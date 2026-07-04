@@ -1,0 +1,15 @@
+# R-ebirth Rust workspace.
+#
+# Members are the native crates behind the `rebirth` R package. The R package's
+# own build (rebirth/src/Makevars) will link the FFI boundary from here starting
+# in WP1; for now each crate is an empty-but-compiling placeholder so the
+# workspace build, its tests, clippy, and rustfmt are green from the first commit.
+[workspace]
+resolver = "2"
+members = ["rebirth-ffi", "rebirth-llm"]
+
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Alessandro Vadala"]

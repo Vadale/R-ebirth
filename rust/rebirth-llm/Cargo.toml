@@ -1,0 +1,9 @@
+[package]
+name = "rebirth-llm"
+description = "Safe inference-engine wrapper for R-ebirth (contains no R types). WP0 placeholder; the vendored, patched llama.cpp engine arrives in WP1."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
