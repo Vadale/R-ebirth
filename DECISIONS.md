@@ -27,6 +27,21 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 - **Decision:** WP-T (the MedGemma audit, `THESIS-PLAN.md`) is parked until the founder's thesis is assigned (~6–8 months, ≈ Q1–Q2 2027). `llm_probe()` (Phase 4) proceeds as a core capability regardless. WP-T gates nothing.
 - **Why:** the assignment date is outside the founder's control; the software will be ahead of the thesis's needs (Phases 1–2 + `llm_probe`) by resumption time.
 
+## D-005 — Rust crate layout: one package-embedded workspace
+- **Date:** 2026-07-04 · **Status:** accepted
+- **Decision:** consolidate both native crates into a single cargo workspace embedded in the package at `rebirth/src/rust/` (members `rebirth-ffi`, `rebirth-llm`); delete the orphaned top-level `rust/`. `rebirth-ffi` is the extendr boundary crate but keeps `[lib] name = "rebirth"` and the `mod rebirth;` module name, so `entrypoint.c`, `rebirth-win.def`, `NAMESPACE`, `document.rs`, and `-lrebirth` are unchanged (≈ zero churn); `rebirth-llm` is a workspace sibling and path dependency, R-free and independently testable. Full analysis in `docs/wp1-plan.md`.
+- **Why:** the top-level `rust/` (the `SOLO-PHASE-PLAN.md` §4 sketch) escapes the package directory, so it is absent in the `R CMD check` tempdir and forbidden by CRAN (ARCHITECTURE §9); embedding under `src/` is self-contained by construction while preserving the three-layer FFI/engine separation (§2/§13). This supersedes the §4 top-level-`rust/` layout sketch (a plan sketch, not a prior ADR).
+- **Alternatives rejected:** path-depend on `../../../rust` (escapes the package → check/CRAN build fails — this was the WP0 orphaning bug); copy or symlink crates in at configure time (tarball/reproducibility fragility); collapse into one flat crate (breaks the R-free engine and unsafe-isolation invariants, §2/§13).
+- **Note:** accepted by Claude under the founder's 2026-07-04 autonomy grant — an internal structural decision with no external impact; recorded here for the founder's standing review.
+
+## D-006 — llama.cpp vendoring and native build
+- **Date:** 2026-07-04 · **Status:** accepted
+- **Decision:** vendor a pinned, pruned llama.cpp source snapshot inside the package at `rebirth/src/llama.cpp/` (upstream tag + tree SHA256 recorded in `src/llama.cpp/VENDORING.md`, mirrored as a provenance record in `vendor/README.md`/`NOTICE`); build it from `rebirth-llm/build.rs` via the newly authorized `cmake` build-dependency crate — Metal + embedded shaders on macOS arm64, CPU elsewhere, CUDA behind a default-off `cuda` feature until Phase 8; declare the small FFI surface as hand-written `extern "C"` (no bindgen); apply no source patches in WP1 (taps are WP4). `SystemRequirements` gains `cmake (>= 3.28)` with a `configure` presence check. Full analysis in `docs/wp1-plan.md`.
+- **Why:** self-containment (D-005 / §9 — a git submodule or a configure-time download breaks the check tempdir and CRAN's no-network rule); cmake is upstream's supported build path (hand-rolling ggml backend registration and Metal-shader embedding would drift on every bump, defeating the `vendor-bump` skill); a tiny hand-written FFI surface stays auditable without a `libclang`/bindgen toolchain dependency.
+- **Alternatives rejected:** git submodule or configure-time download (absent in the tarball / violate CRAN no-network); `cc`-crate hand-compile (brittle vs upstream cmake); dynamic-link a system `libllama` (no stable ABI across `bNNNN` tags); bindgen (adds libclang for a handful of symbols and enlarges the audited unsafe surface).
+- **Dependency authorization:** this ADR authorizes the Rust build-dependency `cmake` and the `cmake (>= 3.28)` SystemRequirement — the only new dependencies WP1 introduces. Accepted by Claude under the founder's 2026-07-04 autonomy grant; **flagged for the founder** as the one WP1 decision that touches the "no new dependency without an approved entry" rule.
+- **Pinned tag:** selection criteria in `docs/wp1-plan.md` (immutable `bNNNN` release with gemma3 + qwen2 support, settled C API, mature Apple-silicon Metal, ~2–4 weeks old); the exact tag is finalized at vendoring time (WP1 Step 1) and recorded with its tree SHA256.
+
 ---
 
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
