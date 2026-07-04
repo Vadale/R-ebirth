@@ -16,7 +16,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: rust
+        working-directory: rebirth/src/rust
 
     steps:
       - uses: actions/checkout@v4
@@ -25,11 +25,17 @@ jobs:
         with:
           components: rustfmt, clippy
 
-      - name: cargo fmt --check
+      # rebirth-ffi is the extendr boundary crate: building it requires R (the
+      # extendr-ffi build script locates R). This R-free job therefore builds,
+      # tests, and lints only rebirth-llm — which proves the engine crate stays
+      # R-free and independently testable (ARCHITECTURE.md §2). rebirth-ffi is
+      # compiled and validated by the R-CMD-check workflow (which sets up R);
+      # full-workspace clippy under R is wired in a later WP1 step.
+      - name: cargo fmt --check (whole workspace)
         run: cargo fmt --all --check
 
-      - name: cargo clippy (deny warnings)
-        run: cargo clippy --all-targets -- -D warnings
+      - name: cargo clippy (R-free engine crate; deny warnings)
+        run: cargo clippy -p rebirth-llm --all-targets -- -D warnings
 
-      - name: cargo test
-        run: cargo test --all
+      - name: cargo test (R-free engine crate)
+        run: cargo test -p rebirth-llm

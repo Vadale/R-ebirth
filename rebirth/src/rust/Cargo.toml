@@ -1,21 +1,20 @@
-[package]
-name = 'rebirth'
-publish = false
-version = '0.1.0'
-edition = '2021'
-rust-version = '1.71'
+# Native workspace for the `rebirth` R package (ADR D-005).
+#
+# Both native crates live here, inside the package, so `R CMD build`/`R CMD check`
+# and CRAN builds are self-contained (ARCHITECTURE.md §9): no path escapes the
+# package directory. `rebirth-ffi` is the extendr boundary (all unsafe, SEXP
+# marshalling); `rebirth-llm` is the R-free engine wrapper (ARCHITECTURE.md §2).
+[workspace]
+resolver = "2"
+members = ["rebirth-ffi", "rebirth-llm"]
 
-[lib]
-crate-type = [ 'rlib', 'staticlib' ]
-name = 'rebirth'
+[workspace.package]
+version = "0.0.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["Alessandro Vadala"]
 
-[[bin]]
-name = 'document'
-path = 'document.rs'
-
-[dependencies]
-extendr-api = "0.9"
-
+# Profiles apply only at the workspace root.
 [profile.release]
 lto = true
 codegen-units = 1

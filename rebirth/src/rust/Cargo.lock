@@ -81,11 +81,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "rebirth"
-version = "0.1.0"
+name = "rebirth-ffi"
+version = "0.0.0"
 dependencies = [
  "extendr-api",
+ "rebirth-llm",
 ]
+
+[[package]]
+name = "rebirth-llm"
+version = "0.0.0"
 
 [[package]]
 name = "syn"
