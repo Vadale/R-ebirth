@@ -1,0 +1,16 @@
+R-ebirth
+Copyright 2026 Alessandro Vadalà
+
+This product includes original software developed for the R-ebirth project,
+dual-licensed under MIT OR Apache-2.0 (see LICENSE-MIT and LICENSE-APACHE).
+
+--------------------------------------------------------------------------------
+Third-party components
+--------------------------------------------------------------------------------
+Vendored dependencies and their licenses are recorded here as they are added.
+
+* llama.cpp — MIT License.
+  Vendored (pinned upstream tag + SHA256) under vendor/ starting in WP1, and
+  patched for activation taps in WP4. Its upstream LICENSE and copyright notice
+  will be reproduced under vendor/ at that time. NOT yet present in this WP0
+  scaffold.
