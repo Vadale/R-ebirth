@@ -18,10 +18,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # R-oldrel is intentionally omitted for now: the package declares
+        # Depends: R (>= 4.5.0), and while the current release is 4.5.x the
+        # oldrel series (4.4.x) is below that floor. Add oldrel back once the
+        # release line reaches 4.6 (the dev target), when oldrel becomes 4.5.x.
         config:
           - {os: macos-15,     r: 'release'}
           - {os: ubuntu-24.04, r: 'release'}
-          - {os: ubuntu-24.04, r: 'oldrel-1'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
