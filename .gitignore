@@ -1,0 +1,22 @@
+# --- macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# --- R ---
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+# built package artifacts (Cargo.lock IS committed; do not ignore it)
+/*.tar.gz
+/*.tgz
+*.Rcheck/
+
+# --- Rust ---
+target/
+**/*.rs.bk
+
+# --- editors / scratch ---
+Untitled.rtf

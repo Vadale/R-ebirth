@@ -1,0 +1,35 @@
+# Cargo checks for the native workspace under rust/ (rebirth-ffi, rebirth-llm).
+# Formatting, linting (warnings are errors), and tests. Downloads no models.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+name: rust.yaml
+
+permissions: read-all
+
+jobs:
+  cargo:
+    runs-on: ubuntu-24.04
+    name: cargo fmt / clippy / test
+
+    defaults:
+      run:
+        working-directory: rust
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: cargo fmt --check
+        run: cargo fmt --all --check
+
+      - name: cargo clippy (deny warnings)
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: cargo test
+        run: cargo test --all

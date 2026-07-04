@@ -1,0 +1,6 @@
+# Pin the Rust toolchain for reproducible builds (ARCHITECTURE.md §9).
+# WP0 pins the stable channel with the components CI verifies; a later WP may
+# pin an exact version if cross-machine reproducibility requires it.
+[toolchain]
+channel = "stable"
+components = ["rustfmt", "clippy"]

@@ -1,0 +1,22 @@
+Package: rebirth
+Title: Local Large Language Models as Base-R Objects
+Version: 0.0.0.9000
+Authors@R: 
+    person("Alessandro", "Vadala", , "vadale93@gmail.com", role = c("aut", "cre", "cph"))
+Description: Load and run local large language models (through a vendored,
+    patched 'llama.cpp') from R and expose generation, embeddings, and
+    mechanistic interpretability tools -- activation tracing, steering,
+    and ablation -- as plain data frames and matrices in base-R idiom. The
+    package is in early development (repository scaffold): no modelling
+    functionality is available yet.
+License: MIT + file LICENSE | Apache License (== 2.0)
+Depends: 
+    R (>= 4.5.0)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 8.0.0
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+Config/rextendr/version: 0.5.0
+SystemRequirements: Cargo (Rust's package manager), rustc >= 1.71.0, xz
