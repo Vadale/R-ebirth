@@ -1,0 +1,29 @@
+# Harness B golden tooling — TEST TOOLING ONLY, never a package dependency.
+#
+# This pins the Python venv used to (re)generate and self-check the goldens
+# under tests/llm-golden/. It is not referenced by DESCRIPTION or Cargo.toml and
+# is never installed by R CMD build/check. Regeneration is governed by the
+# `golden-update` skill.
+#
+# Reproduce the venv (from the repo root):
+#   python3 -m venv .golden-venv
+#   .golden-venv/bin/pip install -r tests/llm-golden/requirements.txt
+#
+# Pinned against Python 3.13. The WP6a slice needs only numpy + gguf; the
+# transitive pins below are the full resolved set so the environment is
+# reproducible. torch/transformers (HF fp32 activation goldens) and a second,
+# unpatched llama.cpp build (the reference logit comparator) are DEFERRED to
+# WP2/WP6b and are intentionally absent here (see reference/README.md).
+
+# --- direct ---
+numpy==2.5.1
+gguf==0.19.0
+
+# --- transitive (pulled in by gguf) ---
+certifi==2026.6.17
+charset-normalizer==3.4.7
+idna==3.18
+PyYAML==6.0.3
+requests==2.34.2
+tqdm==4.68.3
+urllib3==2.7.0
