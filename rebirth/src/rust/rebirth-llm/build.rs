@@ -82,6 +82,22 @@ fn main() {
     // (Phase 8). WP1 never exercises this path.
     cfg.define("GGML_CUDA", if cuda { "ON" } else { "OFF" });
 
+    // Match the macOS deployment target the final link uses, so the vendored
+    // objects are not compiled for a newer macOS than they are linked against —
+    // R CMD check (error-on = warning) rejects "object file was built for newer
+    // 'macOS' version than being linked". R exports MACOSX_DEPLOYMENT_TARGET
+    // during the package build; fall back to the architecture's floor otherwise.
+    if target_os == "macos" {
+        let deployment_target = env::var("MACOSX_DEPLOYMENT_TARGET").unwrap_or_else(|_| {
+            if target_arch == "aarch64" {
+                "11.0".to_string()
+            } else {
+                "10.15".to_string()
+            }
+        });
+        cfg.define("CMAKE_OSX_DEPLOYMENT_TARGET", &deployment_target);
+    }
+
     let dst = cfg.build();
 
     // The cmake crate builds under `<dst>/build`; llama.cpp's install target does
@@ -127,13 +143,19 @@ fn main() {
 /// `document` bin). The R SHLIB link mirrors these in `src/Makevars(.in)`.
 fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
     if target_os == "linux" {
-        // GNU ld: wrap the archives in a group so any back-references between the
-        // ggml/llama archives resolve regardless of order.
-        println!("cargo:rustc-link-arg=-Wl,--start-group");
+        // The engine symbols must reach the `rebirth-ffi` `document` bin, a
+        // dependent crate. `cargo:rustc-link-arg` (which a --start-group needs)
+        // does NOT propagate across crates — only `rustc-link-lib`/`-search` do.
+        // On GNU ld a static archive yields only the members referenced before it
+        // is scanned, so plain, unordered `-l` flags leave the ggml/llama
+        // back-references undefined. `+whole-archive` forces every object in (no
+        // group, order-independent) and propagates via `rustc-link-lib`; `-bundle`
+        // keeps the archives OUT of `librebirth.a` so the R SHLIB link (Makevars
+        // PKG_LIBS, with its own --start-group) remains the single provider and no
+        // symbol is defined twice.
         for stem in lib_stems {
-            println!("cargo:rustc-link-arg=-l{stem}");
+            println!("cargo:rustc-link-lib=static:+whole-archive,-bundle={stem}");
         }
-        println!("cargo:rustc-link-arg=-Wl,--end-group");
         println!("cargo:rustc-link-lib=dylib=stdc++");
         println!("cargo:rustc-link-lib=dylib=m");
         println!("cargo:rustc-link-lib=dylib=dl");
