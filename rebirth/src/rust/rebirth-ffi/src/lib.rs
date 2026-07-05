@@ -93,15 +93,10 @@ fn with_model<F>(ptr: &Robj, f: F) -> Robj
 where
     F: FnOnce(&LoadedModel) -> Result<Robj, RebirthError>,
 {
-    let result = catch_unwind(AssertUnwindSafe(|| {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
         let handle = <&ExternalPtr<LlmHandle>>::try_from(ptr).map_err(|_| RebirthError::Closed)?;
         handle.run(f)
-    }));
-    match result {
-        Ok(Ok(payload)) => payload,
-        Ok(Err(error)) => error_payload(error),
-        Err(panic) => panic_payload(panic),
-    }
+    })))
 }
 
 // --- payload construction --------------------------------------------------
@@ -186,6 +181,18 @@ fn panic_payload(panic: Box<dyn Any + Send>) -> Robj {
     error_payload(RebirthError::Internal { context })
 }
 
+/// Resolve a `catch_unwind` outcome into the classed payload R receives: a
+/// success passes through, a `RebirthError` becomes its error payload, and a
+/// caught panic becomes a `rebirth_error_internal` payload (§2). Every boundary
+/// entry funnels its result through here.
+fn resolve(result: std::thread::Result<Result<Robj, RebirthError>>) -> Robj {
+    match result {
+        Ok(Ok(payload)) => payload,
+        Ok(Err(error)) => error_payload(error),
+        Err(panic) => panic_payload(panic),
+    }
+}
+
 // --- boundary entries ------------------------------------------------------
 
 // Load a GGUF model. All argument validation and defaulting happen in R before
@@ -229,17 +236,12 @@ fn rebirth_model_load(
     // payload construction -- runs inside catch_unwind so a panic anywhere maps
     // to a classed rebirth_error_internal (ARCHITECTURE.md §2.2), never a generic
     // extendr error.
-    let result = catch_unwind(AssertUnwindSafe(|| {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
         let loaded = rebirth_llm::load(request)?;
         let meta = loaded.metadata();
         let ptr: Robj = ExternalPtr::new(LlmHandle::new(loaded)).into();
         Ok::<Robj, RebirthError>(ok_payload(ptr, meta))
-    }));
-    match result {
-        Ok(Ok(payload)) => payload,
-        Ok(Err(error)) => error_payload(error),
-        Err(panic) => panic_payload(panic),
-    }
+    })))
 }
 
 // Deterministically free the native model behind `ptr` (the `close.llm` path).
@@ -354,13 +356,11 @@ fn rebirth_selftest_new_handle() -> Robj {
 // condition instead of reaching R raw. Internal (never in NAMESPACE).
 #[extendr]
 fn rebirth_selftest_panic() -> Robj {
-    match catch_unwind(AssertUnwindSafe(|| -> Result<(), RebirthError> {
-        panic!("forced panic for the internal-error self-test")
-    })) {
-        Ok(Ok(())) => ().into(),
-        Ok(Err(error)) => error_payload(error),
-        Err(panic) => panic_payload(panic),
-    }
+    resolve(catch_unwind(AssertUnwindSafe(
+        || -> Result<Robj, RebirthError> {
+            panic!("forced panic for the internal-error self-test")
+        },
+    )))
 }
 
 // Macro to generate exports. The functions above are internal `.Call` targets;
