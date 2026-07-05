@@ -40,6 +40,35 @@ pub struct llama_vocab {
     _opaque: [u8; 0],
 }
 
+// The names below mirror the llama.h typedefs verbatim (like the structs above),
+// so the FFI surface reads 1:1 against the header; hence the snake_case allow.
+#[allow(non_camel_case_types)]
+/// `llama_token` / `llama_pos` / `llama_seq_id` are all `int32_t` (llama.h l.68-70).
+pub type llama_token = i32;
+#[allow(non_camel_case_types)]
+pub type llama_pos = i32;
+#[allow(non_camel_case_types)]
+pub type llama_seq_id = i32;
+
+#[allow(non_camel_case_types)]
+/// `llama_memory_t` = `struct llama_memory_i *` (opaque; never dereferenced).
+pub type llama_memory_t = *mut c_void;
+
+/// Mirror of `struct llama_batch` (llama.h, tag b9726). Passed **by value** to
+/// `llama_decode`; allocated/freed by `llama_batch_init`/`llama_batch_free`, so
+/// the only fields we write are `n_tokens`, `token`, `pos`, `n_seq_id`,
+/// `seq_id`, and `logits` (all heap arrays sized by the engine).
+#[repr(C)]
+pub struct llama_batch {
+    pub n_tokens: i32,
+    pub token: *mut llama_token,
+    pub embd: *mut f32,
+    pub pos: *mut llama_pos,
+    pub n_seq_id: *mut i32,
+    pub seq_id: *mut *mut llama_seq_id,
+    pub logits: *mut i8,
+}
+
 /// Mirror of `struct llama_model_params` (llama.h, tag b9726).
 #[repr(C)]
 pub struct llama_model_params {
@@ -106,6 +135,14 @@ pub struct llama_context_params {
 /// `ggml_log_callback`: `void (*)(enum ggml_log_level, const char *, void *)`.
 pub type GgmlLogCallback = extern "C" fn(level: c_int, text: *const c_char, user_data: *mut c_void);
 
+/// Mirror of `struct llama_chat_message` (llama.h l.436): a role/content turn.
+/// Both are borrowed NUL-terminated C strings that must outlive the apply call.
+#[repr(C)]
+pub struct llama_chat_message {
+    pub role: *const c_char,
+    pub content: *const c_char,
+}
+
 extern "C" {
     // --- backend lifecycle & capabilities (also used by lib.rs) ---
     pub fn llama_backend_init();
@@ -135,6 +172,9 @@ extern "C" {
 
     // --- metadata getters ---
     pub fn llama_n_ctx(ctx: *const llama_context) -> u32;
+    /// The maximum tokens a single `llama_decode` batch may carry (a prompt
+    /// longer than this must be decoded in chunks).
+    pub fn llama_n_batch(ctx: *const llama_context) -> u32;
     pub fn llama_model_n_layer(model: *const llama_model) -> i32;
     pub fn llama_model_n_embd(model: *const llama_model) -> i32;
     pub fn llama_model_n_ctx_train(model: *const llama_model) -> i32;
@@ -149,4 +189,65 @@ extern "C" {
     pub fn llama_model_desc(model: *const llama_model, buf: *mut c_char, buf_size: usize) -> i32;
     pub fn llama_model_get_vocab(model: *const llama_model) -> *const llama_vocab;
     pub fn llama_vocab_n_tokens(vocab: *const llama_vocab) -> i32;
+    /// `enum llama_vocab_type`; `0` = `LLAMA_VOCAB_TYPE_NONE` (no tokenizer).
+    pub fn llama_vocab_type(vocab: *const llama_vocab) -> c_int;
+    /// Whether `token` ends generation (EOS/EOT/etc.); stops the decode loop.
+    pub fn llama_vocab_is_eog(vocab: *const llama_vocab, token: llama_token) -> bool;
+
+    // --- tokenization ---
+    pub fn llama_tokenize(
+        vocab: *const llama_vocab,
+        text: *const c_char,
+        text_len: i32,
+        tokens: *mut llama_token,
+        n_tokens_max: i32,
+        add_special: bool,
+        parse_special: bool,
+    ) -> i32;
+    pub fn llama_token_to_piece(
+        vocab: *const llama_vocab,
+        token: llama_token,
+        buf: *mut c_char,
+        length: i32,
+        lstrip: i32,
+        special: bool,
+    ) -> i32;
+    pub fn llama_detokenize(
+        vocab: *const llama_vocab,
+        tokens: *const llama_token,
+        n_tokens: i32,
+        text: *mut c_char,
+        text_len_max: i32,
+        remove_special: bool,
+        unparse_special: bool,
+    ) -> i32;
+
+    // --- chat templates ---
+    /// The model's built-in chat template (`name = NULL` for the default), or
+    /// NULL if the GGUF carries none. Owned by the model.
+    pub fn llama_model_chat_template(
+        model: *const llama_model,
+        name: *const c_char,
+    ) -> *const c_char;
+    /// Format `chat` with `tmpl` (a recognized template, not arbitrary Jinja).
+    /// Returns the formatted byte length; a value > `length` means re-alloc and
+    /// retry; a negative value is an error.
+    pub fn llama_chat_apply_template(
+        tmpl: *const c_char,
+        chat: *const llama_chat_message,
+        n_msg: usize,
+        add_ass: bool,
+        buf: *mut c_char,
+        length: i32,
+    ) -> i32;
+
+    // --- decoding & logits ---
+    pub fn llama_batch_init(n_tokens: i32, embd: i32, n_seq_max: i32) -> llama_batch;
+    pub fn llama_batch_free(batch: llama_batch);
+    pub fn llama_decode(ctx: *mut llama_context, batch: llama_batch) -> i32;
+    pub fn llama_get_logits_ith(ctx: *mut llama_context, i: i32) -> *mut f32;
+
+    // --- KV-cache / memory ---
+    pub fn llama_get_memory(ctx: *const llama_context) -> llama_memory_t;
+    pub fn llama_memory_clear(mem: llama_memory_t, data: bool);
 }

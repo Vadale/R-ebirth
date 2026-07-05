@@ -8,10 +8,14 @@ test_that("the rebirth namespace loads with its compiled library", {
 })
 
 test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", {
-  # Every export must have an approved API-GRAMMAR entry. WP1 exports exactly
-  # llm(); the internal .Call wrappers and helpers stay unexported. This guard
-  # grows one approved entry at a time.
-  expect_setequal(getNamespaceExports("rebirth"), "llm")
+  # Every export must have an approved API-GRAMMAR entry. This guard grows one
+  # approved entry at a time; the internal .Call wrappers and helpers stay
+  # unexported. WP1: llm(). WP2 (API-GRAMMAR section 3): llm_tokens(),
+  # llm_generate().
+  expect_setequal(
+    getNamespaceExports("rebirth"),
+    c("llm", "llm_tokens", "llm_generate")
+  )
 })
 
 test_that("the WP1 S3 methods are registered (API-GRAMMAR section 3)", {

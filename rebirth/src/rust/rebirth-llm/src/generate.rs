@@ -1,0 +1,833 @@
+//! Tokenization, teacher-forced logits, and token-level generation.
+//!
+//! The engine wrapper for WP2. Everything here operates on plain Rust types
+//! (token-id slices, strings, `Vec<f32>` logits) so the crate stays R-free
+//! (ARCHITECTURE.md §2). The determinism contract (§7) is honored by drawing
+//! every sampled token on the CPU from the returned logits with a dedicated
+//! seeded RNG (`SplitMix64` below) — the GPU backend never selects a token, so
+//! backend non-determinism cannot enter the output.
+
+use std::os::raw::c_char;
+
+use crate::engine::LoadedModel;
+use crate::error::RebirthError;
+use crate::ffi;
+
+/// Teacher-forced logits for a token sequence: the next-token distribution at
+/// every position. Row-major, `seq_len` rows of `n_vocab` each.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Logits {
+    /// `seq_len * n_vocab` values, position-major (row `p` starts at `p*n_vocab`).
+    pub values: Vec<f32>,
+    pub seq_len: usize,
+    pub n_vocab: usize,
+}
+
+impl Logits {
+    /// The logit row for position `pos` (0-based).
+    pub fn row(&self, pos: usize) -> &[f32] {
+        &self.values[pos * self.n_vocab..(pos + 1) * self.n_vocab]
+    }
+}
+
+/// A tokenized string: the engine-native (0-based) token ids and, aligned, the
+/// display piece of each token. The FFI boundary is where 0-based becomes the
+/// 1-based R API (ARCHITECTURE.md §4); this crate stays engine-native.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Encoding {
+    pub ids: Vec<i32>,
+    pub pieces: Vec<String>,
+}
+
+// --- a batch that frees itself -------------------------------------------
+
+/// RAII wrapper over `llama_batch`: `llama_batch_init` allocates the arrays,
+/// `Drop` calls `llama_batch_free`. All member arrays are engine-owned and sized
+/// to `n_tokens`; we only ever write the documented fields.
+struct Batch {
+    raw: ffi::llama_batch,
+    capacity: i32,
+}
+
+impl Batch {
+    fn new(n_tokens: i32) -> Result<Self, RebirthError> {
+        // SAFETY: allocates a batch holding `n_tokens` tokens (embd = 0 -> token
+        // array), one sequence id per token (n_seq_max = 1). Freed in Drop.
+        let raw = unsafe { ffi::llama_batch_init(n_tokens, 0, 1) };
+        if raw.token.is_null() {
+            return Err(RebirthError::Generation {
+                reason: "batch_alloc".to_string(),
+            });
+        }
+        Ok(Batch {
+            raw,
+            capacity: n_tokens,
+        })
+    }
+
+    /// Fill the batch with `tokens` at positions `start_pos..`, sequence 0.
+    /// `logits_last_only` decides whether only the final token requests logits
+    /// (generation) or every token does (teacher-forced scoring).
+    fn fill(&mut self, tokens: &[i32], start_pos: i32, logits_last_only: bool) {
+        debug_assert!(tokens.len() as i32 <= self.capacity);
+        let n = tokens.len();
+        self.raw.n_tokens = n as i32;
+        for (i, &tok) in tokens.iter().enumerate() {
+            // SAFETY: `i < n <= capacity`; every array below was allocated with
+            // `capacity` slots by `llama_batch_init`. `seq_id[i]` points at an
+            // array of `n_seq_max = 1` element.
+            unsafe {
+                *self.raw.token.add(i) = tok;
+                *self.raw.pos.add(i) = start_pos + i as i32;
+                *self.raw.n_seq_id.add(i) = 1;
+                *(*self.raw.seq_id.add(i)).add(0) = 0;
+                let want = if logits_last_only {
+                    (i == n - 1) as i8
+                } else {
+                    1
+                };
+                *self.raw.logits.add(i) = want;
+            }
+        }
+    }
+}
+
+impl Drop for Batch {
+    fn drop(&mut self) {
+        // SAFETY: `raw` came from `llama_batch_init` and is freed exactly once
+        // (this owner drops once). `ptr::read` bitwise-copies the by-value batch
+        // the C function consumes; the copy is not used afterwards.
+        unsafe { ffi::llama_batch_free(std::ptr::read(&self.raw)) };
+    }
+}
+
+// --- tokenization ---------------------------------------------------------
+
+impl LoadedModel {
+    /// Tokenize `text` into engine-native (0-based) ids plus their display
+    /// pieces. `add_special` adds the model's BOS/EOS if it is configured to;
+    /// `parse_special` treats special-token markup in `text` as tokens.
+    pub fn encode(
+        &self,
+        text: &str,
+        add_special: bool,
+        parse_special: bool,
+    ) -> Result<Encoding, RebirthError> {
+        if !self.has_tokenizer() {
+            return Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            });
+        }
+        let ids = self.tokenize(text, add_special, parse_special)?;
+        let pieces = ids
+            .iter()
+            .map(|&id| self.token_piece(id))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Encoding { ids, pieces })
+    }
+
+    /// Detokenize engine-native (0-based) ids back into a single string. The
+    /// engine reassembles multi-byte UTF-8 that spans token boundaries, so this
+    /// is the correct inverse of [`encode`](Self::encode) (concatenating piece
+    /// strings is not). `remove_special`/`unparse_special` are passed through.
+    pub fn decode_tokens(
+        &self,
+        ids: &[i32],
+        remove_special: bool,
+        unparse_special: bool,
+    ) -> Result<String, RebirthError> {
+        if !self.has_tokenizer() {
+            return Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            });
+        }
+        self.validate_ids(ids)?;
+        if ids.is_empty() {
+            return Ok(String::new());
+        }
+        // Two-pass sizing: a negative return is minus the required byte length.
+        let vocab = self.vocab_ptr();
+        let mut cap = ids.len() * 8 + 16;
+        loop {
+            let mut buf = vec![0u8; cap];
+            // SAFETY: `vocab` is live; `ids` is a valid slice; `buf`/`cap` are
+            // consistent. The engine writes at most `cap` bytes (no NUL).
+            let n = unsafe {
+                ffi::llama_detokenize(
+                    vocab,
+                    ids.as_ptr(),
+                    ids.len() as i32,
+                    buf.as_mut_ptr().cast::<c_char>(),
+                    cap as i32,
+                    remove_special,
+                    unparse_special,
+                )
+            };
+            if n < 0 {
+                cap = (-n) as usize;
+                continue;
+            }
+            buf.truncate(n as usize);
+            // Lossy: a well-formed id sequence detokenizes to valid UTF-8; lossy
+            // only guards against a caller passing a mid-character id subset.
+            return Ok(String::from_utf8_lossy(&buf).into_owned());
+        }
+    }
+
+    /// Reject ids outside `[0, n_vocab)` before they reach the engine (a bad id
+    /// could otherwise trip an assert). Engine-native (0-based) ids.
+    fn validate_ids(&self, ids: &[i32]) -> Result<(), RebirthError> {
+        let n_vocab = self.n_vocab();
+        for &id in ids {
+            if id < 0 || id >= n_vocab {
+                return Err(RebirthError::Tokenize {
+                    reason: format!("token id {id} is outside the vocabulary [0, {n_vocab})"),
+                });
+            }
+        }
+        Ok(())
+    }
+
+    fn tokenize(
+        &self,
+        text: &str,
+        add_special: bool,
+        parse_special: bool,
+    ) -> Result<Vec<i32>, RebirthError> {
+        let vocab = self.vocab_ptr();
+        let bytes = text.as_bytes();
+        // Generous first guess; +8 covers any added special tokens on an empty
+        // or tiny input. A negative return is minus the exact count needed.
+        let mut cap = bytes.len() + 8;
+        loop {
+            let mut tokens = vec![0i32; cap];
+            // SAFETY: `vocab` is live; `bytes` outlives the call; `tokens`/`cap`
+            // are consistent. Passing an explicit length (not NUL-terminated)
+            // handles interior NUL bytes in `text`.
+            let n = unsafe {
+                ffi::llama_tokenize(
+                    vocab,
+                    bytes.as_ptr().cast::<c_char>(),
+                    bytes.len() as i32,
+                    tokens.as_mut_ptr(),
+                    cap as i32,
+                    add_special,
+                    parse_special,
+                )
+            };
+            if n < 0 {
+                cap = (-n) as usize;
+                continue;
+            }
+            tokens.truncate(n as usize);
+            return Ok(tokens);
+        }
+    }
+
+    /// The display piece for a single engine-native id. Lossy: a single token
+    /// may be a partial UTF-8 byte sequence; round-trip correctness comes from
+    /// [`decode_tokens`](Self::decode_tokens) on the whole id vector, not from
+    /// concatenating pieces.
+    fn token_piece(&self, id: i32) -> Result<String, RebirthError> {
+        let vocab = self.vocab_ptr();
+        let mut cap = 32usize;
+        loop {
+            let mut buf = vec![0u8; cap];
+            // SAFETY: `vocab` is live; `buf`/`cap` are consistent. `lstrip = 0`,
+            // `special = true` so control tokens render as their text.
+            let n = unsafe {
+                ffi::llama_token_to_piece(
+                    vocab,
+                    id,
+                    buf.as_mut_ptr().cast::<c_char>(),
+                    cap as i32,
+                    0,
+                    true,
+                )
+            };
+            if n < 0 {
+                cap = (-n) as usize;
+                continue;
+            }
+            buf.truncate(n as usize);
+            return Ok(String::from_utf8_lossy(&buf).into_owned());
+        }
+    }
+}
+
+// --- forward pass ---------------------------------------------------------
+
+impl LoadedModel {
+    /// Clear the KV cache so the next forward pass starts from position 0.
+    fn clear_memory(&self) {
+        // SAFETY: `ctx_ptr` is a live context; `llama_get_memory` returns its
+        // (non-owning) memory handle, cleared in place.
+        unsafe {
+            let mem = ffi::llama_get_memory(self.ctx_ptr());
+            if !mem.is_null() {
+                ffi::llama_memory_clear(mem, true);
+            }
+        }
+    }
+
+    /// Guard: reject a token sequence that cannot fit the context window.
+    fn check_fits(&self, n_tokens: usize) -> Result<(), RebirthError> {
+        let ctx = self.context_length();
+        if n_tokens as u64 > ctx as u64 {
+            return Err(RebirthError::ContextOverflow {
+                prompt_tokens: n_tokens as u32,
+                context_length: ctx,
+                overflow: n_tokens as u32 - ctx,
+            });
+        }
+        Ok(())
+    }
+
+    /// Decode `tokens` starting at `start_pos` and return the raw decode status.
+    /// The batch requests logits per `logits_last_only`.
+    fn decode(
+        &self,
+        tokens: &[i32],
+        start_pos: i32,
+        logits_last_only: bool,
+    ) -> Result<(), RebirthError> {
+        if tokens.is_empty() {
+            return Err(RebirthError::Generation {
+                reason: "empty_batch".to_string(),
+            });
+        }
+        let mut batch = Batch::new(tokens.len() as i32)?;
+        batch.fill(tokens, start_pos, logits_last_only);
+        // SAFETY: `ctx_ptr` is live; `batch.raw` is a fully-populated batch whose
+        // arrays outlive the call (dropped after it). `llama_decode` reads the
+        // batch by value; we keep ownership of the backing arrays in `batch`.
+        let status = unsafe { ffi::llama_decode(self.ctx_ptr(), std::ptr::read(&batch.raw)) };
+        if status != 0 {
+            return Err(RebirthError::Generation {
+                reason: format!("llama_decode returned {status}"),
+            });
+        }
+        Ok(())
+    }
+
+    /// Copy the logit row the engine stored for output slot `ith`.
+    fn logits_ith(&self, ith: i32, n_vocab: usize) -> Result<Vec<f32>, RebirthError> {
+        // SAFETY: `ctx_ptr` is live; `llama_get_logits_ith` returns a pointer to
+        // `n_vocab` f32 owned by the context (valid until the next decode). Null
+        // means the slot did not request logits — an internal inconsistency.
+        let ptr = unsafe { ffi::llama_get_logits_ith(self.ctx_ptr(), ith) };
+        if ptr.is_null() {
+            return Err(RebirthError::Generation {
+                reason: format!("no logits at output slot {ith}"),
+            });
+        }
+        // SAFETY: `ptr` points at `n_vocab` valid f32 (row length = vocab size).
+        let row = unsafe { std::slice::from_raw_parts(ptr, n_vocab) };
+        Ok(row.to_vec())
+    }
+
+    /// Teacher-forced logits at every position of `tokens` (no sampling). This is
+    /// the exact-value oracle path: the numpy reference computes the same rows.
+    pub fn logits_for_tokens(&self, tokens: &[i32]) -> Result<Logits, RebirthError> {
+        self.check_fits(tokens.len())?;
+        let n_vocab = self.n_vocab() as usize;
+        if n_vocab == 0 {
+            return Err(RebirthError::Generation {
+                reason: "model has empty vocabulary".to_string(),
+            });
+        }
+        self.clear_memory();
+        self.decode(tokens, 0, false)?;
+
+        let mut values = Vec::with_capacity(tokens.len() * n_vocab);
+        for i in 0..tokens.len() {
+            values.extend_from_slice(&self.logits_ith(i as i32, n_vocab)?);
+        }
+        Ok(Logits {
+            values,
+            seq_len: tokens.len(),
+            n_vocab,
+        })
+    }
+}
+
+// --- generation -----------------------------------------------------------
+
+/// A deterministic SplitMix64 PRNG. Sampling draws all of its randomness here,
+/// so a generation's output depends only on `(seed, params, logits)` and never
+/// on backend RNG state: same seed + params ⇒ identical tokens across runs and
+/// sessions (the determinism contract, ARCHITECTURE.md §7). SplitMix64 is the
+/// reference seeding generator for the xoshiro family — good statistical quality
+/// for a self-contained integer generator that needs no dependency.
+struct SplitMix64 {
+    state: u64,
+}
+
+impl SplitMix64 {
+    fn new(seed: u64) -> Self {
+        SplitMix64 { state: seed }
+    }
+
+    fn next_u64(&mut self) -> u64 {
+        self.state = self.state.wrapping_add(0x9E37_79B9_7F4A_7C15);
+        let mut z = self.state;
+        z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+        z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+        z ^ (z >> 31)
+    }
+
+    /// A uniform double in `[0, 1)` with 53 bits of entropy.
+    fn next_f64(&mut self) -> f64 {
+        (self.next_u64() >> 11) as f64 * (1.0 / (1u64 << 53) as f64)
+    }
+}
+
+/// Why [`LoadedModel::generate`] stopped producing tokens.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StopReason {
+    /// Reached `max_tokens`.
+    MaxTokens,
+    /// The model emitted an end-of-generation token (EOS/EOT/…).
+    EndOfGeneration,
+    /// One of the `stop` strings appeared in the decoded output.
+    StopString,
+    /// The context window filled up before `max_tokens` was reached.
+    ContextFull,
+}
+
+impl StopReason {
+    /// The R-facing tag for this stop reason (a `finish_reason`-style label).
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            StopReason::MaxTokens => "length",
+            StopReason::EndOfGeneration => "stop",
+            StopReason::StopString => "stop_string",
+            StopReason::ContextFull => "context_full",
+        }
+    }
+}
+
+/// Sampling and length controls for [`LoadedModel::generate`]. The R layer
+/// composes these from the `llm_generate()` arguments; the engine only reads
+/// them.
+#[derive(Debug, Clone)]
+pub struct GenerateParams {
+    /// Maximum number of tokens to produce.
+    pub max_tokens: usize,
+    /// Softmax temperature. `<= 0` selects greedy decoding (argmax) — the exact,
+    /// reproducible path the goldens pin.
+    pub temperature: f32,
+    /// Nucleus (top-p) cutoff in `(0, 1]`; ignored when greedy.
+    pub top_p: f32,
+    /// Seed for the CPU sampler. The caller records the drawn seed so a sampled
+    /// run is reproducible.
+    pub seed: u64,
+    /// Stop strings: generation ends as soon as one appears in the output, which
+    /// is truncated just before it.
+    pub stop: Vec<String>,
+}
+
+/// The result of a generation run. Token ids are engine-native (0-based); the
+/// FFI boundary shifts them to the 1-based R API.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Generation {
+    /// The generated token ids (engine-native, 0-based), prompt excluded.
+    pub tokens: Vec<i32>,
+    /// The decoded continuation text (prompt excluded), truncated at a stop
+    /// string when one fired.
+    pub text: String,
+    /// Why generation stopped.
+    pub stop_reason: StopReason,
+    /// The seed actually used (echoes `params.seed`; the R layer surfaces it so a
+    /// sampled run can be replayed).
+    pub seed: u64,
+}
+
+/// Index of the (first) maximum in `row`. Ties resolve to the lowest index, so
+/// greedy decoding matches `numpy.argmax` on the oracle exactly.
+fn argmax(row: &[f32]) -> usize {
+    let mut best = 0usize;
+    for (i, &v) in row.iter().enumerate() {
+        if v > row[best] {
+            best = i;
+        }
+    }
+    best
+}
+
+/// Draw one token id from `logits` under temperature + nucleus (top-p) sampling,
+/// using `rng` for the single uniform it needs. The computation is fully
+/// deterministic given `rng`'s state: a stable sort (value desc, then index) and
+/// a fixed reduction order make the result reproducible on a given platform.
+fn sample(logits: &[f32], temperature: f32, top_p: f32, rng: &mut SplitMix64) -> usize {
+    let n = logits.len();
+    // Descending by logit; ties broken by ascending index for a total, stable
+    // order (f32::total_cmp handles any -0.0/NaN without a panic).
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_unstable_by(|&a, &b| logits[b].total_cmp(&logits[a]).then(a.cmp(&b)));
+
+    // Softmax with temperature, in descending order, max-shifted for stability.
+    let inv_t = 1.0 / (temperature.max(1e-6) as f64);
+    let max = logits[order[0]] as f64;
+    let mut probs: Vec<f64> = order
+        .iter()
+        .map(|&i| ((logits[i] as f64 - max) * inv_t).exp())
+        .collect();
+    let total: f64 = probs.iter().sum();
+    for p in probs.iter_mut() {
+        *p /= total;
+    }
+
+    // Nucleus: the shortest high-probability prefix whose mass reaches top_p.
+    let p_cut = (top_p as f64).clamp(f64::MIN_POSITIVE, 1.0);
+    let mut cum = 0.0;
+    let mut keep = n;
+    for (k, &p) in probs.iter().enumerate() {
+        cum += p;
+        if cum >= p_cut {
+            keep = k + 1;
+            break;
+        }
+    }
+
+    // Draw within the kept nucleus (renormalized by its retained mass).
+    let kept_mass: f64 = probs[..keep].iter().sum();
+    let target = rng.next_f64() * kept_mass;
+    let mut acc = 0.0;
+    for k in 0..keep {
+        acc += probs[k];
+        if target < acc {
+            return order[k];
+        }
+    }
+    order[keep - 1] // floating-point fallback: the least-likely kept token
+}
+
+/// The byte offset of the earliest `stop` string in `text`, if any.
+fn first_stop(text: &str, stop: &[String]) -> Option<usize> {
+    stop.iter()
+        .filter(|s| !s.is_empty())
+        .filter_map(|s| text.find(s.as_str()))
+        .min()
+}
+
+impl LoadedModel {
+    /// Autoregressively generate a continuation of `prompt` (engine-native,
+    /// 0-based ids). Greedy when `params.temperature <= 0` — the path the
+    /// goldens pin token-for-token — otherwise temperature + nucleus sampling on
+    /// the CPU (§7). The prompt itself must fit the context window (else
+    /// [`RebirthError::ContextOverflow`]); running out of window mid-generation is
+    /// a graceful stop, not an error.
+    pub fn generate(
+        &self,
+        prompt: &[i32],
+        params: &GenerateParams,
+    ) -> Result<Generation, RebirthError> {
+        self.check_fits(prompt.len())?;
+        if params.max_tokens == 0 {
+            return Ok(Generation {
+                tokens: Vec::new(),
+                text: String::new(),
+                stop_reason: StopReason::MaxTokens,
+                seed: params.seed,
+            });
+        }
+        if prompt.is_empty() {
+            return Err(RebirthError::Generation {
+                reason: "empty_prompt".to_string(),
+            });
+        }
+        let n_vocab = self.n_vocab() as usize;
+        if n_vocab == 0 {
+            return Err(RebirthError::Generation {
+                reason: "model has empty vocabulary".to_string(),
+            });
+        }
+        let ctx_len = self.context_length() as usize;
+
+        self.clear_memory();
+        // Decode the prompt in n_batch-sized chunks: llama_decode caps a batch at
+        // n_batch (llama may set n_batch well below n_ctx), so a longer prompt must
+        // be split. Positions stay contiguous and the KV cache accumulates; only
+        // the final token's logits are needed, so `slot` ends at its index within
+        // the last chunk. Each intermediate chunk's last-token logits are computed
+        // and immediately overwritten by the next decode — a negligible cost that
+        // keeps the batch fill uniform.
+        let n_batch = (self.n_batch() as usize).max(1);
+        let mut start = 0usize;
+        let mut slot = 0i32;
+        while start < prompt.len() {
+            let end = (start + n_batch).min(prompt.len());
+            self.decode(&prompt[start..end], start as i32, true)?;
+            slot = (end - start) as i32 - 1;
+            start = end;
+        }
+
+        let vocab = self.vocab_ptr();
+        let mut rng = SplitMix64::new(params.seed);
+        let mut out: Vec<i32> = Vec::with_capacity(params.max_tokens);
+        let mut stop_reason = StopReason::MaxTokens;
+
+        // `n_past` is the position the next continuation token occupies: the
+        // prompt filled 0..prompt.len(), so continuation i lands at prompt.len()+i.
+        for n_past in (prompt.len() as i32..).take(params.max_tokens) {
+            let logits = self.logits_ith(slot, n_vocab)?;
+            let next = if params.temperature <= 0.0 {
+                argmax(&logits)
+            } else {
+                sample(&logits, params.temperature, params.top_p, &mut rng)
+            } as i32;
+
+            // SAFETY: `vocab` is live for the model's lifetime; `next` is an id in
+            // `[0, n_vocab)` (argmax/sample index into a vocab-width row).
+            if unsafe { ffi::llama_vocab_is_eog(vocab, next) } {
+                stop_reason = StopReason::EndOfGeneration;
+                break;
+            }
+            out.push(next);
+
+            if !params.stop.is_empty() && self.has_tokenizer() {
+                let text = self.decode_tokens(&out, false, false)?;
+                if let Some(cut) = first_stop(&text, &params.stop) {
+                    return Ok(Generation {
+                        tokens: out,
+                        text: text[..cut].to_string(),
+                        stop_reason: StopReason::StopString,
+                        seed: params.seed,
+                    });
+                }
+            }
+
+            // No room to place another token? Stop before an out-of-range decode.
+            if n_past as usize >= ctx_len {
+                stop_reason = StopReason::ContextFull;
+                break;
+            }
+            self.decode(&[next], n_past, true)?;
+            slot = 0;
+        }
+
+        // Detokenize the continuation only when the model carries a tokenizer;
+        // the numeric synthetic test model has a vocabulary but no tokenizer, so
+        // it produces token ids with no text form.
+        let text = if self.has_tokenizer() {
+            self.decode_tokens(&out, false, false)?
+        } else {
+            String::new()
+        };
+        Ok(Generation {
+            tokens: out,
+            text,
+            stop_reason,
+            seed: params.seed,
+        })
+    }
+
+    /// Generate a continuation of a text `prompt`. When `chat`, the prompt is
+    /// wrapped as a user turn with the model's chat template; otherwise it is a
+    /// raw completion. Tokenization mirrors llama.cpp's own usage: a templated
+    /// prompt is tokenized with special-token parsing and no added BOS (the
+    /// template already carries the markers), a raw prompt with the model's
+    /// default special tokens. Requires a tokenizer (the synthetic model has
+    /// none — its generation is driven by ids through [`generate`](Self::generate)).
+    pub fn generate_prompt(
+        &self,
+        prompt: &str,
+        chat: bool,
+        params: &GenerateParams,
+    ) -> Result<Generation, RebirthError> {
+        if !self.has_tokenizer() {
+            return Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            });
+        }
+        let (text, add_special, parse_special) = if chat {
+            let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
+            (templated, false, true)
+        } else {
+            (prompt.to_string(), true, false)
+        };
+        let prompt_ids = self.tokenize(&text, add_special, parse_special)?;
+        self.generate(&prompt_ids, params)
+    }
+}
+
+// --- chat templates -------------------------------------------------------
+
+/// A chat turn: a role (`"system"` / `"user"` / `"assistant"`) and its content.
+/// The R layer builds these from `llm_generate()`'s prompt (and future message
+/// forms); the engine only formats them with the model's template.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ChatMessage {
+    pub role: String,
+    pub content: String,
+}
+
+impl ChatMessage {
+    /// A `user`-role message (the common case for `llm_generate(prompt)`).
+    pub fn user(content: impl Into<String>) -> Self {
+        ChatMessage {
+            role: "user".to_string(),
+            content: content.into(),
+        }
+    }
+}
+
+impl LoadedModel {
+    /// The model's built-in chat template (the GGUF `tokenizer.chat_template`),
+    /// or `None` if it carries none.
+    pub fn chat_template(&self) -> Option<String> {
+        // SAFETY: `model_ptr` is a live model; a non-null return is a
+        // NUL-terminated string owned by the model, valid for its lifetime.
+        let ptr = unsafe { ffi::llama_model_chat_template(self.model_ptr(), std::ptr::null()) };
+        if ptr.is_null() {
+            return None;
+        }
+        // SAFETY: non-null, NUL-terminated, model-owned.
+        Some(
+            unsafe { std::ffi::CStr::from_ptr(ptr) }
+                .to_string_lossy()
+                .into_owned(),
+        )
+    }
+
+    /// Format `messages` with the model's own chat template, ending with the
+    /// assistant-turn opener when `add_assistant`. Errors if the model carries no
+    /// chat template (use `chat = FALSE` for a raw completion).
+    pub fn apply_chat_template(
+        &self,
+        messages: &[ChatMessage],
+        add_assistant: bool,
+    ) -> Result<String, RebirthError> {
+        let tmpl = self
+            .chat_template()
+            .ok_or_else(|| RebirthError::Generation {
+                reason: "the model carries no chat template; use chat = FALSE".to_string(),
+            })?;
+        apply_template(&tmpl, messages, add_assistant)
+    }
+}
+
+/// Format `messages` with an explicit llama.cpp template string. Free of any
+/// model so it is unit-testable; [`LoadedModel::apply_chat_template`] supplies
+/// the model's own template. `tmpl` must be one of the templates llama.cpp
+/// recognizes (it is not a general Jinja engine), else this errors.
+fn apply_template(
+    tmpl: &str,
+    messages: &[ChatMessage],
+    add_assistant: bool,
+) -> Result<String, RebirthError> {
+    use std::ffi::CString;
+
+    let nul = |_| RebirthError::Generation {
+        reason: "a chat message or template contains an interior NUL byte".to_string(),
+    };
+    let tmpl_c = CString::new(tmpl).map_err(nul)?;
+    // The C `llama_chat_message` array borrows these CStrings, so they must
+    // outlive the call — keep them owned here for the whole function.
+    let owned: Vec<(CString, CString)> = messages
+        .iter()
+        .map(|m| {
+            Ok((
+                CString::new(m.role.as_str())?,
+                CString::new(m.content.as_str())?,
+            ))
+        })
+        .collect::<Result<_, std::ffi::NulError>>()
+        .map_err(nul)?;
+    let chat: Vec<ffi::llama_chat_message> = owned
+        .iter()
+        .map(|(r, c)| ffi::llama_chat_message {
+            role: r.as_ptr(),
+            content: c.as_ptr(),
+        })
+        .collect();
+
+    // Two-pass sizing: the docs recommend ~2x the message bytes; a return larger
+    // than the buffer is the exact length to re-allocate to.
+    let msg_bytes: usize = messages
+        .iter()
+        .map(|m| m.role.len() + m.content.len())
+        .sum();
+    let mut cap = (msg_bytes * 2 + 64).max(256);
+    loop {
+        let mut buf = vec![0u8; cap];
+        // SAFETY: `tmpl_c` and the CStrings behind `chat` outlive the call;
+        // `buf`/`cap` are consistent; the engine writes at most `cap` bytes.
+        let n = unsafe {
+            ffi::llama_chat_apply_template(
+                tmpl_c.as_ptr(),
+                chat.as_ptr(),
+                chat.len(),
+                add_assistant,
+                buf.as_mut_ptr().cast::<c_char>(),
+                cap as i32,
+            )
+        };
+        if n < 0 {
+            return Err(RebirthError::Generation {
+                reason: format!(
+                    "llama_chat_apply_template failed ({n}); the model's template may be unsupported"
+                ),
+            });
+        }
+        let n = n as usize;
+        if n > cap {
+            cap = n;
+            continue;
+        }
+        buf.truncate(n);
+        return Ok(String::from_utf8_lossy(&buf).into_owned());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{apply_template, ChatMessage};
+
+    #[test]
+    fn split_mix64_is_deterministic_and_advances() {
+        let mut a = super::SplitMix64::new(123);
+        let mut b = super::SplitMix64::new(123);
+        assert_eq!(a.next_u64(), b.next_u64());
+        let first = a.next_u64();
+        assert_ne!(first, a.next_u64(), "the generator advances");
+        // Uniforms stay in [0, 1).
+        for _ in 0..1000 {
+            let u = a.next_f64();
+            assert!((0.0..1.0).contains(&u));
+        }
+    }
+
+    #[test]
+    fn apply_template_formats_chatml() {
+        // "chatml" is one of llama.cpp's recognized template names, so this needs
+        // no model file: it exercises the FFI marshalling and the two-pass sizing.
+        let messages = vec![
+            ChatMessage {
+                role: "system".to_string(),
+                content: "Be concise.".to_string(),
+            },
+            ChatMessage::user("Ciao"),
+        ];
+        let out = apply_template("chatml", &messages, true).expect("chatml applies");
+        assert!(out.contains("<|im_start|>system"), "system turn: {out:?}");
+        assert!(out.contains("Be concise."), "system content: {out:?}");
+        assert!(out.contains("<|im_start|>user"), "user turn: {out:?}");
+        assert!(out.contains("Ciao"), "user content: {out:?}");
+        // add_assistant opens the assistant turn for generation to continue.
+        assert!(
+            out.trim_end().ends_with("<|im_start|>assistant"),
+            "assistant opener: {out:?}"
+        );
+    }
+
+    #[test]
+    fn apply_template_rejects_an_unsupported_template() {
+        let messages = vec![ChatMessage::user("hi")];
+        // A template string llama.cpp does not recognize returns an error, not a
+        // panic — the boundary maps it to a classed rebirth_error_generation.
+        let result = apply_template("not-a-real-template-xyz", &messages, true);
+        assert!(result.is_err());
+    }
+}

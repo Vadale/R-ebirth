@@ -25,6 +25,20 @@ pub enum RebirthError {
     },
     /// The handle has been closed (deterministically or by the GC finalizer).
     Closed,
+    /// Tokenization or detokenization failed (e.g. the model has no tokenizer,
+    /// or an id is outside the vocabulary). `reason` names the failing step.
+    Tokenize { reason: String },
+    /// Generation failed inside the engine (a `llama_decode` error, a batch that
+    /// could not be allocated, etc.). `reason` names the failing step.
+    Generation { reason: String },
+    /// The prompt (plus any special tokens) is longer than the context window.
+    /// `prompt_tokens`/`context_length` give the two sizes; `overflow` is the
+    /// excess (`prompt_tokens - context_length`).
+    ContextOverflow {
+        prompt_tokens: u32,
+        context_length: u32,
+        overflow: u32,
+    },
     /// An unexpected internal failure (e.g. a caught Rust panic). Always a bug.
     Internal { context: String },
 }
@@ -37,6 +51,9 @@ impl RebirthError {
             RebirthError::ModelLoad { .. } => "rebirth_error_model_load",
             RebirthError::Backend { .. } => "rebirth_error_backend",
             RebirthError::Closed => "rebirth_error_closed",
+            RebirthError::Tokenize { .. } => "rebirth_error_tokenize",
+            RebirthError::Generation { .. } => "rebirth_error_generation",
+            RebirthError::ContextOverflow { .. } => "rebirth_error_context_overflow",
             RebirthError::Internal { .. } => "rebirth_error_internal",
         }
     }
@@ -66,6 +83,28 @@ impl fmt::Display for RebirthError {
                 f,
                 "This model handle is closed. \
                  Load the model again with llm() to obtain a fresh handle."
+            ),
+            RebirthError::Tokenize { reason } => write!(
+                f,
+                "Tokenization failed ({reason}). \
+                 The model may lack a tokenizer, or a token id may be outside its vocabulary. \
+                 Check the input and that the model file carries a tokenizer."
+            ),
+            RebirthError::Generation { reason } => write!(
+                f,
+                "Generation failed ({reason}). \
+                 This usually means the engine could not evaluate the prompt. \
+                 Try a shorter prompt or reload the model with llm()."
+            ),
+            RebirthError::ContextOverflow {
+                prompt_tokens,
+                context_length,
+                overflow,
+            } => write!(
+                f,
+                "The prompt is {prompt_tokens} tokens but the context window is {context_length} \
+                 ({overflow} too many). \
+                 Shorten the prompt, or reload the model with a larger context_length."
             ),
             RebirthError::Internal { context } => write!(
                 f,

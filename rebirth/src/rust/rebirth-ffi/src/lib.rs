@@ -23,7 +23,9 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::PathBuf;
 
 use extendr_api::prelude::*;
-use rebirth_llm::{BackendKind, LoadRequest, LoadedModel, ModelMetadata, RebirthError};
+use rebirth_llm::{
+    BackendKind, GenerateParams, LoadRequest, LoadedModel, ModelMetadata, RebirthError,
+};
 
 /// The native side of an `llm` handle: an owned loaded model, or `None` once the
 /// handle has been closed. Interior mutability lets a shared `&LlmHandle` (all
@@ -56,6 +58,49 @@ impl LlmHandle {
     /// `false` if it was already closed (double-close is a no-op).
     fn close(&self) -> bool {
         self.inner.borrow_mut().take().is_some()
+    }
+
+    /// Run `f` against the live model, or `rebirth_error_closed` if the handle
+    /// has been closed. Keeps `inner` private to this type.
+    fn run<F, T>(&self, f: F) -> Result<T, RebirthError>
+    where
+        F: FnOnce(&LoadedModel) -> Result<T, RebirthError>,
+    {
+        let borrow = self.inner.borrow();
+        let model = borrow.as_ref().ok_or(RebirthError::Closed)?;
+        f(model)
+    }
+}
+
+// --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
+
+/// R (1-based token id) -> engine (0-based). The only place the conversion is
+/// applied on the way in (ARCHITECTURE.md §4). `id <= 0` is out of range for a
+/// 1-based id and maps to a negative engine id the engine's validation rejects.
+fn to_engine_token(id_1based: i32) -> i32 {
+    id_1based - 1
+}
+
+/// Engine (0-based token id) -> R (1-based). The only place the conversion is
+/// applied on the way out (ARCHITECTURE.md §4).
+fn from_engine_token(id_0based: i32) -> i32 {
+    id_0based + 1
+}
+
+/// Borrow the live model behind `ptr` and run `f`, mapping a closed/foreign
+/// pointer, a `RebirthError`, or a caught panic to the right classed payload.
+fn with_model<F>(ptr: &Robj, f: F) -> Robj
+where
+    F: FnOnce(&LoadedModel) -> Result<Robj, RebirthError>,
+{
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        let handle = <&ExternalPtr<LlmHandle>>::try_from(ptr).map_err(|_| RebirthError::Closed)?;
+        handle.run(f)
+    }));
+    match result {
+        Ok(Ok(payload)) => payload,
+        Ok(Err(error)) => error_payload(error),
+        Err(panic) => panic_payload(panic),
     }
 }
 
@@ -97,6 +142,21 @@ fn error_fields(error: &RebirthError) -> Robj {
             ("available", Robj::from(available.as_str())),
         ],
         RebirthError::Closed => Vec::new(),
+        RebirthError::Tokenize { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::Generation { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::ContextOverflow {
+            prompt_tokens,
+            context_length,
+            overflow,
+        } => vec![
+            ("prompt_tokens", Robj::from(*prompt_tokens as i32)),
+            ("context_length", Robj::from(*context_length as i32)),
+            ("overflow", Robj::from(*overflow as i32)),
+        ],
         RebirthError::Internal { context } => {
             vec![("context", Robj::from(context.as_str()))]
         }
@@ -215,6 +275,73 @@ fn rebirth_available_backends() -> Robj {
     names.into()
 }
 
+// Encode `text` into tokens. Returns a payload carrying the 1-based token ids
+// (R API, §4) and their display pieces; R assembles the named integer vector.
+// `add_special`/`parse_special` are decided in R (chat vs raw completion).
+#[extendr]
+fn rebirth_tokenize(ptr: Robj, text: &str, add_special: bool, parse_special: bool) -> Robj {
+    with_model(&ptr, |model| {
+        let enc = model.encode(text, add_special, parse_special)?;
+        let ids: Vec<i32> = enc.ids.iter().map(|&id| from_engine_token(id)).collect();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("ids", Robj::from(ids)),
+            ("pieces", Robj::from(enc.pieces)),
+        ])
+        .into())
+    })
+}
+
+// Decode 1-based token ids (R API, §4) back into a single string. The ids are
+// validated as positive integers in R; the engine range-checks after the
+// 1->0-based conversion here.
+#[extendr]
+fn rebirth_detokenize(ptr: Robj, ids: Vec<i32>) -> Robj {
+    with_model(&ptr, |model| {
+        let engine_ids: Vec<i32> = ids.iter().map(|&id| to_engine_token(id)).collect();
+        let text = model.decode_tokens(&engine_ids, false, true)?;
+        Ok(List::from_pairs(vec![("ok", Robj::from(true)), ("text", Robj::from(text))]).into())
+    })
+}
+
+// Generate a continuation of `prompt`. All argument validation and defaulting
+// (including drawing the seed when the user passed NULL) happen in R; here we
+// build the params, run template + tokenize + generate under `with_model`'s
+// catch_unwind, and return the continuation text plus the seed actually used.
+// `stop` is the R character vector of stop sequences (empty for none). `seed`
+// arrives as a double (R has no u64) holding a whole non-negative number.
+// (Eight params: this boundary mirrors the R `llm_generate()` arguments 1:1;
+// extendr maps each to a `.Call` argument, so they cannot be bundled.)
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_generate(
+    ptr: Robj,
+    prompt: &str,
+    chat: bool,
+    max_tokens: i32,
+    temperature: f64,
+    top_p: f64,
+    seed: f64,
+    stop: Vec<String>,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let params = GenerateParams {
+            max_tokens: max_tokens.max(0) as usize,
+            temperature: temperature as f32,
+            top_p: top_p as f32,
+            seed: seed as u64,
+            stop,
+        };
+        let generation = model.generate_prompt(prompt, chat, &params)?;
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("text", Robj::from(generation.text)),
+            ("seed", Robj::from(generation.seed as f64)),
+        ])
+        .into())
+    })
+}
+
 // Test-only: a real, already-closed handle for exercising the close /
 // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
 #[extendr]
@@ -244,6 +371,9 @@ extendr_api::extendr_module! {
     fn rebirth_handle_close;
     fn rebirth_handle_is_closed;
     fn rebirth_available_backends;
+    fn rebirth_tokenize;
+    fn rebirth_detokenize;
+    fn rebirth_generate;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_panic;
 }

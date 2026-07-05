@@ -40,6 +40,29 @@
     37
   ],
   "min_top2_margin": 0.05225115920313561,
+  "greedy_prompt": [
+    1,
+    7
+  ],
+  "greedy_continuation": [
+    24,
+    19,
+    37,
+    19,
+    5,
+    37,
+    18,
+    37,
+    5,
+    37,
+    19,
+    33,
+    37,
+    5,
+    37,
+    5
+  ],
+  "greedy_continuation_min_margin": 0.02088660188282443,
   "logits_sha256": "0c72762f6d810db604413e5ce39ada668019294e28c18f171767b47828027535",
   "numpy_version": "2.5.1"
 }

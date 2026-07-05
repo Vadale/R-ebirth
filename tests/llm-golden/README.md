@@ -23,8 +23,9 @@ tests/llm-golden/
     goldens/
       logits.npy            authoritative logit goldens (float64, seq x vocab)
       logits.csv            human-readable mirror of logits.npy
-      greedy_tokens.csv     argmax token per position (greedy-decode target)
-      metadata.json         config, input tokens, greedy tokens, hashes
+      greedy_tokens.csv     argmax token per position (teacher-forced target)
+      greedy_continuation.csv autoregressive greedy decode from a fixed prompt
+      metadata.json         config, input/prompt tokens, greedy tokens, hashes
   reference/              hooks for the DEFERRED real-model goldens (see below)
     README.md
 ```
@@ -83,6 +84,38 @@ stream is stable), so `build_synthetic.py` reproduces the committed file exactly
   tokens to match exactly**. The synthetic weights keep the top-1 vs top-2 logit
   margin comfortably large (~5e-2 » F32 noise), so greedy decoding is stable
   across precisions and backends.
+
+### Engine-vs-oracle (WP2)
+
+The WP2 de-risking step proves the vendored engine and this numpy oracle agree
+on the synthetic model, so the oracle can guard every future regression:
+
+- **Where:** the Rust integration test
+  `rebirth/src/rust/rebirth-llm/tests/synthetic_logits.rs`, run in the
+  `cargo test -p rebirth-llm` CI job (rust.yaml). It builds the engine, loads the
+  committed GGUF on the **CPU** backend, computes teacher-forced next-token
+  logits for `INPUT_TOKENS`, and compares them to `goldens/logits.csv`.
+- **Tolerance:** the engine computes in **F32**, the oracle in **float64**, so
+  this is a documented cross-precision tolerance, not bit-equality. The observed
+  max absolute deviation is **~2e-3**; the test asserts every logit within
+  `atol = 1e-2` (≈5x headroom over the observed gap, ≈5x below the ~5e-2
+  top-1/top-2 margin) **and** that the integer greedy argmax matches exactly at
+  every position.
+- **Result:** they agree with no oracle reconciliation needed — the numpy
+  reimplementation of the llama.cpp b9726 `LLM_ARCH_LLAMA` forward pass (NORM-mode
+  RoPE, op order, SwiGLU) already matched the engine on first comparison.
+
+### Greedy generation (WP2 Step 3)
+
+`greedy_continuation.csv` is the autoregressive greedy-decode golden: from the
+fixed `GREEDY_PROMPT`, the oracle repeatedly runs forward -> argmax -> append.
+The engine's greedy decode (with its KV cache) must reproduce these ids
+**token-for-token** — the real cross-implementation validation, since one argmax
+flip cascades into a different sequence. The prompt and length
+(`synthetic_model.GREEDY_PROMPT`, `GREEDY_N_NEW`) are chosen so every step's
+top-1/top-2 margin stays ≥ ~2e-2 (~10x the observed F32 gap); the `--check`
+self-check re-asserts both the sequence and that margin floor. The engine side
+is `rebirth/src/rust/rebirth-llm/tests/greedy_generation.rs`.
 
 ## Deferred to WP2 / WP6b (do not build yet)
 

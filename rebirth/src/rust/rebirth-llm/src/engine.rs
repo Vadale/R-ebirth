@@ -321,6 +321,58 @@ impl LoadedModel {
             mmap: self.ctx.mmap,
         }
     }
+
+    // --- crate-internal accessors for the generation module (generate.rs) ---
+    // The raw handles never leave the crate; `generate.rs` is the only other
+    // caller and confines its own `unsafe` to the C-FFI calls (ARCHITECTURE.md
+    // §2.2, D-009).
+
+    /// The live context pointer (`llama_decode`/`llama_get_logits_ith` take
+    /// `*mut`; the KV cache is mutated in place behind it).
+    pub(crate) fn ctx_ptr(&self) -> *mut ffi::llama_context {
+        self.ctx.ptr.as_ptr()
+    }
+
+    /// The model's vocabulary (owned by the model; valid for its whole lifetime).
+    pub(crate) fn vocab_ptr(&self) -> *const ffi::llama_vocab {
+        // SAFETY: `model.ptr` is a live model; the vocab is owned by it and the
+        // returned pointer is valid for as long as the model is.
+        unsafe { ffi::llama_model_get_vocab(self.ctx.model.ptr.as_ptr()) }
+    }
+
+    /// The live model pointer (metadata and chat-template queries).
+    pub(crate) fn model_ptr(&self) -> *const ffi::llama_model {
+        self.ctx.model.ptr.as_ptr()
+    }
+
+    /// Whether the model carries a real tokenizer (`false` for a `no_vocab`
+    /// model such as the synthetic fixture — tokenization is unsupported there).
+    pub(crate) fn has_tokenizer(&self) -> bool {
+        let vocab = self.vocab_ptr();
+        if vocab.is_null() {
+            return false;
+        }
+        // SAFETY: `vocab` is non-null and owned by the live model.
+        // 0 == LLAMA_VOCAB_TYPE_NONE (llama.h l.73).
+        unsafe { ffi::llama_vocab_type(vocab) != 0 }
+    }
+
+    /// Vocabulary size (row count of the logit vector).
+    pub(crate) fn n_vocab(&self) -> i32 {
+        self.ctx.model.vocab_size()
+    }
+
+    /// The active context window in tokens (`n_ctx`).
+    pub(crate) fn context_length(&self) -> u32 {
+        self.ctx.context_length
+    }
+
+    /// The maximum tokens one `llama_decode` batch may carry (`n_batch`). A
+    /// prompt longer than this is decoded in chunks (generate.rs).
+    pub(crate) fn n_batch(&self) -> u32 {
+        // SAFETY: `ctx_ptr` is a live context for the model's lifetime.
+        unsafe { ffi::llama_n_batch(self.ctx_ptr()) }
+    }
 }
 
 /// A fully-validated load request (all R-side defaulting already applied).

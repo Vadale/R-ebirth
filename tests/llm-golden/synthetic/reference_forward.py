@@ -52,6 +52,8 @@ import numpy as np
 from synthetic_model import (
     CONFIG,
     GGUF_FILENAME,
+    GREEDY_N_NEW,
+    GREEDY_PROMPT,
     INPUT_TOKENS,
     build_weights,
     canonical_gguf_path,
@@ -64,6 +66,7 @@ GOLDEN_DIR = os.path.join(HERE, "goldens")
 LOGITS_NPY = os.path.join(GOLDEN_DIR, "logits.npy")
 LOGITS_CSV = os.path.join(GOLDEN_DIR, "logits.csv")
 GREEDY_CSV = os.path.join(GOLDEN_DIR, "greedy_tokens.csv")
+GREEDY_CONT_CSV = os.path.join(GOLDEN_DIR, "greedy_continuation.csv")
 META_JSON = os.path.join(GOLDEN_DIR, "metadata.json")
 
 # Cross-platform tolerance for the committed-golden comparison in --check. Real
@@ -184,6 +187,29 @@ def greedy_tokens(logits: np.ndarray) -> np.ndarray:
     return np.argmax(logits, axis=-1).astype(np.int64)
 
 
+def greedy_continuation(
+    weights: dict[str, np.ndarray],
+    prompt: list[int],
+    n_new: int,
+) -> tuple[list[int], float]:
+    """Autoregressive greedy decode: forward -> argmax -> append -> repeat.
+
+    Returns the `n_new` generated token ids (excluding the prompt) and the
+    minimum top-1/top-2 logit margin observed across the generation steps (the
+    precision-stability guard). Recomputes the full sequence each step, which is
+    mathematically identical to a KV-cached incremental decode under causal
+    attention, so the engine (which does cache) must reproduce these ids exactly.
+    """
+    tokens = list(prompt)
+    margins: list[float] = []
+    for _ in range(n_new):
+        last = forward(weights, tokens)[-1]
+        srt = np.sort(last)
+        margins.append(float(srt[-1] - srt[-2]))
+        tokens.append(int(np.argmax(last)))
+    return tokens[len(prompt):], (min(margins) if margins else float("inf"))
+
+
 def top2_margins(logits: np.ndarray) -> np.ndarray:
     srt = np.sort(logits, axis=-1)
     return srt[:, -1] - srt[:, -2]
@@ -228,6 +254,12 @@ def write_goldens() -> None:
         for i, (tok, inp) in enumerate(zip(greedy, INPUT_TOKENS)):
             fh.write(f"{i},{int(tok)},{inp}\n")
 
+    cont, cont_margin = greedy_continuation(build_weights(), GREEDY_PROMPT, GREEDY_N_NEW)
+    with open(GREEDY_CONT_CSV, "w") as fh:
+        fh.write("step,token\n")
+        for i, tok in enumerate(cont):
+            fh.write(f"{i},{int(tok)}\n")
+
     meta = {
         "model": str(CONFIG["name"]),
         "arch": str(CONFIG["arch"]),
@@ -239,6 +271,9 @@ def write_goldens() -> None:
         "compute_dtype": "float64",
         "greedy_tokens": [int(t) for t in greedy],
         "min_top2_margin": float(np.min(top2_margins(logits))),
+        "greedy_prompt": GREEDY_PROMPT,
+        "greedy_continuation": [int(t) for t in cont],
+        "greedy_continuation_min_margin": cont_margin,
         "logits_sha256": _sha256_array(logits),
         "numpy_version": np.__version__,
     }
@@ -249,6 +284,7 @@ def write_goldens() -> None:
     print(f"wrote goldens for {logits.shape[0]} positions x {logits.shape[1]} vocab")
     print(f"  greedy tokens : {[int(t) for t in greedy]}")
     print(f"  min top-2 gap : {np.min(top2_margins(logits)):.4g}")
+    print(f"  greedy cont.  : {cont} (min step margin {cont_margin:.4g})")
 
 
 def _sha256_array(arr: np.ndarray) -> str:
@@ -301,10 +337,40 @@ def check_goldens() -> int:
         print("FAIL: greedy tokens differ from committed golden", file=sys.stderr)
         return 1
 
+    # 4) The autoregressive greedy-continuation golden still reproduces, and its
+    #    per-step margin stays comfortably above the F32 noise floor.
+    if not os.path.exists(GREEDY_CONT_CSV):
+        print(f"FAIL: committed golden missing: {GREEDY_CONT_CSV}", file=sys.stderr)
+        return 1
+    cont, cont_margin = greedy_continuation(build_weights(), GREEDY_PROMPT, GREEDY_N_NEW)
+    committed_cont = _read_continuation_csv(GREEDY_CONT_CSV)
+    if committed_cont != cont:
+        print(
+            f"FAIL: greedy continuation differs from committed golden "
+            f"(committed {committed_cont} != recomputed {cont})",
+            file=sys.stderr,
+        )
+        return 1
+    if cont_margin < 0.02:
+        print(
+            f"FAIL: greedy continuation min margin {cont_margin:.4g} < 0.02 "
+            "(too close to the F32 noise floor; choose a safer prompt/length)",
+            file=sys.stderr,
+        )
+        return 1
+
     print("OK: reference forward is deterministic; GGUF and committed goldens agree")
     print(f"  greedy tokens : {[int(t) for t in greedy_tokens(a)]}")
     print(f"  min top-2 gap : {np.min(top2_margins(a)):.4g}")
+    print(f"  greedy cont.  : {cont} (min step margin {cont_margin:.4g})")
     return 0
+
+
+def _read_continuation_csv(path: str) -> list[int]:
+    with open(path) as fh:
+        rows = fh.read().splitlines()
+    # header: "step,token"
+    return [int(line.split(",")[1]) for line in rows[1:] if line.strip()]
 
 
 def main() -> int:
