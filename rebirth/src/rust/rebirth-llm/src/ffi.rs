@@ -180,6 +180,8 @@ extern "C" {
     pub fn llama_vocab_n_tokens(vocab: *const llama_vocab) -> i32;
     /// `enum llama_vocab_type`; `0` = `LLAMA_VOCAB_TYPE_NONE` (no tokenizer).
     pub fn llama_vocab_type(vocab: *const llama_vocab) -> c_int;
+    /// Whether `token` ends generation (EOS/EOT/etc.); stops the decode loop.
+    pub fn llama_vocab_is_eog(vocab: *const llama_vocab, token: llama_token) -> bool;
 
     // --- tokenization ---
     pub fn llama_tokenize(

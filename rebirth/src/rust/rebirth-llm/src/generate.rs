@@ -350,3 +350,264 @@ impl LoadedModel {
         })
     }
 }
+
+// --- generation -----------------------------------------------------------
+
+/// A deterministic SplitMix64 PRNG. Sampling draws all of its randomness here,
+/// so a generation's output depends only on `(seed, params, logits)` and never
+/// on backend RNG state: same seed + params ⇒ identical tokens across runs and
+/// sessions (the determinism contract, ARCHITECTURE.md §7). SplitMix64 is the
+/// reference seeding generator for the xoshiro family — good statistical quality
+/// for a self-contained integer generator that needs no dependency.
+struct SplitMix64 {
+    state: u64,
+}
+
+impl SplitMix64 {
+    fn new(seed: u64) -> Self {
+        SplitMix64 { state: seed }
+    }
+
+    fn next_u64(&mut self) -> u64 {
+        self.state = self.state.wrapping_add(0x9E37_79B9_7F4A_7C15);
+        let mut z = self.state;
+        z = (z ^ (z >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+        z = (z ^ (z >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+        z ^ (z >> 31)
+    }
+
+    /// A uniform double in `[0, 1)` with 53 bits of entropy.
+    fn next_f64(&mut self) -> f64 {
+        (self.next_u64() >> 11) as f64 * (1.0 / (1u64 << 53) as f64)
+    }
+}
+
+/// Why [`LoadedModel::generate`] stopped producing tokens.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum StopReason {
+    /// Reached `max_tokens`.
+    MaxTokens,
+    /// The model emitted an end-of-generation token (EOS/EOT/…).
+    EndOfGeneration,
+    /// One of the `stop` strings appeared in the decoded output.
+    StopString,
+    /// The context window filled up before `max_tokens` was reached.
+    ContextFull,
+}
+
+impl StopReason {
+    /// The R-facing tag for this stop reason (a `finish_reason`-style label).
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            StopReason::MaxTokens => "length",
+            StopReason::EndOfGeneration => "stop",
+            StopReason::StopString => "stop_string",
+            StopReason::ContextFull => "context_full",
+        }
+    }
+}
+
+/// Sampling and length controls for [`LoadedModel::generate`]. The R layer
+/// composes these from the `llm_generate()` arguments; the engine only reads
+/// them.
+#[derive(Debug, Clone)]
+pub struct GenerateParams {
+    /// Maximum number of tokens to produce.
+    pub max_tokens: usize,
+    /// Softmax temperature. `<= 0` selects greedy decoding (argmax) — the exact,
+    /// reproducible path the goldens pin.
+    pub temperature: f32,
+    /// Nucleus (top-p) cutoff in `(0, 1]`; ignored when greedy.
+    pub top_p: f32,
+    /// Seed for the CPU sampler. The caller records the drawn seed so a sampled
+    /// run is reproducible.
+    pub seed: u64,
+    /// Stop strings: generation ends as soon as one appears in the output, which
+    /// is truncated just before it.
+    pub stop: Vec<String>,
+}
+
+/// The result of a generation run. Token ids are engine-native (0-based); the
+/// FFI boundary shifts them to the 1-based R API.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Generation {
+    /// The generated token ids (engine-native, 0-based), prompt excluded.
+    pub tokens: Vec<i32>,
+    /// The decoded continuation text (prompt excluded), truncated at a stop
+    /// string when one fired.
+    pub text: String,
+    /// Why generation stopped.
+    pub stop_reason: StopReason,
+    /// The seed actually used (echoes `params.seed`; the R layer surfaces it so a
+    /// sampled run can be replayed).
+    pub seed: u64,
+}
+
+/// Index of the (first) maximum in `row`. Ties resolve to the lowest index, so
+/// greedy decoding matches `numpy.argmax` on the oracle exactly.
+fn argmax(row: &[f32]) -> usize {
+    let mut best = 0usize;
+    for (i, &v) in row.iter().enumerate() {
+        if v > row[best] {
+            best = i;
+        }
+    }
+    best
+}
+
+/// Draw one token id from `logits` under temperature + nucleus (top-p) sampling,
+/// using `rng` for the single uniform it needs. The computation is fully
+/// deterministic given `rng`'s state: a stable sort (value desc, then index) and
+/// a fixed reduction order make the result reproducible on a given platform.
+fn sample(logits: &[f32], temperature: f32, top_p: f32, rng: &mut SplitMix64) -> usize {
+    let n = logits.len();
+    // Descending by logit; ties broken by ascending index for a total, stable
+    // order (f32::total_cmp handles any -0.0/NaN without a panic).
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_unstable_by(|&a, &b| logits[b].total_cmp(&logits[a]).then(a.cmp(&b)));
+
+    // Softmax with temperature, in descending order, max-shifted for stability.
+    let inv_t = 1.0 / (temperature.max(1e-6) as f64);
+    let max = logits[order[0]] as f64;
+    let mut probs: Vec<f64> = order
+        .iter()
+        .map(|&i| ((logits[i] as f64 - max) * inv_t).exp())
+        .collect();
+    let total: f64 = probs.iter().sum();
+    for p in probs.iter_mut() {
+        *p /= total;
+    }
+
+    // Nucleus: the shortest high-probability prefix whose mass reaches top_p.
+    let p_cut = (top_p as f64).clamp(f64::MIN_POSITIVE, 1.0);
+    let mut cum = 0.0;
+    let mut keep = n;
+    for (k, &p) in probs.iter().enumerate() {
+        cum += p;
+        if cum >= p_cut {
+            keep = k + 1;
+            break;
+        }
+    }
+
+    // Draw within the kept nucleus (renormalized by its retained mass).
+    let kept_mass: f64 = probs[..keep].iter().sum();
+    let target = rng.next_f64() * kept_mass;
+    let mut acc = 0.0;
+    for k in 0..keep {
+        acc += probs[k];
+        if target < acc {
+            return order[k];
+        }
+    }
+    order[keep - 1] // floating-point fallback: the least-likely kept token
+}
+
+/// The byte offset of the earliest `stop` string in `text`, if any.
+fn first_stop(text: &str, stop: &[String]) -> Option<usize> {
+    stop.iter()
+        .filter(|s| !s.is_empty())
+        .filter_map(|s| text.find(s.as_str()))
+        .min()
+}
+
+impl LoadedModel {
+    /// Autoregressively generate a continuation of `prompt` (engine-native,
+    /// 0-based ids). Greedy when `params.temperature <= 0` — the path the
+    /// goldens pin token-for-token — otherwise temperature + nucleus sampling on
+    /// the CPU (§7). The prompt itself must fit the context window (else
+    /// [`RebirthError::ContextOverflow`]); running out of window mid-generation is
+    /// a graceful stop, not an error.
+    pub fn generate(
+        &self,
+        prompt: &[i32],
+        params: &GenerateParams,
+    ) -> Result<Generation, RebirthError> {
+        self.check_fits(prompt.len())?;
+        if params.max_tokens == 0 {
+            return Ok(Generation {
+                tokens: Vec::new(),
+                text: String::new(),
+                stop_reason: StopReason::MaxTokens,
+                seed: params.seed,
+            });
+        }
+        if prompt.is_empty() {
+            return Err(RebirthError::Generation {
+                reason: "empty_prompt".to_string(),
+            });
+        }
+        let n_vocab = self.n_vocab() as usize;
+        if n_vocab == 0 {
+            return Err(RebirthError::Generation {
+                reason: "model has empty vocabulary".to_string(),
+            });
+        }
+        let ctx_len = self.context_length() as usize;
+
+        self.clear_memory();
+        self.decode(prompt, 0, true)?;
+        // The batch index whose logits the last decode stored: the prompt's final
+        // token first, then slot 0 for each single-token continuation decode.
+        let mut slot = prompt.len() as i32 - 1;
+
+        let vocab = self.vocab_ptr();
+        let mut rng = SplitMix64::new(params.seed);
+        let mut out: Vec<i32> = Vec::with_capacity(params.max_tokens);
+        let mut stop_reason = StopReason::MaxTokens;
+
+        // `n_past` is the position the next continuation token occupies: the
+        // prompt filled 0..prompt.len(), so continuation i lands at prompt.len()+i.
+        for n_past in (prompt.len() as i32..).take(params.max_tokens) {
+            let logits = self.logits_ith(slot, n_vocab)?;
+            let next = if params.temperature <= 0.0 {
+                argmax(&logits)
+            } else {
+                sample(&logits, params.temperature, params.top_p, &mut rng)
+            } as i32;
+
+            // SAFETY: `vocab` is live for the model's lifetime; `next` is an id in
+            // `[0, n_vocab)` (argmax/sample index into a vocab-width row).
+            if unsafe { ffi::llama_vocab_is_eog(vocab, next) } {
+                stop_reason = StopReason::EndOfGeneration;
+                break;
+            }
+            out.push(next);
+
+            if !params.stop.is_empty() && self.has_tokenizer() {
+                let text = self.decode_tokens(&out, false, false)?;
+                if let Some(cut) = first_stop(&text, &params.stop) {
+                    return Ok(Generation {
+                        tokens: out,
+                        text: text[..cut].to_string(),
+                        stop_reason: StopReason::StopString,
+                        seed: params.seed,
+                    });
+                }
+            }
+
+            // No room to place another token? Stop before an out-of-range decode.
+            if n_past as usize >= ctx_len {
+                stop_reason = StopReason::ContextFull;
+                break;
+            }
+            self.decode(&[next], n_past, true)?;
+            slot = 0;
+        }
+
+        // Detokenize the continuation only when the model carries a tokenizer;
+        // the numeric synthetic test model has a vocabulary but no tokenizer, so
+        // it produces token ids with no text form.
+        let text = if self.has_tokenizer() {
+            self.decode_tokens(&out, false, false)?
+        } else {
+            String::new()
+        };
+        Ok(Generation {
+            tokens: out,
+            text,
+            stop_reason,
+            seed: params.seed,
+        })
+    }
+}
