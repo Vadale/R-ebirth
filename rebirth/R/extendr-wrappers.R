@@ -5,4 +5,16 @@
 #' @useDynLib rebirth, .registration = TRUE
 NULL
 
+rebirth_model_load <- function(path, context_length, gpu_layers, backend, mmap) .Call(wrap__rebirth_model_load, path, context_length, gpu_layers, backend, mmap)
+
+rebirth_handle_close <- function(ptr) .Call(wrap__rebirth_handle_close, ptr)
+
+rebirth_handle_is_closed <- function(ptr) .Call(wrap__rebirth_handle_is_closed, ptr)
+
+rebirth_available_backends <- function() .Call(wrap__rebirth_available_backends)
+
+rebirth_selftest_new_handle <- function() .Call(wrap__rebirth_selftest_new_handle)
+
+rebirth_selftest_panic <- function() .Call(wrap__rebirth_selftest_panic)
+
 # nolint end
