@@ -44,6 +44,10 @@ test_that("llm() validates context_length / gpu_layers / mmap with rebirth_error
   expect_error(llm(f, gpu_layers = 1.5), class = "rebirth_error_argument")
   expect_error(llm(f, gpu_layers = c(1L, 2L)), class = "rebirth_error_argument")
 
+  # values above the R integer range would otherwise coerce to NA at as.integer()
+  expect_error(llm(f, context_length = 3e9), class = "rebirth_error_argument")
+  expect_error(llm(f, gpu_layers = 3e9), class = "rebirth_error_argument")
+
   expect_error(llm(f, mmap = NA), class = "rebirth_error_argument")
   expect_error(llm(f, mmap = "yes"), class = "rebirth_error_argument")
   expect_error(llm(f, mmap = c(TRUE, FALSE)), class = "rebirth_error_argument")

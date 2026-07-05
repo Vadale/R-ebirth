@@ -75,7 +75,8 @@ llm <- function(path,
   }
 
   # --- context_length: a single positive integer ---
-  if (!is_count(context_length) || context_length < 1L) {
+  if (!is_count(context_length) || context_length < 1L ||
+    context_length > .Machine$integer.max) {
     rebirth_abort(
       "rebirth_error_argument",
       "`context_length` must be a single positive integer (the context window in tokens).",
@@ -84,7 +85,8 @@ llm <- function(path,
   }
 
   # --- gpu_layers: NULL, or a single non-negative integer ---
-  if (!is.null(gpu_layers) && (!is_count(gpu_layers) || gpu_layers < 0L)) {
+  if (!is.null(gpu_layers) &&
+    (!is_count(gpu_layers) || gpu_layers < 0L || gpu_layers > .Machine$integer.max)) {
     rebirth_abort(
       "rebirth_error_argument",
       "`gpu_layers` must be NULL (auto) or a single non-negative integer.",

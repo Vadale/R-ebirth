@@ -165,12 +165,18 @@ fn rebirth_model_load(
         mmap,
     };
 
-    match catch_unwind(AssertUnwindSafe(|| rebirth_llm::load(request))) {
-        Ok(Ok(loaded)) => {
-            let meta = loaded.metadata();
-            let ptr: Robj = ExternalPtr::new(LlmHandle::new(loaded)).into();
-            ok_payload(ptr, meta)
-        }
+    // The entire success path -- load, metadata snapshot, external-pointer and
+    // payload construction -- runs inside catch_unwind so a panic anywhere maps
+    // to a classed rebirth_error_internal (ARCHITECTURE.md §2.2), never a generic
+    // extendr error.
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        let loaded = rebirth_llm::load(request)?;
+        let meta = loaded.metadata();
+        let ptr: Robj = ExternalPtr::new(LlmHandle::new(loaded)).into();
+        Ok::<Robj, RebirthError>(ok_payload(ptr, meta))
+    }));
+    match result {
+        Ok(Ok(payload)) => payload,
         Ok(Err(error)) => error_payload(error),
         Err(panic) => panic_payload(panic),
     }

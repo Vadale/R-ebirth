@@ -94,7 +94,7 @@ fn refcount() -> std::sync::MutexGuard<'static, usize> {
 /// from flooding the R console.
 extern "C" fn quiet_log(level: c_int, text: *const c_char, _user_data: *mut c_void) {
     const GGML_LOG_LEVEL_ERROR: c_int = 4;
-    if level >= GGML_LOG_LEVEL_ERROR && !text.is_null() {
+    if level == GGML_LOG_LEVEL_ERROR && !text.is_null() {
         // SAFETY: `text` is a non-null, NUL-terminated engine string.
         let msg = unsafe { CStr::from_ptr(text) }.to_string_lossy();
         eprint!("{msg}");
@@ -218,7 +218,9 @@ impl Model {
         if written < 0 {
             return String::new();
         }
-        buf.truncate((written as usize).min(buf.len()));
+        // Cap at buf.len() - 1 so an over-long description never keeps snprintf's
+        // trailing NUL (which would end up as an embedded '\0' in the String).
+        buf.truncate((written as usize).min(buf.len() - 1));
         String::from_utf8_lossy(&buf).into_owned()
     }
 
