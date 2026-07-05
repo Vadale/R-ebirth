@@ -1,5 +1,7 @@
-# Cargo checks for the native workspace under rust/ (rebirth-ffi, rebirth-llm).
-# Formatting, linting (warnings are errors), and tests. Downloads no models.
+# Native-workspace and test-tooling checks (no R, no models).
+# - cargo:  fmt / clippy / test for the R-free engine crate rebirth-llm.
+# - golden: Harness B numpy reference self-check (the exact-value oracle).
+# Both download only pinned tooling; neither downloads a model.
 on:
   push:
     branches: [main, master]
@@ -39,3 +41,25 @@ jobs:
 
       - name: cargo test (R-free engine crate)
         run: cargo test -p rebirth-llm
+
+  # Harness B, part (b): the numpy reference oracle must be deterministic and
+  # still agree with the committed logit goldens and the committed synthetic
+  # GGUF. Part (a) — the GGUF loads via rebirth::llm() with the right dims — runs
+  # in R-CMD-check.yaml via tests/testthat/test-llm-synthetic.R. This job installs
+  # only the pinned golden tooling (numpy + gguf); it downloads no model.
+  golden:
+    runs-on: ubuntu-24.04
+    name: harness B golden self-check
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: install pinned golden tooling (test-only, not a package dep)
+        run: pip install -r tests/llm-golden/requirements.txt
+
+      - name: reference forward self-check (determinism + goldens + GGUF)
+        run: python tests/llm-golden/synthetic/reference_forward.py --check
