@@ -19,4 +19,4 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Config/rextendr/version: 0.5.0
-SystemRequirements: Cargo (Rust's package manager), rustc >= 1.71.0, xz
+SystemRequirements: Cargo (Rust's package manager), rustc >= 1.71.0, cmake (>= 3.28), xz

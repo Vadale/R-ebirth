@@ -1,9 +1,23 @@
 [package]
 name = "rebirth-llm"
-description = "Safe inference-engine wrapper for R-ebirth (contains no R types). WP0 placeholder; the vendored, patched llama.cpp engine arrives in WP1."
+description = "Safe inference-engine wrapper for R-ebirth (contains no R types). Wraps the vendored llama.cpp engine via a hand-written extern \"C\" FFI."
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
+rust-version = "1.71"
+
+[features]
+# CUDA is defined but not built until Phase 8 (DECISIONS.md D-006). When enabled,
+# build.rs maps it to -DGGML_CUDA=ON. Default off: WP1 builds Metal (macOS arm64)
+# or CPU only.
+default = []
+cuda = []
 
 [dependencies]
+
+# The `cmake` crate drives the vendored llama.cpp static build (DECISIONS.md
+# D-006 — the only new dependency WP1 introduces). It shells out to the system
+# `cmake` binary (SystemRequirements: cmake (>= 3.28)).
+[build-dependencies]
+cmake = "0.1"
