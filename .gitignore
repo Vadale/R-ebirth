@@ -18,5 +18,10 @@
 target/
 **/*.rs.bk
 
+# --- Python (golden tooling; test-only, never a package dependency) ---
+__pycache__/
+*.pyc
+.golden-venv/
+
 # --- editors / scratch ---
 Untitled.rtf
