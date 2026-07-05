@@ -1,0 +1,45 @@
+{
+  "model": "rebirth-synthetic-llama-2l",
+  "arch": "llama",
+  "gguf": "synthetic-llama-2l.gguf",
+  "config": {
+    "arch": "llama",
+    "name": "rebirth-synthetic-llama-2l",
+    "n_vocab": 48,
+    "n_embd": 32,
+    "n_layer": 2,
+    "n_head": 4,
+    "n_head_kv": 4,
+    "n_ff": 64,
+    "n_ctx_train": 4096,
+    "rope_freq_base": 10000.0,
+    "rms_eps": 1e-05,
+    "seed": 20260705
+  },
+  "input_tokens": [
+    1,
+    7,
+    13,
+    22,
+    5,
+    31,
+    44,
+    2
+  ],
+  "seq_len": 8,
+  "n_vocab": 48,
+  "compute_dtype": "float64",
+  "greedy_tokens": [
+    19,
+    24,
+    24,
+    18,
+    37,
+    37,
+    37,
+    37
+  ],
+  "min_top2_margin": 0.05225115920313561,
+  "logits_sha256": "0c72762f6d810db604413e5ce39ada668019294e28c18f171767b47828027535",
+  "numpy_version": "2.5.1"
+}
