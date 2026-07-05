@@ -25,6 +25,28 @@ rebirth_abort <- function(class, message, fields = list(), call = sys.call(-1L))
   stop(cond)
 }
 
+#' Raise a `rebirth_error_argument` for a specific argument
+#'
+#' A thin specialization of [rebirth_abort()] for the common case of an invalid
+#' function argument: it fixes the class to `"rebirth_error_argument"` and
+#' attaches the offending argument's name as the structured `argument` field, so
+#' each call site states only its argument name and its specific message.
+#'
+#' @param argument Character scalar: the name of the offending argument (carried
+#'   as the condition's `argument` field).
+#' @param message Character scalar: the specific, actionable message.
+#' @param call The call to record; defaults to the caller's caller, so the
+#'   condition points at the user-facing function rather than at this helper.
+#' @return Never returns; always raises.
+#' @keywords internal
+#' @noRd
+abort_argument <- function(argument, message, call = sys.call(-1L)) {
+  rebirth_abort(
+    "rebirth_error_argument", message, list(argument = argument),
+    call = call
+  )
+}
+
 #' Raise from an FFI payload, or return it unchanged on success
 #'
 #' Boundary functions return a list payload. On failure (`ok == FALSE`) this
