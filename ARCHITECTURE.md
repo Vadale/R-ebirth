@@ -16,11 +16,13 @@ R session (single-threaded)
 ├── rebirth (R package: R/ code — validation, S3 classes, conditions, docs)
 │     │  .Call via extendr
 │     ▼
-├── rebirth-ffi (Rust crate: ALL unsafe lives here — SEXP boundary,
-│     1-based→0-based conversion, panic catching, condition mapping)
+├── rebirth-ffi (Rust crate: R↔SEXP boundary via extendr — panic catching,
+│     1-based→0-based conversion, condition mapping; any R-side unsafe lives
+│     here, but extendr's safe ExternalPtr/Robj API means none is needed)
 │     ▼
-├── rebirth-llm (Rust crate: safe engine wrapper — model/context lifecycle,
-│     generation, embeddings, tap orchestration, spill writer)
+├── rebirth-llm (Rust crate: engine wrapper — model/context lifecycle,
+│     generation, embeddings, tap orchestration, spill writer; owns the
+│     minimal, SAFETY-commented C-FFI unsafe into vendored llama.cpp; R-free)
 │     ▼
 └── vendored llama.cpp (pinned tag; Metal / CPU / CUDA backends)
 
@@ -33,8 +35,8 @@ Side channels:
 ## 2. The three-layer code design
 
 1. **`rebirth` (R package).** All argument validation, defaulting, and condition raising happens in R *before* crossing the boundary — the Rust side receives only well-formed requests. S3 classes, printing, formula handling (`llm_probe`) are pure R. R code never contains "business logic" that numerics depend on.
-2. **`rebirth-ffi`.** The only crate allowed `unsafe`. Every entry point: (a) catches panics (`catch_unwind`) and converts them to `rebirth_error_internal` with a bug-report message — a panic reaching R is a defect by definition; (b) performs index conversion (see §4); (c) maps `Result<T, RebirthError>` to classed R conditions with structured fields (§8). No engine logic here.
-3. **`rebirth-llm`.** A normal, safe Rust crate with **no R types in its API** — it takes/returns plain Rust types. This keeps it independently testable (`cargo test` without R) and independently reusable (dual MIT/Apache-2.0 — the "engine components reusable anywhere" licensing goal depends on this separation).
+2. **`rebirth-ffi`.** The R↔native boundary. Any *R-side* (SEXP) `unsafe` lives here — in practice **none** is needed in WP1, because extendr's safe `ExternalPtr`/`Robj` API abstracts the SEXP handling. Every entry point: (a) catches panics (`catch_unwind`) and converts them to `rebirth_error_internal` with a bug-report message — a panic reaching R is a defect by definition; (b) performs index conversion (see §4); (c) maps `Result<T, RebirthError>` to classed R conditions with structured fields (§8). No engine logic here.
+3. **`rebirth-llm`.** The engine wrapper. It owns the crate suite's *C-side* `unsafe` — the hand-written `extern "C"` calls into vendored llama.cpp — kept minimal and individually SAFETY-commented, with the raw handles confined behind safe `Drop`-managed wrappers. It has **no R types in its API** — it takes/returns plain Rust types — which keeps it independently testable (`cargo test` without R) and independently reusable (dual MIT/Apache-2.0 — the "engine components reusable anywhere" licensing goal depends on this separation).
 
 Bridge: **extendr** (scaffolded by `rextendr`). Fallback if CRAN friction ever demands it: **savvy** — the three-layer split means only `rebirth-ffi` would change (this is why the split exists). Switching is an ADR.
 

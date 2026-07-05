@@ -52,6 +52,26 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 
 ---
 
+## D-008 — WP1 security audit: accepted; ship, with tracked gates
+- **Date:** 2026-07-05 · **Status:** accepted
+- **Decision:** the WP1 FFI/`unsafe` boundary passed a security audit and ships. Verified sound for WP1's threat model (local, trusted-ish model files, single-threaded R): the two by-value `#[repr(C)]` param structs match `llama.h` at b9726 field-for-field; `meta_str` two-call sizing is correct; the model lifecycle is take-once (no double-free/UAF across `close.llm` + the GC finalizer + extendr's finalizer); panics are caught (manual + extendr's outer `catch_unwind`); C++ exceptions never cross `extern "C"`. Two cheap fixes were applied now: widen the boundary `catch_unwind` to cover the metadata snapshot + payload construction, and drop the `description()` trailing NUL.
+- **Tracked gates (required predecessors, logged so they are not rediscovered under deadline):**
+  - **G1 (Phase 3, downloads):** a malformed-but-magic-valid GGUF can trip a `GGML_ASSERT`/`GGML_ABORT` → `abort()`, killing the R session uncatchably. Before model files become untrusted internet downloads: load untrusted models in a subprocess (isolation) and make checksum/provenance verification fail-closed; add a valid-magic-malformed GGUF corpus/fuzz test.
+  - **G2 (WP4 / Phase 5, threads):** `unsafe impl Send + Sync for Model/Context` is asserted, not enforced. Before any background Rust thread exists, enforce the R-main-thread invariant (thread-id `debug_assert!` in the getters/Drop, or keep the R-facing handle `!Send`).
+  - **G3 (when any handle-taking FFI entry is exported):** foreign `EXTPTRSXP` type confusion — `try_from::<&ExternalPtr<LlmHandle>>` reads the payload before the downcast. The close/is-closed entries are internal now; add an `R_ExternalPtrTag` check if ever exported.
+  - **G4 (CI hardening):** wire `cargo audit` + `cargo deny`, and have CI recompute and assert the vendored pruned-tree SHA256 (from `VENDORING.md`) so a silent change to the vendored engine is caught.
+- **Why:** none of the findings is exploitable under WP1's model, so WP1 is not blocked; but G1–G4 are genuine predecessors for later phases and are far cheaper to honor now than to rediscover under a deadline.
+
+---
+
+## D-009 — `unsafe` is partitioned by boundary (corrects the "all unsafe in rebirth-ffi" statement)
+- **Date:** 2026-07-05 · **Status:** accepted (flagged for the founder)
+- **Decision:** the WP1 review found the implemented `unsafe` split inverts the earlier statement (`ARCHITECTURE.md` §2.2, this log, `docs/wp1-plan.md`) that "`rebirth-ffi` is the only crate allowed `unsafe`." The correct, implemented design partitions `unsafe` by *boundary*: `rebirth-ffi` owns any **R-side (SEXP)** `unsafe` — of which WP1 needs **none**, because extendr's safe `ExternalPtr`/`Robj` API abstracts SEXP handling — and `rebirth-llm` owns the **C-side (llama.cpp FFI)** `unsafe`, kept minimal and individually SAFETY-commented, while staying R-free. `ARCHITECTURE.md` §2.2/§2.3 and the layer diagram are updated to state this; the crate split and the R-free-engine invariant are unchanged.
+- **Why:** the C-FFI `unsafe` necessarily lives with the engine wrapper that calls llama.cpp (`rebirth-llm`); forcing it into `rebirth-ffi` would drag R-free engine code across the boundary. The original wording predated the "extendr's safe API abstracts SEXP" realization. Leaving the docs contradicting the sound, audited code would mislead the next contributor and the security-auditor, which gates on this invariant.
+- **Alternatives rejected:** move the llama FFI into `rebirth-ffi` (breaks the R-free engine / independent reusability — D-005 / §2.3); leave the docs as-is (a "non-negotiable" rule silently contradicting the code).
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
