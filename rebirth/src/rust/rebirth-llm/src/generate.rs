@@ -104,6 +104,19 @@ impl Drop for Batch {
 // --- tokenization ---------------------------------------------------------
 
 impl LoadedModel {
+    /// `Ok(())` if the model carries a tokenizer, else `RebirthError::Tokenize`.
+    /// The text-facing entry points (encode / decode / templated generation) all
+    /// require one; the numeric synthetic model has a vocabulary but no tokenizer.
+    fn require_tokenizer(&self) -> Result<(), RebirthError> {
+        if self.has_tokenizer() {
+            Ok(())
+        } else {
+            Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            })
+        }
+    }
+
     /// Tokenize `text` into engine-native (0-based) ids plus their display
     /// pieces. `add_special` adds the model's BOS/EOS if it is configured to;
     /// `parse_special` treats special-token markup in `text` as tokens.
@@ -113,11 +126,7 @@ impl LoadedModel {
         add_special: bool,
         parse_special: bool,
     ) -> Result<Encoding, RebirthError> {
-        if !self.has_tokenizer() {
-            return Err(RebirthError::Tokenize {
-                reason: "the model carries no tokenizer (no_vocab)".to_string(),
-            });
-        }
+        self.require_tokenizer()?;
         let ids = self.tokenize(text, add_special, parse_special)?;
         let pieces = ids
             .iter()
@@ -136,11 +145,7 @@ impl LoadedModel {
         remove_special: bool,
         unparse_special: bool,
     ) -> Result<String, RebirthError> {
-        if !self.has_tokenizer() {
-            return Err(RebirthError::Tokenize {
-                reason: "the model carries no tokenizer (no_vocab)".to_string(),
-            });
-        }
+        self.require_tokenizer()?;
         self.validate_ids(ids)?;
         if ids.is_empty() {
             return Ok(String::new());
@@ -270,6 +275,17 @@ impl LoadedModel {
         }
     }
 
+    /// `n_vocab` as a positive `usize`, or a generation error when the model has
+    /// an empty vocabulary (nothing could be scored or sampled).
+    fn n_vocab_checked(&self) -> Result<usize, RebirthError> {
+        match self.n_vocab() as usize {
+            0 => Err(RebirthError::Generation {
+                reason: "model has empty vocabulary".to_string(),
+            }),
+            n => Ok(n),
+        }
+    }
+
     /// Guard: reject a token sequence that cannot fit the context window.
     fn check_fits(&self, n_tokens: usize) -> Result<(), RebirthError> {
         let ctx = self.context_length();
@@ -330,12 +346,7 @@ impl LoadedModel {
     /// the exact-value oracle path: the numpy reference computes the same rows.
     pub fn logits_for_tokens(&self, tokens: &[i32]) -> Result<Logits, RebirthError> {
         self.check_fits(tokens.len())?;
-        let n_vocab = self.n_vocab() as usize;
-        if n_vocab == 0 {
-            return Err(RebirthError::Generation {
-                reason: "model has empty vocabulary".to_string(),
-            });
-        }
+        let n_vocab = self.n_vocab_checked()?;
         self.clear_memory();
         self.decode(tokens, 0, false)?;
 
@@ -537,12 +548,7 @@ impl LoadedModel {
                 reason: "empty_prompt".to_string(),
             });
         }
-        let n_vocab = self.n_vocab() as usize;
-        if n_vocab == 0 {
-            return Err(RebirthError::Generation {
-                reason: "model has empty vocabulary".to_string(),
-            });
-        }
+        let n_vocab = self.n_vocab_checked()?;
         let ctx_len = self.context_length() as usize;
 
         self.clear_memory();
@@ -636,11 +642,7 @@ impl LoadedModel {
         chat: bool,
         params: &GenerateParams,
     ) -> Result<Generation, RebirthError> {
-        if !self.has_tokenizer() {
-            return Err(RebirthError::Tokenize {
-                reason: "the model carries no tokenizer (no_vocab)".to_string(),
-            });
-        }
+        self.require_tokenizer()?;
         let (text, add_special, parse_special) = if chat {
             let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
             (templated, false, true)
