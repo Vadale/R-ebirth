@@ -27,3 +27,18 @@ stub_llm <- function(closed = FALSE, interventions = list()) {
     class = "llm"
   )
 }
+
+# An open `llm` backed by a real but already-empty native handle
+# (rebirth_selftest_new_handle): it drives new_llm()/close()/the closed tag with
+# no model file, so the native free is a safe no-op. The metadata values are
+# placeholders — the close tests assert on lifecycle, not on metadata.
+empty_handle_llm <- function() {
+  ptr <- rebirth:::rebirth_selftest_new_handle()
+  payload <- list(
+    ok = TRUE, ptr = ptr, architecture = "x", parameters = 1,
+    quantization = "q", layers = 1L, hidden_size = 1L, context_length = 1L,
+    backend = "cpu", context_train = 1L, size_bytes = 1, vocab_size = 1L,
+    description = ""
+  )
+  rebirth:::new_llm(payload, "x.gguf")
+}

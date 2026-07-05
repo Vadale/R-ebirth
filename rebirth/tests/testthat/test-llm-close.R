@@ -16,14 +16,7 @@ test_that("any use of a closed handle raises rebirth_error_closed", {
 test_that("close.llm marks the handle closed and is idempotent (empty handle)", {
   # A real, already-empty native handle exercises the close boundary with no
   # model file: the free is a safe no-op, the R-side tag transitions once.
-  ptr <- rebirth:::rebirth_selftest_new_handle()
-  payload <- list(
-    ok = TRUE, ptr = ptr, architecture = "x", parameters = 1,
-    quantization = "q", layers = 1L, hidden_size = 1L, context_length = 1L,
-    backend = "cpu", context_train = 1L, size_bytes = 1, vocab_size = 1L,
-    description = ""
-  )
-  m <- rebirth:::new_llm(payload, "x.gguf")
+  m <- empty_handle_llm()
   expect_false(m$state$closed)
 
   expect_null(close(m))
@@ -35,14 +28,7 @@ test_that("close.llm marks the handle closed and is idempotent (empty handle)", 
 })
 
 test_that("the closed tag is shared across copies of a handle (env semantics)", {
-  ptr <- rebirth:::rebirth_selftest_new_handle()
-  payload <- list(
-    ok = TRUE, ptr = ptr, architecture = "x", parameters = 1,
-    quantization = "q", layers = 1L, hidden_size = 1L, context_length = 1L,
-    backend = "cpu", context_train = 1L, size_bytes = 1, vocab_size = 1L,
-    description = ""
-  )
-  m <- rebirth:::new_llm(payload, "x.gguf")
+  m <- empty_handle_llm()
   m2 <- m # copying the R object never copies the native state
   close(m)
   # Closing one binding closes the shared handle.
