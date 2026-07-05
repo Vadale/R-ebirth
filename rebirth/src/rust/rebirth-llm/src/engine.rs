@@ -340,6 +340,11 @@ impl LoadedModel {
         unsafe { ffi::llama_model_get_vocab(self.ctx.model.ptr.as_ptr()) }
     }
 
+    /// The live model pointer (metadata and chat-template queries).
+    pub(crate) fn model_ptr(&self) -> *const ffi::llama_model {
+        self.ctx.model.ptr.as_ptr()
+    }
+
     /// Whether the model carries a real tokenizer (`false` for a `no_vocab`
     /// model such as the synthetic fixture — tokenization is unsupported there).
     pub(crate) fn has_tokenizer(&self) -> bool {

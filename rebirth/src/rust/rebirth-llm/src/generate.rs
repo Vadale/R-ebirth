@@ -611,3 +611,183 @@ impl LoadedModel {
         })
     }
 }
+
+// --- chat templates -------------------------------------------------------
+
+/// A chat turn: a role (`"system"` / `"user"` / `"assistant"`) and its content.
+/// The R layer builds these from `llm_generate()`'s prompt (and future message
+/// forms); the engine only formats them with the model's template.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ChatMessage {
+    pub role: String,
+    pub content: String,
+}
+
+impl ChatMessage {
+    /// A `user`-role message (the common case for `llm_generate(prompt)`).
+    pub fn user(content: impl Into<String>) -> Self {
+        ChatMessage {
+            role: "user".to_string(),
+            content: content.into(),
+        }
+    }
+}
+
+impl LoadedModel {
+    /// The model's built-in chat template (the GGUF `tokenizer.chat_template`),
+    /// or `None` if it carries none.
+    pub fn chat_template(&self) -> Option<String> {
+        // SAFETY: `model_ptr` is a live model; a non-null return is a
+        // NUL-terminated string owned by the model, valid for its lifetime.
+        let ptr = unsafe { ffi::llama_model_chat_template(self.model_ptr(), std::ptr::null()) };
+        if ptr.is_null() {
+            return None;
+        }
+        // SAFETY: non-null, NUL-terminated, model-owned.
+        Some(
+            unsafe { std::ffi::CStr::from_ptr(ptr) }
+                .to_string_lossy()
+                .into_owned(),
+        )
+    }
+
+    /// Format `messages` with the model's own chat template, ending with the
+    /// assistant-turn opener when `add_assistant`. Errors if the model carries no
+    /// chat template (use `chat = FALSE` for a raw completion).
+    pub fn apply_chat_template(
+        &self,
+        messages: &[ChatMessage],
+        add_assistant: bool,
+    ) -> Result<String, RebirthError> {
+        let tmpl = self
+            .chat_template()
+            .ok_or_else(|| RebirthError::Generation {
+                reason: "the model carries no chat template; use chat = FALSE".to_string(),
+            })?;
+        apply_template(&tmpl, messages, add_assistant)
+    }
+}
+
+/// Format `messages` with an explicit llama.cpp template string. Free of any
+/// model so it is unit-testable; [`LoadedModel::apply_chat_template`] supplies
+/// the model's own template. `tmpl` must be one of the templates llama.cpp
+/// recognizes (it is not a general Jinja engine), else this errors.
+fn apply_template(
+    tmpl: &str,
+    messages: &[ChatMessage],
+    add_assistant: bool,
+) -> Result<String, RebirthError> {
+    use std::ffi::CString;
+
+    let nul = |_| RebirthError::Generation {
+        reason: "a chat message or template contains an interior NUL byte".to_string(),
+    };
+    let tmpl_c = CString::new(tmpl).map_err(nul)?;
+    // The C `llama_chat_message` array borrows these CStrings, so they must
+    // outlive the call — keep them owned here for the whole function.
+    let owned: Vec<(CString, CString)> = messages
+        .iter()
+        .map(|m| {
+            Ok((
+                CString::new(m.role.as_str())?,
+                CString::new(m.content.as_str())?,
+            ))
+        })
+        .collect::<Result<_, std::ffi::NulError>>()
+        .map_err(nul)?;
+    let chat: Vec<ffi::llama_chat_message> = owned
+        .iter()
+        .map(|(r, c)| ffi::llama_chat_message {
+            role: r.as_ptr(),
+            content: c.as_ptr(),
+        })
+        .collect();
+
+    // Two-pass sizing: the docs recommend ~2x the message bytes; a return larger
+    // than the buffer is the exact length to re-allocate to.
+    let msg_bytes: usize = messages
+        .iter()
+        .map(|m| m.role.len() + m.content.len())
+        .sum();
+    let mut cap = (msg_bytes * 2 + 64).max(256);
+    loop {
+        let mut buf = vec![0u8; cap];
+        // SAFETY: `tmpl_c` and the CStrings behind `chat` outlive the call;
+        // `buf`/`cap` are consistent; the engine writes at most `cap` bytes.
+        let n = unsafe {
+            ffi::llama_chat_apply_template(
+                tmpl_c.as_ptr(),
+                chat.as_ptr(),
+                chat.len(),
+                add_assistant,
+                buf.as_mut_ptr().cast::<c_char>(),
+                cap as i32,
+            )
+        };
+        if n < 0 {
+            return Err(RebirthError::Generation {
+                reason: format!(
+                    "llama_chat_apply_template failed ({n}); the model's template may be unsupported"
+                ),
+            });
+        }
+        let n = n as usize;
+        if n > cap {
+            cap = n;
+            continue;
+        }
+        buf.truncate(n);
+        return Ok(String::from_utf8_lossy(&buf).into_owned());
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{apply_template, ChatMessage};
+
+    #[test]
+    fn split_mix64_is_deterministic_and_advances() {
+        let mut a = super::SplitMix64::new(123);
+        let mut b = super::SplitMix64::new(123);
+        assert_eq!(a.next_u64(), b.next_u64());
+        let first = a.next_u64();
+        assert_ne!(first, a.next_u64(), "the generator advances");
+        // Uniforms stay in [0, 1).
+        for _ in 0..1000 {
+            let u = a.next_f64();
+            assert!((0.0..1.0).contains(&u));
+        }
+    }
+
+    #[test]
+    fn apply_template_formats_chatml() {
+        // "chatml" is one of llama.cpp's recognized template names, so this needs
+        // no model file: it exercises the FFI marshalling and the two-pass sizing.
+        let messages = vec![
+            ChatMessage {
+                role: "system".to_string(),
+                content: "Be concise.".to_string(),
+            },
+            ChatMessage::user("Ciao"),
+        ];
+        let out = apply_template("chatml", &messages, true).expect("chatml applies");
+        assert!(out.contains("<|im_start|>system"), "system turn: {out:?}");
+        assert!(out.contains("Be concise."), "system content: {out:?}");
+        assert!(out.contains("<|im_start|>user"), "user turn: {out:?}");
+        assert!(out.contains("Ciao"), "user content: {out:?}");
+        // add_assistant opens the assistant turn for generation to continue.
+        assert!(
+            out.trim_end().ends_with("<|im_start|>assistant"),
+            "assistant opener: {out:?}"
+        );
+    }
+
+    #[test]
+    fn apply_template_rejects_an_unsupported_template() {
+        let messages = vec![ChatMessage::user("hi")];
+        // A template string llama.cpp does not recognize returns an error, not a
+        // panic — the boundary maps it to a classed rebirth_error_generation.
+        let result = apply_template("not-a-real-template-xyz", &messages, true);
+        assert!(result.is_err());
+    }
+}

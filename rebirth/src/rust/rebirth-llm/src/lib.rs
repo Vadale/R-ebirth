@@ -19,7 +19,7 @@ mod generate;
 
 pub use engine::{available_backends, load, BackendKind, LoadRequest, LoadedModel, ModelMetadata};
 pub use error::RebirthError;
-pub use generate::{Encoding, GenerateParams, Generation, Logits, StopReason};
+pub use generate::{ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason};
 
 /// Initialize the process-global llama.cpp + ggml backend.
 ///

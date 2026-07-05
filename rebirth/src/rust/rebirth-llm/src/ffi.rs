@@ -135,6 +135,14 @@ pub struct llama_context_params {
 /// `ggml_log_callback`: `void (*)(enum ggml_log_level, const char *, void *)`.
 pub type GgmlLogCallback = extern "C" fn(level: c_int, text: *const c_char, user_data: *mut c_void);
 
+/// Mirror of `struct llama_chat_message` (llama.h l.436): a role/content turn.
+/// Both are borrowed NUL-terminated C strings that must outlive the apply call.
+#[repr(C)]
+pub struct llama_chat_message {
+    pub role: *const c_char,
+    pub content: *const c_char,
+}
+
 extern "C" {
     // --- backend lifecycle & capabilities (also used by lib.rs) ---
     pub fn llama_backend_init();
@@ -209,6 +217,25 @@ extern "C" {
         text_len_max: i32,
         remove_special: bool,
         unparse_special: bool,
+    ) -> i32;
+
+    // --- chat templates ---
+    /// The model's built-in chat template (`name = NULL` for the default), or
+    /// NULL if the GGUF carries none. Owned by the model.
+    pub fn llama_model_chat_template(
+        model: *const llama_model,
+        name: *const c_char,
+    ) -> *const c_char;
+    /// Format `chat` with `tmpl` (a recognized template, not arbitrary Jinja).
+    /// Returns the formatted byte length; a value > `length` means re-alloc and
+    /// retry; a negative value is an error.
+    pub fn llama_chat_apply_template(
+        tmpl: *const c_char,
+        chat: *const llama_chat_message,
+        n_msg: usize,
+        add_ass: bool,
+        buf: *mut c_char,
+        length: i32,
     ) -> i32;
 
     // --- decoding & logits ---
