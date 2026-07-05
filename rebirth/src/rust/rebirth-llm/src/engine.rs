@@ -321,6 +321,27 @@ impl LoadedModel {
             mmap: self.ctx.mmap,
         }
     }
+
+    // --- crate-internal accessors for the generation module (generate.rs) ---
+    // The raw handles never leave the crate; `generate.rs` is the only other
+    // caller and confines its own `unsafe` to the C-FFI calls (ARCHITECTURE.md
+    // §2.2, D-009).
+
+    /// The live context pointer (`llama_decode`/`llama_get_logits_ith` take
+    /// `*mut`; the KV cache is mutated in place behind it).
+    pub(crate) fn ctx_ptr(&self) -> *mut ffi::llama_context {
+        self.ctx.ptr.as_ptr()
+    }
+
+    /// Vocabulary size (row count of the logit vector).
+    pub(crate) fn n_vocab(&self) -> i32 {
+        self.ctx.model.vocab_size()
+    }
+
+    /// The active context window in tokens (`n_ctx`).
+    pub(crate) fn context_length(&self) -> u32 {
+        self.ctx.context_length
+    }
 }
 
 /// A fully-validated load request (all R-side defaulting already applied).

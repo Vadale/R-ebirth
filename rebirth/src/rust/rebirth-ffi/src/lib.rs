@@ -97,6 +97,21 @@ fn error_fields(error: &RebirthError) -> Robj {
             ("available", Robj::from(available.as_str())),
         ],
         RebirthError::Closed => Vec::new(),
+        RebirthError::Tokenize { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::Generation { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::ContextOverflow {
+            prompt_tokens,
+            context_length,
+            overflow,
+        } => vec![
+            ("prompt_tokens", Robj::from(*prompt_tokens as i32)),
+            ("context_length", Robj::from(*context_length as i32)),
+            ("overflow", Robj::from(*overflow as i32)),
+        ],
         RebirthError::Internal { context } => {
             vec![("context", Robj::from(context.as_str()))]
         }

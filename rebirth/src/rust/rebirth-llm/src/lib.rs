@@ -15,9 +15,11 @@ use std::ffi::CStr;
 mod engine;
 mod error;
 mod ffi;
+mod generate;
 
 pub use engine::{available_backends, load, BackendKind, LoadRequest, LoadedModel, ModelMetadata};
 pub use error::RebirthError;
+pub use generate::Logits;
 
 /// Initialize the process-global llama.cpp + ggml backend.
 ///

@@ -39,6 +39,10 @@ jobs:
       - name: cargo clippy (R-free engine crate; deny warnings)
         run: cargo clippy -p rebirth-llm --all-targets -- -D warnings
 
+      # Includes the exact-value engine-vs-oracle logit check (WP2 Step 1,
+      # tests/synthetic_logits.rs): the built engine's teacher-forced logits on
+      # the committed synthetic GGUF must match the numpy oracle golden within
+      # the documented F32-vs-F64 tolerance. Download-free, synthetic-only.
       - name: cargo test (R-free engine crate)
         run: cargo test -p rebirth-llm
 

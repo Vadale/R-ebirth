@@ -40,6 +40,35 @@ pub struct llama_vocab {
     _opaque: [u8; 0],
 }
 
+// The names below mirror the llama.h typedefs verbatim (like the structs above),
+// so the FFI surface reads 1:1 against the header; hence the snake_case allow.
+#[allow(non_camel_case_types)]
+/// `llama_token` / `llama_pos` / `llama_seq_id` are all `int32_t` (llama.h l.68-70).
+pub type llama_token = i32;
+#[allow(non_camel_case_types)]
+pub type llama_pos = i32;
+#[allow(non_camel_case_types)]
+pub type llama_seq_id = i32;
+
+#[allow(non_camel_case_types)]
+/// `llama_memory_t` = `struct llama_memory_i *` (opaque; never dereferenced).
+pub type llama_memory_t = *mut c_void;
+
+/// Mirror of `struct llama_batch` (llama.h, tag b9726). Passed **by value** to
+/// `llama_decode`; allocated/freed by `llama_batch_init`/`llama_batch_free`, so
+/// the only fields we write are `n_tokens`, `token`, `pos`, `n_seq_id`,
+/// `seq_id`, and `logits` (all heap arrays sized by the engine).
+#[repr(C)]
+pub struct llama_batch {
+    pub n_tokens: i32,
+    pub token: *mut llama_token,
+    pub embd: *mut f32,
+    pub pos: *mut llama_pos,
+    pub n_seq_id: *mut i32,
+    pub seq_id: *mut *mut llama_seq_id,
+    pub logits: *mut i8,
+}
+
 /// Mirror of `struct llama_model_params` (llama.h, tag b9726).
 #[repr(C)]
 pub struct llama_model_params {
@@ -149,4 +178,14 @@ extern "C" {
     pub fn llama_model_desc(model: *const llama_model, buf: *mut c_char, buf_size: usize) -> i32;
     pub fn llama_model_get_vocab(model: *const llama_model) -> *const llama_vocab;
     pub fn llama_vocab_n_tokens(vocab: *const llama_vocab) -> i32;
+
+    // --- decoding & logits ---
+    pub fn llama_batch_init(n_tokens: i32, embd: i32, n_seq_max: i32) -> llama_batch;
+    pub fn llama_batch_free(batch: llama_batch);
+    pub fn llama_decode(ctx: *mut llama_context, batch: llama_batch) -> i32;
+    pub fn llama_get_logits_ith(ctx: *mut llama_context, i: i32) -> *mut f32;
+
+    // --- KV-cache / memory ---
+    pub fn llama_get_memory(ctx: *const llama_context) -> llama_memory_t;
+    pub fn llama_memory_clear(mem: llama_memory_t, data: bool);
 }
