@@ -48,6 +48,16 @@ CONFIG: dict[str, object] = {
 # feeds exactly this sequence to llm_logits() and compares against the goldens.
 INPUT_TOKENS: list[int] = [1, 7, 13, 22, 5, 31, 44, 2]
 
+# The fixed prompt and length for the autoregressive greedy-continuation golden
+# (WP2 Step 3): forward -> argmax -> append -> repeat. This is the real
+# cross-implementation check that the engine's greedy decode reproduces an
+# independent numpy generation token-for-token. The prompt/length are chosen so
+# every step's top-1 vs top-2 logit margin stays >= ~2e-2 (~10x the observed F32
+# engine-vs-oracle deviation), keeping the argmax precision-stable and the golden
+# non-flaky across backends. Token ids only (no_vocab model).
+GREEDY_PROMPT: list[int] = [1, 7]
+GREEDY_N_NEW: int = 16
+
 GGUF_FILENAME = "synthetic-llama-2l.gguf"
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
