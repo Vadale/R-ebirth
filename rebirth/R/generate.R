@@ -46,59 +46,37 @@
 llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
                          top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL) {
   if (!inherits(m, "llm")) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`m` must be an `llm` handle returned by llm().",
-      list(argument = "m")
-    )
+    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
 
   if (!is.character(prompt) || length(prompt) == 0L || anyNA(prompt)) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`prompt` must be a non-empty character vector without NA.",
-      list(argument = "prompt")
+    abort_argument(
+      "prompt",
+      "`prompt` must be a non-empty character vector without NA."
     )
   }
   if (!is.numeric(max_tokens) || length(max_tokens) != 1L || is.na(max_tokens) ||
     max_tokens < 1 || max_tokens != round(max_tokens) ||
     max_tokens > .Machine$integer.max) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`max_tokens` must be a single positive integer.",
-      list(argument = "max_tokens")
-    )
+    abort_argument("max_tokens", "`max_tokens` must be a single positive integer.")
   }
   if (!is.numeric(temperature) || length(temperature) != 1L || is.na(temperature) ||
     temperature < 0) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`temperature` must be a single non-negative number (0 = greedy).",
-      list(argument = "temperature")
+    abort_argument(
+      "temperature",
+      "`temperature` must be a single non-negative number (0 = greedy)."
     )
   }
   if (!is.numeric(top_p) || length(top_p) != 1L || is.na(top_p) ||
     top_p <= 0 || top_p > 1) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`top_p` must be a single number in (0, 1].",
-      list(argument = "top_p")
-    )
+    abort_argument("top_p", "`top_p` must be a single number in (0, 1].")
   }
   if (!is.logical(chat) || length(chat) != 1L || is.na(chat)) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`chat` must be a single logical value (TRUE or FALSE).",
-      list(argument = "chat")
-    )
+    abort_argument("chat", "`chat` must be a single logical value (TRUE or FALSE).")
   }
   if (!is.null(stop) && (!is.character(stop) || anyNA(stop))) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`stop` must be NULL or a character vector without NA.",
-      list(argument = "stop")
-    )
+    abort_argument("stop", "`stop` must be NULL or a character vector without NA.")
   }
   stop_seqs <- if (is.null(stop)) character(0) else stop
 
@@ -108,10 +86,9 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   } else {
     if (!is.numeric(seed) || length(seed) != 1L || is.na(seed) ||
       seed < 0 || seed != round(seed)) {
-      rebirth_abort(
-        "rebirth_error_argument",
-        "`seed` must be NULL or a single non-negative whole number.",
-        list(argument = "seed")
+      abort_argument(
+        "seed",
+        "`seed` must be NULL or a single non-negative whole number."
       )
     }
     seed_val <- as.double(seed)

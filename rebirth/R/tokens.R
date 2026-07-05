@@ -42,18 +42,13 @@
 #' @export
 llm_tokens <- function(m, x, decode = FALSE) {
   if (!inherits(m, "llm")) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`m` must be an `llm` handle returned by llm().",
-      list(argument = "m")
-    )
+    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
   if (!is.logical(decode) || length(decode) != 1L || is.na(decode)) {
-    rebirth_abort(
-      "rebirth_error_argument",
-      "`decode` must be a single logical value (TRUE or FALSE).",
-      list(argument = "decode")
+    abort_argument(
+      "decode",
+      "`decode` must be a single logical value (TRUE or FALSE)."
     )
   }
 

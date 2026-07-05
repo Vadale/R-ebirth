@@ -103,7 +103,46 @@ impl Drop for Batch {
 
 // --- tokenization ---------------------------------------------------------
 
+/// Two-pass FFI buffer sizing, shared by `tokenize` / `decode_tokens` /
+/// `token_piece`. Those engine calls share one convention: given a buffer of
+/// `cap` elements they either write `n >= 0` elements and return `n`, or return
+/// a negative value whose magnitude is the exact capacity they need. `fill(ptr,
+/// cap)` runs the call against a freshly allocated buffer of `cap` elements; on a
+/// negative return the buffer is grown to the requested size and the call is
+/// retried. Returns the buffer truncated to the elements actually written. The
+/// unsafe FFI call lives inside each caller's `fill` closure, with its own SAFETY
+/// note; this helper owns only the (safe) sizing loop.
+fn sized_buffer<T: Clone + Default>(
+    initial_cap: usize,
+    mut fill: impl FnMut(*mut T, i32) -> i32,
+) -> Vec<T> {
+    let mut cap = initial_cap;
+    loop {
+        let mut buf = vec![T::default(); cap];
+        let n = fill(buf.as_mut_ptr(), cap as i32);
+        if n < 0 {
+            cap = (-n) as usize;
+            continue;
+        }
+        buf.truncate(n as usize);
+        return buf;
+    }
+}
+
 impl LoadedModel {
+    /// `Ok(())` if the model carries a tokenizer, else `RebirthError::Tokenize`.
+    /// The text-facing entry points (encode / decode / templated generation) all
+    /// require one; the numeric synthetic model has a vocabulary but no tokenizer.
+    fn require_tokenizer(&self) -> Result<(), RebirthError> {
+        if self.has_tokenizer() {
+            Ok(())
+        } else {
+            Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            })
+        }
+    }
+
     /// Tokenize `text` into engine-native (0-based) ids plus their display
     /// pieces. `add_special` adds the model's BOS/EOS if it is configured to;
     /// `parse_special` treats special-token markup in `text` as tokens.
@@ -113,11 +152,7 @@ impl LoadedModel {
         add_special: bool,
         parse_special: bool,
     ) -> Result<Encoding, RebirthError> {
-        if !self.has_tokenizer() {
-            return Err(RebirthError::Tokenize {
-                reason: "the model carries no tokenizer (no_vocab)".to_string(),
-            });
-        }
+        self.require_tokenizer()?;
         let ids = self.tokenize(text, add_special, parse_special)?;
         let pieces = ids
             .iter()
@@ -136,42 +171,32 @@ impl LoadedModel {
         remove_special: bool,
         unparse_special: bool,
     ) -> Result<String, RebirthError> {
-        if !self.has_tokenizer() {
-            return Err(RebirthError::Tokenize {
-                reason: "the model carries no tokenizer (no_vocab)".to_string(),
-            });
-        }
+        self.require_tokenizer()?;
         self.validate_ids(ids)?;
         if ids.is_empty() {
             return Ok(String::new());
         }
-        // Two-pass sizing: a negative return is minus the required byte length.
         let vocab = self.vocab_ptr();
-        let mut cap = ids.len() * 8 + 16;
-        loop {
-            let mut buf = vec![0u8; cap];
-            // SAFETY: `vocab` is live; `ids` is a valid slice; `buf`/`cap` are
-            // consistent. The engine writes at most `cap` bytes (no NUL).
-            let n = unsafe {
+        // First guess ~8 bytes/token; sized_buffer grows on the engine's request.
+        let buf = sized_buffer::<u8>(ids.len() * 8 + 16, |ptr, cap| {
+            // SAFETY: `vocab` is live; `ids` is a valid slice; `ptr` names `cap`
+            // bytes (allocated by sized_buffer). The engine writes at most `cap`
+            // bytes (no NUL).
+            unsafe {
                 ffi::llama_detokenize(
                     vocab,
                     ids.as_ptr(),
                     ids.len() as i32,
-                    buf.as_mut_ptr().cast::<c_char>(),
-                    cap as i32,
+                    ptr.cast::<c_char>(),
+                    cap,
                     remove_special,
                     unparse_special,
                 )
-            };
-            if n < 0 {
-                cap = (-n) as usize;
-                continue;
             }
-            buf.truncate(n as usize);
-            // Lossy: a well-formed id sequence detokenizes to valid UTF-8; lossy
-            // only guards against a caller passing a mid-character id subset.
-            return Ok(String::from_utf8_lossy(&buf).into_owned());
-        }
+        });
+        // Lossy: a well-formed id sequence detokenizes to valid UTF-8; lossy only
+        // guards against a caller passing a mid-character id subset.
+        Ok(String::from_utf8_lossy(&buf).into_owned())
     }
 
     /// Reject ids outside `[0, n_vocab)` before they reach the engine (a bad id
@@ -196,32 +221,25 @@ impl LoadedModel {
     ) -> Result<Vec<i32>, RebirthError> {
         let vocab = self.vocab_ptr();
         let bytes = text.as_bytes();
-        // Generous first guess; +8 covers any added special tokens on an empty
-        // or tiny input. A negative return is minus the exact count needed.
-        let mut cap = bytes.len() + 8;
-        loop {
-            let mut tokens = vec![0i32; cap];
-            // SAFETY: `vocab` is live; `bytes` outlives the call; `tokens`/`cap`
-            // are consistent. Passing an explicit length (not NUL-terminated)
-            // handles interior NUL bytes in `text`.
-            let n = unsafe {
+        // Generous first guess; +8 covers any added special tokens on an empty or
+        // tiny input. sized_buffer grows to the exact count if the engine asks.
+        let tokens = sized_buffer::<i32>(bytes.len() + 8, |ptr, cap| {
+            // SAFETY: `vocab` is live; `bytes` outlives the call; `ptr` names
+            // `cap` i32 (allocated by sized_buffer). Passing an explicit length
+            // (not NUL-terminated) handles interior NUL bytes in `text`.
+            unsafe {
                 ffi::llama_tokenize(
                     vocab,
                     bytes.as_ptr().cast::<c_char>(),
                     bytes.len() as i32,
-                    tokens.as_mut_ptr(),
-                    cap as i32,
+                    ptr,
+                    cap,
                     add_special,
                     parse_special,
                 )
-            };
-            if n < 0 {
-                cap = (-n) as usize;
-                continue;
             }
-            tokens.truncate(n as usize);
-            return Ok(tokens);
-        }
+        });
+        Ok(tokens)
     }
 
     /// The display piece for a single engine-native id. Lossy: a single token
@@ -230,28 +248,13 @@ impl LoadedModel {
     /// concatenating pieces.
     fn token_piece(&self, id: i32) -> Result<String, RebirthError> {
         let vocab = self.vocab_ptr();
-        let mut cap = 32usize;
-        loop {
-            let mut buf = vec![0u8; cap];
-            // SAFETY: `vocab` is live; `buf`/`cap` are consistent. `lstrip = 0`,
-            // `special = true` so control tokens render as their text.
-            let n = unsafe {
-                ffi::llama_token_to_piece(
-                    vocab,
-                    id,
-                    buf.as_mut_ptr().cast::<c_char>(),
-                    cap as i32,
-                    0,
-                    true,
-                )
-            };
-            if n < 0 {
-                cap = (-n) as usize;
-                continue;
-            }
-            buf.truncate(n as usize);
-            return Ok(String::from_utf8_lossy(&buf).into_owned());
-        }
+        let buf = sized_buffer::<u8>(32, |ptr, cap| {
+            // SAFETY: `vocab` is live; `ptr` names `cap` bytes (allocated by
+            // sized_buffer). `lstrip = 0`, `special = true` so control tokens
+            // render as their text.
+            unsafe { ffi::llama_token_to_piece(vocab, id, ptr.cast::<c_char>(), cap, 0, true) }
+        });
+        Ok(String::from_utf8_lossy(&buf).into_owned())
     }
 }
 
@@ -267,6 +270,17 @@ impl LoadedModel {
             if !mem.is_null() {
                 ffi::llama_memory_clear(mem, true);
             }
+        }
+    }
+
+    /// `n_vocab` as a positive `usize`, or a generation error when the model has
+    /// an empty vocabulary (nothing could be scored or sampled).
+    fn n_vocab_checked(&self) -> Result<usize, RebirthError> {
+        match self.n_vocab() as usize {
+            0 => Err(RebirthError::Generation {
+                reason: "model has empty vocabulary".to_string(),
+            }),
+            n => Ok(n),
         }
     }
 
@@ -330,12 +344,7 @@ impl LoadedModel {
     /// the exact-value oracle path: the numpy reference computes the same rows.
     pub fn logits_for_tokens(&self, tokens: &[i32]) -> Result<Logits, RebirthError> {
         self.check_fits(tokens.len())?;
-        let n_vocab = self.n_vocab() as usize;
-        if n_vocab == 0 {
-            return Err(RebirthError::Generation {
-                reason: "model has empty vocabulary".to_string(),
-            });
-        }
+        let n_vocab = self.n_vocab_checked()?;
         self.clear_memory();
         self.decode(tokens, 0, false)?;
 
@@ -537,12 +546,7 @@ impl LoadedModel {
                 reason: "empty_prompt".to_string(),
             });
         }
-        let n_vocab = self.n_vocab() as usize;
-        if n_vocab == 0 {
-            return Err(RebirthError::Generation {
-                reason: "model has empty vocabulary".to_string(),
-            });
-        }
+        let n_vocab = self.n_vocab_checked()?;
         let ctx_len = self.context_length() as usize;
 
         self.clear_memory();
@@ -636,11 +640,7 @@ impl LoadedModel {
         chat: bool,
         params: &GenerateParams,
     ) -> Result<Generation, RebirthError> {
-        if !self.has_tokenizer() {
-            return Err(RebirthError::Tokenize {
-                reason: "the model carries no tokenizer (no_vocab)".to_string(),
-            });
-        }
+        self.require_tokenizer()?;
         let (text, add_special, parse_special) = if chat {
             let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
             (templated, false, true)
