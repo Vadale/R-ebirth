@@ -5,41 +5,24 @@
 //! keeps it independently testable with `cargo test` and reusable under a
 //! permissive licence (ARCHITECTURE.md §2, §13).
 //!
-//! WP1 Steps 1–2 wire the engine and prove it links: the backend can initialize
-//! and report build/system info with no model file. The model/context lifecycle
-//! (loading, metadata, generation) and its `RebirthError` type arrive in the
-//! later WP1 steps; the engine FFI declared here grows with them.
+//! Layout:
+//! - [`ffi`] — the hand-written `extern "C"` surface + `#[repr(C)]` param structs.
+//! - [`error`] — [`RebirthError`], mirroring `API-GRAMMAR.md` §6.
+//! - [`engine`] — the safe `Backend`/`Model`/`Context` lifecycle and [`load`].
 
 use std::ffi::CStr;
 
-/// Hand-written FFI to the vendored llama.cpp C API at the pinned tag (`b9726`).
-///
-/// No bindgen (DECISIONS.md D-006): the surface is small and reviewed by hand
-/// against `src/llama.cpp/include/llama.h` at this exact tag. This module is the
-/// only place `rebirth-llm` touches the C engine; every safe wrapper below is the
-/// sole caller of its declaration, so the linker verifies each symbol name.
-mod ffi {
-    use std::os::raw::c_char;
+mod engine;
+mod error;
+mod ffi;
 
-    extern "C" {
-        /// Initialize the llama + ggml backend. Call once before other engine use.
-        pub fn llama_backend_init();
-        /// Tear down the backend. Call once at process end.
-        pub fn llama_backend_free();
-        /// Static, NUL-terminated string of enabled backends / CPU features.
-        pub fn llama_print_system_info() -> *const c_char;
-        /// Whether this build can offload compute to a GPU backend.
-        pub fn llama_supports_gpu_offload() -> bool;
-        /// Whether this build supports memory-mapping model files.
-        pub fn llama_supports_mmap() -> bool;
-        /// Whether this build supports locking model pages in RAM.
-        pub fn llama_supports_mlock() -> bool;
-        /// Maximum number of devices this build can address.
-        pub fn llama_max_devices() -> usize;
-    }
-}
+pub use engine::{available_backends, load, BackendKind, LoadRequest, LoadedModel, ModelMetadata};
+pub use error::RebirthError;
 
 /// Initialize the process-global llama.cpp + ggml backend.
+///
+/// Low-level: prefer [`engine::available_backends`] / [`load`], which manage a
+/// reference-counted backend for you. Pairs with [`backend_free`].
 pub fn backend_init() {
     // SAFETY: takes no arguments; only sets up global engine state.
     unsafe { ffi::llama_backend_init() }
