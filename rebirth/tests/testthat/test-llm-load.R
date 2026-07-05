@@ -1,0 +1,68 @@
+# WP1 Steps 4-5: llm() argument validation (all in R, before the boundary) and
+# the boundary's error-payload mapping. Real-model loads are Step 8 ([MODEL]).
+
+# --- argument validation: each bad argument errors before any engine call ----
+
+test_that("llm() rejects a non-string path with rebirth_error_model_load", {
+  expect_error(llm(42), class = "rebirth_error_model_load")
+  expect_error(llm(c("a", "b")), class = "rebirth_error_model_load")
+  expect_error(llm(character(0)), class = "rebirth_error_model_load")
+  expect_error(llm(NA_character_), class = "rebirth_error_model_load")
+  expect_error(llm(""), class = "rebirth_error_model_load")
+})
+
+test_that("llm() names the failing check for a missing file", {
+  cnd <- tryCatch(
+    llm(tempfile(fileext = ".gguf")),
+    condition = function(c) c
+  )
+  expect_s3_class(cnd, "rebirth_error_model_load")
+  expect_identical(cnd$failing_check, "path_exists")
+})
+
+test_that("llm() rejects a directory path", {
+  d <- tempfile()
+  dir.create(d)
+  on.exit(unlink(d, recursive = TRUE), add = TRUE)
+  cnd <- tryCatch(llm(d), condition = function(c) c)
+  expect_s3_class(cnd, "rebirth_error_model_load")
+  expect_identical(cnd$failing_check, "path_is_directory")
+})
+
+test_that("llm() validates context_length / gpu_layers / mmap without loading", {
+  f <- tempfile(fileext = ".gguf")
+  file.create(f)
+  on.exit(unlink(f), add = TRUE)
+
+  expect_error(llm(f, context_length = 0), "context_length")
+  expect_error(llm(f, context_length = -5), "context_length")
+  expect_error(llm(f, context_length = 1.5), "context_length")
+  expect_error(llm(f, context_length = c(10L, 20L)), "context_length")
+  expect_error(llm(f, context_length = NA_integer_), "context_length")
+
+  expect_error(llm(f, gpu_layers = -1), "gpu_layers")
+  expect_error(llm(f, gpu_layers = 1.5), "gpu_layers")
+  expect_error(llm(f, gpu_layers = c(1L, 2L)), "gpu_layers")
+
+  expect_error(llm(f, mmap = NA), "mmap")
+  expect_error(llm(f, mmap = "yes"), "mmap")
+  expect_error(llm(f, mmap = c(TRUE, FALSE)), "mmap")
+})
+
+test_that("llm() rejects an unknown backend name (match.arg)", {
+  f <- tempfile(fileext = ".gguf")
+  file.create(f)
+  on.exit(unlink(f), add = TRUE)
+  expect_error(llm(f, backend = "opencl"))
+})
+
+test_that("llm() raises rebirth_error_backend for a backend the build lacks", {
+  f <- tempfile(fileext = ".gguf")
+  file.create(f)
+  on.exit(unlink(f), add = TRUE)
+  # CUDA is never built in WP1, so it is unavailable on every CI platform.
+  cnd <- tryCatch(llm(f, backend = "cuda"), condition = function(c) c)
+  expect_s3_class(cnd, "rebirth_error_backend")
+  expect_identical(cnd$requested, "cuda")
+  expect_match(cnd$available, "cpu")
+})
