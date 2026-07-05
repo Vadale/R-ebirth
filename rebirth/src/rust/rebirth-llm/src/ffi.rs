@@ -172,6 +172,9 @@ extern "C" {
 
     // --- metadata getters ---
     pub fn llama_n_ctx(ctx: *const llama_context) -> u32;
+    /// The maximum tokens a single `llama_decode` batch may carry (a prompt
+    /// longer than this must be decoded in chunks).
+    pub fn llama_n_batch(ctx: *const llama_context) -> u32;
     pub fn llama_model_n_layer(model: *const llama_model) -> i32;
     pub fn llama_model_n_embd(model: *const llama_model) -> i32;
     pub fn llama_model_n_ctx_train(model: *const llama_model) -> i32;

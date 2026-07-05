@@ -23,7 +23,9 @@ use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::PathBuf;
 
 use extendr_api::prelude::*;
-use rebirth_llm::{BackendKind, LoadRequest, LoadedModel, ModelMetadata, RebirthError};
+use rebirth_llm::{
+    BackendKind, GenerateParams, LoadRequest, LoadedModel, ModelMetadata, RebirthError,
+};
 
 /// The native side of an `llm` handle: an owned loaded model, or `None` once the
 /// handle has been closed. Interior mutability lets a shared `&LlmHandle` (all
@@ -302,6 +304,44 @@ fn rebirth_detokenize(ptr: Robj, ids: Vec<i32>) -> Robj {
     })
 }
 
+// Generate a continuation of `prompt`. All argument validation and defaulting
+// (including drawing the seed when the user passed NULL) happen in R; here we
+// build the params, run template + tokenize + generate under `with_model`'s
+// catch_unwind, and return the continuation text plus the seed actually used.
+// `stop` is the R character vector of stop sequences (empty for none). `seed`
+// arrives as a double (R has no u64) holding a whole non-negative number.
+// (Eight params: this boundary mirrors the R `llm_generate()` arguments 1:1;
+// extendr maps each to a `.Call` argument, so they cannot be bundled.)
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_generate(
+    ptr: Robj,
+    prompt: &str,
+    chat: bool,
+    max_tokens: i32,
+    temperature: f64,
+    top_p: f64,
+    seed: f64,
+    stop: Vec<String>,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let params = GenerateParams {
+            max_tokens: max_tokens.max(0) as usize,
+            temperature: temperature as f32,
+            top_p: top_p as f32,
+            seed: seed as u64,
+            stop,
+        };
+        let generation = model.generate_prompt(prompt, chat, &params)?;
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("text", Robj::from(generation.text)),
+            ("seed", Robj::from(generation.seed as f64)),
+        ])
+        .into())
+    })
+}
+
 // Test-only: a real, already-closed handle for exercising the close /
 // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
 #[extendr]
@@ -333,6 +373,7 @@ extendr_api::extendr_module! {
     fn rebirth_available_backends;
     fn rebirth_tokenize;
     fn rebirth_detokenize;
+    fn rebirth_generate;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_panic;
 }

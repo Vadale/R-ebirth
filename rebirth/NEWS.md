@@ -2,6 +2,14 @@
 
 ## rebirth 0.0.0.9000
 
+* `llm_generate()` continues one or more prompts (WP2). `chat = TRUE` applies the
+  model's own chat template; `temperature = 0` decodes greedily (deterministic),
+  otherwise it uses temperature + nucleus (top-p) sampling drawn on the CPU from
+  a seeded generator, so a run is reproducible. `seed = NULL` draws and records a
+  seed, always returned as `attr(result, "seed")`. `stop` ends generation at a
+  string; an over-long prompt raises `rebirth_error_context_overflow`. Greedy
+  decoding is validated token-for-token against an independent numpy reference on
+  a synthetic model.
 * `llm_tokens()` converts between text and the model's tokens (WP2): encoding
   returns a named integer vector of 1-based token ids (names are the token
   pieces), decoding reconstructs the string. UTF-8 correct, including accented

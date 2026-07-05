@@ -546,10 +546,22 @@ impl LoadedModel {
         let ctx_len = self.context_length() as usize;
 
         self.clear_memory();
-        self.decode(prompt, 0, true)?;
-        // The batch index whose logits the last decode stored: the prompt's final
-        // token first, then slot 0 for each single-token continuation decode.
-        let mut slot = prompt.len() as i32 - 1;
+        // Decode the prompt in n_batch-sized chunks: llama_decode caps a batch at
+        // n_batch (llama may set n_batch well below n_ctx), so a longer prompt must
+        // be split. Positions stay contiguous and the KV cache accumulates; only
+        // the final token's logits are needed, so `slot` ends at its index within
+        // the last chunk. Each intermediate chunk's last-token logits are computed
+        // and immediately overwritten by the next decode — a negligible cost that
+        // keeps the batch fill uniform.
+        let n_batch = (self.n_batch() as usize).max(1);
+        let mut start = 0usize;
+        let mut slot = 0i32;
+        while start < prompt.len() {
+            let end = (start + n_batch).min(prompt.len());
+            self.decode(&prompt[start..end], start as i32, true)?;
+            slot = (end - start) as i32 - 1;
+            start = end;
+        }
 
         let vocab = self.vocab_ptr();
         let mut rng = SplitMix64::new(params.seed);
@@ -609,6 +621,34 @@ impl LoadedModel {
             stop_reason,
             seed: params.seed,
         })
+    }
+
+    /// Generate a continuation of a text `prompt`. When `chat`, the prompt is
+    /// wrapped as a user turn with the model's chat template; otherwise it is a
+    /// raw completion. Tokenization mirrors llama.cpp's own usage: a templated
+    /// prompt is tokenized with special-token parsing and no added BOS (the
+    /// template already carries the markers), a raw prompt with the model's
+    /// default special tokens. Requires a tokenizer (the synthetic model has
+    /// none — its generation is driven by ids through [`generate`](Self::generate)).
+    pub fn generate_prompt(
+        &self,
+        prompt: &str,
+        chat: bool,
+        params: &GenerateParams,
+    ) -> Result<Generation, RebirthError> {
+        if !self.has_tokenizer() {
+            return Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            });
+        }
+        let (text, add_special, parse_special) = if chat {
+            let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
+            (templated, false, true)
+        } else {
+            (prompt.to_string(), true, false)
+        };
+        let prompt_ids = self.tokenize(&text, add_special, parse_special)?;
+        self.generate(&prompt_ids, params)
     }
 }
 

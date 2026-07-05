@@ -366,6 +366,13 @@ impl LoadedModel {
     pub(crate) fn context_length(&self) -> u32 {
         self.ctx.context_length
     }
+
+    /// The maximum tokens one `llama_decode` batch may carry (`n_batch`). A
+    /// prompt longer than this is decoded in chunks (generate.rs).
+    pub(crate) fn n_batch(&self) -> u32 {
+        // SAFETY: `ctx_ptr` is a live context for the model's lifetime.
+        unsafe { ffi::llama_n_batch(self.ctx_ptr()) }
+    }
 }
 
 /// A fully-validated load request (all R-side defaulting already applied).
