@@ -50,6 +50,13 @@ jobs:
           needs: check
           working-directory: rebirth
 
+      # Lint the R-boundary crate here rather than in rust.yaml: rebirth-ffi's
+      # build needs R on the PATH (provided by the steps above). rust.yaml lints
+      # the R-free rebirth-llm.
+      - name: clippy (rebirth-ffi, the R boundary crate)
+        run: cargo clippy -p rebirth-ffi --all-targets -- -D warnings
+        working-directory: rebirth/src/rust
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           working-directory: rebirth

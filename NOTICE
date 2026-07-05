@@ -10,7 +10,38 @@ Third-party components
 Vendored dependencies and their licenses are recorded here as they are added.
 
 * llama.cpp — MIT License.
-  Vendored (pinned upstream tag + SHA256) under vendor/ starting in WP1, and
-  patched for activation taps in WP4. Its upstream LICENSE and copyright notice
-  will be reproduced under vendor/ at that time. NOT yet present in this WP0
-  scaffold.
+  Vendored (pinned, pruned source snapshot) inside the package at
+  rebirth/src/llama.cpp/ per DECISIONS.md D-006. Provenance:
+    - upstream:              https://github.com/ggml-org/llama.cpp
+    - tag:                   b9726 (released 2026-06-19)
+    - release tarball SHA256:117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0
+    - pruned tree SHA256:    49422544bd37aad88f5f379b6e0f34d435529a858645249fed8e49cc291a5a92
+  Full provenance and prune manifest: rebirth/src/llama.cpp/VENDORING.md
+  (mirrored at vendor/README.md). WP1 applies zero patches; the activation-tap
+  patch set arrives in WP4 under rebirth/src/llama.cpp/patches/.
+
+  llama.cpp is distributed under the MIT License, reproduced in full below.
+
+  -----------------------------------------------------------------------------
+  MIT License
+
+  Copyright (c) 2023-2026 The ggml authors
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+  -----------------------------------------------------------------------------

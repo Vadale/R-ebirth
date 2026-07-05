@@ -27,6 +27,49 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 - **Decision:** WP-T (the MedGemma audit, `THESIS-PLAN.md`) is parked until the founder's thesis is assigned (~6–8 months, ≈ Q1–Q2 2027). `llm_probe()` (Phase 4) proceeds as a core capability regardless. WP-T gates nothing.
 - **Why:** the assignment date is outside the founder's control; the software will be ahead of the thesis's needs (Phases 1–2 + `llm_probe`) by resumption time.
 
+## D-005 — Rust crate layout: one package-embedded workspace
+- **Date:** 2026-07-04 · **Status:** accepted
+- **Decision:** consolidate both native crates into a single cargo workspace embedded in the package at `rebirth/src/rust/` (members `rebirth-ffi`, `rebirth-llm`); delete the orphaned top-level `rust/`. `rebirth-ffi` is the extendr boundary crate but keeps `[lib] name = "rebirth"` and the `mod rebirth;` module name, so `entrypoint.c`, `rebirth-win.def`, `NAMESPACE`, `document.rs`, and `-lrebirth` are unchanged (≈ zero churn); `rebirth-llm` is a workspace sibling and path dependency, R-free and independently testable. Full analysis in `docs/wp1-plan.md`.
+- **Why:** the top-level `rust/` (the `SOLO-PHASE-PLAN.md` §4 sketch) escapes the package directory, so it is absent in the `R CMD check` tempdir and forbidden by CRAN (ARCHITECTURE §9); embedding under `src/` is self-contained by construction while preserving the three-layer FFI/engine separation (§2/§13). This supersedes the §4 top-level-`rust/` layout sketch (a plan sketch, not a prior ADR).
+- **Alternatives rejected:** path-depend on `../../../rust` (escapes the package → check/CRAN build fails — this was the WP0 orphaning bug); copy or symlink crates in at configure time (tarball/reproducibility fragility); collapse into one flat crate (breaks the R-free engine and unsafe-isolation invariants, §2/§13).
+- **Note:** accepted by Claude under the founder's 2026-07-04 autonomy grant — an internal structural decision with no external impact; recorded here for the founder's standing review.
+
+## D-006 — llama.cpp vendoring and native build
+- **Date:** 2026-07-04 · **Status:** accepted
+- **Decision:** vendor a pinned, pruned llama.cpp source snapshot inside the package at `rebirth/src/llama.cpp/` (upstream tag + tree SHA256 recorded in `src/llama.cpp/VENDORING.md`, mirrored as a provenance record in `vendor/README.md`/`NOTICE`); build it from `rebirth-llm/build.rs` via the newly authorized `cmake` build-dependency crate — Metal + embedded shaders on macOS arm64, CPU elsewhere, CUDA behind a default-off `cuda` feature until Phase 8; declare the small FFI surface as hand-written `extern "C"` (no bindgen); apply no source patches in WP1 (taps are WP4). `SystemRequirements` gains `cmake (>= 3.28)` with a `configure` presence check. Full analysis in `docs/wp1-plan.md`.
+- **Why:** self-containment (D-005 / §9 — a git submodule or a configure-time download breaks the check tempdir and CRAN's no-network rule); cmake is upstream's supported build path (hand-rolling ggml backend registration and Metal-shader embedding would drift on every bump, defeating the `vendor-bump` skill); a tiny hand-written FFI surface stays auditable without a `libclang`/bindgen toolchain dependency.
+- **Alternatives rejected:** git submodule or configure-time download (absent in the tarball / violate CRAN no-network); `cc`-crate hand-compile (brittle vs upstream cmake); dynamic-link a system `libllama` (no stable ABI across `bNNNN` tags); bindgen (adds libclang for a handful of symbols and enlarges the audited unsafe surface).
+- **Dependency authorization:** this ADR authorizes the Rust build-dependency `cmake` and the `cmake (>= 3.28)` SystemRequirement — the only new dependencies WP1 introduces. Accepted by Claude under the founder's 2026-07-04 autonomy grant; **flagged for the founder** as the one WP1 decision that touches the "no new dependency without an approved entry" rule.
+- **Pinned tag:** selection criteria in `docs/wp1-plan.md` (immutable `bNNNN` release with gemma3 + qwen2 support, settled C API, mature Apple-silicon Metal, ~2–4 weeks old); the exact tag is finalized at vendoring time (WP1 Step 1) and recorded with its tree SHA256.
+
+---
+
+## D-007 — Argument-validation errors are classed conditions
+- **Date:** 2026-07-05 · **Status:** accepted (founder-approved 2026-07-05)
+- **Decision:** add `rebirth_error_argument` to `API-GRAMMAR.md` §6 as the package-wide class for invalid user arguments (wrong type/length/range) caught by R-side validation before the native boundary. `llm()`'s `context_length`/`gpu_layers`/`mmap` checks raise it (via `rebirth_abort()`), carrying an `argument` field that names the offending parameter. `path` → `rebirth_error_model_load` and `backend` → `rebirth_error_backend` are unchanged (their §6 semantics predate this).
+- **Why:** grammar rule §1.8 requires *every* error to be a classed condition; before this, those three checks raised bare base-R `stop()`, an internal inconsistency in the approved grammar. One cross-cutting class (rather than per-function argument classes) keeps the hierarchy small while making input errors programmatically catchable.
+- **Alternatives rejected:** leave them as base-R errors (violates §1.8); reuse `rebirth_error_model_load` (wrong semantics — these are not load failures); a distinct argument class per function (needless proliferation for identical validation failures).
+
+---
+
+## D-008 — WP1 security audit: accepted; ship, with tracked gates
+- **Date:** 2026-07-05 · **Status:** accepted
+- **Decision:** the WP1 FFI/`unsafe` boundary passed a security audit and ships. Verified sound for WP1's threat model (local, trusted-ish model files, single-threaded R): the two by-value `#[repr(C)]` param structs match `llama.h` at b9726 field-for-field; `meta_str` two-call sizing is correct; the model lifecycle is take-once (no double-free/UAF across `close.llm` + the GC finalizer + extendr's finalizer); panics are caught (manual + extendr's outer `catch_unwind`); C++ exceptions never cross `extern "C"`. Two cheap fixes were applied now: widen the boundary `catch_unwind` to cover the metadata snapshot + payload construction, and drop the `description()` trailing NUL.
+- **Tracked gates (required predecessors, logged so they are not rediscovered under deadline):**
+  - **G1 (Phase 3, downloads):** a malformed-but-magic-valid GGUF can trip a `GGML_ASSERT`/`GGML_ABORT` → `abort()`, killing the R session uncatchably. Before model files become untrusted internet downloads: load untrusted models in a subprocess (isolation) and make checksum/provenance verification fail-closed; add a valid-magic-malformed GGUF corpus/fuzz test.
+  - **G2 (WP4 / Phase 5, threads):** `unsafe impl Send + Sync for Model/Context` is asserted, not enforced. Before any background Rust thread exists, enforce the R-main-thread invariant (thread-id `debug_assert!` in the getters/Drop, or keep the R-facing handle `!Send`).
+  - **G3 (when any handle-taking FFI entry is exported):** foreign `EXTPTRSXP` type confusion — `try_from::<&ExternalPtr<LlmHandle>>` reads the payload before the downcast. The close/is-closed entries are internal now; add an `R_ExternalPtrTag` check if ever exported.
+  - **G4 (CI hardening):** wire `cargo audit` + `cargo deny`, and have CI recompute and assert the vendored pruned-tree SHA256 (from `VENDORING.md`) so a silent change to the vendored engine is caught.
+- **Why:** none of the findings is exploitable under WP1's model, so WP1 is not blocked; but G1–G4 are genuine predecessors for later phases and are far cheaper to honor now than to rediscover under a deadline.
+
+---
+
+## D-009 — `unsafe` is partitioned by boundary (corrects the "all unsafe in rebirth-ffi" statement)
+- **Date:** 2026-07-05 · **Status:** accepted (flagged for the founder)
+- **Decision:** the WP1 review found the implemented `unsafe` split inverts the earlier statement (`ARCHITECTURE.md` §2.2, this log, `docs/wp1-plan.md`) that "`rebirth-ffi` is the only crate allowed `unsafe`." The correct, implemented design partitions `unsafe` by *boundary*: `rebirth-ffi` owns any **R-side (SEXP)** `unsafe` — of which WP1 needs **none**, because extendr's safe `ExternalPtr`/`Robj` API abstracts SEXP handling — and `rebirth-llm` owns the **C-side (llama.cpp FFI)** `unsafe`, kept minimal and individually SAFETY-commented, while staying R-free. `ARCHITECTURE.md` §2.2/§2.3 and the layer diagram are updated to state this; the crate split and the R-free-engine invariant are unchanged.
+- **Why:** the C-FFI `unsafe` necessarily lives with the engine wrapper that calls llama.cpp (`rebirth-llm`); forcing it into `rebirth-ffi` would drag R-free engine code across the boundary. The original wording predated the "extendr's safe API abstracts SEXP" realization. Leaving the docs contradicting the sound, audited code would mislead the next contributor and the security-auditor, which gates on this invariant.
+- **Alternatives rejected:** move the llama FFI into `rebirth-ffi` (breaks the R-free engine / independent reusability — D-005 / §2.3); leave the docs as-is (a "non-negotiable" rule silently contradicting the code).
+
 ---
 
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)

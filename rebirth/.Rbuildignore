@@ -4,3 +4,10 @@
 ^src/rust/target$
 ^src/Makevars$
 ^src/Makevars\.win$
+# Vendored llama.cpp source (src/llama.cpp/) SHIPS in the tarball (D-006). The
+# native build is out-of-source (under src/rust/target, ignored above), so no
+# build artifacts live in src/llama.cpp/. These defensive rules keep the tarball
+# source-only even if someone runs an in-source cmake by accident.
+^src/llama\.cpp/build$
+^src/llama\.cpp/.*/CMakeFiles$
+^src/llama\.cpp/.*/CMakeCache\.txt$

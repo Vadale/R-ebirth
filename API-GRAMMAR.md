@@ -69,7 +69,7 @@ Classed list: per-layer fitted probes + CV metrics. Methods: `print`, `summary`,
 ## 3. Function entries — Phases 0–1 `[approved pending sign-off]`
 
 ### `llm(path, context_length = 4096, gpu_layers = NULL, backend = c("auto", "metal", "cuda", "cpu"), mmap = TRUE)` — Phase 0
-Loads a GGUF model; returns an `llm` handle. `gpu_layers = NULL` = auto (all that fit); `backend = "auto"` picks the best available. Errors: `rebirth_error_model_load` (missing/corrupt/unsupported file — message names the failing check), `rebirth_error_backend` (requested backend unavailable).
+Loads a GGUF model; returns an `llm` handle. `gpu_layers = NULL` = auto (all that fit); `backend = "auto"` picks the best available. Errors: `rebirth_error_argument` (invalid `context_length`/`gpu_layers`/`mmap`), `rebirth_error_model_load` (missing/corrupt/unsupported file — message names the failing check), `rebirth_error_backend` (requested backend unavailable).
 
 ### `close(con, ...)` method `close.llm` — Phase 0
 Frees native memory deterministically (finalizer remains the safety net). Returns `invisible(NULL)`. Subsequent use of the handle → `rebirth_error_closed`.
@@ -133,6 +133,7 @@ The standardized decodability figure: metric with CI (y) vs layer (x), base grap
 | Class | Raised by | Note |
 |---|---|---|
 | `rebirth_error` | all | base class; never raised bare |
+| `rebirth_error_argument` | any exported function | invalid user argument (type/length/range); `argument` field names it |
 | `rebirth_error_model_load` | `llm()` | file missing/corrupt/unsupported arch |
 | `rebirth_error_backend` | `llm()` | requested backend unavailable |
 | `rebirth_error_closed` | any use of a closed handle | |

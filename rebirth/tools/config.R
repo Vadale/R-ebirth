@@ -4,6 +4,9 @@
 # check the packages MSRV first
 source("tools/msrv.R")
 
+# then check cmake is present and recent enough (builds the vendored llama.cpp)
+source("tools/cmake.R")
+
 # check DEBUG and NOT_CRAN environment variables
 env_debug <- Sys.getenv("DEBUG")
 env_not_cran <- Sys.getenv("NOT_CRAN")
@@ -73,6 +76,44 @@ cfg <- if (is_debug) "debug" else "release"
 # read in the Makevars.in file checking
 is_windows <- .Platform[["OS.type"]] == "windows"
 
+# Native link flags for the vendored llama.cpp/ggml static archives (D-006).
+# rebirth-llm/build.rs relocates the archives into $(LIBDIR); here we name them
+# (in dependency order) plus the per-OS system libraries/frameworks the engine
+# needs. build.rs enables Metal only on macOS arm64, so the archive set and the
+# frameworks are matched to that here.
+sysname <- Sys.info()[["sysname"]]
+arch <- R.version[["arch"]]
+if (is_windows) {
+  # Windows/CUDA is Phase 8 and not yet exercised. CPU-only, GNU ld group form.
+  .llama_libs <- paste(
+    "-Wl,--start-group",
+    "-lllama -lggml -lggml-cpu -lggml-base",
+    "-Wl,--end-group -lstdc++"
+  )
+} else if (identical(sysname, "Darwin")) {
+  is_arm <- arch %in% c("aarch64", "arm64")
+  stems <- c("-lllama", "-lggml", "-lggml-cpu")
+  if (is_arm) stems <- c(stems, "-lggml-metal")
+  stems <- c(stems, "-lggml-base")
+  # ggml-cpu uses Accelerate on all Apple targets; the Metal backend adds
+  # Metal/MetalKit/Foundation. libc++ is linked explicitly because R links the
+  # shared object with the C compiler.
+  frameworks <- if (is_arm) {
+    "-framework Metal -framework MetalKit -framework Foundation -framework Accelerate"
+  } else {
+    "-framework Accelerate"
+  }
+  .llama_libs <- paste(paste(stems, collapse = " "), frameworks, "-lc++")
+} else {
+  # Linux and other Unix: CPU only. Group the archives so any back-references
+  # between them resolve regardless of order under GNU ld.
+  .llama_libs <- paste(
+    "-Wl,--start-group",
+    "-lllama -lggml -lggml-cpu -lggml-base",
+    "-Wl,--end-group -lstdc++ -lm -ldl"
+  )
+}
+
 # if windows we replace in the Makevars.win.in
 mv_fp <- ifelse(
   is_windows,
@@ -102,6 +143,7 @@ new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>
+  gsub("@LLAMA_LIBS@", .llama_libs, x = _) |>
   gsub("@PANIC_EXPORTS@", .panic_exports, x = _)
 
 message("Writing `", mv_ofp, "`.")
