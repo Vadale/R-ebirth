@@ -44,6 +44,14 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 
 ---
 
+## D-007 — Argument-validation errors are classed conditions
+- **Date:** 2026-07-05 · **Status:** accepted (founder-approved 2026-07-05)
+- **Decision:** add `rebirth_error_argument` to `API-GRAMMAR.md` §6 as the package-wide class for invalid user arguments (wrong type/length/range) caught by R-side validation before the native boundary. `llm()`'s `context_length`/`gpu_layers`/`mmap` checks raise it (via `rebirth_abort()`), carrying an `argument` field that names the offending parameter. `path` → `rebirth_error_model_load` and `backend` → `rebirth_error_backend` are unchanged (their §6 semantics predate this).
+- **Why:** grammar rule §1.8 requires *every* error to be a classed condition; before this, those three checks raised bare base-R `stop()`, an internal inconsistency in the approved grammar. One cross-cutting class (rather than per-function argument classes) keeps the hierarchy small while making input errors programmatically catchable.
+- **Alternatives rejected:** leave them as base-R errors (violates §1.8); reuse `rebirth_error_model_load` (wrong semantics — these are not load failures); a distinct argument class per function (needless proliferation for identical validation failures).
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

@@ -76,23 +76,29 @@ llm <- function(path,
 
   # --- context_length: a single positive integer ---
   if (!is_count(context_length) || context_length < 1L) {
-    stop(
+    rebirth_abort(
+      "rebirth_error_argument",
       "`context_length` must be a single positive integer (the context window in tokens).",
-      call. = FALSE
+      list(argument = "context_length")
     )
   }
 
   # --- gpu_layers: NULL, or a single non-negative integer ---
   if (!is.null(gpu_layers) && (!is_count(gpu_layers) || gpu_layers < 0L)) {
-    stop(
+    rebirth_abort(
+      "rebirth_error_argument",
       "`gpu_layers` must be NULL (auto) or a single non-negative integer.",
-      call. = FALSE
+      list(argument = "gpu_layers")
     )
   }
 
   # --- mmap: a single non-NA logical ---
   if (!is.logical(mmap) || length(mmap) != 1L || is.na(mmap)) {
-    stop("`mmap` must be a single logical value (TRUE or FALSE).", call. = FALSE)
+    rebirth_abort(
+      "rebirth_error_argument",
+      "`mmap` must be a single logical value (TRUE or FALSE).",
+      list(argument = "mmap")
+    )
   }
 
   # --- backend: a valid choice, resolved and checked against the build ---

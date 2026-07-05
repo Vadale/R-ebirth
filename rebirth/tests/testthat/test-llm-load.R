@@ -29,24 +29,28 @@ test_that("llm() rejects a directory path", {
   expect_identical(cnd$failing_check, "path_is_directory")
 })
 
-test_that("llm() validates context_length / gpu_layers / mmap without loading", {
+test_that("llm() validates context_length / gpu_layers / mmap with rebirth_error_argument", {
   f <- tempfile(fileext = ".gguf")
   file.create(f)
   on.exit(unlink(f), add = TRUE)
 
-  expect_error(llm(f, context_length = 0), "context_length")
-  expect_error(llm(f, context_length = -5), "context_length")
-  expect_error(llm(f, context_length = 1.5), "context_length")
-  expect_error(llm(f, context_length = c(10L, 20L)), "context_length")
-  expect_error(llm(f, context_length = NA_integer_), "context_length")
+  expect_error(llm(f, context_length = 0), class = "rebirth_error_argument")
+  expect_error(llm(f, context_length = -5), class = "rebirth_error_argument")
+  expect_error(llm(f, context_length = 1.5), class = "rebirth_error_argument")
+  expect_error(llm(f, context_length = c(10L, 20L)), class = "rebirth_error_argument")
+  expect_error(llm(f, context_length = NA_integer_), class = "rebirth_error_argument")
 
-  expect_error(llm(f, gpu_layers = -1), "gpu_layers")
-  expect_error(llm(f, gpu_layers = 1.5), "gpu_layers")
-  expect_error(llm(f, gpu_layers = c(1L, 2L)), "gpu_layers")
+  expect_error(llm(f, gpu_layers = -1), class = "rebirth_error_argument")
+  expect_error(llm(f, gpu_layers = 1.5), class = "rebirth_error_argument")
+  expect_error(llm(f, gpu_layers = c(1L, 2L)), class = "rebirth_error_argument")
 
-  expect_error(llm(f, mmap = NA), "mmap")
-  expect_error(llm(f, mmap = "yes"), "mmap")
-  expect_error(llm(f, mmap = c(TRUE, FALSE)), "mmap")
+  expect_error(llm(f, mmap = NA), class = "rebirth_error_argument")
+  expect_error(llm(f, mmap = "yes"), class = "rebirth_error_argument")
+  expect_error(llm(f, mmap = c(TRUE, FALSE)), class = "rebirth_error_argument")
+
+  # the offending argument is named in a structured field
+  cnd <- tryCatch(llm(f, context_length = 0), condition = function(c) c)
+  expect_identical(cnd$argument, "context_length")
 })
 
 test_that("llm() rejects an unknown backend name (match.arg)", {
