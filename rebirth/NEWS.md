@@ -2,6 +2,11 @@
 
 ## rebirth 0.0.0.9000
 
+* `llm_tokens()` converts between text and the model's tokens (WP2): encoding
+  returns a named integer vector of 1-based token ids (names are the token
+  pieces), decoding reconstructs the string. UTF-8 correct, including accented
+  text that spans token boundaries. Vectorized over inputs; a model without a
+  tokenizer or an out-of-range id raises `rebirth_error_tokenize`.
 * `llm()` loads a local GGUF model and returns an `llm` handle, with
   `print()`, `summary()`, and `close()` methods (WP1). Bad requests (missing,
   unreadable, or corrupt files; an unavailable backend) are reported as classed

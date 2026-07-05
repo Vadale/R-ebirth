@@ -57,6 +57,49 @@ impl LlmHandle {
     fn close(&self) -> bool {
         self.inner.borrow_mut().take().is_some()
     }
+
+    /// Run `f` against the live model, or `rebirth_error_closed` if the handle
+    /// has been closed. Keeps `inner` private to this type.
+    fn run<F, T>(&self, f: F) -> Result<T, RebirthError>
+    where
+        F: FnOnce(&LoadedModel) -> Result<T, RebirthError>,
+    {
+        let borrow = self.inner.borrow();
+        let model = borrow.as_ref().ok_or(RebirthError::Closed)?;
+        f(model)
+    }
+}
+
+// --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
+
+/// R (1-based token id) -> engine (0-based). The only place the conversion is
+/// applied on the way in (ARCHITECTURE.md §4). `id <= 0` is out of range for a
+/// 1-based id and maps to a negative engine id the engine's validation rejects.
+fn to_engine_token(id_1based: i32) -> i32 {
+    id_1based - 1
+}
+
+/// Engine (0-based token id) -> R (1-based). The only place the conversion is
+/// applied on the way out (ARCHITECTURE.md §4).
+fn from_engine_token(id_0based: i32) -> i32 {
+    id_0based + 1
+}
+
+/// Borrow the live model behind `ptr` and run `f`, mapping a closed/foreign
+/// pointer, a `RebirthError`, or a caught panic to the right classed payload.
+fn with_model<F>(ptr: &Robj, f: F) -> Robj
+where
+    F: FnOnce(&LoadedModel) -> Result<Robj, RebirthError>,
+{
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        let handle = <&ExternalPtr<LlmHandle>>::try_from(ptr).map_err(|_| RebirthError::Closed)?;
+        handle.run(f)
+    }));
+    match result {
+        Ok(Ok(payload)) => payload,
+        Ok(Err(error)) => error_payload(error),
+        Err(panic) => panic_payload(panic),
+    }
 }
 
 // --- payload construction --------------------------------------------------
@@ -230,6 +273,35 @@ fn rebirth_available_backends() -> Robj {
     names.into()
 }
 
+// Encode `text` into tokens. Returns a payload carrying the 1-based token ids
+// (R API, §4) and their display pieces; R assembles the named integer vector.
+// `add_special`/`parse_special` are decided in R (chat vs raw completion).
+#[extendr]
+fn rebirth_tokenize(ptr: Robj, text: &str, add_special: bool, parse_special: bool) -> Robj {
+    with_model(&ptr, |model| {
+        let enc = model.encode(text, add_special, parse_special)?;
+        let ids: Vec<i32> = enc.ids.iter().map(|&id| from_engine_token(id)).collect();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("ids", Robj::from(ids)),
+            ("pieces", Robj::from(enc.pieces)),
+        ])
+        .into())
+    })
+}
+
+// Decode 1-based token ids (R API, §4) back into a single string. The ids are
+// validated as positive integers in R; the engine range-checks after the
+// 1->0-based conversion here.
+#[extendr]
+fn rebirth_detokenize(ptr: Robj, ids: Vec<i32>) -> Robj {
+    with_model(&ptr, |model| {
+        let engine_ids: Vec<i32> = ids.iter().map(|&id| to_engine_token(id)).collect();
+        let text = model.decode_tokens(&engine_ids, false, true)?;
+        Ok(List::from_pairs(vec![("ok", Robj::from(true)), ("text", Robj::from(text))]).into())
+    })
+}
+
 // Test-only: a real, already-closed handle for exercising the close /
 // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
 #[extendr]
@@ -259,6 +331,8 @@ extendr_api::extendr_module! {
     fn rebirth_handle_close;
     fn rebirth_handle_is_closed;
     fn rebirth_available_backends;
+    fn rebirth_tokenize;
+    fn rebirth_detokenize;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_panic;
 }

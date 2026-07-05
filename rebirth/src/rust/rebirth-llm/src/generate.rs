@@ -7,6 +7,8 @@
 //! seeded RNG (`SplitMix64` below) — the GPU backend never selects a token, so
 //! backend non-determinism cannot enter the output.
 
+use std::os::raw::c_char;
+
 use crate::engine::LoadedModel;
 use crate::error::RebirthError;
 use crate::ffi;
@@ -26,6 +28,15 @@ impl Logits {
     pub fn row(&self, pos: usize) -> &[f32] {
         &self.values[pos * self.n_vocab..(pos + 1) * self.n_vocab]
     }
+}
+
+/// A tokenized string: the engine-native (0-based) token ids and, aligned, the
+/// display piece of each token. The FFI boundary is where 0-based becomes the
+/// 1-based R API (ARCHITECTURE.md §4); this crate stays engine-native.
+#[derive(Debug, Clone, PartialEq)]
+pub struct Encoding {
+    pub ids: Vec<i32>,
+    pub pieces: Vec<String>,
 }
 
 // --- a batch that frees itself -------------------------------------------
@@ -87,6 +98,160 @@ impl Drop for Batch {
         // (this owner drops once). `ptr::read` bitwise-copies the by-value batch
         // the C function consumes; the copy is not used afterwards.
         unsafe { ffi::llama_batch_free(std::ptr::read(&self.raw)) };
+    }
+}
+
+// --- tokenization ---------------------------------------------------------
+
+impl LoadedModel {
+    /// Tokenize `text` into engine-native (0-based) ids plus their display
+    /// pieces. `add_special` adds the model's BOS/EOS if it is configured to;
+    /// `parse_special` treats special-token markup in `text` as tokens.
+    pub fn encode(
+        &self,
+        text: &str,
+        add_special: bool,
+        parse_special: bool,
+    ) -> Result<Encoding, RebirthError> {
+        if !self.has_tokenizer() {
+            return Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            });
+        }
+        let ids = self.tokenize(text, add_special, parse_special)?;
+        let pieces = ids
+            .iter()
+            .map(|&id| self.token_piece(id))
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Encoding { ids, pieces })
+    }
+
+    /// Detokenize engine-native (0-based) ids back into a single string. The
+    /// engine reassembles multi-byte UTF-8 that spans token boundaries, so this
+    /// is the correct inverse of [`encode`](Self::encode) (concatenating piece
+    /// strings is not). `remove_special`/`unparse_special` are passed through.
+    pub fn decode_tokens(
+        &self,
+        ids: &[i32],
+        remove_special: bool,
+        unparse_special: bool,
+    ) -> Result<String, RebirthError> {
+        if !self.has_tokenizer() {
+            return Err(RebirthError::Tokenize {
+                reason: "the model carries no tokenizer (no_vocab)".to_string(),
+            });
+        }
+        self.validate_ids(ids)?;
+        if ids.is_empty() {
+            return Ok(String::new());
+        }
+        // Two-pass sizing: a negative return is minus the required byte length.
+        let vocab = self.vocab_ptr();
+        let mut cap = ids.len() * 8 + 16;
+        loop {
+            let mut buf = vec![0u8; cap];
+            // SAFETY: `vocab` is live; `ids` is a valid slice; `buf`/`cap` are
+            // consistent. The engine writes at most `cap` bytes (no NUL).
+            let n = unsafe {
+                ffi::llama_detokenize(
+                    vocab,
+                    ids.as_ptr(),
+                    ids.len() as i32,
+                    buf.as_mut_ptr().cast::<c_char>(),
+                    cap as i32,
+                    remove_special,
+                    unparse_special,
+                )
+            };
+            if n < 0 {
+                cap = (-n) as usize;
+                continue;
+            }
+            buf.truncate(n as usize);
+            // Lossy: a well-formed id sequence detokenizes to valid UTF-8; lossy
+            // only guards against a caller passing a mid-character id subset.
+            return Ok(String::from_utf8_lossy(&buf).into_owned());
+        }
+    }
+
+    /// Reject ids outside `[0, n_vocab)` before they reach the engine (a bad id
+    /// could otherwise trip an assert). Engine-native (0-based) ids.
+    fn validate_ids(&self, ids: &[i32]) -> Result<(), RebirthError> {
+        let n_vocab = self.n_vocab();
+        for &id in ids {
+            if id < 0 || id >= n_vocab {
+                return Err(RebirthError::Tokenize {
+                    reason: format!("token id {id} is outside the vocabulary [0, {n_vocab})"),
+                });
+            }
+        }
+        Ok(())
+    }
+
+    fn tokenize(
+        &self,
+        text: &str,
+        add_special: bool,
+        parse_special: bool,
+    ) -> Result<Vec<i32>, RebirthError> {
+        let vocab = self.vocab_ptr();
+        let bytes = text.as_bytes();
+        // Generous first guess; +8 covers any added special tokens on an empty
+        // or tiny input. A negative return is minus the exact count needed.
+        let mut cap = bytes.len() + 8;
+        loop {
+            let mut tokens = vec![0i32; cap];
+            // SAFETY: `vocab` is live; `bytes` outlives the call; `tokens`/`cap`
+            // are consistent. Passing an explicit length (not NUL-terminated)
+            // handles interior NUL bytes in `text`.
+            let n = unsafe {
+                ffi::llama_tokenize(
+                    vocab,
+                    bytes.as_ptr().cast::<c_char>(),
+                    bytes.len() as i32,
+                    tokens.as_mut_ptr(),
+                    cap as i32,
+                    add_special,
+                    parse_special,
+                )
+            };
+            if n < 0 {
+                cap = (-n) as usize;
+                continue;
+            }
+            tokens.truncate(n as usize);
+            return Ok(tokens);
+        }
+    }
+
+    /// The display piece for a single engine-native id. Lossy: a single token
+    /// may be a partial UTF-8 byte sequence; round-trip correctness comes from
+    /// [`decode_tokens`](Self::decode_tokens) on the whole id vector, not from
+    /// concatenating pieces.
+    fn token_piece(&self, id: i32) -> Result<String, RebirthError> {
+        let vocab = self.vocab_ptr();
+        let mut cap = 32usize;
+        loop {
+            let mut buf = vec![0u8; cap];
+            // SAFETY: `vocab` is live; `buf`/`cap` are consistent. `lstrip = 0`,
+            // `special = true` so control tokens render as their text.
+            let n = unsafe {
+                ffi::llama_token_to_piece(
+                    vocab,
+                    id,
+                    buf.as_mut_ptr().cast::<c_char>(),
+                    cap as i32,
+                    0,
+                    true,
+                )
+            };
+            if n < 0 {
+                cap = (-n) as usize;
+                continue;
+            }
+            buf.truncate(n as usize);
+            return Ok(String::from_utf8_lossy(&buf).into_owned());
+        }
     }
 }
 

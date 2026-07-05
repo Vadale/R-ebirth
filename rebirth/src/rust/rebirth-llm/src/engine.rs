@@ -333,6 +333,25 @@ impl LoadedModel {
         self.ctx.ptr.as_ptr()
     }
 
+    /// The model's vocabulary (owned by the model; valid for its whole lifetime).
+    pub(crate) fn vocab_ptr(&self) -> *const ffi::llama_vocab {
+        // SAFETY: `model.ptr` is a live model; the vocab is owned by it and the
+        // returned pointer is valid for as long as the model is.
+        unsafe { ffi::llama_model_get_vocab(self.ctx.model.ptr.as_ptr()) }
+    }
+
+    /// Whether the model carries a real tokenizer (`false` for a `no_vocab`
+    /// model such as the synthetic fixture — tokenization is unsupported there).
+    pub(crate) fn has_tokenizer(&self) -> bool {
+        let vocab = self.vocab_ptr();
+        if vocab.is_null() {
+            return false;
+        }
+        // SAFETY: `vocab` is non-null and owned by the live model.
+        // 0 == LLAMA_VOCAB_TYPE_NONE (llama.h l.73).
+        unsafe { ffi::llama_vocab_type(vocab) != 0 }
+    }
+
     /// Vocabulary size (row count of the logit vector).
     pub(crate) fn n_vocab(&self) -> i32 {
         self.ctx.model.vocab_size()

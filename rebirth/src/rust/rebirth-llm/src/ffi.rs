@@ -178,6 +178,36 @@ extern "C" {
     pub fn llama_model_desc(model: *const llama_model, buf: *mut c_char, buf_size: usize) -> i32;
     pub fn llama_model_get_vocab(model: *const llama_model) -> *const llama_vocab;
     pub fn llama_vocab_n_tokens(vocab: *const llama_vocab) -> i32;
+    /// `enum llama_vocab_type`; `0` = `LLAMA_VOCAB_TYPE_NONE` (no tokenizer).
+    pub fn llama_vocab_type(vocab: *const llama_vocab) -> c_int;
+
+    // --- tokenization ---
+    pub fn llama_tokenize(
+        vocab: *const llama_vocab,
+        text: *const c_char,
+        text_len: i32,
+        tokens: *mut llama_token,
+        n_tokens_max: i32,
+        add_special: bool,
+        parse_special: bool,
+    ) -> i32;
+    pub fn llama_token_to_piece(
+        vocab: *const llama_vocab,
+        token: llama_token,
+        buf: *mut c_char,
+        length: i32,
+        lstrip: i32,
+        special: bool,
+    ) -> i32;
+    pub fn llama_detokenize(
+        vocab: *const llama_vocab,
+        tokens: *const llama_token,
+        n_tokens: i32,
+        text: *mut c_char,
+        text_len_max: i32,
+        remove_special: bool,
+        unparse_special: bool,
+    ) -> i32;
 
     // --- decoding & logits ---
     pub fn llama_batch_init(n_tokens: i32, embd: i32, n_seq_max: i32) -> llama_batch;
