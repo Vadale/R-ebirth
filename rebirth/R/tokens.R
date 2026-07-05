@@ -11,7 +11,7 @@
 #' string a named integer vector is returned; for several strings a list of such
 #' vectors is returned, preserving `names(x)`. No beginning/end-of-sequence
 #' markers are added (you get exactly the tokens of the text); chat formatting is
-#' `llm_generate()`'s job, not this function's.
+#' `llm_generate`'s job, not this function's.
 #'
 #' **Decoding** (`decode = TRUE`). `x` is an integer vector of token ids and the
 #' result is a single string. Decoding is UTF-8 correct even when a multi-byte

@@ -31,7 +31,7 @@ the names are the token pieces (the text each id renders as). For a single
 string a named integer vector is returned; for several strings a list of such
 vectors is returned, preserving \code{names(x)}. No beginning/end-of-sequence
 markers are added (you get exactly the tokens of the text); chat formatting is
-\code{\link[=llm_generate]{llm_generate()}}'s job, not this function's.
+\code{llm_generate}'s job, not this function's.
 
 \strong{Decoding} (\code{decode = TRUE}). \code{x} is an integer vector of token ids and the
 result is a single string. Decoding is UTF-8 correct even when a multi-byte
@@ -54,7 +54,4 @@ ids
 llm_tokens(m, ids, decode = TRUE)
 close(m)
 \dontshow{\}) # examplesIf}
-}
-\seealso{
-\code{\link[=llm_generate]{llm_generate()}}
 }
