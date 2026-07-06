@@ -49,6 +49,14 @@ test_that("interventions on an unsupported architecture are a classed error", {
   expect_match(conditionMessage(cnd), "llama, qwen2, gemma3", fixed = TRUE)
 })
 
+test_that("the R and engine intervention arch allow-lists do not drift (reviewer nit 1)", {
+  # Pin the FULL set on the R side; the engine (INTERVENTION_SUPPORTED_ARCHS in
+  # intervene.rs) pins the identical list in its own unit test. A one-sided addition
+  # (e.g. "gemma2" added on only one side) breaks one of the two tests. The engine
+  # stays authoritative -- this test only catches R<->Rust drift.
+  expect_setequal(INTERVENTION_SUPPORTED_ARCHS, c("llama", "qwen2", "gemma3"))
+})
+
 test_that("llm_steer() validates layer / direction / coef / positions", {
   m <- stub_llm() # qwen2 (supported), layers = 24, hidden_size = 896
 

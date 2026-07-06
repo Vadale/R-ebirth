@@ -250,6 +250,16 @@ mod tests {
     const N_LAYER: usize = 3;
 
     #[test]
+    fn supported_archs_are_exactly_the_pinned_set() {
+        // Reviewer nit 1: pin the FULL list. R's INTERVENTION_SUPPORTED_ARCHS
+        // (intervene.R) pins the identical set in its own unit test, so a one-sided
+        // addition (e.g. adding "gemma2" here but not in R) breaks one of the two
+        // tests. The engine's arch gate stays authoritative; this only catches
+        // R<->Rust drift.
+        assert_eq!(INTERVENTION_SUPPORTED_ARCHS, &["llama", "qwen2", "gemma3"]);
+    }
+
+    #[test]
     fn arch_gate_accepts_supported_and_rejects_others() {
         for arch in ["llama", "qwen2", "gemma3"] {
             assert!(
