@@ -30,6 +30,22 @@ impl Logits {
     }
 }
 
+/// One entry of a next-token distribution's top-k (`llm_logits`): a token, its
+/// logit, and its probability. `prob` is the softmax over the FULL vocabulary —
+/// the token's true next-token probability, not a renormalized top-k share — so
+/// the returned probabilities sum to at most 1.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TokenLogit {
+    /// Engine-native (0-based) vocabulary id; the FFI shifts it to the 1-based R API.
+    pub token_id: i32,
+    /// The token's decoded display piece.
+    pub token: String,
+    /// The raw logit, in the engine's native f32.
+    pub logit: f32,
+    /// Softmax probability over the full vocabulary, in `(0, 1]`.
+    pub prob: f64,
+}
+
 /// A tokenized string: the engine-native (0-based) token ids and, aligned, the
 /// display piece of each token. The FFI boundary is where 0-based becomes the
 /// 1-based R API (ARCHITECTURE.md §4); this crate stays engine-native.
@@ -346,6 +362,42 @@ impl LoadedModel {
         Ok(row.to_vec())
     }
 
+    /// Clear the KV cache, decode `tokens` into it in `n_batch`-sized chunks
+    /// (only each chunk's final token requests logits), and return the last
+    /// position's logit row (`n_vocab` values) — the next-token distribution
+    /// after the whole prompt.
+    ///
+    /// A causal context caps a `llama_decode` batch at `n_batch = min(n_ctx,
+    /// requested)`, which can sit well below `n_ctx` (llama's default request is
+    /// 2048), so a prompt longer than one batch MUST be split or `llama_decode`
+    /// trips `GGML_ASSERT(n_tokens_all <= n_batch)` and aborts the process. The KV
+    /// cache accumulates across chunks, so the final row equals a single-batch
+    /// decode's. Shared by [`generate`](Self::generate) (whose first sampling step
+    /// reads this row) and [`next_token_logits`](Self::next_token_logits) (for
+    /// which the row is the answer); the caller has already run
+    /// [`check_fits`](Self::check_fits).
+    ///
+    /// Public so the `no_vocab` synthetic regression test can drive the chunked
+    /// decode from a raw token-id vector — the text-level `next_token_logits`
+    /// needs a tokenizer the synthetic fixture lacks, so it cannot reach this path.
+    pub fn prompt_last_logits(
+        &self,
+        tokens: &[i32],
+        n_vocab: usize,
+    ) -> Result<Vec<f32>, RebirthError> {
+        self.clear_memory();
+        let n_batch = (self.n_batch() as usize).max(1);
+        let mut start = 0usize;
+        let mut slot = 0i32;
+        while start < tokens.len() {
+            let end = (start + n_batch).min(tokens.len());
+            self.decode(&tokens[start..end], start as i32, true)?;
+            slot = (end - start) as i32 - 1;
+            start = end;
+        }
+        self.logits_ith(slot, n_vocab)
+    }
+
     /// Teacher-forced logits at every position of `tokens` (no sampling). This is
     /// the exact-value oracle path: the numpy reference computes the same rows.
     pub fn logits_for_tokens(&self, tokens: &[i32]) -> Result<Logits, RebirthError> {
@@ -363,6 +415,49 @@ impl LoadedModel {
             seq_len: tokens.len(),
             n_vocab,
         })
+    }
+
+    /// The `top` most likely next tokens after `prompt` (`llm_logits`).
+    ///
+    /// The prompt is tokenized as a raw completion — the model's own special
+    /// tokens added, special markup not parsed, exactly like `chat = FALSE`
+    /// generation — then ingested through the same `n_batch`-chunked, last-only
+    /// forward pass generation uses
+    /// ([`prompt_last_logits`](Self::prompt_last_logits)), and the final position's
+    /// next-token distribution is reduced to its top-`top` by [`top_k_logits`].
+    /// Running on the handle's own generation context means an intervened handle's
+    /// distribution reflects its interventions exactly as generation does; the
+    /// chunking means a prompt longer than one decode batch (but within
+    /// `context_length`) is split rather than aborting the engine. Requires a
+    /// tokenizer (a `no_vocab` model raises [`RebirthError::Tokenize`]); an empty
+    /// token sequence raises [`RebirthError::Generation`]; a prompt beyond
+    /// `context_length` raises [`RebirthError::ContextOverflow`].
+    pub fn next_token_logits(
+        &self,
+        prompt: &str,
+        top: usize,
+    ) -> Result<Vec<TokenLogit>, RebirthError> {
+        self.require_tokenizer()?;
+        let ids = self.tokenize(prompt, true, false)?;
+        if ids.is_empty() {
+            return Err(RebirthError::Generation {
+                reason: "empty_prompt".to_string(),
+            });
+        }
+        self.check_fits(ids.len())?;
+        let n_vocab = self.n_vocab_checked()?;
+        let last = self.prompt_last_logits(&ids, n_vocab)?;
+        top_k_logits(&last, top)
+            .into_iter()
+            .map(|(id, logit, prob)| {
+                Ok(TokenLogit {
+                    token_id: id as i32,
+                    token: self.token_piece(id as i32)?,
+                    logit,
+                    prob,
+                })
+            })
+            .collect()
     }
 }
 
@@ -518,6 +613,42 @@ fn sample(logits: &[f32], temperature: f32, top_p: f32, rng: &mut SplitMix64) ->
     order[keep - 1] // floating-point fallback: the least-likely kept token
 }
 
+/// The `top` highest-logit entries of a next-token distribution `logits`.
+///
+/// The softmax is taken over the WHOLE row (max-shifted, accumulated in f64 for
+/// stability, matching [`sample`] and the numpy oracle) *before* the top-`top`
+/// are selected, so each returned probability is the token's true share of the
+/// full distribution. Results are ordered by descending logit, ties broken by
+/// ascending id — the same total, stable order as the sampler — so rank 1 is
+/// always the argmax. `top` is clamped to the row length. Returns
+/// `(id_0based, logit, prob)` per rank.
+///
+/// Public so the synthetic-model golden test can check this extraction against the
+/// numpy oracle's final-position row directly (the `no_vocab` synthetic model has
+/// no tokenizer, so the text-level [`next_token_logits`](LoadedModel::next_token_logits)
+/// cannot run on it).
+pub fn top_k_logits(logits: &[f32], top: usize) -> Vec<(usize, f32, f64)> {
+    let n = logits.len();
+    let keep = top.min(n);
+    if keep == 0 {
+        return Vec::new();
+    }
+    // Softmax over the full row, max-shifted, accumulated in f64.
+    let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max) as f64;
+    let exps: Vec<f64> = logits.iter().map(|&v| (v as f64 - max).exp()).collect();
+    let total: f64 = exps.iter().sum();
+
+    // Descending by logit; ties by ascending index for a total, stable order
+    // (total_cmp handles any -0.0/NaN without a panic).
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_unstable_by(|&a, &b| logits[b].total_cmp(&logits[a]).then(a.cmp(&b)));
+    order
+        .into_iter()
+        .take(keep)
+        .map(|i| (i, logits[i], exps[i] / total))
+        .collect()
+}
+
 /// The byte offset of the earliest `stop` string in `text`, if any.
 fn first_stop(text: &str, stop: &[String]) -> Option<usize> {
     stop.iter()
@@ -555,23 +686,11 @@ impl LoadedModel {
         let n_vocab = self.n_vocab_checked()?;
         let ctx_len = self.context_length() as usize;
 
-        self.clear_memory();
-        // Decode the prompt in n_batch-sized chunks: llama_decode caps a batch at
-        // n_batch (llama may set n_batch well below n_ctx), so a longer prompt must
-        // be split. Positions stay contiguous and the KV cache accumulates; only
-        // the final token's logits are needed, so `slot` ends at its index within
-        // the last chunk. Each intermediate chunk's last-token logits are computed
-        // and immediately overwritten by the next decode — a negligible cost that
-        // keeps the batch fill uniform.
-        let n_batch = (self.n_batch() as usize).max(1);
-        let mut start = 0usize;
-        let mut slot = 0i32;
-        while start < prompt.len() {
-            let end = (start + n_batch).min(prompt.len());
-            self.decode(&prompt[start..end], start as i32, true)?;
-            slot = (end - start) as i32 - 1;
-            start = end;
-        }
+        // Ingest the prompt in n_batch-sized chunks and take its final-position
+        // logits — the shared path with next_token_logits, which also handles the
+        // prompt-longer-than-one-batch split. This row is the first sampling step's
+        // next-token distribution.
+        let mut logits = self.prompt_last_logits(prompt, n_vocab)?;
 
         let vocab = self.vocab_ptr();
         let mut rng = SplitMix64::new(params.seed);
@@ -581,7 +700,6 @@ impl LoadedModel {
         // `n_past` is the position the next continuation token occupies: the
         // prompt filled 0..prompt.len(), so continuation i lands at prompt.len()+i.
         for n_past in (prompt.len() as i32..).take(params.max_tokens) {
-            let logits = self.logits_ith(slot, n_vocab)?;
             let next = if params.temperature <= 0.0 {
                 argmax(&logits)
             } else {
@@ -614,7 +732,10 @@ impl LoadedModel {
                 break;
             }
             self.decode(&[next], n_past, true)?;
-            slot = 0;
+            // The single-token decode wrote its logits to output slot 0; hold them
+            // as the next iteration's distribution (the same rows the old
+            // logits_ith(slot) read produced, in the same order).
+            logits = self.logits_ith(0, n_vocab)?;
         }
 
         // Detokenize the continuation only when the model carries a tokenizer;
@@ -789,7 +910,49 @@ fn apply_template(
 
 #[cfg(test)]
 mod tests {
-    use super::{apply_template, ChatMessage};
+    use super::{apply_template, top_k_logits, ChatMessage};
+
+    #[test]
+    fn top_k_logits_orders_by_descending_logit_with_full_vocab_softmax() {
+        // Deliberately unsorted input; ids as (0-based) positions.
+        let logits = [0.0f32, 3.0, 1.0, 2.0, -1.0];
+        let picks = top_k_logits(&logits, 3);
+        // Rank order by descending logit: id 1 (3.0), id 3 (2.0), id 2 (1.0).
+        let ids: Vec<usize> = picks.iter().map(|&(i, _, _)| i).collect();
+        assert_eq!(ids, vec![1, 3, 2]);
+        // Logits carried through verbatim, in rank order.
+        let ls: Vec<f32> = picks.iter().map(|&(_, l, _)| l).collect();
+        assert_eq!(ls, vec![3.0, 2.0, 1.0]);
+
+        // Probabilities are the softmax over the WHOLE row (not the top-3), so they
+        // match a full-row softmax and sum to < 1 (mass sits in the dropped tail).
+        let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max) as f64;
+        let denom: f64 = logits.iter().map(|&v| (v as f64 - max).exp()).sum();
+        for &(i, _, p) in &picks {
+            let want = (logits[i] as f64 - max).exp() / denom;
+            assert!((p - want).abs() < 1e-12, "prob[{i}] {p} vs {want}");
+        }
+        let kept_mass: f64 = picks.iter().map(|&(_, _, p)| p).sum();
+        assert!(
+            kept_mass < 1.0,
+            "top-3 mass {kept_mass} must exclude the tail"
+        );
+    }
+
+    #[test]
+    fn top_k_logits_breaks_ties_by_ascending_id_and_clamps_top() {
+        // Three tied top logits: ascending id resolves the order deterministically.
+        let logits = [5.0f32, 5.0, 5.0, 1.0];
+        let picks = top_k_logits(&logits, 2);
+        let ids: Vec<usize> = picks.iter().map(|&(i, _, _)| i).collect();
+        assert_eq!(ids, vec![0, 1], "ties resolve to the lowest ids");
+
+        // `top` beyond the vocabulary is clamped to the row length (no panic, no pad).
+        let all = top_k_logits(&logits, 999);
+        assert_eq!(all.len(), 4);
+        // `top = 0` yields nothing.
+        assert!(top_k_logits(&logits, 0).is_empty());
+    }
 
     #[test]
     fn split_mix64_is_deterministic_and_advances() {

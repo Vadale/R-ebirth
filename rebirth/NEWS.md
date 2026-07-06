@@ -2,6 +2,18 @@
 
 ## rebirth 0.0.0.9000
 
+* `llm_logits()` reads the model's next-token distribution: a forward pass over
+  each `prompt` returning the `top` most likely next tokens as a long-format base
+  `data.frame` (`prompt_id`, `rank`, `token_id`, `token`, `logit`, `prob`), ranked
+  most- to least-likely (`rank == 1` is the token greedy generation would pick).
+  Probabilities are the softmax over the **full** vocabulary (computed before the
+  top-`top` are selected, so each `prob` is the token's true share and the head
+  sums to less than 1); token ids are 1-based like [`llm_tokens()`]. Vectorized
+  over `prompt`, deterministic, and intervention-aware — active `llm_steer()`/
+  `llm_ablate()` effects on the handle reshape the distribution. The top-k +
+  softmax extraction is validated against an independent numpy reference on the
+  synthetic model.
+
 * `llm_steer()` and `llm_ablate()` add the intervention core (WP5). Each returns a
   **new** `llm` handle -- a fresh context on the source model's shared, read-only
   weights, with the intervention applied -- and never mutates the source; removing

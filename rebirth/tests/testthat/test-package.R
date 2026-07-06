@@ -12,12 +12,13 @@ test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", 
   # approved entry at a time; the internal .Call wrappers and helpers stay
   # unexported. WP1: llm(). WP2 (API-GRAMMAR section 3): llm_tokens(),
   # llm_generate(). WP3: llm_embed(). WP4 (API-GRAMMAR section 4): llm_trace().
-  # WP5 (API-GRAMMAR section 4): llm_steer(), llm_ablate().
+  # WP5 (API-GRAMMAR section 4): llm_steer(), llm_ablate(). WP (API-GRAMMAR
+  # section 4): llm_logits().
   expect_setequal(
     getNamespaceExports("rebirth"),
     c(
       "llm", "llm_tokens", "llm_generate", "llm_embed", "llm_trace",
-      "llm_steer", "llm_ablate"
+      "llm_steer", "llm_ablate", "llm_logits"
     )
   )
 })
