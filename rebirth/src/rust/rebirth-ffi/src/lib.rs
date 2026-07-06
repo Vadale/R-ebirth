@@ -24,8 +24,8 @@ use std::path::PathBuf;
 
 use extendr_api::prelude::*;
 use rebirth_llm::{
-    BackendKind, CaptureRow, CaptureSpec, Component, GenerateParams, LoadRequest, LoadedModel,
-    ModelMetadata, Pooling, Positions, RebirthError, SpillPlan, TraceOutput,
+    BackendKind, CaptureRow, CaptureSpec, Component, GenerateParams, InterventionSpec, LoadRequest,
+    LoadedModel, ModelMetadata, Pooling, Positions, RebirthError, SpillPlan, TraceOutput,
 };
 
 /// The native side of an `llm` handle: an owned loaded model, or `None` once the
@@ -598,6 +598,83 @@ fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
     .into()
 }
 
+// Derive a NEW handle with the FULL accumulated intervention spec applied to a
+// fresh context on `ptr`'s shared weights (WP5, D-016). R has validated every
+// argument (layer/neuron ranges, the layer-1 steer limit, positions/component
+// restrictions, the supported architecture) and flattened its accumulated
+// interventions list into these dense arrays; here we do ONLY the 1-based ->
+// 0-based layer/neuron conversion (ARCHITECTURE §4) and replay the arrays into an
+// `InterventionSpec`, which sums steers per layer and unions ablations
+// (last-write-wins by replay order) exactly as the engine's builder is unit-tested
+// to do (D-016). `derive_with_interventions` clones the source `Arc<Model>` (no
+// reload) and builds a fresh context, so the SOURCE handle is only read and stays
+// bit-for-bit unchanged (reversibility). The whole body runs under with_model's
+// catch_unwind, so a panic never crosses the ABI, and a non-zero native setter
+// return is already mapped to RebirthError::Intervention inside the engine.
+//
+// Steering: `steer_layers[i]` (1-based) carries the summed vector at
+// `steer_vectors[i*n_embd .. (i+1)*n_embd]` (row-major). Ablation: one
+// (`ablate_layers[i]`, `ablate_neurons[i]`, `ablate_values[i]`) triple per ablated
+// neuron (both index vectors 1-based). Empty arrays mean "that kind is absent".
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_intervene(
+    ptr: Robj,
+    n_embd: i32,
+    n_layer: i32,
+    steer_layers: Vec<i32>,
+    steer_vectors: Vec<f64>,
+    ablate_layers: Vec<i32>,
+    ablate_neurons: Vec<i32>,
+    ablate_values: Vec<f64>,
+) -> Robj {
+    with_model(&ptr, |model| {
+        // Fail fast on an unsupported architecture, before allocating any context
+        // (D-012/D-014: never a silent no-op on an arch without the choke point).
+        model.check_intervention_supported()?;
+
+        let width = n_embd.max(0) as usize;
+        // Defensive: R is the sole caller and guarantees these lengths, but check
+        // rather than risk an out-of-bounds slice panic on an internal mismatch.
+        if steer_vectors.len() != width.saturating_mul(steer_layers.len())
+            || ablate_layers.len() != ablate_neurons.len()
+            || ablate_layers.len() != ablate_values.len()
+        {
+            return Err(RebirthError::Internal {
+                context: "intervention arrays reached the boundary with inconsistent lengths"
+                    .to_string(),
+            });
+        }
+
+        let mut spec = InterventionSpec::new(width, n_layer.max(0) as usize);
+
+        // Steering: one row per accumulated steer entry; add_steer sums rows that
+        // land on the same engine layer (control vectors are additive, D-016).
+        for (i, &layer_1based) in steer_layers.iter().enumerate() {
+            let il = to_engine_index(layer_1based) as usize;
+            let start = i * width;
+            let vector: Vec<f32> = steer_vectors[start..start + width]
+                .iter()
+                .map(|&v| v as f32)
+                .collect();
+            spec.add_steer(il, &vector);
+        }
+
+        // Ablation: one (layer, neuron, value) triple per ablated neuron; add_ablation
+        // unions with last-write-wins in replay (accumulation) order (D-016).
+        for i in 0..ablate_layers.len() {
+            let il = to_engine_index(ablate_layers[i]) as usize;
+            let neuron = to_engine_index(ablate_neurons[i]) as usize;
+            spec.add_ablation(il, &[neuron], ablate_values[i] as f32);
+        }
+
+        let derived = model.derive_with_interventions(&spec)?;
+        let meta = derived.metadata();
+        let new_ptr: Robj = ExternalPtr::new(LlmHandle::new(derived)).into();
+        Ok(ok_payload(new_ptr, meta))
+    })
+}
+
 // Test-only: a real, already-closed handle for exercising the close /
 // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
 #[extendr]
@@ -670,6 +747,7 @@ extendr_api::extendr_module! {
     fn rebirth_generate;
     fn rebirth_embed;
     fn rebirth_trace;
+    fn rebirth_intervene;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_panic;
     fn rebirth_selftest_trace_tokens_spill;
