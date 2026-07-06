@@ -10,9 +10,25 @@ use std::os::raw::{c_char, c_int};
 use std::path::PathBuf;
 use std::ptr::NonNull;
 use std::sync::{Arc, Mutex, Once, PoisonError};
+use std::thread::ThreadId;
 
 use crate::error::RebirthError;
 use crate::ffi;
+
+/// D-008 gate G2: the raw llama.cpp handles are confined to the R main thread
+/// (ARCHITECTURE.md section 3). WP4 Step 5 introduces the first background thread
+/// (the spill writer), which receives only owned plain `CaptureRow` data — never
+/// a handle — so the confinement holds. This debug-only tripwire fires if any
+/// future code ever touches a handle from another thread: the `unsafe impl Send +
+/// Sync` below is then no longer sound, and the misuse trips here first.
+#[inline]
+fn assert_r_main_thread(owner: ThreadId, what: &str) {
+    debug_assert_eq!(
+        std::thread::current().id(),
+        owner,
+        "rebirth: {what} touched off the R main thread (D-008 G2 violation)"
+    );
+}
 
 /// A concrete compute backend. `"auto"` is resolved to one of these in R before
 /// the boundary; the engine never sees `"auto"`.
@@ -148,12 +164,17 @@ impl Drop for Backend {
 pub struct Model {
     ptr: NonNull<ffi::llama_model>,
     resolved_backend: BackendKind,
+    /// The R main thread the handle was created on (D-008 G2 confinement check).
+    owner: ThreadId,
     _backend: Backend,
 }
 
 // The raw handle is only ever touched on the R main thread (ARCHITECTURE.md §3),
-// but `Arc<Model>` requires `Send + Sync`. llama.cpp models are safe to share by
-// const reference for the read-only metadata queries used here.
+// but `Arc<Model>` requires `Send + Sync`. This is asserted, not proven: WP4's
+// spill writer thread never receives a `Model`/`Context` (only owned `CaptureRow`
+// data over a bounded channel), so the handle is never actually sent across a
+// thread boundary. The `owner` thread-id `debug_assert` in the getters and Drop
+// (D-008 G2) is the tripwire that catches any future code that breaks this.
 unsafe impl Send for Model {}
 unsafe impl Sync for Model {}
 
@@ -237,6 +258,7 @@ impl Model {
 
 impl Drop for Model {
     fn drop(&mut self) {
+        assert_r_main_thread(self.owner, "Model::drop");
         // SAFETY: `ptr` was produced by `llama_model_load_from_file` and is freed
         // exactly once (this owner is dropped once). Freed after every `Context`
         // that referenced it (contexts hold an `Arc<Model>`).
@@ -251,13 +273,18 @@ pub struct Context {
     context_length: u32,
     gpu_layers: i32,
     mmap: bool,
+    /// The R main thread the context was created on (D-008 G2 confinement check).
+    owner: ThreadId,
 }
 
+// Asserted, not proven — see the `Model` note above. The context handle is used
+// only on the R main thread; the spill writer thread never receives it.
 unsafe impl Send for Context {}
 unsafe impl Sync for Context {}
 
 impl Drop for Context {
     fn drop(&mut self) {
+        assert_r_main_thread(self.owner, "Context::drop");
         // SAFETY: `ptr` came from `llama_init_from_model`; freed exactly once and
         // before the `Arc<Model>` it borrows (dropped right after this).
         unsafe { ffi::llama_free(self.ptr.as_ptr()) };
@@ -374,11 +401,13 @@ impl LoadedModel {
     /// The live context pointer (`llama_decode`/`llama_get_logits_ith` take
     /// `*mut`; the KV cache is mutated in place behind it).
     pub(crate) fn ctx_ptr(&self) -> *mut ffi::llama_context {
+        assert_r_main_thread(self.ctx.owner, "Context::ctx_ptr");
         self.ctx.ptr.as_ptr()
     }
 
     /// The model's vocabulary (owned by the model; valid for its whole lifetime).
     pub(crate) fn vocab_ptr(&self) -> *const ffi::llama_vocab {
+        assert_r_main_thread(self.ctx.model.owner, "Model::vocab_ptr");
         // SAFETY: `model.ptr` is a live model; the vocab is owned by it and the
         // returned pointer is valid for as long as the model is.
         unsafe { ffi::llama_model_get_vocab(self.ctx.model.ptr.as_ptr()) }
@@ -386,6 +415,7 @@ impl LoadedModel {
 
     /// The live model pointer (metadata and chat-template queries).
     pub(crate) fn model_ptr(&self) -> *const ffi::llama_model {
+        assert_r_main_thread(self.ctx.model.owner, "Model::model_ptr");
         self.ctx.model.ptr.as_ptr()
     }
 
@@ -499,6 +529,13 @@ impl LoadedModel {
     pub(crate) fn hidden_size(&self) -> i32 {
         // SAFETY: `model.ptr` is a live model; read-only scalar getter.
         unsafe { ffi::llama_model_n_embd(self.ctx.model.ptr.as_ptr()) }
+    }
+
+    /// The number of transformer blocks (`n_layer`); the capture's layer count
+    /// when `layers = None` (all blocks), used for the predictive spill estimate.
+    pub(crate) fn num_layers(&self) -> i32 {
+        // SAFETY: `model.ptr` is a live model; read-only scalar getter.
+        unsafe { ffi::llama_model_n_layer(self.ctx.model.ptr.as_ptr()) }
     }
 
     /// Build a fresh tracing context sized to `n_ctx` tokens, with the scheduler
@@ -622,6 +659,7 @@ pub fn load(req: LoadRequest) -> Result<LoadedModel, RebirthError> {
     let model = Arc::new(Model {
         ptr: model_ptr,
         resolved_backend: req.backend,
+        owner: std::thread::current().id(),
         _backend: backend,
     });
 
@@ -646,6 +684,7 @@ pub fn load(req: LoadRequest) -> Result<LoadedModel, RebirthError> {
             context_length,
             gpu_layers: resolved_gpu_layers,
             mmap: req.mmap,
+            owner: std::thread::current().id(),
         },
     })
 }

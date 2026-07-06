@@ -174,6 +174,16 @@ fn error_fields(error: &RebirthError) -> Robj {
         RebirthError::Trace { reason } => {
             vec![("reason", Robj::from(reason.as_str()))]
         }
+        // R has no u64: the two byte sizes surface as doubles (exact for these
+        // magnitudes), matching the R-side predictive OOM's `estimate_bytes` field.
+        RebirthError::Oom {
+            estimate_bytes,
+            budget_bytes,
+            ..
+        } => vec![
+            ("estimate_bytes", Robj::from(*estimate_bytes as f64)),
+            ("budget_bytes", Robj::from(*budget_bytes as f64)),
+        ],
         RebirthError::Internal { context } => {
             vec![("context", Robj::from(context.as_str()))]
         }

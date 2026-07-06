@@ -10,10 +10,13 @@
 //! The crate stays R-free (ARCHITECTURE §2): plain Rust types in and out, C-FFI
 //! `unsafe` minimal and individually SAFETY-commented (D-009).
 //!
-//! Bounded, single-threaded (WP4): capture accumulates into a pre-sized `Vec`
-//! (the R boundary budget-checks the estimate first); there is no background sink
-//! thread yet — the Arrow-IPC spill and its D-008 G2 thread checkpoint are WP4
-//! Step 5.
+//! Capture flows into a [`RowSink`]: either a pre-sized in-memory `Vec` (the
+//! in-budget path — no background thread, no Arrow touched) or, when the predicted
+//! size exceeds the budget and `spill = TRUE`, the disk-spill sink
+//! ([`crate::spill`], feature `spill`) that streams rows to an Arrow-IPC file on a
+//! background writer thread (WP4 Step 5, D-013). The estimate is computed from the
+//! tokenized lengths *before* any capture allocation (the 16 GB rule): count →
+//! estimate → decide → only then capture.
 
 use std::ffi::{c_void, CStr};
 
@@ -112,11 +115,89 @@ pub struct CaptureRow {
     pub token_pos: u32,
     pub layer: u32,
     pub component: Component,
-    /// The token piece at `token_pos`, filled by the text-facing [`LoadedModel::trace_texts`];
-    /// `None` for the raw-id [`LoadedModel::activations`] path (a `no_vocab` model
-    /// has no pieces — the R `token` column is then `NA`).
+    /// The token piece at `token_pos`, filled from the prompt's pieces by the
+    /// text-facing [`LoadedModel::trace_texts_spill`]; `None` for the raw-id
+    /// [`LoadedModel::activations`] path (a `no_vocab` model has no pieces — the R
+    /// `token` column is then `NA`). Filled at capture time so a spilled row lands
+    /// on disk already carrying its `token`.
     pub token: Option<String>,
     pub values: Vec<f32>,
+}
+
+/// Where captured rows go: an in-memory `Vec` (in budget) or the disk-spill sink
+/// (over budget with `spill = TRUE`). The callback pushes into it on the R thread;
+/// the spill variant hands each row to the writer thread over its bounded channel.
+enum RowSink {
+    Memory(Vec<CaptureRow>),
+    #[cfg(feature = "spill")]
+    Spill(crate::spill::SpillSink),
+}
+
+impl RowSink {
+    /// Append one captured row. In-memory is infallible; the spill sink returns a
+    /// classed error if its writer thread has stopped (backpressure send failure).
+    fn push(&mut self, row: CaptureRow) -> Result<(), RebirthError> {
+        match self {
+            RowSink::Memory(rows) => {
+                rows.push(row);
+                Ok(())
+            }
+            #[cfg(feature = "spill")]
+            RowSink::Spill(sink) => sink.push(row),
+        }
+    }
+}
+
+/// The result of a planned trace: rows held in memory, or a report of a completed
+/// spill (the boundary reconstructs the lazy `rebirth_trace` from the report
+/// without loading the file).
+#[derive(Debug)]
+pub enum TraceOutput {
+    Memory(Vec<CaptureRow>),
+    #[cfg(feature = "spill")]
+    Spilled(SpillReport),
+}
+
+/// What the R boundary needs to reconstruct a spilled `rebirth_trace` object and
+/// its lazy reader without loading the file. Indices are engine-native (0-based);
+/// `rebirth-ffi` shifts them to the 1-based R API (ARCHITECTURE.md section 4).
+#[cfg(feature = "spill")]
+#[derive(Debug)]
+pub struct SpillReport {
+    /// The single `.arrow` file written for this trace.
+    pub path: String,
+    /// Total long-format rows written (positions x layers x components x n_embd).
+    pub n_rows: u64,
+    /// Total captured `(prompt, position)` pairs; each `(layer, component)` group
+    /// holds this many `(prompt, position)` rows (times `n_embd` neurons).
+    pub n_positions: u64,
+    /// 0-based union of captured layers.
+    pub layers: Vec<u32>,
+    /// 0-based union of captured token positions across prompts.
+    pub positions: Vec<u32>,
+    /// The captured components, in request order.
+    pub components: Vec<Component>,
+    pub n_embd: usize,
+    /// The per-trace identity echoed back for the object's staleness check.
+    pub trace_id: String,
+}
+
+/// The spill routing + budget decision inputs, all supplied by the R boundary
+/// (which owns the session spill directory and the integrity strings). Present in
+/// every build; the actual disk writer is compiled only under the `spill` feature.
+pub struct SpillPlan {
+    /// Whether an over-budget capture may stream to disk (else it is an OOM).
+    pub spill: bool,
+    /// The in-memory budget in bytes; above it the decision is spill-or-OOM.
+    pub budget_bytes: u64,
+    /// Absolute path of the `.arrow` file to write if spilling.
+    pub spill_path: String,
+    /// The model identifier (its path) for the integrity footer.
+    pub model: String,
+    /// The per-trace identity string for the integrity footer.
+    pub trace_id: String,
+    /// A canonical capture-spec string for the integrity footer.
+    pub spec_key: String,
 }
 
 /// The engine tensor name to match for `comp` on architecture `arch`, or `None`
@@ -164,6 +245,7 @@ pub fn parse_tensor_name(name: &str) -> Option<(&str, u32)> {
 
 /// The requested components resolved to their engine tensor names for one model,
 /// plus the layer filter and row width — computed once per trace before decoding.
+#[derive(Clone)]
 struct ResolvedSpec {
     /// `(tensor base name, component)` for each requested component.
     names: Vec<(&'static str, Component)>,
@@ -203,9 +285,13 @@ struct CaptureState {
     prompt_id: u32,
     /// This prompt's 0-based capture positions.
     positions: Vec<u32>,
+    /// This prompt's token pieces (one per token), for the `token` column; empty
+    /// on the raw-id path (`token` then stays `None`).
+    pieces: Vec<String>,
     /// This prompt's token count (the expected row count of every tapped tensor).
     n_tokens: usize,
-    rows: Vec<CaptureRow>,
+    /// Where captured rows go (in-memory or the disk-spill sink).
+    sink: RowSink,
     /// Reused host buffer for one tensor's `n_tokens * n_embd` f32.
     scratch: Vec<f32>,
     /// The first capture failure, surfaced by the engine after the decode returns
@@ -214,23 +300,31 @@ struct CaptureState {
 }
 
 impl CaptureState {
-    fn new(resolved: ResolvedSpec) -> Self {
+    fn new(resolved: ResolvedSpec, sink: RowSink) -> Self {
         CaptureState {
             resolved,
             prompt_id: 0,
             positions: Vec::new(),
+            pieces: Vec::new(),
             n_tokens: 0,
-            rows: Vec::new(),
+            sink,
             scratch: Vec::new(),
             error: None,
         }
     }
 
     /// Point the state at a new prompt before its decode (rows keep accumulating).
-    fn begin_prompt(&mut self, prompt_id: u32, positions: Vec<u32>, n_tokens: usize) {
+    fn begin_prompt(
+        &mut self,
+        prompt_id: u32,
+        positions: Vec<u32>,
+        n_tokens: usize,
+        pieces: Vec<String>,
+    ) {
         self.prompt_id = prompt_id;
         self.positions = positions;
         self.n_tokens = n_tokens;
+        self.pieces = pieces;
     }
 
     /// Record a caught panic as an internal error (idempotent — keep the first).
@@ -309,20 +403,28 @@ impl CaptureState {
             ffi::ggml_backend_tensor_get(t, self.scratch.as_mut_ptr().cast::<c_void>(), 0, nbytes);
         }
 
-        // Index-based to avoid borrowing `self.positions`/`self.scratch` across the
-        // `self.rows` push.
+        // Index-based to avoid borrowing `self.positions`/`self.scratch`/`self.pieces`
+        // across the `self.sink.push`. Each row carries its token piece (filled here
+        // so a spilled row lands on disk with its `token`, not patched afterward).
         for i in 0..self.positions.len() {
             let p = self.positions[i];
             let start = (p as usize) * n_embd;
             let values = self.scratch[start..start + n_embd].to_vec();
-            self.rows.push(CaptureRow {
+            let token = self.pieces.get(p as usize).cloned();
+            let row = CaptureRow {
                 prompt_id: self.prompt_id,
                 token_pos: p,
                 layer: il,
                 component,
-                token: None,
+                token,
                 values,
-            });
+            };
+            if let Err(err) = self.sink.push(row) {
+                // A spill-writer failure aborts the pass cleanly: record it and
+                // cancel compute (the engine surfaces it after the decode returns).
+                self.error = Some(err);
+                return false;
+            }
         }
         true
     }
@@ -427,12 +529,13 @@ impl LoadedModel {
                         // name at the current engine version: `attn_out` on qwen2/gemma3,
                         // which name only the pre-projection `kqv_out` — a different
                         // quantity, never substituted silently (D-014).
-                        let available = [Component::Residual, Component::MlpOut, Component::AttnOut]
-                            .into_iter()
-                            .filter(|&c| component_name(&arch, c).is_some())
-                            .map(Component::as_str)
-                            .collect::<Vec<_>>()
-                            .join(", ");
+                        let available =
+                            [Component::Residual, Component::MlpOut, Component::AttnOut]
+                                .into_iter()
+                                .filter(|&c| component_name(&arch, c).is_some())
+                                .map(Component::as_str)
+                                .collect::<Vec<_>>()
+                                .join(", ");
                         format!(
                             "The '{}' component is not observable for a '{arch}' model at \
                              the current engine version: this architecture names only the \
@@ -467,20 +570,10 @@ impl LoadedModel {
         Ok(())
     }
 
-    /// Trace a batch of pre-tokenized id sequences with one trace context, capturing
-    /// per the spec. The shared core of [`activations`](Self::activations) and
-    /// [`trace_texts`](Self::trace_texts); rows carry no token pieces (the text path
-    /// fills them). Prompts are processed sequentially (API-GRAMMAR §1.5).
-    fn trace_sequences(
-        &self,
-        batches: &[&[i32]],
-        spec: &CaptureSpec,
-    ) -> Result<Vec<CaptureRow>, RebirthError> {
-        if batches.is_empty() {
-            return Ok(Vec::new());
-        }
-        let resolved = self.resolve_spec(spec)?;
-
+    /// Validate every prompt (non-empty, in-vocabulary ids, fits the context) and
+    /// return the longest token count (the trace context is sized to it). Runs
+    /// before any capture allocation.
+    fn validate_batches(&self, batches: &[&[i32]]) -> Result<usize, RebirthError> {
         let mut longest = 0usize;
         for ids in batches {
             self.validate_ids(ids)?;
@@ -494,14 +587,31 @@ impl LoadedModel {
             self.check_trace_fits(ids.len())?;
             longest = longest.max(ids.len());
         }
+        Ok(longest)
+    }
+
+    /// Run one trace context over `batches`, pushing captured rows into `sink` and
+    /// returning it filled. `pieces[i]` are prompt `i`'s token pieces (empty for
+    /// the raw-id path). Prompts are processed sequentially (API-GRAMMAR §1.5).
+    /// The shared core of the in-memory and spill entry points.
+    fn run_capture(
+        &self,
+        batches: &[&[i32]],
+        pieces: &[Vec<String>],
+        spec: &CaptureSpec,
+        resolved: ResolvedSpec,
+        longest: usize,
+        sink: RowSink,
+    ) -> Result<RowSink, RebirthError> {
         // Size the context so each prompt decodes in one batch (clamped to the
         // handle's window, which every prompt already fits).
         let n_ctx = (longest.max(1)).min(self.context_length() as usize) as u32;
 
         // The capture state lives behind a stable raw pointer for the callback's
         // lifetime. `Box::into_raw` gives clear single-owner provenance; the guard
-        // reclaims it on every exit path (including `?`).
-        let state_ptr = Box::into_raw(Box::new(CaptureState::new(resolved)));
+        // reclaims it on every exit path (including `?`, which drops the sink — for
+        // a spill sink that joins its writer thread, so nothing is leaked).
+        let state_ptr = Box::into_raw(Box::new(CaptureState::new(resolved, sink)));
         struct Reclaim(*mut CaptureState);
         impl Drop for Reclaim {
             fn drop(&mut self) {
@@ -519,16 +629,47 @@ impl LoadedModel {
 
         for (i, ids) in batches.iter().enumerate() {
             let positions = spec.positions.resolve(ids.len());
+            let prompt_pieces = pieces.get(i).cloned().unwrap_or_default();
             // SAFETY: single-threaded; the callback is not running between decodes,
             // so this is the only live access to `*state_ptr` here.
-            unsafe { (*state_ptr).begin_prompt(i as u32, positions, ids.len()) };
+            unsafe { (*state_ptr).begin_prompt(i as u32, positions, ids.len(), prompt_pieces) };
             self.trace_decode(&ctx, ids, state_ptr)?;
         }
 
-        drop(ctx); // stop the callback referencing `state_ptr` before we move rows out
-                   // SAFETY: the callback can no longer run; take the accumulated rows.
-        let rows = unsafe { std::mem::take(&mut (*state_ptr).rows) };
-        Ok(rows)
+        drop(ctx); // stop the callback referencing `state_ptr` before we move the sink out
+                   // SAFETY: the callback can no longer run; take the filled sink.
+        let sink =
+            unsafe { std::mem::replace(&mut (*state_ptr).sink, RowSink::Memory(Vec::new())) };
+        Ok(sink)
+    }
+
+    /// Capture into memory and return the rows (the in-budget path; no Arrow, no
+    /// background thread). Shared by the raw-id entry points and the in-budget
+    /// branch of the planned capture.
+    fn capture_in_memory(
+        &self,
+        batches: &[&[i32]],
+        pieces: &[Vec<String>],
+        spec: &CaptureSpec,
+    ) -> Result<Vec<CaptureRow>, RebirthError> {
+        if batches.is_empty() {
+            return Ok(Vec::new());
+        }
+        let resolved = self.resolve_spec(spec)?;
+        let longest = self.validate_batches(batches)?;
+        let sink = self.run_capture(
+            batches,
+            pieces,
+            spec,
+            resolved,
+            longest,
+            RowSink::Memory(Vec::new()),
+        )?;
+        match sink {
+            RowSink::Memory(rows) => Ok(rows),
+            #[cfg(feature = "spill")]
+            RowSink::Spill(_) => unreachable!("capture_in_memory always uses a Memory sink"),
+        }
     }
 
     /// One prompt's traced decode: run it, then surface a tap error (more specific
@@ -547,6 +688,171 @@ impl LoadedModel {
         decode
     }
 
+    /// The predicted in-memory capture size in bytes: `n_positions x n_layers x
+    /// n_components x n_embd x 4`. `n_positions` sums each prompt's resolved
+    /// positions, so `positions = "all"` is estimated exactly from the tokenized
+    /// lengths (the count-then-decide half of the 16 GB rule).
+    fn estimate_capture_bytes(
+        &self,
+        batches: &[&[i32]],
+        spec: &CaptureSpec,
+        resolved: &ResolvedSpec,
+    ) -> u64 {
+        let n_layers = match &resolved.layers {
+            Some(v) => v.len() as u64,
+            None => self.num_layers().max(0) as u64,
+        };
+        let n_components = resolved.names.len() as u64;
+        let n_embd = resolved.n_embd as u64;
+        let n_positions: u64 = batches
+            .iter()
+            .map(|ids| spec.positions.resolve(ids.len()).len() as u64)
+            .sum();
+        n_positions
+            .saturating_mul(n_layers)
+            .saturating_mul(n_components)
+            .saturating_mul(n_embd)
+            .saturating_mul(4)
+    }
+
+    /// Plan and run a capture per the 16 GB rule: validate, estimate, then decide
+    /// (in budget → memory; over budget & `spill` → disk; over budget & no `spill`
+    /// → `Oom` before any capture allocation). `pieces[i]` are prompt `i`'s token
+    /// pieces (empty for the raw-id path). The shared core behind the spill-aware
+    /// entry points.
+    fn trace_capture_planned(
+        &self,
+        batches: &[&[i32]],
+        pieces: &[Vec<String>],
+        spec: &CaptureSpec,
+        plan: &SpillPlan,
+    ) -> Result<TraceOutput, RebirthError> {
+        if batches.is_empty() {
+            return Ok(TraceOutput::Memory(Vec::new()));
+        }
+        let resolved = self.resolve_spec(spec)?;
+        let longest = self.validate_batches(batches)?;
+        let estimate = self.estimate_capture_bytes(batches, spec, &resolved);
+
+        if estimate > plan.budget_bytes {
+            if !plan.spill {
+                return Err(RebirthError::Oom {
+                    estimate_bytes: estimate,
+                    budget_bytes: plan.budget_bytes,
+                    suggestion: "Capture less -- set positions = \"last\", narrow \
+                                 layers to a band, or drop components."
+                        .to_string(),
+                });
+            }
+            #[cfg(feature = "spill")]
+            {
+                return self.capture_spilled(batches, pieces, spec, resolved, longest, plan);
+            }
+            #[cfg(not(feature = "spill"))]
+            {
+                let _ = (pieces, longest);
+                return Err(RebirthError::Oom {
+                    estimate_bytes: estimate,
+                    budget_bytes: plan.budget_bytes,
+                    suggestion: "This build was compiled without disk-spill support \
+                                 (the `spill` feature is off), so capture less."
+                        .to_string(),
+                });
+            }
+        }
+
+        // In budget: capture into memory (no Arrow, no thread).
+        let sink = self.run_capture(
+            batches,
+            pieces,
+            spec,
+            resolved,
+            longest,
+            RowSink::Memory(Vec::new()),
+        )?;
+        match sink {
+            RowSink::Memory(rows) => Ok(TraceOutput::Memory(rows)),
+            #[cfg(feature = "spill")]
+            RowSink::Spill(_) => unreachable!("in-budget branch always uses a Memory sink"),
+        }
+    }
+
+    /// Stream an over-budget capture to an Arrow-IPC file on the writer thread and
+    /// return a [`SpillReport`]. A capture or write failure removes the partial
+    /// file so a failed trace leaves nothing on disk.
+    #[cfg(feature = "spill")]
+    fn capture_spilled(
+        &self,
+        batches: &[&[i32]],
+        pieces: &[Vec<String>],
+        spec: &CaptureSpec,
+        resolved: ResolvedSpec,
+        longest: usize,
+        plan: &SpillPlan,
+    ) -> Result<TraceOutput, RebirthError> {
+        // Row-count metadata for the object's print/summary (no data load needed).
+        let n_positions: u64 = batches
+            .iter()
+            .map(|ids| spec.positions.resolve(ids.len()).len() as u64)
+            .sum();
+        let mut positions_union: Vec<u32> = batches
+            .iter()
+            .flat_map(|ids| spec.positions.resolve(ids.len()))
+            .collect();
+        positions_union.sort_unstable();
+        positions_union.dedup();
+        let layers_union: Vec<u32> = match &resolved.layers {
+            Some(v) => {
+                let mut v = v.clone();
+                v.sort_unstable();
+                v.dedup();
+                v
+            }
+            None => (0..self.num_layers().max(0) as u32).collect(),
+        };
+        let n_embd = resolved.n_embd;
+
+        let sink = crate::spill::SpillSink::new(crate::spill::SpillMeta {
+            path: plan.spill_path.clone(),
+            trace_id: plan.trace_id.clone(),
+            model: plan.model.clone(),
+            spec: plan.spec_key.clone(),
+            n_embd,
+        })?;
+
+        let filled = self
+            .run_capture(
+                batches,
+                pieces,
+                spec,
+                resolved,
+                longest,
+                RowSink::Spill(sink),
+            )
+            .map_err(|err| {
+                let _ = std::fs::remove_file(&plan.spill_path);
+                err
+            })?;
+        let n_rows = match filled {
+            RowSink::Spill(sink) => sink.finish().map_err(|err| {
+                let _ = std::fs::remove_file(&plan.spill_path);
+                err
+            })?,
+            RowSink::Memory(_) => unreachable!("spill branch always uses a Spill sink"),
+        };
+
+        Ok(TraceOutput::Spilled(SpillReport {
+            path: plan.spill_path.clone(),
+            n_rows,
+            n_positions,
+            layers: layers_union,
+            positions: positions_union,
+            components: spec.components.clone(),
+            n_embd,
+            trace_id: plan.trace_id.clone(),
+        }))
+    }
+
     /// Exact-value building block for the synthetic golden (`synthetic_trace.rs`):
     /// the per-(layer, component, position) activations for one raw id sequence, in
     /// memory. No tokenizer needed; rows carry no token pieces.
@@ -555,7 +861,7 @@ impl LoadedModel {
         ids: &[i32],
         spec: &CaptureSpec,
     ) -> Result<Vec<CaptureRow>, RebirthError> {
-        self.trace_sequences(&[ids], spec)
+        self.capture_in_memory(&[ids], &[], spec)
     }
 
     /// Trace pre-tokenized id batches (no tokenizer required); rows carry no token
@@ -565,34 +871,71 @@ impl LoadedModel {
         batches: &[&[i32]],
         spec: &CaptureSpec,
     ) -> Result<Vec<CaptureRow>, RebirthError> {
-        self.trace_sequences(batches, spec)
+        self.capture_in_memory(batches, &[], spec)
+    }
+
+    /// Spill-aware raw-id trace (no tokenizer needed; rows carry no token pieces):
+    /// estimate the size, then capture into memory or stream to disk or refuse
+    /// (`Oom`). The golden/spill Rust tests drive the spill path through here on the
+    /// `no_vocab` synthetic model.
+    pub fn trace_token_batch_spill(
+        &self,
+        batches: &[&[i32]],
+        spec: &CaptureSpec,
+        plan: &SpillPlan,
+    ) -> Result<TraceOutput, RebirthError> {
+        self.trace_capture_planned(batches, &[], spec, plan)
     }
 
     /// The R-facing entry: tokenize each text (`add_special = true`,
-    /// `parse_special = false`, as for embeddings) then trace, attaching each
-    /// captured position's token piece. Requires a tokenizer (a `no_vocab` model
-    /// raises `rebirth_error_tokenize`).
+    /// `parse_special = false`, as for embeddings), estimate the capture's size
+    /// from the token counts, then capture into memory (in budget), stream to disk
+    /// (`spill = TRUE` over budget), or refuse before allocating (`spill = FALSE`
+    /// over budget → `Oom`). The count → estimate → decide → capture ordering keeps
+    /// a full trace from OOM-ing the session (the 16 GB rule). Requires a tokenizer
+    /// (a `no_vocab` model raises `rebirth_error_tokenize`).
+    pub fn trace_texts_spill(
+        &self,
+        texts: &[&str],
+        spec: &CaptureSpec,
+        plan: &SpillPlan,
+    ) -> Result<TraceOutput, RebirthError> {
+        self.require_tokenizer()?;
+        if texts.is_empty() {
+            return Ok(TraceOutput::Memory(Vec::new()));
+        }
+
+        // Count: tokenize once (its counts drive the estimate; the same ids and
+        // pieces are reused for capture, so nothing is tokenized twice).
+        let mut encodings = Vec::with_capacity(texts.len());
+        for &text in texts {
+            encodings.push(self.encode(text, true, false)?);
+        }
+        let batches: Vec<&[i32]> = encodings.iter().map(|e| e.ids.as_slice()).collect();
+        let pieces: Vec<Vec<String>> = encodings.iter().map(|e| e.pieces.clone()).collect();
+        self.trace_capture_planned(&batches, &pieces, spec, plan)
+    }
+
+    /// The in-memory R-facing text trace (WP4 Steps 3-4): tokenize each text, trace
+    /// in memory, and return the rows with their token pieces. Superseded at the
+    /// boundary by [`trace_texts_spill`](Self::trace_texts_spill) once spill is
+    /// wired through the FFI; retained until then.
     pub fn trace_texts(
         &self,
         texts: &[&str],
         spec: &CaptureSpec,
     ) -> Result<Vec<CaptureRow>, RebirthError> {
         self.require_tokenizer()?;
-
+        if texts.is_empty() {
+            return Ok(Vec::new());
+        }
         let mut encodings = Vec::with_capacity(texts.len());
         for &text in texts {
             encodings.push(self.encode(text, true, false)?);
         }
         let batches: Vec<&[i32]> = encodings.iter().map(|e| e.ids.as_slice()).collect();
-        let mut rows = self.trace_sequences(&batches, spec)?;
-
-        // Attach the token piece for each captured (prompt, position).
-        for row in &mut rows {
-            if let Some(enc) = encodings.get(row.prompt_id as usize) {
-                row.token = enc.pieces.get(row.token_pos as usize).cloned();
-            }
-        }
-        Ok(rows)
+        let pieces: Vec<Vec<String>> = encodings.iter().map(|e| e.pieces.clone()).collect();
+        self.capture_in_memory(&batches, &pieces, spec)
     }
 }
 
@@ -639,7 +982,10 @@ mod tests {
         // NOT observable there and returns None -> rebirth_error_trace, never a silent
         // substitute. A `{attn_out, kqv_out}` union would also wrongly capture the pre-Wo
         // tensor on llama, which carries `kqv_out` too.
-        assert_eq!(component_name("llama", Component::AttnOut), Some("attn_out"));
+        assert_eq!(
+            component_name("llama", Component::AttnOut),
+            Some("attn_out")
+        );
         assert_eq!(component_name("qwen2", Component::AttnOut), None);
         assert_eq!(component_name("gemma3", Component::AttnOut), None);
         // Unsupported architecture: no name for any component (-> rebirth_error_trace).
