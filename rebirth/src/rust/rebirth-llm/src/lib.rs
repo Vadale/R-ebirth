@@ -29,7 +29,9 @@ mod spill;
 mod trace;
 
 pub use embed::{Embeddings, Pooling};
-pub use engine::{available_backends, load, BackendKind, LoadRequest, LoadedModel, ModelMetadata};
+pub use engine::{
+    available_backends, load, load_with_batch, BackendKind, LoadRequest, LoadedModel, ModelMetadata,
+};
 pub use error::RebirthError;
 pub use generate::{
     top_k_logits, ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason, TokenLogit,

@@ -396,7 +396,8 @@ fn rebirth_generate(
 // boundary), consistent with llm_tokens; `logit`/`prob` are upcast f32/f64 -> R
 // doubles. The rows arrive already ordered rank 1..top (descending logit); R adds
 // the `rank` and `prompt_id` columns. Active interventions on the handle apply
-// (the reused generation forward pass sees them), exactly as for llm_generate.
+// (the forward pass runs on the handle's own context, which carries them),
+// exactly as for llm_generate.
 #[extendr]
 fn rebirth_logits(ptr: Robj, prompt: &str, top: i32) -> Robj {
     with_model(&ptr, |model| {

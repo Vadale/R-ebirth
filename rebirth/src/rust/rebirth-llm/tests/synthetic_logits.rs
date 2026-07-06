@@ -14,7 +14,7 @@
 
 use std::path::PathBuf;
 
-use rebirth_llm::{load, top_k_logits, BackendKind, LoadRequest};
+use rebirth_llm::{load, load_with_batch, top_k_logits, BackendKind, LoadRequest};
 
 /// The fixed golden input (`synthetic_model.INPUT_TOKENS`).
 const INPUT_TOKENS: [i32; 8] = [1, 7, 13, 22, 5, 31, 44, 2];
@@ -284,4 +284,73 @@ fn top_k_extraction_matches_numpy_oracle_at_the_final_position() {
     eprintln!(
         "top-k gate: max |Δlogit| = {max_logit_d:.3e}, max |Δprob| = {max_prob_d:.3e} (atol {ATOL:.1e})"
     );
+}
+
+/// Regression guard for the `llm_logits` over-batch abort (reviewer Finding 1): a
+/// prompt longer than one decode batch, but within `context_length`, must return
+/// logits — never trip `GGML_ASSERT(n_tokens_all <= n_batch)` -> `ggml_abort()` ->
+/// `SIGABRT`, which `catch_unwind` cannot intercept and which would kill the whole
+/// R session.
+///
+/// `next_token_logits` takes text and needs a tokenizer, which the `no_vocab`
+/// synthetic model lacks, so this drives the exact decode path it now uses —
+/// `prompt_last_logits` — with a raw token-id vector. The context is built with
+/// `n_batch = 4` (via `load_with_batch`), so the 8-token golden input spans two
+/// decode chunks. The pre-fix code routed the whole prompt through a single
+/// unchunked `decode(.., logits_last_only = false)`, so this exact input
+/// `ggml_abort`s on it; post-fix it chunks and returns the same final-position
+/// distribution the `logits.csv` golden pins.
+#[test]
+fn chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row() {
+    let gguf = synthetic_gguf();
+    let golden = golden_logits_csv();
+    assert!(gguf.exists(), "synthetic GGUF missing at {}", gguf.display());
+    assert!(
+        golden.exists(),
+        "logit golden missing at {}",
+        golden.display()
+    );
+
+    // n_batch = 4 < INPUT_TOKENS.len() (8) <= context_length (512): the prompt fits
+    // the context window but exceeds one decode batch, so it MUST be chunked. This
+    // is the input that ggml_aborts on the pre-fix single-decode path.
+    let model = load_with_batch(
+        LoadRequest {
+            path: gguf,
+            context_length: 512,
+            gpu_layers: None,
+            // CPU so the exact-value path runs identically on every CI platform.
+            backend: BackendKind::Cpu,
+            mmap: true,
+        },
+        Some(4),
+    )
+    .expect("synthetic model loads");
+
+    let oracle = read_golden_csv(&golden);
+    let n_vocab = oracle[0].len();
+
+    // The exact decode next_token_logits runs, fed raw ids (no tokenizer needed).
+    // Reaching this line at all proves the chunked path did not abort.
+    let last = model
+        .prompt_last_logits(&INPUT_TOKENS, n_vocab)
+        .expect("chunked over-batch decode returns logits");
+    assert_eq!(last.len(), n_vocab, "final-position row is vocab-wide");
+
+    // Chunking is causally transparent: the KV cache accumulates across chunks, so
+    // the final position attends to the whole prompt and its top-k matches the
+    // golden's last row (ids exact — the oracle gaps exceed 2*ATOL, asserted by the
+    // sibling test — and logits within the F32-vs-F64 harness tolerance).
+    let picks = top_k_logits(&last, TOP);
+    let oracle_row = &oracle[INPUT_TOKENS.len() - 1];
+    let oracle_ids = oracle_top_ids(oracle_row, TOP);
+    for (rank, &(id, logit, _)) in picks.iter().enumerate() {
+        assert_eq!(id, oracle_ids[rank], "top-k id at rank {} differs", rank + 1);
+        let ld = (logit as f64 - oracle_row[id]).abs();
+        assert!(
+            ld <= ATOL,
+            "logit at rank {} |Δ|={ld:.3e} > {ATOL:.1e}",
+            rank + 1
+        );
+    }
 }

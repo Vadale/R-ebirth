@@ -654,6 +654,25 @@ pub struct LoadRequest {
 
 /// Load a GGUF model into an owned `LoadedModel`, or return a classed error.
 pub fn load(req: LoadRequest) -> Result<LoadedModel, RebirthError> {
+    load_impl(req, None)
+}
+
+/// Like [`load`], but forces the context's `n_batch` — the maximum number of
+/// tokens a single `llama_decode` may carry. `None` keeps the engine default
+/// (for a causal context, `min(n_ctx, 2048)`).
+///
+/// Primarily a test seam: a small `n_batch` makes a short prompt exceed one
+/// decode batch, so the `n_batch`-chunked forward pass (`prompt_last_logits`) is
+/// exercised without feeding thousands of tokens — the regression guard for the
+/// `llm_logits` over-batch abort.
+pub fn load_with_batch(
+    req: LoadRequest,
+    n_batch: Option<u32>,
+) -> Result<LoadedModel, RebirthError> {
+    load_impl(req, n_batch)
+}
+
+fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, RebirthError> {
     // Acquire the backend up front so the ggml device registry is populated
     // before any capability query, and so it lives for the whole load. On an
     // early return the guard drops and (if last) tears the backend down again.
@@ -712,6 +731,12 @@ pub fn load(req: LoadRequest) -> Result<LoadedModel, RebirthError> {
     // SAFETY: default params are a plain by-value C struct we only tweak.
     let mut cparams = unsafe { ffi::llama_context_default_params() };
     cparams.n_ctx = req.context_length;
+    // Test seam (load_with_batch): shrink the decode batch below n_ctx so the
+    // chunked-decode path can be reached by a short prompt. llama derives
+    // n_ubatch = min(n_batch, default) from this, so setting n_batch suffices.
+    if let Some(nb) = n_batch {
+        cparams.n_batch = nb;
+    }
 
     // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
     // failure the `Arc<Model>` drops here, freeing the model and backend.
