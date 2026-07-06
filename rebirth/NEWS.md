@@ -2,6 +2,16 @@
 
 ## rebirth 0.0.0.9000
 
+* `llm_embed()` encodes a character vector into a base numeric `matrix`, one row
+  per input by the model's embedding size (WP3). `pooling` chooses how per-token
+  vectors are reduced — `"mean"`, `"last"`, or `"model"` (the model's own pooling
+  when the GGUF defines one; a generative model such as Qwen2.5 defines none and
+  raises `rebirth_error_embed` asking for `"mean"`/`"last"`). `normalize = TRUE`
+  (default) L2-normalizes each row to a unit vector so dot products are cosine
+  similarities — validated and explicit, never silent. Row names follow `names(x)`
+  (else the input positions). Pooling and the normalize path are validated
+  token-for-token against an independent numpy reference on a synthetic model.
+
 * `llm_generate()` continues one or more prompts (WP2). `chat = TRUE` applies the
   model's own chat template; `temperature = 0` decodes greedily (deterministic),
   otherwise it uses temperature + nucleus (top-p) sampling drawn on the CPU from
