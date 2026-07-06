@@ -631,15 +631,21 @@ read_spill_slice <- function(x, layer, component) {
 }
 
 # The staleness fail-safe (ARCHITECTURE section 6): before reading a spilled file,
-# confirm its integrity footer (schema metadata) matches the trace object. A file
-# from a different rebirth version (format), or one overwritten by a later trace or
-# belonging to another session (spec), is rejected rather than silently misread.
+# confirm its integrity footer (schema metadata) AND its on-disk schema match the
+# trace object. A file from a different rebirth version (format), one overwritten by
+# a later trace or belonging to another session (trace id / spec), or one whose
+# column names or types have been altered (schema), is rejected rather than silently
+# misread. The schema check matters because matching metadata strings alone do not
+# guarantee the columns still decode: an altered column type would coerce to
+# NA/garbage on read.
 verify_spill_integrity <- function(x, path) {
-  md <- tryCatch(
-    nanoarrow::read_nanoarrow(path, lazy = TRUE)$get_schema()$metadata,
+  schema <- tryCatch(
+    nanoarrow::read_nanoarrow(path, lazy = TRUE)$get_schema(),
     error = function(e) NULL
   )
+  md <- if (is.null(schema)) NULL else schema$metadata
   fmt <- if (is.null(md)) NULL else md[["rebirth.spill_format"]]
+  trace_id <- if (is.null(md)) NULL else md[["rebirth.trace_id"]]
   spec <- if (is.null(md)) NULL else md[["rebirth.spec"]]
   if (is.null(fmt) || !identical(as.character(fmt), "1")) {
     rebirth_abort(
@@ -653,18 +659,71 @@ verify_spill_integrity <- function(x, path) {
       )
     )
   }
-  if (is.null(spec) || !identical(as.character(spec), as.character(attr(x, "spill_spec")))) {
+  # The on-disk schema must still be the rebirth_trace schema (right column names and
+  # types), or the read would coerce to NA/garbage despite matching metadata strings.
+  if (!spill_schema_ok(schema)) {
     rebirth_abort(
       "rebirth_error_trace",
       sprintf(
         paste0(
-          "The spill file '%s' does not match this trace object: its capture spec ",
-          "differs, so it was likely overwritten by a later trace or belongs to a ",
-          "different session. Re-run llm_trace()."
+          "The spill file '%s' does not have the expected rebirth_trace columns or ",
+          "column types. It may be from a different rebirth version or a corrupted ",
+          "file; re-run llm_trace()."
+        ),
+        path
+      )
+    )
+  }
+  if (is.null(trace_id) ||
+    !identical(as.character(trace_id), as.character(attr(x, "spill_trace_id"))) ||
+    is.null(spec) || !identical(as.character(spec), as.character(attr(x, "spill_spec")))) {
+    rebirth_abort(
+      "rebirth_error_trace",
+      sprintf(
+        paste0(
+          "The spill file '%s' does not match this trace object: its capture spec or ",
+          "trace id differs, so it was likely overwritten by a later trace or belongs ",
+          "to a different session. Re-run llm_trace()."
         ),
         path
       )
     )
   }
   invisible(TRUE)
+}
+
+# Whether a spilled file's Arrow schema is the rebirth_trace schema: the seven
+# columns in order, each of the expected kind. Types are checked by kind, not exact
+# Arrow type, so the on-disk encoding (D-013: uint32 indices, float32 `value`, utf8
+# strings) can evolve without breaking the guard — but an altered column type (e.g.
+# `value` turned into a string, which would read back as NA) is rejected. Operates
+# on the nanoarrow schema object, so it is identical whether that schema came from a
+# real file or a constructed fixture. `NULL` (an unreadable schema) is not ok.
+spill_schema_ok <- function(schema) {
+  if (is.null(schema)) {
+    return(FALSE)
+  }
+  fields <- schema$children
+  if (length(fields) != 7L) {
+    return(FALSE)
+  }
+  # `unname()`: nanoarrow's `$children` is a named list, so vapply would carry those
+  # names, breaking the `identical()` compare against the unnamed expected vector.
+  field_names <- unname(vapply(fields, function(f) f$name, character(1)))
+  field_formats <- unname(vapply(fields, function(f) f$format, character(1)))
+  expected_names <- c(
+    "prompt_id", "token_pos", "token", "layer", "component", "neuron", "value"
+  )
+  if (!identical(field_names, expected_names)) {
+    return(FALSE)
+  }
+  # Arrow C-data-interface format strings, grouped by the kind each column must be.
+  is_int <- function(fmt) fmt %in% c("c", "C", "s", "S", "i", "I", "l", "L")
+  is_chr <- function(fmt) fmt %in% c("u", "U", "vu")
+  is_num <- function(fmt) fmt %in% c("e", "f", "g")
+  kind <- list(
+    prompt_id = is_int, token_pos = is_int, token = is_chr, layer = is_int,
+    component = is_chr, neuron = is_int, value = is_num
+  )
+  all(mapply(function(nm, fmt) kind[[nm]](fmt), field_names, field_formats))
 }

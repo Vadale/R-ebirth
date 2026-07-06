@@ -190,3 +190,74 @@ test_that("a spill file with a truncated/corrupt body fails as a classed conditi
     class = "rebirth_error_trace"
   )
 })
+
+test_that("a spill file with a tampered column type is rejected (schema check)", {
+  # SEC-LOW: matching integrity metadata (format/trace_id/spec) is not enough -- if
+  # a column's TYPE was altered on disk, the read would coerce to NA/garbage. So
+  # verify_spill_integrity() also checks the on-disk schema. Defect this catches:
+  # trusting the metadata strings without confirming the columns still decode.
+
+  # spill_schema_ok() accepts the exact on-disk encoding (uint32 indices, float32
+  # value, utf8 strings). These schemas need no array, so no `arrow` package.
+  real_shape <- nanoarrow::na_struct(list(
+    prompt_id = nanoarrow::na_uint32(), token_pos = nanoarrow::na_uint32(),
+    token = nanoarrow::na_string(), layer = nanoarrow::na_uint32(),
+    component = nanoarrow::na_string(), neuron = nanoarrow::na_uint32(),
+    value = nanoarrow::na_float()
+  ))
+  expect_true(spill_schema_ok(real_shape))
+  # A tampered `value` (string, not float) is rejected; so is a missing/renamed col.
+  tampered_schema <- nanoarrow::na_struct(list(
+    prompt_id = nanoarrow::na_uint32(), token_pos = nanoarrow::na_uint32(),
+    token = nanoarrow::na_string(), layer = nanoarrow::na_uint32(),
+    component = nanoarrow::na_string(), neuron = nanoarrow::na_uint32(),
+    value = nanoarrow::na_string()
+  ))
+  expect_false(spill_schema_ok(tampered_schema))
+  expect_false(spill_schema_ok(NULL))
+
+  # End to end: a genuine Arrow-IPC file whose metadata still matches the object but
+  # whose `value` column is utf8 (index columns int32 so nanoarrow needs no `arrow`).
+  dir <- tempfile("rebirth-spill-test-")
+  dir.create(dir)
+  on.exit(unlink(dir, recursive = TRUE, force = TRUE), add = TRUE)
+  path <- file.path(dir, "tampered.arrow")
+
+  spec_key <- "model=/m.gguf|layers=all|positions=all|components=residual"
+  file_schema <- nanoarrow::nanoarrow_schema_modify(
+    nanoarrow::na_struct(list(
+      prompt_id = nanoarrow::na_int32(), token_pos = nanoarrow::na_int32(),
+      token = nanoarrow::na_string(), layer = nanoarrow::na_int32(),
+      component = nanoarrow::na_string(), neuron = nanoarrow::na_int32(),
+      value = nanoarrow::na_string()
+    )),
+    list(metadata = list(
+      "rebirth.spill_format" = "1", "rebirth.trace_id" = "t",
+      "rebirth.model" = "/m.gguf", "rebirth.spec" = spec_key
+    ))
+  )
+  df <- data.frame(
+    prompt_id = 0L, token_pos = 0L, token = "x", layer = 0L,
+    component = "residual", neuron = 0L, value = "NOT_A_NUMBER",
+    stringsAsFactors = FALSE
+  )
+  nanoarrow::write_nanoarrow(nanoarrow::as_nanoarrow_array(df, schema = file_schema), path)
+
+  # The object's integrity strings MATCH the file's metadata, so the schema type
+  # check -- not the format / trace-id / spec check -- is what must fire.
+  x <- structure(
+    data.frame(
+      prompt_id = integer(0), token_pos = integer(0), token = character(0),
+      layer = integer(0), component = character(0), neuron = integer(0),
+      value = double(0), stringsAsFactors = FALSE
+    ),
+    class = c("rebirth_trace", "data.frame"),
+    spilled = TRUE, spill_files = path,
+    spill_trace_id = "t", spill_spec = spec_key
+  )
+  expect_error(verify_spill_integrity(x, path), class = "rebirth_error_trace")
+  expect_error(
+    as.matrix(x, layer = 1, component = "residual"),
+    class = "rebirth_error_trace"
+  )
+})
