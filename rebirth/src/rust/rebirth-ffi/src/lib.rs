@@ -388,6 +388,37 @@ fn rebirth_generate(
     })
 }
 
+// Next-token distribution for `prompt`: a forward pass over the prompt tokens,
+// then the `top` highest-logit next tokens (`llm_logits`). R has validated
+// m/prompt/top; here we run next_token_logits under with_model's catch_unwind and
+// return four parallel columns the R side stacks into the per-prompt data.frame
+// (§4). `token_id` is shifted engine 0-based -> R 1-based here (the single §4 index
+// boundary), consistent with llm_tokens; `logit`/`prob` are upcast f32/f64 -> R
+// doubles. The rows arrive already ordered rank 1..top (descending logit); R adds
+// the `rank` and `prompt_id` columns. Active interventions on the handle apply
+// (the reused generation forward pass sees them), exactly as for llm_generate.
+#[extendr]
+fn rebirth_logits(ptr: Robj, prompt: &str, top: i32) -> Robj {
+    with_model(&ptr, |model| {
+        let entries = model.next_token_logits(prompt, top.max(0) as usize)?;
+        let token_id: Vec<i32> = entries
+            .iter()
+            .map(|e| from_engine_token(e.token_id))
+            .collect();
+        let token: Vec<String> = entries.iter().map(|e| e.token.clone()).collect();
+        let logit: Vec<f64> = entries.iter().map(|e| e.logit as f64).collect();
+        let prob: Vec<f64> = entries.iter().map(|e| e.prob).collect();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("token_id", Robj::from(token_id)),
+            ("token", Robj::from(token)),
+            ("logit", Robj::from(logit)),
+            ("prob", Robj::from(prob)),
+        ])
+        .into())
+    })
+}
+
 // Embed a character vector into a row-major matrix. R has validated
 // m/x/pooling/normalize; here we parse the pooling enum, run embed_texts under
 // with_model's catch_unwind, and return the flat values plus the two dimensions.
@@ -754,6 +785,7 @@ extendr_api::extendr_module! {
     fn rebirth_tokenize;
     fn rebirth_detokenize;
     fn rebirth_generate;
+    fn rebirth_logits;
     fn rebirth_embed;
     fn rebirth_trace;
     fn rebirth_intervene;
