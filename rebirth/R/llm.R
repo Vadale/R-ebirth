@@ -141,7 +141,11 @@ llm <- function(path,
 # Build the `llm` S3 object from a successful load payload. The mutable closed
 # tag lives in an environment (reference semantics) so `close()` on one binding
 # is visible through every copy of the handle (ARCHITECTURE.md section 3).
-new_llm <- function(payload, path) {
+# `interventions` is empty for a freshly loaded handle and carries the accumulated
+# steering/ablation spec for a derived handle (llm_steer/llm_ablate, D-016); each
+# handle gets its own `state` env + finalizer, so a derived handle frees its
+# distinct native context independently of the source.
+new_llm <- function(payload, path, interventions = list()) {
   state <- new.env(parent = emptyenv())
   state$closed <- FALSE
   state$ptr <- payload$ptr
@@ -158,7 +162,7 @@ new_llm <- function(payload, path) {
       hidden_size = payload$hidden_size,
       context_length = payload$context_length,
       backend = payload$backend,
-      interventions = list(),
+      interventions = interventions,
       # Extras surfaced by summary(), kept dot-prefixed to mark them as not part
       # of the API-GRAMMAR section 2 slot set.
       .context_train = payload$context_train,
@@ -295,10 +299,34 @@ print.summary.llm <- function(x, ...) {
   }
   n_iv <- length(x$interventions)
   cat(sprintf("  interventions:   %d active\n", n_iv))
+  # The full intervention list (API-GRAMMAR section 2: summary adds it; print
+  # shows only the count). One compact line per steer/ablate, no vector dumps.
+  for (iv in x$interventions) {
+    cat(sprintf("    - %s\n", format_intervention(iv)))
+  }
   invisible(x)
 }
 
 # --- small internal helpers ------------------------------------------------
+
+# A one-line human description of an intervention entry (llm_steer/llm_ablate),
+# for summary(). Never dumps the direction vector -- only its length -- and uses
+# the compact format_index_set() display for the ablated neuron set.
+format_intervention <- function(iv) {
+  if (identical(iv$kind, "steer")) {
+    sprintf(
+      "steer  layer %d  (coef %s, direction[%d], positions %s)",
+      iv$layer, format(iv$coef), length(iv$direction), iv$positions
+    )
+  } else if (identical(iv$kind, "ablate")) {
+    sprintf(
+      "ablate layer %d  neurons %s -> %s  (%s)",
+      iv$layer, format_index_set(iv$neurons), format(iv$value), iv$component
+    )
+  } else {
+    sprintf("intervention (%s) at layer %s", as.character(iv$kind), as.character(iv$layer))
+  }
+}
 
 # A single, whole, non-NA number (integer-valued, but stored as double or int).
 is_count <- function(x) {

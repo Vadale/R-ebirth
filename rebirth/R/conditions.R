@@ -47,6 +47,28 @@ abort_argument <- function(argument, message, call = sys.call(-1L)) {
   )
 }
 
+#' Raise a `rebirth_error_intervention` for a failed steer/ablate validation
+#'
+#' A thin specialization of [rebirth_abort()] fixing the class to
+#' `"rebirth_error_intervention"` (API-GRAMMAR.md section 6: dimension/layer
+#' validation for `llm_steer()`/`llm_ablate()`). The intervention-domain checks
+#' (unsupported architecture, out-of-range layer, the layer-1 steer limit,
+#' `direction`/`neurons`/`coef`/`value` shape, position/component restrictions)
+#' all funnel through here; each call site attaches the offending argument name
+#' as the structured `argument` field where one is at fault.
+#'
+#' @param message Character scalar: the specific, actionable message.
+#' @param fields Named list of structured fields to attach (e.g.
+#'   `list(argument = "layer")`).
+#' @param call The call to record; defaults to the caller's caller, so the
+#'   condition points at the user-facing function rather than at this helper.
+#' @return Never returns; always raises.
+#' @keywords internal
+#' @noRd
+abort_intervention <- function(message, fields = list(), call = sys.call(-1L)) {
+  rebirth_abort("rebirth_error_intervention", message, fields, call = call)
+}
+
 #' Raise from an FFI payload, or return it unchanged on success
 #'
 #' Boundary functions return a list payload. On failure (`ok == FALSE`) this
