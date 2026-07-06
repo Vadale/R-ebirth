@@ -9,8 +9,9 @@
   raises `rebirth_error_embed` asking for `"mean"`/`"last"`). `normalize = TRUE`
   (default) L2-normalizes each row to a unit vector so dot products are cosine
   similarities — validated and explicit, never silent. Row names follow `names(x)`
-  (else the input positions). Pooling and the normalize path are validated
-  token-for-token against an independent numpy reference on a synthetic model.
+  (else the input positions). The per-token hidden states, each pooling mode, and
+  the normalize path are validated value-for-value against an independent numpy
+  reference on a synthetic model.
 
 * `llm_generate()` continues one or more prompts (WP2). `chat = TRUE` applies the
   model's own chat template; `temperature = 0` decodes greedily (deterministic),
