@@ -305,10 +305,11 @@ mod tests {
     use crate::trace::Component;
 
     /// Build a handful of `CaptureRow`s spanning two prompts x two layers so the
-    /// writer emits multiple `(prompt, layer)` batches (exercising dictionary
-    /// replacement across batches — the exact case the nanoarrow reader must
-    /// handle). Distinct token pieces per prompt make the per-batch dictionaries
-    /// genuinely differ.
+    /// writer emits multiple `(prompt, layer)` batches — exercising the flush-on-
+    /// key-change batching, so more than one record batch is written and read back.
+    /// `token`/`component` are plain UTF-8, not dictionary-encoded (the D-013 outcome
+    /// — the pinned nanoarrow reader rejects dictionary-encoded IPC), so the distinct
+    /// per-prompt token pieces are just ordinary column data, not a dictionary case.
     fn sample_rows(n_embd: usize) -> Vec<CaptureRow> {
         let mut rows = Vec::new();
         for prompt_id in 0..2u32 {
