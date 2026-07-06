@@ -329,7 +329,9 @@ derive_intervened <- function(m, entry, call = sys.call(-1L)) {
     ),
     call = call
   )
-  new_llm_derived(payload, m, interventions)
+  # Share the source's path (same underlying weights); new_llm() gives the derived
+  # handle its own state env + finalizer, so it frees independently of the source.
+  new_llm(payload, m$path, interventions)
 }
 
 # Flatten an accumulated interventions list into the dense parallel arrays the
@@ -365,13 +367,4 @@ flatten_interventions <- function(interventions, hidden_size) {
     ablate_neurons = as.integer(ablate_neurons),
     ablate_values = as.double(ablate_values)
   )
-}
-
-# Build the derived `llm` from an intervention payload: the source's metadata
-# (identical -- shared weights), the source path, and the accumulated
-# interventions. new_llm() installs a fresh `state` env + finalizer around the NEW
-# native context, so the derived handle frees independently of the source (the
-# source's Arc<Model> keeps the weights alive for both).
-new_llm_derived <- function(payload, source, interventions) {
-  new_llm(payload, source$path, interventions)
 }
