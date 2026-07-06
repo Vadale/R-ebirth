@@ -2,6 +2,29 @@
 
 ## rebirth 0.0.0.9000
 
+* `llm_steer()` and `llm_ablate()` add the intervention core (WP5). Each returns a
+  **new** `llm` handle -- a fresh context on the source model's shared, read-only
+  weights, with the intervention applied -- and never mutates the source; removing
+  an intervention is simply using the original handle (reversibility is exact).
+  `llm_steer(m, layer, direction, coef, positions = "all")` adds `coef * direction`
+  to the residual stream at `layer` (llama.cpp's native control vector);
+  `llm_ablate(m, layer, neurons, value, component = "residual")` forces the listed
+  neurons to `value`. Interventions **compose** and are derivation-order-independent
+  (`ablate |> steer` behaves like `steer |> ablate`): steering stacks by summation,
+  ablation is a union (last-write-wins per neuron), and a steer never moves an
+  ablated neuron. Each derivation allocates a fresh context (a sub-second pause and
+  real memory, not a free copy). Invalid requests -- an unsupported architecture
+  (supported: `llama`, `qwen2`, `gemma3`), an out-of-range layer, steering layer 1
+  (unreachable by the native control vector -- ablate it instead), a wrong-length
+  `direction`, out-of-range `neurons`, or the not-yet-supported `positions`/
+  `component` values -- raise `rebirth_error_intervention` rather than silently
+  doing nothing. Interventions apply to generation and logits only for now:
+  `llm_embed()` and `llm_trace()` on an intervened handle raise
+  `rebirth_error_embed` / `rebirth_error_trace` rather than returning base vectors
+  mislabeled as intervened. The exact numerical effect and bit-for-bit
+  reversibility are validated against an independent numpy reference on a synthetic
+  model.
+
 * `llm_trace()` captures a model's internal activations over the prompt tokens
   (WP4, observation core): a long-format `rebirth_trace` `data.frame` with columns
   `prompt_id`, `token_pos`, `token`, `layer`, `component`, `neuron`, `value`. The

@@ -313,18 +313,19 @@ print.summary.llm <- function(x, ...) {
 # for summary(). Never dumps the direction vector -- only its length -- and uses
 # the compact format_index_set() display for the ablated neuron set.
 format_intervention <- function(iv) {
-  if (identical(iv$kind, "steer")) {
+  kind <- if (is.list(iv) && !is.null(iv$kind)) iv$kind else NA_character_
+  if (identical(kind, "steer")) {
     sprintf(
       "steer  layer %d  (coef %s, direction[%d], positions %s)",
       iv$layer, format(iv$coef), length(iv$direction), iv$positions
     )
-  } else if (identical(iv$kind, "ablate")) {
+  } else if (identical(kind, "ablate")) {
     sprintf(
       "ablate layer %d  neurons %s -> %s  (%s)",
       iv$layer, format_index_set(iv$neurons), format(iv$value), iv$component
     )
   } else {
-    sprintf("intervention (%s) at layer %s", as.character(iv$kind), as.character(iv$layer))
+    "intervention (unrecognized)"
   }
 }
 
