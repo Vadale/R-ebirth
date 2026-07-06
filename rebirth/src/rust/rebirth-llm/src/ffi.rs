@@ -40,6 +40,22 @@ pub struct llama_vocab {
     _opaque: [u8; 0],
 }
 
+/// Opaque `struct ggml_tensor` (WP4). Never dereferenced from Rust — the tap only
+/// hands it to the accessors below. The scheduler passes one to the eval callback
+/// per graph node.
+#[repr(C)]
+pub struct ggml_tensor {
+    _opaque: [u8; 0],
+}
+
+/// The scheduler eval callback (`ggml-backend.h` L314, tag b9726):
+/// `bool (*)(struct ggml_tensor * t, bool ask, void * user_data)`. `ask = true`
+/// asks "observe this node?"; `ask = false` fires after the node is computed and
+/// synchronized ("data ready"), and returning `false` cancels the rest of the
+/// compute. Installed on a context via the `cb_eval`/`cb_eval_user_data` params.
+pub type GgmlSchedEvalCallback =
+    extern "C" fn(t: *mut ggml_tensor, ask: bool, user_data: *mut c_void) -> bool;
+
 // The names below mirror the llama.h typedefs verbatim (like the structs above),
 // so the FFI surface reads 1:1 against the header; hence the snake_case allow.
 #[allow(non_camel_case_types)]
@@ -261,6 +277,30 @@ extern "C" {
     /// the already-declared `llama_model_meta_val_str`.
     pub fn llama_get_embeddings_ith(ctx: *mut llama_context, i: i32) -> *mut f32;
 
+    // --- activation taps (WP4) ---
+    // The minimal accessor surface (D-006 / D-012): the opaque `ggml_tensor` above
+    // plus these four getters. No `ggml_tensor` struct mirror, and deliberately NOT
+    // `ggml_backend_tensor_set` (that is WP5 ablation, D-012). The tap matches by
+    // name, checks the shape, and copies the host-side data — read-only.
+    /// The tensor's graph name, e.g. `"l_out-7"` (ggml.h L865). Owned by the graph;
+    /// valid for the duration of the callback.
+    pub fn ggml_get_name(t: *const ggml_tensor) -> *const c_char;
+    /// Total element count of the tensor (ggml.h L736); for a captured hidden-state
+    /// tensor this is `n_tokens * n_embd`.
+    pub fn ggml_nelements(t: *const ggml_tensor) -> i64;
+    /// Total byte size of the tensor's storage (ggml.h L738); `nelements * 4` for
+    /// the F32 hidden states the tap reads.
+    pub fn ggml_nbytes(t: *const ggml_tensor) -> usize;
+    /// Copy `size` bytes of the tensor's data to `data` (host memcpy on Apple-silicon
+    /// shared memory; ggml-backend.h L93). Called at `ask = false`, after the
+    /// scheduler has synchronized, so the data is ready.
+    pub fn ggml_backend_tensor_get(
+        t: *const ggml_tensor,
+        data: *mut c_void,
+        offset: usize,
+        size: usize,
+    );
+
     // --- KV-cache / memory ---
     pub fn llama_get_memory(ctx: *const llama_context) -> llama_memory_t;
     pub fn llama_memory_clear(mem: llama_memory_t, data: bool);
@@ -284,6 +324,16 @@ mod tests {
         assert_eq!(p.pooling_type, -1, "LLAMA_POOLING_TYPE_UNSPECIFIED");
         assert_eq!(p.attention_type, -1, "LLAMA_ATTENTION_TYPE_UNSPECIFIED");
         assert!(!p.embeddings, "embeddings default is false");
+
+        // WP4 is the first code that *writes* the eval-callback fields; pin their
+        // b9726 null defaults by value (llama-context.cpp L3466-3467) so a reordered
+        // mirror that shifts them surfaces here, and the generation/embedding
+        // contexts (which never set them) provably install no callback.
+        assert!(p.cb_eval.is_null(), "cb_eval default is null");
+        assert!(
+            p.cb_eval_user_data.is_null(),
+            "cb_eval_user_data default is null"
+        );
 
         // ABI size guard: the value checks above catch any misalignment at or before
         // `embeddings`, but not a future vendor-bump that reorders the layout *after*

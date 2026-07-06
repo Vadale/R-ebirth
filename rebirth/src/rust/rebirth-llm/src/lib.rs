@@ -10,6 +10,10 @@
 //! - [`error`] — [`RebirthError`], mirroring `API-GRAMMAR.md` §6.
 //! - [`engine`] — the safe `Backend`/`Model`/`Context` lifecycle and [`load`].
 //! - [`embed`] — text/token embeddings pooled in Rust (WP3, D-011).
+//! - [`trace`] — activation tracing via the scheduler eval callback (WP4, D-012).
+//! - `spill` — Arrow-IPC disk spill for over-budget traces (WP4 Step 5, D-013),
+//!   behind the default-on `spill` feature (a `--no-default-features` build omits
+//!   it and the Arrow crates entirely).
 
 use std::ffi::CStr;
 
@@ -18,11 +22,19 @@ mod engine;
 mod error;
 mod ffi;
 mod generate;
+#[cfg(feature = "spill")]
+mod spill;
+mod trace;
 
 pub use embed::{Embeddings, Pooling};
 pub use engine::{available_backends, load, BackendKind, LoadRequest, LoadedModel, ModelMetadata};
 pub use error::RebirthError;
 pub use generate::{ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason};
+#[cfg(feature = "spill")]
+pub use trace::SpillReport;
+pub use trace::{
+    parse_tensor_name, CaptureRow, CaptureSpec, Component, Positions, SpillPlan, TraceOutput,
+};
 
 /// Initialize the process-global llama.cpp + ggml backend.
 ///

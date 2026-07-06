@@ -47,6 +47,22 @@ pub enum RebirthError {
     /// the failure site and carried in `reason`; `Display` presents it verbatim,
     /// and the R condition surfaces it as the structured `reason` field.
     Embed { reason: String },
+    /// Activation tracing failed inside the engine: a requested component has no
+    /// tensor for the model's architecture, a tapped tensor had an unexpected
+    /// shape/dtype, or the trace decode failed. `reason` carries the full,
+    /// already-actionable message (composed at the failure site, like `Embed`).
+    Trace { reason: String },
+    /// A capture whose predicted in-memory size exceeds the budget, raised BEFORE
+    /// the capture is allocated when `spill = false` (the 16 GB rule; API-GRAMMAR
+    /// section 4). The R validation layer raises the same class pre-boundary for
+    /// the length-known filters; this covers the `positions = "all"` case, whose
+    /// exact size is known only after tokenization. `estimate_bytes`/`budget_bytes`
+    /// are the two sizes; `suggestion` names the filters that would fit.
+    Oom {
+        estimate_bytes: u64,
+        budget_bytes: u64,
+        suggestion: String,
+    },
     /// An unexpected internal failure (e.g. a caught Rust panic). Always a bug.
     Internal { context: String },
 }
@@ -63,6 +79,8 @@ impl RebirthError {
             RebirthError::Generation { .. } => "rebirth_error_generation",
             RebirthError::ContextOverflow { .. } => "rebirth_error_context_overflow",
             RebirthError::Embed { .. } => "rebirth_error_embed",
+            RebirthError::Trace { .. } => "rebirth_error_trace",
+            RebirthError::Oom { .. } => "rebirth_error_oom",
             RebirthError::Internal { .. } => "rebirth_error_internal",
         }
     }
@@ -119,6 +137,22 @@ impl fmt::Display for RebirthError {
             // each embedding cause needs distinct guidance, so `reason` already
             // holds a complete what-happened -> cause -> what-to-try message.
             RebirthError::Embed { reason } => write!(f, "{reason}"),
+            // Like `Embed`, the trace causes need distinct guidance (unsupported
+            // component/architecture vs a shape mismatch), so `reason` already holds
+            // a complete what-happened -> cause -> what-to-try message.
+            RebirthError::Trace { reason } => write!(f, "{reason}"),
+            RebirthError::Oom {
+                estimate_bytes,
+                budget_bytes,
+                suggestion,
+            } => write!(
+                f,
+                "This trace would need about {} in memory, over the {} budget. {suggestion} \
+                 Or set spill = TRUE to stream it to disk, or raise \
+                 options(rebirth.trace_budget=).",
+                human_bytes(*estimate_bytes),
+                human_bytes(*budget_bytes)
+            ),
             RebirthError::Internal { context } => write!(
                 f,
                 "Internal error in the rebirth engine: {context}. \
@@ -129,3 +163,21 @@ impl fmt::Display for RebirthError {
 }
 
 impl std::error::Error for RebirthError {}
+
+/// A compact human-readable byte size (e.g. `"6.1 GB"`), mirroring the R
+/// `format_bytes()` used for the pre-boundary OOM message so both estimate sites
+/// read the same. Only the OOM message needs it.
+fn human_bytes(n: u64) -> String {
+    const UNITS: [&str; 5] = ["B", "KB", "MB", "GB", "TB"];
+    let mut value = n as f64;
+    let mut i = 0;
+    while value >= 1024.0 && i < UNITS.len() - 1 {
+        value /= 1024.0;
+        i += 1;
+    }
+    if i == 0 {
+        format!("{n} {}", UNITS[0])
+    } else {
+        format!("{value:.1} {}", UNITS[i])
+    }
+}

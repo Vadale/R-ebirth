@@ -11,11 +11,27 @@ test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", 
   # Every export must have an approved API-GRAMMAR entry. This guard grows one
   # approved entry at a time; the internal .Call wrappers and helpers stay
   # unexported. WP1: llm(). WP2 (API-GRAMMAR section 3): llm_tokens(),
-  # llm_generate(). WP3: llm_embed().
+  # llm_generate(). WP3: llm_embed(). WP4 (API-GRAMMAR section 4): llm_trace().
   expect_setequal(
     getNamespaceExports("rebirth"),
-    c("llm", "llm_tokens", "llm_generate", "llm_embed")
+    c("llm", "llm_tokens", "llm_generate", "llm_embed", "llm_trace")
   )
+})
+
+test_that("the WP4 rebirth_trace S3 methods are registered (API-GRAMMAR section 2/4)", {
+  # print/summary/as.matrix on `rebirth_trace`, plus print on its summary object.
+  for (m in c(
+    "print.rebirth_trace", "summary.rebirth_trace",
+    "as.matrix.rebirth_trace", "print.summary.rebirth_trace"
+  )) {
+    expect_true(
+      exists(m, envir = asNamespace("rebirth"), inherits = FALSE),
+      info = m
+    )
+  }
+  expect_false(is.null(getS3method("print", "rebirth_trace", optional = TRUE)))
+  expect_false(is.null(getS3method("summary", "rebirth_trace", optional = TRUE)))
+  expect_false(is.null(getS3method("as.matrix", "rebirth_trace", optional = TRUE)))
 })
 
 test_that("the WP1 S3 methods are registered (API-GRAMMAR section 3)", {
