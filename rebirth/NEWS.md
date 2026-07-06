@@ -2,6 +2,22 @@
 
 ## rebirth 0.0.0.9000
 
+* `llm_trace()` captures a model's internal activations over the prompt tokens
+  (WP4, observation core): a long-format `rebirth_trace` `data.frame` with columns
+  `prompt_id`, `token_pos`, `token`, `layer`, `component`, `neuron`, `value`. The
+  filters `layers`, `positions` (`"last"`/`"all"`/explicit), and `components`
+  (`"residual"`, `"attn_out"`, `"mlp_out"`) select what is captured; the
+  memory-safe defaults capture little (`positions = "last"`,
+  `components = "residual"`). Tracing uses a dedicated, transient context tapped via
+  llama.cpp's scheduler eval callback, so normal generation carries no overhead
+  (zero vendored patch, D-012). A capture whose estimated size exceeds the budget
+  (`min(2 GB, 20% RAM)`, `options(rebirth.trace_budget=)`) raises
+  `rebirth_error_oom` — carrying `estimate_bytes` — *before* any allocation (disk
+  spill for over-budget captures is not yet implemented). `print()`/`summary()`
+  digest the trace without dumping it; `as.matrix(tr, layer, component)` extracts
+  one slice as a neuron-wide numeric matrix. Per-layer activations are validated
+  value-for-value against an independent numpy reference on a synthetic model.
+
 * `llm_embed()` encodes a character vector into a base numeric `matrix`, one row
   per input by the model's embedding size (WP3). `pooling` chooses how per-token
   vectors are reduced — `"mean"`, `"last"`, or `"model"` (the model's own pooling
