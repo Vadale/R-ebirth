@@ -62,6 +62,27 @@ test_that("llm_embed() rejects a closed handle", {
   expect_error(llm_embed(m, "hi"), class = "rebirth_error_closed")
 })
 
+# --- semantic-similarity fixture integrity (no model; runs in CI) ------------
+
+# The committed embed-similarity.csv drives the [MODEL] ranking acceptance test.
+# This guard runs in CI (no model) so a corrupted or mis-edited fixture is caught
+# early: the ranking property needs >= 2 topics, >= 2 sentences per topic, and no
+# empty/duplicate sentences (a duplicate would force a within-pair cosine of ~1
+# and silently rig the ranking).
+test_that("the semantic-similarity fixture is well-formed and topic-separated", {
+  fx <- read.csv(
+    testthat::test_path("fixtures", "embed-similarity.csv"),
+    stringsAsFactors = FALSE
+  )
+  expect_named(fx, c("group", "sentence"))
+  expect_false(anyNA(fx))
+  expect_true(all(nzchar(trimws(fx$sentence))))
+  expect_identical(anyDuplicated(fx$sentence), 0L)
+  per_topic <- table(fx$group)
+  expect_gte(length(per_topic), 2L) # at least two topics to contrast
+  expect_true(all(per_topic >= 2L)) # each topic needs at least one within-pair
+})
+
 # --- [MODEL] real-model embedding (Qwen: tokenizer + n_embd = 896) -----------
 
 test_that("embedding dimensions match the model card", {
@@ -102,4 +123,52 @@ test_that("pooling = \"model\" on a generative model is a clean embed error", {
   on.exit(close(m), add = TRUE)
   # Qwen2.5 defines no pooling, so \"model\" must ask for mean/last, not crash.
   expect_error(llm_embed(m, "hello", pooling = "model"), class = "rebirth_error_embed")
+})
+
+test_that("related sentence pairs rank above unrelated ones (semantic similarity)", {
+  # ROADMAP Section 5 WP3 acceptance criterion. On a real model, mean-pooled unit
+  # embeddings of topically-related sentences must be more cosine-similar to each
+  # other than to sentences from a different topic. The fixture is committed and
+  # separated by construction (pets / space / cooking, no shared salient words
+  # across groups), and the assertion is a *ranking*, not a tuned threshold -- so
+  # it catches an embedding path that returns constant / near-constant rows, pools
+  # the wrong axis, scrambles row order, or ignores the input text: defects the
+  # synthetic golden (exact values, one model) cannot reveal about topic geometry.
+  # Mean pooling is used because it is steadier than last-token pooling on a
+  # generative decoder like Qwen2.5-0.5B.
+  m <- llm(qwen_model_path())
+  on.exit(close(m), add = TRUE)
+
+  fx <- read.csv(
+    testthat::test_path("fixtures", "embed-similarity.csv"),
+    stringsAsFactors = FALSE
+  )
+  e <- llm_embed(m, fx$sentence, pooling = "mean", normalize = TRUE)
+  expect_identical(nrow(e), nrow(fx))
+
+  # Rows are L2-normalized, so a row dot product IS cosine similarity. Assert that
+  # precondition before reading the Gram matrix as cosines (guards against a row
+  # dot product silently not being a cosine).
+  expect_true(all(abs(sqrt(rowSums(e^2)) - 1) < 1e-5))
+
+  cos <- e %*% t(e) # cos[i, j] = cosine(row i, row j)
+  same_topic <- outer(fx$group, fx$group, "==")
+  pair <- upper.tri(cos) # each unordered pair once, diagonal excluded
+
+  within <- cos[pair & same_topic] # related pairs
+  cross <- cos[pair & !same_topic] # unrelated pairs
+  # The split must cover every pair exactly once and leave neither side empty.
+  expect_gt(length(within), 0L)
+  expect_gt(length(cross), 0L)
+  expect_identical(length(within) + length(cross), sum(pair))
+
+  # Diagnostic floor (robust): topics separate on average. An embedding that
+  # ignored the text or returned near-constant rows fails here first, telling the
+  # strict check below apart from a genuinely broken embedding path.
+  expect_gt(mean(within), mean(cross))
+
+  # Acceptance property (strict): the weakest related pair still beats the
+  # strongest unrelated pair. expect_gt prints both operands on failure, so a
+  # borderline run shows its margin.
+  expect_gt(min(within), max(cross))
 })
