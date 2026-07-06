@@ -21,6 +21,8 @@ rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, 
 
 rebirth_embed <- function(ptr, texts, pooling, normalize) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize)
 
+rebirth_trace <- function(ptr, prompts, layers, positions_mode, positions_values, components) .Call(wrap__rebirth_trace, ptr, prompts, layers, positions_mode, positions_values, components)
+
 rebirth_selftest_new_handle <- function() .Call(wrap__rebirth_selftest_new_handle)
 
 rebirth_selftest_panic <- function() .Call(wrap__rebirth_selftest_panic)

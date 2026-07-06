@@ -24,7 +24,8 @@ use std::path::PathBuf;
 
 use extendr_api::prelude::*;
 use rebirth_llm::{
-    BackendKind, GenerateParams, LoadRequest, LoadedModel, ModelMetadata, Pooling, RebirthError,
+    BackendKind, CaptureRow, CaptureSpec, Component, GenerateParams, LoadRequest, LoadedModel,
+    ModelMetadata, Pooling, Positions, RebirthError,
 };
 
 /// The native side of an `llm` handle: an owned loaded model, or `None` once the
@@ -85,6 +86,21 @@ fn to_engine_token(id_1based: i32) -> i32 {
 /// applied on the way out (ARCHITECTURE.md §4).
 fn from_engine_token(id_0based: i32) -> i32 {
     id_0based + 1
+}
+
+/// R (1-based index) -> engine (0-based), for layers/positions/neurons. The single
+/// inbound conversion site (ARCHITECTURE.md §4). R has already validated the value
+/// is a positive integer, so `one_based - 1` is non-negative; the `.max(0)` makes
+/// the narrowing to `u32` total even for an unvalidated caller.
+fn to_engine_index(one_based: i32) -> u32 {
+    (one_based - 1).max(0) as u32
+}
+
+/// Engine (0-based index) -> R (1-based), for layers/positions/neurons. The single
+/// outbound conversion site (ARCHITECTURE.md §4). Inverse of [`to_engine_index`] on
+/// the valid range: `from_engine_index(to_engine_index(x)) == x` for `x >= 1`.
+fn from_engine_index(zero_based: u32) -> i32 {
+    (zero_based as i64 + 1) as i32
 }
 
 /// Borrow the live model behind `ptr` and run `f`, mapping a closed/foreign
@@ -153,6 +169,9 @@ fn error_fields(error: &RebirthError) -> Robj {
             ("overflow", Robj::from(*overflow as i32)),
         ],
         RebirthError::Embed { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::Trace { reason } => {
             vec![("reason", Robj::from(reason.as_str()))]
         }
         RebirthError::Internal { context } => {
@@ -376,6 +395,120 @@ fn rebirth_embed(ptr: Robj, texts: Vec<String>, pooling: &str, normalize: bool) 
     })
 }
 
+// Trace activations over the prompt tokens. R has validated m/prompts/layers/
+// positions/components and run the predictive OOM check; here we build the
+// engine-native (0-based) capture spec -- the 1-based -> 0-based conversion for
+// `layers`/`positions` happens ONLY here (ARCHITECTURE §4) -- run trace_texts
+// under with_model's catch_unwind, and expand the captured rows into the seven
+// long-format columns with layer/token_pos/prompt_id/neuron shifted back to
+// 1-based. `layers` empty = all blocks; `positions_mode` is "last"/"all"/"explicit"
+// with `positions_values` the 1-based explicit positions (empty otherwise).
+#[extendr]
+fn rebirth_trace(
+    ptr: Robj,
+    prompts: Vec<String>,
+    layers: Vec<i32>,
+    positions_mode: &str,
+    positions_values: Vec<i32>,
+    components: Vec<String>,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let spec = build_capture_spec(&layers, positions_mode, &positions_values, &components)?;
+        let refs: Vec<&str> = prompts.iter().map(String::as_str).collect();
+        let rows = model.trace_texts(&refs, &spec)?;
+        Ok(trace_payload(&rows))
+    })
+}
+
+/// Build the engine-native capture spec from the validated R arguments, applying
+/// the 1-based -> 0-based conversion for `layers`/`positions` here and nowhere else.
+fn build_capture_spec(
+    layers: &[i32],
+    positions_mode: &str,
+    positions_values: &[i32],
+    components: &[String],
+) -> Result<CaptureSpec, RebirthError> {
+    let layers = if layers.is_empty() {
+        None
+    } else {
+        Some(layers.iter().map(|&l| to_engine_index(l)).collect())
+    };
+    let positions = match positions_mode {
+        "last" => Positions::Last,
+        "all" => Positions::All,
+        "explicit" => Positions::Explicit(
+            positions_values
+                .iter()
+                .map(|&p| to_engine_index(p))
+                .collect(),
+        ),
+        other => {
+            return Err(RebirthError::Internal {
+                context: format!(
+                    "positions mode '{other}' reached the boundary unresolved \
+                     (R must pass \"last\", \"all\", or \"explicit\")"
+                ),
+            })
+        }
+    };
+    let components = components
+        .iter()
+        .map(|c| {
+            Component::parse(c).ok_or_else(|| RebirthError::Internal {
+                context: format!("component '{c}' reached the boundary unresolved"),
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(CaptureSpec {
+        layers,
+        positions,
+        components,
+    })
+}
+
+/// Expand the captured rows into the exact 7-column `rebirth_trace` payload
+/// (API-GRAMMAR §2), one long-format entry per (row, neuron). Every index is
+/// shifted engine 0-based -> R 1-based here; `value` is upcast f32 -> f64.
+fn trace_payload(rows: &[CaptureRow]) -> Robj {
+    let total: usize = rows.iter().map(|r| r.values.len()).sum();
+    let mut prompt_id = Vec::with_capacity(total);
+    let mut token_pos = Vec::with_capacity(total);
+    let mut token = Vec::with_capacity(total);
+    let mut layer = Vec::with_capacity(total);
+    let mut component = Vec::with_capacity(total);
+    let mut neuron = Vec::with_capacity(total);
+    let mut value = Vec::with_capacity(total);
+
+    for row in rows {
+        let pid = from_engine_index(row.prompt_id);
+        let pos = from_engine_index(row.token_pos);
+        let lyr = from_engine_index(row.layer);
+        let comp = row.component.as_str();
+        let tok = row.token.as_deref().unwrap_or("");
+        for (k, &v) in row.values.iter().enumerate() {
+            prompt_id.push(pid);
+            token_pos.push(pos);
+            token.push(tok.to_string());
+            layer.push(lyr);
+            component.push(comp.to_string());
+            neuron.push(from_engine_index(k as u32));
+            value.push(v as f64);
+        }
+    }
+
+    List::from_pairs(vec![
+        ("ok", Robj::from(true)),
+        ("prompt_id", Robj::from(prompt_id)),
+        ("token_pos", Robj::from(token_pos)),
+        ("token", Robj::from(token)),
+        ("layer", Robj::from(layer)),
+        ("component", Robj::from(component)),
+        ("neuron", Robj::from(neuron)),
+        ("value", Robj::from(value)),
+    ])
+    .into()
+}
+
 // Test-only: a real, already-closed handle for exercising the close /
 // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
 #[extendr]
@@ -407,6 +540,41 @@ extendr_api::extendr_module! {
     fn rebirth_detokenize;
     fn rebirth_generate;
     fn rebirth_embed;
+    fn rebirth_trace;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_panic;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{from_engine_index, to_engine_index};
+    use rebirth_llm::parse_tensor_name;
+
+    // The canonical defect class (ARCHITECTURE §4): 1-based <-> 0-based conversion
+    // lives ONLY here, so it is property-tested here.
+    #[test]
+    fn engine_index_round_trips_over_the_valid_range() {
+        // from_engine_index(to_engine_index(x)) == x for every 1-based index.
+        for x in 1..=4096i32 {
+            assert_eq!(
+                from_engine_index(to_engine_index(x)),
+                x,
+                "round-trip at {x}"
+            );
+        }
+        // Anchor the two ends explicitly: layer 1 <-> engine il 0.
+        assert_eq!(to_engine_index(1), 0);
+        assert_eq!(from_engine_index(0), 1);
+    }
+
+    #[test]
+    fn tensor_name_layer_surfaces_as_one_based_api_layer() {
+        // The tap parses a graph tensor name to a 0-based engine layer; this
+        // boundary is the only place it becomes the 1-based API layer. So the
+        // graph name "l_out-7" (engine il = 7) surfaces to R as layer 8.
+        let (base, il) = parse_tensor_name("l_out-7").expect("l_out-7 parses");
+        assert_eq!(base, "l_out");
+        assert_eq!(il, 7);
+        assert_eq!(from_engine_index(il), 8, "l_out-7 -> API layer 8");
+    }
 }
