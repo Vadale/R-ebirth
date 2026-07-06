@@ -239,6 +239,13 @@ bool llama_adapter_intervene::apply(
         }
         masks[il] = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);
         adds[il]  = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);
+        // rebirth WP5 (F-3): fail closed if either tensor was not created, so a
+        // future vendor-bump that changes ggml tensor-overhead accounting can never
+        // leave a half-created pair -> ggml_add(cur, nullptr) in apply_to.
+        if (!masks[il] || !adds[il]) {
+            LLAMA_LOG_ERROR("%s: failed to create intervention tensors\n", __func__);
+            return false;
+        }
     }
 
     // allocate tensors / buffers and zero
