@@ -39,6 +39,14 @@ pub enum RebirthError {
         context_length: u32,
         overflow: u32,
     },
+    /// Embedding failed. Unlike the other engine errors this has several distinct
+    /// causes — `pooling = "model"` is unavailable (the model defines no pooling,
+    /// or is a reranker with a RANK head), or an input does not fit the context
+    /// window — each needing its own guidance (and, for the over-long case, the
+    /// two specific sizes). So the full, already-actionable message is composed at
+    /// the failure site and carried in `reason`; `Display` presents it verbatim,
+    /// and the R condition surfaces it as the structured `reason` field.
+    Embed { reason: String },
     /// An unexpected internal failure (e.g. a caught Rust panic). Always a bug.
     Internal { context: String },
 }
@@ -54,6 +62,7 @@ impl RebirthError {
             RebirthError::Tokenize { .. } => "rebirth_error_tokenize",
             RebirthError::Generation { .. } => "rebirth_error_generation",
             RebirthError::ContextOverflow { .. } => "rebirth_error_context_overflow",
+            RebirthError::Embed { .. } => "rebirth_error_embed",
             RebirthError::Internal { .. } => "rebirth_error_internal",
         }
     }
@@ -106,6 +115,10 @@ impl fmt::Display for RebirthError {
                  ({overflow} too many). \
                  Shorten the prompt, or reload the model with a larger context_length."
             ),
+            // The message is composed at the failure site (see the variant doc):
+            // each embedding cause needs distinct guidance, so `reason` already
+            // holds a complete what-happened -> cause -> what-to-try message.
+            RebirthError::Embed { reason } => write!(f, "{reason}"),
             RebirthError::Internal { context } => write!(
                 f,
                 "Internal error in the rebirth engine: {context}. \

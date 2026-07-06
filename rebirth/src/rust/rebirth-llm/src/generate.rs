@@ -43,14 +43,16 @@ pub struct Encoding {
 
 /// RAII wrapper over `llama_batch`: `llama_batch_init` allocates the arrays,
 /// `Drop` calls `llama_batch_free`. All member arrays are engine-owned and sized
-/// to `n_tokens`; we only ever write the documented fields.
-struct Batch {
-    raw: ffi::llama_batch,
+/// to `n_tokens`; we only ever write the documented fields. `pub(crate)` so the
+/// embedding path (`embed.rs`) reuses this already-SAFETY-reviewed batch fill
+/// instead of duplicating a near-identical one.
+pub(crate) struct Batch {
+    pub(crate) raw: ffi::llama_batch,
     capacity: i32,
 }
 
 impl Batch {
-    fn new(n_tokens: i32) -> Result<Self, RebirthError> {
+    pub(crate) fn new(n_tokens: i32) -> Result<Self, RebirthError> {
         // SAFETY: allocates a batch holding `n_tokens` tokens (embd = 0 -> token
         // array), one sequence id per token (n_seq_max = 1). Freed in Drop.
         let raw = unsafe { ffi::llama_batch_init(n_tokens, 0, 1) };
@@ -67,8 +69,9 @@ impl Batch {
 
     /// Fill the batch with `tokens` at positions `start_pos..`, sequence 0.
     /// `logits_last_only` decides whether only the final token requests logits
-    /// (generation) or every token does (teacher-forced scoring).
-    fn fill(&mut self, tokens: &[i32], start_pos: i32, logits_last_only: bool) {
+    /// (generation) or every token does (teacher-forced scoring, and the
+    /// embedding path, which flags every token for per-token output).
+    pub(crate) fn fill(&mut self, tokens: &[i32], start_pos: i32, logits_last_only: bool) {
         debug_assert!(tokens.len() as i32 <= self.capacity);
         let n = tokens.len();
         self.raw.n_tokens = n as i32;
@@ -131,9 +134,10 @@ fn sized_buffer<T: Clone + Default>(
 
 impl LoadedModel {
     /// `Ok(())` if the model carries a tokenizer, else `RebirthError::Tokenize`.
-    /// The text-facing entry points (encode / decode / templated generation) all
-    /// require one; the numeric synthetic model has a vocabulary but no tokenizer.
-    fn require_tokenizer(&self) -> Result<(), RebirthError> {
+    /// The text-facing entry points (encode / decode / templated generation /
+    /// text embedding) all require one; the numeric synthetic model has a
+    /// vocabulary but no tokenizer.
+    pub(crate) fn require_tokenizer(&self) -> Result<(), RebirthError> {
         if self.has_tokenizer() {
             Ok(())
         } else {
@@ -201,7 +205,7 @@ impl LoadedModel {
 
     /// Reject ids outside `[0, n_vocab)` before they reach the engine (a bad id
     /// could otherwise trip an assert). Engine-native (0-based) ids.
-    fn validate_ids(&self, ids: &[i32]) -> Result<(), RebirthError> {
+    pub(crate) fn validate_ids(&self, ids: &[i32]) -> Result<(), RebirthError> {
         let n_vocab = self.n_vocab();
         for &id in ids {
             if id < 0 || id >= n_vocab {
@@ -213,7 +217,7 @@ impl LoadedModel {
         Ok(())
     }
 
-    fn tokenize(
+    pub(crate) fn tokenize(
         &self,
         text: &str,
         add_special: bool,

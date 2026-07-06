@@ -9,14 +9,17 @@
 //! - [`ffi`] — the hand-written `extern "C"` surface + `#[repr(C)]` param structs.
 //! - [`error`] — [`RebirthError`], mirroring `API-GRAMMAR.md` §6.
 //! - [`engine`] — the safe `Backend`/`Model`/`Context` lifecycle and [`load`].
+//! - [`embed`] — text/token embeddings pooled in Rust (WP3, D-011).
 
 use std::ffi::CStr;
 
+mod embed;
 mod engine;
 mod error;
 mod ffi;
 mod generate;
 
+pub use embed::{Embeddings, Pooling};
 pub use engine::{available_backends, load, BackendKind, LoadRequest, LoadedModel, ModelMetadata};
 pub use error::RebirthError;
 pub use generate::{ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason};

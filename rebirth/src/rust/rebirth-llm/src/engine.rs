@@ -264,6 +264,26 @@ impl Drop for Context {
     }
 }
 
+/// A transient embeddings-mode context (D-011): `create_embedding_context` builds
+/// one per `llm_embed` call, sized to the batch, and it drops at the call's end.
+/// Unlike [`Context`] it is never stored in the `Arc`-shared handle, so it needs
+/// no `unsafe impl Send + Sync` — it lives and dies on the R main thread inside a
+/// single call (keeping the D-008 G2 thread-safety gate closed).
+pub(crate) struct EmbeddingContext {
+    pub(crate) ptr: NonNull<ffi::llama_context>,
+    /// Keeps the model alive for the context's lifetime; dropped after `ptr`.
+    _model: Arc<Model>,
+    pub(crate) n_embd: usize,
+}
+
+impl Drop for EmbeddingContext {
+    fn drop(&mut self) {
+        // SAFETY: `ptr` came from `llama_init_from_model`; freed exactly once and
+        // before the `Arc<Model>` it holds (dropped right after this).
+        unsafe { ffi::llama_free(self.ptr.as_ptr()) };
+    }
+}
+
 /// The R-facing bundle: a loaded model plus its active context. Dropping this
 /// frees the context, then (if it was the last reference) the model, then (if it
 /// was the last handle) the backend.
@@ -372,6 +392,74 @@ impl LoadedModel {
     pub(crate) fn n_batch(&self) -> u32 {
         // SAFETY: `ctx_ptr` is a live context for the model's lifetime.
         unsafe { ffi::llama_n_batch(self.ctx_ptr()) }
+    }
+
+    // --- crate-internal embedding support (embed.rs) ------------------------
+
+    /// Build a fresh embeddings-mode context sized to `n_ctx` tokens (D-011):
+    /// `embeddings = true`, `pooling_type = NONE` (so `llama_get_embeddings_ith`
+    /// yields per-token post-final-norm rows), `attention_type = UNSPECIFIED`
+    /// (llama auto-selects causal for generative models, non-causal for encoders),
+    /// and `n_batch = n_ubatch = n_ctx` so any sequence up to `n_ctx` tokens
+    /// decodes in a single batch — required for a non-causal encoder (its whole
+    /// sequence must live in one ubatch) and the clean way to avoid the
+    /// `GGML_ASSERT(n_tokens_all <= n_batch)` abort without per-chunk pooling.
+    pub(crate) fn create_embedding_context(
+        &self,
+        n_ctx: u32,
+    ) -> Result<EmbeddingContext, RebirthError> {
+        let model = self.ctx.model.clone();
+
+        // SAFETY: default params are a plain by-value C struct we only tweak. The
+        // three embedding fields' offsets are guarded by the ffi.rs ABI test.
+        let mut cparams = unsafe { ffi::llama_context_default_params() };
+        cparams.n_ctx = n_ctx;
+        cparams.n_batch = n_ctx;
+        cparams.n_ubatch = n_ctx;
+        cparams.embeddings = true;
+        cparams.pooling_type = 0; // LLAMA_POOLING_TYPE_NONE
+        cparams.attention_type = -1; // LLAMA_ATTENTION_TYPE_UNSPECIFIED
+
+        // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
+        // failure the local `Arc<Model>` clone drops here, releasing its reference.
+        let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
+        let ptr = NonNull::new(ctx_ptr).ok_or_else(|| RebirthError::Embed {
+            reason: "Could not create an embedding context for this model. \
+                     The model may not support embeddings, or there was not enough memory. \
+                     Try a shorter input, or free other loaded models first."
+                .to_string(),
+        })?;
+
+        // SAFETY: `model.ptr` is a live model; read-only scalar getter.
+        let n_embd = unsafe { ffi::llama_model_n_embd(model.ptr.as_ptr()) };
+        if n_embd <= 0 {
+            // SAFETY: `ptr` came from `llama_init_from_model` just above; free the
+            // freshly created context before returning so it is not leaked.
+            unsafe { ffi::llama_free(ptr.as_ptr()) };
+            return Err(RebirthError::Embed {
+                reason: "This model reports no embedding dimension, so it cannot \
+                         produce embeddings. Use a model that has an embedding output."
+                    .to_string(),
+            });
+        }
+
+        Ok(EmbeddingContext {
+            ptr,
+            _model: model,
+            n_embd: n_embd as usize,
+        })
+    }
+
+    /// The model's own pooling from GGUF `<arch>.pooling_type`, or `None` when the
+    /// key is absent — read via the existing `llama_model_meta_val_str` and parsed
+    /// as an integer exactly like `quantization()` parses `general.file_type`.
+    /// `embed.rs` maps the value to a reduction (§2.4 / D-011).
+    pub(crate) fn model_pooling_type_meta(&self) -> Option<i32> {
+        let model = &self.ctx.model;
+        let key = format!("{}.pooling_type", model.architecture());
+        model
+            .meta_str(&key)
+            .and_then(|s| s.trim().parse::<i32>().ok())
     }
 }
 

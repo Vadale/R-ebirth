@@ -11,10 +11,10 @@ test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", 
   # Every export must have an approved API-GRAMMAR entry. This guard grows one
   # approved entry at a time; the internal .Call wrappers and helpers stay
   # unexported. WP1: llm(). WP2 (API-GRAMMAR section 3): llm_tokens(),
-  # llm_generate().
+  # llm_generate(). WP3: llm_embed().
   expect_setequal(
     getNamespaceExports("rebirth"),
-    c("llm", "llm_tokens", "llm_generate")
+    c("llm", "llm_tokens", "llm_generate", "llm_embed")
   )
 })
 

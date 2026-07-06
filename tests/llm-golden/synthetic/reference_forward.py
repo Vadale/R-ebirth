@@ -65,6 +65,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 GOLDEN_DIR = os.path.join(HERE, "goldens")
 LOGITS_NPY = os.path.join(GOLDEN_DIR, "logits.npy")
 LOGITS_CSV = os.path.join(GOLDEN_DIR, "logits.csv")
+EMBEDDINGS_NPY = os.path.join(GOLDEN_DIR, "embeddings.npy")
+EMBEDDINGS_CSV = os.path.join(GOLDEN_DIR, "embeddings.csv")
 GREEDY_CSV = os.path.join(GOLDEN_DIR, "greedy_tokens.csv")
 GREEDY_CONT_CSV = os.path.join(GOLDEN_DIR, "greedy_continuation.csv")
 META_JSON = os.path.join(GOLDEN_DIR, "metadata.json")
@@ -117,8 +119,17 @@ def softmax_lastdim(x: np.ndarray) -> np.ndarray:
 # --- forward pass ----------------------------------------------------------
 
 
-def forward(weights: dict[str, np.ndarray], tokens: list[int]) -> np.ndarray:
-    """Return logits of shape (seq_len, n_vocab), float64."""
+def hidden_states(weights: dict[str, np.ndarray], tokens: list[int]) -> np.ndarray:
+    """Return the post-final-norm hidden states, shape (seq_len, n_embd), float64.
+
+    This is the value of ``x`` immediately AFTER the final ``output_norm`` RMSNorm
+    and BEFORE the LM-head matmul -- llama.cpp's ``result_norm`` tensor, i.e.
+    exactly what ``llama_get_embeddings_ith`` returns for a NONE-pooling context
+    (ADR D-011, ``docs/wp3-embed-plan.md`` s7.1). ``forward`` composes the logits
+    from it, so extracting it here is a pure refactor: the numeric ops and their
+    order are unchanged, so the logit goldens do not drift (``--check`` enforces
+    this).
+    """
     n_embd = int(CONFIG["n_embd"])  # type: ignore[arg-type]
     n_layer = int(CONFIG["n_layer"])  # type: ignore[arg-type]
     n_head = int(CONFIG["n_head"])  # type: ignore[arg-type]
@@ -172,8 +183,19 @@ def forward(weights: dict[str, np.ndarray], tokens: list[int]) -> np.ndarray:
         x = x + ff  # residual
 
     x = rmsnorm(x, w("output_norm.weight"), eps)
-    logits = x @ w("output.weight").T  # (seq, n_vocab)
-    return logits
+    return x  # (seq, n_embd) post-final-norm hidden states ("result_norm")
+
+
+def forward(weights: dict[str, np.ndarray], tokens: list[int]) -> np.ndarray:
+    """Return logits of shape (seq_len, n_vocab), float64.
+
+    Composed from the post-final-norm hidden states so both goldens derive from
+    one forward pass: ``logits = hidden_states(...) @ output.T``. This matmul is
+    byte-identical to the previously inlined ``x @ w("output.weight").T`` (same
+    float64 operands, same order), so ``logits.npy`` must not drift.
+    """
+    x = hidden_states(weights, tokens)
+    return x @ weights["output.weight"].astype(np.float64).T  # (seq, n_vocab)
 
 
 # --- goldens ---------------------------------------------------------------
@@ -181,6 +203,11 @@ def forward(weights: dict[str, np.ndarray], tokens: list[int]) -> np.ndarray:
 
 def compute_logits() -> np.ndarray:
     return forward(build_weights(), INPUT_TOKENS)
+
+
+def compute_hidden_states() -> np.ndarray:
+    """Post-final-norm hidden states for INPUT_TOKENS (the embeddings golden)."""
+    return hidden_states(build_weights(), INPUT_TOKENS)
 
 
 def greedy_tokens(logits: np.ndarray) -> np.ndarray:
@@ -249,6 +276,16 @@ def write_goldens() -> None:
         for i, row in enumerate(logits):
             fh.write(str(i) + "," + ",".join(f"{v:.17g}" for v in row) + "\n")
 
+    # Embeddings golden (WP3): the per-token post-final-norm hidden states -- the
+    # exact tensor llama_get_embeddings_ith returns under NONE pooling (D-011).
+    # Same .npy + .csv format/precision convention as the logits golden above.
+    emb = compute_hidden_states()
+    np.save(EMBEDDINGS_NPY, emb)
+    with open(EMBEDDINGS_CSV, "w") as fh:
+        fh.write("position," + ",".join(f"embd_{j}" for j in range(emb.shape[1])) + "\n")
+        for i, row in enumerate(emb):
+            fh.write(str(i) + "," + ",".join(f"{v:.17g}" for v in row) + "\n")
+
     with open(GREEDY_CSV, "w") as fh:
         fh.write("position,token,input_token\n")
         for i, (tok, inp) in enumerate(zip(greedy, INPUT_TOKENS)):
@@ -259,6 +296,15 @@ def write_goldens() -> None:
         fh.write("step,token\n")
         for i, tok in enumerate(cont):
             fh.write(f"{i},{int(tok)}\n")
+
+    # Pooled embedding goldens for the llm_embed() pooling modes, reduced over
+    # the per-token rows: mean = elementwise average of all rows, last = the
+    # final token (row 7). Normalized variants are L2 unit vectors (v/||v||),
+    # what normalize = TRUE returns; these pin the Rust reduction + L2 path.
+    mean_pool = emb.mean(axis=0)
+    last_pool = emb[-1]
+    mean_pool_normalized = mean_pool / np.linalg.norm(mean_pool)
+    last_pool_normalized = last_pool / np.linalg.norm(last_pool)
 
     meta = {
         "model": str(CONFIG["name"]),
@@ -275,6 +321,11 @@ def write_goldens() -> None:
         "greedy_continuation": [int(t) for t in cont],
         "greedy_continuation_min_margin": cont_margin,
         "logits_sha256": _sha256_array(logits),
+        "embeddings_sha256": _sha256_array(emb),
+        "mean_pool": mean_pool.tolist(),
+        "last_pool": last_pool.tolist(),
+        "mean_pool_normalized": mean_pool_normalized.tolist(),
+        "last_pool_normalized": last_pool_normalized.tolist(),
         "numpy_version": np.__version__,
     }
     with open(META_JSON, "w") as fh:
@@ -282,6 +333,7 @@ def write_goldens() -> None:
         fh.write("\n")
 
     print(f"wrote goldens for {logits.shape[0]} positions x {logits.shape[1]} vocab")
+    print(f"  embeddings    : {emb.shape[0]} x {emb.shape[1]} (sha256 {_sha256_array(emb)[:16]})")
     print(f"  greedy tokens : {[int(t) for t in greedy]}")
     print(f"  min top-2 gap : {np.min(top2_margins(logits)):.4g}")
     print(f"  greedy cont.  : {cont} (min step margin {cont_margin:.4g})")
@@ -306,6 +358,14 @@ def check_goldens() -> int:
     b = compute_logits()
     if not np.array_equal(a, b):
         print("FAIL: forward pass is not deterministic (two runs differ)", file=sys.stderr)
+        return 1
+
+    # 1b) Same-machine determinism for the post-final-norm hidden states (the
+    #     embeddings golden), matching the logits determinism guard above.
+    ha = compute_hidden_states()
+    hb = compute_hidden_states()
+    if not np.array_equal(ha, hb):
+        print("FAIL: hidden_states is not deterministic (two runs differ)", file=sys.stderr)
         return 1
 
     # 2) The committed GGUF holds exactly the oracle's weights.
@@ -337,6 +397,35 @@ def check_goldens() -> int:
         print("FAIL: greedy tokens differ from committed golden", file=sys.stderr)
         return 1
 
+    # 3b) The committed embeddings golden round-trips: it loads and still matches
+    #     the recomputed post-final-norm hidden states (same tolerance as logits).
+    if not os.path.exists(EMBEDDINGS_NPY):
+        print(f"FAIL: committed golden missing: {EMBEDDINGS_NPY}", file=sys.stderr)
+        return 1
+    committed_emb = np.load(EMBEDDINGS_NPY)
+    if committed_emb.shape != ha.shape:
+        print(
+            f"FAIL: embeddings golden shape {committed_emb.shape} != recomputed {ha.shape}",
+            file=sys.stderr,
+        )
+        return 1
+    if not np.allclose(committed_emb, ha, atol=CHECK_ATOL, rtol=CHECK_RTOL):
+        max_abs = float(np.max(np.abs(committed_emb - ha)))
+        print(
+            f"FAIL: hidden states drifted from committed golden (max abs {max_abs:.3e})",
+            file=sys.stderr,
+        )
+        return 1
+
+    # 3c) Cross-consistency: the committed hidden states, pushed through the LM
+    #     head, reproduce the committed logits -- proving embeddings.npy is the
+    #     pre-LM-head tensor of the SAME forward pass (not a stray array), so the
+    #     two goldens are tied together and neither can drift silently alone.
+    output_w = build_weights()["output.weight"].astype(np.float64)
+    if not np.allclose(committed_emb @ output_w.T, committed, atol=CHECK_ATOL, rtol=CHECK_RTOL):
+        print("FAIL: committed embeddings @ output.T != committed logits", file=sys.stderr)
+        return 1
+
     # 4) The autoregressive greedy-continuation golden still reproduces, and its
     #    per-step margin stays comfortably above the F32 noise floor.
     if not os.path.exists(GREEDY_CONT_CSV):
@@ -360,6 +449,7 @@ def check_goldens() -> int:
         return 1
 
     print("OK: reference forward is deterministic; GGUF and committed goldens agree")
+    print(f"  embeddings    : {ha.shape[0]} x {ha.shape[1]} (sha256 {_sha256_array(ha)[:16]})")
     print(f"  greedy tokens : {[int(t) for t in greedy_tokens(a)]}")
     print(f"  min top-2 gap : {np.min(top2_margins(a)):.4g}")
     print(f"  greedy cont.  : {cont} (min step margin {cont_margin:.4g})")
