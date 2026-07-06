@@ -108,6 +108,12 @@ files are removed when the R session ends.
 The model must carry a tokenizer; a \code{no_vocab} model raises
 \code{rebirth_error_tokenize}. As with the other text entry points, the runnable
 example is guarded by the \code{REBIRTH_TEST_MODEL_QWEN} environment variable.
+
+Tracing an \strong{intervened} handle (from \code{\link[=llm_steer]{llm_steer()}}/\code{\link[=llm_ablate]{llm_ablate()}}) raises
+\code{rebirth_error_trace}: interventions currently apply to generation and logits
+only, and the trace context does not inherit them, so tracing would capture the
+base (un-intervened) forward pass while labeling it intervened. Trace the
+original handle.
 }
 \examples{
 \dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}

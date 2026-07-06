@@ -24,6 +24,11 @@
 #' `REBIRTH_TEST_MODEL_QWEN` environment variable — point it at a local Qwen2.5
 #' GGUF to run it.
 #'
+#' Embedding an **intervened** handle (from [llm_steer()]/[llm_ablate()]) raises
+#' `rebirth_error_embed`: interventions currently apply to generation and logits
+#' only, and the embedding context does not inherit them, so returning base vectors
+#' labeled as intervened would be silent mislabeling. Embed the original handle.
+#'
 #' @param m An `llm` handle from [llm()].
 #' @param x A character vector of one or more non-empty strings to embed; `NA` and
 #'   empty strings (`""`) are rejected. `names(x)` become the row names.
@@ -48,6 +53,10 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
+  guard_not_intervened(
+    m, "rebirth_error_embed",
+    "Embedding an intervened handle is not yet supported"
+  )
   pooling <- match.arg(pooling)
   if (!is.character(x) || length(x) == 0L || anyNA(x)) {
     abort_argument("x", "`x` must be a non-empty character vector without NA.")
