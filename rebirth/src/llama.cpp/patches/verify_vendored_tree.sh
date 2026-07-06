@@ -13,14 +13,28 @@
 # resolves its own location. Exits non-zero on any mismatch.
 set -eu
 
+# POSIX sh has no `pipefail`; enable it where the running shell supports it (bash,
+# ksh, zsh, busybox ash) so a failure mid-pipe (e.g. shasum on an unreadable file)
+# is not masked by a succeeding tail stage. Harmless where unsupported — digest()
+# below is also robust on its own via explicit status capture (F-5).
+if (set -o pipefail) 2>/dev/null; then set -o pipefail; fi
+
 # rebirth/src/llama.cpp — one dir up from this script's patches/ dir.
 here=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 vend="$here/VENDORING.md"
 
 # The documented pruned-tree digest of $1, excluding VENDORING.md and patches/.
+# Fail-closed (F-5): materialize the sorted file list, then capture the per-file
+# `xargs shasum` status EXPLICITLY (POSIX sh has no pipefail) so an unreadable file
+# fails the function instead of being masked by the succeeding reduce/`cut`.
 digest() {
-    ( cd "$1" && find . -type f -not -path './VENDORING.md' -not -path './patches/*' \
-        | LC_ALL=C sort | xargs shasum -a 256 | shasum -a 256 | cut -d' ' -f1 )
+    (
+        cd "$1" || exit 1
+        list=$(find . -type f -not -path './VENDORING.md' -not -path './patches/*' \
+            | LC_ALL=C sort)
+        manifest=$(printf '%s\n' "$list" | xargs shasum -a 256) || exit 1
+        printf '%s\n' "$manifest" | shasum -a 256 | cut -d' ' -f1
+    )
 }
 
 # The 64-hex SHA on the VENDORING.md table row containing $1.
@@ -51,13 +65,20 @@ echo "OK (G4): vendored pruned tree matches VENDORING.md post-patch SHA256"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 cp -R "$here/." "$tmp/"
-(
+# Capture the reverse-apply subshell status EXPLICITLY (F-5): under `set -e` a bare
+# `git apply -R` failure would abort with no diagnostic, so wrap it in `if !` (which
+# `set -e` does not trip) and emit the intended coherence message. Fail-closed.
+if ! (
     cd "$tmp"
     for p in patches/*.diff; do
         [ -e "$p" ] || continue
         git apply -R -p1 "$p"
     done
-)
+); then
+    echo "FAIL (coherence): patches/*.diff did not reverse-apply cleanly to the committed tree" >&2
+    echo "The committed tree and patches/*.diff have diverged; re-generate the diff." >&2
+    exit 1
+fi
 pre_actual=$(digest "$tmp")
 if [ "$pre_actual" != "$pre_expected" ]; then
     echo "FAIL (coherence): reverse-applying patches/*.diff does not restore the pre-patch tree" >&2
