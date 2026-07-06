@@ -1059,6 +1059,7 @@ llm_graph_context::llm_graph_context(const llm_graph_params & params) :
     sched            (params.sched),
     backend_cpu      (params.backend_cpu),
     cvec             (params.cvec),
+    intervene        (params.intervene), // rebirth WP5
     loras            (params.loras),
     mctx             (params.mctx),
     cross            (params.cross),
@@ -1079,7 +1080,13 @@ void llm_graph_context::cb(ggml_tensor * cur, const char * name, int il) const {
 ggml_tensor * llm_graph_context::build_cvec(
          ggml_tensor * cur,
                  int   il) const {
-    return cvec->apply_to(ctx0, cur, il);
+    cur = cvec->apply_to(ctx0, cur, il);
+    // rebirth WP5 (D-012/D-016): apply the ablation AFTER the control vector, so a
+    // jointly steered+ablated neuron is forced to `value`. A no-op (no node) unless
+    // a genuine ablation is registered for `il`, so the un-intervened graph is
+    // byte-identical to the unpatched build.
+    cur = intervene->apply_to(ctx0, cur, il);
+    return cur;
 }
 
 ggml_tensor * llm_graph_context::build_lora_mm(

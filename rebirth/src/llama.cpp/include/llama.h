@@ -699,6 +699,22 @@ extern "C" {
                          int32_t   il_start,
                          int32_t   il_end);
 
+    // rebirth WP5 patch (DECISIONS.md D-012/D-016): register per-layer ablation
+    // buffers so build_cvec applies `x*mask + add` AFTER the control vector,
+    // forcing the masked neurons to `value`. mask/add are n_embd x n_layer F32
+    // buffers from layer 0 (full coverage); a NULL mask clears the intervention.
+    // il_start/il_end bound the active layer range (both inclusive). Returns 0 on
+    // success, -1 on n_embd mismatch. Project-prefixed: a rebirth patch, not
+    // upstream API.
+    LLAMA_API int32_t rebirth_set_intervene(
+            struct llama_context * ctx,
+                     const float * mask,
+                     const float * add,
+                          size_t   len,
+                         int32_t   n_embd,
+                         int32_t   il_start,
+                         int32_t   il_end);
+
     //
     // Memory
     //

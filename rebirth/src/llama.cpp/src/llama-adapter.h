@@ -42,6 +42,45 @@ private:
 using llama_adapter_cvec_ptr = std::shared_ptr<llama_adapter_cvec>;
 
 //
+// llama_adapter_intervene  (rebirth WP5 patch — DECISIONS.md D-012/D-016)
+//
+// Sibling of llama_adapter_cvec that forces chosen residual neurons to a fixed
+// value. Applied inside build_cvec AFTER the control vector, it computes
+// `cur * mask + add` per layer, so mask[k] = 0 / add[k] = value pins neuron k to
+// `value` (D-016 compose order: ablation wins over a co-located steer). Unlike
+// cvec it covers ALL layers (buffer offset n_embd*il, from layer 0), and it
+// registers per-layer tensors ONLY for layers with a genuine (non-identity)
+// ablation, so an un-ablated layer emits no `x*1+0` node and the un-intervened
+// graph is byte-identical to the unpatched build.
+//
+struct llama_adapter_intervene {
+    ggml_tensor * mask_for(int il) const;
+
+    ggml_tensor * apply_to(ggml_context * ctx, ggml_tensor * cur, int  il) const;
+
+    bool apply(
+            const llama_model & model,
+            const float * mask,
+            const float * add,
+            size_t len,
+            int32_t n_embd,
+            int32_t il_start,
+            int32_t il_end);
+
+private:
+    int32_t layer_start = -1;
+    int32_t layer_end   = -1;
+
+    std::vector<ggml_context_ptr> ctxs;
+    std::vector<ggml_backend_buffer_ptr> bufs;
+
+    std::vector<ggml_tensor *> masks; // per layer (nullptr = no ablation)
+    std::vector<ggml_tensor *> adds;  // per layer (nullptr = no ablation)
+};
+
+using llama_adapter_intervene_ptr = std::shared_ptr<llama_adapter_intervene>;
+
+//
 // llama_adapter_lora
 //
 
