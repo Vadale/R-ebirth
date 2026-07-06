@@ -576,16 +576,43 @@ read_spill_slice <- function(x, layer, component) {
   verify_spill_integrity(x, path)
 
   engine_layer <- as.integer(layer) - 1L # disk indices are 0-based (engine-native)
-  stream <- nanoarrow::read_nanoarrow(path, lazy = TRUE)
-  parts <- list()
-  repeat {
-    batch <- stream$get_next()
-    if (is.null(batch)) break
-    df <- as.data.frame(batch)
-    sel <- df$layer == engine_layer & df$component == component
-    if (any(sel)) {
-      parts[[length(parts) + 1L]] <- df[sel, c("prompt_id", "token_pos", "neuron", "value")]
-    }
+
+  # Pull every record batch, keeping only the requested (layer, component) rows. A
+  # readable header/schema does NOT guarantee readable batch bodies: a truncated or
+  # corrupt file raises a raw nanoarrow error while pulling batches, so catch any
+  # read failure and re-raise it as a classed rebirth_error_trace carrying the same
+  # re-run guidance as the missing-file / stale-footer branches (never a bare
+  # nanoarrow error to the user). The condition is captured and re-raised at this
+  # frame so its recorded `call` matches the other branches.
+  parts <- tryCatch(
+    {
+      stream <- nanoarrow::read_nanoarrow(path, lazy = TRUE)
+      acc <- list()
+      repeat {
+        batch <- stream$get_next()
+        if (is.null(batch)) break
+        df <- as.data.frame(batch)
+        sel <- df$layer == engine_layer & df$component == component
+        if (any(sel)) {
+          acc[[length(acc) + 1L]] <- df[sel, c("prompt_id", "token_pos", "neuron", "value")]
+        }
+      }
+      acc
+    },
+    error = function(e) e
+  )
+  if (inherits(parts, "condition")) {
+    rebirth_abort(
+      "rebirth_error_trace",
+      sprintf(
+        paste0(
+          "The spill file '%s' could not be read: its record batches are truncated ",
+          "or corrupt (%s). Spilled traces are temporary and are removed when the R ",
+          "session ends; re-run llm_trace() to recreate it."
+        ),
+        path, conditionMessage(parts)
+      )
+    )
   }
   if (length(parts) == 0L) {
     return(data.frame(

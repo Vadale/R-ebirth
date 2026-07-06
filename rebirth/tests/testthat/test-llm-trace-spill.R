@@ -153,3 +153,40 @@ test_that("a spill file whose footer disagrees with the object is rejected", {
     class = "rebirth_error_trace"
   )
 })
+
+test_that("a spill file with a truncated/corrupt body fails as a classed condition", {
+  # SEC-MEDIUM: a readable header/schema does NOT guarantee readable record-batch
+  # bodies. A spill file whose batches are truncated must raise rebirth_error_trace
+  # (with the re-run guidance), never a raw nanoarrow error. Defect this catches:
+  # the batch-read loop in read_spill_slice() running unguarded.
+  m <- llm(synthetic_model_path())
+  dir <- tempfile("rebirth-spill-test-")
+  dir.create(dir)
+  on.exit({
+    close(m)
+    unlink(dir, recursive = TRUE, force = TRUE)
+  }, add = TRUE)
+
+  sp <- selftest_trace_tokens(m, synthetic_tokens(), spill = TRUE, budget = 1024, spill_dir = dir)
+  path <- attr(sp, "spill_files")
+  # A valid read first (file and object agree, body intact).
+  expect_silent(as.matrix(sp, layer = 1, component = "residual"))
+
+  # Truncate the body: keep the first 40% of the stream so the schema message (at
+  # the head) survives but the record-batch data is cut off. The file is tens of KB
+  # of batch data, so 40% lands well past the small schema and inside the first
+  # batch's body.
+  size <- file.info(path)$size
+  expect_gt(size, 4000) # ample headroom: 40% >> the schema message
+  bytes <- readBin(path, "raw", n = size)
+  writeBin(head(bytes, ceiling(length(bytes) * 0.4)), path)
+
+  # The schema/footer still verifies (so we are exercising the body-read branch,
+  # not the header/staleness branch)...
+  expect_silent(verify_spill_integrity(sp, path))
+  # ...but pulling the truncated batches now surfaces a classed trace error.
+  expect_error(
+    as.matrix(sp, layer = 1, component = "residual"),
+    class = "rebirth_error_trace"
+  )
+})
