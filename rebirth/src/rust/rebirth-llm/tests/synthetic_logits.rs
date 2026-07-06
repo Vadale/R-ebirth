@@ -304,7 +304,11 @@ fn top_k_extraction_matches_numpy_oracle_at_the_final_position() {
 fn chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row() {
     let gguf = synthetic_gguf();
     let golden = golden_logits_csv();
-    assert!(gguf.exists(), "synthetic GGUF missing at {}", gguf.display());
+    assert!(
+        gguf.exists(),
+        "synthetic GGUF missing at {}",
+        gguf.display()
+    );
     assert!(
         golden.exists(),
         "logit golden missing at {}",
@@ -345,7 +349,12 @@ fn chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row() {
     let oracle_row = &oracle[INPUT_TOKENS.len() - 1];
     let oracle_ids = oracle_top_ids(oracle_row, TOP);
     for (rank, &(id, logit, _)) in picks.iter().enumerate() {
-        assert_eq!(id, oracle_ids[rank], "top-k id at rank {} differs", rank + 1);
+        assert_eq!(
+            id,
+            oracle_ids[rank],
+            "top-k id at rank {} differs",
+            rank + 1
+        );
         let ld = (logit as f64 - oracle_row[id]).abs();
         assert!(
             ld <= ATOL,
