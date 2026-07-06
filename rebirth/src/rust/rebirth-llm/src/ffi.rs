@@ -259,10 +259,6 @@ extern "C" {
     /// and `llama_get_embeddings_seq` / `llama_pooling_type` (engine-side pooling)
     /// are all unneeded — the model's own pooling is read from GGUF metadata via
     /// the already-declared `llama_model_meta_val_str`.
-    // `allow(dead_code)`: declared here with the ABI guard (WP3 Step 1); its first
-    // caller is `EmbeddingContext::per_token` (WP3 Step 2), where the allow is
-    // removed.
-    #[allow(dead_code)]
     pub fn llama_get_embeddings_ith(ctx: *mut llama_context, i: i32) -> *mut f32;
 
     // --- KV-cache / memory ---

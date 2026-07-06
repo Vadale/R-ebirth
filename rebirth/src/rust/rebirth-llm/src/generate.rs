@@ -134,9 +134,10 @@ fn sized_buffer<T: Clone + Default>(
 
 impl LoadedModel {
     /// `Ok(())` if the model carries a tokenizer, else `RebirthError::Tokenize`.
-    /// The text-facing entry points (encode / decode / templated generation) all
-    /// require one; the numeric synthetic model has a vocabulary but no tokenizer.
-    fn require_tokenizer(&self) -> Result<(), RebirthError> {
+    /// The text-facing entry points (encode / decode / templated generation /
+    /// text embedding) all require one; the numeric synthetic model has a
+    /// vocabulary but no tokenizer.
+    pub(crate) fn require_tokenizer(&self) -> Result<(), RebirthError> {
         if self.has_tokenizer() {
             Ok(())
         } else {
@@ -204,7 +205,7 @@ impl LoadedModel {
 
     /// Reject ids outside `[0, n_vocab)` before they reach the engine (a bad id
     /// could otherwise trip an assert). Engine-native (0-based) ids.
-    fn validate_ids(&self, ids: &[i32]) -> Result<(), RebirthError> {
+    pub(crate) fn validate_ids(&self, ids: &[i32]) -> Result<(), RebirthError> {
         let n_vocab = self.n_vocab();
         for &id in ids {
             if id < 0 || id >= n_vocab {
@@ -216,7 +217,7 @@ impl LoadedModel {
         Ok(())
     }
 
-    fn tokenize(
+    pub(crate) fn tokenize(
         &self,
         text: &str,
         add_special: bool,

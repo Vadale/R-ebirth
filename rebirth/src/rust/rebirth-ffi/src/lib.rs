@@ -152,6 +152,9 @@ fn error_fields(error: &RebirthError) -> Robj {
             ("context_length", Robj::from(*context_length as i32)),
             ("overflow", Robj::from(*overflow as i32)),
         ],
+        RebirthError::Embed { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
         RebirthError::Internal { context } => {
             vec![("context", Robj::from(context.as_str()))]
         }
