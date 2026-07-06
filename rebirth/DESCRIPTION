@@ -10,8 +10,10 @@ Description: Load and run local large language models (through a vendored,
     package is in early development (repository scaffold): no modelling
     functionality is available yet.
 License: MIT + file LICENSE | Apache License (== 2.0)
-Depends: 
+Depends:
     R (>= 4.5.0)
+Imports:
+    nanoarrow
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0

@@ -8,13 +8,29 @@ authors.workspace = true
 rust-version = "1.71"
 
 [features]
+# `spill` (default on) compiles the Arrow-IPC disk-spill writer for over-budget
+# `llm_trace()` captures (DECISIONS.md D-013). A `--no-default-features` build
+# carries none of the Arrow crates — the `spill` module is `#[cfg]`-guarded — so
+# the in-budget in-memory trace path exercises no Arrow code.
+#
 # CUDA is defined but not built until Phase 8 (DECISIONS.md D-006). When enabled,
 # build.rs maps it to -DGGML_CUDA=ON. Default off: WP1 builds Metal (macOS arm64)
 # or CPU only.
-default = []
+default = ["spill"]
 cuda = []
+spill = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
 
 [dependencies]
+
+# Arrow-IPC spill writer (DECISIONS.md D-013), optional behind `spill`. Exact
+# versions pinned and vendored (ARCHITECTURE.md section 9); `default-features =
+# false` strips the compression codecs (zstd/lz4), parquet, csv, and json weight
+# so only the IPC core is built. arrow-buffer/arrow-data/arrow-select/flatbuffers,
+# and arrow-array's own chrono/num/half temporal-and-numeric support, arrive
+# transitively (intrinsic to arrow-array — not removable without forking arrow).
+arrow-array = { version = "=59.0.0", default-features = false, optional = true }
+arrow-schema = { version = "=59.0.0", default-features = false, optional = true }
+arrow-ipc = { version = "=59.0.0", default-features = false, optional = true }
 
 # The `cmake` crate drives the vendored llama.cpp static build (DECISIONS.md
 # D-006 — the only new dependency WP1 introduces). It shells out to the system
