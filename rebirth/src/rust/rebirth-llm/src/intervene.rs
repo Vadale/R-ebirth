@@ -117,11 +117,6 @@ impl InterventionSpec {
         }
         self.ablate_il_range = Some(widen(self.ablate_il_range, il as i32));
     }
-
-    /// Whether this spec carries no intervention at all.
-    pub fn is_empty(&self) -> bool {
-        self.steer.is_none() && self.ablate_mask.is_none()
-    }
 }
 
 /// Widen an inclusive range to include `il` (or start it at `il`).
@@ -283,9 +278,11 @@ mod tests {
     }
 
     #[test]
-    fn empty_spec_is_empty() {
+    fn new_spec_has_no_buffers() {
+        // A freshly built spec is a no-op: both buffers stay unallocated. The
+        // empty-spec derivation (a fresh context, no adapter) relies on this, and
+        // intervene_kl.rs exercises that no-op path end to end.
         let spec = InterventionSpec::new(N_EMBD, N_LAYER);
-        assert!(spec.is_empty());
         assert!(spec.steer.is_none());
         assert!(spec.ablate_mask.is_none());
     }
