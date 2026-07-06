@@ -30,6 +30,22 @@ impl Logits {
     }
 }
 
+/// One entry of a next-token distribution's top-k (`llm_logits`): a token, its
+/// logit, and its probability. `prob` is the softmax over the FULL vocabulary —
+/// the token's true next-token probability, not a renormalized top-k share — so
+/// the returned probabilities sum to at most 1.
+#[derive(Debug, Clone, PartialEq)]
+pub struct TokenLogit {
+    /// Engine-native (0-based) vocabulary id; the FFI shifts it to the 1-based R API.
+    pub token_id: i32,
+    /// The token's decoded display piece.
+    pub token: String,
+    /// The raw logit, in the engine's native f32.
+    pub logit: f32,
+    /// Softmax probability over the full vocabulary, in `(0, 1]`.
+    pub prob: f64,
+}
+
 /// A tokenized string: the engine-native (0-based) token ids and, aligned, the
 /// display piece of each token. The FFI boundary is where 0-based becomes the
 /// 1-based R API (ARCHITECTURE.md §4); this crate stays engine-native.
@@ -364,6 +380,44 @@ impl LoadedModel {
             n_vocab,
         })
     }
+
+    /// The `top` most likely next tokens after `prompt` (`llm_logits`).
+    ///
+    /// The prompt is tokenized as a raw completion — the model's own special
+    /// tokens added, special markup not parsed, exactly like `chat = FALSE`
+    /// generation — then run through [`logits_for_tokens`](Self::logits_for_tokens)
+    /// (the WP2 oracle path), and the final position's next-token distribution is
+    /// reduced to its top-`top` by [`top_k_logits`]. Reusing the generation forward
+    /// pass means an intervened handle's distribution reflects its interventions
+    /// exactly as generation does. Requires a tokenizer (a `no_vocab` model raises
+    /// [`RebirthError::Tokenize`]); an empty token sequence raises
+    /// [`RebirthError::Generation`].
+    pub fn next_token_logits(
+        &self,
+        prompt: &str,
+        top: usize,
+    ) -> Result<Vec<TokenLogit>, RebirthError> {
+        self.require_tokenizer()?;
+        let ids = self.tokenize(prompt, true, false)?;
+        if ids.is_empty() {
+            return Err(RebirthError::Generation {
+                reason: "empty_prompt".to_string(),
+            });
+        }
+        let logits = self.logits_for_tokens(&ids)?;
+        let last = logits.row(logits.seq_len - 1);
+        top_k_logits(last, top)
+            .into_iter()
+            .map(|(id, logit, prob)| {
+                Ok(TokenLogit {
+                    token_id: id as i32,
+                    token: self.token_piece(id as i32)?,
+                    logit,
+                    prob,
+                })
+            })
+            .collect()
+    }
 }
 
 // --- generation -----------------------------------------------------------
@@ -516,6 +570,42 @@ fn sample(logits: &[f32], temperature: f32, top_p: f32, rng: &mut SplitMix64) ->
         }
     }
     order[keep - 1] // floating-point fallback: the least-likely kept token
+}
+
+/// The `top` highest-logit entries of a next-token distribution `logits`.
+///
+/// The softmax is taken over the WHOLE row (max-shifted, accumulated in f64 for
+/// stability, matching [`sample`] and the numpy oracle) *before* the top-`top`
+/// are selected, so each returned probability is the token's true share of the
+/// full distribution. Results are ordered by descending logit, ties broken by
+/// ascending id — the same total, stable order as the sampler — so rank 1 is
+/// always the argmax. `top` is clamped to the row length. Returns
+/// `(id_0based, logit, prob)` per rank.
+///
+/// Public so the synthetic-model golden test can check this extraction against the
+/// numpy oracle's final-position row directly (the `no_vocab` synthetic model has
+/// no tokenizer, so the text-level [`next_token_logits`](LoadedModel::next_token_logits)
+/// cannot run on it).
+pub fn top_k_logits(logits: &[f32], top: usize) -> Vec<(usize, f32, f64)> {
+    let n = logits.len();
+    let keep = top.min(n);
+    if keep == 0 {
+        return Vec::new();
+    }
+    // Softmax over the full row, max-shifted, accumulated in f64.
+    let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max) as f64;
+    let exps: Vec<f64> = logits.iter().map(|&v| (v as f64 - max).exp()).collect();
+    let total: f64 = exps.iter().sum();
+
+    // Descending by logit; ties by ascending index for a total, stable order
+    // (total_cmp handles any -0.0/NaN without a panic).
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_unstable_by(|&a, &b| logits[b].total_cmp(&logits[a]).then(a.cmp(&b)));
+    order
+        .into_iter()
+        .take(keep)
+        .map(|i| (i, logits[i], exps[i] / total))
+        .collect()
 }
 
 /// The byte offset of the earliest `stop` string in `text`, if any.
@@ -789,7 +879,49 @@ fn apply_template(
 
 #[cfg(test)]
 mod tests {
-    use super::{apply_template, ChatMessage};
+    use super::{apply_template, top_k_logits, ChatMessage};
+
+    #[test]
+    fn top_k_logits_orders_by_descending_logit_with_full_vocab_softmax() {
+        // Deliberately unsorted input; ids as (0-based) positions.
+        let logits = [0.0f32, 3.0, 1.0, 2.0, -1.0];
+        let picks = top_k_logits(&logits, 3);
+        // Rank order by descending logit: id 1 (3.0), id 3 (2.0), id 2 (1.0).
+        let ids: Vec<usize> = picks.iter().map(|&(i, _, _)| i).collect();
+        assert_eq!(ids, vec![1, 3, 2]);
+        // Logits carried through verbatim, in rank order.
+        let ls: Vec<f32> = picks.iter().map(|&(_, l, _)| l).collect();
+        assert_eq!(ls, vec![3.0, 2.0, 1.0]);
+
+        // Probabilities are the softmax over the WHOLE row (not the top-3), so they
+        // match a full-row softmax and sum to < 1 (mass sits in the dropped tail).
+        let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max) as f64;
+        let denom: f64 = logits.iter().map(|&v| (v as f64 - max).exp()).sum();
+        for &(i, _, p) in &picks {
+            let want = (logits[i] as f64 - max).exp() / denom;
+            assert!((p - want).abs() < 1e-12, "prob[{i}] {p} vs {want}");
+        }
+        let kept_mass: f64 = picks.iter().map(|&(_, _, p)| p).sum();
+        assert!(
+            kept_mass < 1.0,
+            "top-3 mass {kept_mass} must exclude the tail"
+        );
+    }
+
+    #[test]
+    fn top_k_logits_breaks_ties_by_ascending_id_and_clamps_top() {
+        // Three tied top logits: ascending id resolves the order deterministically.
+        let logits = [5.0f32, 5.0, 5.0, 1.0];
+        let picks = top_k_logits(&logits, 2);
+        let ids: Vec<usize> = picks.iter().map(|&(i, _, _)| i).collect();
+        assert_eq!(ids, vec![0, 1], "ties resolve to the lowest ids");
+
+        // `top` beyond the vocabulary is clamped to the row length (no panic, no pad).
+        let all = top_k_logits(&logits, 999);
+        assert_eq!(all.len(), 4);
+        // `top = 0` yields nothing.
+        assert!(top_k_logits(&logits, 0).is_empty());
+    }
 
     #[test]
     fn split_mix64_is_deterministic_and_advances() {

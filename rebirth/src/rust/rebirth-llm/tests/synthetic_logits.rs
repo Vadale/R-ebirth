@@ -14,7 +14,7 @@
 
 use std::path::PathBuf;
 
-use rebirth_llm::{load, BackendKind, LoadRequest};
+use rebirth_llm::{load, top_k_logits, BackendKind, LoadRequest};
 
 /// The fixed golden input (`synthetic_model.INPUT_TOKENS`).
 const INPUT_TOKENS: [i32; 8] = [1, 7, 13, 22, 5, 31, 44, 2];
@@ -142,4 +142,146 @@ fn argmax_f64(row: &[f64]) -> usize {
         }
     }
     best
+}
+
+/// Full-vocab softmax of a float64 row (max-shifted) — the oracle probability the
+/// engine's `top_k_logits` must reproduce.
+fn softmax_f64(row: &[f64]) -> Vec<f64> {
+    let max = row.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+    let exps: Vec<f64> = row.iter().map(|&v| (v - max).exp()).collect();
+    let total: f64 = exps.iter().sum();
+    exps.into_iter().map(|e| e / total).collect()
+}
+
+/// The `top` highest-logit ids of `row`, descending by logit, ties by ascending id
+/// — the reference ordering `top_k_logits` must match.
+fn oracle_top_ids(row: &[f64], top: usize) -> Vec<usize> {
+    let mut order: Vec<usize> = (0..row.len()).collect();
+    order.sort_by(|&a, &b| row[b].total_cmp(&row[a]).then(a.cmp(&b)));
+    order.truncate(top);
+    order
+}
+
+/// How many top tokens the golden gate ranks. Well within the synthetic vocab (48)
+/// and, at the final position, every consecutive gap in this prefix exceeds
+/// `2 * ATOL` — asserted below — so the F32 engine cannot reorder the ranking
+/// relative to the float64 oracle. A regression that scrambles the ordering or the
+/// values is still caught by the id + logit + prob checks.
+const TOP: usize = 8;
+
+/// The engine's top-k next-token extraction over the synthetic model's final
+/// position matches the numpy oracle: same token ordering, logit values within the
+/// harness ATOL, and full-vocab softmax probabilities. This is the `llm_logits`
+/// numeric gate — it exercises the exact `top_k_logits` path the FFI calls, on the
+/// `no_vocab` synthetic model (no tokenizer, so the text-level path is Qwen-gated).
+#[test]
+fn top_k_extraction_matches_numpy_oracle_at_the_final_position() {
+    let gguf = synthetic_gguf();
+    let golden = golden_logits_csv();
+    assert!(
+        gguf.exists(),
+        "synthetic GGUF missing at {}",
+        gguf.display()
+    );
+    assert!(
+        golden.exists(),
+        "logit golden missing at {}",
+        golden.display()
+    );
+
+    let model = load(LoadRequest {
+        path: gguf,
+        context_length: 512,
+        gpu_layers: None,
+        backend: BackendKind::Cpu,
+        mmap: true,
+    })
+    .expect("synthetic model loads");
+
+    let logits = model
+        .logits_for_tokens(&INPUT_TOKENS)
+        .expect("teacher-forced logits");
+    let oracle = read_golden_csv(&golden);
+    assert_eq!(oracle.len(), INPUT_TOKENS.len(), "golden row count");
+
+    // The next-token distribution is the FINAL position's row (what llm_logits
+    // returns): engine last row vs the golden's last row.
+    let last = INPUT_TOKENS.len() - 1;
+    let engine_row = logits.row(last);
+    let oracle_row = &oracle[last];
+    assert_eq!(engine_row.len(), oracle_row.len(), "vocab width");
+
+    let picks = top_k_logits(engine_row, TOP);
+    assert_eq!(picks.len(), TOP, "top-{TOP} rows");
+
+    let oracle_ids = oracle_top_ids(oracle_row, TOP);
+    let oracle_probs = softmax_f64(oracle_row);
+
+    // Self-guard: the oracle's ranked prefix is separated by > 2*ATOL at every step,
+    // so an F32 logit shift (bounded by ATOL) cannot reorder it. If a future golden
+    // regeneration narrows a gap, this fires and says to lower TOP — never a flake.
+    for k in 1..TOP {
+        let gap = oracle_row[oracle_ids[k - 1]] - oracle_row[oracle_ids[k]];
+        assert!(
+            gap > 2.0 * ATOL,
+            "oracle top-{TOP} gap at rank {} is {gap:.3e} <= 2*ATOL; lower TOP",
+            k + 1
+        );
+    }
+
+    let mut max_logit_d = 0.0f64;
+    let mut max_prob_d = 0.0f64;
+    let mut prev_logit = f32::INFINITY;
+    let mut prev_prob = f64::INFINITY;
+    for (rank, &(id, logit, prob)) in picks.iter().enumerate() {
+        // 1) Ordering: the engine's k-th token id is the oracle's k-th token id.
+        assert_eq!(
+            id,
+            oracle_ids[rank],
+            "top-k token id differs at rank {}",
+            rank + 1
+        );
+        // 2) Logit value within the F32-vs-F64 harness tolerance.
+        let ld = (logit as f64 - oracle_row[id]).abs();
+        max_logit_d = max_logit_d.max(ld);
+        assert!(
+            ld <= ATOL,
+            "logit at rank {} |Δ|={ld:.3e} > {ATOL:.1e}",
+            rank + 1
+        );
+        // 3) Full-vocab softmax probability matches the oracle's.
+        let pd = (prob - oracle_probs[id]).abs();
+        max_prob_d = max_prob_d.max(pd);
+        assert!(
+            pd <= ATOL,
+            "prob at rank {} |Δ|={pd:.3e} > {ATOL:.1e}",
+            rank + 1
+        );
+        // 4) Structure: prob in (0, 1], and both logit and prob are non-increasing
+        //    with rank (rank 1 is the argmax).
+        assert!(prob > 0.0 && prob <= 1.0, "prob {prob} out of (0, 1]");
+        assert!(
+            logit <= prev_logit,
+            "logit not non-increasing at rank {}",
+            rank + 1
+        );
+        assert!(
+            prob <= prev_prob,
+            "prob not non-increasing at rank {}",
+            rank + 1
+        );
+        prev_logit = logit;
+        prev_prob = prob;
+    }
+    // Full-vocab softmax: the retained top-TOP mass excludes the tail, so it is < 1
+    // (a renormalized top-k share would sum to exactly 1 — this catches that bug).
+    let kept_mass: f64 = picks.iter().map(|&(_, _, p)| p).sum();
+    assert!(
+        kept_mass < 1.0,
+        "top-{TOP} mass {kept_mass} should exclude the tail"
+    );
+
+    eprintln!(
+        "top-k gate: max |Δlogit| = {max_logit_d:.3e}, max |Δprob| = {max_prob_d:.3e} (atol {ATOL:.1e})"
+    );
 }
