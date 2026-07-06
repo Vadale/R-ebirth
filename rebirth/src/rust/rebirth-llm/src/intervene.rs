@@ -213,6 +213,13 @@ impl LoadedModel {
         if let (Some(mask), Some(add), Some((il_start, il_end))) =
             (&spec.ablate_mask, &spec.ablate_add, spec.ablate_il_range)
         {
+            // The C API bounds-checks reads of BOTH `mask` and `add` against a single
+            // `len` (llama.h), so `add` must be at least `len` long too. The two are
+            // always allocated together at `n_embd*n_layer` (add_ablation), hence
+            // equal; take the min defensively so a future divergence can never let the
+            // engine over-read `add`, and assert the invariant in debug builds (F-2).
+            debug_assert_eq!(mask.len(), add.len(), "ablation mask/add length mismatch");
+            let len = mask.len().min(add.len());
             // SAFETY: live context on this thread; `mask`/`add` are Rust-owned f32
             // buffers of `n_embd*n_layer` (full coverage from layer 0) that outlive
             // this synchronous call; the engine copies them before returning.
@@ -221,7 +228,7 @@ impl LoadedModel {
                     derived.ctx_ptr(),
                     mask.as_ptr(),
                     add.as_ptr(),
-                    mask.len(),
+                    len,
                     n_embd as i32,
                     il_start,
                     il_end,
