@@ -284,6 +284,30 @@ impl Drop for EmbeddingContext {
     }
 }
 
+/// A transient tracing context (WP4, D-011/D-012 pattern): `create_trace_context`
+/// builds one per `llm_trace` call with the scheduler eval callback installed
+/// (`cb_eval`/`cb_eval_user_data`), so the forward pass can be observed. Like
+/// [`EmbeddingContext`] it is never stored in the `Arc`-shared handle — it lives
+/// and dies on the R main thread inside one call, needing no `unsafe impl Send +
+/// Sync` (keeping the D-008 G2 thread-safety gate closed). The generation context
+/// never gets a callback, so tap-off overhead is structurally zero. The methods
+/// live in `trace.rs` next to the `CaptureState` the callback drives.
+pub(crate) struct TraceContext {
+    pub(crate) ptr: NonNull<ffi::llama_context>,
+    /// Keeps the model alive for the context's lifetime; dropped after `ptr`.
+    _model: Arc<Model>,
+}
+
+impl Drop for TraceContext {
+    fn drop(&mut self) {
+        // SAFETY: `ptr` came from `llama_init_from_model`; freed exactly once and
+        // before the `Arc<Model>` it holds. Freeing the context tears down the
+        // scheduler (and thus the installed callback), so no capture can run after
+        // this — the caller drops the context before reclaiming the capture state.
+        unsafe { ffi::llama_free(self.ptr.as_ptr()) };
+    }
+}
+
 /// The R-facing bundle: a loaded model plus its active context. Dropping this
 /// frees the context, then (if it was the last reference) the model, then (if it
 /// was the last handle) the backend.
@@ -460,6 +484,77 @@ impl LoadedModel {
         model
             .meta_str(&key)
             .and_then(|s| s.trim().parse::<i32>().ok())
+    }
+
+    // --- crate-internal tracing support (trace.rs) --------------------------
+
+    /// The model's architecture string (`general.architecture`, e.g. `"llama"`,
+    /// `"qwen2"`), used by the tap's per-architecture component-name matcher.
+    pub(crate) fn architecture(&self) -> String {
+        self.ctx.model.architecture()
+    }
+
+    /// The residual-stream width (`n_embd`); every tapped component tensor
+    /// (residual/attn_out/mlp_out) is this wide, so it is the expected row length.
+    pub(crate) fn hidden_size(&self) -> i32 {
+        // SAFETY: `model.ptr` is a live model; read-only scalar getter.
+        unsafe { ffi::llama_model_n_embd(self.ctx.model.ptr.as_ptr()) }
+    }
+
+    /// Build a fresh tracing context sized to `n_ctx` tokens, with the scheduler
+    /// eval callback `cb_eval` and its `cb_eval_user_data` installed (D-012). Sizing
+    /// mirrors the embedding context (`n_batch = n_ubatch = n_ctx`) so each prompt
+    /// decodes in a single batch — required for the "flag every token as an output"
+    /// trick that gives every tapped tensor `n_tokens` rows in token order (the tap
+    /// then filters positions host-side). Otherwise the context is a plain forward
+    /// pass (default pooling/attention), matching the graph whose tensor names the
+    /// matcher was verified against.
+    pub(crate) fn create_trace_context(
+        &self,
+        n_ctx: u32,
+        cb_eval: ffi::GgmlSchedEvalCallback,
+        cb_eval_user_data: *mut c_void,
+    ) -> Result<TraceContext, RebirthError> {
+        let model = self.ctx.model.clone();
+
+        // SAFETY: default params are a plain by-value C struct we only tweak. The
+        // `cb_eval`/`cb_eval_user_data` offsets are guarded by the ffi.rs ABI test.
+        let mut cparams = unsafe { ffi::llama_context_default_params() };
+        cparams.n_ctx = n_ctx;
+        cparams.n_batch = n_ctx;
+        cparams.n_ubatch = n_ctx;
+        // A function pointer stored in the opaque `*mut c_void` callback field (the
+        // ffi mirror types callbacks as void pointers; a data and a code pointer are
+        // the same width on every target this crate builds for).
+        cparams.cb_eval = cb_eval as *mut c_void;
+        cparams.cb_eval_user_data = cb_eval_user_data;
+
+        // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
+        // failure the local `Arc<Model>` clone drops here, releasing its reference.
+        let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
+        let ptr = NonNull::new(ctx_ptr).ok_or_else(|| RebirthError::Trace {
+            reason: "Could not create a tracing context for this model. \
+                     There may not be enough memory; free other loaded models first, \
+                     or trace fewer prompts at once."
+                .to_string(),
+        })?;
+
+        // SAFETY: `model.ptr` is a live model; read-only scalar getter. The row
+        // width the tap validates against comes from `hidden_size()` on the caller
+        // side; here we only reject a model with no hidden dimension up front.
+        let n_embd = unsafe { ffi::llama_model_n_embd(model.ptr.as_ptr()) };
+        if n_embd <= 0 {
+            // SAFETY: `ptr` came from `llama_init_from_model` just above; free the
+            // freshly created context before returning so it is not leaked.
+            unsafe { ffi::llama_free(ptr.as_ptr()) };
+            return Err(RebirthError::Trace {
+                reason: "This model reports no hidden dimension, so its activations \
+                         cannot be traced."
+                    .to_string(),
+            });
+        }
+
+        Ok(TraceContext { ptr, _model: model })
     }
 }
 

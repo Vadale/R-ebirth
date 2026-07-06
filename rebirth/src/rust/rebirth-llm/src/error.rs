@@ -47,6 +47,11 @@ pub enum RebirthError {
     /// the failure site and carried in `reason`; `Display` presents it verbatim,
     /// and the R condition surfaces it as the structured `reason` field.
     Embed { reason: String },
+    /// Activation tracing failed inside the engine: a requested component has no
+    /// tensor for the model's architecture, a tapped tensor had an unexpected
+    /// shape/dtype, or the trace decode failed. `reason` carries the full,
+    /// already-actionable message (composed at the failure site, like `Embed`).
+    Trace { reason: String },
     /// An unexpected internal failure (e.g. a caught Rust panic). Always a bug.
     Internal { context: String },
 }
@@ -63,6 +68,7 @@ impl RebirthError {
             RebirthError::Generation { .. } => "rebirth_error_generation",
             RebirthError::ContextOverflow { .. } => "rebirth_error_context_overflow",
             RebirthError::Embed { .. } => "rebirth_error_embed",
+            RebirthError::Trace { .. } => "rebirth_error_trace",
             RebirthError::Internal { .. } => "rebirth_error_internal",
         }
     }
@@ -119,6 +125,10 @@ impl fmt::Display for RebirthError {
             // each embedding cause needs distinct guidance, so `reason` already
             // holds a complete what-happened -> cause -> what-to-try message.
             RebirthError::Embed { reason } => write!(f, "{reason}"),
+            // Like `Embed`, the trace causes need distinct guidance (unsupported
+            // component/architecture vs a shape mismatch), so `reason` already holds
+            // a complete what-happened -> cause -> what-to-try message.
+            RebirthError::Trace { reason } => write!(f, "{reason}"),
             RebirthError::Internal { context } => write!(
                 f,
                 "Internal error in the rebirth engine: {context}. \
