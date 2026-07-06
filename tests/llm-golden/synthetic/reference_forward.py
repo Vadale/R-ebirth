@@ -73,11 +73,31 @@ GREEDY_CSV = os.path.join(GOLDEN_DIR, "greedy_tokens.csv")
 GREEDY_CONT_CSV = os.path.join(GOLDEN_DIR, "greedy_continuation.csv")
 META_JSON = os.path.join(GOLDEN_DIR, "metadata.json")
 
+# WP5 intervention goldens (llm_steer / llm_ablate). Logits of the SAME forward
+# pass with a steering vector / an ablation applied at the build_cvec site, plus
+# the steer vector itself so the Rust de-risking gate (synthetic_intervene.rs)
+# applies the identical intervention. See the INTERVENTION block below for the
+# semantics and how the steer vector / ablated neuron were chosen.
+INTERVENE_STEER_NPY = os.path.join(GOLDEN_DIR, "intervene_steer_logits.npy")
+INTERVENE_STEER_CSV = os.path.join(GOLDEN_DIR, "intervene_steer_logits.csv")
+INTERVENE_ABLATE_NPY = os.path.join(GOLDEN_DIR, "intervene_ablate_logits.npy")
+INTERVENE_ABLATE_CSV = os.path.join(GOLDEN_DIR, "intervene_ablate_logits.csv")
+INTERVENE_BOTH_NPY = os.path.join(GOLDEN_DIR, "intervene_both_logits.npy")
+INTERVENE_BOTH_CSV = os.path.join(GOLDEN_DIR, "intervene_both_logits.csv")
+INTERVENE_STEER_VECTOR_CSV = os.path.join(GOLDEN_DIR, "intervene_steer_vector.csv")
+
 # Cross-platform tolerance for the committed-golden comparison in --check. Real
 # regressions move logits by >> 1e-3; float64 libm/BLAS differences across
 # platforms are ~1e-12 on O(1) logits, so this band separates the two cleanly.
 CHECK_ATOL = 1e-8
 CHECK_RTOL = 1e-6
+
+# Oracle-side effect-size floor for the WP5 intervention goldens: the chosen
+# steer vector / ablated neuron must move at least one logit by this much vs the
+# base, so the Rust de-risking gate's ">> ATOL" (ATOL = 1e-2) effect assertion is
+# not marginal. The chosen interventions clear it with wide margin (recorded as
+# intervene_*_max_abs_delta in metadata.json).
+INTERVENE_MIN_EFFECT = 0.1
 
 # WP4 activation golden: the fixed order of the component axis (axis 1) of
 # activations.npy / activations.csv. The engine's per-architecture tap matcher
@@ -92,6 +112,77 @@ CHECK_RTOL = 1e-6
 #   index 2  residual -> ``l_out-<il>``    (llama.cpp L224): block output AFTER
 #            both residual adds (post build_cvec, a no-op with no control vector).
 ACTIVATION_COMPONENTS = ("attn_out", "mlp_out", "residual")
+
+
+# --- WP5 interventions (llm_steer / llm_ablate) ----------------------------
+#
+# Steering and ablation are applied at the ``build_cvec`` residual site — right
+# after the second residual add, before the ``l_out`` capture — matching the
+# engine (``src/models/llama.cpp`` L220-224: the residual ``l_out-<il>`` is named
+# AFTER ``build_cvec``). Compose order is MANDATED by DECISIONS.md D-016: steering
+# (the native control-vector add) runs FIRST, ablation (the WP5 ``intervene``
+# adapter) runs AFTER, so a jointly steered+ablated neuron is forced to exactly
+# ``value`` — the engine's ``(x + steer) ⊙ mask + add``.
+#
+# Indices are 0-based engine layers (this oracle is engine-native; the 1-based R
+# API conversion lives only in ``rebirth-ffi``). The native control vector
+# reserves engine layer 0 (no row, ``llama-adapter.cpp`` L65/L127), so steering
+# targets engine ``il = 1`` (the only steerable block of this 2-layer model);
+# ablation covers all layers, so it targets engine ``il = 0`` — exercising exactly
+# the block the native cvec cannot reach.
+#
+# The steer vector and the ablated neuron were chosen BY MEASURED EFFECT (the
+# model is random-seeded; a weak neuron/vector would make the de-risking gate's
+# ">> ATOL" effect assertions marginal — see select_intervention() and the
+# recorded intervene_*_max_abs_delta). The steer vector is exactly
+# F32-representable (stored as float32) so the R-double -> f32 downcast at the FFI
+# injects no error; the only engine-vs-oracle gap is downstream F32 accumulation,
+# the regime logits.npy already tolerates.
+STEER_LAYER = 1     # engine il steered (native cvec cannot reach il = 0)
+ABLATE_LAYER = 0    # engine il ablated (the intervene adapter covers all layers)
+ABLATE_NEURON = 2   # neuron of ABLATE_LAYER's residual forced to ABLATE_VALUE
+                    # (chosen by --select: strongest effect, max |Δ| logits ~1.59)
+ABLATE_VALUE = 0.0  # forced value (API-GRAMMAR §4 "forced to value")
+
+# The steer direction (coef = 1), length n_embd, exactly F32-representable. A
+# fixed sign-alternating pattern of magnitude 1.5: large enough that the effect
+# on the logits is far above the gate's ATOL, F32-exact, and independent of the
+# seeded weights (so it does not silently weaken if the model is regenerated).
+STEER_VECTOR = (
+    1.5 * ((np.arange(int(CONFIG["n_embd"])) % 2) * -2.0 + 1.0)  # +1.5,-1.5,+1.5,...
+).astype(np.float32)
+
+
+class Intervention:
+    """A fully-accumulated intervention set applied at the ``build_cvec`` site.
+
+    ``steer[il]`` (a length-``n_embd`` array) is summed into the residual first —
+    the native control-vector semantics; then ``ablate[il] = (neurons, value)``
+    forces those neurons to ``value`` (the WP5 ``intervene`` adapter, which wins on
+    any jointly touched neuron — D-016). Mirrors the engine's
+    ``(x + steer) ⊙ mask + add``.
+    """
+
+    def __init__(self, steer=None, ablate=None):
+        self.steer = steer or {}     # il -> np.ndarray (n_embd,)
+        self.ablate = ablate or {}   # il -> (list[int] neurons, float value)
+
+    def apply(self, x: np.ndarray, il: int) -> np.ndarray:
+        # x: (seq, n_embd). Compose order: steer (cvec) THEN ablate (intervene).
+        if il in self.steer:
+            x = x + self.steer[il].astype(np.float64)  # new array (cvec add)
+        if il in self.ablate:
+            neurons, value = self.ablate[il]
+            x = x.copy()  # do not mutate the forward pass's array on the no-steer path
+            x[:, neurons] = value  # intervene: forces the ablated neurons to `value`
+        return x
+
+
+def _intervention_for(kind: str) -> Intervention:
+    """Build the named WP5 intervention from the module constants above."""
+    steer = {STEER_LAYER: STEER_VECTOR} if kind in ("steer", "both") else {}
+    ablate = {ABLATE_LAYER: ([ABLATE_NEURON], ABLATE_VALUE)} if kind in ("ablate", "both") else {}
+    return Intervention(steer=steer, ablate=ablate)
 
 
 # --- kernels (numpy, float64) ----------------------------------------------
@@ -139,6 +230,7 @@ def hidden_states(
     weights: dict[str, np.ndarray],
     tokens: list[int],
     capture: dict[tuple[int, str], np.ndarray] | None = None,
+    intervene: "Intervention | None" = None,
 ) -> np.ndarray:
     """Return the post-final-norm hidden states, shape (seq_len, n_embd), float64.
 
@@ -158,6 +250,12 @@ def hidden_states(
     to the logits, so passing ``capture`` changes no floating-point operation on
     the ``x`` path and the logit/embedding goldens still do not drift. Default
     ``None`` = no capture (the WP2/WP3 behaviour, byte-for-byte).
+
+    If ``intervene`` is an :class:`Intervention` (WP5), it is applied to ``x`` at
+    the ``build_cvec`` site — after the second residual add, before the ``residual``
+    capture — so the steered/ablated value flows to ``l_out-<il>`` and downstream,
+    matching the engine. Default ``None`` = no intervention, and with ``None`` the
+    new branch is skipped entirely, so the WP2/WP3/WP4 goldens do not drift.
     """
     n_embd = int(CONFIG["n_embd"])  # type: ignore[arg-type]
     n_layer = int(CONFIG["n_layer"])  # type: ignore[arg-type]
@@ -221,9 +319,16 @@ def hidden_states(
         # cb() on the build_ffn return value, before the ggml_add at L220).
         ff = (gate * up) @ w(f"blk.{il}.ffn_down.weight").T
         x = x + ff  # residual add #2
-        # residual COMPONENT = the block output AFTER both residual adds, i.e. the
-        # engine's ``l_out-<il>`` (llama.cpp L224: cb() after build_cvec, which is a
-        # no-op here since no control vector is loaded, so it equals the L220 add).
+        # WP5 build_cvec site: apply steering then ablation (D-016 compose order)
+        # BEFORE the residual capture, so `l_out-<il>` and the downstream input
+        # both carry the intervention -- exactly where the engine's patched
+        # build_cvec applies it. A no-op when intervene is None.
+        if intervene is not None:
+            x = intervene.apply(x, il)
+        # residual COMPONENT = the block output AFTER both residual adds AND the
+        # build_cvec intervention, i.e. the engine's ``l_out-<il>`` (llama.cpp L224:
+        # cb() after build_cvec). With no control vector / intervention this equals
+        # the L220 residual add (the WP4 baseline the activations golden pins).
         if capture is not None:
             capture[(il, "attn_out")] = attn_sublayer_out.copy()
             capture[(il, "mlp_out")] = ff.copy()
@@ -233,15 +338,22 @@ def hidden_states(
     return x  # (seq, n_embd) post-final-norm hidden states ("result_norm")
 
 
-def forward(weights: dict[str, np.ndarray], tokens: list[int]) -> np.ndarray:
+def forward(
+    weights: dict[str, np.ndarray],
+    tokens: list[int],
+    intervene: "Intervention | None" = None,
+) -> np.ndarray:
     """Return logits of shape (seq_len, n_vocab), float64.
 
     Composed from the post-final-norm hidden states so both goldens derive from
     one forward pass: ``logits = hidden_states(...) @ output.T``. This matmul is
     byte-identical to the previously inlined ``x @ w("output.weight").T`` (same
     float64 operands, same order), so ``logits.npy`` must not drift.
+
+    ``intervene`` (WP5) is threaded to :func:`hidden_states`; ``None`` (the
+    default) is the un-intervened pass that produces the base ``logits.npy``.
     """
-    x = hidden_states(weights, tokens)
+    x = hidden_states(weights, tokens, intervene=intervene)
     return x @ weights["output.weight"].astype(np.float64).T  # (seq, n_vocab)
 
 
@@ -284,6 +396,49 @@ def compute_activations() -> np.ndarray:
         for ci, comp in enumerate(ACTIVATION_COMPONENTS):
             acts[il, ci] = capture[(il, comp)]
     return acts
+
+
+def compute_intervene_logits(kind: str) -> np.ndarray:
+    """Logits for INPUT_TOKENS with the named WP5 intervention applied.
+
+    ``kind`` is ``"steer"`` (steer STEER_LAYER by STEER_VECTOR), ``"ablate"``
+    (force ABLATE_LAYER's ABLATE_NEURON to ABLATE_VALUE), or ``"both"`` (compose
+    them). Shape ``(seq_len, n_vocab)``, float64. The base ``logits.npy`` is the
+    ``intervene=None`` pass and is unchanged.
+    """
+    return forward(build_weights(), INPUT_TOKENS, intervene=_intervention_for(kind))
+
+
+def select_intervention() -> None:
+    """Print, for the record, how STEER_VECTOR / ABLATE_NEURON were chosen.
+
+    The model is random-seeded, so the intervention's downstream effect on the
+    logits depends on the seed; this ranks each candidate ablated neuron of
+    ABLATE_LAYER by its max |Δ| vs the base logits and reports the configured
+    steer vector's effect. Run via ``python reference_forward.py --select``; it
+    writes nothing. Chosen: the strongest neuron, and a seed-independent F32-exact
+    steer vector whose effect clears INTERVENE_MIN_EFFECT with wide margin.
+    """
+    n_embd = int(CONFIG["n_embd"])  # type: ignore[arg-type]
+    base = compute_logits()
+    ranked = []
+    for k in range(n_embd):
+        iv = Intervention(ablate={ABLATE_LAYER: ([k], ABLATE_VALUE)})
+        lg = forward(build_weights(), INPUT_TOKENS, intervene=iv)
+        ranked.append((k, float(np.max(np.abs(lg - base)))))
+    ranked.sort(key=lambda kv: kv[1], reverse=True)
+    print(f"ablation il={ABLATE_LAYER} value={ABLATE_VALUE} -- max |Δ| logits per neuron:")
+    for k, d in ranked:
+        marker = "  <== chosen" if k == ABLATE_NEURON else ""
+        print(f"  neuron {k:2d}: {d:.4g}{marker}")
+    steer = compute_intervene_logits("steer")
+    both = compute_intervene_logits("both")
+    print(
+        f"steer il={STEER_LAYER} (coef=1) max |Δ| logits = "
+        f"{float(np.max(np.abs(steer - base))):.4g}"
+    )
+    print(f"both (steer+ablate) max |Δ| logits = {float(np.max(np.abs(both - base))):.4g}")
+    print(f"effect floor INTERVENE_MIN_EFFECT = {INTERVENE_MIN_EFFECT}")
 
 
 def greedy_tokens(logits: np.ndarray) -> np.ndarray:
@@ -367,6 +522,30 @@ def _write_activations_csv(path: str, acts: np.ndarray) -> None:
                     )
 
 
+def _write_logits_csv(path: str, logits: np.ndarray) -> None:
+    """Human- and Rust-readable mirror of a logits .npy (full float64 precision).
+
+    Same format/convention as the base ``logits.csv`` (``position,logit_0,...``,
+    one row per position); the WP5 intervention logit goldens reuse it.
+    """
+    with open(path, "w") as fh:
+        fh.write("position," + ",".join(f"logit_{j}" for j in range(logits.shape[1])) + "\n")
+        for i, row in enumerate(logits):
+            fh.write(str(i) + "," + ",".join(f"{v:.17g}" for v in row) + "\n")
+
+
+def _write_steer_vector_csv(path: str, vector: np.ndarray) -> None:
+    """The WP5 steer vector (one ``neuron,value`` row per element) so the Rust
+    de-risking gate applies the byte-for-byte identical vector. Values are written
+    at full float64 precision of the exact float32 value (``float(v)``), so a Rust
+    parse-as-f64-then-downcast-to-f32 recovers the original float32 exactly.
+    """
+    with open(path, "w") as fh:
+        fh.write("neuron,value\n")
+        for j, v in enumerate(vector):
+            fh.write(f"{j},{float(v):.17g}\n")
+
+
 def write_goldens() -> None:
     os.makedirs(GOLDEN_DIR, exist_ok=True)
     logits = compute_logits()
@@ -398,6 +577,21 @@ def write_goldens() -> None:
     acts = compute_activations()
     np.save(ACTIVATIONS_NPY, acts)
     _write_activations_csv(ACTIVATIONS_CSV, acts)
+
+    # Intervention golden (WP5): logits of the SAME forward pass with steering /
+    # ablation / both applied at the build_cvec site. The base `logits` above is
+    # the intervene=None pass and is unchanged. Also emit the steer vector so the
+    # Rust gate applies the identical intervention. Same .npy + .csv convention.
+    steer_logits = compute_intervene_logits("steer")
+    ablate_logits = compute_intervene_logits("ablate")
+    both_logits = compute_intervene_logits("both")
+    np.save(INTERVENE_STEER_NPY, steer_logits)
+    _write_logits_csv(INTERVENE_STEER_CSV, steer_logits)
+    np.save(INTERVENE_ABLATE_NPY, ablate_logits)
+    _write_logits_csv(INTERVENE_ABLATE_CSV, ablate_logits)
+    np.save(INTERVENE_BOTH_NPY, both_logits)
+    _write_logits_csv(INTERVENE_BOTH_CSV, both_logits)
+    _write_steer_vector_csv(INTERVENE_STEER_VECTOR_CSV, STEER_VECTOR)
 
     with open(GREEDY_CSV, "w") as fh:
         fh.write("position,token,input_token\n")
@@ -439,6 +633,21 @@ def write_goldens() -> None:
         "activations_shape": [int(d) for d in acts.shape],
         "activations_axes": ["layer", "component", "token_pos", "neuron"],
         "activations_component_order": list(ACTIVATION_COMPONENTS),
+        # WP5 intervention goldens (llm_steer / llm_ablate). Indices are 0-based
+        # engine layers; the steer vector is the exact F32 vector both the oracle
+        # and the Rust gate apply. The max_abs_delta values record the measured
+        # effect vs the base logits (must exceed INTERVENE_MIN_EFFECT).
+        "intervene_steer_layer": int(STEER_LAYER),
+        "intervene_ablate_layer": int(ABLATE_LAYER),
+        "intervene_ablate_neuron": int(ABLATE_NEURON),
+        "intervene_ablate_value": float(ABLATE_VALUE),
+        "intervene_steer_vector": [float(v) for v in STEER_VECTOR],
+        "intervene_steer_logits_sha256": _sha256_array(steer_logits),
+        "intervene_ablate_logits_sha256": _sha256_array(ablate_logits),
+        "intervene_both_logits_sha256": _sha256_array(both_logits),
+        "intervene_steer_max_abs_delta": float(np.max(np.abs(steer_logits - logits))),
+        "intervene_ablate_max_abs_delta": float(np.max(np.abs(ablate_logits - logits))),
+        "intervene_both_max_abs_delta": float(np.max(np.abs(both_logits - logits))),
         "mean_pool": mean_pool.tolist(),
         "last_pool": last_pool.tolist(),
         "mean_pool_normalized": mean_pool_normalized.tolist(),
@@ -452,6 +661,11 @@ def write_goldens() -> None:
     print(f"wrote goldens for {logits.shape[0]} positions x {logits.shape[1]} vocab")
     print(f"  embeddings    : {emb.shape[0]} x {emb.shape[1]} (sha256 {_sha256_array(emb)[:16]})")
     print(f"  activations   : {list(acts.shape)} (sha256 {_sha256_array(acts)[:16]})")
+    print(
+        f"  interventions : steer|Δ|={np.max(np.abs(steer_logits - logits)):.4g} "
+        f"ablate|Δ|={np.max(np.abs(ablate_logits - logits)):.4g} "
+        f"both|Δ|={np.max(np.abs(both_logits - logits)):.4g}"
+    )
     print(f"  greedy tokens : {[int(t) for t in greedy]}")
     print(f"  min top-2 gap : {np.min(top2_margins(logits)):.4g}")
     print(f"  greedy cont.  : {cont} (min step margin {cont_margin:.4g})")
@@ -592,6 +806,59 @@ def check_goldens() -> int:
         )
         return 1
 
+    # 3f) WP5 intervention goldens: each recomputes deterministically, round-trips
+    #     its committed .npy within tolerance, and moves the logits vs the base by
+    #     more than INTERVENE_MIN_EFFECT (so the Rust de-risking gate's ">> ATOL"
+    #     effect assertion is not marginal). `committed` is the base logits (step 3).
+    for kind, npy_path in (
+        ("steer", INTERVENE_STEER_NPY),
+        ("ablate", INTERVENE_ABLATE_NPY),
+        ("both", INTERVENE_BOTH_NPY),
+    ):
+        r1 = compute_intervene_logits(kind)
+        r2 = compute_intervene_logits(kind)
+        if not np.array_equal(r1, r2):
+            print(f"FAIL: intervention '{kind}' logits are not deterministic", file=sys.stderr)
+            return 1
+        if not os.path.exists(npy_path):
+            print(f"FAIL: committed golden missing: {npy_path}", file=sys.stderr)
+            return 1
+        committed_iv = np.load(npy_path)
+        if committed_iv.shape != r1.shape:
+            print(
+                f"FAIL: intervention '{kind}' golden shape {committed_iv.shape} != "
+                f"recomputed {r1.shape}",
+                file=sys.stderr,
+            )
+            return 1
+        if not np.allclose(committed_iv, r1, atol=CHECK_ATOL, rtol=CHECK_RTOL):
+            max_abs = float(np.max(np.abs(committed_iv - r1)))
+            print(
+                f"FAIL: intervention '{kind}' logits drifted from committed golden "
+                f"(max abs {max_abs:.3e})",
+                file=sys.stderr,
+            )
+            return 1
+        effect = float(np.max(np.abs(committed_iv - committed)))
+        if effect < INTERVENE_MIN_EFFECT:
+            print(
+                f"FAIL: intervention '{kind}' moves the logits by only {effect:.3g} "
+                f"(< INTERVENE_MIN_EFFECT {INTERVENE_MIN_EFFECT}); choose a stronger "
+                "neuron / steer vector",
+                file=sys.stderr,
+            )
+            return 1
+
+    # 3g) The committed steer vector CSV (the exact vector the Rust gate applies)
+    #     must equal STEER_VECTOR, or the two sides would silently desync.
+    if not os.path.exists(INTERVENE_STEER_VECTOR_CSV):
+        print(f"FAIL: committed golden missing: {INTERVENE_STEER_VECTOR_CSV}", file=sys.stderr)
+        return 1
+    committed_vec = _read_steer_vector_csv(INTERVENE_STEER_VECTOR_CSV)
+    if not np.array_equal(committed_vec.astype(np.float32), STEER_VECTOR):
+        print("FAIL: committed steer vector CSV != STEER_VECTOR", file=sys.stderr)
+        return 1
+
     # 4) The autoregressive greedy-continuation golden still reproduces, and its
     #    per-step margin stays comfortably above the F32 noise floor.
     if not os.path.exists(GREEDY_CONT_CSV):
@@ -615,6 +882,7 @@ def check_goldens() -> int:
         return 1
 
     print("OK: reference forward is deterministic; GGUF and committed goldens agree")
+    print("  interventions : steer/ablate/both goldens agree; effects >= floor")
     print(f"  embeddings    : {ha.shape[0]} x {ha.shape[1]} (sha256 {_sha256_array(ha)[:16]})")
     print(
         f"  activations   : {list(committed_acts.shape)} "
@@ -633,6 +901,13 @@ def _read_continuation_csv(path: str) -> list[int]:
     return [int(line.split(",")[1]) for line in rows[1:] if line.strip()]
 
 
+def _read_steer_vector_csv(path: str) -> np.ndarray:
+    with open(path) as fh:
+        rows = fh.read().splitlines()
+    # header: "neuron,value"
+    return np.array([float(line.split(",")[1]) for line in rows[1:] if line.strip()])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -640,7 +915,16 @@ def main() -> int:
         action="store_true",
         help="verify the committed goldens (self-check) without writing",
     )
+    parser.add_argument(
+        "--select",
+        action="store_true",
+        help="print how the WP5 steer vector / ablated neuron were chosen (no writes)",
+    )
     args = parser.parse_args()
+
+    if args.select:
+        select_intervention()
+        return 0
 
     if args.check:
         return check_goldens()
