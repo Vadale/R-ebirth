@@ -146,3 +146,37 @@ test_that("llm_logits() vectorizes over prompt with per-prompt ranks", {
   expect_equal(single$token_id, df$token_id[df$prompt_id == 1L])
   expect_equal(single$logit, df$logit[df$prompt_id == 1L])
 })
+
+test_that("llm_logits() reflects an active intervention -- diverges from base [MODEL]", {
+  # Pins the "intervention-aware" claim (NEWS/Rd): a steered handle's next-token
+  # distribution must differ from the base handle's on the same prompt. The exact
+  # numerical effect is proven in Rust against the numpy oracle
+  # (synthetic_intervene.rs); this proves the R-surface claim on a real model.
+  m <- llm(qwen_model_path())
+  on.exit(close(m), add = TRUE)
+
+  prompt <- "The weather today is"
+  base <- llm_logits(m, prompt, top = 20L)
+
+  # Steer at a mid layer (layer 1 is not steerable) along a unit-norm direction at
+  # the magnitude the valence fixture uses -- enough to reshape the distribution.
+  layer <- max(2L, m$layers %/% 2L)
+  set.seed(1L) # deterministic direction; base R, no dependency
+  d <- stats::rnorm(m$hidden_size)
+  direction <- d / sqrt(sum(d^2))
+  steered <- llm_steer(m, layer, direction, coef = 10)
+  on.exit(close(steered), add = TRUE)
+  steer <- llm_logits(steered, prompt, top = 20L)
+
+  # The claim: the steered handle reports a different distribution than the base.
+  expect_false(isTRUE(all.equal(base, steer)))
+
+  # No-op guard: a coef = 0 steer adds nothing, so a *derived* handle alone does
+  # not move the distribution -- the divergence above is the steer's effect, not an
+  # artifact of allocating a fresh context (cf. the valence fixture's guard A).
+  steer_zero <- llm_steer(m, layer, direction, coef = 0)
+  on.exit(close(steer_zero), add = TRUE)
+  zero <- llm_logits(steer_zero, prompt, top = 20L)
+  expect_identical(zero$token_id, base$token_id)
+  expect_equal(zero$logit, base$logit)
+})
