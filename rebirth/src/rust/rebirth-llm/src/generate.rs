@@ -43,14 +43,16 @@ pub struct Encoding {
 
 /// RAII wrapper over `llama_batch`: `llama_batch_init` allocates the arrays,
 /// `Drop` calls `llama_batch_free`. All member arrays are engine-owned and sized
-/// to `n_tokens`; we only ever write the documented fields.
-struct Batch {
-    raw: ffi::llama_batch,
+/// to `n_tokens`; we only ever write the documented fields. `pub(crate)` so the
+/// embedding path (`embed.rs`) reuses this already-SAFETY-reviewed batch fill
+/// instead of duplicating a near-identical one.
+pub(crate) struct Batch {
+    pub(crate) raw: ffi::llama_batch,
     capacity: i32,
 }
 
 impl Batch {
-    fn new(n_tokens: i32) -> Result<Self, RebirthError> {
+    pub(crate) fn new(n_tokens: i32) -> Result<Self, RebirthError> {
         // SAFETY: allocates a batch holding `n_tokens` tokens (embd = 0 -> token
         // array), one sequence id per token (n_seq_max = 1). Freed in Drop.
         let raw = unsafe { ffi::llama_batch_init(n_tokens, 0, 1) };
@@ -67,8 +69,9 @@ impl Batch {
 
     /// Fill the batch with `tokens` at positions `start_pos..`, sequence 0.
     /// `logits_last_only` decides whether only the final token requests logits
-    /// (generation) or every token does (teacher-forced scoring).
-    fn fill(&mut self, tokens: &[i32], start_pos: i32, logits_last_only: bool) {
+    /// (generation) or every token does (teacher-forced scoring, and the
+    /// embedding path, which flags every token for per-token output).
+    pub(crate) fn fill(&mut self, tokens: &[i32], start_pos: i32, logits_last_only: bool) {
         debug_assert!(tokens.len() as i32 <= self.capacity);
         let n = tokens.len();
         self.raw.n_tokens = n as i32;

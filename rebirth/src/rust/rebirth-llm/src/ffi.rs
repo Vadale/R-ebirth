@@ -247,7 +247,46 @@ extern "C" {
     pub fn llama_decode(ctx: *mut llama_context, batch: llama_batch) -> i32;
     pub fn llama_get_logits_ith(ctx: *mut llama_context, i: i32) -> *mut f32;
 
+    // --- embeddings (WP3) ---
+    /// Per-token embedding for output slot `i` (the post-final-norm hidden state,
+    /// "result_norm") when the context was created with `pooling_type = NONE`.
+    /// Points at `n_embd` f32 owned by the context, valid until the next decode.
+    /// NULL for an invalid slot (llama.h b9726 l.1025).
+    ///
+    /// Deliberately NOT declared (keeps the D-006 minimal FFI surface): the WP3
+    /// strategy (D-011) sets `embeddings = true` at context creation and pools in
+    /// Rust over these per-token rows, so `llama_set_embeddings` (a runtime toggle)
+    /// and `llama_get_embeddings_seq` / `llama_pooling_type` (engine-side pooling)
+    /// are all unneeded — the model's own pooling is read from GGUF metadata via
+    /// the already-declared `llama_model_meta_val_str`.
+    // `allow(dead_code)`: declared here with the ABI guard (WP3 Step 1); its first
+    // caller is `EmbeddingContext::per_token` (WP3 Step 2), where the allow is
+    // removed.
+    #[allow(dead_code)]
+    pub fn llama_get_embeddings_ith(ctx: *mut llama_context, i: i32) -> *mut f32;
+
     // --- KV-cache / memory ---
     pub fn llama_get_memory(ctx: *const llama_context) -> llama_memory_t;
     pub fn llama_memory_clear(mem: llama_memory_t, data: bool);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// WP3 is the first code that *writes* `pooling_type`, `attention_type`, and
+    /// `embeddings` on the by-value `llama_context_params`. D-008 audited these
+    /// offsets against `llama.h` b9726; because the struct is obtained and passed
+    /// by value from `llama_context_default_params()`, a reordered or misaligned
+    /// `#[repr(C)]` mirror surfaces as *wrong default values* here — not a link
+    /// error — so this guards the three fields with a value check, not just a
+    /// compile check. It re-runs on every CI run and every `vendor-bump`.
+    #[test]
+    fn context_params_embedding_fields_have_the_expected_abi() {
+        // SAFETY: default params are a plain by-value C struct we only read.
+        let p = unsafe { llama_context_default_params() };
+        assert_eq!(p.pooling_type, -1, "LLAMA_POOLING_TYPE_UNSPECIFIED");
+        assert_eq!(p.attention_type, -1, "LLAMA_ATTENTION_TYPE_UNSPECIFIED");
+        assert!(!p.embeddings, "embeddings default is false");
+    }
 }
