@@ -91,6 +91,22 @@ test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spi
   expect_true(all(is.na(ref$token)))
 })
 
+test_that("the trace payload carries the positions_recycled signal (Rust->R wiring)", {
+  # REV-2: guards the field the API-GRAMMAR section 4 recycling warning reads. The
+  # payload must carry a logical `positions_recycled` (FALSE for the fixed
+  # all-positions selftest spec). A rename on either side of the boundary would
+  # surface here as NULL, silently disabling the warning in llm_trace() (where
+  # isTRUE(NULL) is FALSE). The warning firing on TRUE is covered by the [MODEL]
+  # test in test-llm-trace.R and the Rust signal tests.
+  m <- llm(synthetic_model_path())
+  on.exit(close(m), add = TRUE)
+  payload <- rebirth_check(rebirth_selftest_trace_tokens_spill(
+    m$ptr, as.integer(synthetic_tokens()), FALSE, Inf, "", m$path, "", "spec"
+  ))
+  expect_type(payload$positions_recycled, "logical")
+  expect_false(payload$positions_recycled)
+})
+
 test_that("print() and summary() on a spilled trace never read the file", {
   # ACCEPTANCE: print/summary report a spilled trace from its attributes alone.
   # Proof: delete the spill file, then print/summary still succeed (they would

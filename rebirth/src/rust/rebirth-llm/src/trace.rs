@@ -92,6 +92,22 @@ impl Positions {
                 .collect(),
         }
     }
+
+    /// Whether an explicit `positions` vector, recycled across prompts of these
+    /// per-prompt token counts, had any requested position fall out of range for at
+    /// least one prompt (so it was dropped for that prompt). This is the
+    /// API-GRAMMAR §4 recycling-warning signal ("recycled per prompt with a warning
+    /// if lengths differ"): the reportable case is precisely a differing-length
+    /// batch where the same explicit vector does not fit every prompt. Always false
+    /// for `Last`/`All`, which are resolved per prompt and never out of range.
+    fn recycled_out_of_range(&self, token_counts: &[usize]) -> bool {
+        match self {
+            Positions::Explicit(v) => token_counts
+                .iter()
+                .any(|&n| v.iter().any(|&p| p as usize >= n)),
+            _ => false,
+        }
+    }
 }
 
 /// What to capture (engine-native, 0-based). Built at the `rebirth-ffi` boundary
@@ -153,7 +169,14 @@ impl RowSink {
 /// without loading the file).
 #[derive(Debug)]
 pub enum TraceOutput {
-    Memory(Vec<CaptureRow>),
+    Memory {
+        rows: Vec<CaptureRow>,
+        /// Whether an explicit `positions` vector was recycled across prompts of
+        /// differing lengths and dropped some out-of-range positions (the
+        /// API-GRAMMAR §4 warning signal). Always false for `Last`/`All`. The R
+        /// boundary turns a `true` into a single `warning()`.
+        positions_recycled: bool,
+    },
     #[cfg(feature = "spill")]
     Spilled(SpillReport),
 }
@@ -180,6 +203,10 @@ pub struct SpillReport {
     pub n_embd: usize,
     /// The per-trace identity echoed back for the object's staleness check.
     pub trace_id: String,
+    /// Whether an explicit `positions` vector was recycled across prompts of
+    /// differing lengths and dropped some out-of-range positions (API-GRAMMAR §4;
+    /// same signal as [`TraceOutput::Memory`]).
+    pub positions_recycled: bool,
 }
 
 /// The spill routing + budget decision inputs, all supplied by the R boundary
@@ -728,11 +755,21 @@ impl LoadedModel {
         plan: &SpillPlan,
     ) -> Result<TraceOutput, RebirthError> {
         if batches.is_empty() {
-            return Ok(TraceOutput::Memory(Vec::new()));
+            return Ok(TraceOutput::Memory {
+                rows: Vec::new(),
+                positions_recycled: false,
+            });
         }
         let resolved = self.resolve_spec(spec)?;
         let longest = self.validate_batches(batches)?;
         let estimate = self.estimate_capture_bytes(batches, spec, &resolved);
+
+        // API-GRAMMAR §4 recycling signal: an explicit positions vector applied to
+        // prompts of differing lengths where some position falls out of range. The
+        // engine knows each prompt's token count, so it is decided here and reported
+        // to R (which raises the single warning).
+        let token_counts: Vec<usize> = batches.iter().map(|ids| ids.len()).collect();
+        let positions_recycled = spec.positions.recycled_out_of_range(&token_counts);
 
         if estimate > plan.budget_bytes {
             if !plan.spill {
@@ -746,7 +783,15 @@ impl LoadedModel {
             }
             #[cfg(feature = "spill")]
             {
-                return self.capture_spilled(batches, pieces, spec, resolved, longest, plan);
+                return self.capture_spilled(
+                    batches,
+                    pieces,
+                    spec,
+                    resolved,
+                    longest,
+                    plan,
+                    positions_recycled,
+                );
             }
             #[cfg(not(feature = "spill"))]
             {
@@ -771,7 +816,10 @@ impl LoadedModel {
             RowSink::Memory(Vec::new()),
         )?;
         match sink {
-            RowSink::Memory(rows) => Ok(TraceOutput::Memory(rows)),
+            RowSink::Memory(rows) => Ok(TraceOutput::Memory {
+                rows,
+                positions_recycled,
+            }),
             #[cfg(feature = "spill")]
             RowSink::Spill(_) => unreachable!("in-budget branch always uses a Memory sink"),
         }
@@ -781,6 +829,7 @@ impl LoadedModel {
     /// return a [`SpillReport`]. A capture or write failure removes the partial
     /// file so a failed trace leaves nothing on disk.
     #[cfg(feature = "spill")]
+    #[allow(clippy::too_many_arguments)]
     fn capture_spilled(
         &self,
         batches: &[&[i32]],
@@ -789,6 +838,7 @@ impl LoadedModel {
         resolved: ResolvedSpec,
         longest: usize,
         plan: &SpillPlan,
+        positions_recycled: bool,
     ) -> Result<TraceOutput, RebirthError> {
         // Row-count metadata for the object's print/summary (no data load needed).
         let n_positions: u64 = batches
@@ -850,6 +900,7 @@ impl LoadedModel {
             components: spec.components.clone(),
             n_embd,
             trace_id: plan.trace_id.clone(),
+            positions_recycled,
         }))
     }
 
@@ -902,7 +953,10 @@ impl LoadedModel {
     ) -> Result<TraceOutput, RebirthError> {
         self.require_tokenizer()?;
         if texts.is_empty() {
-            return Ok(TraceOutput::Memory(Vec::new()));
+            return Ok(TraceOutput::Memory {
+                rows: Vec::new(),
+                positions_recycled: false,
+            });
         }
 
         // Count: tokenize once (its counts drive the estimate; the same ids and
@@ -979,6 +1033,24 @@ mod tests {
         assert_eq!(Positions::All.resolve(3), vec![0, 1, 2]);
         // Explicit indices are kept in-range; out-of-range ones are dropped.
         assert_eq!(Positions::Explicit(vec![0, 2, 9]).resolve(4), vec![0, 2]);
+    }
+
+    #[test]
+    fn explicit_positions_recycling_signal_fires_only_on_a_dropped_position() {
+        // The API-GRAMMAR §4 warning signal: an explicit vector recycled across
+        // prompts of differing lengths where a position falls out of range.
+        let p = Positions::Explicit(vec![0, 7]);
+        // pos 7 (0-based) is valid for the 8-token prompt, out of range for the
+        // 3-token one -> reported.
+        assert!(p.recycled_out_of_range(&[8, 3]));
+        assert!(p.recycled_out_of_range(&[5])); // out of range for a single short prompt
+                                                // All positions in range for every prompt -> not reported (even if lengths
+                                                // differ, nothing was dropped).
+        assert!(!p.recycled_out_of_range(&[8, 8]));
+        assert!(!p.recycled_out_of_range(&[8]));
+        // "last"/"all" are resolved per prompt and are never out of range.
+        assert!(!Positions::Last.recycled_out_of_range(&[3, 8]));
+        assert!(!Positions::All.recycled_out_of_range(&[3, 8]));
     }
 
     #[test]

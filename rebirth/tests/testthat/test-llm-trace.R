@@ -402,3 +402,29 @@ test_that("llm_trace() attn_out on a qwen2 model is a classed, honest error [MOD
     class = "rebirth_error_trace"
   )
 })
+
+test_that("llm_trace() warns when explicit positions are recycled across differing lengths [MODEL]", {
+  # ACCEPTANCE (API-GRAMMAR section 4): an explicit `positions` vector is recycled
+  # per prompt, "with a warning if lengths differ". A position valid for a long
+  # prompt but out of range for a short one is dropped for the short one, which must
+  # warn (once). Keyword positions ("last"/"all") never warn. Skipped in CI (needs a
+  # tokenizer + model); runs on the founder's hardware with REBIRTH_TEST_MODEL_QWEN.
+  m <- llm(qwen_model_path())
+  on.exit(close(m), add = TRUE)
+
+  short_long <- c("Hi.", "A considerably longer sentence, with several tokens to trace.")
+
+  # Position 9 is out of range for the short prompt -> recycled/dropped -> warn.
+  expect_warning(
+    llm_trace(m, short_long, layers = 1L, positions = c(1L, 9L), components = "residual"),
+    regexp = "recycled"
+  )
+  # Keyword positions never warn, even across differing-length prompts.
+  expect_no_warning(
+    llm_trace(m, short_long, layers = 1L, positions = "last", components = "residual")
+  )
+  # An explicit position in range for every prompt does not warn.
+  expect_no_warning(
+    llm_trace(m, short_long, layers = 1L, positions = 1L, components = "residual")
+  )
+})

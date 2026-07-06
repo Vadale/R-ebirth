@@ -110,7 +110,7 @@ fn in_budget_captures_in_memory() {
         )
         .expect("in-memory capture");
     match out {
-        TraceOutput::Memory(rows) => {
+        TraceOutput::Memory { rows, .. } => {
             assert_eq!(rows.len(), 48, "2 layers x 3 comps x 8 tokens");
         }
         TraceOutput::Spilled(_) => panic!("a generous budget must stay in memory"),
@@ -119,6 +119,58 @@ fn in_budget_captures_in_memory() {
         !std::path::Path::new(&path).exists(),
         "in-budget must not spill"
     );
+}
+
+#[test]
+fn explicit_positions_recycled_across_differing_lengths_is_reported() {
+    // REV-2 / API-GRAMMAR §4: an explicit positions vector recycled across prompts
+    // of differing lengths, where a position is out of range for a shorter prompt,
+    // is reported on the TraceOutput so the R boundary can warn once.
+    let model = load_synthetic();
+    let spec = CaptureSpec {
+        layers: Some(vec![0]),
+        // pos 7 (0-based) is valid for the 8-token prompt, out of range for a 3-token one.
+        positions: Positions::Explicit(vec![0, 7]),
+        components: vec![Component::Residual],
+    };
+    let short: [i32; 3] = [INPUT_TOKENS[0], INPUT_TOKENS[1], INPUT_TOKENS[2]];
+
+    // Differing lengths with a dropped position -> reported (a generous budget keeps
+    // it in memory, so no file is written).
+    let out = model
+        .trace_token_batch_spill(
+            &[&INPUT_TOKENS, &short],
+            &spec,
+            &plan(true, 1 << 30, &tmp_spill_path("recycled")),
+        )
+        .expect("in-memory capture");
+    match out {
+        TraceOutput::Memory {
+            positions_recycled, ..
+        } => assert!(
+            positions_recycled,
+            "pos 7 is out of range for the 3-token prompt -> recycling reported"
+        ),
+        TraceOutput::Spilled(_) => panic!("a generous budget must stay in memory"),
+    }
+
+    // Same explicit vector, all prompts long enough -> not reported.
+    let out2 = model
+        .trace_token_batch_spill(
+            &[&INPUT_TOKENS, &INPUT_TOKENS],
+            &spec,
+            &plan(true, 1 << 30, &tmp_spill_path("norecycle")),
+        )
+        .expect("in-memory capture");
+    match out2 {
+        TraceOutput::Memory {
+            positions_recycled, ..
+        } => assert!(
+            !positions_recycled,
+            "all positions in range for both prompts -> not reported"
+        ),
+        TraceOutput::Spilled(_) => panic!("a generous budget must stay in memory"),
+    }
 }
 
 #[test]
@@ -153,7 +205,7 @@ fn over_budget_spills_and_the_file_equals_the_in_memory_capture() {
         .expect("spill capture");
     let report = match out {
         TraceOutput::Spilled(report) => report,
-        TraceOutput::Memory(_) => panic!("a tiny budget must spill"),
+        TraceOutput::Memory { .. } => panic!("a tiny budget must spill"),
     };
     assert_eq!(report.n_rows, 48 * N_EMBD as u64, "long-format rows");
     assert_eq!(report.n_positions, 8);

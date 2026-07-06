@@ -455,7 +455,10 @@ fn rebirth_trace(
 /// spill report the R side turns into a lazy `rebirth_trace`.
 fn trace_output_payload(output: TraceOutput) -> Robj {
     match output {
-        TraceOutput::Memory(rows) => trace_payload(&rows),
+        TraceOutput::Memory {
+            rows,
+            positions_recycled,
+        } => trace_payload(&rows, positions_recycled),
         #[cfg(feature = "spill")]
         TraceOutput::Spilled(report) => spill_payload(&report),
     }
@@ -485,6 +488,7 @@ fn spill_payload(report: &rebirth_llm::SpillReport) -> Robj {
     List::from_pairs(vec![
         ("ok", Robj::from(true)),
         ("spilled", Robj::from(true)),
+        ("positions_recycled", Robj::from(report.positions_recycled)),
         ("spill_path", Robj::from(report.path.as_str())),
         ("n_rows", Robj::from(report.n_rows as f64)),
         ("n_positions", Robj::from(report.n_positions as f64)),
@@ -546,7 +550,8 @@ fn build_capture_spec(
 /// Expand the captured rows into the exact 7-column `rebirth_trace` payload
 /// (API-GRAMMAR §2), one long-format entry per (row, neuron). Every index is
 /// shifted engine 0-based -> R 1-based here; `value` is upcast f32 -> f64.
-fn trace_payload(rows: &[CaptureRow]) -> Robj {
+/// `positions_recycled` is the API-GRAMMAR §4 warning signal R acts on.
+fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
     let total: usize = rows.iter().map(|r| r.values.len()).sum();
     let mut prompt_id = Vec::with_capacity(total);
     let mut token_pos = Vec::with_capacity(total);
@@ -578,6 +583,7 @@ fn trace_payload(rows: &[CaptureRow]) -> Robj {
     List::from_pairs(vec![
         ("ok", Robj::from(true)),
         ("spilled", Robj::from(false)),
+        ("positions_recycled", Robj::from(positions_recycled)),
         ("prompt_id", Robj::from(prompt_id)),
         ("token_pos", Robj::from(token_pos)),
         ("token", Robj::from(token)),

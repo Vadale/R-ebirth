@@ -149,6 +149,21 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
     spill, as.double(budget), spill_path, m$path, trace_id, spec_key
   ))
 
+  # API-GRAMMAR section 4: an explicit `positions` vector is recycled per prompt,
+  # with a warning if lengths differ. The engine -- which knows each prompt's token
+  # count -- reports whether any explicit position fell out of range for some prompt;
+  # warn once when it did. Keyword positions ("last"/"all") never warn: they are not
+  # numeric here, and the engine reports FALSE for them.
+  if (!is.character(positions) && isTRUE(payload$positions_recycled)) {
+    warning(
+      "An explicit `positions` vector was recycled across prompts of differing ",
+      "lengths; some positions were out of range for the shorter prompts and were ",
+      "dropped (no rows for those prompt/position pairs). Pass positions within the ",
+      "shortest prompt's length, or use positions = \"all\".",
+      call. = FALSE
+    )
+  }
+
   if (isTRUE(payload$spilled)) {
     new_spilled_trace(payload, m, prompts, spec_key)
   } else {
