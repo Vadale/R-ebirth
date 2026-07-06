@@ -89,10 +89,19 @@ fn from_engine_token(id_0based: i32) -> i32 {
 }
 
 /// R (1-based index) -> engine (0-based), for layers/positions/neurons. The single
-/// inbound conversion site (ARCHITECTURE.md §4). R has already validated the value
-/// is a positive integer, so `one_based - 1` is non-negative; the `.max(0)` makes
-/// the narrowing to `u32` total even for an unvalidated caller.
+/// inbound conversion site (ARCHITECTURE.md §4).
+///
+/// PRECONDITION (F-4): `one_based >= 1`. R validates every layer/position/neuron as
+/// a positive integer before the boundary, so this is the only supported input. The
+/// `.max(0)` clamp on a `<= 0` value is a memory-safety FLOOR, not a supported path:
+/// it merely keeps the narrowing to `u32` total (no wrap to a huge index) for an
+/// unvalidated caller; such a value maps to engine index 0 and is still rejected
+/// downstream, never silently treated as a real index.
 fn to_engine_index(one_based: i32) -> u32 {
+    debug_assert!(
+        one_based >= 1,
+        "to_engine_index precondition: R passes a validated 1-based index"
+    );
     (one_based - 1).max(0) as u32
 }
 
