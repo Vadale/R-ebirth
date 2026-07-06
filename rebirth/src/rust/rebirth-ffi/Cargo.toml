@@ -20,6 +20,14 @@ crate-type = ["rlib", "staticlib"]
 name = "document"
 path = "document.rs"
 
+[features]
+# Forward the engine's disk-spill feature (DECISIONS.md D-013). Default on, so the
+# R package ships with `llm_trace(spill = TRUE)` functional; a
+# `--no-default-features` build drops spill in both crates (no Arrow), keeping the
+# no-spill configuration coherent end to end.
+default = ["spill"]
+spill = ["rebirth-llm/spill"]
+
 [dependencies]
 extendr-api = "0.9"
-rebirth-llm = { path = "../rebirth-llm" }
+rebirth-llm = { path = "../rebirth-llm", default-features = false }

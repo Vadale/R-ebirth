@@ -915,28 +915,6 @@ impl LoadedModel {
         let pieces: Vec<Vec<String>> = encodings.iter().map(|e| e.pieces.clone()).collect();
         self.trace_capture_planned(&batches, &pieces, spec, plan)
     }
-
-    /// The in-memory R-facing text trace (WP4 Steps 3-4): tokenize each text, trace
-    /// in memory, and return the rows with their token pieces. Superseded at the
-    /// boundary by [`trace_texts_spill`](Self::trace_texts_spill) once spill is
-    /// wired through the FFI; retained until then.
-    pub fn trace_texts(
-        &self,
-        texts: &[&str],
-        spec: &CaptureSpec,
-    ) -> Result<Vec<CaptureRow>, RebirthError> {
-        self.require_tokenizer()?;
-        if texts.is_empty() {
-            return Ok(Vec::new());
-        }
-        let mut encodings = Vec::with_capacity(texts.len());
-        for &text in texts {
-            encodings.push(self.encode(text, true, false)?);
-        }
-        let batches: Vec<&[i32]> = encodings.iter().map(|e| e.ids.as_slice()).collect();
-        let pieces: Vec<Vec<String>> = encodings.iter().map(|e| e.pieces.clone()).collect();
-        self.capture_in_memory(&batches, &pieces, spec)
-    }
 }
 
 #[cfg(test)]

@@ -21,10 +21,12 @@ rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, 
 
 rebirth_embed <- function(ptr, texts, pooling, normalize) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize)
 
-rebirth_trace <- function(ptr, prompts, layers, positions_mode, positions_values, components) .Call(wrap__rebirth_trace, ptr, prompts, layers, positions_mode, positions_values, components)
+rebirth_trace <- function(ptr, prompts, layers, positions_mode, positions_values, components, spill, budget_bytes, spill_path, model_id, trace_id, spec_key) .Call(wrap__rebirth_trace, ptr, prompts, layers, positions_mode, positions_values, components, spill, budget_bytes, spill_path, model_id, trace_id, spec_key)
 
 rebirth_selftest_new_handle <- function() .Call(wrap__rebirth_selftest_new_handle)
 
 rebirth_selftest_panic <- function() .Call(wrap__rebirth_selftest_panic)
+
+rebirth_selftest_trace_tokens_spill <- function(ptr, tokens, spill, budget_bytes, spill_path, model_id, trace_id, spec_key) .Call(wrap__rebirth_selftest_trace_tokens_spill, ptr, tokens, spill, budget_bytes, spill_path, model_id, trace_id, spec_key)
 
 # nolint end

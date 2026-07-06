@@ -25,7 +25,7 @@ use std::path::PathBuf;
 use extendr_api::prelude::*;
 use rebirth_llm::{
     BackendKind, CaptureRow, CaptureSpec, Component, GenerateParams, LoadRequest, LoadedModel,
-    ModelMetadata, Pooling, Positions, RebirthError,
+    ModelMetadata, Pooling, Positions, RebirthError, SpillPlan, TraceOutput,
 };
 
 /// The native side of an `llm` handle: an owned loaded model, or `None` once the
@@ -406,13 +406,18 @@ fn rebirth_embed(ptr: Robj, texts: Vec<String>, pooling: &str, normalize: bool) 
 }
 
 // Trace activations over the prompt tokens. R has validated m/prompts/layers/
-// positions/components and run the predictive OOM check; here we build the
-// engine-native (0-based) capture spec -- the 1-based -> 0-based conversion for
-// `layers`/`positions` happens ONLY here (ARCHITECTURE §4) -- run trace_texts
-// under with_model's catch_unwind, and expand the captured rows into the seven
-// long-format columns with layer/token_pos/prompt_id/neuron shifted back to
-// 1-based. `layers` empty = all blocks; `positions_mode` is "last"/"all"/"explicit"
-// with `positions_values` the 1-based explicit positions (empty otherwise).
+// positions/components/spill and (for the length-known filters with spill = FALSE)
+// run the predictive OOM check; here we build the engine-native (0-based) capture
+// spec -- the 1-based -> 0-based conversion for `layers`/`positions` happens ONLY
+// here (ARCHITECTURE §4) -- assemble the spill plan, run trace_texts_spill under
+// with_model's catch_unwind (which does the authoritative count -> estimate ->
+// decide, so the `positions = "all"` size is exact), and return either the seven
+// long-format in-memory columns (indices shifted back to 1-based) or a spill
+// report (the file path + the capture's dims for the lazy object). `layers` empty
+// = all blocks; `positions_mode` is "last"/"all"/"explicit" with `positions_values`
+// the 1-based explicit positions (empty otherwise). The spill strings (path,
+// model, trace_id, spec_key) are authored in R, which owns the session spill dir.
+#[allow(clippy::too_many_arguments)]
 #[extendr]
 fn rebirth_trace(
     ptr: Robj,
@@ -421,13 +426,75 @@ fn rebirth_trace(
     positions_mode: &str,
     positions_values: Vec<i32>,
     components: Vec<String>,
+    spill: bool,
+    budget_bytes: f64,
+    spill_path: &str,
+    model_id: &str,
+    trace_id: &str,
+    spec_key: &str,
 ) -> Robj {
     with_model(&ptr, |model| {
         let spec = build_capture_spec(&layers, positions_mode, &positions_values, &components)?;
         let refs: Vec<&str> = prompts.iter().map(String::as_str).collect();
-        let rows = model.trace_texts(&refs, &spec)?;
-        Ok(trace_payload(&rows))
+        let plan = SpillPlan {
+            spill,
+            // R passes a validated positive budget as a double; clamp defensively.
+            budget_bytes: budget_bytes.max(0.0) as u64,
+            spill_path: spill_path.to_string(),
+            model: model_id.to_string(),
+            trace_id: trace_id.to_string(),
+            spec_key: spec_key.to_string(),
+        };
+        Ok(trace_output_payload(
+            model.trace_texts_spill(&refs, &spec, &plan)?,
+        ))
     })
+}
+
+/// The R payload for a completed trace: the in-memory long-format columns, or a
+/// spill report the R side turns into a lazy `rebirth_trace`.
+fn trace_output_payload(output: TraceOutput) -> Robj {
+    match output {
+        TraceOutput::Memory(rows) => trace_payload(&rows),
+        #[cfg(feature = "spill")]
+        TraceOutput::Spilled(report) => spill_payload(&report),
+    }
+}
+
+/// The R payload for a spilled trace: the file path plus the capture's dimensions
+/// (layers/positions shifted engine 0-based -> R 1-based), so the boundary builds
+/// a lazy `rebirth_trace` whose print/summary need no data load. `n_rows`/
+/// `n_positions` are doubles (R has no u64; exact at these magnitudes).
+#[cfg(feature = "spill")]
+fn spill_payload(report: &rebirth_llm::SpillReport) -> Robj {
+    let layers: Vec<i32> = report
+        .layers
+        .iter()
+        .map(|&l| from_engine_index(l))
+        .collect();
+    let positions: Vec<i32> = report
+        .positions
+        .iter()
+        .map(|&p| from_engine_index(p))
+        .collect();
+    let components: Vec<String> = report
+        .components
+        .iter()
+        .map(|c| c.as_str().to_string())
+        .collect();
+    List::from_pairs(vec![
+        ("ok", Robj::from(true)),
+        ("spilled", Robj::from(true)),
+        ("spill_path", Robj::from(report.path.as_str())),
+        ("n_rows", Robj::from(report.n_rows as f64)),
+        ("n_positions", Robj::from(report.n_positions as f64)),
+        ("layers", Robj::from(layers)),
+        ("positions", Robj::from(positions)),
+        ("components", Robj::from(components)),
+        ("n_embd", Robj::from(report.n_embd as i32)),
+        ("trace_id", Robj::from(report.trace_id.as_str())),
+    ])
+    .into()
 }
 
 /// Build the engine-native capture spec from the validated R arguments, applying
@@ -508,6 +575,7 @@ fn trace_payload(rows: &[CaptureRow]) -> Robj {
 
     List::from_pairs(vec![
         ("ok", Robj::from(true)),
+        ("spilled", Robj::from(false)),
         ("prompt_id", Robj::from(prompt_id)),
         ("token_pos", Robj::from(token_pos)),
         ("token", Robj::from(token)),
@@ -538,6 +606,46 @@ fn rebirth_selftest_panic() -> Robj {
     )))
 }
 
+// Test-only: trace RAW (1-based) token ids with spill, bypassing the tokenizer, so
+// the `no_vocab` synthetic model can exercise the full spill path (writer + reader)
+// in CI where `llm_trace()` (which tokenizes text) cannot run. Fixed capture spec
+// (all layers, all positions, all three components) to keep the surface small; the
+// R test authors the matching `spec_key`. Internal (never in NAMESPACE).
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_selftest_trace_tokens_spill(
+    ptr: Robj,
+    tokens: Vec<i32>,
+    spill: bool,
+    budget_bytes: f64,
+    spill_path: &str,
+    model_id: &str,
+    trace_id: &str,
+    spec_key: &str,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let spec = CaptureSpec {
+            layers: None,
+            positions: Positions::All,
+            components: vec![Component::Residual, Component::AttnOut, Component::MlpOut],
+        };
+        let ids: Vec<i32> = tokens.iter().map(|&t| to_engine_token(t)).collect();
+        let plan = SpillPlan {
+            spill,
+            budget_bytes: budget_bytes.max(0.0) as u64,
+            spill_path: spill_path.to_string(),
+            model: model_id.to_string(),
+            trace_id: trace_id.to_string(),
+            spec_key: spec_key.to_string(),
+        };
+        Ok(trace_output_payload(model.trace_token_batch_spill(
+            &[&ids],
+            &spec,
+            &plan,
+        )?))
+    })
+}
+
 // Macro to generate exports. The functions above are internal `.Call` targets;
 // the user-facing surface is the R `llm()` and its S3 methods.
 extendr_api::extendr_module! {
@@ -553,6 +661,7 @@ extendr_api::extendr_module! {
     fn rebirth_trace;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_panic;
+    fn rebirth_selftest_trace_tokens_spill;
 }
 
 #[cfg(test)]

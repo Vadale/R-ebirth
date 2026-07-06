@@ -107,8 +107,19 @@ pub struct SpillSink {
 
 impl SpillSink {
     /// Create the file and spawn the writer thread. The thread holds only the
-    /// file, the receiver, and the schema — no handle (G2).
+    /// file, the receiver, and the schema — no handle (G2). The parent (the R
+    /// session spill directory) is created here, so it exists only once a trace
+    /// actually spills — an in-memory trace leaves no directory behind.
     pub fn new(meta: SpillMeta) -> Result<SpillSink, RebirthError> {
+        if let Some(parent) = std::path::Path::new(&meta.path).parent() {
+            std::fs::create_dir_all(parent).map_err(|e| RebirthError::Trace {
+                reason: format!(
+                    "Could not create the spill directory '{}' ({e}). Check the cache \
+                     location is writable, or pass spill = FALSE to keep the trace in memory.",
+                    parent.display()
+                ),
+            })?;
+        }
         let file = File::create(&meta.path).map_err(|e| RebirthError::Trace {
             reason: format!(
                 "Could not open the spill file '{}' for writing ({e}). \

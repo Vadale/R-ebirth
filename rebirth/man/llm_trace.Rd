@@ -44,11 +44,14 @@ models; on architectures that do not name the post-projection output (e.g.
 qwen2, gemma3) requesting it raises \code{rebirth_error_trace} listing the available
 components rather than silently substituting a different tensor.}
 
-\item{spill}{Single logical (default \code{TRUE}). Reserved for the disk-spill path;
-until it lands, an over-budget capture raises \code{rebirth_error_oom} regardless of
-this flag.}
+\item{spill}{Single logical (default \code{TRUE}). When a capture exceeds the memory
+budget, \code{TRUE} streams it to a disk file (a lazily-loaded spilled trace) and
+\code{FALSE} raises \code{rebirth_error_oom} instead. A within-budget capture is always
+held in memory regardless of this flag.}
 
-\item{spill_dir}{\code{NULL} or a single directory path for spill files (reserved).}
+\item{spill_dir}{\code{NULL} (default: a managed per-session directory under the user
+cache, cleaned up when the session ends) or a single directory path in which to
+write spill files (left in place for you to manage).}
 
 \item{x}{A \code{rebirth_trace} (for \code{print}/\code{as.matrix}) or its \code{summary}.}
 
@@ -58,13 +61,17 @@ this flag.}
 }
 \value{
 A \code{rebirth_trace}: a \code{data.frame} (class \code{c("rebirth_trace", "data.frame")}) with the seven columns above, carrying \code{model}, \code{spilled},
-\code{spill_files}, and \code{prompts} attributes. See \code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}} to
-extract one \verb{(layer, component)} slice as a numeric matrix.
+\code{spill_files}, and \code{prompts} attributes. When \code{spilled} is \code{TRUE} the rows live
+in \code{spill_files} (read on demand by \code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}}) rather than in
+the frame. See \code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}} to extract one \verb{(layer, component)}
+slice as a numeric matrix.
 
 \code{print} returns its argument invisibly.
 
 \code{summary} returns a \code{data.frame} (class \code{summary.rebirth_trace}) with one
-row per captured \verb{(layer, component)} group: its \code{n} and mean \verb{|value|}.
+row per captured \verb{(layer, component)} group: its \code{n} and mean \verb{|value|}. For a
+spilled trace, \code{mean_abs} is \code{NA} (reporting it would force a data load); use
+\code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}} to read a slice.
 }
 \description{
 Runs a forward pass over each prompt's tokens (no sampling) and captures the
@@ -87,12 +94,16 @@ vector), and \code{value} (the activation).
 
 \strong{Memory (the 16 GB rule).} A full trace can be large, so the defaults capture
 little (\code{positions = "last"}, \code{components = "residual"}); widen them deliberately.
-Before running, the in-memory size is estimated from the filters; if it exceeds
-the budget (\verb{min(2 GB, 20\% of RAM)}, overridable with
-\verb{options(rebirth.trace_budget = <bytes>)}) the call raises \code{rebirth_error_oom}
-\emph{before} any allocation, its \code{estimate_bytes} field stating the estimate.
-Streaming an over-budget capture to disk (\code{spill = TRUE}) is not yet available
-and currently raises the same predictive \code{rebirth_error_oom}.
+Before running, the capture's size is estimated from the filters. If it fits the
+budget (\verb{min(2 GB, 20\% of RAM)}, overridable with
+\verb{options(rebirth.trace_budget = <bytes>)}) it is held in memory. If it exceeds the
+budget and \code{spill = TRUE} (the default), the capture is streamed to an Arrow-IPC
+file under the session cache and the result is a \emph{spilled} \code{rebirth_trace} that
+loads lazily: \code{print()}/\code{summary()} never read the file, and
+\code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}} reads only the requested \verb{(layer, component)} slice.
+If it exceeds the budget and \code{spill = FALSE}, the call raises \code{rebirth_error_oom}
+\emph{before} any allocation, its \code{estimate_bytes} field stating the estimate. Spill
+files are removed when the R session ends.
 
 The model must carry a tokenizer; a \code{no_vocab} model raises
 \code{rebirth_error_tokenize}. As with the other text entry points, the runnable
