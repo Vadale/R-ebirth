@@ -52,6 +52,11 @@ pub enum RebirthError {
     /// shape/dtype, or the trace decode failed. `reason` carries the full,
     /// already-actionable message (composed at the failure site, like `Embed`).
     Trace { reason: String },
+    /// An intervention (`llm_steer`/`llm_ablate`) failed: the model's architecture
+    /// lacks the `build_cvec` residual choke point, a native setter rejected the
+    /// buffer, or a dimension/layer was invalid. `reason` carries the full,
+    /// already-actionable message (composed at the failure site, like `Trace`).
+    Intervention { reason: String },
     /// A capture whose predicted in-memory size exceeds the budget, raised BEFORE
     /// the capture is allocated when `spill = false` (the 16 GB rule; API-GRAMMAR
     /// section 4). The R validation layer raises the same class pre-boundary for
@@ -80,6 +85,7 @@ impl RebirthError {
             RebirthError::ContextOverflow { .. } => "rebirth_error_context_overflow",
             RebirthError::Embed { .. } => "rebirth_error_embed",
             RebirthError::Trace { .. } => "rebirth_error_trace",
+            RebirthError::Intervention { .. } => "rebirth_error_intervention",
             RebirthError::Oom { .. } => "rebirth_error_oom",
             RebirthError::Internal { .. } => "rebirth_error_internal",
         }
@@ -141,6 +147,10 @@ impl fmt::Display for RebirthError {
             // component/architecture vs a shape mismatch), so `reason` already holds
             // a complete what-happened -> cause -> what-to-try message.
             RebirthError::Trace { reason } => write!(f, "{reason}"),
+            // Like `Trace`, the intervention causes need distinct guidance
+            // (unsupported architecture vs a rejected buffer vs an invalid
+            // dimension/layer), so `reason` already holds a complete message.
+            RebirthError::Intervention { reason } => write!(f, "{reason}"),
             RebirthError::Oom {
                 estimate_bytes,
                 budget_bytes,
