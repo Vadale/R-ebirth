@@ -289,7 +289,9 @@ impl LoadedModel {
     }
 
     /// Guard: reject a token sequence that cannot fit the context window.
-    fn check_fits(&self, n_tokens: usize) -> Result<(), RebirthError> {
+    /// `pub(crate)` so the trace path (`trace.rs`) shares this exact check instead
+    /// of reimplementing the same `ContextOverflow` computation.
+    pub(crate) fn check_fits(&self, n_tokens: usize) -> Result<(), RebirthError> {
         let ctx = self.context_length();
         if n_tokens as u64 > ctx as u64 {
             return Err(RebirthError::ContextOverflow {

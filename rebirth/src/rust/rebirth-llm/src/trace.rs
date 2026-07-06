@@ -583,20 +583,6 @@ impl LoadedModel {
         })
     }
 
-    /// `RebirthError::ContextOverflow` if a prompt of `len` tokens does not fit the
-    /// context window (checked before any allocation).
-    fn check_trace_fits(&self, len: usize) -> Result<(), RebirthError> {
-        let ctx = self.context_length();
-        if len as u64 > ctx as u64 {
-            return Err(RebirthError::ContextOverflow {
-                prompt_tokens: len as u32,
-                context_length: ctx,
-                overflow: len as u32 - ctx,
-            });
-        }
-        Ok(())
-    }
-
     /// Validate every prompt (non-empty, in-vocabulary ids, fits the context) and
     /// return the longest token count (the trace context is sized to it). Runs
     /// before any capture allocation.
@@ -611,7 +597,7 @@ impl LoadedModel {
                         .to_string(),
                 });
             }
-            self.check_trace_fits(ids.len())?;
+            self.check_fits(ids.len())?;
             longest = longest.max(ids.len());
         }
         Ok(longest)
