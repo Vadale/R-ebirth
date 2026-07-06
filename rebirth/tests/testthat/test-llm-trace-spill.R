@@ -76,6 +76,21 @@ test_that("a spilled trace's slices equal the in-memory slices exactly", {
   expect_match(rownames(x)[1], "^[0-9]+\\.[0-9]+$")
 })
 
+test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spill path)", {
+  # REV-3: the synthetic model is no_vocab, so a captured row carries no token
+  # piece. The in-memory boundary payload must surface `token` as NA_character_
+  # (not ""), agreeing with the spill path -- which writes append_null (NA) -- and
+  # the documented rebirth_trace schema. Defect this catches: trace_payload mapping
+  # None to "" so the in-memory and spilled `token` columns silently disagree.
+  m <- llm(synthetic_model_path())
+  on.exit(close(m), add = TRUE)
+
+  ref <- selftest_trace_tokens(m, synthetic_tokens(), spill = FALSE, budget = Inf)
+  expect_false(isTRUE(attr(ref, "spilled")))
+  expect_type(ref$token, "character")
+  expect_true(all(is.na(ref$token)))
+})
+
 test_that("print() and summary() on a spilled trace never read the file", {
   # ACCEPTANCE: print/summary report a spilled trace from its attributes alone.
   # Proof: delete the spill file, then print/summary still succeed (they would

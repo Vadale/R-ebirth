@@ -550,7 +550,10 @@ fn trace_payload(rows: &[CaptureRow]) -> Robj {
     let total: usize = rows.iter().map(|r| r.values.len()).sum();
     let mut prompt_id = Vec::with_capacity(total);
     let mut token_pos = Vec::with_capacity(total);
-    let mut token = Vec::with_capacity(total);
+    // `token: None` (the raw-id path, or a no_vocab model with no pieces) becomes R
+    // `NA_character_`, agreeing with the spill path (which writes `append_null`) and
+    // the documented `rebirth_trace` schema — never an empty string "".
+    let mut token: Vec<Option<String>> = Vec::with_capacity(total);
     let mut layer = Vec::with_capacity(total);
     let mut component = Vec::with_capacity(total);
     let mut neuron = Vec::with_capacity(total);
@@ -561,11 +564,10 @@ fn trace_payload(rows: &[CaptureRow]) -> Robj {
         let pos = from_engine_index(row.token_pos);
         let lyr = from_engine_index(row.layer);
         let comp = row.component.as_str();
-        let tok = row.token.as_deref().unwrap_or("");
         for (k, &v) in row.values.iter().enumerate() {
             prompt_id.push(pid);
             token_pos.push(pos);
-            token.push(tok.to_string());
+            token.push(row.token.clone());
             layer.push(lyr);
             component.push(comp.to_string());
             neuron.push(from_engine_index(k as u32));
