@@ -657,8 +657,7 @@ impl LoadedModel {
     }
 
     /// Capture into memory and return the rows (the in-budget path; no Arrow, no
-    /// background thread). Shared by the raw-id entry points and the in-budget
-    /// branch of the planned capture.
+    /// background thread). Used by the raw-id `activations` building block.
     fn capture_in_memory(
         &self,
         batches: &[&[i32]],
@@ -899,16 +898,6 @@ impl LoadedModel {
         spec: &CaptureSpec,
     ) -> Result<Vec<CaptureRow>, RebirthError> {
         self.capture_in_memory(&[ids], &[], spec)
-    }
-
-    /// Trace pre-tokenized id batches (no tokenizer required); rows carry no token
-    /// pieces. One trace context serves the whole batch.
-    pub fn trace_token_batch(
-        &self,
-        batches: &[&[i32]],
-        spec: &CaptureSpec,
-    ) -> Result<Vec<CaptureRow>, RebirthError> {
-        self.capture_in_memory(batches, &[], spec)
     }
 
     /// Spill-aware raw-id trace (no tokenizer needed; rows carry no token pieces):
