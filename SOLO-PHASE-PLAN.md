@@ -21,7 +21,7 @@ Operational companion: **`ROADMAP.md`** — work packages, toolchain, prompts fo
 - **Rung 2 — the distribution (transition).** An installer bundling vanilla R + the R-ebirth suite preinstalled + curated defaults (packages auto-attached via site profile, sensible options, pinned versions). Delivers the "batteries included, feels like a new environment" experience **without forking a single line of R**.
 - **Rung 3 — the fork (community era).** Only for the things a package can never do: new surface syntax (real type annotations, `async`/`await` keywords), changed base defaults, the speculative JIT in the evaluator, allocator/GC work. Entered only when there is a community to share the permanent upstream-merge tax. The v0.1 fork plan (base pinning, patch-first rule, PATCHES.md, upstream `make check` invariant) is preserved verbatim in `DECISIONS.md` as the rung-3 playbook.
 
-**What a package genuinely cannot do** (the honest boundary, so it is never rediscovered by surprise): modify the parser, change base-R defaults, replace the evaluator/GC, or make R itself faster on arbitrary user loops. **Interim mitigations on rung 1:** function-based forms instead of new syntax (`async({...})`/`await()` in the promises tradition; type declarations as arguments rather than annotations), and — Phase 2 option — a `reb_compile()` transpiler for typed hot functions (nimble/odin precedent). Everything else discussed for research capability — speed on real workloads, the LLM anatomy lab, topic modelling, the base-R grammar — is fully deliverable from the package, because the heavy compute lives in the native engine either way.
+**What a package genuinely cannot do** (the honest boundary, so it is never rediscovered by surprise): modify the parser, change base-R defaults, replace the evaluator/GC, or make R itself faster on arbitrary user loops. **Interim mitigations on rung 1:** function-based forms instead of new syntax (`async({...})`/`await()` in the promises tradition; type declarations as arguments rather than annotations), and — a roadmap-Phase-7 option — a `reb_compile()` transpiler for typed hot functions (nimble/odin precedent). Everything else discussed for research capability — speed on real workloads, the LLM anatomy lab, topic modelling, the base-R grammar — is fully deliverable from the package, because the heavy compute lives in the native engine either way.
 
 ---
 
@@ -68,7 +68,7 @@ Notes:
 - **Windows is dramatically cheaper on the package path** than it was for the fork: no interpreter build, just a package with native code under the standard Rtools toolchain — and **users never compile anything** because r-universe serves prebuilt binaries (§4). Windows native is therefore promoted from "experimental at Phase 1 exit" to a full tier-2 target during Phase 1. CUDA validation still starts on WSL2 (cheapest route), then moves native.
 - **Mac mini memory budget (≈10–11 GB free)** unchanged: capture filters mandatory, large traces spill to Arrow IPC files reopened lazily; a full trace degrades to disk, never OOMs the session.
 - **Local Linux VMs** (UTM/lima, arm64 Ubuntu): smoke tests only, VM ≤ 4 GB, never concurrently with a 7B model; heavy testing lives in CI.
-- **MLX:** still Phase 2, via `mlx-c`, as a second backend behind the same R API.
+- **MLX:** roadmap Phase 10 (post-`v1.0`, still solo), via `mlx-c`, as a second backend behind the same R API.
 - **Pinned reference models** unchanged: synthetic ~2-layer GGUF in-repo for exact-value unit tests; Qwen2.5-0.5B-Instruct Q8_0 (~0.5 GB, Apache-2.0) for CI integration; Qwen2.5-1.5B-Instruct Q4_K_M (~1 GB) as demo model and 7B Q4 as quality option. Llama-family supported but not demo defaults (license gating).
 
 ---
@@ -127,11 +127,13 @@ r-ebirth/
 
 ## 7. Non-goals through end of Phase 1 (updated)
 
+> **Terminology (read this first — it is the single most confusing point in the docs).** "Phase 1" in *this* plan means the plan's own second era = **roadmap Phases 4–9** (see the `ROADMAP.md` mapping line), which ends at `v1.0`. It is **not** roadmap Phase 1. The non-goals below mark the boundary of *that era* — not of the whole solo project. The **full solo track runs through roadmap Phase 18** (fine-tuning, RL, topics+SAE, `rebirth.bio`) before any team phase; nothing below is cancelled, only sequenced after `v1.0`.
+
 - **No source fork of GNU R** — re-evaluated only at the community rung (D-002).
 - **No new surface syntax** (type annotations, `async`/`await` keywords) — parser work is rung 3; interim function-based forms only.
 - **No JIT / evaluator work** — rung 3 by definition now.
 - **No Arrow-backed default verbs on the critical path** — the LLM module returns plain R structures first; kernel/Arrow work proceeds behind a flag.
-- **No MLX backend** (Phase 2), **no fine-tuning / LoRA training / RLHF** (Phase 2), **no SAE training** (Phase 2; applying pretrained SAEs = late-Phase-1 stretch, decided then).
+- **No MLX backend, no fine-tuning / LoRA training, no RLHF, no SAE training** *through the end of plan-Phase 1 (`v1.0`)* — **deferred, not cancelled**: MLX = roadmap Phase 10, fine-tuning = Phase 12, alignment/RL = Phase 13, topics + SAE = Phase 14 (all still solo, post-`v1.0`). Applying *pretrained* SAEs to traces belongs to Phase 14; training SAEs from scratch stays out.
 - **No `serve`/streaming before the second half of Phase 1.**
 - **No multi-GPU, no distributed, no cloud integration.**
 - **No CRAN submission before Phase 1 exit** (r-universe carries distribution until then).

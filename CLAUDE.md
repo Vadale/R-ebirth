@@ -8,7 +8,7 @@ Entry point for any AI model working on this project. **The repository documents
 
 Strategy = the **three-rung ladder** (see `SOLO-PHASE-PLAN.md` §0): rung 1 = this package suite (now); rung 2 = a curated distribution; rung 3 = a fork of GNU R (JIT, new syntax) — team-gated, last. We are on **rung 1**.
 
-**Status (2026-07-04):** planning complete; `API-GRAMMAR.md` v1.0 **approved by the founder — binding** (D-003); `DECISIONS.md` seeded (D-001…D-004 + the rung-3 fork playbook). **Code not started.** WP0 can begin locally at any time; only the GitHub org/handle blocks its CI acceptance, and the HF account (MedGemma terms) is needed by WP1.
+**Status (2026-07-06):** **code underway — roadmap Phase 1 is 2/3 done.** WP0 (bootstrap + CI), WP1 (`llm()` model loading over vendored llama.cpp b9726, Metal), WP6a (Harness B synthetic oracle), and WP2 (`llm_tokens()`/`llm_generate()`, token-for-token validated) are merged to `main`; CI green cross-platform. **Next: WP3 (`llm_embed()`) closes Phase 1**, then Phase 2 = the anatomy lab (`llm_trace`/`llm_steer`/`llm_ablate`). `API-GRAMMAR.md` v1.0 binding (D-003); `DECISIONS.md` at D-009 (+ rung-3 fork playbook, Appendix A). See `HANDOFF.md` for the full development handoff. Exported so far: `llm()`, `llm_tokens()`, `llm_generate()` + S3 methods. Remaining founder input still open: HF account with MedGemma terms (thesis-era, parked); repo visibility.
 
 ## Language rules (absolute — founder's standing order)
 
@@ -62,7 +62,7 @@ Strategy = the **three-rung ladder** (see `SOLO-PHASE-PLAN.md` §0): rung 1 = th
 - **Why package, not fork (D-002):** forking GNU R meant GPL inheritance, a permanent upstream-merge tax (2–3 releases/year), brutal Windows builds, and replace-your-R adoption friction. The package path removed all four (notably: licensing became fully permissive) while keeping every research capability — the heavy compute lives in the native engine either way. The fork remains as Phase 21 with its playbook archived in `DECISIONS.md`.
 - **Prior-art lessons (why predecessors died — treat as engineering data):** FastR/Renjin reimplemented R and underfunded the C-API bridge → incompatible with the compiled-package ecosystem → death. pqR proved fork-and-improve works technically but died solo. Ř/rir proved a speculative JIT *inside* GNU R works — research funding ended. webR proved the codebase is malleable (R in Wasm). Lesson: compatibility is the product; that is why rung 1 runs *on stock R*.
 - **Do NOT rebuild what the ecosystem already does well:** ellmer/mall/ragnar/vitals (API-based LLM work), localLLM/llamaR (plain llama.cpp bindings — rebirth's differentiator is taps/steering/tidy traces, not inference itself), duckplyr/data.table (fast wrangling), mirai (async workhorse — likely dependency in Phase 5, needs ADR).
-- **The white space rebirth owns:** tidy mechanistic interpretability, local fine-tuning from R, native topic modelling, live introspection during generation.
+- **The white space rebirth owns:** tidy mechanistic interpretability, local fine-tuning from R, native topic modelling, live introspection during generation, and — the biology bet (roadmap Phase 18, `rebirth.bio`) — **tidy mechanistic interpretability of protein/DNA language models** (ESM-2/DNABERT-class): the R answer to Python's graphein/ESM stack, where R's statistics + Bioconductor make it stronger than parity, not weaker. Today R's only protein-LM bridge (`immLynx`) shells out to Python; rebirth runs the encoder natively.
 
 ## Honesty limits (never claim, anywhere — code, docs, papers, README)
 
@@ -89,12 +89,24 @@ Interaction rules he has explicitly set: peer tone (no lecturing, no condescensi
 | `security-auditor` | phase boundaries touching the FFI/unsafe boundary, file parsing, downloads, or the serve module (Phases 0–2, 7, 8) | read-only + reports |
 | `doc-writer` | after WP acceptance passes; before releases | roxygen/vignettes/README/NEWS; examples must run |
 
+> **Coding model = Opus.** Run the session in Opus (`/model opus`). The agents above carry no `model:` field, so they **inherit the session model** — running on Opus means every subagent (coder, architect, reviewer…) implements with Opus. To pin a different model per agent, set `model:` in its `.claude/agents/<name>.md` frontmatter.
+
 ## Skills (`.claude/skills/`)
 
 - `new-wp` — start a work package correctly (branch, spec check, TDD order, acceptance copy).
 - `golden-update` — regenerate reference goldens safely (the only sanctioned way to touch them).
 - `vendor-bump` — quarterly llama.cpp update: re-apply tap patch, re-run harness B, document.
 - `release` — cut a release: check matrix, NEWS, tag, r-universe verification.
+
+## Knowledge graph (graphify) — query it to save tokens
+
+A persistent knowledge graph of the codebase lives at `graphify-out/` (`graph.json`, `graph.html`, `GRAPH_REPORT.md`). **Before opening many source files to answer a "how does X work" / "what calls Y" question, query the graph** — it returns the relevant nodes and their source locations without loading every file, which is the cheapest way to build context:
+
+- `graphify query "how does generation decode the prompt"` — BFS traversal from the matched nodes.
+- `graphify path "llm_generate" "llama_decode"` — how two things connect.
+- `graphify explain "RebirthError"` — a plain-language description of a node.
+
+**Keep it fresh — but refresh carefully:** the curated graph is code-only (Rust engine + Python goldens) and **deliberately excludes the vendored `rebirth/src/llama.cpp/` tree**. A bare `graphify update .` / `graphify .` on this repo re-ingests that vendored C++ and swamps our code with ~10 k noise nodes (verified 2026-07-06). Refresh via the **graphify skill** (it does the narrowing/exclusion) after new code lands, not by pointing the CLI at the repo root; if a run pollutes anyway, graphify auto-backs-up the prior graph to `graphify-out/<date>/` — restore those 5 files to recover the clean state. Enriching the graph with the R surface + planning docs is the budget-permitting task in `HANDOFF.md` §6.
 
 ## Session hygiene (before ending any session)
 
@@ -103,6 +115,6 @@ Interaction rules he has explicitly set: peer tone (no lecturing, no condescensi
 3. User-visible change → `NEWS.md`.
 4. Durable project fact changed → update **this file** (keep it short; details belong in the referenced docs).
 
-## Open inputs from the founder (as of 2026-07-03)
+## Open inputs from the founder (as of 2026-07-06)
 
-GitHub handle/org (repo + r-universe — blocks WP0's CI acceptance only); HF account with MedGemma terms accepted (needed by WP1); hours/week (calendar planning only); repo visibility (recommendation: public at first tag). Thesis inputs parked until assignment (≈ Q1–Q2 2027).
+Code is underway (Phase 1, 2/3 done — WP0/WP1/WP6a/WP2 merged). The GitHub remote + r-universe org are needed before the `v0.1.0` release (Phase 3, WP8), not before coding continues. HF account with MedGemma terms is thesis-era (parked). Still open: repo visibility (recommendation: public at first tag); hours/week (calendar planning only). Thesis inputs parked until assignment (≈ Q1–Q2 2027).

@@ -86,7 +86,7 @@ GitHub repo (public recommended from first tag); r-universe org (automatic macOS
 | **15** | Model export & interop | ONNX export for classical R models; adapter export — "write in R, deploy anywhere" |
 | **16** | Real-time data streams | general tidy-streaming: the "infinite data.frame" on live sources |
 | **17** | Fast data layer | Arrow-native verbs; `reb_compile()`; public benchmarks |
-| **18** | Science verticals | `rebirth.bio`: DNA/protein language-model support |
+| **18** | Science verticals (`rebirth.bio`) | native protein/DNA LM inference + **tidy mech-interp of protein LMs** + residue-graphs + zero-shot variant effect — the R answer to graphein/ESM |
 
 **Team track (deliberately last — requires more than one person):**
 
@@ -145,8 +145,8 @@ Activation goldens; nightly 0.5B tolerance runs; the **mutation test** (injected
 ### Phase 3 — First public release (~2 weeks)
 
 **WP7 — Demos as acceptance tests.**
-Demo A "anatomy lab" (contrast set → trace → `prcomp` → per-layer `glmnet` probes → AUC+CI plot → steer verification); Demo B "topics without Python". Scripts in `tests/demos/` + draft vignettes.
-*Acceptance:* each < 10 min on the Mac mini from RStudio; pinned seeds ⇒ identical outputs; Demo A nightly in CI.
+Demo A "anatomy lab" (contrast set → trace → `prcomp` → per-layer `glmnet` probes → AUC+CI plot → steer verification); Demo B "topics without Python"; **Demo C (optional stretch) "biological-sequence anatomy lab"** — any protein/DNA-sequence encoder that already loads through the engine (BERT-class today; full ESM-2 support is the Phase-18 arch ADR) → `llm_embed`/`llm_trace` → a per-layer `glmnet` probe that localizes a residue-level property → the same money-plot, on biology. Scripts in `tests/demos/` + draft vignettes.
+*Acceptance:* Demos A and B each < 10 min on the Mac mini from RStudio; pinned seeds ⇒ identical outputs; Demo A nightly in CI. **Demo C does not gate Phase 3** — it ships if an encoder loads cleanly (makes the biology promise runnable at first release, per D-010), otherwise it becomes the seed of Phase 18.
 
 **WP8 — Docs + release.**
 roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download()` helper for pinned models** (checksums verified); pkgdown site; r-universe live; `NEWS.md`; tag **`v0.1.0`**.
@@ -198,8 +198,9 @@ roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download(
 ### Phase 13 — Alignment & RL *(new — the RL slice of the vision, at honest local scale)*
 **Goal:** preference optimization for small models. **Scope:** DPO/ORPO-class training on top of the Phase 12 backend; reward/eval loops in R; consistent formula-flavored interface. Datacenter PPO/RLHF explicitly out (header list). **Exit:** documented preference-tuning run of a 1–3B model with before/after evals.
 
-### Phase 14 — Topics & SAE analysis
-**Goal:** productize the analysis layers. **Scope:** `rebirth.topics` satellite (Demo-B pipeline as one function + options); pretrained sparse-autoencoder application to traces (`llm_trace() |> sae_features()`) using public SAE releases. **Exit:** topics package on r-universe; SAE-features demo reproducing a known finding on a public SAE.
+### Phase 14 — Topics & SAE analysis *(where topic modelling and interpretability merge)*
+**Goal:** productize the analysis layers, and close the loop the founding vision asked for — interpretability *inside* topic modelling. **Scope:** `rebirth.topics` satellite (Demo-B pipeline as one function + options); pretrained sparse-autoencoder application to traces (`llm_trace() |> sae_features()`) using public SAE releases; **topic × interpretability integration** — the same local model that embeds documents for clustering also *explains* the clusters, so a topic can be characterized not only by its label (`llm_generate`) but by the internal concepts/SAE features that drive its documents (`llm_trace`/`llm_probe`). **Exit:** topics package on r-universe; SAE-features demo reproducing a known finding on a public SAE; a topic map whose clusters are annotated with the interpretable features that distinguish them.
+> **Note:** the *basic* integration (embed + label with one model, probe why documents group) is already possible from Phases 2–4; Phase 14 productizes and deepens it with SAE features.
 
 ### Phase 15 — Model export & interop *(new — "write in R, deploy anywhere")*
 **Goal:** what leaves R runs anywhere. **Scope:** ONNX export for classical R models (lm/glm + tree ensembles; exact coverage by ADR); LoRA adapter merge/export (GGUF/safetensors); model-card generation. **Exit:** an R-trained classical model served from a non-R runtime via ONNX; an adapter exported, reloaded, verified.
@@ -210,8 +211,23 @@ roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download(
 ### Phase 17 — Fast data layer
 **Goal:** the columnar performance story. **Scope:** Arrow-native verbs graduate from behind the flag; `reb_compile()` productization (if Phase 7 ADR said go); public reproducible benchmark suite vs current Python stacks (honest baselines: polars/duckdb, not strawmen). **Exit:** benchmarks published; verbs documented. *(Solo-feasible; a second contributor halves the calendar.)*
 
-### Phase 18 — Science verticals *(new — the biology promise)*
-**Goal:** the founding vision's biology domain. **Scope:** `rebirth.bio` satellite: encoder-model support (BERT-class DNA/protein language models) for embeddings and, where architecture allows, traces; genomic tokenization helpers. **Exit:** DNABERT-class embeddings + an exploratory variant-effect demo in R. *(Solo-possible; flagged as ideal first-contributor territory — natural bridge to the Bioconductor community.)*
+### Phase 18 — Science verticals: `rebirth.bio` *(the biology promise — a deliberate white-space bet)*
+
+**The white space (researched 2026-07-06).** R's structural-bioinformatics leader, `bio3d`, is excellent at *classical* analysis (structure superposition, PCA, dynamic correlation networks) but has no path to protein *language models* or to the geometric-deep-learning-style graph featurization that now dominates the field. Python owns that ground: `graphein` builds residue/atomic graphs wired to PyG/DGL, and pre-trained protein LMs (ESM-2 class) are the frontier — increasingly fused into geometric nets. R's only bridge to protein LMs today (`immLynx`, Bioconductor 3.23) *shells out to Python/HuggingFace*; there is no native engine. That is the gap `rebirth` is uniquely built to close, because a protein LM is a transformer encoder — the exact machinery `llm_embed`/`llm_trace`/`llm_logits`/`llm_probe` already provide.
+
+**Goal:** make R the best place to *interrogate* protein/DNA language models — not just run them, but open them up with statistics. The differentiator is not "embeddings in R" (that is mere parity); it is **tidy mechanistic interpretability of biological sequence models**, which does not yet exist well anywhere.
+
+**Scope (`rebirth.bio` satellite):**
+1. **Native protein/DNA LM inference** — load ESM-2-class / DNABERT-class encoder GGUFs through the existing engine; per-residue and pooled embeddings; amino-acid/genomic tokenization helpers. *(Arch-support ADR first: ESM-2 is BERT/RoBERTa-style; stock `llama.cpp` computes BERT-class embeddings but ESM's architecture mapping in `convert_hf_to_gguf.py` is not first-class — resolve via a conversion patch or a minimal vendored arch patch, which is exactly what a patchable vendored engine exists for. Feasible; scoped in the ADR.)*
+2. **The anatomy lab, for proteins** — `llm_trace` + `llm_probe` to localize *which layer encodes which biophysical property* (secondary structure, solvent accessibility, catalytic/binding sites, evolutionary conservation), probed against structural annotations with `glmnet` and honest confidence intervals. This is Demo A applied to biology; it is essentially unpublished as a reproducible tidy workflow.
+3. **Residue-graph analysis, native** — build contact/interaction graphs (the `graphein` value proposition) in R with per-residue LM embeddings/activations as node features, feeding `igraph`/`tidygraph` and R's statistical models. Bridges LM internals to Bioconductor's mature sequence/annotation/structure stack (`Biostrings`, `GenomicRanges`, `bio3d`).
+4. **Zero-shot variant effect** — mutation scanning from pLM pseudo-log-likelihoods via `llm_logits` at masked positions (ESM's flagship capability). R cannot do this natively today.
+
+**Why R goes *stronger*, not merely even:** the downstream statistics the protein-ML world routinely under-does are R's home turf — proper CIs on decodability, mixed-effects models across protein families, multiple-testing control, phylogenetic comparative methods, and outcome/econometric models (a natural fit for the founder's health-economics lens) — layered on Bioconductor's annotation infrastructure, which Python has no equal to.
+
+**Exit:** `rebirth.bio` on r-universe; a reproducible demo that (a) localizes secondary-structure decodability by layer in an ESM-2 model and (b) runs a zero-shot variant-effect scan on a small protein — both on the founder's Mac, offline.
+
+**Early proof-of-concept (optional, needs no reorder):** capabilities 1–2 ride entirely on machinery that exists by **Phase 2–3**. A protein-LM mini-demo ("Demo C") can therefore be shown as soon as an encoder model loads, long before the full satellite — a cheap way to make the biology promise *runnable* early without pulling the whole vertical forward. *(Solo-possible; also the ideal first-contributor on-ramp and a natural bridge to the Bioconductor community.)*
 
 ---
 
@@ -586,10 +602,18 @@ SCOPE
   Demo B data: prepared public-abstracts sample (<= 5 MB) in inst/extdata
   + a fetch script for the full corpus. Draft Quarto vignettes for both.
   Wire demo A into nightly CI on the CI model with relaxed thresholds.
-- Out: README/pkgdown polish (WP8).
+  OPTIONAL STRETCH — tests/demos/demo-C-bio-anatomy.R (per D-010): load any
+  protein/DNA-sequence ENCODER that already converts to GGUF and loads through
+  the engine (BERT-class; do NOT block on ESM-2 arch support — that is the
+  Phase-18 ADR) -> llm_embed/llm_trace -> a per-layer glmnet probe localizing a
+  residue-level property (e.g. secondary structure) -> the Demo-A money-plot on
+  biology. Ship it only if an encoder loads cleanly; it does NOT gate Phase 3.
+- Out: README/pkgdown polish (WP8); ESM-2 arch support and rebirth.bio proper
+  (Phase 18); anything that would delay v0.1.0.
 
 ACCEPTANCE
-- Each demo runs end-to-end on the Mac mini from RStudio in < 10 minutes.
+- Demos A and B each run end-to-end on the Mac mini from RStudio in < 10
+  minutes (Demo C is optional per D-010 and does not gate this WP).
 - Pinned seeds -> identical outputs across runs (probe AUCs, cluster labels).
 - Demo A nightly green in CI.
 

@@ -72,6 +72,14 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 
 ---
 
+## D-010 — `v1.0` scope stays lean; fine-tuning, RL, and `rebirth.bio` follow post-`v1.0`
+- **Date:** 2026-07-06 · **Status:** accepted (founder delegated the choice to Claude, 2026-07-06)
+- **Decision:** `v1.0` (roadmap Phase 9) freezes the *interpretability + embeddings + topics + probe + serving* core and nothing heavier. Fine-tuning (Phase 12), alignment/RL (Phase 13), topics + SAE productization (Phase 14), and `rebirth.bio` (Phase 18) stay in the solo track but are sequenced **after** `v1.0`, each shippable on its own. One concession pulled earlier: an *optional* protein-LM proof-of-concept ("Demo C", ROADMAP WP7) that rides the existing embed/trace machinery and does **not** gate Phase 3.
+- **Why:** `v1.0` freezes the `llm_*` API forever, so it must be the small, rock-solid core — not a construction site. Fine-tuning/RL need a training-backend ADR (candle vs libtorch/R-torch) and a real GPU story; folding them into pre-`v1.0` would balloon the solo lift and push the first CRAN release out ~a year. Every phase already ships, so nothing is lost by sequencing. The founder's full vision is preserved: all of it is solo, none team-gated.
+- **Alternatives rejected:** a "complete" `v1.0` bundling training/RL/bio (much later, riskier first release, a heavier API surface locked prematurely); cancelling any of them (they stay — only their order is fixed).
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
