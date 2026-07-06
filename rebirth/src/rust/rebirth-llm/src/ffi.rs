@@ -284,5 +284,16 @@ mod tests {
         assert_eq!(p.pooling_type, -1, "LLAMA_POOLING_TYPE_UNSPECIFIED");
         assert_eq!(p.attention_type, -1, "LLAMA_ATTENTION_TYPE_UNSPECIFIED");
         assert!(!p.embeddings, "embeddings default is false");
+
+        // ABI size guard: the value checks above catch any misalignment at or before
+        // `embeddings`, but not a future vendor-bump that reorders the layout *after*
+        // it (the `samplers`/`n_samplers`/`ctx_other` tail). Pinning the full size
+        // catches that too, even though WP3 writes no tail field. Refresh on
+        // `vendor-bump` if the field list legitimately changes.
+        assert_eq!(
+            core::mem::size_of::<llama_context_params>(),
+            160,
+            "llama_context_params size drifted from b9726; re-verify the #[repr(C)] mirror"
+        );
     }
 }

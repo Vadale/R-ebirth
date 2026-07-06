@@ -32,6 +32,7 @@ test_that("llm_embed() validates its arguments", {
   expect_error(llm_embed(m, NA_character_), class = "rebirth_error_argument")
   expect_error(llm_embed(m, 42), class = "rebirth_error_argument")
   expect_error(llm_embed(m, c("a", NA)), class = "rebirth_error_argument")
+  expect_error(llm_embed(m, c("a", "")), class = "rebirth_error_argument")
   expect_error(llm_embed(m, "hi", normalize = NA), class = "rebirth_error_argument")
   expect_error(llm_embed(m, "hi", normalize = "yes"), class = "rebirth_error_argument")
   expect_error(

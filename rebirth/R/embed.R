@@ -25,7 +25,8 @@
 #' GGUF to run it.
 #'
 #' @param m An `llm` handle from [llm()].
-#' @param x A non-empty character vector to embed; `names(x)` become the row names.
+#' @param x A character vector of one or more non-empty strings to embed; `NA` and
+#'   empty strings (`""`) are rejected. `names(x)` become the row names.
 #' @param pooling How to reduce each input's per-token vectors to one vector:
 #'   `"mean"` (average), `"last"` (final token), or `"model"` (the model's own
 #'   pooling when the GGUF defines one; otherwise an error asking for
@@ -50,6 +51,12 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
   pooling <- match.arg(pooling)
   if (!is.character(x) || length(x) == 0L || anyNA(x)) {
     abort_argument("x", "`x` must be a non-empty character vector without NA.")
+  }
+  if (any(!nzchar(x))) {
+    abort_argument(
+      "x",
+      "`x` must not contain empty strings (\"\"); every element needs text to embed."
+    )
   }
   if (!is.logical(normalize) || length(normalize) != 1L || is.na(normalize)) {
     abort_argument(

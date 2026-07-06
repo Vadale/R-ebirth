@@ -250,7 +250,10 @@ impl LoadedModel {
     /// input length (at least 1) capped at the handle's context window. Sizing to
     /// the batch keeps the compute buffers small (the 16 GB rule, D-011).
     fn embedding_n_ctx(&self, longest: usize) -> u32 {
-        (longest.max(1) as u32).min(self.context_length())
+        // Clamp before narrowing so a `longest` beyond u32::MAX could never truncate
+        // to a wrong small value. Callers already run `check_embed_fits`, but this
+        // makes the narrowing safe by construction rather than by precondition.
+        longest.max(1).min(self.context_length() as usize) as u32
     }
 
     /// `RebirthError::Embed` if `len` tokens do not fit the context window, naming

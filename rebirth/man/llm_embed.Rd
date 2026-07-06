@@ -9,7 +9,8 @@ llm_embed(m, x, pooling = c("mean", "last", "model"), normalize = TRUE)
 \arguments{
 \item{m}{An \code{llm} handle from \code{\link[=llm]{llm()}}.}
 
-\item{x}{A non-empty character vector to embed; \code{names(x)} become the row names.}
+\item{x}{A character vector of one or more non-empty strings to embed; \code{NA} and
+empty strings (\code{""}) are rejected. \code{names(x)} become the row names.}
 
 \item{pooling}{How to reduce each input's per-token vectors to one vector:
 \code{"mean"} (average), \code{"last"} (final token), or \code{"model"} (the model's own
