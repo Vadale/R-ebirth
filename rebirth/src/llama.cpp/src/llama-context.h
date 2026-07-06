@@ -129,6 +129,15 @@ struct llama_context {
                 int32_t   il_start,
                 int32_t   il_end);
 
+    // rebirth WP5 (D-012/D-016): register the per-layer ablation mask/add buffers.
+    bool set_intervene(
+            const float * mask,
+            const float * add,
+                 size_t   len,
+                int32_t   n_embd,
+                int32_t   il_start,
+                int32_t   il_end);
+
     // process a single ubatch with a specific graph type
     // if memory_context is provided, it will be applied first to the context's memory
     // ret contains the status of the graph computation
@@ -277,6 +286,7 @@ private:
     llama_cparams cparams;
 
     llama_adapter_cvec_ptr  cvec;
+    llama_adapter_intervene_ptr intervene; // rebirth WP5
     llama_adapter_loras_ptr loras;
 
     llama_cross cross; // TODO: tmp for handling cross-attention - need something better probably

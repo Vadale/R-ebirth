@@ -23,6 +23,8 @@ rebirth_embed <- function(ptr, texts, pooling, normalize) .Call(wrap__rebirth_em
 
 rebirth_trace <- function(ptr, prompts, layers, positions_mode, positions_values, components, spill, budget_bytes, spill_path, model_id, trace_id, spec_key) .Call(wrap__rebirth_trace, ptr, prompts, layers, positions_mode, positions_values, components, spill, budget_bytes, spill_path, model_id, trace_id, spec_key)
 
+rebirth_intervene <- function(ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values) .Call(wrap__rebirth_intervene, ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values)
+
 rebirth_selftest_new_handle <- function() .Call(wrap__rebirth_selftest_new_handle)
 
 rebirth_selftest_panic <- function() .Call(wrap__rebirth_selftest_panic)

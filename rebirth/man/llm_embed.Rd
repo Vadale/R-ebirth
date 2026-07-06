@@ -49,6 +49,11 @@ The model must carry a tokenizer; a \code{no_vocab} model raises
 synthetic model has no tokenizer), so the runnable example is guarded by the
 \code{REBIRTH_TEST_MODEL_QWEN} environment variable — point it at a local Qwen2.5
 GGUF to run it.
+
+Embedding an \strong{intervened} handle (from \code{\link[=llm_steer]{llm_steer()}}/\code{\link[=llm_ablate]{llm_ablate()}}) raises
+\code{rebirth_error_embed}: interventions currently apply to generation and logits
+only, and the embedding context does not inherit them, so returning base vectors
+labeled as intervened would be silent mislabeling. Embed the original handle.
 }
 \examples{
 \dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}

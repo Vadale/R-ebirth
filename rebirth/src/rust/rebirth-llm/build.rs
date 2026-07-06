@@ -10,7 +10,10 @@
 //!
 //! Backends (D-006): Metal + embedded shaders on macOS arm64, CPU only elsewhere,
 //! CUDA behind the default-off `cuda` feature (defined, not built, until Phase 8).
-//! No source patches are applied in WP1 (activation taps are WP4).
+//! The vendored tree is committed WITH the rebirth patch set already applied
+//! (D-015): this script compiles it as-is — no build-time patching. The patch
+//! provenance diffs live in `src/llama.cpp/patches/`, and the tree's post-patch
+//! SHA256 (asserted by CI gate G4) is recorded in `src/llama.cpp/VENDORING.md`.
 
 use std::env;
 use std::fs;

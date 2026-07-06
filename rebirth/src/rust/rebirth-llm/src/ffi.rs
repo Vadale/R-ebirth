@@ -301,6 +301,42 @@ extern "C" {
         size: usize,
     );
 
+    // --- interventions (WP5, D-012/D-016) ---
+    // Both setters take pointers + lengths (no struct-mirror change), so the
+    // size-160 ABI test above still covers everything WP5 relies on. The buffers
+    // are Rust-owned, copied synchronously by the engine, and never retained past
+    // the call. `ggml_backend_tensor_set` stays undeclared: ablation is a native
+    // graph op (`x*mask + add`), not a host tensor write (D-012).
+    /// Steering — the native control vector (zero patch; llama.h L694). `data` is
+    /// an `n_embd x n_layer` F32 buffer laid out "from layer 1" (llama-adapter.cpp
+    /// L124-131), so engine layer `il`'s vector sits at offset `n_embd*(il-1)` and
+    /// the buffer has no row for layer 0. Returns 0 on success, -1 on n_embd
+    /// mismatch; a NULL `data` clears the vector.
+    pub fn llama_set_adapter_cvec(
+        ctx: *mut llama_context,
+        data: *const f32,
+        len: usize,
+        n_embd: i32,
+        il_start: i32,
+        il_end: i32,
+    ) -> i32;
+
+    /// Ablation — the WP5 vendored patch's public C API (rebirth-prefixed, added
+    /// by `patches/0001-rebirth-wp5-ablation-intervene.diff`). `mask` and `add` are
+    /// `n_embd x n_layer` F32 buffers from layer 0 (full coverage) so `build_cvec`
+    /// applies `x*mask + add` after the control vector. A NULL `mask` clears the
+    /// intervention. Returns 0 on success, -1 on n_embd mismatch. Copied
+    /// synchronously.
+    pub fn rebirth_set_intervene(
+        ctx: *mut llama_context,
+        mask: *const f32,
+        add: *const f32,
+        len: usize,
+        n_embd: i32,
+        il_start: i32,
+        il_end: i32,
+    ) -> i32;
+
     // --- KV-cache / memory ---
     pub fn llama_get_memory(ctx: *const llama_context) -> llama_memory_t;
     pub fn llama_memory_clear(mem: llama_memory_t, data: bool);

@@ -1,7 +1,10 @@
 # Native-workspace and test-tooling checks (no R, no models).
-# - cargo:  fmt / clippy / test for the R-free engine crate rebirth-llm.
-# - golden: Harness B numpy reference self-check (the exact-value oracle).
-# Both download only pinned tooling; neither downloads a model.
+# - cargo:         fmt / clippy / test for the R-free engine crate rebirth-llm.
+# - golden:        Harness B numpy reference self-check (the exact-value oracle).
+# - vendored-tree: the committed patched llama.cpp tree hashes to VENDORING.md's
+#                  post-patch SHA (D-008 gate G4) and patches/*.diff reverse-apply
+#                  to the pre-patch SHA (D-015 coherence).
+# All download only pinned tooling; none downloads a model.
 on:
   push:
     branches: [main, master]
@@ -67,3 +70,17 @@ jobs:
 
       - name: reference forward self-check (determinism + goldens + GGUF)
         run: python tests/llm-golden/synthetic/reference_forward.py --check
+
+  # D-008 gate G4 + D-015 patch coherence: prove the committed, patched vendored
+  # llama.cpp tree still hashes to the recorded post-patch SHA256 (a silent engine
+  # change fails here) and that patches/*.diff reverse-apply to the pre-patch
+  # SHA256 (the committed tree and the diff cannot drift apart). No Rust, no model.
+  vendored-tree:
+    runs-on: ubuntu-24.04
+    name: vendored tree integrity (G4 + patch coherence)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: verify vendored llama.cpp tree SHA256 + patch coherence
+        run: sh rebirth/src/llama.cpp/patches/verify_vendored_tree.sh

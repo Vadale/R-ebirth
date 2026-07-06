@@ -11,6 +11,7 @@
 //! - [`engine`] — the safe `Backend`/`Model`/`Context` lifecycle and [`load`].
 //! - [`embed`] — text/token embeddings pooled in Rust (WP3, D-011).
 //! - [`trace`] — activation tracing via the scheduler eval callback (WP4, D-012).
+//! - [`intervene`] — steering + ablation on a fresh context (WP5, D-012/D-016).
 //! - `spill` — Arrow-IPC disk spill for over-budget traces (WP4 Step 5, D-013),
 //!   behind the default-on `spill` feature (a `--no-default-features` build omits
 //!   it and the Arrow crates entirely).
@@ -22,6 +23,7 @@ mod engine;
 mod error;
 mod ffi;
 mod generate;
+mod intervene;
 #[cfg(feature = "spill")]
 mod spill;
 mod trace;
@@ -30,6 +32,7 @@ pub use embed::{Embeddings, Pooling};
 pub use engine::{available_backends, load, BackendKind, LoadRequest, LoadedModel, ModelMetadata};
 pub use error::RebirthError;
 pub use generate::{ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason};
+pub use intervene::InterventionSpec;
 #[cfg(feature = "spill")]
 pub use trace::SpillReport;
 pub use trace::{

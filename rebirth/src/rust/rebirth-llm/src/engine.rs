@@ -596,6 +596,49 @@ impl LoadedModel {
 
         Ok(TraceContext { ptr, _model: model })
     }
+
+    // --- crate-internal intervention support (intervene.rs) -----------------
+
+    /// Build a NEW `LoadedModel` sharing this model's weights (an `Arc<Model>`
+    /// clone — no reload) with a FRESH generation context of the same
+    /// configuration (causal, `embeddings = false` — the `load()` context). The
+    /// source handle's own context is never touched, so the original stays
+    /// bit-for-bit unchanged (WP5 reversibility, D-016). `intervene.rs` then
+    /// applies the steering / ablation adapters to the returned context; the
+    /// interventions live on the per-context adapters, not the shared weights, so
+    /// a fresh context is a clean slate regardless of what the source carried.
+    pub(crate) fn clone_with_fresh_context(&self) -> Result<LoadedModel, RebirthError> {
+        let model = self.ctx.model.clone();
+
+        // SAFETY: default params are a plain by-value C struct we only tweak;
+        // mirrors `load()`'s generation context (only `n_ctx` is set).
+        let mut cparams = unsafe { ffi::llama_context_default_params() };
+        cparams.n_ctx = self.ctx.context_length;
+
+        // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
+        // failure the local `Arc<Model>` clone drops here, releasing its reference.
+        let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
+        let ctx_ptr = NonNull::new(ctx_ptr).ok_or_else(|| RebirthError::Intervention {
+            reason: "Could not create a context for the intervened model. There may \
+                     not be enough memory; free other loaded models first, or reduce \
+                     context_length."
+                .to_string(),
+        })?;
+
+        // SAFETY: `ctx_ptr` is a live context; query its resolved window.
+        let context_length = unsafe { ffi::llama_n_ctx(ctx_ptr.as_ptr()) };
+
+        Ok(LoadedModel {
+            ctx: Context {
+                ptr: ctx_ptr,
+                model,
+                context_length,
+                gpu_layers: self.ctx.gpu_layers,
+                mmap: self.ctx.mmap,
+                owner: std::thread::current().id(),
+            },
+        })
+    }
 }
 
 /// A fully-validated load request (all R-side defaulting already applied).

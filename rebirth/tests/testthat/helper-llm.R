@@ -2,7 +2,7 @@
 # pointer, so print/summary/close *logic* can be tested without a model file
 # (the real-model value checks are WP1 Step 8, env-gated). Mirrors new_llm()'s
 # shape but skips the boundary and the finalizer.
-stub_llm <- function(closed = FALSE, interventions = list()) {
+stub_llm <- function(closed = FALSE, interventions = list(), architecture = "qwen2") {
   state <- new.env(parent = emptyenv())
   state$closed <- closed
   state$ptr <- NULL
@@ -11,7 +11,7 @@ stub_llm <- function(closed = FALSE, interventions = list()) {
       ptr = NULL,
       state = state,
       path = "/models/Qwen2.5-0.5B-Instruct-Q8_0.gguf",
-      architecture = "qwen2",
+      architecture = architecture,
       parameters = 494032768,
       quantization = "Q8_0",
       layers = 24L,

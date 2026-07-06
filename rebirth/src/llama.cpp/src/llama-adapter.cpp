@@ -133,6 +133,152 @@ bool llama_adapter_cvec::apply(
     return true;
 }
 
+// intervene  (rebirth WP5 patch — DECISIONS.md D-012/D-016)
+
+ggml_tensor * llama_adapter_intervene::mask_for(int il) const {
+    if (il < 0 || il < layer_start || il > layer_end || (size_t) il >= masks.size()) {
+        return nullptr;
+    }
+
+    return masks[il];
+}
+
+ggml_tensor * llama_adapter_intervene::apply_to(ggml_context * ctx, ggml_tensor * cur, int  il) const {
+    ggml_tensor * m = mask_for(il);
+    if (m != nullptr) {
+        // cur * mask + add: zero the ablated neurons, then set them to `value`.
+        // A node is emitted only for layers with a genuine ablation (mask_for is
+        // nullptr otherwise), so an un-ablated layer leaves the graph untouched.
+        cur = ggml_mul(ctx, cur, m);
+        cur = ggml_add(ctx, cur, adds[il]);
+    }
+
+    return cur;
+}
+
+bool llama_adapter_intervene::apply(
+        const llama_model & model,
+        const float * mask,
+        const float * add,
+        size_t len,
+        int32_t n_embd,
+        int32_t il_start,
+        int32_t il_end) {
+    const auto & hparams = model.hparams;
+
+    if (mask == nullptr) {
+        // disable the current intervention (mirrors llama_adapter_cvec::apply)
+        layer_start = -1;
+        layer_end   = -1;
+        return true;
+    }
+
+    if (n_embd != (int) hparams.n_embd) {
+        LLAMA_LOG_ERROR("%s: intervene n_embd does not match model\n", __func__);
+        return false;
+    }
+
+    // Rebuild the per-layer tensor slots (a fresh context per rebirth derivation).
+    masks.assign(hparams.n_layer(), nullptr);
+    adds.assign(hparams.n_layer(), nullptr);
+    ctxs.clear();
+    bufs.clear();
+
+    // A context per buffer type (as llama_adapter_cvec::init), sized for up to two
+    // tensors (mask + add) per layer.
+    std::map<ggml_backend_buffer_type_t, ggml_context *> ctx_map;
+    auto ctx_for_buft = [&](ggml_backend_buffer_type_t buft) -> ggml_context * {
+        auto it = ctx_map.find(buft);
+        if (it == ctx_map.end()) {
+            ggml_init_params params = {
+                /*.mem_size   =*/ 2*hparams.n_layer()*ggml_tensor_overhead(),
+                /*.mem_buffer =*/ NULL,
+                /*.no_alloc   =*/ true,
+            };
+
+            ggml_context * ctx = ggml_init(params);
+            if (!ctx) {
+                return nullptr;
+            }
+
+            ctx_map[buft] = ctx;
+            ctxs.emplace_back(ctx);
+
+            return ctx;
+        }
+
+        return it->second;
+    };
+
+    // Create mask/add tensors ONLY for layers with a GENUINE (non-identity)
+    // ablation: an all-ones mask with an all-zeros add is `x*1+0 == x`, so it needs
+    // no node (an un-ablated in-range layer never perturbs the graph). Full
+    // coverage: buffer offset n_embd*il, from layer 0.
+    for (size_t il = 0; il < hparams.n_layer(); il++) {
+        const size_t off = n_embd * il;
+        if (off + (size_t) n_embd > len) {
+            continue; // buffer too short for this layer's row
+        }
+
+        bool genuine = false;
+        for (int j = 0; j < n_embd; j++) {
+            if (mask[off + j] != 1.0f || add[off + j] != 0.0f) {
+                genuine = true;
+                break;
+            }
+        }
+        if (!genuine) {
+            continue;
+        }
+
+        ggml_backend_buffer_type_t buft = model.select_buft(il);
+        ggml_context * ctx = ctx_for_buft(buft);
+        if (!ctx) {
+            LLAMA_LOG_ERROR("%s: failed to allocate context for intervention\n", __func__);
+            return false;
+        }
+        masks[il] = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);
+        adds[il]  = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);
+        // rebirth WP5 (F-3): fail closed if either tensor was not created, so a
+        // future vendor-bump that changes ggml tensor-overhead accounting can never
+        // leave a half-created pair -> ggml_add(cur, nullptr) in apply_to.
+        if (!masks[il] || !adds[il]) {
+            LLAMA_LOG_ERROR("%s: failed to create intervention tensors\n", __func__);
+            return false;
+        }
+    }
+
+    // allocate tensors / buffers and zero
+    bufs.reserve(ctx_map.size());
+    for (auto it : ctx_map) {
+        ggml_backend_buffer_type_t buft = it.first;
+        ggml_context * ctx = it.second;
+        ggml_backend_buffer_t buf = ggml_backend_alloc_ctx_tensors_from_buft(ctx, buft);
+        if (!buf) {
+            LLAMA_LOG_ERROR("%s: failed to allocate buffer for intervention\n", __func__);
+            return false;
+        }
+        ggml_backend_buffer_clear(buf, 0);
+        bufs.emplace_back(buf);
+    }
+
+    // set the mask/add data for each genuinely-ablated layer
+    for (size_t il = 0; il < hparams.n_layer(); il++) {
+        if (masks[il] == nullptr) {
+            continue;
+        }
+
+        const size_t off = n_embd * il;
+        ggml_backend_tensor_set(masks[il], mask + off, 0, n_embd * ggml_element_size(masks[il]));
+        ggml_backend_tensor_set(adds[il],  add  + off, 0, n_embd * ggml_element_size(adds[il]));
+    }
+
+    layer_start = il_start;
+    layer_end   = il_end;
+
+    return true;
+}
+
 // lora
 
 llama_adapter_lora_weight * llama_adapter_lora::get_weight(ggml_tensor * w) {

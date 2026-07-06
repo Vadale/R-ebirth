@@ -35,6 +35,7 @@ llama_context::llama_context(
               llama_context_params params) :
     model(model),
     cvec(std::make_unique<llama_adapter_cvec>()),
+    intervene(std::make_unique<llama_adapter_intervene>()), // rebirth WP5
     loras(std::make_unique<llama_adapter_loras>()),
     balloc(std::make_unique<llama_batch_allocr>(model.hparams.n_pos_per_embd())) {
     // TODO warning when creating llama_context with awkward ctx size that is not a power of 2,
@@ -1297,6 +1298,24 @@ bool llama_context::set_adapter_cvec(
     return res;
 }
 
+// rebirth WP5 (D-012/D-016): register the ablation mask/add buffers so build_cvec
+// applies `x*mask + add` after the control vector.
+bool llama_context::set_intervene(
+            const float * mask,
+            const float * add,
+                 size_t   len,
+                int32_t   n_embd,
+                int32_t   il_start,
+                int32_t   il_end) {
+    LLAMA_LOG_DEBUG("%s: il_start = %d, il_end = %d\n", __func__, il_start, il_end);
+
+    bool res = intervene->apply(model, mask, add, len, n_embd, il_start, il_end);
+
+    sched_need_reserve = true;
+
+    return res;
+}
+
 llm_graph_result * llama_context::process_ubatch(const llama_ubatch & ubatch, llm_graph_type gtype, llama_memory_context_i * mctx, ggml_status & ret) {
     if (mctx && !mctx->apply()) {
         LLAMA_LOG_ERROR("%s: failed to apply memory context\n", __func__);
@@ -2404,6 +2423,7 @@ llm_graph_params llama_context::graph_params(
         /*.sched       =*/ sched.get(),
         /*.backend_cpu =*/ backend_cpu,
         /*.cvec        =*/ cvec.get(),
+        /*.intervene   =*/ intervene.get(), // rebirth WP5
         /*.loras       =*/ loras.get(),
         /*.mctx        =*/ mctx,
         /*.cross       =*/ &cross,
@@ -3808,6 +3828,22 @@ int32_t llama_set_adapter_cvec(
               int32_t   il_start,
               int32_t   il_end) {
     bool res = ctx->set_adapter_cvec(data, len, n_embd, il_start, il_end);
+
+    return res ? 0 : -1;
+}
+
+// rebirth WP5 (D-012/D-016): public C entry for the ablation intervention. Named
+// with the project prefix (not llama_*) so a patch-added symbol is greppable and
+// cannot collide with upstream. See include/llama.h.
+int32_t rebirth_set_intervene(
+        llama_context * ctx,
+          const float * mask,
+          const float * add,
+               size_t   len,
+              int32_t   n_embd,
+              int32_t   il_start,
+              int32_t   il_end) {
+    bool res = ctx->set_intervene(mask, add, len, n_embd, il_start, il_end);
 
     return res ? 0 : -1;
 }

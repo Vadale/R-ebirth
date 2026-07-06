@@ -16,14 +16,23 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | ggml version | 0.15.2 (per `ggml/CMakeLists.txt`) |
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9726.tar.gz` |
 | Release tarball SHA256 | `117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0` |
-| Pruned tree SHA256 | `49422544bd37aad88f5f379b6e0f34d435529a858645249fed8e49cc291a5a92` |
+| Pruned tree SHA256 (pre-patch) | `49422544bd37aad88f5f379b6e0f34d435529a858645249fed8e49cc291a5a92` |
+| Pruned tree SHA256 (post-patch) | `82664707e17d99564b9932a424bffd18ad2f1424ec01d4faa759f8ce0267895a` |
 
 The **release tarball SHA256** is the digest of the unmodified upstream
 `b9726.tar.gz` as downloaded from GitHub — verifiable by anyone against upstream.
 
-The **pruned tree SHA256** is a reproducible digest of *this* vendored tree
-(after the prune below), computed from the sorted per-file SHA256 manifest,
-excluding this file and the `patches/` directory:
+The tree is committed with the **rebirth patch set applied** (DECISIONS.md
+D-015). Three SHAs pin it (D-015 strengthening #1):
+
+- **Pruned tree SHA256 (pre-patch)** — the pristine upstream tree after the prune
+  below (provenance). Reverse-applying `patches/*.diff` to the committed tree must
+  reproduce this (the coherence check).
+- **Pruned tree SHA256 (post-patch)** — the digest of *this* committed tree (with
+  the patches applied). **This is the value D-008 gate G4 asserts in CI.**
+
+Both are reproducible digests of the tree, computed from the sorted per-file
+SHA256 manifest, excluding this file and the `patches/` directory:
 
 ```sh
 # run from this directory (rebirth/src/llama.cpp)
@@ -31,14 +40,34 @@ find . -type f -not -path './VENDORING.md' -not -path './patches/*' \
   | LC_ALL=C sort | xargs shasum -a 256 | shasum -a 256
 ```
 
+`patches/verify_vendored_tree.sh` runs both assertions (G4 + coherence); CI wires
+it as the `vendored-tree` job (`.github/workflows/rust.yaml`).
+
 ## Patches
 
-None. **WP1 applies zero source patches** — the vendored build is behaviourally
-identical to an unpatched upstream build at the same tag, which is the clean
-baseline the WP4 activation-tap patch set must later leave numerically
-undisturbed (ARCHITECTURE.md §5, §11). The `patches/` directory is created empty
-here and populated in WP4; each hunk will be annotated with why it exists so the
-quarterly `vendor-bump` skill stays mechanical.
+The tree is committed **with the rebirth patch set applied** (DECISIONS.md D-015:
+patches land in the committed tree, not at build time — `build.rs` compiles it
+as-is, which is CRAN/`R CMD INSTALL`-robust and needs no diff-applier dependency).
+`patches/` holds the human-readable, `vendor-bump`-reappliable delta.
+
+| Patch | Files / hunks | Why | ADR |
+|---|---|---|---|
+| `0001-rebirth-wp5-ablation-intervene.diff` | 7 files, 14 hunks | `llm_ablate()`: a sibling `llama_adapter_intervene` applied inside `build_cvec` **after** the control vector (`cur * mask + add`, forcing masked neurons to `value`). No-op (no graph node) when no ablation is registered, so the un-intervened forward pass is byte-identical to the unpatched build. | D-012 / D-016 |
+
+WP4 (activation observation) added **zero** patches (the eval-callback tap is
+zero-patch, D-012); WP5's ablation hook above is the project's first vendored
+patch. **The un-intervened path is unchanged:** the WP2/WP3/WP4 synthetic goldens
+pass byte-identically after the patch (engine-vs-oracle max |Δ|: logits 1.99e-3,
+embeddings 2.92e-3, activations 3.73e-3 — the pre-patch values).
+
+`vendor-bump`: fetch upstream b9726 → re-apply `patches/*.diff` → re-run harness B
+→ re-record the pre- and post-patch SHAs above. Two integrity checks guard drift
+(run by `patches/verify_vendored_tree.sh`, wired in CI):
+
+- **G4 (D-008):** the committed tree's digest equals the post-patch SHA (a silent
+  engine change fails CI).
+- **Coherence (D-015 strengthening #2):** reverse-applying `patches/*.diff`
+  reproduces the pre-patch SHA (the tree and the diff cannot silently diverge).
 
 ## Prune manifest
 

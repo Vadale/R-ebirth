@@ -35,6 +35,12 @@
 #' `rebirth_error_tokenize`. As with the other text entry points, the runnable
 #' example is guarded by the `REBIRTH_TEST_MODEL_QWEN` environment variable.
 #'
+#' Tracing an **intervened** handle (from [llm_steer()]/[llm_ablate()]) raises
+#' `rebirth_error_trace`: interventions currently apply to generation and logits
+#' only, and the trace context does not inherit them, so tracing would capture the
+#' base (un-intervened) forward pass while labeling it intervened. Trace the
+#' original handle.
+#'
 #' @param m An `llm` handle from [llm()].
 #' @param prompts A character vector of one or more non-empty prompts; `NA` and
 #'   empty strings (`""`) are rejected. `names(prompts)` are retained on the
@@ -79,6 +85,10 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
+  guard_not_intervened(
+    m, "rebirth_error_trace",
+    "Tracing an intervened handle is not yet supported"
+  )
 
   if (!is.character(prompts) || length(prompts) == 0L || anyNA(prompts)) {
     abort_argument("prompts", "`prompts` must be a non-empty character vector without NA.")
