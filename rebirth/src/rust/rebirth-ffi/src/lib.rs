@@ -24,7 +24,7 @@ use std::path::PathBuf;
 
 use extendr_api::prelude::*;
 use rebirth_llm::{
-    BackendKind, GenerateParams, LoadRequest, LoadedModel, ModelMetadata, RebirthError,
+    BackendKind, GenerateParams, LoadRequest, LoadedModel, ModelMetadata, Pooling, RebirthError,
 };
 
 /// The native side of an `llm` handle: an owned loaded model, or `None` once the
@@ -347,6 +347,35 @@ fn rebirth_generate(
     })
 }
 
+// Embed a character vector into a row-major matrix. R has validated
+// m/x/pooling/normalize; here we parse the pooling enum, run embed_texts under
+// with_model's catch_unwind, and return the flat values plus the two dimensions.
+// No 1-based<->0-based conversion is needed: llm_embed takes text, not token-id
+// indices (the internal ids never surface to R), so the §4 index boundary is
+// crossed nowhere here.
+#[extendr]
+fn rebirth_embed(ptr: Robj, texts: Vec<String>, pooling: &str, normalize: bool) -> Robj {
+    with_model(&ptr, |model| {
+        let pool = Pooling::parse(pooling).ok_or_else(|| RebirthError::Internal {
+            context: format!(
+                "pooling '{pooling}' reached the boundary unresolved (R must resolve match.arg)"
+            ),
+        })?;
+        let refs: Vec<&str> = texts.iter().map(String::as_str).collect();
+        let emb = model.embed_texts(&refs, pool, normalize)?;
+        // Upcast f32 -> f64 (R doubles); `values` stays row-major (n_rows x n_embd),
+        // consumed by matrix(..., byrow = TRUE) in R.
+        let values: Vec<f64> = emb.values.iter().map(|&v| v as f64).collect();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("values", Robj::from(values)),
+            ("n_embd", Robj::from(emb.n_embd as i32)),
+            ("n_rows", Robj::from(emb.n_rows as i32)),
+        ])
+        .into())
+    })
+}
+
 // Test-only: a real, already-closed handle for exercising the close /
 // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
 #[extendr]
@@ -377,6 +406,7 @@ extendr_api::extendr_module! {
     fn rebirth_tokenize;
     fn rebirth_detokenize;
     fn rebirth_generate;
+    fn rebirth_embed;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_panic;
 }

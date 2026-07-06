@@ -19,6 +19,8 @@ rebirth_detokenize <- function(ptr, ids) .Call(wrap__rebirth_detokenize, ptr, id
 
 rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop) .Call(wrap__rebirth_generate, ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop)
 
+rebirth_embed <- function(ptr, texts, pooling, normalize) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize)
+
 rebirth_selftest_new_handle <- function() .Call(wrap__rebirth_selftest_new_handle)
 
 rebirth_selftest_panic <- function() .Call(wrap__rebirth_selftest_panic)
