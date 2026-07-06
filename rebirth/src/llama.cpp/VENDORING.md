@@ -17,7 +17,7 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9726.tar.gz` |
 | Release tarball SHA256 | `117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0` |
 | Pruned tree SHA256 (pre-patch) | `49422544bd37aad88f5f379b6e0f34d435529a858645249fed8e49cc291a5a92` |
-| Pruned tree SHA256 (post-patch) | `1796dcde3b2c46e96f7ac78288c0d1e08279dada0432ada7d570dba461ee9440` |
+| Pruned tree SHA256 (post-patch) | `82664707e17d99564b9932a424bffd18ad2f1424ec01d4faa759f8ce0267895a` |
 
 The **release tarball SHA256** is the digest of the unmodified upstream
 `b9726.tar.gz` as downloaded from GitHub — verifiable by anyone against upstream.

@@ -35,10 +35,10 @@ Hunks (each also carries an inline `rebirth WP5` code comment):
 --- 8< --- unified diff below --- 8< ---
 
 diff --git a/include/llama.h b/include/llama.h
-index 27e4806..9bc0065 100644
+index 27e4806..697542f 100644
 --- a/include/llama.h
 +++ b/include/llama.h
-@@ -699,6 +699,22 @@ extern "C" {
+@@ -699,6 +699,24 @@ extern "C" {
                           int32_t   il_start,
                           int32_t   il_end);
  
@@ -46,6 +46,8 @@ index 27e4806..9bc0065 100644
 +    // buffers so build_cvec applies `x*mask + add` AFTER the control vector,
 +    // forcing the masked neurons to `value`. mask/add are n_embd x n_layer F32
 +    // buffers from layer 0 (full coverage); a NULL mask clears the intervention.
++    // `len` bounds reads of BOTH mask and add, so each buffer must be >= len
++    // elements (the caller passes len = min(mask length, add length)).
 +    // il_start/il_end bound the active layer range (both inclusive). Returns 0 on
 +    // success, -1 on n_embd mismatch. Project-prefixed: a rebirth patch, not
 +    // upstream API.
@@ -62,10 +64,10 @@ index 27e4806..9bc0065 100644
      // Memory
      //
 diff --git a/src/llama-adapter.cpp b/src/llama-adapter.cpp
-index 3e0fe66..0d4d2dc 100644
+index 3e0fe66..56d889e 100644
 --- a/src/llama-adapter.cpp
 +++ b/src/llama-adapter.cpp
-@@ -133,6 +133,145 @@ bool llama_adapter_cvec::apply(
+@@ -133,6 +133,152 @@ bool llama_adapter_cvec::apply(
      return true;
  }
  
@@ -175,6 +177,13 @@ index 3e0fe66..0d4d2dc 100644
 +        }
 +        masks[il] = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);
 +        adds[il]  = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, n_embd);
++        // rebirth WP5 (F-3): fail closed if either tensor was not created, so a
++        // future vendor-bump that changes ggml tensor-overhead accounting can never
++        // leave a half-created pair -> ggml_add(cur, nullptr) in apply_to.
++        if (!masks[il] || !adds[il]) {
++            LLAMA_LOG_ERROR("%s: failed to create intervention tensors\n", __func__);
++            return false;
++        }
 +    }
 +
 +    // allocate tensors / buffers and zero
