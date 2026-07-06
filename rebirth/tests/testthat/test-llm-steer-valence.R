@@ -28,7 +28,7 @@
 
 # The pinned SHA256 of valence-direction.csv (emitted by make-valence-direction.R).
 # Regenerating the artifact updates this (golden discipline / the golden-update skill).
-DIRECTION_SHA256 <- "f708f2042adf1831986e754c76a6d9a79849ab26375f8afef2019cf370aebcc2"
+DIRECTION_SHA256 <- "b81deee797a69f8bfcb7e053d9d5bbfdb6bd2a438ef5d7bbd75aa4a96eb37cac"
 
 # The direction was derived at, and is steered at, this 1-based API layer (mid-late
 # of Qwen2.5-0.5B's 24 blocks), with this coefficient -- both chosen by a documented

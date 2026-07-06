@@ -16,6 +16,11 @@
 //! early with no model) and runs on the founder's Mac / nightly. `logits_for_tokens`
 //! is teacher-forced and deterministic, so the KLs reproduce run to run.
 //!
+//! [MODEL] PIN (provenance; no committed model registry exists yet -- that is
+//! Phase 3): the calibration model is Qwen2.5-0.5B-Instruct Q8_0, SHA256
+//! ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e -- the same
+//! pinned file TARGETED_NEURONS below were calibrated against.
+//!
 //! ADVERSARIAL DESIGN -- this fixture must FAIL on a no-op ablation. The `noop`
 //! measurement below derives a handle from an EMPTY spec (a fresh context with no
 //! adapter): its next-token distribution equals base, so KL is ~0. If deriving a

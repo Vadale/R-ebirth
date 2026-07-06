@@ -20,8 +20,10 @@
 # ORIGINAL to this project (no third-party corpus or lexicon).
 #
 # The direction is a MODEL-DERIVED artifact, produced on the founder's Metal Mac
-# from Qwen2.5-0.5B-Instruct Q8_0. Regenerating on another machine reproduces the
-# METHOD, not the exact bytes -- small floating-point differences across backends
+# from Qwen2.5-0.5B-Instruct Q8_0 (SHA256
+# ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e). Regenerating on
+# another machine reproduces the METHOD, not the exact bytes -- small floating-point
+# differences across backends
 # are expected (as for every [MODEL] golden). The committed file's SHA256 therefore
 # pins the exact bytes the fixture was calibrated against; the fixture asserts
 # SEMANTIC behaviour (a valence shift), never bit-exact values, and checks the
@@ -131,6 +133,10 @@ main <- function() {
       "# model: %s (%s, %d layers, hidden %d)",
       basename(model_path), m$architecture, m$layers, m$hidden_size
     ),
+    # Record the calibration model's SHA256 so the [MODEL] pin is traceable (no
+    # committed model registry exists yet -- that is Phase 3). Computed from the
+    # actual file, so regenerating on the founder's pinned Qwen reproduces this line.
+    sprintf("# model sha256: %s", unname(tools::sha256sum(model_path))),
     sprintf(
       "# method: diff-in-means of last-token residual, API layer %d, L2-normalised",
       DIRECTION_LAYER
