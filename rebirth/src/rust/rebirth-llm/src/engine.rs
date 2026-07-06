@@ -521,12 +521,14 @@ impl LoadedModel {
     /// The model's architecture string (`general.architecture`, e.g. `"llama"`,
     /// `"qwen2"`), used by the tap's per-architecture component-name matcher.
     pub(crate) fn architecture(&self) -> String {
+        assert_r_main_thread(self.ctx.model.owner, "Model::architecture");
         self.ctx.model.architecture()
     }
 
     /// The residual-stream width (`n_embd`); every tapped component tensor
     /// (residual/attn_out/mlp_out) is this wide, so it is the expected row length.
     pub(crate) fn hidden_size(&self) -> i32 {
+        assert_r_main_thread(self.ctx.model.owner, "Model::hidden_size");
         // SAFETY: `model.ptr` is a live model; read-only scalar getter.
         unsafe { ffi::llama_model_n_embd(self.ctx.model.ptr.as_ptr()) }
     }
@@ -534,6 +536,7 @@ impl LoadedModel {
     /// The number of transformer blocks (`n_layer`); the capture's layer count
     /// when `layers = None` (all blocks), used for the predictive spill estimate.
     pub(crate) fn num_layers(&self) -> i32 {
+        assert_r_main_thread(self.ctx.model.owner, "Model::num_layers");
         // SAFETY: `model.ptr` is a live model; read-only scalar getter.
         unsafe { ffi::llama_model_n_layer(self.ctx.model.ptr.as_ptr()) }
     }
