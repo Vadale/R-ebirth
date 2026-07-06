@@ -369,7 +369,7 @@ test_that("llm_trace() on a real model returns the rebirth_trace schema and slic
   tr <- llm_trace(
     m, c(a = "The cat sat on the mat.", b = "Quarks feel the strong force."),
     layers = 1:2, positions = "last",
-    components = c("residual", "attn_out"), spill = FALSE
+    components = c("residual", "mlp_out"), spill = FALSE
   )
 
   expect_s3_class(tr, "rebirth_trace")
@@ -379,7 +379,7 @@ test_that("llm_trace() on a real model returns the rebirth_trace schema and slic
   )
   expect_type(tr$prompt_id, "integer")
   expect_type(tr$value, "double")
-  expect_setequal(unique(tr$component), c("residual", "attn_out"))
+  expect_setequal(unique(tr$component), c("residual", "mlp_out"))
   expect_setequal(unique(tr$layer), 1:2)
   expect_setequal(unique(tr$prompt_id), 1:2) # one per input prompt
   expect_true(all(tr$neuron >= 1L & tr$neuron <= m$hidden_size))
@@ -388,4 +388,17 @@ test_that("llm_trace() on a real model returns the rebirth_trace schema and slic
   expect_true(is.matrix(mat))
   expect_identical(ncol(mat), m$hidden_size)
   expect_match(rownames(mat)[1], "^[0-9]+\\.[0-9]+$")
+})
+
+test_that("llm_trace() attn_out on a qwen2 model is a classed, honest error [MODEL]", {
+  # D-014: attn_out is the post-projection attention output, which qwen2 does not
+  # name (it exposes only the pre-projection kqv_out, a different quantity, not even
+  # hidden_size wide on gemma3). The engine raises rebirth_error_trace naming the
+  # available components, never silently substituting the pre-Wo tensor.
+  m <- llm(qwen_model_path())
+  on.exit(close(m), add = TRUE)
+  expect_error(
+    llm_trace(m, "hello", components = "attn_out"),
+    class = "rebirth_error_trace"
+  )
 })

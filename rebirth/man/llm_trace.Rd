@@ -37,8 +37,12 @@ to capture (each in \code{1:m$layers}).}
 token of each prompt), \code{"all"}, or a vector of 1-based positions.}
 
 \item{components}{A subset of \code{c("residual", "attn_out", "mlp_out")}
-(default \code{"residual"}): the residual stream, the attention sub-layer output,
-and/or the MLP sub-layer output.}
+(default \code{"residual"}): the residual stream, the attention sub-layer output
+(after the output projection; TransformerLens \code{hook_attn_out}), and/or the MLP
+sub-layer output. \code{"attn_out"} is currently observable only on llama-family
+models; on architectures that do not name the post-projection output (e.g.
+qwen2, gemma3) requesting it raises \code{rebirth_error_trace} listing the available
+components rather than silently substituting a different tensor.}
 
 \item{spill}{Single logical (default \code{TRUE}). Reserved for the disk-spill path;
 until it lands, an over-budget capture raises \code{rebirth_error_oom} regardless of

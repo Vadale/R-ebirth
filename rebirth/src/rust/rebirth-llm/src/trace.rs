@@ -120,25 +120,29 @@ pub struct CaptureRow {
 }
 
 /// The engine tensor name to match for `comp` on architecture `arch`, or `None`
-/// when this architecture is not supported for tracing.
+/// when this component is not observable by name for this architecture.
 ///
 /// Per architecture, exactly ONE name (never a union): on a llama graph BOTH the
 /// post-Wo `attn_out-<il>` AND the pre-Wo `kqv_out-<il>` exist, so a `{attn_out,
-/// kqv_out}` alias would capture the wrong/both tensors. `residual`/`mlp_out` are
-/// consistent across the supported architectures; `attn_out` is not — llama names
-/// the post-projection output `attn_out`, while qwen2/gemma3 build attention via
-/// the shared `build_attn` helper whose only per-layer attention-output tensor is
-/// `kqv_out` (verified against b9726: `src/models/{llama,qwen2,gemma3}.cpp`,
-/// `src/llama-graph.cpp`). An unsupported architecture returns `None` → the caller
-/// raises `rebirth_error_trace`, never a silent empty capture.
+/// kqv_out}` alias would capture the wrong/both tensors. `residual` (`l_out`) and
+/// `mlp_out` (`ffn_out`) are consistent across the supported architectures. `attn_out`
+/// (D-014) is the post-projection attention output: only llama names it; qwen2/gemma3
+/// name only the pre-Wo `kqv_out` (a different quantity, and not `hidden_size` wide on
+/// gemma3), so `attn_out` there returns `None` and is never silently substituted
+/// (verified against b9726: `src/models/{llama,qwen2,gemma3}.cpp`, `src/llama-graph.cpp`).
+/// `None` → the caller raises `rebirth_error_trace`, never a silent empty capture.
 fn component_name(arch: &str, comp: Component) -> Option<&'static str> {
     let supported = matches!(arch, "llama" | "qwen2" | "gemma3");
     match comp {
         Component::Residual => supported.then_some("l_out"),
         Component::MlpOut => supported.then_some("ffn_out"),
+        // D-014: `attn_out` is the post-projection (Wo) attention output, hidden_size
+        // wide. Only llama names it (`attn_out-<il>`); qwen2/gemma3 build attention via
+        // the shared `build_attn` and name only the pre-Wo `kqv_out-<il>` — a different
+        // quantity (and not hidden_size wide on gemma3), never substituted silently. So
+        // `attn_out` on those archs returns None -> the caller raises rebirth_error_trace.
         Component::AttnOut => match arch {
             "llama" => Some("attn_out"),
-            "qwen2" | "gemma3" => Some("kqv_out"),
             _ => None,
         },
     }
@@ -412,14 +416,33 @@ impl LoadedModel {
             match component_name(&arch, comp) {
                 Some(name) => names.push((name, comp)),
                 None => {
-                    return Err(RebirthError::Trace {
-                        reason: format!(
-                            "The '{}' component cannot be traced for a '{arch}' model. \
-                             Activation tracing supports the llama, qwen2, and gemma3 \
-                             architectures; this model's architecture is not among them.",
+                    let supported_arch = matches!(arch.as_str(), "llama" | "qwen2" | "gemma3");
+                    let reason = if !supported_arch {
+                        format!(
+                            "Activation tracing is not supported for the '{arch}' \
+                             architecture (supported: llama, qwen2, gemma3)."
+                        )
+                    } else {
+                        // Supported architecture, but this component is not observable by
+                        // name at the current engine version: `attn_out` on qwen2/gemma3,
+                        // which name only the pre-projection `kqv_out` — a different
+                        // quantity, never substituted silently (D-014).
+                        let available = [Component::Residual, Component::MlpOut, Component::AttnOut]
+                            .into_iter()
+                            .filter(|&c| component_name(&arch, c).is_some())
+                            .map(Component::as_str)
+                            .collect::<Vec<_>>()
+                            .join(", ");
+                        format!(
+                            "The '{}' component is not observable for a '{arch}' model at \
+                             the current engine version: this architecture names only the \
+                             pre-projection attention tensor, a different quantity that is \
+                             not substituted silently. Available components: {available}. \
+                             See ?llm_trace.",
                             comp.as_str()
-                        ),
-                    })
+                        )
+                    };
+                    return Err(RebirthError::Trace { reason });
                 }
             }
         }
@@ -611,18 +634,14 @@ mod tests {
             assert_eq!(component_name(arch, Component::Residual), Some("l_out"));
             assert_eq!(component_name(arch, Component::MlpOut), Some("ffn_out"));
         }
-        // attn_out is architecture-dependent: llama names the post-Wo output
-        // `attn_out`; qwen2/gemma3 expose only the pre-Wo `kqv_out`. Matching a
-        // single name (not a union) keeps the llama capture off the pre-Wo tensor.
-        assert_eq!(
-            component_name("llama", Component::AttnOut),
-            Some("attn_out")
-        );
-        assert_eq!(component_name("qwen2", Component::AttnOut), Some("kqv_out"));
-        assert_eq!(
-            component_name("gemma3", Component::AttnOut),
-            Some("kqv_out")
-        );
+        // attn_out (D-014) = the post-projection output. Only llama names it; qwen2 and
+        // gemma3 name only the pre-Wo `kqv_out` (a different quantity), so attn_out is
+        // NOT observable there and returns None -> rebirth_error_trace, never a silent
+        // substitute. A `{attn_out, kqv_out}` union would also wrongly capture the pre-Wo
+        // tensor on llama, which carries `kqv_out` too.
+        assert_eq!(component_name("llama", Component::AttnOut), Some("attn_out"));
+        assert_eq!(component_name("qwen2", Component::AttnOut), None);
+        assert_eq!(component_name("gemma3", Component::AttnOut), None);
         // Unsupported architecture: no name for any component (-> rebirth_error_trace).
         for comp in [Component::Residual, Component::AttnOut, Component::MlpOut] {
             assert_eq!(component_name("bert", comp), None);

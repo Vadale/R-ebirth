@@ -40,8 +40,12 @@
 #' @param positions Which token positions to capture: `"last"` (default, the last
 #'   token of each prompt), `"all"`, or a vector of 1-based positions.
 #' @param components A subset of `c("residual", "attn_out", "mlp_out")`
-#'   (default `"residual"`): the residual stream, the attention sub-layer output,
-#'   and/or the MLP sub-layer output.
+#'   (default `"residual"`): the residual stream, the attention sub-layer output
+#'   (after the output projection; TransformerLens `hook_attn_out`), and/or the MLP
+#'   sub-layer output. `"attn_out"` is currently observable only on llama-family
+#'   models; on architectures that do not name the post-projection output (e.g.
+#'   qwen2, gemma3) requesting it raises `rebirth_error_trace` listing the available
+#'   components rather than silently substituting a different tensor.
 #' @param spill Single logical (default `TRUE`). Reserved for the disk-spill path;
 #'   until it lands, an over-budget capture raises `rebirth_error_oom` regardless of
 #'   this flag.
