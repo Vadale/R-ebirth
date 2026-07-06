@@ -65,6 +65,24 @@
   "greedy_continuation_min_margin": 0.02088660188282443,
   "logits_sha256": "0c72762f6d810db604413e5ce39ada668019294e28c18f171767b47828027535",
   "embeddings_sha256": "9ea73969894afee83227ebb01c231d879f013251ebaef2d46bd0a9ea389b5b74",
+  "activations_sha256": "873bd16be730a30802f931e3794e02b24dc458f69aa53572fb8b63610f9db1b0",
+  "activations_shape": [
+    2,
+    3,
+    8,
+    32
+  ],
+  "activations_axes": [
+    "layer",
+    "component",
+    "token_pos",
+    "neuron"
+  ],
+  "activations_component_order": [
+    "attn_out",
+    "mlp_out",
+    "residual"
+  ],
   "mean_pool": [
     -0.040227689967568134,
     1.6140864892590399,
