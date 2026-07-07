@@ -518,20 +518,25 @@ summary.rebirth_trace <- function(object, ...) {
   if (isTRUE(attr(object, "spilled"))) {
     return(summary_spilled_trace(object))
   }
-  groups <- unique(object[c("layer", "component")])
-  groups <- groups[order(groups$layer, groups$component), , drop = FALSE]
-  n <- integer(nrow(groups))
-  mean_abs <- numeric(nrow(groups))
-  for (i in seq_len(nrow(groups))) {
-    sel <- object$layer == groups$layer[i] & object$component == groups$component[i]
-    n[i] <- sum(sel)
-    mean_abs[i] <- mean(abs(object$value[sel]))
-  }
+  # One pass over the rows: aggregate() splits by (layer, component) once and returns
+  # each group's row count and mean |value| together, instead of rescanning the full
+  # layer/component/value columns once per group (the old loop was O(groups x rows)).
+  agg <- aggregate(
+    abs(object$value),
+    by = list(layer = object$layer, component = object$component),
+    FUN = function(v) c(n = length(v), mean_abs = mean(v))
+  )
+  # Coerce the grouping columns to their API types BEFORE ordering, so the row order
+  # is numeric by layer (not the lexical order a factor grouping column could carry).
+  layer <- as.integer(as.character(agg$layer))
+  component <- as.character(agg$component)
+  ord <- order(layer, component)
+  stats <- agg$x # a two-column matrix: n, mean_abs
   out <- data.frame(
-    layer = as.integer(groups$layer),
-    component = as.character(groups$component),
-    n = n,
-    mean_abs = mean_abs,
+    layer = layer[ord],
+    component = component[ord],
+    n = as.integer(stats[, "n"])[ord],
+    mean_abs = as.double(stats[, "mean_abs"])[ord],
     stringsAsFactors = FALSE
   )
   structure(
