@@ -151,6 +151,17 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 
 ---
 
+## D-018 — harness B acceptance: exact same-implementation legs + a scale-robust HF-fp32 semantic cross-check
+- **Date:** 2026-07-07 · **Status:** ACCEPTED — founder ratified 2026-07-07 (corrects the ROADMAP WP4/WP6a "rank-correlation ≥ 0.999/layer vs HF fp32" criterion, empirically unreachable)
+- **Decision:** harness B validates the activation taps against two references, each with an honestly-scoped bar:
+  - **Same-implementation legs (the hard, exact / near-exact gates):** the in-repo synthetic 2-layer model vs the independent numpy oracle stays **exact** (ATOL 1e-2, per-component *and* per-token-position); logits vs an **unpatched llama.cpp** build (same pinned tag) stay near-exact (documented per-quantization tolerance).
+  - **Independent-implementation leg (HF fp32) — a semantic cross-check, not a fidelity gate:** the CI model's activations vs a PyTorch fp32 reference confirm the taps read the **correct tensors**, at a **scale-robust tolerance** (per-layer Spearman and per-row cosine ≥ ~0.94), anchored by the **exact residual-decomposition identity** (`residual[l] = residual[l-1] + attn_out[l] + mlp_out[l]`, max|Δ| = 0.0) and **top-k next-token logit agreement**. Bit-fidelity / ≥ 0.999-per-layer is **not** asserted on this leg.
+- **Why:** ≥ 0.999/layer against an independent HF reference is unreachable and **not a defect** — measured min Spearman ~0.976 on Qwen2.5-0.5B, and it is **not quantization** (an fp16 GGUF gives the same gap as Q8_0) nor **backend** (CPU == Metal): it is intrinsic llama.cpp-vs-PyTorch numerical divergence that compounds with depth (layer-1 cosine 0.999 → layer-24 ~0.96) on a numerically sensitive small model. Asserting an unreachable bar would either block a correct implementation or pressure the golden into being gamed; the residual identity + logit agreement + the exact same-implementation legs together prove tap correctness **without overclaiming fidelity** (honesty limits). Non-gameability is pinned: in the WP6b HF-golden review a +1-layer shift breached every gate (min Spearman −0.26, blow-up 55.6 ≫ the 8.0 gate) while genuine divergence passed with margin.
+- **Alternatives rejected:** keep ≥ 0.999 vs HF (proven unreachable); drop the HF leg (loses the independent cross-check that catches a wrong-tensor tap); chase a tighter HF bound via TransformerLens / a larger model (deferred — the dual-reference already pins correctness; not worth the dependency + compute now).
+- **Scope note:** updates the ROADMAP WP4/WP6a "≥ 0.999/layer" acceptance line only; the exact same-implementation gates and the synthetic per-position ATOL are unchanged. Applies to the nightly 0.5B run and future models. Evidence: the WP6b HF-golden PR + reviewer report.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
