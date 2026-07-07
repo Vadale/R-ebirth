@@ -2,6 +2,21 @@
 
 ## rebirth 0.0.0.9000
 
+* Two reference demos and Quarto vignettes land (WP7). **Demo A -- "the anatomy
+  lab"** traces a fixed sentiment contrast set with `llm_trace()`, fits one
+  cross-validated `glmnet` ridge-logistic probe per layer, and plots out-of-fold
+  decodability (AUC with a bootstrap CI) against depth -- "where sentiment becomes
+  readable" -- then `llm_steer()`s along a `prcomp()` direction and verifies the
+  effect on held-out prompts. **Demo B -- "topic modelling without Python"**
+  embeds public abstracts with `llm_embed()`, lays them out with `uwot::umap()`,
+  clusters with `dbscan::hdbscan()`, names each cluster with `llm_generate()`, and
+  draws one labelled map -- a BERTopic-class pipeline, fully local. Both money
+  plots are base graphics. The demos live in `tests/demos/` (Demo A also runs
+  nightly on the CI model) and are documented in the `anatomy-lab` and
+  `topics-without-python` vignettes, which render with or without a local model.
+  `glmnet`, `uwot`, and `dbscan` join `Suggests` (used only by the demos); the
+  package's sole hard dependency stays `nanoarrow`.
+
 * `llm_logits()` reads the model's next-token distribution: a forward pass over
   each `prompt` returning the `top` most likely next tokens as a long-format base
   `data.frame` (`prompt_id`, `rank`, `token_id`, `token`, `logit`, `prob`), ranked
