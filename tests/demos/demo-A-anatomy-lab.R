@@ -83,28 +83,6 @@ local({
   "Everything about the evening was dismal and forgettable."
 )
 
-.demo_A_holdout_pos <- c(
-  "The morning sun and fresh air made me feel wonderful and alive.",
-  "Our guests praised the dinner and the whole night was a delight.",
-  "The update is smooth and fast; I am genuinely impressed.",
-  "Volunteers worked cheerfully and the event was a resounding success.",
-  "The puppy was adorable and filled the house with happy energy.",
-  "Her speech was inspiring and the room erupted in warm applause.",
-  "The results are excellent and the whole team is thrilled.",
-  "A cozy, welcoming inn with delicious food and lovely views."
-)
-
-.demo_A_holdout_neg <- c(
-  "The cold rain and traffic made me feel wretched and drained.",
-  "Our guests complained about the dinner and the night was a disaster.",
-  "The update is buggy and sluggish; I am genuinely disappointed.",
-  "Volunteers argued bitterly and the event was a complete failure.",
-  "The stray dog was filthy and filled the yard with a foul stench.",
-  "Her speech was tedious and the room fell into an awkward silence.",
-  "The results are terrible and the whole team is demoralized.",
-  "A dingy, hostile motel with inedible food and grim views."
-)
-
 # Neutral held-out prompts for the steering check: sentiment should come from the
 # intervention, not the prompt.
 .demo_A_neutral <- c(
