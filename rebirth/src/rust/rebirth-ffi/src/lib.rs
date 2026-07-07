@@ -19,6 +19,7 @@
 
 use std::any::Any;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::PathBuf;
 
@@ -669,9 +670,17 @@ fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
     // with no pieces) becomes an `NA` level, so R reconstructs `NA_character_` —
     // agreeing with the spill path (`append_null`) and the schema, never `""`.
     // `row_nneuron[r]` is the `rep()` count R expands each row's code by.
+    //
+    // The `*_index` maps make interning O(1) per row. The keys borrow from `rows`
+    // (immutable for the whole loop), so a distinct token/component is looked up by
+    // hash instead of the old O(distinct-levels) linear scan — for a wide capture
+    // (all positions, all layers) the distinct-token count grows with the prompt
+    // length, so that scan was O(rows x tokens).
     let mut component_levels: Vec<String> = Vec::new();
+    let mut component_index: HashMap<&str, i32> = HashMap::new();
     let mut component_codes: Vec<i32> = Vec::with_capacity(n_rows);
     let mut token_levels: Vec<Option<String>> = Vec::new();
+    let mut token_index: HashMap<Option<&str>, i32> = HashMap::new();
     let mut token_codes: Vec<i32> = Vec::with_capacity(n_rows);
     let mut row_nneuron: Vec<i32> = Vec::with_capacity(n_rows);
 
@@ -681,26 +690,18 @@ fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
         let lyr = from_engine_index(row.layer);
 
         let comp = row.component.as_str();
-        let ccode = match component_levels.iter().position(|c| c.as_str() == comp) {
-            Some(i) => i,
-            None => {
-                component_levels.push(comp.to_string());
-                component_levels.len() - 1
-            }
-        };
-        component_codes.push(ccode as i32 + 1); // 1-based for R indexing
+        let ccode = *component_index.entry(comp).or_insert_with(|| {
+            component_levels.push(comp.to_string());
+            component_levels.len() as i32 // 1-based for R indexing
+        });
+        component_codes.push(ccode);
 
-        let tcode = match token_levels
-            .iter()
-            .position(|t| t.as_deref() == row.token.as_deref())
-        {
-            Some(i) => i,
-            None => {
-                token_levels.push(row.token.clone());
-                token_levels.len() - 1
-            }
-        };
-        token_codes.push(tcode as i32 + 1); // 1-based for R indexing
+        let tok = row.token.as_deref();
+        let tcode = *token_index.entry(tok).or_insert_with(|| {
+            token_levels.push(row.token.clone());
+            token_levels.len() as i32 // 1-based for R indexing
+        });
+        token_codes.push(tcode);
 
         row_nneuron.push(row.values.len() as i32);
 
