@@ -31,7 +31,10 @@
 #' @param seed `NULL` (draw and record a seed) or a single non-negative whole
 #'   number for a reproducible run.
 #' @param chat Single logical. `TRUE` applies the model's chat template; `FALSE`
-#'   completes the raw prompt.
+#'   completes the raw prompt. If the model's embedded template cannot be detected
+#'   by the engine (e.g. some Gemma models), a built-in template for the model's
+#'   architecture is used instead; if neither applies, a classed error is raised
+#'   rather than mis-formatting the prompt.
 #' @param stop `NULL`, or a character vector of stop sequences that end
 #'   generation.
 #' @return A character vector the same length as `prompt` (names preserved), each

@@ -34,7 +34,10 @@ probable tokens whose cumulative probability reaches \code{top_p}.}
 number for a reproducible run.}
 
 \item{chat}{Single logical. \code{TRUE} applies the model's chat template; \code{FALSE}
-completes the raw prompt.}
+completes the raw prompt. If the model's embedded template cannot be detected
+by the engine (e.g. some Gemma models), a built-in template for the model's
+architecture is used instead; if neither applies, a classed error is raised
+rather than mis-formatting the prompt.}
 
 \item{stop}{\code{NULL}, or a character vector of stop sequences that end
 generation.}

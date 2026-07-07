@@ -831,10 +831,13 @@ impl LoadedModel {
     /// Generate a continuation of a text `prompt`. When `chat`, the prompt is
     /// wrapped as a user turn with the model's chat template; otherwise it is a
     /// raw completion. Tokenization mirrors llama.cpp's own usage: a templated
-    /// prompt is tokenized with special-token parsing and no added BOS (the
-    /// template already carries the markers), a raw prompt with the model's
-    /// default special tokens. Requires a tokenizer (the synthetic model has
-    /// none — its generation is driven by ids through [`generate`](Self::generate)).
+    /// prompt is always parsed for special tokens; whether the tokenizer ALSO adds
+    /// the model's BOS is decided by the template source — an embedded Jinja
+    /// template bakes its own BOS in (`add_special = false`), while the D-021
+    /// builtin fallback omits it (`add_special = true`), both carried on the
+    /// returned [`TemplatedPrompt`]. A raw completion adds the model's default
+    /// special tokens. Requires a tokenizer (the synthetic model has none — its
+    /// generation is driven by ids through [`generate`](Self::generate)).
     pub fn generate_prompt(
         &self,
         prompt: &str,
@@ -844,7 +847,7 @@ impl LoadedModel {
         self.require_tokenizer()?;
         let (text, add_special, parse_special) = if chat {
             let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
-            (templated, false, true)
+            (templated.text, templated.add_special, true)
         } else {
             (prompt.to_string(), true, false)
         };
@@ -895,17 +898,118 @@ impl LoadedModel {
     /// Format `messages` with the model's own chat template, ending with the
     /// assistant-turn opener when `add_assistant`. Errors if the model carries no
     /// chat template (use `chat = FALSE` for a raw completion).
+    ///
+    /// The model's embedded `tokenizer.chat_template` is tried first (the common
+    /// case — e.g. Qwen's chatml, which b9726 detects). If it is present but the
+    /// applier cannot recognize it (some modern models' Jinja, e.g. Gemma 4's),
+    /// this falls back to the architecture's builtin template (D-021); see
+    /// [`resolve_and_apply_template`]. The returned [`TemplatedPrompt`] carries how
+    /// the result must be tokenized (the builtin fallback omits the leading BOS).
     pub fn apply_chat_template(
         &self,
         messages: &[ChatMessage],
         add_assistant: bool,
-    ) -> Result<String, RebirthError> {
-        let tmpl = self
-            .chat_template()
-            .ok_or_else(|| RebirthError::Generation {
-                reason: "the model carries no chat template; use chat = FALSE".to_string(),
-            })?;
-        apply_template(&tmpl, messages, add_assistant)
+    ) -> Result<TemplatedPrompt, RebirthError> {
+        let embedded = self.chat_template();
+        resolve_and_apply_template(
+            embedded.as_deref(),
+            &self.architecture(),
+            messages,
+            add_assistant,
+        )
+    }
+}
+
+/// A chat prompt formatted for the model, plus how it must be tokenized. Embedded
+/// Jinja chat templates bake in the leading BOS token (`{{ bos_token }}`), but the
+/// llama.cpp builtin templates used by the D-021 fallback omit it, so a
+/// builtin-formatted prompt must be tokenized with the tokenizer adding the model's
+/// special tokens. Getting this wrong is not cosmetic: a Gemma prompt without its
+/// BOS decodes into degenerate output (it echoes the turn markers instead of
+/// answering).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TemplatedPrompt {
+    /// The formatted prompt text (already carrying the turn markers).
+    pub text: String,
+    /// Whether the tokenizer must add the model's special tokens (BOS/EOS): `true`
+    /// only when the builtin fallback was used (it omits the BOS an embedded
+    /// template would carry); `false` for the embedded template, which supplies its
+    /// own BOS. Consumed as `add_special` by [`LoadedModel::generate_prompt`].
+    pub add_special: bool,
+}
+
+/// The llama.cpp builtin chat-template name to use when a model's own embedded
+/// template is present but the applier cannot detect it, keyed on the model
+/// architecture (`general.architecture`) — the D-021 fallback. Deliberately small
+/// and explicit: only families whose builtin format is a settled match for the
+/// arch; `None` = no known builtin, so the caller surfaces the original error
+/// rather than mis-format.
+///
+/// The builtin names are verified present at b9726 in `src/llama-chat.cpp`'s
+/// `LLM_CHAT_TEMPLATES` map: `"gemma"` (line 44), `"chatml"` (line 29), `"llama3"`
+/// (line 54). The applier accepts either a builtin name or a Jinja string as its
+/// first argument, so passing the name re-selects the builtin format.
+fn arch_builtin_template(arch: &str) -> Option<&'static str> {
+    match arch {
+        // Gemma family: all share the `<start_of_turn>user\n...<end_of_turn>\n
+        // <start_of_turn>model\n` builtin (LLM_CHAT_TEMPLATE_GEMMA). Gemma 4's
+        // embedded Jinja is NOT detected by b9726 (its string lacks the
+        // `<start_of_turn>` literal the applier keys on at llama-chat.cpp:155), so
+        // this fallback is what makes chat = TRUE work for it (spike-confirmed).
+        "gemma" | "gemma2" | "gemma3" | "gemma4" => Some("gemma"),
+        // Qwen family: chatml (`<|im_start|>role\n...<|im_end|>`).
+        "qwen2" | "qwen3" | "qwen35" => Some("chatml"),
+        // Llama family: the Llama-3 header format. `general.architecture` is
+        // "llama" for both Llama 2 and Llama 3 GGUFs and cannot disambiguate them;
+        // this fallback only fires when the embedded template is undetectable
+        // (Llama 2/3 embedded templates ARE detected today), so in practice it is
+        // reached only by newer llama-arch models, for which Llama 3 is the right
+        // default.
+        "llama" => Some("llama3"),
+        _ => None,
+    }
+}
+
+/// Format `messages`, preferring the model's `embedded` chat template and falling
+/// back to the architecture's builtin when the embedded one is present but the
+/// applier cannot detect it (D-021). Free of any model so it is unit-testable.
+///
+/// - `embedded` present and applies cleanly → used unchanged (the common path;
+///   Qwen's chatml is detected today, so its formatting is untouched), with
+///   `add_special = false` (an embedded Jinja template carries its own BOS).
+/// - `embedded` present but the applier rejects it (returns < 0) → retry with
+///   [`arch_builtin_template`]`(arch)`; on success return `add_special = true` (the
+///   builtin omits the BOS, so the tokenizer must add it). If there is no mapping
+///   or the builtin also fails, surface the original classed error — never a silent
+///   mis-format.
+/// - `embedded` absent (`None`) → the model declares no chat contract; error with
+///   the same "use chat = FALSE" message as before (a builtin fallback here would
+///   format a base model that intentionally carries no template).
+fn resolve_and_apply_template(
+    embedded: Option<&str>,
+    arch: &str,
+    messages: &[ChatMessage],
+    add_assistant: bool,
+) -> Result<TemplatedPrompt, RebirthError> {
+    let Some(tmpl) = embedded else {
+        return Err(RebirthError::Generation {
+            reason: "the model carries no chat template; use chat = FALSE".to_string(),
+        });
+    };
+    match apply_template(tmpl, messages, add_assistant) {
+        Ok(text) => Ok(TemplatedPrompt {
+            text,
+            add_special: false,
+        }),
+        Err(embedded_err) => match arch_builtin_template(arch) {
+            Some(builtin) => apply_template(builtin, messages, add_assistant)
+                .map(|text| TemplatedPrompt {
+                    text,
+                    add_special: true,
+                })
+                .map_err(|_| embedded_err),
+            None => Err(embedded_err),
+        },
     }
 }
 
@@ -984,7 +1088,10 @@ fn apply_template(
 
 #[cfg(test)]
 mod tests {
-    use super::{apply_template, top_k_logits, ChatMessage};
+    use super::{
+        apply_template, arch_builtin_template, resolve_and_apply_template, top_k_logits,
+        ChatMessage, RebirthError,
+    };
 
     #[test]
     fn top_k_logits_orders_by_descending_logit_with_full_vocab_softmax() {
@@ -1072,5 +1179,114 @@ mod tests {
         // panic — the boundary maps it to a classed rebirth_error_generation.
         let result = apply_template("not-a-real-template-xyz", &messages, true);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn arch_builtin_template_maps_the_known_families() {
+        // D-021: the arch -> builtin-name fallback map, small and explicit.
+        for arch in ["gemma", "gemma2", "gemma3", "gemma4"] {
+            assert_eq!(arch_builtin_template(arch), Some("gemma"), "arch {arch}");
+        }
+        for arch in ["qwen2", "qwen3", "qwen35"] {
+            assert_eq!(arch_builtin_template(arch), Some("chatml"), "arch {arch}");
+        }
+        assert_eq!(arch_builtin_template("llama"), Some("llama3"));
+        // Anything without a settled builtin maps to None -> the caller surfaces
+        // the original error rather than mis-format.
+        for arch in ["bert", "mamba", "qwen2moe", "", "gemma-embedding"] {
+            assert_eq!(arch_builtin_template(arch), None, "arch {arch:?}");
+        }
+    }
+
+    #[test]
+    fn resolve_template_prefers_a_working_embedded_template_unchanged() {
+        // Invariant (D-021): when the model's embedded template applies, behavior
+        // is UNCHANGED — the arch is not even consulted. "chatml" stands in for a
+        // detectable embedded template; the arch is deliberately gemma4 (whose
+        // fallback would be "gemma") to prove the embedded template wins.
+        let messages = vec![ChatMessage::user("Ciao")];
+        let out = resolve_and_apply_template(Some("chatml"), "gemma4", &messages, true)
+            .expect("embedded chatml applies");
+        assert!(
+            out.text.contains("<|im_start|>user"),
+            "chatml used: {out:?}"
+        );
+        assert!(
+            !out.text.contains("<start_of_turn>"),
+            "the gemma fallback must NOT be taken when the embedded template works: {out:?}"
+        );
+        // An embedded template carries its own BOS, so the tokenizer must NOT add one.
+        assert!(!out.add_special, "embedded template => add_special = false");
+    }
+
+    #[test]
+    fn resolve_template_falls_back_to_gemma_for_a_gemma4_model() {
+        // The spike case: a gemma4 model whose embedded Jinja b9726 cannot detect.
+        // An undetectable embedded string stands in for it; the arch fallback must
+        // select the "gemma" builtin and format the turn correctly.
+        let messages = vec![ChatMessage::user("What colours are there?")];
+        let out =
+            resolve_and_apply_template(Some("not-a-real-template-xyz"), "gemma4", &messages, true)
+                .expect("the gemma4 arch fallback applies the gemma builtin");
+        assert!(
+            out.text.contains("<start_of_turn>user"),
+            "gemma user turn: {out:?}"
+        );
+        assert!(
+            out.text.trim_end().ends_with("<start_of_turn>model"),
+            "gemma assistant opener: {out:?}"
+        );
+        // The builtin gemma template omits the leading BOS, so the tokenizer must
+        // add it — else a Gemma prompt decodes into degenerate output.
+        assert!(
+            out.add_special,
+            "builtin fallback => add_special = true (BOS)"
+        );
+    }
+
+    #[test]
+    fn resolve_template_falls_back_to_chatml_for_qwen() {
+        // A qwen-family model whose embedded template is undetectable falls back to
+        // chatml. (In practice Qwen's embedded chatml IS detected today, so this is
+        // the defensive path; the map covers qwen2/qwen3/qwen35.)
+        let messages = vec![ChatMessage::user("hi")];
+        for arch in ["qwen2", "qwen3", "qwen35"] {
+            let out = resolve_and_apply_template(Some("<<garbage>>"), arch, &messages, true)
+                .unwrap_or_else(|_| panic!("chatml fallback applies for {arch}"));
+            assert!(
+                out.text.contains("<|im_start|>user"),
+                "chatml used for {arch}: {out:?}"
+            );
+            assert!(
+                out.add_special,
+                "builtin fallback => add_special = true ({arch})"
+            );
+        }
+    }
+
+    #[test]
+    fn resolve_template_surfaces_the_original_error_without_a_fallback() {
+        // An undetectable embedded template on an architecture with no builtin
+        // mapping raises the original classed error — never a silent mis-format.
+        let messages = vec![ChatMessage::user("hi")];
+        let err =
+            resolve_and_apply_template(Some("not-a-real-template-xyz"), "bert", &messages, true)
+                .expect_err("no fallback -> the embedded error is surfaced");
+        assert!(matches!(err, RebirthError::Generation { .. }));
+    }
+
+    #[test]
+    fn resolve_template_errors_when_the_model_has_no_template() {
+        // No embedded template at all: the model declares no chat contract, so the
+        // "use chat = FALSE" error is preserved (no builtin fallback here).
+        let messages = vec![ChatMessage::user("hi")];
+        let err = resolve_and_apply_template(None, "gemma4", &messages, true)
+            .expect_err("a model with no chat template errors");
+        match err {
+            RebirthError::Generation { reason } => {
+                assert!(reason.contains("chat = FALSE"), "message: {reason:?}");
+            }
+            other => panic!("expected a generation error, got {other:?}"),
+        }
     }
 }
