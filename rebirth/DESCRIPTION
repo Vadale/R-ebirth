@@ -4,11 +4,12 @@ Version: 0.0.0.9000
 Authors@R: 
     person("Alessandro", "Vadala", , "vadale93@gmail.com", role = c("aut", "cre", "cph"))
 Description: Load and run local large language models (through a vendored,
-    patched 'llama.cpp') from R and expose generation, embeddings, and
-    mechanistic interpretability tools -- activation tracing, steering,
-    and ablation -- as plain data frames and matrices in base-R idiom. The
-    package is in early development (repository scaffold): no modelling
-    functionality is available yet.
+    patched 'llama.cpp') from R and work with them as plain data frames and
+    matrices in base-R idiom. Provides model loading and tokenization ('llm',
+    'llm_tokens'), text generation ('llm_generate'), next-token distributions
+    ('llm_logits'), text embeddings ('llm_embed'), and mechanistic
+    interpretability tools -- activation tracing ('llm_trace'), activation
+    steering ('llm_steer'), and neuron ablation ('llm_ablate').
 License: MIT + file LICENSE | Apache License (== 2.0)
 Depends:
     R (>= 4.5.0)
