@@ -29,6 +29,10 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+      CMAKE_C_COMPILER_LAUNCHER: "sccache"
+      CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
 
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +40,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+
+      # Compiler cache (see env): routes the vendored llama.cpp cmake build and
+      # rustc through sccache so the C++ engine isn't recompiled from scratch each
+      # run. Content-keyed, so it survives R CMD check's temp build dir + cleanup.
+      - name: sccache (compiler cache)
+        uses: mozilla-actions/sccache-action@v0.0.9
 
       - uses: r-lib/actions/setup-pandoc@v2
 
