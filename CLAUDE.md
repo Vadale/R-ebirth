@@ -86,7 +86,7 @@ Interaction rules he has explicitly set: peer tone (no lecturing, no condescensi
 | `coder` | implementing the current WP | the workhorse; follows ROADMAP §5 prompts |
 | `test-engineer` | goldens, fixtures, harness B work; before merging numerical code | adversarial mindset; owns `tests/` |
 | `reviewer` | after every WP implementation, before the founder's own review | read-only; checks grammar/rules/diff quality |
-| `simplifier` | **mandatory at each phase end, and after any WP adding > ~500 lines** | behavior-preserving complexity reduction; the anti-entropy agent |
+| `simplifier` | **mandatory at each phase end, and after any WP adding > ~500 lines** | the maintainability & refactoring engineer — behavior-preserving refactoring (structure, indirection layers), measured hot-path optimization, dependency reduction, real-reuse helper extraction, leak/resource-hygiene fixes, clean code |
 | `security-auditor` | phase boundaries touching the FFI/unsafe boundary, file parsing, downloads, or the serve module (Phases 0–2, 7, 8) | read-only + reports |
 | `doc-writer` | after WP acceptance passes; before releases | roxygen/vignettes/README/NEWS; examples must run |
 
