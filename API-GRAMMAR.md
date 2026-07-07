@@ -137,9 +137,9 @@ The standardized decodability figure: metric with CI (y) vs layer (x), base grap
 | `rebirth_error_model_load` | `llm()` | file missing/corrupt/unsupported arch |
 | `rebirth_error_backend` | `llm()` | requested backend unavailable |
 | `rebirth_error_closed` | any use of a closed handle | |
-| `rebirth_error_tokenize` | `llm_tokens()` | |
+| `rebirth_error_tokenize` | `llm_tokens()`; also `llm_generate`/`llm_embed`/`llm_logits` on a model that cannot tokenize (e.g. `no_vocab`) | |
 | `rebirth_error_generation` | `llm_generate()`, `llm_logits()` | |
-| `rebirth_error_context_overflow` | generate/trace | message includes overflow size |
+| `rebirth_error_context_overflow` | generate/trace/logits | message includes overflow size |
 | `rebirth_error_embed` | `llm_embed()` | |
 | `rebirth_error_trace` | `llm_trace()` | |
 | `rebirth_error_oom` | trace with `spill = FALSE` | predictive, pre-allocation |

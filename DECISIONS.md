@@ -142,6 +142,15 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 
 ---
 
+## D-017 — trace memory budget measured on materialized bytes
+- **Date:** 2026-07-07 · **Status:** PROPOSED — needs founder ratification (supersedes the ARCH §5 estimate basis; flagged by the 2026-07-07 full-codebase audit as its only settled-decision change)
+- **Decision (proposed):** `llm_trace()`'s memory budget is computed against the **peak resident bytes of the materialized R `data.frame` the caller receives**, not the engine's f32 activation bytes (ARCH §5's basis). The estimate multiplies the f32 activation size by a **measured expansion factor** (audit: the long `data.frame` is ~10× the f32 bytes; the transient FFI payload — currently a per-neuron `String` clone — pushes the peak ~30×), and the FFI payload **de-duplicates the token/component strings** (one interned copy, not one per neuron). An `object.size(result) ≤ K × estimate` test pins the factor so it cannot silently drift. Spill triggers on the corrected estimate.
+- **Why:** the f32 basis under-counts the real cost 10–30×, so a capture estimating in `[~300 MB, 2 GB]` stayed "in budget", never spilled, and materialized 3–20 GB → the 16 GB session died with no error (audit finding H-1). Budgeting on what the user actually receives is the only basis that makes the fail-safe honest. **The interim already shipped** (PR #10): the default budget was cut `2 GB → 256 MB` so large captures spill via the proven path; D-017 is the proper fix that restores an accurate, larger usable in-memory budget without the OOM.
+- **Alternatives rejected:** keep the f32 basis and only lower the default (the interim — safe but leaves the budget inaccurate and the usable in-memory size needlessly small); cap rows instead of bytes (does not bound the per-neuron string blow-up); drop the budget and always spill (loses the fast in-memory path for small traces).
+- **Scope note:** changes the budget MEASUREMENT and the FFI payload string interning only; the `rebirth_trace` object, the `data.frame` schema, and `as.matrix` are unchanged. The pattern generalizes to Phase 6 (streaming traces) and Phase 14 (SAE features). On ratification the coder implements it and updates ARCH §5; until then the interim 256 MB default holds.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
