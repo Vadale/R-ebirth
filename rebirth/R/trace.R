@@ -53,10 +53,15 @@
 #' @param components A subset of `c("residual", "attn_out", "mlp_out")`
 #'   (default `"residual"`): the residual stream, the attention sub-layer output
 #'   (after the output projection; TransformerLens `hook_attn_out`), and/or the MLP
-#'   sub-layer output. `"attn_out"` is currently observable only on llama-family
-#'   models; on architectures that do not name the post-projection output (e.g.
-#'   qwen2, gemma3) requesting it raises `rebirth_error_trace` listing the available
-#'   components rather than silently substituting a different tensor.
+#'   sub-layer output. Tracing is supported on the `llama`, `qwen2`, `gemma3`,
+#'   `qwen3`, `qwen35`, and `gemma4` architectures; any other raises
+#'   `rebirth_error_trace`. `"residual"` is available on all of them. `"mlp_out"` is
+#'   available on all except `gemma4` (whose mixture-of-experts layers name their FFN
+#'   output differently, so capturing it would silently miss layers). `"attn_out"` is
+#'   currently observable only on llama-family models; on the others (which name only
+#'   the pre-projection attention tensor, a different quantity) requesting it raises
+#'   `rebirth_error_trace` listing the available components rather than silently
+#'   substituting a different tensor.
 #' @param spill Single logical (default `TRUE`). When a capture exceeds the memory
 #'   budget, `TRUE` streams it to a disk file (a lazily-loaded spilled trace) and
 #'   `FALSE` raises `rebirth_error_oom` instead. A within-budget capture is always
