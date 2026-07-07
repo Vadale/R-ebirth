@@ -1,5 +1,7 @@
 # Native-workspace and test-tooling checks (no R, no models).
-# - cargo:         fmt / clippy / test for the R-free engine crate rebirth-llm.
+# - cargo:         fmt / clippy / test for the R-free engine crate rebirth-llm,
+#                  incl. the --no-default-features (no-spill) config.
+#                  (rebirth-ffi needs R, so its tests run in R-CMD-check.yaml.)
 # - golden:        Harness B numpy reference self-check (the exact-value oracle).
 # - vendored-tree: the committed patched llama.cpp tree hashes to VENDORING.md's
 #                  post-patch SHA (D-008 gate G4) and patches/*.diff reverse-apply
@@ -48,6 +50,14 @@ jobs:
       # the documented F32-vs-F64 tolerance. Download-free, synthetic-only.
       - name: cargo test (R-free engine crate)
         run: cargo test -p rebirth-llm
+
+      # The no-spill configuration (--no-default-features drops the `spill` feature
+      # in both crates, D-013) must stay compilable and green: its
+      # #[cfg(not(feature = "spill"))] arm has no other CI coverage and would
+      # otherwise rot. Build + test (not just check) -- the spill-only tests are
+      # #![cfg(feature = "spill")]-gated, so they compile out here.
+      - name: cargo test (R-free engine crate, no-spill config)
+        run: cargo test -p rebirth-llm --no-default-features
 
   # Harness B, part (b): the numpy reference oracle must be deterministic and
   # still agree with the committed logit goldens and the committed synthetic
