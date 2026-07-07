@@ -1,0 +1,109 @@
+# Nightly Demo A ("the anatomy lab") acceptance run on the pinned
+# Qwen2.5-0.5B-Instruct Q8_0 GGUF (WP7).
+#
+# WHY A SEPARATE, SCHEDULED WORKFLOW (not part of R-CMD-check.yaml):
+#   Per-commit CI is model-free (synthetic model only). Demo A needs a real model
+#   to trace sentiment and steer, so -- like nightly-model-tolerance.yaml -- it
+#   downloads the CI-integration model ONCE per night and runs end-to-end. Its OWN
+#   file, triggered only by `schedule` + `workflow_dispatch`, means a nightly demo
+#   flake can NEVER gate a PR (WP7: "Demo A nightly green in CI", non-gating).
+#
+# RELAXED THRESHOLDS: the 0.5B model is weaker than the 1.5B demo default, so the
+#   acceptance is loose but meaningful -- peak per-layer probe AUC >= 0.70 (well
+#   above chance) and positive steering decodes MORE positive than negative
+#   steering downstream (shift_up > shift_down). Backend note: greedy generation
+#   can differ CPU-vs-Metal, but these two checks are decodability + a within-run
+#   ordering, so they are backend-robust.
+#
+# MODEL PIN (same provenance as nightly-model-tolerance.yaml): repo
+#   Qwen/Qwen2.5-0.5B-Instruct-GGUF, file qwen2.5-0.5b-instruct-q8_0.gguf,
+#   revision 9217f5db79a29953eb74d5343926648285ec7e67 (immutable), Apache-2.0.
+#   MODEL_SHA256 is the file's git-lfs content hash; the download is verified
+#   FAIL-CLOSED (mismatch => file deleted => job fails) before the demo runs.
+on:
+  schedule:
+    - cron: '30 4 * * *' # 04:30 UTC, nightly (after model-tolerance at 04:00)
+  workflow_dispatch: {} # manual trigger (founder, on demand)
+
+name: nightly-demo-A.yaml
+
+permissions: read-all
+
+concurrency:
+  group: nightly-demo-A
+  cancel-in-progress: false
+
+jobs:
+  demo-A:
+    runs-on: ubuntu-24.04
+    name: nightly Demo A (anatomy lab) on Qwen2.5-0.5B Q8_0
+    timeout-minutes: 90
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      MODEL_URL: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q8_0.gguf
+      MODEL_SHA256: ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          # Demo A needs glmnet (Suggests); pkgload comes with devtools.
+          extra-packages: any::devtools any::glmnet
+          working-directory: rebirth
+
+      - name: Download + verify the pinned Qwen2.5-0.5B Q8_0 GGUF (fail-closed)
+        run: |
+          set -euo pipefail
+          dest="$RUNNER_TEMP/qwen2.5-0.5b-instruct-q8_0.gguf"
+          echo "Downloading $MODEL_URL"
+          curl -fL --retry 3 --retry-delay 5 -o "$dest" "$MODEL_URL"
+          if ! echo "${MODEL_SHA256}  ${dest}" | sha256sum -c -; then
+            rm -f "$dest"
+            echo "::error::SHA256 mismatch for the pinned Qwen2.5-0.5B Q8_0 GGUF; refusing to run"
+            exit 1
+          fi
+          echo "verified: $(sha256sum "$dest")"
+          echo "REBIRTH_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
+
+      - name: Build rebirth and run Demo A end-to-end (relaxed acceptance)
+        run: |
+          Rscript -e '
+            suppressMessages(pkgload::load_all("rebirth", quiet = TRUE))
+            mp <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN")
+            stopifnot(nzchar(mp), file.exists(mp))
+            # Fail LOUDLY if the model is not the expected one (a nightly that
+            # silently skips is a nightly that lies).
+            m <- llm(mp)
+            stopifnot(identical(m$architecture, "qwen2"), m$layers == 24L)
+            close(m)
+
+            Sys.setenv(REBIRTH_DEMO_NO_AUTORUN = "1")
+            source("tests/demos/demo-A-anatomy-lab.R") # also runs the demo-utils self-test
+            res <- run_demo_A(mp, plot_file = "demoA-money.png")
+
+            cat(sprintf("Demo A: peak AUC %.3f at layer %d; steer shift up %.3f / down %.3f\n",
+                        res$best_auc, res$best_layer, res$steer$shift_up, res$steer$shift_down))
+
+            # Relaxed, backend-robust acceptance (see the header).
+            stopifnot(is.finite(res$best_auc), res$best_auc >= 0.70)
+            stopifnot(res$steer$shift_up > res$steer$shift_down)
+            cat("Demo A nightly acceptance: PASS\n")
+          '
+
+      - name: Upload the money plot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-A-money-plot
+          path: demoA-money.png
+          if-no-files-found: warn

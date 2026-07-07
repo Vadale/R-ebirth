@@ -521,7 +521,7 @@ summary.rebirth_trace <- function(object, ...) {
   # One pass over the rows: aggregate() splits by (layer, component) once and returns
   # each group's row count and mean |value| together, instead of rescanning the full
   # layer/component/value columns once per group (the old loop was O(groups x rows)).
-  agg <- aggregate(
+  agg <- stats::aggregate(
     abs(object$value),
     by = list(layer = object$layer, component = object$component),
     FUN = function(v) c(n = length(v), mean_abs = mean(v))
