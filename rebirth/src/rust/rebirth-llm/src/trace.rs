@@ -30,9 +30,10 @@ use crate::generate::Batch;
 /// value becomes one long-format row of exactly 40 bytes — four i32 columns
 /// (`prompt_id`/`token_pos`/`layer`/`neuron`, 4 B each), one f64 `value` (8 B), and
 /// two character columns (`token`/`component`, 8 B pointers each into R's shared
-/// CHARSXP pool) — i.e. 10x the 4-byte f32; `11` (measured ratio 10.40x on a small
-/// trace, asymptote 10.0x) is the smallest integer that upper-bounds it including
-/// R's fixed per-vector + data.frame overhead. The budget is compared against this
+/// CHARSXP pool) — i.e. 10x the 4-byte f32 asymptotically. `11` upper-bounds this for
+/// every *real*-model trace (hidden_size >= 896 -> <= 10.65x) and every budget-relevant
+/// large capture (ratio -> 10.0x); tiny sub-600-row synthetic traces (hidden=32) reach
+/// ~27.75x but are < ~22 KB, far under any budget. The budget is compared against this
 /// materialized cost, not the f32 bytes (the H-1 fix). R pins the identical value
 /// in `TRACE_MATERIALIZED_EXPANSION` (`trace.R`), each side unit-tested — a one-sided
 /// change breaks the R/engine symmetry the spill decision relies on (audit P-5).

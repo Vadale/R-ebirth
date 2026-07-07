@@ -89,7 +89,9 @@ test_that("a materialized trace fits K x its f32-activation bytes (D-017 pins th
   # is exactly one f32 activation, so the f32 basis is nrow(tr) * 4 -- the same
   # quantity the engine's estimate_capture_bytes multiplies by K. Runs in CI on the
   # synthetic model via the raw-token in-memory path (2 layers x 3 components x 8
-  # positions x 32 neurons = 1536 rows; measured ratio ~10.4x, under the pinned 11x).
+  # positions x 32 neurons = 1536 rows -- the FULL synthetic capture; ratio ~10.4x here,
+  # under the pinned 11x. Smaller sub-600-row slices amortize R's fixed overhead worse
+  # and exceed 11x (harmless: < ~22 KB, never near a budget), so keep these dims large.
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
 

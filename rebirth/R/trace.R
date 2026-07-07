@@ -337,9 +337,10 @@ validate_positions <- function(positions, call = sys.call(-1L)) {
 # cost in the returned long-format data.frame (D-017). Each captured value becomes
 # one 40-byte row -- four i32 columns (prompt_id/token_pos/layer/neuron), one f64
 # `value`, and two character-pointer columns (token/component into R's shared CHARSXP
-# pool) -- i.e. 10x the 4-byte f32; 11 upper-bounds the measured ratio (10.40x on a
-# small trace, asymptote 10.0x) with headroom for R's fixed per-vector + data.frame
-# overhead. The engine pins the identical value in TRACE_MATERIALIZED_EXPANSION
+# pool) -- i.e. 10x the 4-byte f32 asymptotically. 11 upper-bounds this for every
+# *real*-model trace (hidden_size >= 896 => <= 10.65x) and every budget-relevant large
+# capture (ratio -> 10.0x); a tiny sub-600-row capture on the hidden=32 synthetic
+# model reaches ~27.75x but is < ~22 KB, far under any budget. The engine pins the identical value in TRACE_MATERIALIZED_EXPANSION
 # (trace.rs), each side unit-tested, so the R pre-check and the engine spill decision
 # stay symmetric (audit P-5); the object.size test (test-llm-trace-spill.R) pins it
 # against a real materialized trace.
