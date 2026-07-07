@@ -1,0 +1,66 @@
+# cargo-deny configuration — DECISIONS.md D-008 gate G4 (the supply-chain gate).
+#
+# WHERE THIS RUNS (Hard rule 8e — every gate states where it runs):
+#   - PER-PR (deterministic, GATES merges): `cargo deny check bans licenses sources`
+#     as the `supply-chain` job in .github/workflows/rust.yaml. These three checks
+#     depend only on the committed Cargo.lock + Cargo.toml, so they are reproducible
+#     run-to-run: a new dependency with a disallowed license, an unexpected source, or
+#     a banned crate is caught at PR time, before merge.
+#   - NIGHTLY (feed-dependent, NEVER gates a PR): `cargo deny check advisories` plus
+#     `cargo audit` in .github/workflows/nightly-supply-chain.yaml. The RustSec
+#     advisory feed changes daily WITHOUT our code changing, so a freshly published
+#     advisory must never turn an unrelated PR red — it surfaces as a nightly failure
+#     that a human triages (same rationale as nightly-model-tolerance.yaml).
+#
+# The allow-list below is the MINIMAL set the actual dependency tree resolves to
+# (verified with `cargo deny list`, 2026-07-07). The package itself is dual
+# MIT OR Apache-2.0 (CLAUDE.md Stack row); the vendored llama.cpp is MIT.
+
+[graph]
+# Evaluate every optional dependency (the default-on `spill` feature pulls the arrow
+# crates; the default-off `cuda` feature adds no crates) so nothing is missed.
+all-features = true
+
+[licenses]
+# Every crate in the resolved tree satisfies one of these (all OSI-approved and
+# FSF-Free/Libre, all permissive). An AND-expression such as unicode-ident's
+# "(MIT OR Apache-2.0) AND Unicode-3.0" requires Unicode-3.0 to be present here.
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Unicode-3.0",
+]
+# tiny-keccak is CC0-1.0-only (a public-domain dedication — strictly more permissive
+# than MIT). It is a transitive dependency (const-random -> ahash -> arrow-array).
+# Scoped to this one crate so a NEW crate introducing CC0-1.0 is still surfaced.
+exceptions = [
+    { crate = "tiny-keccak", allow = ["CC0-1.0"] },
+]
+confidence-threshold = 0.9
+
+[bans]
+# Duplicate versions are INFORMATIONAL, not a failure: a large transitive tree
+# (arrow, extendr, windows-sys, getrandom 0.2/0.3) legitimately carries a few. WARN
+# keeps them visible without flaking the per-PR gate as the tree evolves.
+multiple-versions = "warn"
+wildcards = "warn"
+# The internal `rebirth-llm = { path = ... }` dependency has no version requirement
+# (it is a workspace path dep), which cargo-deny otherwise flags as a wildcard.
+allow-wildcard-paths = true
+
+[advisories]
+# Security VULNERABILITIES fail the nightly advisories run. One known transitive
+# maintenance notice is ignored with a reason (it is not a vulnerability):
+ignore = [
+    # paste 1.0.15 — unmaintained (upstream archived, RUSTSEC-2024-0436). A transitive
+    # proc-macro dependency of extendr-api (the R bridge); there is no safe drop-in in
+    # the tree today. A maintenance NOTICE, not a vulnerability. Revisit on an extendr
+    # bump (a maintained replacement, e.g. `pastey`, would clear this). (2026-07-07)
+    "RUSTSEC-2024-0436",
+]
+
+[sources]
+# Only crates.io (plus the in-tree path members) is an allowed origin. A git or
+# unknown-registry dependency must be a deliberate, reviewed choice.
+unknown-registry = "deny"
+unknown-git = "deny"

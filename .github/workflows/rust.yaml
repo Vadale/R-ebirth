@@ -6,6 +6,11 @@
 # - vendored-tree: the committed patched llama.cpp tree hashes to VENDORING.md's
 #                  post-patch SHA (D-008 gate G4) and patches/*.diff reverse-apply
 #                  to the pre-patch SHA (D-015 coherence).
+# - supply-chain:  cargo-deny licenses/bans/sources (D-008 gate G4, DETERMINISTIC
+#                  half — depends only on the committed Cargo.lock, so it safely gates
+#                  PRs). The feed-dependent half (RustSec advisories + cargo audit)
+#                  runs in nightly-supply-chain.yaml so a fresh advisory never gates a
+#                  PR. Config: rebirth/src/rust/deny.toml.
 # All download only pinned tooling; none downloads a model.
 on:
   push:
@@ -107,3 +112,23 @@ jobs:
 
       - name: verify vendored llama.cpp tree SHA256 + patch coherence
         run: sh rebirth/src/llama.cpp/patches/verify_vendored_tree.sh
+
+  # D-008 gate G4 (deterministic half): the dependency tree carries only permitted
+  # licenses (MIT / Apache-2.0 / Unicode-3.0, + tiny-keccak's CC0-1.0 exception), no
+  # banned crate, and no unexpected source. These checks read only the committed
+  # Cargo.lock + Cargo.toml, so they are reproducible run-to-run and safely gate a PR
+  # (a new dependency with a bad license is caught before merge). RustSec ADVISORIES
+  # are intentionally NOT here — they change with the external feed, so they run in
+  # nightly-supply-chain.yaml (never gating a PR). No Rust build; no model.
+  supply-chain:
+    runs-on: ubuntu-24.04
+    name: supply-chain (cargo-deny licenses/bans/sources)
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: cargo deny — licenses / bans / sources
+        uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          command: check bans licenses sources
+          manifest-path: rebirth/src/rust/Cargo.toml
