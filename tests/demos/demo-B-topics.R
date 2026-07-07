@@ -111,8 +111,13 @@ demo_B_plot <- function(coords, cluster, labels = NULL, file = NULL,
   col <- rep(grDevices::adjustcolor("grey70", 0.45), length(cluster)) # noise = grey
   for (j in seq_along(ids)) col[cluster == ids[[j]]] <- pal[[j]]
 
+  # pad the range so medoid labels near the edges are not clipped
+  xr <- range(coords[, 1L])
+  yr <- range(coords[, 2L])
   plot(coords, col = col, pch = 19, cex = 0.55, xlab = "UMAP 1", ylab = "UMAP 2",
-       main = title)
+       main = title,
+       xlim = xr + c(-1, 1) * 0.08 * diff(xr),
+       ylim = yr + c(-1, 1) * 0.06 * diff(yr))
   n_noise <- sum(cluster == 0L)
   graphics::mtext(
     sprintf("%d abstracts  |  %d topics discovered  |  %d unclustered (grey)",
