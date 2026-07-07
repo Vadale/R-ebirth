@@ -1,0 +1,141 @@
+---
+title: "Topic modelling without Python"
+format: html
+engine: knitr
+vignette: >
+  %\VignetteIndexEntry{Topic modelling without Python}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+
+# The embedding step needs a local GGUF model; UMAP and HDBSCAN need uwot and
+# dbscan. A checker has none of these, so we gate the real pipeline and fall back
+# to an illustrative layout keyed off the sample's known topics. Point
+# REBIRTH_DEMO_MODEL (or REBIRTH_TEST_MODEL_QWEN) at a GGUF file, and install
+# uwot + dbscan, to render the map from real embeddings.
+model_path <- Sys.getenv("REBIRTH_DEMO_MODEL", Sys.getenv("REBIRTH_TEST_MODEL_QWEN", ""))
+have_model <- nzchar(model_path) && file.exists(model_path)
+have_uwot <- requireNamespace("uwot", quietly = TRUE)
+have_dbscan <- requireNamespace("dbscan", quietly = TRUE)
+run_real <- have_model && have_uwot && have_dbscan
+```
+
+A BERTopic-class pipeline --- embed documents, reduce with UMAP, cluster with
+HDBSCAN, name the clusters --- is usually a Python affair. With `rebirth` it is a
+handful of base-R lines over CRAN packages the R ecosystem already has, running
+fully local with zero Python.
+
+The steps: `llm_embed()` the abstracts, lay them out with `uwot::umap()`, find
+clusters with `dbscan::hdbscan()`, and name each cluster by asking the model
+itself with `llm_generate()`.
+
+## The corpus
+
+The package ships a small **synthetic** sample so this runs offline; for the real
+~5,000-abstract arXiv corpus, use `tests/demos/fetch-abstracts.R`.
+
+```{r}
+#| label: data
+csv <- system.file("extdata", "abstracts-sample.csv", package = "rebirth")
+abstracts <- if (nzchar(csv)) {
+  utils::read.csv(csv, stringsAsFactors = FALSE)
+} else {
+  # fallback when the vignette is knitted from the source tree
+  utils::read.csv(file.path("..", "inst", "extdata", "abstracts-sample.csv"),
+                  stringsAsFactors = FALSE)
+}
+nrow(abstracts)
+table(abstracts$label)
+```
+
+## Embed, reduce, cluster, name
+
+`set.seed()` plus `n_sgd_threads = 1` makes the UMAP layout reproducible; HDBSCAN
+is deterministic given the layout. Cluster names come from the model itself.
+
+```{r}
+#| label: pipeline-real
+#| eval: !expr run_real
+library(rebirth)
+m <- llm(model_path)
+
+emb <- llm_embed(m, abstracts$text, pooling = "mean", normalize = TRUE)
+
+set.seed(20240707)
+coords <- uwot::umap(emb, n_neighbors = 15, min_dist = 0.1, n_components = 2,
+                     metric = "cosine", n_sgd_threads = 1)
+cluster <- dbscan::hdbscan(coords, minPts = 15)$cluster # 0 = noise
+
+# Name each cluster from its most central abstracts.
+ids <- sort(setdiff(unique(cluster), 0))
+labels <- vapply(ids, function(g) {
+  members <- which(cluster == g)
+  cen <- colMeans(coords[members, , drop = FALSE])
+  medoid <- members[which.min(rowSums(sweep(coords[members, , drop = FALSE], 2, cen)^2))]
+  prompt <- paste0(
+    "Reply with a SHORT topic label of 2 to 4 words for these abstracts, ",
+    "and nothing else.\n\n",
+    paste0("- ", abstracts$text[medoid], collapse = "\n"), "\n\nTopic label:"
+  )
+  trimws(gsub("[\"'`.]", "", llm_generate(m, prompt, max_tokens = 12, temperature = 0, seed = 1)))
+}, character(1))
+names(labels) <- ids
+close(m)
+```
+
+```{r}
+#| label: pipeline-illustrative
+#| eval: !expr isFALSE(run_real)
+# Illustrative layout (no model/uwot/dbscan at render time): eight Gaussian blobs
+# keyed off the sample's known topics, so the map matches what the real pipeline
+# produces. Run the chunk above on your own model for the genuine embedding map.
+set.seed(20240707)
+labs <- unique(abstracts$label)
+ang <- setNames(2 * pi * (seq_along(labs) - 1) / length(labs), labs)
+cx <- 6 * cos(ang[abstracts$label]); cy <- 6 * sin(ang[abstracts$label])
+coords <- cbind(cx + rnorm(nrow(abstracts), 0, 0.8),
+                cy + rnorm(nrow(abstracts), 0, 0.8))
+cluster <- as.integer(factor(abstracts$label, levels = labs))
+labels <- setNames(labs, seq_along(labs))
+```
+
+## The labelled map
+
+```{r}
+#| label: cluster-map
+#| fig-width: 8.5
+#| fig-height: 6.5
+#| fig-alt: "UMAP scatter of abstracts coloured into topic clusters with topic labels."
+ids <- sort(setdiff(unique(cluster), 0))
+pal <- adjustcolor(grDevices::hcl.colors(length(ids), "Dark 3"), 0.6)
+col <- rep(adjustcolor("grey70", 0.45), length(cluster))
+for (j in seq_along(ids)) col[cluster == ids[j]] <- pal[j]
+
+op <- par(mar = c(4.2, 4.2, 3, 1), mgp = c(2.5, 0.7, 0), las = 1)
+xr <- range(coords[, 1]); yr <- range(coords[, 2]) # pad so edge labels fit
+plot(coords, col = col, pch = 19, cex = 0.5, xlab = "UMAP 1", ylab = "UMAP 2",
+     xlim = xr + c(-1, 1) * 0.10 * diff(xr), ylim = yr + c(-1, 1) * 0.06 * diff(yr),
+     main = sprintf("Topic modelling without Python (%s)",
+                    if (run_real) "real embeddings" else "illustrative"))
+halo <- function(x, y, s) {
+  o <- 0.006 * diff(par("usr")[1:2])
+  for (dx in c(-1, 1)) for (dy in c(-1, 1)) text(x + dx * o, y + dy * o, s, col = "white", font = 2)
+  text(x, y, s, font = 2)
+}
+for (j in seq_along(ids)) {
+  members <- which(cluster == ids[j])
+  cen <- colMeans(coords[members, , drop = FALSE])
+  med <- members[which.min(rowSums(sweep(coords[members, , drop = FALSE], 2, cen)^2))]
+  halo(coords[med, 1], coords[med, 2], labels[[as.character(ids[j])]])
+}
+par(op)
+```
+
+Each colour is a discovered topic; grey points are HDBSCAN's noise class. The full
+runnable script (naming, tuning, and the arXiv fetcher) is
+`tests/demos/demo-B-topics.R`. No Python was involved at any step.
