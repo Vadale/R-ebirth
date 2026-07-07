@@ -291,6 +291,58 @@ impl Drop for Context {
     }
 }
 
+/// A freshly created raw `llama_context` that frees itself on `Drop` until
+/// ownership is released with [`OwnedContext::into_raw`]. It makes the window
+/// between `llama_init_from_model` and the final owning-struct construction
+/// leak-proof by construction: any `?`/early return in that window drops the
+/// guard and frees the context, so no call site has to remember a manual
+/// `llama_free` (the pattern this replaces — two hand-written frees on the
+/// `n_embd <= 0` paths of the embedding/trace builders — was easy to forget on a
+/// newly added early return). Every context builder below funnels through it.
+struct OwnedContext {
+    ptr: NonNull<ffi::llama_context>,
+}
+
+impl OwnedContext {
+    /// Create a context for `model` from `cparams`, mapping a null result (out of
+    /// memory, or an unsupported configuration) to the classed error `on_fail()`
+    /// returns.
+    fn create(
+        model: &Model,
+        cparams: ffi::llama_context_params,
+        on_fail: impl FnOnce() -> RebirthError,
+    ) -> Result<OwnedContext, RebirthError> {
+        // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. A
+        // null return means no context was created, so there is nothing to free.
+        let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
+        let ptr = NonNull::new(ctx_ptr).ok_or_else(on_fail)?;
+        Ok(OwnedContext { ptr })
+    }
+
+    /// The raw context pointer, for read-only queries (e.g. `llama_n_ctx`) made
+    /// while the guard still owns the context.
+    fn as_ptr(&self) -> *mut ffi::llama_context {
+        self.ptr.as_ptr()
+    }
+
+    /// Release ownership: the caller takes the raw pointer and the guard no longer
+    /// frees it. Used when the pointer moves into an owning struct's field.
+    fn into_raw(self) -> NonNull<ffi::llama_context> {
+        let ptr = self.ptr;
+        std::mem::forget(self);
+        ptr
+    }
+}
+
+impl Drop for OwnedContext {
+    fn drop(&mut self) {
+        // SAFETY: `ptr` came from `llama_init_from_model` and is freed exactly
+        // once — `into_raw` forgets the guard when ownership transfers out, so
+        // this runs only on the leak-prevention (early-return) path.
+        unsafe { ffi::llama_free(self.ptr.as_ptr()) };
+    }
+}
+
 /// A transient embeddings-mode context (D-011): `create_embedding_context` builds
 /// one per `llm_embed` call, sized to the batch, and it drops at the call's end.
 /// Unlike [`Context`] it is never stored in the `Arc`-shared handle, so it needs
@@ -474,10 +526,9 @@ impl LoadedModel {
         cparams.pooling_type = 0; // LLAMA_POOLING_TYPE_NONE
         cparams.attention_type = -1; // LLAMA_ATTENTION_TYPE_UNSPECIFIED
 
-        // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
-        // failure the local `Arc<Model>` clone drops here, releasing its reference.
-        let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
-        let ptr = NonNull::new(ctx_ptr).ok_or_else(|| RebirthError::Embed {
+        // The guard frees the context on any early return below (the `n_embd <= 0`
+        // reject) until ownership transfers into `EmbeddingContext`.
+        let ctx = OwnedContext::create(&model, cparams, || RebirthError::Embed {
             reason: "Could not create an embedding context for this model. \
                      The model may not support embeddings, or there was not enough memory. \
                      Try a shorter input, or free other loaded models first."
@@ -487,9 +538,7 @@ impl LoadedModel {
         // SAFETY: `model.ptr` is a live model; read-only scalar getter.
         let n_embd = unsafe { ffi::llama_model_n_embd(model.ptr.as_ptr()) };
         if n_embd <= 0 {
-            // SAFETY: `ptr` came from `llama_init_from_model` just above; free the
-            // freshly created context before returning so it is not leaked.
-            unsafe { ffi::llama_free(ptr.as_ptr()) };
+            // `ctx` drops here, freeing the freshly created context.
             return Err(RebirthError::Embed {
                 reason: "This model reports no embedding dimension, so it cannot \
                          produce embeddings. Use a model that has an embedding output."
@@ -498,7 +547,7 @@ impl LoadedModel {
         }
 
         Ok(EmbeddingContext {
-            ptr,
+            ptr: ctx.into_raw(),
             _model: model,
             n_embd: n_embd as usize,
         })
@@ -569,10 +618,9 @@ impl LoadedModel {
         cparams.cb_eval = cb_eval as *mut c_void;
         cparams.cb_eval_user_data = cb_eval_user_data;
 
-        // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
-        // failure the local `Arc<Model>` clone drops here, releasing its reference.
-        let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
-        let ptr = NonNull::new(ctx_ptr).ok_or_else(|| RebirthError::Trace {
+        // The guard frees the context on any early return below (the `n_embd <= 0`
+        // reject) until ownership transfers into `TraceContext`.
+        let ctx = OwnedContext::create(&model, cparams, || RebirthError::Trace {
             reason: "Could not create a tracing context for this model. \
                      There may not be enough memory; free other loaded models first, \
                      or trace fewer prompts at once."
@@ -584,9 +632,7 @@ impl LoadedModel {
         // side; here we only reject a model with no hidden dimension up front.
         let n_embd = unsafe { ffi::llama_model_n_embd(model.ptr.as_ptr()) };
         if n_embd <= 0 {
-            // SAFETY: `ptr` came from `llama_init_from_model` just above; free the
-            // freshly created context before returning so it is not leaked.
-            unsafe { ffi::llama_free(ptr.as_ptr()) };
+            // `ctx` drops here, freeing the freshly created context.
             return Err(RebirthError::Trace {
                 reason: "This model reports no hidden dimension, so its activations \
                          cannot be traced."
@@ -594,7 +640,10 @@ impl LoadedModel {
             });
         }
 
-        Ok(TraceContext { ptr, _model: model })
+        Ok(TraceContext {
+            ptr: ctx.into_raw(),
+            _model: model,
+        })
     }
 
     // --- crate-internal intervention support (intervene.rs) -----------------
@@ -615,22 +664,20 @@ impl LoadedModel {
         let mut cparams = unsafe { ffi::llama_context_default_params() };
         cparams.n_ctx = self.ctx.context_length;
 
-        // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
-        // failure the local `Arc<Model>` clone drops here, releasing its reference.
-        let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
-        let ctx_ptr = NonNull::new(ctx_ptr).ok_or_else(|| RebirthError::Intervention {
+        let ctx = OwnedContext::create(&model, cparams, || RebirthError::Intervention {
             reason: "Could not create a context for the intervened model. There may \
                      not be enough memory; free other loaded models first, or reduce \
                      context_length."
                 .to_string(),
         })?;
 
-        // SAFETY: `ctx_ptr` is a live context; query its resolved window.
-        let context_length = unsafe { ffi::llama_n_ctx(ctx_ptr.as_ptr()) };
+        // SAFETY: the guard owns a live context; query its resolved window before
+        // transferring ownership into the `Context` below.
+        let context_length = unsafe { ffi::llama_n_ctx(ctx.as_ptr()) };
 
         Ok(LoadedModel {
             ctx: Context {
-                ptr: ctx_ptr,
+                ptr: ctx.into_raw(),
                 model,
                 context_length,
                 gpu_layers: self.ctx.gpu_layers,
@@ -738,19 +785,19 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
         cparams.n_batch = nb;
     }
 
-    // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. On
-    // failure the `Arc<Model>` drops here, freeing the model and backend.
-    let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
-    let ctx_ptr = NonNull::new(ctx_ptr).ok_or_else(|| RebirthError::ModelLoad {
+    // On failure the `Arc<Model>` drops after the guard, freeing the model and
+    // backend; the guard owns the context until it moves into `Context` below.
+    let ctx = OwnedContext::create(&model, cparams, || RebirthError::ModelLoad {
         failing_check: "context_init".to_string(),
     })?;
 
-    // SAFETY: `ctx_ptr` is a live context; query its resolved window.
-    let context_length = unsafe { ffi::llama_n_ctx(ctx_ptr.as_ptr()) };
+    // SAFETY: the guard owns a live context; query its resolved window before
+    // transferring ownership into the `Context` below.
+    let context_length = unsafe { ffi::llama_n_ctx(ctx.as_ptr()) };
 
     Ok(LoadedModel {
         ctx: Context {
-            ptr: ctx_ptr,
+            ptr: ctx.into_raw(),
             model,
             context_length,
             gpu_layers: resolved_gpu_layers,
