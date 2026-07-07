@@ -2,6 +2,23 @@
 
 ## rebirth 0.0.0.9000
 
+* Modern model families are usable **as text** (WP7.5a part-1, D-021): Gemma 4,
+  Qwen 3, and Qwen 3.5 GGUFs already load and generate at the pinned engine, and
+  two gaps are closed. (1) `llm_generate(chat = TRUE)` now works on models whose
+  embedded chat template the engine cannot detect: when the embedded template is
+  present but unrecognized, the resolver falls back to the architecture's builtin
+  template (`gemma`/`chatml`/`llama3`) — this fixes Gemma 4, whose Jinja template
+  was undetected and previously failed with `llama_chat_apply_template failed
+  (-1)`. Models whose embedded template already applies (e.g. Qwen's chatml) are
+  unchanged. (2) `llm_trace()` now supports the `qwen3`, `qwen35`, and `gemma4`
+  architectures, with source-derived per-architecture component tables. On
+  `gemma4`, `residual` traces every layer; `mlp_out` and `attn_out` raise
+  `rebirth_error_trace` rather than return a partial or mislabeled capture (its
+  FFN output is named only on dense layers, and its same-named `attn_out` tensor is
+  a different quantity than the post-projection output the component defines). The
+  support matrix is recorded in `docs/wp7.5-model-matrix.md`. Steering/ablation on
+  the new families is a later part; the intervention support is unchanged here.
+
 * Two reference demos and Quarto vignettes land (WP7). **Demo A -- "the anatomy
   lab"** traces a fixed sentiment contrast set with `llm_trace()`, fits one
   cross-validated `glmnet` ridge-logistic probe per layer, and plots out-of-fold
