@@ -127,8 +127,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: cargo deny — licenses / bans / sources
-        uses: EmbarkStudios/cargo-deny-action@v2
+      # Install a PREBUILT cargo-deny binary (~seconds) instead of the Docker-based
+      # cargo-deny-action, whose image build cost ~10 min/run while the check itself is
+      # ~15s. Keeps the per-PR gate fast (the point of the sccache CI cache).
+      - uses: taiki-e/install-action@v2
         with:
-          command: check bans licenses sources
-          manifest-path: rebirth/src/rust/Cargo.toml
+          tool: cargo-deny
+
+      - name: cargo deny — licenses / bans / sources
+        working-directory: rebirth/src/rust
+        run: cargo-deny check bans licenses sources

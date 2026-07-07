@@ -70,11 +70,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # cargo-deny is the canonical tool for D-008 G4; the action uses a prebuilt
-      # binary (no compile). Pinned to the config at rebirth/src/rust/deny.toml, which
-      # carries the documented `paste` unmaintained ignore.
-      - name: cargo deny — advisories
-        uses: EmbarkStudios/cargo-deny-action@v2
+      # Install a PREBUILT cargo-deny binary (~seconds). The Docker-based
+      # cargo-deny-action rebuilds its image ~10 min/run (measured on the per-PR
+      # supply-chain job) — avoid it. Config at rebirth/src/rust/deny.toml carries the
+      # documented `paste` unmaintained ignore.
+      - uses: taiki-e/install-action@v2
         with:
-          command: check advisories
-          manifest-path: rebirth/src/rust/Cargo.toml
+          tool: cargo-deny
+
+      - name: cargo deny — advisories
+        working-directory: rebirth/src/rust
+        run: cargo-deny check advisories
