@@ -1,0 +1,31 @@
+# Valgrind suppressions for the nightly memory-safety job
+# (.github/workflows/nightly-memory-safety.yaml).
+#
+# WHAT THIS IS FOR: the vendored llama.cpp / ggml engine is a large third-party C++
+# library that is NOT compiled with debug allocators. On process exit it may hold a
+# handful of process-global singletons (the ggml backend/device registry, a one-time
+# threadpool) that are reachable-but-not-freed. Those are NOT leaks of OUR code and
+# are already excluded by the job's `--errors-for-leak-kinds=definite,indirect`
+# (reachable/"still reachable"/"possibly lost" do not trip the gate). This file exists
+# for the residual case: a genuinely upstream-internal *definite* loss that is not a
+# rebirth defect and that we choose to suppress with a documented reason.
+#
+# DISCIPLINE (owner: test-engineer): keep this file MINIMAL. Every suppression must
+#   1. cite the RustSec/llama.cpp/ggml origin it silences,
+#   2. be scoped by function/object name (never a blanket `...` that could hide a
+#      rebirth-owned leak), and
+#   3. carry the date + reason it was added.
+# A suppression that could hide a leak on the rebirth intervention path (engine.rs
+# OwnedContext / intervene.rs / trace.rs frames) is FORBIDDEN — that is exactly what
+# this job is meant to catch.
+#
+# HOW TO POPULATE: the job runs valgrind with `--gen-suppressions=all`, so if the
+# first nightly surfaces an upstream-benign definite loss, its ready-to-paste
+# suppression block is printed in the job log. Copy it here, trim the volatile
+# addresses, add the citation + date, and confirm the frames are entirely inside
+# ggml/llama (no rebirth_* / rebirth_llm / OwnedContext frame) before committing.
+#
+# As of 2026-07-07 this file is intentionally empty of suppressions: the security
+# auditor (WP5) and the simplifier (2026-07-07 punchlist) both found the intervention
+# path leak-free, and the first nightly run is expected to confirm zero definite loss.
+# Entries are added ONLY in response to a real upstream finding, never pre-emptively.

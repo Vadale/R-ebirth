@@ -1,0 +1,185 @@
+# Nightly memory-safety + leak check of the INTERVENTION PATH (F-1; DECISIONS.md
+# D-008 predecessor work; ARCHITECTURE.md §4 / SOLO-PHASE-PLAN.md §4 "Nightly").
+#
+# WHY A SEPARATE, SCHEDULED WORKFLOW (not per-PR): a dynamic memory-safety run is
+# slow and, on a large third-party C++ engine, can surface upstream-internal noise;
+# it must NEVER gate a PR (a false finding cannot block a merge). Kept in its OWN
+# file, triggered only by `schedule` + `workflow_dispatch`, exactly like
+# nightly-model-tolerance.yaml. It is download-free: it exercises ONLY the committed
+# synthetic 2-layer GGUF (CLAUDE.md CI budget — no model download here).
+#
+# ─────────────────────────────────────────────────────────────────────────────────
+# MECHANISM: Valgrind memcheck on the NORMAL build, running the intervention-path
+#   cargo tests. Chosen deliberately over compile-time sanitizers for this first
+#   memory-safety gate. The hard problem is the mixed Rust + UNINSTRUMENTED-C++
+#   boundary (the FFI into vendored llama.cpp and the project's first vendored patch,
+#   the `build_cvec` ablation hook). Valgrind instruments at the BINARY level, so it
+#   sees every load/store/alloc/free across the WHOLE process — our Rust, the FFI, the
+#   uninstrumented C++, and the patch — with NO recompile and NO symbol-interposition
+#   blind spot at the boundary. An ASan/UBSan build would instrument only what is
+#   recompiled with `-fsanitize=...`; to cover the patch it would additionally need
+#   the vendored llama.cpp rebuilt with the sanitizer (threaded through the cmake
+#   build) and a matching runtime — more moving parts and a real blind-spot trap if
+#   the C++ is missed. Valgrind avoids all of that for the leak + invalid-access +
+#   use-after-free classes that matter most here.
+#
+# WHAT THIS COVERS: definite/indirect memory LEAKS, use-after-free, invalid reads/
+#   writes, invalid/mismatched free, and use of uninitialised values — across the
+#   full stack, INCLUDING the `build_cvec` ablation patch and the OwnedContext RAII
+#   drop path (engine.rs), which are on the exercised path (synthetic_intervene =
+#   steer + ablate + clone_with_fresh_context; synthetic_trace = the eval-callback
+#   tap + create_trace_context; both plus synthetic_embed/generate drop OwnedContext
+#   and re-enter the FFI decode boundary many times).
+# WHAT THIS DOES NOT COVER (tracked as the follow-on enhancement): stack-buffer- and
+#   global-buffer-overflow (Valgrind cannot see those — ASan can) and non-memory
+#   undefined behaviour such as signed-overflow / misalignment / invalid-enum (UBSan
+#   only). Adding an ASan+UBSan job with the vendored llama.cpp ALSO recompiled with
+#   `-fsanitize=address,undefined` (via CMAKE_C_FLAGS/CMAKE_CXX_FLAGS, sccache
+#   disabled) is the tracked next step; it is intentionally NOT in this first F-1
+#   delivery to keep the gate robust and first-run-viable. Data races are out of scope
+#   by design (D-008 G2: the handles are single-thread-confined).
+#
+# BASELINE BUILD (Valgrind must be able to DECODE every instruction the engine runs):
+#   ggml otherwise builds with `-march=native`, which on a GitHub AVX-512 runner would
+#   emit instructions Valgrind can crash on ("unhandled instruction bytes"). Setting
+#   SOURCE_DATE_EPOCH makes ggml's own CMake set GGML_NATIVE_DEFAULT=OFF
+#   (ggml/CMakeLists.txt: `if (... OR DEFINED ENV{SOURCE_DATE_EPOCH}) ... OFF`), which
+#   drives INS_ENB=OFF, so SSE4.2/AVX/AVX2/AVX512/FMA/F16C all default OFF and no
+#   `-march=native` is added — a baseline x86-64 (SSE2) engine that Valgrind decodes
+#   cleanly. It is a build-config env var only; it changes no product code.
+#
+# NO sccache HERE (correctness): the per-PR workflows route compilation through
+#   sccache. This job must NOT reuse those cached objects — they were compiled with
+#   the native (AVX) ISA, which would defeat the baseline requirement above and give a
+#   FALSE-CLEAN Valgrind run from cached, differently-compiled code. So RUSTC_WRAPPER /
+#   CMAKE_*_COMPILER_LAUNCHER are left unset and the engine is rebuilt from scratch
+#   (acceptable: this is nightly). The C++ is Release (build.rs) so its backtraces may
+#   be terse; leak/UAF DETECTION does not depend on C++ debug info.
+#
+# RUNNER: ubuntu-24.04 (GitHub-hosted, 4 vCPU / 16 GB). Valgrind 3.22 from apt. CPU
+#   backend only (the synthetic tests force BackendKind::Cpu), so the exact FFI + patch
+#   path is exercised identically to CI's other Linux legs.
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC nightly (staggered before nightly-model-tolerance)
+  workflow_dispatch: {} # manual trigger (founder / test-engineer, on demand)
+
+name: nightly-memory-safety.yaml
+
+permissions: read-all
+
+concurrency:
+  group: nightly-memory-safety
+  cancel-in-progress: false
+
+jobs:
+  valgrind-intervention:
+    runs-on: ubuntu-24.04
+    name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
+    timeout-minutes: 90
+
+    defaults:
+      run:
+        working-directory: rebirth/src/rust
+
+    env:
+      # Force ggml to a baseline (no -march=native, no AVX) so Valgrind can decode
+      # every instruction (see header). A fixed, reproducible epoch value.
+      SOURCE_DATE_EPOCH: "1700000000"
+      # Run each target test binary UNDER Valgrind (cargo's per-target runner). Only
+      # applies to the x86_64-unknown-linux-gnu *target* artifacts (the test binaries),
+      # not to host build scripts — so build.rs / cmake are never wrapped. Folded to a
+      # single whitespace-separated line (cargo splits the runner on whitespace).
+      #   --error-exitcode=1        any memcheck error OR a gated leak -> exit 1 -> fail
+      #   --errors-for-leak-kinds=definite,indirect  fail on REAL losses only; ignore
+      #                             "possible" (interior pointers) + "reachable" (engine
+      #                             process-global singletons) to stay low-false-positive
+      #   --gen-suppressions=all    on any finding, print a ready-to-paste suppression
+      #   --suppressions=...        documented upstream-benign entries (starts empty)
+      CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER: >-
+        valgrind
+        --error-exitcode=1
+        --leak-check=full
+        --errors-for-leak-kinds=definite,indirect
+        --show-leak-kinds=definite,indirect
+        --track-origins=yes
+        --gen-suppressions=all
+        --suppressions=${{ github.workspace }}/tests/valgrind/rebirth.supp
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Valgrind
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+          valgrind --version
+
+      # Build FIRST (no runner is consulted for --no-run), so a compile failure is
+      # distinct from a Valgrind finding. Baseline ISA via SOURCE_DATE_EPOCH; no
+      # sccache. Explicit --target so build scripts stay host-side (never wrapped).
+      - name: Build the intervention-path test binaries (baseline ISA, no sccache)
+        run: |
+          set -euo pipefail
+          cargo test -p rebirth-llm \
+            --test synthetic_intervene \
+            --test synthetic_trace \
+            --test synthetic_embed \
+            --test synthetic_generate \
+            --target x86_64-unknown-linux-gnu \
+            --no-run
+
+      # Run the SAME selection under Valgrind (the runner env wraps each test binary).
+      # --test-threads=1 keeps leak attribution deterministic; --nocapture surfaces the
+      # per-test markers we assert on below.
+      - name: Run the intervention path under Valgrind (fail loud on any finding)
+        run: |
+          set -uo pipefail
+          cargo test -p rebirth-llm \
+            --test synthetic_intervene \
+            --test synthetic_trace \
+            --test synthetic_embed \
+            --test synthetic_generate \
+            --target x86_64-unknown-linux-gnu \
+            -- --test-threads=1 --nocapture 2>&1 | tee run.log
+          run_status=${PIPESTATUS[0]}
+
+          # (1) Authoritative gate: cargo (hence valgrind --error-exitcode) succeeded.
+          if [ "$run_status" -ne 0 ]; then
+            echo "::error::Valgrind found a memory error/leak OR a test failed on the intervention path (exit $run_status). Inspect the ERROR SUMMARY / LEAK SUMMARY and the --gen-suppressions blocks in the log above. Per F-1: a REAL memory bug here is a CRITICAL finding — do not weaken this gate; report it."
+            exit 1
+          fi
+
+          # (2) Prove Valgrind ACTUALLY wrapped the binaries (a mis-set RUNNER would run
+          #     the tests uninstrumented and pass -> a false green). Valgrind prints one
+          #     "ERROR SUMMARY" per process; we launched four test binaries.
+          summaries=$(grep -c "ERROR SUMMARY:" run.log || true)
+          if [ "$summaries" -ne 4 ]; then
+            echo "::error::Expected 4 Valgrind ERROR SUMMARY lines (one per test binary); found $summaries. Valgrind may not have wrapped the tests (runner mis-set) — refusing a false green."
+            exit 1
+          fi
+          clean=$(grep -c "ERROR SUMMARY: 0 errors" run.log || true)
+          if [ "$clean" -ne 4 ]; then
+            echo "::error::A test binary reported Valgrind errors ($clean/4 clean)."
+            exit 1
+          fi
+
+          # (3) Prove the INTERVENTION PATH itself executed (not a silent skip): each
+          #     load-bearing test prints its marker only after the steer/ablate or trace
+          #     forward pass ran.
+          grep -q "intervene engine-vs-oracle max" run.log \
+            || { echo "::error::synthetic_intervene did not run the steer/ablate (build_cvec) path — no marker."; exit 1; }
+          grep -q "engine-vs-oracle activations max" run.log \
+            || { echo "::error::synthetic_trace did not run the activation-tap path — no marker."; exit 1; }
+
+          # (4) Prove all four binaries ran to a clean test result (no silent 0-test run).
+          oks=$(grep -c "test result: ok" run.log || true)
+          if [ "$oks" -ne 4 ]; then
+            echo "::error::Expected 4 'test result: ok' lines (one per test binary); found $oks."
+            exit 1
+          fi
+
+          echo "Memory-safety nightly OK: 4/4 intervention-path test binaries ran under Valgrind with 0 errors and 0 definite/indirect leaks (build_cvec patch + OwnedContext drop exercised)."
