@@ -84,15 +84,16 @@ name_clusters <- function(m, texts, cluster, coords, k = 4L, verbose = TRUE) {
 # ---- the labelled cluster map (base graphics only) ---------------------------
 
 # Text with a white halo, so labels stay readable over coloured points.
-.demo_halo_text <- function(x, y, labels, col = "black", cex = 1, font = 2, ...) {
+.demo_halo_text <- function(x, y, labels, col = "black", cex = 1, font = 2,
+                            adj = c(0.5, 0.5), ...) {
   off <- 0.006 * diff(par("usr")[1:2])
   for (dx in c(-1, 1)) {
     for (dy in c(-1, 1)) {
       graphics::text(x + dx * off, y + dy * off, labels, col = "white",
-                     cex = cex, font = font, ...)
+                     cex = cex, font = font, adj = adj, ...)
     }
   }
-  graphics::text(x, y, labels, col = col, cex = cex, font = font, ...)
+  graphics::text(x, y, labels, col = col, cex = cex, font = font, adj = adj, ...)
 }
 
 demo_B_plot <- function(coords, cluster, labels = NULL, file = NULL,
@@ -125,13 +126,20 @@ demo_B_plot <- function(coords, cluster, labels = NULL, file = NULL,
     side = 3, line = 0.3, cex = 0.82, col = "grey35"
   )
 
-  # topic names at cluster medoids
+  # topic names at cluster medoids: nudged just above the medoid and horizontally
+  # justified by side of the plot, so an edge label stays inside the region (no
+  # clipping) and sits clear of its own points.
+  usr <- graphics::par("usr")
+  yoff <- 0.018 * (usr[[4]] - usr[[3]])
   for (j in seq_along(ids)) {
     members <- which(cluster == ids[[j]])
     cen <- colMeans(coords[members, , drop = FALSE])
     med <- members[which.min(rowSums(sweep(coords[members, , drop = FALSE], 2, cen)^2))]
     lab <- if (!is.null(labels)) labels[[as.character(ids[[j]])]] else paste("topic", ids[[j]])
-    .demo_halo_text(coords[med, 1L], coords[med, 2L], lab, cex = 0.92)
+    lx <- coords[med, 1L]
+    frac <- (lx - usr[[1]]) / (usr[[2]] - usr[[1]])
+    adjx <- if (frac < 0.28) 0 else if (frac > 0.72) 1 else 0.5
+    .demo_halo_text(lx, coords[med, 2L] + yoff, lab, cex = 0.92, adj = c(adjx, 0.5))
   }
   invisible(NULL)
 }
