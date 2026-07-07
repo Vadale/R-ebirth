@@ -23,9 +23,12 @@ synthetic_tokens <- function() c(1, 7, 13, 22, 5, 31, 44, 2) + 1L
 # resulting object is byte-identical to a user's. `spill_dir` isolates the files.
 selftest_trace_tokens <- function(m, tokens, spill, budget, spill_dir = NULL) {
   components <- c("residual", "attn_out", "mlp_out")
-  spec_key <- trace_spec_key(m, NULL, "all", components)
+  # Mirror llm_trace()'s spec key + nonce trace id (M-2). The raw-token path has no
+  # text prompts, so a fixed placeholder stands in for the prompts digest; it is
+  # used consistently for both the footer and the object, so the two still agree.
+  spec_key <- trace_spec_key(m, "tokens", NULL, "all", components)
   spill_path <- if (isTRUE(spill)) next_spill_path(spill_dir) else ""
-  trace_id <- if (nzchar(spill_path)) basename(spill_path) else ""
+  trace_id <- if (nzchar(spill_path)) next_trace_id() else ""
   payload <- rebirth_check(rebirth_selftest_trace_tokens_spill(
     m$ptr, as.integer(tokens), spill, as.double(budget),
     spill_path, m$path, trace_id, spec_key
@@ -168,6 +171,31 @@ test_that("a spill file whose footer disagrees with the object is rejected", {
     as.matrix(stale, layer = 1, component = "residual"),
     class = "rebirth_error_trace"
   )
+})
+
+test_that("the spec key varies with prompts and the trace id is a nonce (M-2)", {
+  # ACCEPTANCE (M-2): the staleness fail-safe must not be defeatable by a same-filter
+  # trace from a later session. Two defects enabled that: the trace id was the file
+  # basename (trace-<n>.arrow, counter restarts each session -> collides in a reused
+  # spill_dir), and the spec key omitted the prompts (identical filters -> identical
+  # key regardless of the text traced). Both are closed here.
+  m <- llm(synthetic_model_path())
+  on.exit(close(m), add = TRUE)
+
+  # Same filters, different prompts -> different spec keys.
+  k1 <- trace_spec_key(m, c("alpha", "beta"), NULL, "all", "residual")
+  k2 <- trace_spec_key(m, c("alpha", "GAMMA"), NULL, "all", "residual")
+  expect_false(identical(k1, k2))
+  # The digest is deterministic, so an object's stored spec always matches the footer
+  # written from the same inputs at trace time.
+  expect_identical(k1, trace_spec_key(m, c("alpha", "beta"), NULL, "all", "residual"))
+  # The key now carries the model size and a prompts digest.
+  expect_match(k1, "size=[0-9]")
+  expect_match(k1, "prompts=[0-9a-f]")
+
+  # The trace id is a fresh nonce per call (never the per-session-counter filename),
+  # so two traces -- even to the same user spill_dir -- never share an id.
+  expect_false(identical(next_trace_id(), next_trace_id()))
 })
 
 test_that("a spill file with a truncated/corrupt body fails as a classed condition", {

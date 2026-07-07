@@ -153,9 +153,9 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
   positions_mode <- if (is.character(positions)) positions else "explicit"
   positions_values <- if (is.character(positions)) integer(0) else as.integer(positions)
 
-  spec_key <- trace_spec_key(m, layers, positions, components)
+  spec_key <- trace_spec_key(m, prompts, layers, positions, components)
   spill_path <- if (isTRUE(spill)) next_spill_path(spill_dir) else ""
-  trace_id <- if (nzchar(spill_path)) basename(spill_path) else ""
+  trace_id <- if (nzchar(spill_path)) next_trace_id() else ""
 
   payload <- rebirth_check(rebirth_trace(
     m$ptr, as.character(prompts), layers_arg,
@@ -242,11 +242,26 @@ new_spilled_trace <- function(payload, m, prompts, spec_key) {
   )
 }
 
+# A content digest of the exact prompts traced, so a spill file's spec key changes
+# with the prompts, not just the filters (M-2). serialize() gives an unambiguous
+# byte image of the character vector (no delimiter collisions between prompts, and
+# NA/encoding-faithful); tools::md5sum() over it -- the only base-R md5 entry, so no
+# added dependency -- yields a compact, low-collision, deterministic fingerprint.
+prompts_digest <- function(prompts) {
+  tf <- tempfile("rebirth-prompts-")
+  on.exit(unlink(tf), add = TRUE)
+  writeBin(serialize(as.character(prompts), connection = NULL), tf)
+  unname(tools::md5sum(tf))
+}
+
 # A canonical capture-spec string identifying this trace, written into the spill
 # file's integrity footer and stored on the object. On reopen, a file whose footer
 # spec differs from the object's (a stale or replaced file) is rejected. Built to
-# be reproducible from the object's own attributes so the two always agree.
-trace_spec_key <- function(m, layers, positions, components) {
+# be reproducible from the object's own inputs so the two always agree. Includes a
+# digest of the prompts and the model file's size (M-2): two traces that share
+# filters but differ in prompts -- or run against a different model file swapped in
+# at the same path -- get different keys, so one cannot be misread as the other.
+trace_spec_key <- function(m, prompts, layers, positions, components) {
   layers_str <- if (is.null(layers)) {
     "all"
   } else {
@@ -258,9 +273,17 @@ trace_spec_key <- function(m, layers, positions, components) {
     paste(sort(unique(as.integer(positions))), collapse = ",")
   }
   components_str <- paste(sort(unique(components)), collapse = ",")
+  # Model file size distinguishes a different model swapped in at the same path; NA
+  # (file unreadable) degrades to a literal "NA" rather than erroring.
+  model_size <- tryCatch(file.size(m$path), error = function(e) NA_real_)
+  size_str <- if (length(model_size) != 1L || is.na(model_size)) {
+    "NA"
+  } else {
+    format(model_size, scientific = FALSE, trim = TRUE)
+  }
   sprintf(
-    "model=%s|layers=%s|positions=%s|components=%s",
-    m$path, layers_str, positions_str, components_str
+    "model=%s|size=%s|layers=%s|positions=%s|components=%s|prompts=%s",
+    m$path, size_str, layers_str, positions_str, components_str, prompts_digest(prompts)
   )
 }
 
