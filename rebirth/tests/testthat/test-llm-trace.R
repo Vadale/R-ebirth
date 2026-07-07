@@ -259,6 +259,19 @@ test_that("llm_trace(spill = FALSE) over budget raises rebirth_error_oom before 
   expect_gt(cnd$estimate_bytes, 1024)
 })
 
+test_that("the default trace budget is the H-1 interim cap, not the old 2 GB", {
+  # INTERIM (H-1): the size estimate counts only the engine's f32 bytes, but the
+  # materialized R object is ~10x that, so an "in-budget" capture could still OOM the
+  # 16 GB session. Until the budget-semantics ADR redefines the estimate, the default
+  # in-memory cap is 256 MB (estimate basis) so a large capture spills to disk. A
+  # silent revert to the old 2 GB cap is the regression this guards. No option is set,
+  # so the default path runs: min(256 MB, 20% RAM) <= 256 MB.
+  old <- options(rebirth.trace_budget = NULL)
+  on.exit(options(old), add = TRUE)
+  expect_lte(trace_budget(), 256 * 1024^2)
+  expect_lt(trace_budget(), 2 * 1024^3)
+})
+
 # --- rebirth_trace S3 methods (constructed object; runs in CI) --------------
 
 test_that("print.rebirth_trace shows dims + capture spec and never dumps the data", {

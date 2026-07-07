@@ -21,7 +21,7 @@
 #' **Memory (the 16 GB rule).** A full trace can be large, so the defaults capture
 #' little (`positions = "last"`, `components = "residual"`); widen them deliberately.
 #' Before running, the capture's size is estimated from the filters. If it fits the
-#' budget (`min(2 GB, 20% of RAM)`, overridable with
+#' budget (`min(256 MB, 20% of RAM)`, overridable with
 #' `options(rebirth.trace_budget = <bytes>)`) it is held in memory. If it exceeds the
 #' budget and `spill = TRUE` (the default), the capture is streamed to an Arrow-IPC
 #' file under the session cache and the result is a *spilled* `rebirth_trace` that
@@ -325,19 +325,27 @@ validate_positions <- function(positions, call = sys.call(-1L)) {
 }
 
 # The in-memory capture budget in bytes: an explicit option wins; otherwise
-# min(2 GB, 20% of system RAM), falling back to the 2 GB cap when RAM is unknown.
+# min(256 MB, 20% of system RAM), falling back to the 256 MB cap when RAM is unknown.
 trace_budget <- function() {
   opt <- getOption("rebirth.trace_budget")
   if (!is.null(opt) && is.numeric(opt) && length(opt) == 1L && !is.na(opt) && opt > 0) {
     return(as.double(opt))
   }
-  cap <- 2 * 1024^3
+  # INTERIM (H-1): the estimate this budget gates counts only the engine's f32 host
+  # bytes (n_values * 4), but the materialized R data.frame is ~10x that (its
+  # transient peak ~30x), so an "in-budget" capture could still OOM the 16 GB
+  # session. Until the pending budget-semantics ADR redefines the estimate on
+  # materialized bytes, keep the default cap low enough that a large capture SPILLS
+  # to disk (the spill path is proven) rather than staying in memory: a 256 MB
+  # estimate basis is ~2.5 GB materialized -- safe. Do NOT raise this cap or change
+  # the estimate basis without that ADR.
+  cap <- 256 * 1024^2
   ram <- system_ram_bytes()
   if (is.na(ram)) cap else min(cap, 0.2 * ram)
 }
 
 # Best-effort total system RAM in bytes, or NA when it cannot be determined
-# (never errors -- the caller then uses the 2 GB cap). Only consulted when the
+# (never errors -- the caller then uses the 256 MB cap). Only consulted when the
 # rebirth.trace_budget option is unset.
 system_ram_bytes <- function() {
   ram <- tryCatch(
