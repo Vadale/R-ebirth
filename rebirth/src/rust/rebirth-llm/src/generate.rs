@@ -319,8 +319,15 @@ impl LoadedModel {
         Ok(())
     }
 
-    /// Decode `tokens` starting at `start_pos` and return the raw decode status.
-    /// The batch requests logits per `logits_last_only`.
+    /// Submit ONE batch of `tokens` at `start_pos`, requesting logits per
+    /// `logits_last_only`. Rejects an over-`n_batch` batch with a classed error
+    /// BEFORE it reaches `llama_decode`, where more than `n_batch` tokens trips
+    /// `GGML_ASSERT(n_tokens_all <= n_batch)` -> `ggml_abort` (a `SIGABRT`
+    /// `catch_unwind` cannot intercept — it would kill the R session). Multi-token
+    /// sequence ingest routes through [`decode_chunked`](Self::decode_chunked),
+    /// which keeps every submit within the bound; the direct callers here pass a
+    /// single continuation token. This guard is the last-line defense that makes
+    /// the abort unrepresentable even for a future direct caller (audit P-1).
     fn decode(
         &self,
         tokens: &[i32],
@@ -330,6 +337,15 @@ impl LoadedModel {
         if tokens.is_empty() {
             return Err(RebirthError::Generation {
                 reason: "empty_batch".to_string(),
+            });
+        }
+        let n_batch = (self.n_batch() as usize).max(1);
+        if tokens.len() > n_batch {
+            return Err(RebirthError::Generation {
+                reason: format!(
+                    "decode batch of {} tokens exceeds n_batch {n_batch} (must be chunked)",
+                    tokens.len()
+                ),
             });
         }
         let mut batch = Batch::new(tokens.len() as i32)?;
@@ -342,6 +358,48 @@ impl LoadedModel {
             return Err(RebirthError::Generation {
                 reason: format!("llama_decode returned {status}"),
             });
+        }
+        Ok(())
+    }
+
+    /// Decode `tokens` in `n_batch`-sized chunks, invoking `on_chunk(chunk_start,
+    /// chunk_len)` right after each chunk's own [`decode`](Self::decode) — before
+    /// the next chunk overwrites the engine's per-token logit buffer
+    /// (`llama_get_logits_ith` addresses only the most recent decode, so an
+    /// all-positions harvest MUST copy each chunk's rows out inside `on_chunk`).
+    /// Positions are global: chunk `k` decodes at its offset in `tokens`, and the
+    /// KV cache accumulates across chunks, so the harvested rows equal a single
+    /// oversized decode's — callers clear the cache first when they need a fresh
+    /// pass.
+    ///
+    /// This is the single chunked-ingest CHOKEPOINT (audit P-1): every multi-token
+    /// forward pass over a caller-supplied sequence routes through here —
+    /// generation's prompt ingest (via [`prompt_last_logits`](Self::prompt_last_logits))
+    /// and the teacher-forced [`logits_for_tokens`](Self::logits_for_tokens) — so no
+    /// ingest path can hand `llama_decode` more than `n_batch` tokens and the
+    /// process-killing `GGML_ASSERT(n_tokens_all <= n_batch)` abort is
+    /// unrepresentable (generation's single-token continuation decodes directly,
+    /// trivially within the bound, which [`decode`](Self::decode) also guards). An
+    /// empty `tokens` is rejected (matching [`decode`](Self::decode)) rather than
+    /// silently harvesting nothing.
+    fn decode_chunked(
+        &self,
+        tokens: &[i32],
+        logits_last_only: bool,
+        mut on_chunk: impl FnMut(usize, usize) -> Result<(), RebirthError>,
+    ) -> Result<(), RebirthError> {
+        if tokens.is_empty() {
+            return Err(RebirthError::Generation {
+                reason: "empty_batch".to_string(),
+            });
+        }
+        let n_batch = (self.n_batch() as usize).max(1);
+        let mut start = 0usize;
+        while start < tokens.len() {
+            let end = (start + n_batch).min(tokens.len());
+            self.decode(&tokens[start..end], start as i32, logits_last_only)?;
+            on_chunk(start, end - start)?;
+            start = end;
         }
         Ok(())
     }
@@ -362,20 +420,19 @@ impl LoadedModel {
         Ok(row.to_vec())
     }
 
-    /// Clear the KV cache, decode `tokens` into it in `n_batch`-sized chunks
-    /// (only each chunk's final token requests logits), and return the last
-    /// position's logit row (`n_vocab` values) — the next-token distribution
+    /// Clear the KV cache, decode `tokens` into it through the `n_batch`-chunking
+    /// chokepoint (only each chunk's final token requests logits), and return the
+    /// last position's logit row (`n_vocab` values) — the next-token distribution
     /// after the whole prompt.
     ///
     /// A causal context caps a `llama_decode` batch at `n_batch = min(n_ctx,
     /// requested)`, which can sit well below `n_ctx` (llama's default request is
-    /// 2048), so a prompt longer than one batch MUST be split or `llama_decode`
-    /// trips `GGML_ASSERT(n_tokens_all <= n_batch)` and aborts the process. The KV
-    /// cache accumulates across chunks, so the final row equals a single-batch
-    /// decode's. Shared by [`generate`](Self::generate) (whose first sampling step
-    /// reads this row) and [`next_token_logits`](Self::next_token_logits) (for
-    /// which the row is the answer); the caller has already run
-    /// [`check_fits`](Self::check_fits).
+    /// 2048), so a prompt longer than one batch MUST be split, which
+    /// [`decode_chunked`](Self::decode_chunked) does. The KV cache accumulates
+    /// across chunks, so the final row equals a single-batch decode's. Shared by
+    /// [`generate`](Self::generate) (whose first sampling step reads this row) and
+    /// [`next_token_logits`](Self::next_token_logits) (for which the row is the
+    /// answer); the caller has already run [`check_fits`](Self::check_fits).
     ///
     /// Public so the `no_vocab` synthetic regression test can drive the chunked
     /// decode from a raw token-id vector — the text-level `next_token_logits`
@@ -386,30 +443,46 @@ impl LoadedModel {
         n_vocab: usize,
     ) -> Result<Vec<f32>, RebirthError> {
         self.clear_memory();
-        let n_batch = (self.n_batch() as usize).max(1);
-        let mut start = 0usize;
-        let mut slot = 0i32;
-        while start < tokens.len() {
-            let end = (start + n_batch).min(tokens.len());
-            self.decode(&tokens[start..end], start as i32, true)?;
-            slot = (end - start) as i32 - 1;
-            start = end;
-        }
-        self.logits_ith(slot, n_vocab)
+        let total = tokens.len();
+        let mut last: Vec<f32> = Vec::new();
+        self.decode_chunked(tokens, true, |start, len| {
+            // Only the FINAL chunk's last token carries the whole-prompt
+            // distribution; it sits at chunk-local batch index len-1 (the sole slot
+            // each chunk flags with logits_last_only). Read just that chunk, as the
+            // pre-chunking code read only the last slot after its loop.
+            if start + len == total {
+                last = self.logits_ith((len - 1) as i32, n_vocab)?;
+            }
+            Ok(())
+        })?;
+        Ok(last)
     }
 
     /// Teacher-forced logits at every position of `tokens` (no sampling). This is
     /// the exact-value oracle path: the numpy reference computes the same rows.
+    ///
+    /// Routes through the [`decode_chunked`](Self::decode_chunked) chokepoint so a
+    /// sequence longer than one decode batch (but within `context_length`) is
+    /// split rather than aborting the process on
+    /// `GGML_ASSERT(n_tokens_all <= n_batch)`. Every chunk flags all its tokens for
+    /// logits and its rows are copied out before the next chunk's decode overwrites
+    /// the engine buffer (`llama_get_logits_ith` addresses only the most recent
+    /// decode); the KV cache accumulates across chunks, so a position attends to
+    /// the whole prefix exactly as a single oversized decode would.
     pub fn logits_for_tokens(&self, tokens: &[i32]) -> Result<Logits, RebirthError> {
         self.check_fits(tokens.len())?;
         let n_vocab = self.n_vocab_checked()?;
         self.clear_memory();
-        self.decode(tokens, 0, false)?;
 
         let mut values = Vec::with_capacity(tokens.len() * n_vocab);
-        for i in 0..tokens.len() {
-            values.extend_from_slice(&self.logits_ith(i as i32, n_vocab)?);
-        }
+        self.decode_chunked(tokens, false, |_start, len| {
+            // Chunk-local batch index i is global position start+i; appending each
+            // chunk's rows in index order rebuilds the position-major matrix.
+            for i in 0..len {
+                values.extend_from_slice(&self.logits_ith(i as i32, n_vocab)?);
+            }
+            Ok(())
+        })?;
         Ok(Logits {
             values,
             seq_len: tokens.len(),
@@ -731,10 +804,11 @@ impl LoadedModel {
                 stop_reason = StopReason::ContextFull;
                 break;
             }
+            // One continuation token, decoded at its own position n_past into the
+            // accumulated KV cache (not a fresh position-0 ingest, so this is a
+            // direct single-batch decode — trivially within n_batch — not a
+            // decode_chunked call). Its logits land at output slot 0.
             self.decode(&[next], n_past, true)?;
-            // The single-token decode wrote its logits to output slot 0; hold them
-            // as the next iteration's distribution (the same rows the old
-            // logits_ith(slot) read produced, in the same order).
             logits = self.logits_ith(0, n_vocab)?;
         }
 

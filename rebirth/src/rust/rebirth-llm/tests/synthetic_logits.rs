@@ -363,3 +363,77 @@ fn chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row() {
         );
     }
 }
+
+/// Regression guard for the H-2 over-batch abort in the ALL-POSITIONS teacher-forced
+/// path (`logits_for_tokens`): the same `GGML_ASSERT(n_tokens_all <= n_batch)` ->
+/// `ggml_abort()` -> `SIGABRT` class the `llm_logits` fix paid for, latent here
+/// because `logits_for_tokens` used to submit the whole sequence in one unchunked
+/// `decode(.., logits_last_only = false)`. With `n_batch = 4` the 8-token golden
+/// input spans two decode chunks, so the pre-fix code aborts on it; post-fix it
+/// chunks, copies each chunk's rows out before the next decode overwrites the
+/// engine buffer, and reconstructs the full `seq_len x n_vocab` matrix — every row
+/// still matching the numpy oracle within the F32-vs-F64 tolerance. This proves the
+/// chunked harvest rebuilds ALL positions correctly, not just the final row.
+#[test]
+fn chunked_over_batch_teacher_forced_logits_match_the_full_golden_matrix() {
+    let gguf = synthetic_gguf();
+    let golden = golden_logits_csv();
+    assert!(
+        gguf.exists(),
+        "synthetic GGUF missing at {}",
+        gguf.display()
+    );
+    assert!(
+        golden.exists(),
+        "logit golden missing at {}",
+        golden.display()
+    );
+
+    // n_batch = 4 < INPUT_TOKENS.len() (8) <= context_length (512): the sequence
+    // fits the context window but exceeds one decode batch, so it MUST be chunked.
+    // This is the input that ggml_aborts on the pre-fix single-decode path.
+    let model = load_with_batch(
+        LoadRequest {
+            path: gguf,
+            context_length: 512,
+            gpu_layers: None,
+            // CPU so the exact-value path runs identically on every CI platform.
+            backend: BackendKind::Cpu,
+            mmap: true,
+        },
+        Some(4),
+    )
+    .expect("synthetic model loads");
+
+    // Reaching this line at all proves the chunked path did not abort.
+    let logits = model
+        .logits_for_tokens(&INPUT_TOKENS)
+        .expect("chunked over-batch teacher-forced logits");
+
+    let oracle = read_golden_csv(&golden);
+    assert_eq!(oracle.len(), INPUT_TOKENS.len(), "golden row count");
+    assert_eq!(logits.seq_len, INPUT_TOKENS.len());
+    assert_eq!(logits.n_vocab, oracle[0].len(), "vocab width");
+
+    let mut max_abs = 0.0f64;
+    for (pos, oracle_row) in oracle.iter().enumerate() {
+        let engine_row = logits.row(pos);
+        // Greedy argmax exact at every position (precision-stable ~5e-2 margin).
+        assert_eq!(
+            argmax(engine_row),
+            argmax_f64(oracle_row),
+            "greedy argmax differs at position {pos} after chunked decode"
+        );
+        // Every logit within the F32-vs-F64 tolerance — the chunked harvest must
+        // reproduce the single-decode matrix row for row.
+        for (j, (&e, &o)) in engine_row.iter().zip(oracle_row.iter()).enumerate() {
+            let d = (e as f64 - o).abs();
+            max_abs = max_abs.max(d);
+            assert!(
+                d <= ATOL,
+                "logit[{pos}][{j}] engine={e} oracle={o} |Δ|={d:.3e} > {ATOL:.1e}"
+            );
+        }
+    }
+    eprintln!("chunked teacher-forced max |Δ| = {max_abs:.3e} (atol {ATOL:.1e})");
+}
