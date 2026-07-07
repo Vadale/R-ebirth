@@ -1,0 +1,117 @@
+# Nightly Harness B tolerance run on the pinned Qwen2.5-0.5B-Instruct Q8_0 GGUF.
+#
+# WHY A SEPARATE, SCHEDULED WORKFLOW (not part of R-CMD-check.yaml):
+#   Per-commit CI is model-free (synthetic model only -- CLAUDE.md CI budget: "per-commit
+#   jobs use only the synthetic model; 0.5B runs are nightly"). This job is the tolerance
+#   HALF of Harness B: it downloads the CI-integration model ONCE per night and runs the
+#   [MODEL]-gated suite (the HF fp32 activation-golden comparison plus the WP5
+#   steering/ablation acceptance fixtures). Keeping it in its OWN file, triggered only by
+#   `schedule` + `workflow_dispatch`, means a nightly numerical flake can NEVER gate a PR.
+#
+# RUNNER + RAM: ubuntu-24.04 (GitHub-hosted: 4 vCPU, 16 GB RAM, ~14 GB SSD). The model is
+#   Q8_0 0.5B -- 675,710,816 bytes (~0.63 GB) on disk, ~0.7-1 GB resident with a KV cache
+#   -- trivially within 16 GB. The build (Rust core + vendored llama.cpp) mirrors the
+#   proven R-CMD-check ubuntu leg; the backend is CPU.
+#
+# BACKEND NOTE (honesty): the HF-golden tolerance is documented backend- AND
+#   quantization-independent (test-llm-trace-golden.R header + D-018: CPU == Metal,
+#   fp16 == Q8_0), so a CPU runner is a valid home for the CORE tolerance comparison. The
+#   WP5 *valence-margin* [MODEL] thresholds were calibrated on the founder's M4 (Metal);
+#   greedy generation can differ across backends, so those specific margins are the one
+#   part of this suite that may need a first-run recalibration against the CPU backend.
+#   (The steer/ablate "output changed" + reversibility + order-independence guards, and
+#   the coef=0 no-op, are within-backend and therefore backend-robust.) Flagged in the
+#   WP6b handoff.
+#
+# MODEL PIN (recorded HERE -- there is no inst/models.csv registry yet; that is Phase
+#   3/WP8): repo Qwen/Qwen2.5-0.5B-Instruct-GGUF, file qwen2.5-0.5b-instruct-q8_0.gguf,
+#   revision 9217f5db79a29953eb74d5343926648285ec7e67 (immutable), license Apache-2.0.
+#   MODEL_SHA256 is the file's git-lfs content hash (source of truth); the download is
+#   verified FAIL-CLOSED (mismatch => file deleted => job fails) before any test runs.
+on:
+  schedule:
+    - cron: '0 4 * * *' # 04:00 UTC, nightly
+  workflow_dispatch: {} # manual trigger (founder, on demand)
+
+name: nightly-model-tolerance.yaml
+
+permissions: read-all
+
+concurrency:
+  group: nightly-model-tolerance
+  cancel-in-progress: false
+
+jobs:
+  model-tolerance:
+    runs-on: ubuntu-24.04
+    name: nightly Qwen2.5-0.5B Q8_0 tolerance ([MODEL] suite)
+    timeout-minutes: 90
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      # The pinned CI-integration model (see the header for full provenance).
+      MODEL_URL: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q8_0.gguf
+      MODEL_SHA256: ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::devtools
+          working-directory: rebirth
+
+      - name: Download + verify the pinned Qwen2.5-0.5B Q8_0 GGUF (fail-closed)
+        run: |
+          set -euo pipefail
+          dest="$RUNNER_TEMP/qwen2.5-0.5b-instruct-q8_0.gguf"
+          echo "Downloading $MODEL_URL"
+          curl -fL --retry 3 --retry-delay 5 -o "$dest" "$MODEL_URL"
+          # Fail-closed integrity gate: on a checksum mismatch DELETE the file and fail
+          # the job BEFORE any test can run against an unverified model (the API-GRAMMAR
+          # download contract: mismatch => file deleted + hard error).
+          if ! echo "${MODEL_SHA256}  ${dest}" | sha256sum -c -; then
+            rm -f "$dest"
+            echo "::error::SHA256 mismatch for the pinned Qwen2.5-0.5B Q8_0 GGUF; refusing to run"
+            exit 1
+          fi
+          echo "verified: $(sha256sum "$dest")"
+          # Export the verified path to the test step.
+          echo "REBIRTH_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
+
+      - name: Build rebirth and run the [MODEL] tolerance suite
+        working-directory: rebirth
+        run: |
+          Rscript -e '
+            suppressMessages(pkgload::load_all(".", quiet = TRUE))
+            mp <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN")
+            stopifnot(nzchar(mp), file.exists(mp))
+            # Fail LOUDLY if the downloaded file is not the expected model, so the
+            # [MODEL] suite cannot silently skip into a false green (a nightly that
+            # skips everything is a nightly that lies).
+            m <- llm(mp)
+            stopifnot(
+              identical(m$architecture, "qwen2"),
+              m$layers == 24L, m$hidden_size == 896L
+            )
+            close(m)
+            library(testthat)
+            res <- test_dir("tests/testthat", reporter = "summary", stop_on_failure = TRUE)
+            df <- as.data.frame(res)
+            # The HF-golden [MODEL] comparison (the WP6b tolerance core) MUST have RUN,
+            # not skipped: passed > 0 means its expectations executed.
+            golden <- df[grepl("HF fp32 activation golden", df$test), ]
+            stopifnot(nrow(golden) == 1L, golden$failed == 0L, golden$passed > 0L)
+            cat(sprintf(
+              "nightly [MODEL] suite: %d passed, %d skipped, %d failed\n",
+              sum(df$passed), sum(df$skipped), sum(df$failed)
+            ))
+          '

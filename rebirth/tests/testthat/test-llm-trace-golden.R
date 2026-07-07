@@ -68,6 +68,36 @@ DELTA_ATOL <- 1.0 # per-(layer,comp) max|delta| <= ATOL + RTOL * max|golden_slic
 DELTA_RTOL <- 0.06 # observed maxima leave ~1.7-2x headroom under this bound
 GLOBAL_MAXABS_BLOWUP <- 8.0 # coarse blow-up guard (observed global max|delta| 2.72)
 
+# --- the shared scale-robust agreement gate (rule 8f: thresholds live ONLY above) -
+# Given an engine slice `eng` and the golden slice `gol` it must reproduce (both
+# [n_prompts x n_embd]), compute the four scale-robust metrics and a single pass/fail
+# against the pinned thresholds:
+#   (1) per-layer Spearman  >= MIN_LAYER_SPEARMAN   (rank agreement, scale-free)
+#   (2) per-row   cosine    >= MIN_ROW_COSINE       (direction agreement, per prompt)
+#   (3) max|delta| <= DELTA_ATOL + DELTA_RTOL*scale (absolute agreement, scale-aware)
+#   (4) max|delta| <  GLOBAL_MAXABS_BLOWUP          (coarse blow-up guard)
+# BOTH callers -- the [MODEL] cross-validation (real engine vs golden) and the
+# model-free mutation test (deliberately mutated golden vs golden) -- go through here,
+# so no threshold is duplicated or can drift between them. (1)+(2) catch a wrong /
+# shifted tensor; (3)+(4) catch a pure scale defect that (1)+(2) are invariant to.
+trace_golden_gate <- function(eng, gol) {
+  stopifnot(identical(dim(eng), dim(gol)))
+  mad <- max(abs(eng - gol))
+  gscale <- max(abs(gol))
+  spear <- suppressWarnings(cor(as.vector(eng), as.vector(gol), method = "spearman"))
+  cosr <- vapply(seq_len(nrow(eng)), function(r) {
+    sum(eng[r, ] * gol[r, ]) / (sqrt(sum(eng[r, ]^2)) * sqrt(sum(gol[r, ]^2)))
+  }, numeric(1))
+  mincos <- min(cosr)
+  bound <- DELTA_ATOL + DELTA_RTOL * gscale
+  list(
+    spearman = spear, min_cosine = mincos, max_abs_delta = mad,
+    rel_max = mad / gscale, bound = bound,
+    pass = spear >= MIN_LAYER_SPEARMAN && mincos >= MIN_ROW_COSINE &&
+      mad <= bound && mad < GLOBAL_MAXABS_BLOWUP
+  )
+}
+
 qwen_model_path <- function() {
   p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
   skip_if_not(
@@ -124,6 +154,99 @@ test_that("the committed HF activation golden fixture is well-formed and matches
   expect_false(isTRUE(all.equal(s1, s2)))
 })
 
+# --- model-free mutation test: the gate has teeth (no model; per-commit CI) --
+# This is the WP6b mutation-test acceptance. It runs in per-commit CI (R CMD check):
+# it reads ONLY the committed golden blob, sets no REBIRTH_TEST_MODEL_QWEN and loads
+# no model (rule 8e). It locks in the non-gameability the [MODEL] test can only show
+# with a real model (D-018): feed a DELIBERATELY MUTATED slice through the SAME
+# trace_golden_gate() the [MODEL] test uses and prove the gate REJECTS it -- satisfying
+# ARCHITECTURE.md:52 ("harness B's off-by-one mutation test (inject layer+1) must fail
+# loudly") without a model. The [MODEL] test proved a real +1 shift breaches every gate
+# (D-018: min Spearman -0.26, blow-up 55.6); this proves the same gate has teeth per-commit.
+
+# Apply `mutate(v, li0, ci0)` to build the (mutated) engine slice the gate sees for each
+# (layer, component), compare it to the TRUE golden slice, and return TRUE iff EVERY
+# slice passes -- the collection-level verdict the [MODEL] test enforces (its
+# `violations` vector must be empty). A mutation is "caught" iff this returns FALSE.
+gate_all_slices_pass <- function(v, mutate, layers0 = 0:(GOLDEN_N_LAYERS - 1L)) {
+  for (li0 in layers0) {
+    for (ci0 in 0:(GOLDEN_N_COMPONENTS - 1L)) {
+      if (!trace_golden_gate(mutate(v, li0, ci0), golden_slice(v, li0, ci0))$pass) {
+        return(FALSE)
+      }
+    }
+  }
+  TRUE
+}
+
+test_that("golden gate is SATISFIED when a slice is compared to itself (no-op guard)", {
+  # Defect caught: a vacuous / always-failing gate. If a golden slice cannot clear its
+  # OWN thresholds, every pass/fail verdict below is meaningless. This control is what
+  # gives the three mutation rejections their force. Runs per-commit (no model).
+  v <- read_golden(golden_fixture_path())
+  expect_true(gate_all_slices_pass(v, function(v, li0, ci0) golden_slice(v, li0, ci0)))
+
+  g <- trace_golden_gate(golden_slice(v, 11L, 0L), golden_slice(v, 11L, 0L))
+  expect_true(g$pass)
+  expect_equal(g$spearman, 1)
+  expect_equal(g$min_cosine, 1)
+  expect_equal(g$max_abs_delta, 0)
+})
+
+test_that("golden gate CATCHES a +1 layer-shift mutation (off-by-one, ARCHITECTURE section 4)", {
+  # Defect caught: an off-by-one in engine<->API layer indexing (the canonical defect
+  # class, ARCHITECTURE section 4 / ARCHITECTURE.md:52) -- the engine returns layer
+  # L+1's activation when asked for layer L. Runs per-commit (no model).
+  v <- read_golden(golden_fixture_path())
+  # Aggregate, mirroring the [MODEL] all-layers verdict: ask for L, get L+1 (the top
+  # layer has no L+1, so shift over layers 0..N-2). Not one slice survives.
+  expect_false(gate_all_slices_pass(
+    v, function(v, li0, ci0) golden_slice(v, li0 + 1L, ci0),
+    layers0 = 0:(GOLDEN_N_LAYERS - 2L)
+  ))
+  # Focused: adjacent mlp_out layers differ in BOTH rank and direction, so the shift
+  # collapses Spearman and cosine far below their floors -- not a marginal miss.
+  g <- trace_golden_gate(golden_slice(v, 2L, 1L), golden_slice(v, 1L, 1L))
+  expect_false(g$pass)
+  expect_lt(g$min_cosine, MIN_ROW_COSINE)
+  expect_lt(g$spearman, MIN_LAYER_SPEARMAN)
+})
+
+test_that("golden gate CATCHES a wrong-component swap (residual<->mlp_out)", {
+  # Defect caught: the tap reads the WRONG named tensor -- mlp_out where residual was
+  # requested, or vice versa (a tensor-name mismatch in trace.rs). The mutated engine
+  # slice is the sibling component at the same layer. Runs per-commit (no model).
+  v <- read_golden(golden_fixture_path())
+  expect_false(gate_all_slices_pass(
+    v, function(v, li0, ci0) golden_slice(v, li0, 1L - ci0)
+  ))
+  # Focused (0-based layer 2): residual and mlp_out are distinct quantities, so the swap
+  # collapses direction agreement. (At layer 0 residual ~= mlp_out and the swap slips
+  # through THERE -- caught by the OTHER layers, exactly how the all-layers gate works.)
+  g <- trace_golden_gate(golden_slice(v, 2L, 1L), golden_slice(v, 2L, 0L))
+  expect_false(g$pass)
+  expect_lt(g$min_cosine, MIN_ROW_COSINE)
+})
+
+test_that("golden gate CATCHES a scalar blow-up that cosine/Spearman are BLIND to", {
+  # Defect caught: a pure SCALE error -- a missing/extra normalization or a wrong scale
+  # factor in a kernel, so the tap reads activations k-times too large. Cosine (per-row,
+  # scale-free) and Spearman (rank, monotone-invariant) CANNOT see a positive rescale:
+  # both stay exactly 1.0. Only the absolute atol+rtol bound and the 8.0 blow-up guard
+  # reject it -- proving those two checks are load-bearing, not decorative. No model.
+  v <- read_golden(golden_fixture_path())
+  expect_false(gate_all_slices_pass(v, function(v, li0, ci0) 3 * golden_slice(v, li0, ci0)))
+
+  # Focused on a large-scale residual slice: rank + direction are PERFECTLY preserved,
+  # yet max|delta| (2x the scale) smashes both the bound and the 8.0 blow-up guard.
+  gol <- golden_slice(v, 23L, 0L)
+  g <- trace_golden_gate(3 * gol, gol)
+  expect_equal(g$spearman, 1) # rank-blind
+  expect_equal(g$min_cosine, 1) # direction-blind
+  expect_gt(g$max_abs_delta, GLOBAL_MAXABS_BLOWUP) # caught ONLY by the absolute guards
+  expect_false(g$pass)
+})
+
 # --- [MODEL] numerical cross-validation --------------------------------------
 
 test_that("llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8_0 tolerance) [MODEL]", {
@@ -176,25 +299,15 @@ test_that("llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8
       gol <- golden_slice(v, li - 1L, ci - 1L)
       expect_identical(dim(eng), dim(gol))
 
-      d <- abs(eng - gol)
-      mad <- max(d)
-      gscale <- max(abs(gol))
-      relmax <- mad / gscale
-      spear <- suppressWarnings(cor(as.vector(eng), as.vector(gol), method = "spearman"))
-      cosr <- vapply(seq_len(nrow(eng)), function(r) {
-        sum(eng[r, ] * gol[r, ]) / (sqrt(sum(eng[r, ]^2)) * sqrt(sum(gol[r, ]^2)))
-      }, numeric(1))
-      mincos <- min(cosr)
-      bound <- DELTA_ATOL + DELTA_RTOL * gscale
-
-      worst_spear <- min(worst_spear, spear)
-      worst_cos <- min(worst_cos, mincos)
-      worst_rel <- max(worst_rel, relmax)
-      global_maxabs <- max(global_maxabs, mad)
-      if (spear < MIN_LAYER_SPEARMAN || mincos < MIN_ROW_COSINE || mad > bound) {
+      g <- trace_golden_gate(eng, gol) # the SAME gate the model-free mutation test drives
+      worst_spear <- min(worst_spear, g$spearman)
+      worst_cos <- min(worst_cos, g$min_cosine)
+      worst_rel <- max(worst_rel, g$rel_max)
+      global_maxabs <- max(global_maxabs, g$max_abs_delta)
+      if (!g$pass) {
         violations <- c(violations, sprintf(
           "L%02d/%s: spearman=%.4f cos=%.4f max|delta|=%.3f (bound %.3f)",
-          li, GOLDEN_COMPONENTS[ci], spear, mincos, mad, bound
+          li, GOLDEN_COMPONENTS[ci], g$spearman, g$min_cosine, g$max_abs_delta, g$bound
         ))
       }
     }
