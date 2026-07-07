@@ -142,15 +142,23 @@ Tap patch on vendored llama.cpp (residual stream post-block, attention out, MLP 
 Activation goldens; nightly 0.5B tolerance runs; the **mutation test** (injected off-by-one layer index must make the harness fail).
 *Acceptance:* mutation test fails loudly; golden regeneration documented.
 
-### Phase 3 — First public release (~2 weeks)
+### Phase 3 — First public release — v0.1.0, text-only (~2 weeks + WP7.5 ≈ 4 weeks)
 
-**WP7 — Demos as acceptance tests.**
+> **WP7.5a/b (D-021 / D-022) are inserted between WP7 and WP8** — modern models usable as text + richer demo analysis/viz. **Vision is deferred to v0.2.0 / Phase 11 (D-023)**; v0.1.0 ships text-only.
+
+**WP7 — Demos as acceptance tests.** ✅ merged (PR #17).
 Demo A "anatomy lab" (contrast set → trace → `prcomp` → per-layer `glmnet` probes → AUC+CI plot → steer verification); Demo B "topics without Python"; **Demo C (optional stretch) "biological-sequence anatomy lab"** — any protein/DNA-sequence encoder that already loads through the engine (BERT-class today; full ESM-2 support is the Phase-18 arch ADR) → `llm_embed`/`llm_trace` → a per-layer `glmnet` probe that localizes a residue-level property → the same money-plot, on biology. Scripts in `tests/demos/` + draft vignettes.
 *Acceptance:* Demos A and B each < 10 min on the Mac mini from RStudio; pinned seeds ⇒ identical outputs; Demo A nightly in CI. **Demo C does not gate Phase 3** — it ships if an encoder loads cleanly (makes the biology promise runnable at first release, per D-010), otherwise it becomes the seed of Phase 18.
 
+**WP7.5a — Modern models as text (D-021).** Day-1 spike (founder's Mac, Metal): pin text-only instruct GGUFs (Gemma 4 up to 12B, Qwen 3.5 up to ~9B, Qwen 3 mid-sizes; Gemma-3-4B text-only as control) → support matrix (`docs/wp7.5-model-matrix.md`, SHA256/license/RSS/tokens-s); `llm_trace` per-arch matcher extension (qwen3/qwen35/gemma4, with the adversarial test rejecting gemma4's same-named `attn_out` collision); a **runtime sentinel intervention probe** replacing the D-016 hard allow-list; WP5 `[MODEL]` valence/KL fixtures on the new families. Engine untouched in the default path; the vendor bump is conditional (trigger-gated, 3-day timebox, revertible).
+*Acceptance:* matrix committed; a text-only Gemma 4 E4B GGUF loads; per-arch trace `[MODEL]` tests + the gemma4-`attn_out` rejection test; the sentinel probe passes on synthetic + all pinned decoders and rejects a no-choke-point case with `rebirth_error_intervention`; original-handle bit-for-bit reversal still green; `cargo test` + `R CMD check` green.
+
+**WP7.5b — Demo analysis & visualization deepening (D-022).** Five Demo A mech-interp analyses (A1 multi-concept overlay, A2 token×layer heatmap, A3 steering dose–response, A4 targeted-vs-random ablation curve, A5 direction geometry) + Demo B depth (silhouette, log-odds top terms, inter-topic dendrogram) + a base-R visual-polish pass. Behind `extended = TRUE`; **zero new dependencies**.
+*Acceptance:* extended runs ≤ +10 min per demo on the Mac + nightly on 0.5B; fixed seeds ⇒ byte-identical numeric re-runs; extended `demo_utils_selftest()` green per commit; A4 random control near-null while targeted discriminates; vignettes render model-free; no `DESCRIPTION` diff.
+
 **WP8 — Docs + release.**
-roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download()` helper for pinned models** (checksums verified); pkgdown site; r-universe live; `NEWS.md`; tag **`v0.1.0`**.
-*Acceptance:* `install.packages("rebirth", repos = <r-universe>)` works on clean R 4.6.1; a stranger runs Demo B from the README alone.
+roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download()` helper for pinned models** (checksums verified); pkgdown site; r-universe live; `NEWS.md`; tag **`v0.1.0`**. Demo default = **Gemma 4 E4B (as text)**, showcased; the **license-clean reproduction path + CI stay on Qwen (Apache-2.0)** (D-023).
+*Acceptance:* `install.packages("rebirth", repos = <r-universe>)` works on clean R 4.6.1; a stranger runs Demo B from the README alone on the Apache-2.0 default (Qwen).
 
 > **= `SOLO-PHASE-PLAN.md` Phase 0 exit checklist.**
 
@@ -189,8 +197,8 @@ roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download(
 ### Phase 10 — MLX backend
 **Goal:** second Apple-native inference engine via `mlx-c`, behind the unchanged R API (backend selection in `llm()`). **Scope:** generation + embeddings first; traces if MLX exposes comparable capture points, else documented as llama.cpp-only. Harness B extended with cross-engine agreement tests. **Exit:** same script, two engines, agreeing numbers; Metal-llama.cpp vs MLX benchmark table.
 
-### Phase 11 — Multimodal models *(new — unlocks radiology images)*
-**Goal:** vision-language GGUFs (mmproj path: MedGemma 1.5 vision, LLaVA-class) under the same API. **Scope:** `llm()` loads model + mmproj; `llm_generate()` accepts images; image embeddings; traces extended toward the vision tower where the runtime allows. **Exit:** MedGemma 1.5 vision answering questions about a chest X-ray locally on the Mac — the thesis's "future work" made runnable.
+### Phase 11 — Multimodal models *(pulled forward → v0.2.0, per D-023 — unlocks radiology images)*
+**Goal:** vision-language GGUFs under the same API. The vendored engine was pruned of the entire multimodal subsystem, so this **re-vendors and builds a second native library** (`libmtmd`/`clip`). **Scope (T1+T2, ~5–7 weeks / 3–4 WPs):** re-vendor + build the vision library (+ the pruned `common/`/`stb_image`); image-preprocess + vision-encode FFI (image parsing = untrusted input → security-auditor gate); the interleaved `batch.embd` decode path (n_batch chokepoint honored); `llm(projector=)` + `llm_generate(images=)` (T1) + `llm_embed(images=)` (T2) per approved API-GRAMMAR entries (reserved at API-GRAMMAR:156); a new vision golden category in harness B. License-clean default = **Qwen-VL (Apache-2.0**; decoders already vendored), MedGemma/Gemma 4 E4B the quality option. **T3 — interpretability of the vision tower itself (trace/steer/ablate the vision encoder) is a SEPARATE later research phase** (reuses none of the tap/intervention machinery; a non-causal SigLIP encoder breaks the D-018 residual-decomposition golden — the same open problem as Phase-18 encoder interpretability). **Exit:** a VLM answering questions about an image locally on the Mac; **`v0.2.0` tagged**.
 
 ### Phase 12 — Fine-tuning
 **Goal:** `llm_finetune()` — LoRA/QLoRA on 1–8B models, base-R formula-flavored interface; adapters loadable in `llm()`. **Scope:** backend ADR first (candle vs libtorch/R-torch). **Exit:** documented end-to-end fine-tune of a small model on founder hardware, reproducible, with before/after evals.
