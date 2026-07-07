@@ -1,0 +1,83 @@
+# Nightly supply-chain advisory scan (F-1; DECISIONS.md D-008 gate G4, feed-dependent
+# half). Runs `cargo audit` + `cargo deny check advisories` against the committed
+# Cargo.lock and the live RustSec advisory database.
+#
+# WHY NIGHTLY, NOT PER-PR: the RustSec advisory FEED changes daily WITHOUT our code
+#   changing, so a freshly published advisory could turn an unrelated PR red for a
+#   reason the PR author cannot fix. Advisory scanning therefore runs on a schedule and
+#   NEVER gates a PR — a new advisory surfaces as a nightly failure a human triages
+#   (same rationale as nightly-model-tolerance.yaml). The DETERMINISTIC half of the
+#   gate — `cargo deny check bans licenses sources`, which depends only on the
+#   committed lockfile — DOES gate PRs and lives in rust.yaml (the `supply-chain` job).
+#
+# Config: rebirth/src/rust/deny.toml (allow-list, the paste unmaintained ignore, and
+#   the full per-PR / nightly split rationale are documented there).
+on:
+  schedule:
+    - cron: '0 5 * * *' # 05:00 UTC nightly (staggered after the other nightlies)
+  workflow_dispatch: {} # manual trigger (founder / test-engineer, on demand)
+
+name: nightly-supply-chain.yaml
+
+permissions: read-all
+
+concurrency:
+  group: nightly-supply-chain
+  cancel-in-progress: false
+
+jobs:
+  cargo-audit:
+    runs-on: ubuntu-24.04
+    name: cargo audit (RustSec advisories)
+
+    defaults:
+      run:
+        working-directory: rebirth/src/rust
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      # Install the pinned-by-lock cargo-audit (compiles once per night; nightly
+      # tolerates it, and it adds no third-party GitHub Action).
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+
+      # Default behaviour is the intended gate: a VULNERABILITY advisory fails the job
+      # (non-zero exit); an unmaintained/notice warning does NOT (verified locally:
+      # `paste` unmaintained -> exit 0). Prove it actually scanned (a nightly that
+      # silently scans nothing lies): assert a non-zero dependency count.
+      - name: Run cargo audit (fail loud on any vulnerability)
+        run: |
+          set -uo pipefail
+          cargo audit 2>&1 | tee audit.log
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            echo "::error::cargo audit reported a security vulnerability in the dependency tree (exit $status). Triage the advisory above; do not ignore it without a documented reason in deny.toml."
+            exit 1
+          fi
+          if ! grep -Eq "Scanning Cargo.lock for vulnerabilities \([1-9][0-9]* crate" audit.log; then
+            echo "::error::cargo audit did not scan the lockfile (0 crates) — refusing a false green."
+            exit 1
+          fi
+          echo "cargo audit OK: no vulnerabilities in the scanned dependency tree."
+
+  cargo-deny-advisories:
+    runs-on: ubuntu-24.04
+    name: cargo deny check advisories
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Install a PREBUILT cargo-deny binary (~seconds). The Docker-based
+      # cargo-deny-action rebuilds its image ~10 min/run (measured on the per-PR
+      # supply-chain job) — avoid it. Config at rebirth/src/rust/deny.toml carries the
+      # documented `paste` unmaintained ignore.
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-deny
+
+      - name: cargo deny — advisories
+        working-directory: rebirth/src/rust
+        run: cargo-deny check advisories
