@@ -52,3 +52,18 @@ test_that("format helpers render human-readable magnitudes", {
   expect_match(rebirth:::format_bytes(4.7e9), "GB")
   expect_identical(rebirth:::format_bytes(512), "512 B")
 })
+
+# Twin-pin (Hard rule 8f): format_bytes() (R) and human_bytes() (Rust) format the
+# two halves of the OOM story -- the R-side predictive pre-check (trace.R) vs the
+# engine's own message. The Rust twin asserts these exact same sentinels in
+# rebirth-llm/src/error.rs (`human_bytes_twin_pins_the_r_format_bytes`); keeping the
+# expected strings identical here means neither formula can drift without a failure.
+test_that("format_bytes twin-pins the Rust human_bytes formula", {
+  expect_identical(rebirth:::format_bytes(0), "0 B")
+  expect_identical(rebirth:::format_bytes(512), "512 B")
+  expect_identical(rebirth:::format_bytes(1023), "1023 B")
+  expect_identical(rebirth:::format_bytes(1024), "1.0 KB")
+  expect_identical(rebirth:::format_bytes(531000000), "506.4 MB")
+  expect_identical(rebirth:::format_bytes(4400000000), "4.1 GB")
+  expect_identical(rebirth:::format_bytes(5e12), "4.5 TB")
+})

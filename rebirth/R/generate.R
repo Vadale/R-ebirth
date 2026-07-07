@@ -56,9 +56,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
       "`prompt` must be a non-empty character vector without NA."
     )
   }
-  if (!is.numeric(max_tokens) || length(max_tokens) != 1L || is.na(max_tokens) ||
-    max_tokens < 1 || max_tokens != round(max_tokens) ||
-    max_tokens > .Machine$integer.max) {
+  if (!is_count(max_tokens) || max_tokens < 1L || max_tokens > .Machine$integer.max) {
     abort_argument("max_tokens", "`max_tokens` must be a single positive integer.")
   }
   if (!is.numeric(temperature) || length(temperature) != 1L || is.na(temperature) ||

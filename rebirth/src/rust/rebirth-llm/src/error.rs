@@ -191,3 +191,25 @@ fn human_bytes(n: u64) -> String {
         format!("{value:.1} {}", UNITS[i])
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::human_bytes;
+
+    // Twin-pin (Hard rule 8f): human_bytes() and the R format_bytes() format the same
+    // byte sizes for the two halves of the OOM story -- the engine message built here
+    // vs the R-side predictive pre-check (trace.R). These sentinels are asserted with
+    // the identical expected strings by the R twin in tests/testthat/test-llm-print.R
+    // ("format_bytes twin-pins ..."), so if either formula drifts (a changed unit
+    // threshold or precision) one side fails and the OOM message can't silently diverge.
+    #[test]
+    fn human_bytes_twin_pins_the_r_format_bytes() {
+        assert_eq!(human_bytes(0), "0 B");
+        assert_eq!(human_bytes(512), "512 B");
+        assert_eq!(human_bytes(1023), "1023 B");
+        assert_eq!(human_bytes(1024), "1.0 KB");
+        assert_eq!(human_bytes(531_000_000), "506.4 MB");
+        assert_eq!(human_bytes(4_400_000_000), "4.1 GB");
+        assert_eq!(human_bytes(5_000_000_000_000), "4.5 TB");
+    }
+}

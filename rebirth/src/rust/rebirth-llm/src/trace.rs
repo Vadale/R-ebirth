@@ -635,7 +635,7 @@ impl LoadedModel {
         &self,
         batches: &[&[i32]],
         pieces: &[Vec<String>],
-        spec: &CaptureSpec,
+        positions: &[Vec<u32>],
         resolved: ResolvedSpec,
         longest: usize,
         sink: RowSink,
@@ -665,11 +665,15 @@ impl LoadedModel {
         let ctx = self.create_trace_context(n_ctx, trace_trampoline, state_ptr.cast::<c_void>())?;
 
         for (i, ids) in batches.iter().enumerate() {
-            let positions = spec.positions.resolve(ids.len());
+            // The positions were resolved once by the caller (the identical Vecs the
+            // budget estimate summed, D-017); clone this prompt's set into the state.
+            let prompt_positions = positions[i].clone();
             let prompt_pieces = pieces.get(i).cloned().unwrap_or_default();
             // SAFETY: single-threaded; the callback is not running between decodes,
             // so this is the only live access to `*state_ptr` here.
-            unsafe { (*state_ptr).begin_prompt(i as u32, positions, ids.len(), prompt_pieces) };
+            unsafe {
+                (*state_ptr).begin_prompt(i as u32, prompt_positions, ids.len(), prompt_pieces)
+            };
             self.trace_decode(&ctx, ids, state_ptr)?;
         }
 
@@ -693,10 +697,14 @@ impl LoadedModel {
         }
         let resolved = self.resolve_spec(spec)?;
         let longest = self.validate_batches(batches)?;
+        let positions: Vec<Vec<u32>> = batches
+            .iter()
+            .map(|ids| spec.positions.resolve(ids.len()))
+            .collect();
         let sink = self.run_capture(
             batches,
             pieces,
-            spec,
+            &positions,
             resolved,
             longest,
             RowSink::Memory(Vec::new()),
@@ -729,25 +737,19 @@ impl LoadedModel {
     /// x 4` times [`TRACE_MATERIALIZED_EXPANSION`] (D-017), i.e. the cost of the
     /// materialized long-format R `data.frame`, not the engine's f32 host buffers
     /// (the H-1 fix — the f32 basis under-counted the real object ~10x). `n_positions`
-    /// sums each prompt's resolved positions, so `positions = "all"` is estimated
-    /// exactly from the tokenized lengths (the count-then-decide half of the 16 GB
-    /// rule). The R pre-check (`check_trace_budget`) computes the identical quantity.
-    fn estimate_capture_bytes(
-        &self,
-        batches: &[&[i32]],
-        spec: &CaptureSpec,
-        resolved: &ResolvedSpec,
-    ) -> u64 {
+    /// sums the pre-resolved per-prompt `positions` (the identical Vecs the capture
+    /// then consumes, so the estimate and the capture measure the same set — D-017),
+    /// so `positions = "all"` is estimated exactly from the tokenized lengths (the
+    /// count-then-decide half of the 16 GB rule). The R pre-check
+    /// (`check_trace_budget`) computes the identical quantity.
+    fn estimate_capture_bytes(&self, positions: &[Vec<u32>], resolved: &ResolvedSpec) -> u64 {
         let n_layers = match &resolved.layers {
             Some(v) => v.len() as u64,
             None => self.num_layers().max(0) as u64,
         };
         let n_components = resolved.names.len() as u64;
         let n_embd = resolved.n_embd as u64;
-        let n_positions: u64 = batches
-            .iter()
-            .map(|ids| spec.positions.resolve(ids.len()).len() as u64)
-            .sum();
+        let n_positions: u64 = positions.iter().map(|p| p.len() as u64).sum();
         n_positions
             .saturating_mul(n_layers)
             .saturating_mul(n_components)
@@ -776,7 +778,14 @@ impl LoadedModel {
         }
         let resolved = self.resolve_spec(spec)?;
         let longest = self.validate_batches(batches)?;
-        let estimate = self.estimate_capture_bytes(batches, spec, &resolved);
+        // Resolve each prompt's capture positions ONCE here; the budget estimate and
+        // the capture below then share the identical per-prompt Vecs, so they measure
+        // the same set by construction (D-017) rather than re-resolving independently.
+        let positions: Vec<Vec<u32>> = batches
+            .iter()
+            .map(|ids| spec.positions.resolve(ids.len()))
+            .collect();
+        let estimate = self.estimate_capture_bytes(&positions, &resolved);
 
         // API-GRAMMAR §4 recycling signal: an explicit positions vector applied to
         // prompts of differing lengths where some position falls out of range. The
@@ -800,6 +809,7 @@ impl LoadedModel {
                 return self.capture_spilled(
                     batches,
                     pieces,
+                    &positions,
                     spec,
                     resolved,
                     longest,
@@ -824,7 +834,7 @@ impl LoadedModel {
         let sink = self.run_capture(
             batches,
             pieces,
-            spec,
+            &positions,
             resolved,
             longest,
             RowSink::Memory(Vec::new()),
@@ -848,6 +858,7 @@ impl LoadedModel {
         &self,
         batches: &[&[i32]],
         pieces: &[Vec<String>],
+        positions: &[Vec<u32>],
         spec: &CaptureSpec,
         resolved: ResolvedSpec,
         longest: usize,
@@ -855,14 +866,9 @@ impl LoadedModel {
         positions_recycled: bool,
     ) -> Result<TraceOutput, RebirthError> {
         // Row-count metadata for the object's print/summary (no data load needed).
-        let n_positions: u64 = batches
-            .iter()
-            .map(|ids| spec.positions.resolve(ids.len()).len() as u64)
-            .sum();
-        let mut positions_union: Vec<u32> = batches
-            .iter()
-            .flat_map(|ids| spec.positions.resolve(ids.len()))
-            .collect();
+        // Uses the same pre-resolved positions the budget estimate summed (D-017).
+        let n_positions: u64 = positions.iter().map(|p| p.len() as u64).sum();
+        let mut positions_union: Vec<u32> = positions.iter().flatten().copied().collect();
         positions_union.sort_unstable();
         positions_union.dedup();
         let layers_union: Vec<u32> = match &resolved.layers {
@@ -888,7 +894,7 @@ impl LoadedModel {
             .run_capture(
                 batches,
                 pieces,
-                spec,
+                positions,
                 resolved,
                 longest,
                 RowSink::Spill(sink),

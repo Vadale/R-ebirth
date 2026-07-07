@@ -19,6 +19,7 @@
 
 use std::any::Any;
 use std::cell::RefCell;
+use std::collections::HashMap;
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::PathBuf;
 
@@ -669,9 +670,17 @@ fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
     // with no pieces) becomes an `NA` level, so R reconstructs `NA_character_` —
     // agreeing with the spill path (`append_null`) and the schema, never `""`.
     // `row_nneuron[r]` is the `rep()` count R expands each row's code by.
+    //
+    // The `*_index` maps make interning O(1) per row. The keys borrow from `rows`
+    // (immutable for the whole loop), so a distinct token/component is looked up by
+    // hash instead of the old O(distinct-levels) linear scan — for a wide capture
+    // (all positions, all layers) the distinct-token count grows with the prompt
+    // length, so that scan was O(rows x tokens).
     let mut component_levels: Vec<String> = Vec::new();
+    let mut component_index: HashMap<&str, i32> = HashMap::new();
     let mut component_codes: Vec<i32> = Vec::with_capacity(n_rows);
     let mut token_levels: Vec<Option<String>> = Vec::new();
+    let mut token_index: HashMap<Option<&str>, i32> = HashMap::new();
     let mut token_codes: Vec<i32> = Vec::with_capacity(n_rows);
     let mut row_nneuron: Vec<i32> = Vec::with_capacity(n_rows);
 
@@ -681,26 +690,18 @@ fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
         let lyr = from_engine_index(row.layer);
 
         let comp = row.component.as_str();
-        let ccode = match component_levels.iter().position(|c| c.as_str() == comp) {
-            Some(i) => i,
-            None => {
-                component_levels.push(comp.to_string());
-                component_levels.len() - 1
-            }
-        };
-        component_codes.push(ccode as i32 + 1); // 1-based for R indexing
+        let ccode = *component_index.entry(comp).or_insert_with(|| {
+            component_levels.push(comp.to_string());
+            component_levels.len() as i32 // 1-based for R indexing
+        });
+        component_codes.push(ccode);
 
-        let tcode = match token_levels
-            .iter()
-            .position(|t| t.as_deref() == row.token.as_deref())
-        {
-            Some(i) => i,
-            None => {
-                token_levels.push(row.token.clone());
-                token_levels.len() - 1
-            }
-        };
-        token_codes.push(tcode as i32 + 1); // 1-based for R indexing
+        let tok = row.token.as_deref();
+        let tcode = *token_index.entry(tok).or_insert_with(|| {
+            token_levels.push(row.token.clone());
+            token_levels.len() as i32 // 1-based for R indexing
+        });
+        token_codes.push(tcode);
 
         row_nneuron.push(row.values.len() as i32);
 
@@ -766,7 +767,12 @@ fn rebirth_intervene(
         // (D-012/D-014: never a silent no-op on an arch without the choke point).
         model.check_intervention_supported()?;
 
-        let width = n_embd.max(0) as usize;
+        // n_embd / n_layer are the model's own dimensions (m$hidden_size / m$layers),
+        // always >= 1 for a real model. Route them through the same reject-not-clamp
+        // guard as every other boundary scalar (M-4 / Hard rule 8b) instead of the
+        // lone `.max(0)` clamp: an out-of-contract dimension is an internal error to
+        // surface, not a silent 0 that would only trip the length check below.
+        let width = checked_count(n_embd, "n_embd")?;
         // Defensive: R is the sole caller and guarantees these lengths, but check
         // rather than risk an out-of-bounds slice panic on an internal mismatch.
         if steer_vectors.len() != width.saturating_mul(steer_layers.len())
@@ -779,7 +785,7 @@ fn rebirth_intervene(
             });
         }
 
-        let mut spec = InterventionSpec::new(width, n_layer.max(0) as usize);
+        let mut spec = InterventionSpec::new(width, checked_count(n_layer, "n_layer")?);
 
         // Steering: one row per accumulated steer entry; add_steer sums rows that
         // land on the same engine layer (control vectors are additive, D-016).
