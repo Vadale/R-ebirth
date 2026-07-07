@@ -185,15 +185,23 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
   }
 }
 
-# Assemble an in-memory `rebirth_trace` from the seven long-format columns the
-# boundary returns (the in-budget path).
+# Assemble an in-memory `rebirth_trace` from the boundary payload (the in-budget
+# path). The numeric columns arrive fully expanded; `token`/`component` arrive
+# INTERNED (D-017) -- each distinct label once (a levels table) plus a per-row
+# 1-based code and per-row neuron count -- and are re-expanded here to the exact
+# per-neuron character columns via rep.int(). rep.int()/`[` reuse R's CHARSXPs, so
+# the columns are byte-identical to a per-neuron Rust expansion while the boundary
+# no longer clones a String per neuron (the audit's ~30x transient peak, H-1).
 new_inmemory_trace <- function(payload, m, prompts) {
+  times <- payload$row_nneuron
+  token <- payload$token_levels[rep.int(payload$token_codes, times)]
+  component <- payload$component_levels[rep.int(payload$component_codes, times)]
   df <- data.frame(
     prompt_id = payload$prompt_id,
     token_pos = payload$token_pos,
-    token = payload$token,
+    token = token,
     layer = payload$layer,
-    component = payload$component,
+    component = component,
     neuron = payload$neuron,
     value = payload$value,
     stringsAsFactors = FALSE

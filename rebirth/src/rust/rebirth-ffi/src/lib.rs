@@ -642,34 +642,72 @@ fn build_capture_spec(
     })
 }
 
-/// Expand the captured rows into the exact 7-column `rebirth_trace` payload
-/// (API-GRAMMAR §2), one long-format entry per (row, neuron). Every index is
-/// shifted engine 0-based -> R 1-based here; `value` is upcast f32 -> f64.
+/// Expand the captured rows into the `rebirth_trace` payload (API-GRAMMAR §2). The
+/// per-neuron numeric columns (`prompt_id`/`token_pos`/`layer`/`neuron`/`value`) are
+/// emitted in full; the `token` and `component` labels — constant across a row's
+/// neurons — are INTERNED (D-017): each distinct label crosses the boundary once (a
+/// levels table) with a per-row 1-based code into it, and R re-expands them to the
+/// identical per-neuron character columns via `rep()`. This removes the per-neuron
+/// `String` clone that made the transient payload ~30x the f32 activation size (the
+/// audit's H-1); the reconstructed data.frame columns are byte-identical. Every
+/// index is shifted engine 0-based -> R 1-based here; `value` is upcast f32 -> f64.
 /// `positions_recycled` is the API-GRAMMAR §4 warning signal R acts on.
 fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
     let total: usize = rows.iter().map(|r| r.values.len()).sum();
+    let n_rows = rows.len();
     let mut prompt_id = Vec::with_capacity(total);
     let mut token_pos = Vec::with_capacity(total);
-    // `token: None` (the raw-id path, or a no_vocab model with no pieces) becomes R
-    // `NA_character_`, agreeing with the spill path (which writes `append_null`) and
-    // the documented `rebirth_trace` schema — never an empty string "".
-    let mut token: Vec<Option<String>> = Vec::with_capacity(total);
     let mut layer = Vec::with_capacity(total);
-    let mut component = Vec::with_capacity(total);
     let mut neuron = Vec::with_capacity(total);
     let mut value = Vec::with_capacity(total);
+
+    // Interned per-row token/component transport (D-017). Each distinct label is
+    // pushed once into a levels table; `*_codes[r]` is the 1-based position of row
+    // `r`'s label in that table. These codes are a TRANSPORT index for R's `[`, not
+    // the 1-based API index of ARCHITECTURE §4 (the genuine indices go through
+    // `from_engine_index` above). `token: None` (the raw-id path, or a no_vocab model
+    // with no pieces) becomes an `NA` level, so R reconstructs `NA_character_` —
+    // agreeing with the spill path (`append_null`) and the schema, never `""`.
+    // `row_nneuron[r]` is the `rep()` count R expands each row's code by.
+    let mut component_levels: Vec<String> = Vec::new();
+    let mut component_codes: Vec<i32> = Vec::with_capacity(n_rows);
+    let mut token_levels: Vec<Option<String>> = Vec::new();
+    let mut token_codes: Vec<i32> = Vec::with_capacity(n_rows);
+    let mut row_nneuron: Vec<i32> = Vec::with_capacity(n_rows);
 
     for row in rows {
         let pid = from_engine_index(row.prompt_id);
         let pos = from_engine_index(row.token_pos);
         let lyr = from_engine_index(row.layer);
+
         let comp = row.component.as_str();
+        let ccode = match component_levels.iter().position(|c| c.as_str() == comp) {
+            Some(i) => i,
+            None => {
+                component_levels.push(comp.to_string());
+                component_levels.len() - 1
+            }
+        };
+        component_codes.push(ccode as i32 + 1); // 1-based for R indexing
+
+        let tcode = match token_levels
+            .iter()
+            .position(|t| t.as_deref() == row.token.as_deref())
+        {
+            Some(i) => i,
+            None => {
+                token_levels.push(row.token.clone());
+                token_levels.len() - 1
+            }
+        };
+        token_codes.push(tcode as i32 + 1); // 1-based for R indexing
+
+        row_nneuron.push(row.values.len() as i32);
+
         for (k, &v) in row.values.iter().enumerate() {
             prompt_id.push(pid);
             token_pos.push(pos);
-            token.push(row.token.clone());
             layer.push(lyr);
-            component.push(comp.to_string());
             neuron.push(from_engine_index(k as u32));
             value.push(v as f64);
         }
@@ -681,11 +719,14 @@ fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
         ("positions_recycled", Robj::from(positions_recycled)),
         ("prompt_id", Robj::from(prompt_id)),
         ("token_pos", Robj::from(token_pos)),
-        ("token", Robj::from(token)),
         ("layer", Robj::from(layer)),
-        ("component", Robj::from(component)),
         ("neuron", Robj::from(neuron)),
         ("value", Robj::from(value)),
+        ("component_levels", Robj::from(component_levels)),
+        ("component_codes", Robj::from(component_codes)),
+        ("token_levels", Robj::from(token_levels)),
+        ("token_codes", Robj::from(token_codes)),
+        ("row_nneuron", Robj::from(row_nneuron)),
     ])
     .into()
 }
