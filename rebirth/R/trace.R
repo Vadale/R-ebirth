@@ -121,6 +121,10 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
       "`components` must be a non-empty subset of \"residual\", \"attn_out\", \"mlp_out\"."
     )
   }
+  # De-duplicate components (M-1): a repeated component (e.g. c("residual",
+  # "residual")) would otherwise double-count its (layer, component) groups in the
+  # capture and the spilled summary. First-occurrence order is preserved.
+  components <- unique(components)
 
   if (!is.logical(spill) || length(spill) != 1L || is.na(spill)) {
     abort_argument("spill", "`spill` must be a single logical value (TRUE or FALSE).")
@@ -281,6 +285,12 @@ validate_positions <- function(positions, call = sys.call(-1L)) {
         call = call
       )
     }
+    # De-duplicate explicit positions (M-1): a repeated position would otherwise
+    # emit duplicate capture rows, which as.matrix() then mis-assembles into a
+    # wrong matrix under correct labels. Sorting is harmless -- capture is
+    # per-position and the matrix is re-sorted by (prompt_id, token_pos). This also
+    # keeps the predictive-OOM `length(positions)` and the spec_key exact.
+    return(sort(unique(as.integer(positions))))
   } else {
     abort_argument(
       "positions",
@@ -572,6 +582,26 @@ as.matrix.rebirth_trace <- function(x, layer, component = "residual", ...) {
   pts <- unique(sub[c("prompt_id", "token_pos")])
   pts <- pts[order(pts$prompt_id, pts$token_pos), , drop = FALSE]
   n_neuron <- length(unique(sub$neuron))
+  # Structural invariant: the slice must be a full (prompt_id, token_pos) x neuron
+  # grid, i.e. exactly one value per cell. If it is not, matrix(byrow = TRUE) would
+  # silently recycle/mis-assemble the values under correct row/column labels (the
+  # M-1 duplicate-row failure). Positions and components are de-duplicated upstream,
+  # so a mismatch here means an unexpected duplicate reached the frame -- fail loud
+  # rather than return a wrong matrix.
+  if (nrow(sub) != nrow(pts) * n_neuron) {
+    rebirth_abort(
+      "rebirth_error_trace",
+      sprintf(
+        paste0(
+          "This trace slice (layer %s, component \"%s\") holds %d rows, not the ",
+          "expected %d (%d position(s) x %d neurons): it has duplicate or missing ",
+          "(position, neuron) entries and cannot be reshaped to a matrix. Re-run ",
+          "llm_trace()."
+        ),
+        layer, component, nrow(sub), nrow(pts) * n_neuron, nrow(pts), n_neuron
+      )
+    )
+  }
   mat <- matrix(sub$value, nrow = nrow(pts), ncol = n_neuron, byrow = TRUE)
   rownames(mat) <- sprintf("%d.%d", pts$prompt_id, pts$token_pos)
   mat

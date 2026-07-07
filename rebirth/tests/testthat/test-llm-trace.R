@@ -169,6 +169,18 @@ test_that("llm_trace() validates `positions`", {
   expect_identical(cnd$argument, "positions")
 })
 
+test_that("validate_positions() de-duplicates explicit positions (M-1)", {
+  # Defect (M-1): a repeated position (e.g. positions = c(1, 2, 2)) would emit
+  # duplicate capture rows that as.matrix() then mis-assembles into a wrong matrix
+  # under correct labels. Explicit positions must collapse to a sorted unique
+  # integer vector before capture; keyword positions pass through unchanged.
+  expect_identical(validate_positions(c(1, 2, 2)), c(1L, 2L))
+  expect_identical(validate_positions(c(2L, 1L, 2L, 1L)), c(1L, 2L))
+  expect_identical(validate_positions(3L), 3L)
+  expect_identical(validate_positions("last"), "last")
+  expect_identical(validate_positions("all"), "all")
+})
+
 test_that("llm_trace() validates `components` (subset of the allowed set)", {
   # Defect: an unknown component name silently producing an empty capture rather
   # than a classed error naming the argument.
@@ -355,6 +367,35 @@ test_that("as.matrix.rebirth_trace extracts one (layer, component) slice as a ma
   # (never a silent empty / whole-frame coercion).
   expect_error(as.matrix(x, layer = 99L))
   expect_error(as.matrix(x))
+})
+
+test_that("as.matrix.rebirth_trace fails loud on a mis-shaped (duplicated) slice (M-1)", {
+  # Defect (M-1): duplicate (prompt_id, token_pos, neuron) rows in a slice would make
+  # matrix(byrow = TRUE) silently recycle/interleave values under correct row and
+  # column labels -- a wrong matrix, no error. The structural invariant
+  # nrow(sub) == n_points * n_neuron must instead raise a classed rebirth_error_trace,
+  # catching any duplication source (a future one, or a defeated upstream dedupe).
+  x <- make_trace()
+  base <- as.data.frame(x)
+  # Duplicate the layer-1/residual slice's rows: same coordinates, so the unique
+  # (prompt, pos) points and neuron count are unchanged but nrow doubles.
+  slice <- base[base$layer == 1L & base$component == "residual", ]
+  dup <- structure(
+    rbind(base, slice),
+    class = c("rebirth_trace", "data.frame"),
+    model = attr(x, "model"),
+    spilled = FALSE,
+    spill_files = character(0),
+    prompts = attr(x, "prompts")
+  )
+  expect_error(
+    as.matrix(dup, layer = 1L, component = "residual"),
+    class = "rebirth_error_trace"
+  )
+  # The guard is slice-local: an untouched (layer, component) slice still works.
+  clean <- as.matrix(dup, layer = 2L, component = "attn_out")
+  expect_true(is.matrix(clean))
+  expect_identical(dim(clean), c(2L, 4L))
 })
 
 # --- [MODEL] real-model trace (Qwen: tokenizer + hidden_size = 896) ----------

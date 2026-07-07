@@ -84,12 +84,22 @@ impl Positions {
             Positions::All => (0..n_tokens as u32).collect(),
             // Keep only in-range positions; a caller-supplied index past a prompt's
             // end simply produces no row for that prompt (positions are recycled
-            // across prompts of differing lengths, API-GRAMMAR §4).
-            Positions::Explicit(v) => v
-                .iter()
-                .copied()
-                .filter(|&p| (p as usize) < n_tokens)
-                .collect(),
+            // across prompts of differing lengths, API-GRAMMAR §4). De-duplicate
+            // defensively (M-1): a repeated position would otherwise emit duplicate
+            // capture rows that as.matrix() then mis-assembles. R already
+            // sort(unique())s explicit positions, so this guards a direct engine
+            // caller; sorting is harmless (rows are re-sorted by (prompt, pos)
+            // downstream) and it also keeps the spilled n_positions count exact.
+            Positions::Explicit(v) => {
+                let mut out: Vec<u32> = v
+                    .iter()
+                    .copied()
+                    .filter(|&p| (p as usize) < n_tokens)
+                    .collect();
+                out.sort_unstable();
+                out.dedup();
+                out
+            }
         }
     }
 
@@ -1008,6 +1018,12 @@ mod tests {
         assert_eq!(Positions::All.resolve(3), vec![0, 1, 2]);
         // Explicit indices are kept in-range; out-of-range ones are dropped.
         assert_eq!(Positions::Explicit(vec![0, 2, 9]).resolve(4), vec![0, 2]);
+        // Duplicate and unsorted explicit positions are de-duplicated and sorted
+        // (M-1 defense): a repeated position must not emit duplicate capture rows.
+        assert_eq!(
+            Positions::Explicit(vec![2, 0, 2, 9, 0]).resolve(4),
+            vec![0, 2]
+        );
     }
 
     #[test]
