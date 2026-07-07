@@ -105,6 +105,19 @@ local({
   "A dingy, hostile motel with inedible food and grim views."
 )
 
+# Neutral held-out prompts for the steering check: sentiment should come from the
+# intervention, not the prompt.
+.demo_A_neutral <- c(
+  "Describe the meeting that happened this afternoon.",
+  "Write a sentence about the food at the new restaurant.",
+  "Tell me about your commute to work today.",
+  "Summarize what the weather has been like this week.",
+  "Describe the film you watched last night.",
+  "Give your impression of the new office.",
+  "Write a short note about how the project is going.",
+  "Describe the neighbourhood where you live."
+)
+
 # ---- small internals ---------------------------------------------------------
 
 # Feature matrix for one layer, with rows aligned to prompt order via the
@@ -249,58 +262,60 @@ run_demo_A <- function(model_path = .demo_A_model_path(),
   res
 }
 
-# Steer at the peak layer, read the effect DOWNSTREAM (a later layer) on held-out
-# prompts: a genuine propagated effect, not the tautology of reading the injected
-# vector back at the layer where it was added.
+# Verify steering BEHAVIOURALLY on held-out prompts. Interventions apply to
+# generation (not to llm_trace, which rejects an intervened handle by grammar),
+# so we: generate continuations from neutral leads under +/- steering, then score
+# each continuation's sentiment by tracing it through the CLEAN model and
+# projecting onto the probe's sentiment axis. Positive steering should yield
+# more-positive output than negative steering.
 .demo_A_steer_check <- function(m, tr, band, best_layer, y, steer_scale, say) {
-  steer_layer <- max(best_layer, 2L) # layer 1 is not steerable (grammar)
-  read_layer <- max(band[band >= min(steer_layer + 4L, max(band))])
-
-  x_steer <- .demo_A_layer_matrix(tr, steer_layer)
-  dir <- .demo_A_direction(x_steer, y)
-  proj <- as.numeric(x_steer %*% dir)
-  gap <- mean(proj[y]) - mean(proj[!y]) # positive-negative gap on this axis
+  steer_layer <- min(max(best_layer, 2L), max(band)) # layer 1 is not steerable
+  x <- .demo_A_layer_matrix(tr, steer_layer)
+  dir <- .demo_A_direction(x, y) # sentiment axis at this layer
+  proj <- as.numeric(x %*% dir)
+  gap <- mean(proj[y]) - mean(proj[!y]) # positive-negative gap on the axis
   coef <- steer_scale * gap
-  read_dir <- .demo_A_direction(.demo_A_layer_matrix(tr, read_layer), y)
 
   m_pos <- rebirth::llm_steer(m, layer = steer_layer, direction = dir, coef = coef)
   m_neg <- rebirth::llm_steer(m, layer = steer_layer, direction = dir, coef = -coef)
-  on.exit({ close(m_pos); close(m_neg) }, add = TRUE)
+  on.exit({
+    close(m_pos)
+    close(m_neg)
+  }, add = TRUE)
 
-  held <- c(.demo_A_holdout_pos, .demo_A_holdout_neg)
-  readout <- function(model) {
-    h <- rebirth::llm_trace(model, held, layers = read_layer, positions = "last",
-                            components = "residual")
-    as.numeric(.demo_A_layer_matrix(h, read_layer) %*% read_dir)
+  leads <- .demo_A_neutral
+  generate <- function(model) {
+    rebirth::llm_generate(model, leads, max_tokens = 32L, temperature = 0,
+                          seed = 1L, chat = TRUE)
   }
-  base <- readout(m)
-  up <- readout(m_pos)
-  down <- readout(m_neg)
+  # Score generated text by tracing it through the CLEAN handle (m) -- never an
+  # intervened one -- and projecting the last token onto the sentiment axis.
+  sentiment <- function(txt) {
+    trg <- rebirth::llm_trace(m, txt, layers = steer_layer, positions = "last",
+                              components = "residual")
+    as.numeric(.demo_A_layer_matrix(trg, steer_layer) %*% dir)
+  }
+  g_base <- generate(m)
+  g_pos <- generate(m_pos)
+  g_neg <- generate(m_neg)
+  s_base <- sentiment(g_base)
+  s_pos <- sentiment(g_pos)
+  s_neg <- sentiment(g_neg)
 
-  # One-sided paired Wilcoxon: does +coef raise, and -coef lower, the downstream
-  # sentiment read-out relative to baseline on the held-out prompts?
-  p_up <- suppressWarnings(wilcox.test(up, base, paired = TRUE, alternative = "greater")$p.value)
-  p_down <- suppressWarnings(wilcox.test(down, base, paired = TRUE, alternative = "less")$p.value)
+  # One-sided paired Wilcoxon: does +coef push the OUTPUT more positive, and
+  # -coef more negative, than baseline?
+  p_up <- suppressWarnings(wilcox.test(s_pos, s_base, paired = TRUE, alternative = "greater")$p.value)
+  p_down <- suppressWarnings(wilcox.test(s_neg, s_base, paired = TRUE, alternative = "less")$p.value)
   say(sprintf(
-    "steer @ L%d, read @ L%d: mean shift +%.3f (p=%.3g) / %.3f (p=%.3g)",
-    steer_layer, read_layer, mean(up - base), p_up, mean(down - base), p_down
+    "steer @ L%d (coef %.2f): output sentiment +%.3f (p=%.3g) / %.3f (p=%.3g)",
+    steer_layer, coef, mean(s_pos - s_base), p_up, mean(s_neg - s_base), p_down
   ))
 
-  # Qualitative before/after generation on one neutral prompt.
-  neutral <- "In one sentence, describe the town where you grew up."
-  gen <- tryCatch(
-    list(
-      base = rebirth::llm_generate(m, neutral, max_tokens = 40L, seed = 1L),
-      pos = rebirth::llm_generate(m_pos, neutral, max_tokens = 40L, seed = 1L),
-      neg = rebirth::llm_generate(m_neg, neutral, max_tokens = 40L, seed = 1L)
-    ),
-    error = function(e) NULL
-  )
-
   list(
-    steer_layer = steer_layer, read_layer = read_layer, coef = coef,
-    shift_up = mean(up - base), shift_down = mean(down - base),
-    p_up = p_up, p_down = p_down, generations = gen
+    steer_layer = steer_layer, coef = coef,
+    shift_up = mean(s_pos - s_base), shift_down = mean(s_neg - s_base),
+    p_up = p_up, p_down = p_down,
+    generations = list(base = g_base, pos = g_pos, neg = g_neg)
   )
 }
 
