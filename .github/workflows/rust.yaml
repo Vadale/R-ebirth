@@ -21,6 +21,12 @@ jobs:
     runs-on: ubuntu-24.04
     name: cargo fmt / clippy / test
 
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+      CMAKE_C_COMPILER_LAUNCHER: "sccache"
+      CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
+
     defaults:
       run:
         working-directory: rebirth/src/rust
@@ -31,6 +37,13 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
+
+      # Cache the vendored llama.cpp (cmake C++) + Rust compilation across runs,
+      # keyed by content hash. RUSTC_WRAPPER + CMAKE_*_COMPILER_LAUNCHER (see env)
+      # route rustc and the engine's cmake build through sccache; the GHA backend
+      # stores the cache. The dominant CI cost is recompiling llama.cpp each run.
+      - name: sccache (compiler cache)
+        uses: mozilla-actions/sccache-action@v0.0.9
 
       # rebirth-ffi is the extendr boundary crate: building it requires R (the
       # extendr-ffi build script locates R). This R-free job therefore builds,
