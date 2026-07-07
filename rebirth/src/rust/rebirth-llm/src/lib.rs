@@ -41,6 +41,7 @@ pub use intervene::InterventionSpec;
 pub use trace::SpillReport;
 pub use trace::{
     parse_tensor_name, CaptureRow, CaptureSpec, Component, Positions, SpillPlan, TraceOutput,
+    TRACE_MATERIALIZED_EXPANSION,
 };
 
 /// Initialize the process-global llama.cpp + ggml backend.

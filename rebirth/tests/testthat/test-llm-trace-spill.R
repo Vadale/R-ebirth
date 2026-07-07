@@ -79,6 +79,28 @@ test_that("a spilled trace's slices equal the in-memory slices exactly", {
   expect_match(rownames(x)[1], "^[0-9]+\\.[0-9]+$")
 })
 
+test_that("a materialized trace fits K x its f32-activation bytes (D-017 pins the factor)", {
+  # ACCEPTANCE (D-017): the trace budget is measured on the peak resident cost of the
+  # materialized data.frame the caller receives, estimated as
+  # TRACE_MATERIALIZED_EXPANSION x the f32 activation bytes. This pins that factor
+  # against a real boundary-produced trace: object.size(tr) must not exceed K x its
+  # f32 bytes, or the budget/spill decision would under-count the object and let an
+  # "in-budget" capture OOM the session (the H-1 failure class). Each long-format row
+  # is exactly one f32 activation, so the f32 basis is nrow(tr) * 4 -- the same
+  # quantity the engine's estimate_capture_bytes multiplies by K. Runs in CI on the
+  # synthetic model via the raw-token in-memory path (2 layers x 3 components x 8
+  # positions x 32 neurons = 1536 rows -- the FULL synthetic capture; ratio ~10.4x here,
+  # under the pinned 11x. Smaller sub-600-row slices amortize R's fixed overhead worse
+  # and exceed 11x (harmless: < ~22 KB, never near a budget), so keep these dims large.
+  m <- llm(synthetic_model_path())
+  on.exit(close(m), add = TRUE)
+
+  tr <- selftest_trace_tokens(m, synthetic_tokens(), spill = FALSE, budget = Inf)
+  expect_false(isTRUE(attr(tr, "spilled")))
+  f32_bytes <- as.double(nrow(tr)) * 4
+  expect_lte(as.double(object.size(tr)), TRACE_MATERIALIZED_EXPANSION * f32_bytes)
+})
+
 test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spill path)", {
   # REV-3: the synthetic model is no_vocab, so a captured row carries no token
   # piece. The in-memory boundary payload must surface `token` as NA_character_

@@ -25,6 +25,20 @@ use crate::error::RebirthError;
 use crate::ffi;
 use crate::generate::Batch;
 
+/// Expansion factor from an f32 activation's engine bytes to its peak resident cost
+/// in the long-format R `data.frame` the caller receives (D-017). Each captured
+/// value becomes one long-format row of exactly 40 bytes — four i32 columns
+/// (`prompt_id`/`token_pos`/`layer`/`neuron`, 4 B each), one f64 `value` (8 B), and
+/// two character columns (`token`/`component`, 8 B pointers each into R's shared
+/// CHARSXP pool) — i.e. 10x the 4-byte f32 asymptotically. `11` upper-bounds this for
+/// every *real*-model trace (hidden_size >= 896 -> <= 10.65x) and every budget-relevant
+/// large capture (ratio -> 10.0x); tiny sub-600-row synthetic traces (hidden=32) reach
+/// ~27.75x but are < ~22 KB, far under any budget. The budget is compared against this
+/// materialized cost, not the f32 bytes (the H-1 fix). R pins the identical value
+/// in `TRACE_MATERIALIZED_EXPANSION` (`trace.R`), each side unit-tested — a one-sided
+/// change breaks the R/engine symmetry the spill decision relies on (audit P-5).
+pub const TRACE_MATERIALIZED_EXPANSION: u64 = 11;
+
 /// One activation component of a transformer block. The R API exposes exactly
 /// these three (`API-GRAMMAR.md` §2); the boundary parses the string names.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -710,10 +724,14 @@ impl LoadedModel {
         decode
     }
 
-    /// The predicted in-memory capture size in bytes: `n_positions x n_layers x
-    /// n_components x n_embd x 4`. `n_positions` sums each prompt's resolved
-    /// positions, so `positions = "all"` is estimated exactly from the tokenized
-    /// lengths (the count-then-decide half of the 16 GB rule).
+    /// The predicted peak resident size of the capture as the caller receives it, in
+    /// bytes: the f32 activation bytes `n_positions x n_layers x n_components x n_embd
+    /// x 4` times [`TRACE_MATERIALIZED_EXPANSION`] (D-017), i.e. the cost of the
+    /// materialized long-format R `data.frame`, not the engine's f32 host buffers
+    /// (the H-1 fix — the f32 basis under-counted the real object ~10x). `n_positions`
+    /// sums each prompt's resolved positions, so `positions = "all"` is estimated
+    /// exactly from the tokenized lengths (the count-then-decide half of the 16 GB
+    /// rule). The R pre-check (`check_trace_budget`) computes the identical quantity.
     fn estimate_capture_bytes(
         &self,
         batches: &[&[i32]],
@@ -735,6 +753,7 @@ impl LoadedModel {
             .saturating_mul(n_components)
             .saturating_mul(n_embd)
             .saturating_mul(4)
+            .saturating_mul(TRACE_MATERIALIZED_EXPANSION)
     }
 
     /// Plan and run a capture per the 16 GB rule: validate, estimate, then decide
@@ -1042,6 +1061,15 @@ mod tests {
         // "last"/"all" are resolved per prompt and are never out of range.
         assert!(!Positions::Last.recycled_out_of_range(&[3, 8]));
         assert!(!Positions::All.recycled_out_of_range(&[3, 8]));
+    }
+
+    #[test]
+    fn materialized_expansion_factor_is_the_pinned_value() {
+        // Twin pin (audit P-5): R's TRACE_MATERIALIZED_EXPANSION (trace.R) pins the
+        // identical value in its own test, so a one-sided change to the budget
+        // expansion factor breaks one of the two tests and the R/engine spill decision
+        // cannot silently diverge. Value justified in the const's doc comment.
+        assert_eq!(TRACE_MATERIALIZED_EXPANSION, 11);
     }
 
     #[test]
