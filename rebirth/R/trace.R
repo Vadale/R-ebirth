@@ -20,8 +20,9 @@
 #'
 #' **Memory (the 16 GB rule).** A full trace can be large, so the defaults capture
 #' little (`positions = "last"`, `components = "residual"`); widen them deliberately.
-#' Before running, the capture's size is estimated from the filters. If it fits the
-#' budget (`min(256 MB, 20% of RAM)`, overridable with
+#' Before running, the size of the `data.frame` you would receive is estimated from
+#' the filters (the materialized-object cost, D-017). If it fits the budget
+#' (`min(2 GB, 20% of RAM)`, overridable with
 #' `options(rebirth.trace_budget = <bytes>)`) it is held in memory. If it exceeds the
 #' budget and `spill = TRUE` (the default), the capture is streamed to an Arrow-IPC
 #' file under the session cache and the result is a *spilled* `rebirth_trace` that
@@ -332,28 +333,45 @@ validate_positions <- function(positions, call = sys.call(-1L)) {
   positions
 }
 
-# The in-memory capture budget in bytes: an explicit option wins; otherwise
-# min(256 MB, 20% of system RAM), falling back to the 256 MB cap when RAM is unknown.
+# The expansion factor from an f32 activation's engine bytes to its peak resident
+# cost in the returned long-format data.frame (D-017). Each captured value becomes
+# one 40-byte row -- four i32 columns (prompt_id/token_pos/layer/neuron), one f64
+# `value`, and two character-pointer columns (token/component into R's shared CHARSXP
+# pool) -- i.e. 10x the 4-byte f32; 11 upper-bounds the measured ratio (10.40x on a
+# small trace, asymptote 10.0x) with headroom for R's fixed per-vector + data.frame
+# overhead. The engine pins the identical value in TRACE_MATERIALIZED_EXPANSION
+# (trace.rs), each side unit-tested, so the R pre-check and the engine spill decision
+# stay symmetric (audit P-5); the object.size test (test-llm-trace-spill.R) pins it
+# against a real materialized trace.
+TRACE_MATERIALIZED_EXPANSION <- 11L
+
+# The default in-memory budget cap: 2 GB of materialized data.frame (D-017). Via the
+# expansion factor above that is ~180 MB of f32 activations resident -- a full
+# small-model trace stays in memory while a genuinely large capture spills, all
+# within the 16 GB target. This restores an accurate, usable in-memory budget,
+# superseding the interim 256 MB stopgap (which gated the pre-D-017 f32-basis
+# estimate that under-counted the real object ~10x).
+TRACE_BUDGET_DEFAULT_CAP <- 2 * 1024^3
+
+# The in-memory capture budget in bytes of the materialized data.frame: an explicit
+# option wins; otherwise min(2 GB, 20% of system RAM), falling back to the 2 GB cap
+# when RAM is unknown.
 trace_budget <- function() {
   opt <- getOption("rebirth.trace_budget")
   if (!is.null(opt) && is.numeric(opt) && length(opt) == 1L && !is.na(opt) && opt > 0) {
     return(as.double(opt))
   }
-  # INTERIM (H-1): the estimate this budget gates counts only the engine's f32 host
-  # bytes (n_values * 4), but the materialized R data.frame is ~10x that (its
-  # transient peak ~30x), so an "in-budget" capture could still OOM the 16 GB
-  # session. Until the pending budget-semantics ADR redefines the estimate on
-  # materialized bytes, keep the default cap low enough that a large capture SPILLS
-  # to disk (the spill path is proven) rather than staying in memory: a 256 MB
-  # estimate basis is ~2.5 GB materialized -- safe. Do NOT raise this cap or change
-  # the estimate basis without that ADR.
-  cap <- 256 * 1024^2
+  # D-017: the estimate this budget gates is the materialized data.frame cost
+  # (TRACE_MATERIALIZED_EXPANSION x the f32 activation bytes), so this cap is a real
+  # materialized-memory ceiling, not the f32-buffer under-count that let an
+  # "in-budget" capture OOM the 16 GB session (audit H-1).
+  cap <- TRACE_BUDGET_DEFAULT_CAP
   ram <- system_ram_bytes()
   if (is.na(ram)) cap else min(cap, 0.2 * ram)
 }
 
 # Best-effort total system RAM in bytes, or NA when it cannot be determined
-# (never errors -- the caller then uses the 256 MB cap). Only consulted when the
+# (never errors -- the caller then uses the 2 GB cap). Only consulted when the
 # rebirth.trace_budget option is unset.
 system_ram_bytes <- function() {
   ram <- tryCatch(
@@ -395,8 +413,13 @@ check_trace_budget <- function(m, prompts, layers, positions, components, spill,
   }
 
   n_layers <- if (is.null(layers)) m$layers else length(layers)
-  estimate <- as.double(length(prompts)) * n_positions * n_layers *
+  # D-017: budget on the materialized data.frame cost (K x the f32 activation bytes),
+  # not the f32 bytes alone (the H-1 under-count). The engine's estimate_capture_bytes
+  # applies the identical factor, so this R pre-check and the engine's spill decision
+  # agree on whether a capture fits.
+  f32_bytes <- as.double(length(prompts)) * n_positions * n_layers *
     length(components) * m$hidden_size * 4
+  estimate <- f32_bytes * TRACE_MATERIALIZED_EXPANSION
   if (estimate <= budget) {
     return(invisible(NULL))
   }

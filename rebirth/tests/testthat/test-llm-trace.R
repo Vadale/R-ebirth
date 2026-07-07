@@ -259,17 +259,32 @@ test_that("llm_trace(spill = FALSE) over budget raises rebirth_error_oom before 
   expect_gt(cnd$estimate_bytes, 1024)
 })
 
-test_that("the default trace budget is the H-1 interim cap, not the old 2 GB", {
-  # INTERIM (H-1): the size estimate counts only the engine's f32 bytes, but the
-  # materialized R object is ~10x that, so an "in-budget" capture could still OOM the
-  # 16 GB session. Until the budget-semantics ADR redefines the estimate, the default
-  # in-memory cap is 256 MB (estimate basis) so a large capture spills to disk. A
-  # silent revert to the old 2 GB cap is the regression this guards. No option is set,
-  # so the default path runs: min(256 MB, 20% RAM) <= 256 MB.
+test_that("the default trace budget is the D-017 materialized-bytes cap (2 GB)", {
+  # D-017: the estimate now measures the materialized data.frame (K x the f32 bytes),
+  # so the budget is a real materialized-memory ceiling. The default cap is 2 GB
+  # (~180 MB of f32 activations resident) -- a usable in-memory budget that keeps a
+  # full small-model trace in memory while spilling genuinely large captures. This
+  # guards against (a) a silent revert to the interim 256 MB stopgap and (b) the
+  # pre-D-017 f32-basis 2 GB, which mapped to ~20 GB materialized (the H-1 OOM).
+  expect_identical(TRACE_BUDGET_DEFAULT_CAP, 2 * 1024^3)
   old <- options(rebirth.trace_budget = NULL)
   on.exit(options(old), add = TRUE)
-  expect_lte(trace_budget(), 256 * 1024^2)
-  expect_lt(trace_budget(), 2 * 1024^3)
+  b <- trace_budget()
+  expect_lte(b, TRACE_BUDGET_DEFAULT_CAP) # never exceeds the 2 GB cap
+  # Lifted above the interim 256 MB: min(2 GB, 20% RAM) > 256 MB on any machine with
+  # more than ~1.3 GB RAM (every CI runner and the 16 GB target).
+  expect_gt(b, 256 * 1024^2)
+})
+
+test_that("TRACE_MATERIALIZED_EXPANSION matches the engine's pinned factor (twin pin)", {
+  # Twin pin (audit P-5): the engine pins the identical value in
+  # TRACE_MATERIALIZED_EXPANSION (trace.rs, unit test
+  # `materialized_expansion_factor_is_the_pinned_value`). A one-sided change to the
+  # budget expansion factor desynchronizes the R pre-check and the engine spill
+  # decision; each side's own test then fails. The value (11) is justified in the
+  # constant's comment and pinned empirically by the object.size test in
+  # test-llm-trace-spill.R.
+  expect_identical(TRACE_MATERIALIZED_EXPANSION, 11L)
 })
 
 # --- rebirth_trace S3 methods (constructed object; runs in CI) --------------

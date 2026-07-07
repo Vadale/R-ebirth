@@ -76,7 +76,10 @@ fn tmp_spill_path(tag: &str) -> String {
 fn over_budget_without_spill_is_oom_before_capture() {
     let model = load_synthetic();
     let path = tmp_spill_path("oom");
-    // estimate = 8 pos x 2 layers x 3 comps x 32 embd x 4 = 6144 bytes > 1 KB.
+    // estimate = f32 bytes x the materialized-object expansion factor (D-017):
+    // (8 pos x 2 layers x 3 comps x 32 embd x 4) x TRACE_MATERIALIZED_EXPANSION,
+    // well over the 1 KB budget. The reported estimate is the materialized cost the
+    // user would pay, not the f32 host bytes (the H-1 fix).
     let out = model.trace_token_batch_spill(
         &[&INPUT_TOKENS],
         &all_components_spec(),
@@ -89,7 +92,10 @@ fn over_budget_without_spill_is_oom_before_capture() {
             ..
         }) => {
             assert_eq!(budget_bytes, 1024);
-            assert_eq!(estimate_bytes, 8 * 2 * 3 * N_EMBD as u64 * 4);
+            assert_eq!(
+                estimate_bytes,
+                8 * 2 * 3 * N_EMBD as u64 * 4 * rebirth_llm::TRACE_MATERIALIZED_EXPANSION
+            );
         }
         other => panic!("expected Oom, got {other:?}"),
     }
