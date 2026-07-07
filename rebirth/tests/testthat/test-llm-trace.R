@@ -169,6 +169,18 @@ test_that("llm_trace() validates `positions`", {
   expect_identical(cnd$argument, "positions")
 })
 
+test_that("validate_positions() de-duplicates explicit positions (M-1)", {
+  # Defect (M-1): a repeated position (e.g. positions = c(1, 2, 2)) would emit
+  # duplicate capture rows that as.matrix() then mis-assembles into a wrong matrix
+  # under correct labels. Explicit positions must collapse to a sorted unique
+  # integer vector before capture; keyword positions pass through unchanged.
+  expect_identical(validate_positions(c(1, 2, 2)), c(1L, 2L))
+  expect_identical(validate_positions(c(2L, 1L, 2L, 1L)), c(1L, 2L))
+  expect_identical(validate_positions(3L), 3L)
+  expect_identical(validate_positions("last"), "last")
+  expect_identical(validate_positions("all"), "all")
+})
+
 test_that("llm_trace() validates `components` (subset of the allowed set)", {
   # Defect: an unknown component name silently producing an empty capture rather
   # than a classed error naming the argument.
@@ -245,6 +257,19 @@ test_that("llm_trace(spill = FALSE) over budget raises rebirth_error_oom before 
   expect_true(is.numeric(cnd$estimate_bytes))
   expect_length(cnd$estimate_bytes, 1L)
   expect_gt(cnd$estimate_bytes, 1024)
+})
+
+test_that("the default trace budget is the H-1 interim cap, not the old 2 GB", {
+  # INTERIM (H-1): the size estimate counts only the engine's f32 bytes, but the
+  # materialized R object is ~10x that, so an "in-budget" capture could still OOM the
+  # 16 GB session. Until the budget-semantics ADR redefines the estimate, the default
+  # in-memory cap is 256 MB (estimate basis) so a large capture spills to disk. A
+  # silent revert to the old 2 GB cap is the regression this guards. No option is set,
+  # so the default path runs: min(256 MB, 20% RAM) <= 256 MB.
+  old <- options(rebirth.trace_budget = NULL)
+  on.exit(options(old), add = TRUE)
+  expect_lte(trace_budget(), 256 * 1024^2)
+  expect_lt(trace_budget(), 2 * 1024^3)
 })
 
 # --- rebirth_trace S3 methods (constructed object; runs in CI) --------------
@@ -355,6 +380,35 @@ test_that("as.matrix.rebirth_trace extracts one (layer, component) slice as a ma
   # (never a silent empty / whole-frame coercion).
   expect_error(as.matrix(x, layer = 99L))
   expect_error(as.matrix(x))
+})
+
+test_that("as.matrix.rebirth_trace fails loud on a mis-shaped (duplicated) slice (M-1)", {
+  # Defect (M-1): duplicate (prompt_id, token_pos, neuron) rows in a slice would make
+  # matrix(byrow = TRUE) silently recycle/interleave values under correct row and
+  # column labels -- a wrong matrix, no error. The structural invariant
+  # nrow(sub) == n_points * n_neuron must instead raise a classed rebirth_error_trace,
+  # catching any duplication source (a future one, or a defeated upstream dedupe).
+  x <- make_trace()
+  base <- as.data.frame(x)
+  # Duplicate the layer-1/residual slice's rows: same coordinates, so the unique
+  # (prompt, pos) points and neuron count are unchanged but nrow doubles.
+  slice <- base[base$layer == 1L & base$component == "residual", ]
+  dup <- structure(
+    rbind(base, slice),
+    class = c("rebirth_trace", "data.frame"),
+    model = attr(x, "model"),
+    spilled = FALSE,
+    spill_files = character(0),
+    prompts = attr(x, "prompts")
+  )
+  expect_error(
+    as.matrix(dup, layer = 1L, component = "residual"),
+    class = "rebirth_error_trace"
+  )
+  # The guard is slice-local: an untouched (layer, component) slice still works.
+  clean <- as.matrix(dup, layer = 2L, component = "attn_out")
+  expect_true(is.matrix(clean))
+  expect_identical(dim(clean), c(2L, 4L))
 })
 
 # --- [MODEL] real-model trace (Qwen: tokenizer + hidden_size = 896) ----------

@@ -57,6 +57,14 @@ jobs:
         run: cargo clippy -p rebirth-ffi --all-targets -- -D warnings
         working-directory: rebirth/src/rust
 
+      # Run rebirth-ffi's own tests here too (R on the PATH links the crate): the
+      # ARCHITECTURE §4 index-conversion property tests and the P-4 boundary-guard
+      # reject tests live in this crate and otherwise run nowhere in CI (rust.yaml
+      # is R-free and cannot build rebirth-ffi).
+      - name: cargo test (rebirth-ffi, the R boundary crate)
+        run: cargo test -p rebirth-ffi
+        working-directory: rebirth/src/rust
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           working-directory: rebirth

@@ -95,7 +95,7 @@ vector), and \code{value} (the activation).
 \strong{Memory (the 16 GB rule).} A full trace can be large, so the defaults capture
 little (\code{positions = "last"}, \code{components = "residual"}); widen them deliberately.
 Before running, the capture's size is estimated from the filters. If it fits the
-budget (\verb{min(2 GB, 20\% of RAM)}, overridable with
+budget (\verb{min(256 MB, 20\% of RAM)}, overridable with
 \verb{options(rebirth.trace_budget = <bytes>)}) it is held in memory. If it exceeds the
 budget and \code{spill = TRUE} (the default), the capture is streamed to an Arrow-IPC
 file under the session cache and the result is a \emph{spilled} \code{rebirth_trace} that

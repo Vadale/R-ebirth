@@ -50,6 +50,23 @@ next_spill_path <- function(spill_dir = NULL) {
   }
 }
 
+# A per-trace nonce for a spill file's integrity footer, unique across sessions,
+# processes, and calls. The old id was basename(spill_path) (trace-<n>.arrow), whose
+# per-session counter restarts at 1 each session: two sessions writing to the same
+# user-supplied spill_dir produced the same id, so a later trace's file could be
+# read as an earlier trace object's activations (M-2). A nonce closes that: the
+# process id separates processes, basename(tempfile("")) is unique per call within a
+# session (and, being tempfile's own counter, does not perturb the user's RNG), and
+# a high-resolution timestamp separates sessions that reuse a pid.
+next_trace_id <- function() {
+  paste(
+    Sys.getpid(),
+    basename(tempfile("")),
+    sprintf("%.6f", as.numeric(Sys.time())),
+    sep = "-"
+  )
+}
+
 # Remove this session's spill directory (called by the exit finalizer). Best
 # effort: never errors, so it is safe during R's shutdown.
 cleanup_spill_session <- function() {

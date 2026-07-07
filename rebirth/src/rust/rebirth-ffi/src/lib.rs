@@ -89,27 +89,64 @@ fn from_engine_token(id_0based: i32) -> i32 {
 }
 
 /// R (1-based index) -> engine (0-based), for layers/positions/neurons. The single
-/// inbound conversion site (ARCHITECTURE.md §4).
+/// inbound conversion site (ARCHITECTURE.md §4). Fallible on purpose (M-4/P-4).
 ///
-/// PRECONDITION (F-4): `one_based >= 1`. R validates every layer/position/neuron as
-/// a positive integer before the boundary, so this is the only supported input. The
-/// `.max(0)` clamp on a `<= 0` value is a memory-safety FLOOR, not a supported path:
-/// it merely keeps the narrowing to `u32` total (no wrap to a huge index) for an
-/// unvalidated caller; such a value maps to engine index 0 and is still rejected
-/// downstream, never silently treated as a real index.
-fn to_engine_index(one_based: i32) -> u32 {
-    debug_assert!(
-        one_based >= 1,
-        "to_engine_index precondition: R passes a validated 1-based index"
-    );
-    (one_based - 1).max(0) as u32
+/// R validates every layer/position/neuron as a positive integer before the
+/// boundary, so a value `< 1` here means R's validation broke. We reject it with
+/// `rebirth_error_internal` — we want that bug report — rather than clamping it (the
+/// old `.max(0)`) into engine index 0, which would silently ablate/trace a
+/// DIFFERENT, valid item (layer 1, neuron 1). At the boundary, out-of-contract input
+/// is an error, never a plausible different request.
+fn to_engine_index(one_based: i32) -> Result<u32, RebirthError> {
+    if one_based < 1 {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "a 1-based index reached the FFI boundary as {one_based} (< 1); R must \
+                 validate layers/positions/neurons as positive integers before the call"
+            ),
+        });
+    }
+    Ok((one_based - 1) as u32)
 }
 
 /// Engine (0-based index) -> R (1-based), for layers/positions/neurons. The single
 /// outbound conversion site (ARCHITECTURE.md §4). Inverse of [`to_engine_index`] on
-/// the valid range: `from_engine_index(to_engine_index(x)) == x` for `x >= 1`.
+/// the valid range: `from_engine_index(to_engine_index(x)?) == x` for `x >= 1`.
 fn from_engine_index(zero_based: u32) -> i32 {
     (zero_based as i64 + 1) as i32
+}
+
+/// A 1-based count/size (e.g. `max_tokens`, `top`, `context_length`) that R
+/// validated as a positive integer before the boundary. A value `< 1` here means R's
+/// validation broke, so reject with `rebirth_error_internal` rather than silently
+/// clamping it (the old `.max(0)`/`.max(1)`) into a different valid request (P-4).
+fn checked_count(value: i32, name: &str) -> Result<usize, RebirthError> {
+    if value < 1 {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "{name} = {value} reached the FFI boundary below 1; R must validate it as a \
+                 positive integer before the call"
+            ),
+        });
+    }
+    Ok(value as usize)
+}
+
+/// The trace memory budget (bytes) R computed and validated (always `> 0` from
+/// `trace_budget()`, or `Inf` in the self-test's "never spill" path). A negative or
+/// NaN value means R's computation broke, so reject rather than clamp it to 0 (the
+/// old `.max(0.0)`), which would silently force every capture to spill or OOM;
+/// `Inf` saturates to `u64::MAX`, the intended unbounded-budget sentinel (P-4).
+fn checked_budget_bytes(budget_bytes: f64) -> Result<u64, RebirthError> {
+    if budget_bytes < 0.0 || budget_bytes.is_nan() {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "the trace budget reached the FFI boundary as {budget_bytes} (negative or NaN); \
+                 R computes a positive budget before the call"
+            ),
+        });
+    }
+    Ok(budget_bytes as u64)
 }
 
 /// Borrow the live model behind `ptr` and run `f`, mapping a closed/foreign
@@ -264,9 +301,19 @@ fn rebirth_model_load(
             });
         }
     };
+    // R validates context_length as a positive integer; a value below 1 here means
+    // that validation broke -- reject, never clamp it to 1 (P-4).
+    if context_length < 1 {
+        return error_payload(RebirthError::Internal {
+            context: format!(
+                "context_length {context_length} reached the FFI boundary below 1; R must \
+                 validate it as a positive integer before the call"
+            ),
+        });
+    }
     let request = LoadRequest {
         path: PathBuf::from(path),
-        context_length: context_length.max(1) as u32,
+        context_length: context_length as u32,
         gpu_layers: if gpu_layers < 0 {
             None
         } else {
@@ -372,7 +419,7 @@ fn rebirth_generate(
 ) -> Robj {
     with_model(&ptr, |model| {
         let params = GenerateParams {
-            max_tokens: max_tokens.max(0) as usize,
+            max_tokens: checked_count(max_tokens, "max_tokens")?,
             temperature: temperature as f32,
             top_p: top_p as f32,
             seed: seed as u64,
@@ -401,7 +448,7 @@ fn rebirth_generate(
 #[extendr]
 fn rebirth_logits(ptr: Robj, prompt: &str, top: i32) -> Robj {
     with_model(&ptr, |model| {
-        let entries = model.next_token_logits(prompt, top.max(0) as usize)?;
+        let entries = model.next_token_logits(prompt, checked_count(top, "top")?)?;
         let token_id: Vec<i32> = entries
             .iter()
             .map(|e| from_engine_token(e.token_id))
@@ -482,8 +529,7 @@ fn rebirth_trace(
         let refs: Vec<&str> = prompts.iter().map(String::as_str).collect();
         let plan = SpillPlan {
             spill,
-            // R passes a validated positive budget as a double; clamp defensively.
-            budget_bytes: budget_bytes.max(0.0) as u64,
+            budget_bytes: checked_budget_bytes(budget_bytes)?,
             spill_path: spill_path.to_string(),
             model: model_id.to_string(),
             trace_id: trace_id.to_string(),
@@ -556,7 +602,12 @@ fn build_capture_spec(
     let layers = if layers.is_empty() {
         None
     } else {
-        Some(layers.iter().map(|&l| to_engine_index(l)).collect())
+        Some(
+            layers
+                .iter()
+                .map(|&l| to_engine_index(l))
+                .collect::<Result<Vec<_>, _>>()?,
+        )
     };
     let positions = match positions_mode {
         "last" => Positions::Last,
@@ -565,7 +616,7 @@ fn build_capture_spec(
             positions_values
                 .iter()
                 .map(|&p| to_engine_index(p))
-                .collect(),
+                .collect::<Result<Vec<_>, _>>()?,
         ),
         other => {
             return Err(RebirthError::Internal {
@@ -692,7 +743,7 @@ fn rebirth_intervene(
         // Steering: one row per accumulated steer entry; add_steer sums rows that
         // land on the same engine layer (control vectors are additive, D-016).
         for (i, &layer_1based) in steer_layers.iter().enumerate() {
-            let il = to_engine_index(layer_1based) as usize;
+            let il = to_engine_index(layer_1based)? as usize;
             let start = i * width;
             let vector: Vec<f32> = steer_vectors[start..start + width]
                 .iter()
@@ -704,8 +755,8 @@ fn rebirth_intervene(
         // Ablation: one (layer, neuron, value) triple per ablated neuron; add_ablation
         // unions with last-write-wins in replay (accumulation) order (D-016).
         for i in 0..ablate_layers.len() {
-            let il = to_engine_index(ablate_layers[i]) as usize;
-            let neuron = to_engine_index(ablate_neurons[i]) as usize;
+            let il = to_engine_index(ablate_layers[i])? as usize;
+            let neuron = to_engine_index(ablate_neurons[i])? as usize;
             spec.add_ablation(il, &[neuron], ablate_values[i] as f32);
         }
 
@@ -761,7 +812,7 @@ fn rebirth_selftest_trace_tokens_spill(
         let ids: Vec<i32> = tokens.iter().map(|&t| to_engine_token(t)).collect();
         let plan = SpillPlan {
             spill,
-            budget_bytes: budget_bytes.max(0.0) as u64,
+            budget_bytes: checked_budget_bytes(budget_bytes)?,
             spill_path: spill_path.to_string(),
             model: model_id.to_string(),
             trace_id: trace_id.to_string(),
@@ -797,7 +848,7 @@ extendr_api::extendr_module! {
 
 #[cfg(test)]
 mod tests {
-    use super::{from_engine_index, to_engine_index};
+    use super::{checked_budget_bytes, checked_count, from_engine_index, to_engine_index};
     use rebirth_llm::parse_tensor_name;
 
     // The canonical defect class (ARCHITECTURE §4): 1-based <-> 0-based conversion
@@ -807,14 +858,51 @@ mod tests {
         // from_engine_index(to_engine_index(x)) == x for every 1-based index.
         for x in 1..=4096i32 {
             assert_eq!(
-                from_engine_index(to_engine_index(x)),
+                from_engine_index(to_engine_index(x).expect("valid 1-based index")),
                 x,
                 "round-trip at {x}"
             );
         }
         // Anchor the two ends explicitly: layer 1 <-> engine il 0.
-        assert_eq!(to_engine_index(1), 0);
+        assert_eq!(to_engine_index(1).unwrap(), 0);
         assert_eq!(from_engine_index(0), 1);
+    }
+
+    #[test]
+    fn to_engine_index_rejects_out_of_contract_indices() {
+        // M-4/P-4: an index < 1 (R validation broke) is rejected with
+        // rebirth_error_internal, never clamped to engine 0 (which would ablate/trace
+        // a different, valid item). The old `.max(0)` returned 0 for both.
+        for bad in [0i32, -1, -7, i32::MIN] {
+            let err = to_engine_index(bad).expect_err("index < 1 must reject");
+            assert_eq!(err.class(), "rebirth_error_internal", "bad index {bad}");
+        }
+    }
+
+    #[test]
+    fn checked_count_rejects_below_one_and_passes_positive() {
+        // The count/size boundary guard (max_tokens, top, context_length): reject < 1,
+        // pass a positive value through as usize (P-4).
+        assert_eq!(checked_count(1, "top").unwrap(), 1);
+        assert_eq!(checked_count(4096, "max_tokens").unwrap(), 4096);
+        for bad in [0i32, -1, i32::MIN] {
+            assert_eq!(
+                checked_count(bad, "top").unwrap_err().class(),
+                "rebirth_error_internal"
+            );
+        }
+    }
+
+    #[test]
+    fn checked_budget_bytes_rejects_negative_and_nan_but_passes_inf() {
+        // The trace budget guard: reject negative/NaN (R computes a positive budget),
+        // pass 0, a finite value, and Inf (the self-test's unbounded sentinel, which
+        // saturates to u64::MAX) (P-4).
+        assert_eq!(checked_budget_bytes(0.0).unwrap(), 0);
+        assert_eq!(checked_budget_bytes(2048.0).unwrap(), 2048);
+        assert_eq!(checked_budget_bytes(f64::INFINITY).unwrap(), u64::MAX);
+        assert!(checked_budget_bytes(-1.0).is_err());
+        assert!(checked_budget_bytes(f64::NAN).is_err());
     }
 
     #[test]
