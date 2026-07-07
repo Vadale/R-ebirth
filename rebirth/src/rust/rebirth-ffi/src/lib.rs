@@ -767,7 +767,12 @@ fn rebirth_intervene(
         // (D-012/D-014: never a silent no-op on an arch without the choke point).
         model.check_intervention_supported()?;
 
-        let width = n_embd.max(0) as usize;
+        // n_embd / n_layer are the model's own dimensions (m$hidden_size / m$layers),
+        // always >= 1 for a real model. Route them through the same reject-not-clamp
+        // guard as every other boundary scalar (M-4 / Hard rule 8b) instead of the
+        // lone `.max(0)` clamp: an out-of-contract dimension is an internal error to
+        // surface, not a silent 0 that would only trip the length check below.
+        let width = checked_count(n_embd, "n_embd")?;
         // Defensive: R is the sole caller and guarantees these lengths, but check
         // rather than risk an out-of-bounds slice panic on an internal mismatch.
         if steer_vectors.len() != width.saturating_mul(steer_layers.len())
@@ -780,7 +785,7 @@ fn rebirth_intervene(
             });
         }
 
-        let mut spec = InterventionSpec::new(width, n_layer.max(0) as usize);
+        let mut spec = InterventionSpec::new(width, checked_count(n_layer, "n_layer")?);
 
         // Steering: one row per accumulated steer entry; add_steer sums rows that
         // land on the same engine layer (control vectors are additive, D-016).
