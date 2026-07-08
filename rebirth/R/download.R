@@ -33,8 +33,12 @@
 #' The target file name is the URL's last path segment. If a registry model is
 #' already present and its checksum matches, the download is skipped (idempotent,
 #' offline-friendly); a present-but-mismatching file is treated as corrupt and
-#' re-downloaded. Verification happens on a temporary file that is only moved into
-#' place once it passes, so the final path never holds unverified bytes.
+#' re-downloaded. A bare URL has no pinned checksum, so a same-named cached file
+#' cannot be shown to have come from that URL and is never reused -- a bare URL is
+#' always re-fetched. Verification happens on a temporary file that is only moved
+#' into place once it passes, so the final path never holds unverified bytes.
+#' Downloads follow HTTPS redirects; for a registry alias the pinned checksum
+#' still guards integrity end-to-end, so a redirect cannot substitute the bytes.
 #'
 #' This is one of only two functions in the package that write outside a session
 #' temporary directory (the other is [llm_trace()] spill); see the package's
@@ -43,7 +47,9 @@
 #' @param model Single string: a registry alias (see Details) or a full
 #'   `https://` URL to a GGUF file.
 #' @param dir `NULL` (the user cache directory) or a single string naming the
-#'   directory to download into (created recursively if missing).
+#'   directory to download into (created recursively if missing). Use a directory
+#'   only you can write to; downloading into a world-writable/shared directory is
+#'   not supported.
 #' @param quiet Single logical. `TRUE` suppresses the download progress bar and
 #'   the informational messages. Default `FALSE`.
 #' @return The local file path, returned **invisibly**. Errors:
@@ -96,7 +102,13 @@ model_registry <- function() {
       "The model registry (models.csv) is missing from the installed package."
     )
   }
-  utils::read.csv(path, stringsAsFactors = FALSE, colClasses = "character")
+  # na.strings = character(0L): keep every field literal so a hash/URL that
+  # happens to read as "NA" is never coerced to NA_character_ (which would route
+  # an alias into the unverified branch); the hash-format check in resolve_model
+  # is the real fail-closed guard, this just removes the read.csv NA quirk.
+  utils::read.csv(
+    path, stringsAsFactors = FALSE, colClasses = "character", na.strings = character(0L)
+  )
 }
 
 # Resolve `model` to a download spec: list(url, sha256, source, size_bytes).
@@ -146,12 +158,18 @@ resolve_model <- function(model, call = sys.call(-1L)) {
       call = call
     )
   }
-  list(
-    url = url,
-    sha256 = tolower(row$sha256[[1L]]),
-    source = "alias",
-    size_bytes = row$size_bytes[[1L]]
-  )
+  sha256 <- tolower(row$sha256[[1L]])
+  if (!grepl("^[0-9a-f]{64}$", sha256)) {
+    # Fail closed on a malformed registry hash rather than downgrading to an
+    # unverified download: the ship-time registry test guards this, but a
+    # re-packager or hand-edit must not be able to slip an unpinned model past
+    # a runtime that trusted the file blindly.
+    abort_download(
+      sprintf("Registry entry '%s' has a malformed SHA256; refusing to download.", model),
+      fields = list(argument = "model", sha256 = sha256), call = call
+    )
+  }
+  list(url = url, sha256 = sha256, source = "alias", size_bytes = row$size_bytes[[1L]])
 }
 
 # The last path segment of a URL, with any query string / fragment stripped;
@@ -211,22 +229,14 @@ download_verify <- function(url, expected, dir, quiet, call = sys.call(-1L)) {
       }
       unlink(dest, force = TRUE)
     }
-  } else if (file.exists(dest)) {
-    # Bare URL with a file already present: nothing to verify against, so report
-    # its hash and reuse it rather than re-downloading.
-    actual <- tolower(unname(tools::sha256sum(dest)))
-    if (!quiet) {
-      message(sprintf(
-        "Using existing '%s' at '%s'.\n  SHA256: %s (no registry checksum to verify against).",
-        fname, dir, actual
-      ))
-    }
-    return(dest)
   }
+  # A bare URL has no pinned checksum, so a same-named cached file cannot be shown
+  # to have come from THIS url; it is never reused -- always re-fetched (any file
+  # already at `dest` is overwritten by move_into_place once the fetch succeeds).
 
   tmp <- tempfile(pattern = "rebirth-dl-", tmpdir = dir, fileext = ".part")
   on.exit(unlink(tmp, force = TRUE), add = TRUE)
-  fetch_url(url, tmp, quiet)
+  fetch_url(url, tmp, quiet, call = call)
 
   if (!file.exists(tmp)) {
     abort_download(
@@ -300,7 +310,12 @@ move_into_place <- function(tmp, dest) {
 # method. Isolated so tests mock exactly this and drive every surrounding path
 # offline. download.file() raises on an HTTP/connection error and leaves no file;
 # any residue is removed and the failure re-raised as a classed condition.
-fetch_url <- function(url, dest, quiet) {
+fetch_url <- function(url, dest, quiet, call = sys.call(-1L)) {
+  # A model GGUF is often > 1 GB; the default download timeout (60s) would abort a
+  # legitimate fetch on any normal link, so raise it for the duration (never
+  # lowering a user's larger setting) and restore it afterwards.
+  old_timeout <- options(timeout = max(getOption("timeout", 60L), 3600L))
+  on.exit(options(old_timeout), add = TRUE)
   status <- tryCatch(
     utils::download.file(
       url, destfile = dest, method = "libcurl", mode = "wb", quiet = quiet
@@ -312,7 +327,7 @@ fetch_url <- function(url, dest, quiet) {
           "Download failed for '%s': %s\n  Check your network connection and the URL.",
           url, conditionMessage(e)
         ),
-        fields = list(url = url)
+        fields = list(url = url), call = call
       )
     }
   )
@@ -320,7 +335,7 @@ fetch_url <- function(url, dest, quiet) {
     if (file.exists(dest)) unlink(dest, force = TRUE)
     abort_download(
       sprintf("Download of '%s' failed with status %s.", url, as.character(status)),
-      fields = list(url = url)
+      fields = list(url = url), call = call
     )
   }
   invisible(dest)

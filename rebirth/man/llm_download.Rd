@@ -11,7 +11,9 @@ llm_download(model, dir = NULL, quiet = FALSE)
 \verb{https://} URL to a GGUF file.}
 
 \item{dir}{\code{NULL} (the user cache directory) or a single string naming the
-directory to download into (created recursively if missing).}
+directory to download into (created recursively if missing). Use a directory
+only you can write to; downloading into a world-writable/shared directory is
+not supported.}
 
 \item{quiet}{Single logical. \code{TRUE} suppresses the download progress bar and
 the informational messages. Default \code{FALSE}.}
@@ -57,8 +59,12 @@ unverifiable file as if it had been verified.
 The target file name is the URL's last path segment. If a registry model is
 already present and its checksum matches, the download is skipped (idempotent,
 offline-friendly); a present-but-mismatching file is treated as corrupt and
-re-downloaded. Verification happens on a temporary file that is only moved into
-place once it passes, so the final path never holds unverified bytes.
+re-downloaded. A bare URL has no pinned checksum, so a same-named cached file
+cannot be shown to have come from that URL and is never reused -- a bare URL is
+always re-fetched. Verification happens on a temporary file that is only moved
+into place once it passes, so the final path never holds unverified bytes.
+Downloads follow HTTPS redirects; for a registry alias the pinned checksum
+still guards integrity end-to-end, so a redirect cannot substitute the bytes.
 
 This is one of only two functions in the package that write outside a session
 temporary directory (the other is \code{\link[=llm_trace]{llm_trace()}} spill); see the package's

@@ -15,7 +15,7 @@ make_fixture <- function(content = "rebirth-download-fixture-bytes") {
 
 # A fetch_url() stand-in that "downloads" by copying a local fixture to `dest`.
 copy_fetch <- function(fixture_path) {
-  function(url, dest, quiet) {
+  function(url, dest, quiet, call = NULL) {
     stopifnot(file.copy(fixture_path, dest, overwrite = TRUE))
     invisible(dest)
   }
@@ -68,6 +68,20 @@ test_that("the model registry is well-formed (https, 64-hex sha256, unique alias
   expect_true(all(grepl("^[0-9a-f]{64}$", reg$sha256)))
   expect_true(all(grepl("^[0-9]+$", reg$size_bytes)))
   expect_false(anyNA(reg$license))
+})
+
+test_that("resolve_model() fails closed on a malformed registry SHA256", {
+  # LOW-1 (security-auditor): a re-packaged / hand-edited registry whose hash is
+  # not 64-hex must NOT downgrade to an unverified download. The runtime guard in
+  # resolve_model() rejects it, independent of the ship-time well-formedness test.
+  bad <- data.frame(
+    alias = "bogus", url = "https://example.org/bogus.gguf", sha256 = "not-a-real-hash",
+    size_bytes = "1", license = "X", notes = "", stringsAsFactors = FALSE
+  )
+  local_mocked_bindings(model_registry = function() bad)
+  expect_error(rebirth:::resolve_model("bogus"), class = "rebirth_error_download")
+  cnd <- tryCatch(rebirth:::resolve_model("bogus"), condition = function(c) c)
+  expect_identical(cnd$sha256, "not-a-real-hash")
 })
 
 test_that("the CI-integration alias pins the same SHA256 the nightly workflow uses", {
@@ -187,7 +201,7 @@ test_that("download_verify() skips the download on a verified cache hit", {
 
   called <- FALSE
   local_mocked_bindings(
-    fetch_url = function(url, dest, quiet) {
+    fetch_url = function(url, dest, quiet, call = NULL) {
       called <<- TRUE
       stop("fetch_url must not be called on a verified cache hit")
     }
@@ -206,7 +220,7 @@ test_that("download_verify() re-downloads when the cached file is corrupt", {
 
   called <- FALSE
   local_mocked_bindings(
-    fetch_url = function(url, dest, quiet) {
+    fetch_url = function(url, dest, quiet, call = NULL) {
       called <<- TRUE
       stopifnot(file.copy(fx$path, dest, overwrite = TRUE))
       invisible(dest)
@@ -247,11 +261,32 @@ test_that("download_verify() reports the hash for a bare URL and never claims it
   expect_identical(tolower(unname(tools::sha256sum(path))), fx$sha256)
 })
 
+test_that("download_verify() re-fetches a bare URL even if a same-named file exists", {
+  # LOW-4: two different bare URLs sharing a basename must not collide. An
+  # unverifiable bare URL never reuses an existing same-named cached file --
+  # it always re-fetches, so it can never return another URL's stale bytes.
+  fx <- make_fixture("the-correct-bytes-for-this-url")
+  dir <- tempfile("dlcache-")
+  dir.create(dir)
+  on.exit(unlink(dir, recursive = TRUE, force = TRUE), add = TRUE)
+  writeBin(charToRaw("stale-bytes-from-a-different-url"), file.path(dir, "model.gguf"))
+
+  fetched <- FALSE
+  local_mocked_bindings(fetch_url = function(url, dest, quiet, call = NULL) {
+    fetched <<- TRUE
+    stopifnot(file.copy(fx$path, dest, overwrite = TRUE))
+    invisible(dest)
+  })
+  path <- rebirth:::download_verify("https://x/model.gguf", NA_character_, dir, quiet = TRUE)
+  expect_true(fetched) # did NOT silently reuse the stale cached file
+  expect_identical(tolower(unname(tools::sha256sum(path))), fx$sha256)
+})
+
 test_that("download_verify() surfaces a network failure as rebirth_error_download", {
   dir <- tempfile("dlcache-")
   on.exit(unlink(dir, recursive = TRUE, force = TRUE), add = TRUE)
   local_mocked_bindings(
-    fetch_url = function(url, dest, quiet) {
+    fetch_url = function(url, dest, quiet, call = NULL) {
       rebirth:::abort_download("Download failed for test", list(url = url))
     }
   )
