@@ -1,0 +1,3 @@
+alias,url,sha256,size_bytes,license,notes
+qwen2.5-0.5b-instruct-q8_0,https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q8_0.gguf,ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e,675710816,Apache-2.0,Qwen2.5 0.5B Instruct Q8_0; the CI-integration model (smallest download).
+qwen2.5-1.5b-instruct-q4_k_m,https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/91cad51170dc346986eccefdc2dd33a9da36ead9/qwen2.5-1.5b-instruct-q4_k_m.gguf,6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e,1117320736,Apache-2.0,Qwen2.5 1.5B Instruct Q4_K_M; the demo default.
