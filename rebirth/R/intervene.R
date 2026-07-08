@@ -3,13 +3,20 @@
 # the accumulated steering / ablation spec applied. The source handle is never
 # mutated (reversibility = use the original object, D-003 / API-GRAMMAR section 2).
 
-# Architectures whose graphs carry the `build_cvec` residual choke point that both
-# steering and ablation hook (D-012/D-016). Mirrors the engine's
-# INTERVENTION_SUPPORTED_ARCHS (intervene.rs) so the R fail-fast and the engine gate
-# agree; the engine re-checks authoritatively before any decode. Tiering (D-016):
-# llama + qwen2 are fixture-covered; gemma3 is source-verified at b9726, its runtime
-# fixture chartered for WP6b/thesis-era.
-INTERVENTION_SUPPORTED_ARCHS <- c("llama", "qwen2", "gemma3")
+# Architecture support is NOT gated in R (D-021): the engine runs a runtime sentinel
+# probe inside derive_with_interventions (probe.rs) that proves steering and ablation
+# actually take effect on THIS model at the requested layers, raising
+# rebirth_error_intervention (never a silent no-op) otherwise -- so any
+# standard-residual decoder works, without a hand-maintained allow-list.
+#
+# This constant is DOCUMENTATION ONLY; it does NOT gate anything. It names the
+# "behaviorally validated" tier: architectures that, beyond passing the runtime
+# probe, also carry a committed WP5 intervention acceptance fixture -- llama via the
+# exact numerical oracle (synthetic_intervene.rs), qwen2 via the [MODEL] valence +
+# KL fixtures on Qwen2.5-0.5B. Surfaced by ?llm_steer / the model matrix; any other
+# architecture still works when the probe passes, it is simply not (yet) in this
+# fixture-backed tier.
+INTERVENTION_VALIDATED_ARCHS <- c("llama", "qwen2")
 
 #' Steer a model along a direction
 #'
@@ -51,9 +58,14 @@ INTERVENTION_SUPPORTED_ARCHS <- c("llama", "qwen2", "gemma3")
 #' handle raises `rebirth_error_embed` / `rebirth_error_trace` rather than silently
 #' returning base (un-intervened) vectors mislabeled as steered.
 #'
-#' Supported on the `llama`, `qwen2`, and `gemma3` architectures (the residual
-#' choke point the mechanism hooks); any other architecture raises
-#' `rebirth_error_intervention` rather than silently doing nothing.
+#' **Model support.** Interventions work on any standard-residual decoder. Before
+#' the handle is returned, a runtime probe verifies on *this* model that steering
+#' actually shifts the residual at each requested layer; if it would silently do
+#' nothing (an architecture that does not route its residual through the choke point
+#' the mechanism hooks), `rebirth_error_intervention` is raised instead of a no-op
+#' handle. The `llama` and `qwen2` architectures are additionally *behaviorally
+#' validated* -- they pass the valence-steering and KL-ablation acceptance fixtures;
+#' any other architecture is enabled the moment it passes the probe.
 #'
 #' @param m An `llm` handle from [llm()].
 #' @param layer Single 1-based transformer block to steer, in `2:m$layers` (layer
@@ -87,7 +99,6 @@ llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
-  check_intervention_arch(m)
   layer <- validate_intervention_layer(m, layer)
 
   # The native control vector reserves engine index 0 (the first block), so it
@@ -179,8 +190,13 @@ llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
 #'
 #' Only `component = "residual"` ablation is supported in this release (the shared
 #' choke point); `"attn_out"`/`"mlp_out"` raise `rebirth_error_intervention`.
-#' Supported on `llama`, `qwen2`, and `gemma3`; any other architecture raises
-#' `rebirth_error_intervention` rather than silently doing nothing.
+#'
+#' **Model support.** Interventions work on any standard-residual decoder; before the
+#' handle is returned, a runtime probe verifies on *this* model that the ablation
+#' takes effect at each requested layer, raising `rebirth_error_intervention` rather
+#' than silently doing nothing. `llama` and `qwen2` are additionally *behaviorally
+#' validated* (the valence / KL acceptance fixtures); other architectures are enabled
+#' once they pass the probe.
 #'
 #' @param m An `llm` handle from [llm()].
 #' @param layer Single 1-based transformer block, in `1:m$layers`.
@@ -211,7 +227,6 @@ llm_ablate <- function(m, layer, neurons, value = 0, component = "residual") {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
-  check_intervention_arch(m)
   layer <- validate_intervention_layer(m, layer)
 
   if (!is.numeric(neurons) || length(neurons) == 0L || anyNA(neurons) ||
@@ -277,25 +292,6 @@ guard_not_intervened <- function(m, class, what, call = sys.call(-1L)) {
 }
 
 # --- internal: validation, composition, and the derived-handle constructor ---
-
-# Fail fast (before any native call) if this model's architecture lacks the
-# residual choke point interventions hook. The engine re-checks authoritatively.
-check_intervention_arch <- function(m, call = sys.call(-1L)) {
-  if (!(m$architecture %in% INTERVENTION_SUPPORTED_ARCHS)) {
-    abort_intervention(
-      sprintf(
-        paste0(
-          "Interventions (steering and ablation) are not supported for the '%s' ",
-          "architecture: it lacks the residual choke point the mechanism hooks. ",
-          "Supported architectures: %s."
-        ),
-        m$architecture, paste(INTERVENTION_SUPPORTED_ARCHS, collapse = ", ")
-      ),
-      call = call
-    )
-  }
-  invisible(m)
-}
 
 # Validate a single 1-based `layer` in 1:m$layers; return it as an integer.
 validate_intervention_layer <- function(m, layer, call = sys.call(-1L)) {

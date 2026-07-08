@@ -18,9 +18,26 @@ delivered the two software pieces those models need beyond loading:
   component tables for `qwen3`/`qwen35`/`gemma4`, with `gemma4`'s same-named `attn_out`
   tensor rejected as a name collision (D-014/D-021).
 
-Interventions (`llm_steer`/`llm_ablate`) are **out of scope for part-1** — the runtime
-sentinel intervention probe that supersedes the D-016 hard allow-list is part-2. The
-intervention allow-list is unchanged here.
+WP7.5a part-2 delivered the third piece: a **runtime sentinel intervention probe**
+(`probe.rs`, D-021 §1.3) that supersedes the D-016 hard arch allow-list
+(`{llama,qwen2,gemma3}`). Before `llm_steer`/`llm_ablate` return a handle, the engine
+decodes one sentinel token on a throwaway context and checks, at each requested layer,
+that a sentinel ablation pins the residual (`l_out-<il>[k]`) and a sentinel control
+vector shifts it by exactly ε — proving the mechanism (`build_cvec` + the native cvec
+path) actually takes effect on *this* model. Pass → interventions enabled (any
+standard-residual decoder, incl. gemma4/qwen3/qwen35); fail → `rebirth_error_intervention`
+naming what did not respond, never a silent no-op. The verdict is cached per model, so
+the ~two-token cost is paid once.
+
+The R constant is retargeted to a **documentation-only "behaviorally validated" tier**
+(`INTERVENTION_VALIDATED_ARCHS`, non-gating): architectures with a committed WP5
+acceptance fixture beyond the probe — `llama` (the exact numerical oracle,
+`synthetic_intervene.rs`) and `qwen2` (the `[MODEL]` valence + KL fixtures on
+Qwen2.5-0.5B). `gemma3` dropped from the old list (it was only source-verified, never
+behaviorally validated); it still works whenever the probe passes. `gemma4` is
+probe-verified and additionally **behaviorally spot-check-confirmed** (valence + KL, see
+the E4B intervention spot-check below), but stays out of the fixture-backed constant until
+it has a committed fixture of its own.
 
 ## Where the checks ran
 
@@ -74,6 +91,44 @@ gated by the Gemma Terms of Use and are never fetched in CI (D-023).
   by resolving `gemma4` → the builtin `"gemma"` template (`LLM_CHAT_TEMPLATE_GEMMA`,
   applied at `llama-chat.cpp:391-399`), which is byte-correct for the family. No vendor
   bump; the fix is in the R/Rust layer only.
+
+## Gemma 4 E4B intervention spot-check (2026-07-08) [MODEL]
+
+Run on the founder's Mac (Metal) against the E4B blob above, exercising the WP7.5a
+part-2 sentinel probe and the steer/ablate mechanism end to end. All figures are from a
+standalone `[MODEL]` script (public API only), not yet a committed fixture.
+
+- **Probe passes.** Every requested layer's ablation-pin and steer-shift sentinel
+  responds; `llm_steer`/`llm_ablate` derive handles (probe adds ~one throwaway decode,
+  cached per model). Steering and ablation both visibly change generation.
+- **Reversibility holds — on the deterministic forward pass.** The source's next-token
+  distribution (`llm_logits`) is bit-identical after probed steer + ablate derivations,
+  and order-independent (steer∘ablate = ablate∘steer). NB: gemma4 *greedy generation* on
+  Metal is not bit-reproducible even with **no** derivation (a backend FP-reduction
+  property — two back-to-back base generations diverge; `llm_logits` is stable), so
+  reversibility is verified on the teacher-forced forward pass, matching the exact
+  bit-for-bit Rust oracle on the synthetic model (`synthetic_intervene.rs`, CPU).
+- **KL-ablation causal control** (5 factual prompts, layer 34, K = 24 neurons, mean KL
+  vs base over the full-vocab softmax): targeted (top-|activation|) = **0.4127** vs a
+  matched random set = **0.0006** → **671×**; base‖base floor = 0.0000. Targeted ablation
+  is three orders of magnitude more disruptive than random — a genuine causal effect, not
+  generic perturbation.
+- **Valence steering** (10 committed neutral prompts, the committed 141-word lexicon, a
+  gemma4-derived diff-in-means direction, `chat = FALSE`, `max_tokens = 48`,
+  `temperature = 0`): clean `+coef > base > -coef` at layer 21 / coef ±14 →
+  **+0.0280 / +0.0054 / −0.0029**, pos−neg = **+0.0309** (above the Qwen fixture's 0.03
+  bar), also positive at layer 31 (both coefs). Gemma 4 needs a larger coefficient than
+  Qwen (14 vs 10), consistent with its wider residual (2560 vs 896).
+
+**Tier decision.** Both behavioral checks pass, so Gemma 4 interventions are
+**probe-verified and behaviorally spot-check-confirmed**. Gemma 4 is deliberately **not**
+added to `INTERVENTION_VALIDATED_ARCHS` (which stays `{llama, qwen2}`): that constant is
+reserved for architectures with a *committed, reproducible* acceptance fixture (llama's
+numerical oracle; qwen2's SHA256-pinned valence + KL fixtures), per the honest-by-
+construction rule "claim only what a golden covers." A committed gemma4 fixture (a pinned
+gemma4 direction artifact + calibrated thresholds, mirroring `test-llm-steer-valence.R`)
+is **chartered as a WP7.5b/follow-up** and needs founder sign-off on committing a
+Gemma-derived artifact under the Gemma Terms of Use.
 
 ## Notes on obtaining text-only GGUFs (D-021 / D-023)
 

@@ -34,27 +34,31 @@ test_that("llm_steer() / llm_ablate() reject a non-llm handle", {
   expect_error(llm_ablate(42, 1, 1), class = "rebirth_error_argument")
 })
 
-test_that("interventions on an unsupported architecture are a classed error", {
-  m <- stub_llm(architecture = "bert") # BERT-class lacks the build_cvec choke point
-  expect_error(
-    llm_steer(m, 2, rep(0, m$hidden_size)),
-    class = "rebirth_error_intervention"
-  )
-  expect_error(
-    llm_ablate(m, 1, 1),
-    class = "rebirth_error_intervention"
-  )
-  # The supported set is named in the message.
-  cnd <- tryCatch(llm_ablate(m, 1, 1), condition = function(c) c)
-  expect_match(conditionMessage(cnd), "llama, qwen2, gemma3", fixed = TRUE)
-})
+# The R-side architecture hard-stop is gone (D-021): interventions are no longer
+# gated by a fixed allow-list. The engine's runtime sentinel probe proves the
+# mechanism takes effect on the specific model and raises rebirth_error_intervention
+# if it would silently no-op. That rejection is exercised on real weights in the Rust
+# integration test tests/synthetic_probe.rs (a steer at a layer the mechanism cannot
+# reach is refused with the classed error); it cannot be tested here, since an
+# unsupported-architecture model is never available in CI and a stub handle has no
+# live engine to probe.
 
-test_that("the R and engine intervention arch allow-lists do not drift (reviewer nit 1)", {
-  # Pin the FULL set on the R side; the engine (INTERVENTION_SUPPORTED_ARCHS in
-  # intervene.rs) pins the identical list in its own unit test. A one-sided addition
-  # (e.g. "gemma2" added on only one side) breaks one of the two tests. The engine
-  # stays authoritative -- this test only catches R<->Rust drift.
-  expect_setequal(INTERVENTION_SUPPORTED_ARCHS, c("llama", "qwen2", "gemma3"))
+test_that("INTERVENTION_VALIDATED_ARCHS is documentation for the validated tier, not a gate", {
+  # Retargeted from the old twin-pinned hard allow-list (D-021, hard rule 8f): the
+  # constant now DOCUMENTS the behaviorally-validated tier (architectures with a
+  # committed WP5 acceptance fixture beyond the runtime probe), consumed only by
+  # ?llm_steer / the model matrix. It must gate nothing.
+  expect_true(all(c("llama", "qwen2") %in% INTERVENTION_VALIDATED_ARCHS))
+  # gemma3 was only source-verified, never behaviorally validated -> it is NOT in the
+  # tier (honest); it still works at runtime whenever the probe passes.
+  expect_false("gemma3" %in% INTERVENTION_VALIDATED_ARCHS)
+  # The tier is doc-only: neither entry point consults it, and the old R-side arch
+  # hard-stop call (check_intervention_arch) is gone -- the engine probe replaces it.
+  for (fn in list(llm_steer, llm_ablate)) {
+    src <- paste(deparse(body(fn)), collapse = "\n")
+    expect_false(grepl("INTERVENTION_VALIDATED_ARCHS", src, fixed = TRUE))
+    expect_false(grepl("check_intervention_arch", src, fixed = TRUE))
+  }
 })
 
 test_that("llm_steer() validates layer / direction / coef / positions", {
@@ -311,7 +315,7 @@ test_that("the original handle reproduces its output bit-for-bit after derivatio
   m <- llm(qwen_model_path())
   on.exit(close(m), add = TRUE)
   prompt <- "In one sentence, describe the ocean."
-  base <- llm_generate(m, prompt, max_tokens = 24, temperature = 0)
+  base <- llm_logits(m, prompt) # deterministic; Metal greedy text is not bit-reproducible
 
   # Deriving steered / ablated handles must not touch the source context.
   s <- llm_steer(m, layer = 4, direction = rep(1, m$hidden_size), coef = 3)
@@ -319,8 +323,8 @@ test_that("the original handle reproduces its output bit-for-bit after derivatio
   on.exit(close(s), add = TRUE)
   on.exit(close(a), add = TRUE)
 
-  after <- llm_generate(m, prompt, max_tokens = 24, temperature = 0)
-  expect_identical(base, after) # bit-for-bit, WP5 acceptance
+  after <- llm_logits(m, prompt)
+  expect_identical(base, after) # source next-token distribution unchanged (WP5)
 })
 
 test_that("generation is derivation-order-independent (steer/ablate commute)", {
@@ -338,10 +342,12 @@ test_that("generation is derivation-order-independent (steer/ablate commute)", {
   on.exit(close(c1), add = TRUE)
   on.exit(close(c2), add = TRUE)
 
-  # Same interventions, opposite derivation order -> identical greedy output (a
-  # steer never moves an ablated neuron; ablation runs after the steer, D-016).
+  # Same interventions, opposite derivation order -> identical next-token
+  # distribution (a steer never moves an ablated neuron; ablation runs after the
+  # steer, D-016). Asserted via the deterministic, intervention-aware llm_logits,
+  # not greedy text (see the reversibility test above for why).
   expect_identical(
-    llm_generate(c1, prompt, max_tokens = 24, temperature = 0),
-    llm_generate(c2, prompt, max_tokens = 24, temperature = 0)
+    llm_logits(c1, prompt),
+    llm_logits(c2, prompt)
   )
 })

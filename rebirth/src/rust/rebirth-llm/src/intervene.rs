@@ -21,19 +21,13 @@ use crate::engine::LoadedModel;
 use crate::error::RebirthError;
 use crate::ffi;
 
-/// Architectures whose graphs call `build_cvec` — the residual choke point both
-/// steering and ablation hook — so interventions are supported. Seeded with the
-/// verified set; an unlisted architecture raises `rebirth_error_intervention`,
-/// never a silent no-op (D-012/D-014). Tiering (D-016): `llama` + `qwen2` are
-/// fixture-covered; `gemma3` is source-verified at b9726 (`models/gemma3.cpp`
-/// L194 calls `build_cvec`), its runtime fixture chartered for WP6b/thesis-era.
-const INTERVENTION_SUPPORTED_ARCHS: &[&str] = &["llama", "qwen2", "gemma3"];
-
-/// Whether `arch` supports interventions (free function so the arch gate is
-/// unit-testable without a loaded model).
-fn intervention_arch_supported(arch: &str) -> bool {
-    INTERVENTION_SUPPORTED_ARCHS.contains(&arch)
-}
+// The D-016 hard arch allow-list (`INTERVENTION_SUPPORTED_ARCHS = {llama, qwen2,
+// gemma3}`, checked before decode) is superseded by the runtime sentinel probe in
+// `probe.rs` (D-021 §1.3): `derive_with_interventions` proves on a throwaway context
+// that steering and ablation actually take effect on THIS model at the requested
+// layers, enabling any standard-residual decoder while still refusing (loudly) a
+// silent no-op. The R-facing "behaviorally validated" tier is documentation-only
+// (`INTERVENTION_VALIDATED_ARCHS` in `intervene.R`), not a gate.
 
 /// A fully-accumulated intervention set, engine-native (0-based layers). The
 /// caller ([`InterventionSpec::add_steer`] / [`add_ablation`](InterventionSpec::add_ablation))
@@ -117,76 +111,62 @@ impl InterventionSpec {
         }
         self.ablate_il_range = Some(widen(self.ablate_il_range, il as i32));
     }
-}
 
-/// Widen an inclusive range to include `il` (or start it at `il`).
-fn widen(range: Option<(i32, i32)>, il: i32) -> (i32, i32) {
-    match range {
-        None => (il, il),
-        Some((s, e)) => (s.min(il), e.max(il)),
-    }
-}
-
-impl LoadedModel {
-    /// `Ok(())` if this model's architecture has the `build_cvec` residual choke
-    /// point interventions hook, else `rebirth_error_intervention` (never a silent
-    /// no-op, D-012/D-014).
-    pub fn check_intervention_supported(&self) -> Result<(), RebirthError> {
-        let arch = self.architecture();
-        if intervention_arch_supported(&arch) {
-            Ok(())
-        } else {
-            Err(RebirthError::Intervention {
-                reason: format!(
-                    "Interventions (steering and ablation) are not supported for the \
-                     '{arch}' architecture: it does not have the residual choke point \
-                     the mechanism hooks. Supported architectures: {}.",
-                    INTERVENTION_SUPPORTED_ARCHS.join(", ")
-                ),
+    /// The engine layers (0-based) carrying a NON-ZERO steer vector — the layers a
+    /// steer actually perturbs (a zero vector, e.g. `coef = 0`, is a genuine no-op
+    /// and is excluded). The sentinel probe (`probe.rs`) verifies exactly these.
+    pub(crate) fn nonzero_steer_layers(&self) -> Vec<u32> {
+        let Some(steer) = &self.steer else {
+            return Vec::new();
+        };
+        (0..self.n_layer)
+            .filter(|&il| {
+                let base = il * self.n_embd;
+                steer[base..base + self.n_embd].iter().any(|&v| v != 0.0)
             })
-        }
+            .map(|il| il as u32)
+            .collect()
     }
 
-    /// Build a NEW handle sharing this model's weights (a cloned `Arc<Model>`, no
-    /// reload) with `spec` applied to a fresh context. The source handle is only
-    /// read, so the original reproduces its outputs bit-for-bit (D-016). Works
-    /// identically on a base or an already-derived handle (the caller passes the
-    /// FULL accumulated spec, so the result is base-weights + all interventions).
-    pub fn derive_with_interventions(
+    /// The engine layers (0-based) carrying a GENUINE ablation — one that is not the
+    /// identity `x*1 + 0`. Mirrors the patched engine's own "genuine" test
+    /// (`llama-adapter.cpp`, `mask[k] != 1 || add[k] != 0`), so the probe verifies
+    /// exactly the layers whose graph the ablation adapter touches.
+    pub(crate) fn ablation_layers(&self) -> Vec<u32> {
+        let (Some(mask), Some(add)) = (&self.ablate_mask, &self.ablate_add) else {
+            return Vec::new();
+        };
+        (0..self.n_layer)
+            .filter(|&il| {
+                let base = il * self.n_embd;
+                (0..self.n_embd).any(|j| mask[base + j] != 1.0 || add[base + j] != 0.0)
+            })
+            .map(|il| il as u32)
+            .collect()
+    }
+
+    /// Apply this spec's steering (native control vector) and ablation (the
+    /// `rebirth_set_intervene` patch) adapters to a live `ctx_ptr`. Shared by the
+    /// real derivation ([`LoadedModel::derive_with_interventions`]) and the sentinel
+    /// probe, so both configure a context through one reviewed code path.
+    pub(crate) fn apply_to_context(
         &self,
-        spec: &InterventionSpec,
-    ) -> Result<LoadedModel, RebirthError> {
-        self.check_intervention_supported()?;
-
-        // Defensive: the R layer builds the spec from this model's metadata, so a
-        // dimension mismatch here is an internal error, not a user error.
-        let n_embd = self.hidden_size().max(0) as usize;
-        let n_layer = self.num_layers().max(0) as usize;
-        if spec.n_embd != n_embd || spec.n_layer != n_layer {
-            return Err(RebirthError::Intervention {
-                reason: format!(
-                    "Internal error: the intervention spec is {} x {} but the model \
-                     is {n_embd} x {n_layer}. Please report this.",
-                    spec.n_embd, spec.n_layer
-                ),
-            });
-        }
-
-        let derived = self.clone_with_fresh_context()?;
-
-        if let (Some(steer), Some((il_start, il_end))) = (&spec.steer, spec.steer_il_range) {
+        ctx_ptr: *mut ffi::llama_context,
+    ) -> Result<(), RebirthError> {
+        let n_embd = self.n_embd;
+        if let (Some(steer), Some((il_start, il_end))) = (&self.steer, self.steer_il_range) {
             // The native cvec buffer has no layer-0 row: pass a view starting at
             // engine layer 1 (`&steer[n_embd..]`, length `n_embd*(n_layer-1)`), so
             // engine layer `il` lands at the native offset `n_embd*(il-1)`. For a
             // 1-layer model this view is empty (steering is then a no-op).
             let native = &steer[n_embd.min(steer.len())..];
-            // SAFETY: `derived.ctx_ptr()` is a live context on this (R main) thread.
-            // `native` is a Rust-owned f32 slice that outlives this synchronous
-            // call; the engine copies the data before returning. The `(ptr, len)`
-            // pair is exactly the "from layer 1" cvec buffer the engine expects.
+            // SAFETY: `ctx_ptr` is a live context on this (R main) thread. `native`
+            // is a Rust-owned f32 slice that outlives this synchronous call; the
+            // engine copies the data before returning. The `(ptr, len)` pair is
+            // exactly the "from layer 1" cvec buffer the engine expects.
             let status = unsafe {
                 ffi::llama_set_adapter_cvec(
-                    derived.ctx_ptr(),
+                    ctx_ptr,
                     native.as_ptr(),
                     native.len(),
                     n_embd as i32,
@@ -206,7 +186,7 @@ impl LoadedModel {
         }
 
         if let (Some(mask), Some(add), Some((il_start, il_end))) =
-            (&spec.ablate_mask, &spec.ablate_add, spec.ablate_il_range)
+            (&self.ablate_mask, &self.ablate_add, self.ablate_il_range)
         {
             // The C API bounds-checks reads of BOTH `mask` and `add` against a single
             // `len` (llama.h), so `add` must be at least `len` long too. The two are
@@ -220,7 +200,7 @@ impl LoadedModel {
             // this synchronous call; the engine copies them before returning.
             let status = unsafe {
                 ffi::rebirth_set_intervene(
-                    derived.ctx_ptr(),
+                    ctx_ptr,
                     mask.as_ptr(),
                     add.as_ptr(),
                     len,
@@ -240,6 +220,55 @@ impl LoadedModel {
             }
         }
 
+        Ok(())
+    }
+}
+
+/// Widen an inclusive range to include `il` (or start it at `il`).
+fn widen(range: Option<(i32, i32)>, il: i32) -> (i32, i32) {
+    match range {
+        None => (il, il),
+        Some((s, e)) => (s.min(il), e.max(il)),
+    }
+}
+
+impl LoadedModel {
+    /// Build a NEW handle sharing this model's weights (a cloned `Arc<Model>`, no
+    /// reload) with `spec` applied to a fresh context. The source handle is only
+    /// read, so the original reproduces its outputs bit-for-bit (D-016). Works
+    /// identically on a base or an already-derived handle (the caller passes the
+    /// FULL accumulated spec, so the result is base-weights + all interventions).
+    ///
+    /// Before returning the handle, the runtime sentinel probe (`probe.rs`, D-021)
+    /// proves on a throwaway context that the steering / ablation the spec requests
+    /// actually take effect on THIS model at each requested layer, replacing the
+    /// removed hard arch allow-list: a standard-residual decoder is enabled, while a
+    /// model where interventions would silently do nothing is refused loudly
+    /// (`rebirth_error_intervention`, the D-012 worst case).
+    pub fn derive_with_interventions(
+        &self,
+        spec: &InterventionSpec,
+    ) -> Result<LoadedModel, RebirthError> {
+        // Defensive: the R layer builds the spec from this model's metadata, so a
+        // dimension mismatch here is an internal error, not a user error.
+        let n_embd = self.hidden_size().max(0) as usize;
+        let n_layer = self.num_layers().max(0) as usize;
+        if spec.n_embd != n_embd || spec.n_layer != n_layer {
+            return Err(RebirthError::Intervention {
+                reason: format!(
+                    "Internal error: the intervention spec is {} x {} but the model \
+                     is {n_embd} x {n_layer}. Please report this.",
+                    spec.n_embd, spec.n_layer
+                ),
+            });
+        }
+
+        // Prove the mechanism takes effect on this model at the requested layers
+        // (D-021), replacing the hard arch gate. Refuses before any handle is built.
+        self.verify_interventions_effective(spec)?;
+
+        let derived = self.clone_with_fresh_context()?;
+        spec.apply_to_context(derived.ctx_ptr())?;
         Ok(derived)
     }
 }
@@ -252,29 +281,31 @@ mod tests {
     const N_LAYER: usize = 3;
 
     #[test]
-    fn supported_archs_are_exactly_the_pinned_set() {
-        // Reviewer nit 1: pin the FULL list. R's INTERVENTION_SUPPORTED_ARCHS
-        // (intervene.R) pins the identical set in its own unit test, so a one-sided
-        // addition (e.g. adding "gemma2" here but not in R) breaks one of the two
-        // tests. The engine's arch gate stays authoritative; this only catches
-        // R<->Rust drift.
-        assert_eq!(INTERVENTION_SUPPORTED_ARCHS, &["llama", "qwen2", "gemma3"]);
+    fn nonzero_steer_layers_lists_only_layers_with_a_nonzero_vector() {
+        // The probe verifies exactly the layers a steer perturbs. A zero vector
+        // (e.g. coef = 0) allocates the buffer but leaves the layer all-zero, so it
+        // is a genuine no-op and must NOT be reported (nothing to verify).
+        let mut spec = InterventionSpec::new(N_EMBD, N_LAYER);
+        assert_eq!(spec.nonzero_steer_layers(), Vec::<u32>::new());
+        spec.add_steer(2, &[1.0, 0.0, 0.0, 0.0]);
+        spec.add_steer(0, &[0.0; N_EMBD]); // zero vector on layer 0 -> not a steer
+        assert_eq!(spec.nonzero_steer_layers(), vec![2]);
+        spec.add_steer(1, &[0.0, 0.0, 3.0, 0.0]);
+        assert_eq!(spec.nonzero_steer_layers(), vec![1, 2]);
     }
 
     #[test]
-    fn arch_gate_accepts_supported_and_rejects_others() {
-        for arch in ["llama", "qwen2", "gemma3"] {
-            assert!(
-                intervention_arch_supported(arch),
-                "{arch} must be supported"
-            );
-        }
-        for arch in ["bert", "nomic-bert", "mamba", ""] {
-            assert!(
-                !intervention_arch_supported(arch),
-                "{arch} must not be supported"
-            );
-        }
+    fn ablation_layers_lists_only_genuinely_ablated_layers() {
+        // Mirrors the patched engine's "genuine" test (mask != 1 || add != 0): a
+        // layer left at the identity is not reported (the graph is untouched there).
+        let mut spec = InterventionSpec::new(N_EMBD, N_LAYER);
+        assert_eq!(spec.ablation_layers(), Vec::<u32>::new());
+        spec.add_ablation(0, &[1], 0.0); // mask[0,1]=0 -> genuine
+        spec.add_ablation(2, &[3], -1.0); // mask[2,3]=0, add=-1 -> genuine
+        assert_eq!(spec.ablation_layers(), vec![0, 2]);
+        // A "value = 0 on an already-zeroed neuron" is still genuine (mask == 0).
+        spec.add_ablation(1, &[0], 0.0);
+        assert_eq!(spec.ablation_layers(), vec![0, 1, 2]);
     }
 
     #[test]

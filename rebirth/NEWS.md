@@ -2,6 +2,21 @@
 
 ## rebirth 0.0.0.9000
 
+* Steering and ablation now work on **any standard-residual decoder**, not a fixed
+  architecture list (WP7.5a part-2, D-021). The old hard allow-list
+  (`{llama, qwen2, gemma3}`) is replaced by a **runtime sentinel intervention
+  probe**: before `llm_steer()`/`llm_ablate()` return a handle, the engine decodes
+  one throwaway token and checks, at each requested layer, that a sentinel ablation
+  pins the residual and a sentinel control vector shifts it by exactly the expected
+  amount — proving the mechanism actually takes effect on *this* model. A model where
+  interventions would silently do nothing is refused with `rebirth_error_intervention`
+  naming what did not respond (never a silent no-op); the verdict is cached per model,
+  so the cost is paid once. This enables interventions on Gemma 4 / Qwen 3 / Qwen 3.5
+  (their graphs carry the same residual choke point) with no vendored change. The
+  `llm_steer()`/`llm_ablate()` signatures are unchanged. `llama` and `qwen2` remain
+  the *behaviorally validated* tier (they pass the valence / KL acceptance fixtures);
+  the tier is documentation only and no longer gates.
+
 * Modern model families are usable **as text** (WP7.5a part-1, D-021): Gemma 4,
   Qwen 3, and Qwen 3.5 GGUFs already load and generate at the pinned engine, and
   two gaps are closed. (1) `llm_generate(chat = TRUE)` now works on models whose
@@ -16,8 +31,8 @@
   `rebirth_error_trace` rather than return a partial or mislabeled capture (its
   FFN output is named only on dense layers, and its same-named `attn_out` tensor is
   a different quantity than the post-projection output the component defines). The
-  support matrix is recorded in `docs/wp7.5-model-matrix.md`. Steering/ablation on
-  the new families is a later part; the intervention support is unchanged here.
+  support matrix is recorded in `docs/wp7.5-model-matrix.md`. (Steering/ablation on
+  the new families arrives in part-2, above.)
 
 * Two reference demos and Quarto vignettes land (WP7). **Demo A -- "the anatomy
   lab"** traces a fixed sentiment contrast set with `llm_trace()`, fits one
@@ -57,8 +72,8 @@
   (`ablate |> steer` behaves like `steer |> ablate`): steering stacks by summation,
   ablation is a union (last-write-wins per neuron), and a steer never moves an
   ablated neuron. Each derivation allocates a fresh context (a sub-second pause and
-  real memory, not a free copy). Invalid requests -- an unsupported architecture
-  (supported: `llama`, `qwen2`, `gemma3`), an out-of-range layer, steering layer 1
+  real memory, not a free copy). Invalid requests -- an architecture whose
+  intervention mechanism the runtime probe cannot verify, an out-of-range layer, steering layer 1
   (unreachable by the native control vector -- ablate it instead), a wrong-length
   `direction`, out-of-range `neurons`, or the not-yet-supported `positions`/
   `component` values -- raise `rebirth_error_intervention` rather than silently

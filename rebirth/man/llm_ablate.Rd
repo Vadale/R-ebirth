@@ -55,8 +55,13 @@ returning base vectors mislabeled as ablated.
 
 Only \code{component = "residual"} ablation is supported in this release (the shared
 choke point); \code{"attn_out"}/\code{"mlp_out"} raise \code{rebirth_error_intervention}.
-Supported on \code{llama}, \code{qwen2}, and \code{gemma3}; any other architecture raises
-\code{rebirth_error_intervention} rather than silently doing nothing.
+
+\strong{Model support.} Interventions work on any standard-residual decoder; before the
+handle is returned, a runtime probe verifies on \emph{this} model that the ablation
+takes effect at each requested layer, raising \code{rebirth_error_intervention} rather
+than silently doing nothing. \code{llama} and \code{qwen2} are additionally \emph{behaviorally
+validated} (the valence / KL acceptance fixtures); other architectures are enabled
+once they pass the probe.
 }
 \examples{
 \dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}

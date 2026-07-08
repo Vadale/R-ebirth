@@ -66,6 +66,16 @@ x' = x ⊙ mask + add          (per layer, broadcast over token columns)
 
 ### 1.3 Architecture coverage and the mandatory unsupported-arch error
 
+> **Superseded (WP7.5a part-2, D-021):** the static `INTERVENTION_SUPPORTED_ARCHS`
+> allow-list described below is replaced by a **runtime sentinel intervention probe**
+> (`rebirth-llm/src/probe.rs`) that proves `build_cvec` + the native cvec path actually
+> take effect on *this* model at the requested layers before a handle is returned —
+> catching the same silent-no-op case per model instead of by a hand-maintained string
+> list. The R `INTERVENTION_SUPPORTED_ARCHS` hard-stop is gone; the retargeted
+> `INTERVENTION_VALIDATED_ARCHS` names only the documentation "behaviorally validated"
+> tier and does not gate. Current source of truth: `docs/wp7.5-model-matrix.md`. The
+> paragraphs below are kept as the WP5-era design record.
+
 `build_cvec` is present in all pinned/CI/demo archs but only 106/134 graphs (§0). For an arch that never calls `build_cvec` (e.g. BERT-class), our intervene adapter's `apply_to` would **never be invoked** → the ablation would silently not apply → a handle that *claims* an intervention but generates unablated output. D-012/D-014 forbid exactly this silent no-op.
 
 **Detection (implements the D-012/D-014 mandate):** a curated `INTERVENTION_SUPPORTED_ARCHS` allow-list in the engine, seeded with the **verified, tested** archs — `llama`, `qwen2`, `gemma3` — and checked against the model's `general.architecture` at `llm_steer`/`llm_ablate` time (fail fast, before any decode). An unlisted arch → `rebirth_error_intervention` naming the arch and the supported set. The `vendor-bump` skill re-verifies each listed arch still calls `build_cvec` (a `grep` assertion in `models/`). Growing the list = adding test coverage for that arch, not merely a string — honest by construction (we claim only what a golden covers). This mirrors WP4's "unmatched component/arch → `rebirth_error_trace`" philosophy.
