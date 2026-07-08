@@ -65,9 +65,14 @@ contexts that do not inherit the adapters, so calling them on an intervened
 handle raises \code{rebirth_error_embed} / \code{rebirth_error_trace} rather than silently
 returning base (un-intervened) vectors mislabeled as steered.
 
-Supported on the \code{llama}, \code{qwen2}, and \code{gemma3} architectures (the residual
-choke point the mechanism hooks); any other architecture raises
-\code{rebirth_error_intervention} rather than silently doing nothing.
+\strong{Model support.} Interventions work on any standard-residual decoder. Before
+the handle is returned, a runtime probe verifies on \emph{this} model that steering
+actually shifts the residual at each requested layer; if it would silently do
+nothing (an architecture that does not route its residual through the choke point
+the mechanism hooks), \code{rebirth_error_intervention} is raised instead of a no-op
+handle. The \code{llama} and \code{qwen2} architectures are additionally \emph{behaviorally
+validated} -- they pass the valence-steering and KL-ablation acceptance fixtures;
+any other architecture is enabled the moment it passes the probe.
 }
 \examples{
 \dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
