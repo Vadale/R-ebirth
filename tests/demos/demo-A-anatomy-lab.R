@@ -84,7 +84,8 @@ local({
 )
 
 # Neutral held-out prompts for the steering check: sentiment should come from the
-# intervention, not the prompt.
+# intervention, not the prompt. Sixteen committed leads (was eight) -- the wider set
+# tightens A3's per-coefficient bootstrap CIs at no extra committed-prompt risk.
 .demo_A_neutral <- c(
   "Describe the meeting that happened this afternoon.",
   "Write a sentence about the food at the new restaurant.",
@@ -93,7 +94,15 @@ local({
   "Describe the film you watched last night.",
   "Give your impression of the new office.",
   "Write a short note about how the project is going.",
-  "Describe the neighbourhood where you live."
+  "Describe the neighbourhood where you live.",
+  "Describe the book you are currently reading.",
+  "Write a sentence about your morning routine.",
+  "Tell me about the coffee shop near the station.",
+  "Summarize how the training session went.",
+  "Give your impression of the new phone.",
+  "Describe the walk you took at lunchtime.",
+  "Write a short note about the conference you attended.",
+  "Tell me about the apartment you just moved into."
 )
 
 # ---- A1: a SECOND committed contrast set -- FORMALITY (register) --------------
@@ -212,6 +221,23 @@ local({
   fid
 }
 
+# The committed steering layer: a mid-depth layer (~65% of depth), NOT the peak-
+# decodability `best_layer`. Decodability (where a concept is READABLE) and
+# steerability (where injecting the direction CHANGES behaviour) are different
+# properties -- exactly the "reading is not causing" lesson. On a capable model
+# decodability saturates from very early layers, so `best_layer` can land at the
+# first ceiling-hit (e.g. layer 5/42 on Gemma 4 E4B), where steering does NOT
+# causally control the output; a mid-depth layer does (verified by a per-layer
+# dose-response sweep: gemma4 L27, Qwen2.5-0.5B L16 -- both ~0.65 depth). Committed
+# and arch-agnostic; clamped to a steerable layer (>= 2, layer 1 is not steerable).
+.DEMO_A_STEER_FRAC <- 0.65
+.demo_A_steer_layer <- function(band) {
+  target <- round(.DEMO_A_STEER_FRAC * max(band))
+  cand <- band[band >= 2L]
+  if (length(cand) == 0L) cand <- band # degenerate tiny model
+  as.integer(cand[which.min(abs(cand - target))])
+}
+
 # The unit "positive - negative" concept axis at one layer, via prcomp: take the
 # principal component most aligned with the label and orient it toward positive
 # sentiment. Deliberately classical (SOLO-PHASE-PLAN Sec 8).
@@ -315,8 +341,15 @@ demo_A_plot <- function(res, file = NULL) {
 
 # ---- A1: multi-concept decodability overlay ----------------------------------
 
+# The two concepts' AUC curves both saturate at the ceiling on a capable model, so
+# "peak layer" is a weak descriptor. The honest, robust contrast is the RISE-SHAPE:
+# the first layer from which decodability stays >= this threshold (sustained onset).
+.DEMO_A1_ONSET_THR <- 0.9
+
 # Trace sentiment AND formality in a SINGLE forward pass, then probe each concept
-# per layer. Shows the two concepts becoming linearly readable at different depths.
+# per layer. The story is the rise-shape difference: register (formality) is a
+# surface feature readable from the very first layer, while sentiment is noisy early
+# and only stabilizes with depth.
 .demo_A1_run <- function(m, say) {
   sent <- c(.demo_A_train_pos, .demo_A_train_neg)
   form <- c(.demo_A_formal, .demo_A_casual)
@@ -331,12 +364,15 @@ demo_A_plot <- function(res, file = NULL) {
   idx_form <- length(sent) + seq_along(form)
   ps <- .demo_A_probe_by_layer(tr, band, y_sent, .demo_A_foldid(y_sent), rows = idx_sent)
   pf <- .demo_A_probe_by_layer(tr, band, y_form, .demo_A_foldid(y_form), rows = idx_form)
+  onset_sent <- .demo_sustained_onset(ps$auc, band, .DEMO_A1_ONSET_THR)
+  onset_form <- .demo_sustained_onset(pf$auc, band, .DEMO_A1_ONSET_THR)
   say(sprintf(
-    "A1: sentiment peak AUC %.3f @ L%d; formality peak AUC %.3f @ L%d",
-    ps$best_auc, ps$best_layer, pf$best_auc, pf$best_layer
+    "A1: sustained AUC >= %.2f from L%s (sentiment) vs L%s (formality); early-layer AUC %.3f vs %.3f",
+    .DEMO_A1_ONSET_THR, onset_sent, onset_form, ps$auc[[1L]], pf$auc[[1L]]
   ))
   list(
     band = band, sentiment = ps, formality = pf,
+    onset_sent = onset_sent, onset_form = onset_form, thr = .DEMO_A1_ONSET_THR,
     n = length(sent) + length(form), model = m$path
   )
 }
@@ -350,32 +386,46 @@ demo_A_plot <- function(res, file = NULL) {
   on.exit(graphics::par(op), add = TRUE)
   .demo_par()
   pal <- .demo_pal_qual(2)
+  col_sent <- pal[[1]]
+  col_form <- pal[[2]]
   L <- a1$band
   ylo <- min(0.45, min(a1$sentiment$lower, a1$formality$lower) - 0.02)
   plot(L, a1$sentiment$auc,
     type = "n", ylim = c(ylo, 1.0), xlim = range(L),
     xlab = "Transformer layer", ylab = "Probe AUC (out-of-fold)",
-    main = "Two concepts, two depths: where each becomes readable"
+    main = "Formality reads from layer 1; sentiment emerges with depth"
   )
   graphics::grid(nx = NA, ny = NULL, col = "grey92", lty = 1)
   graphics::abline(h = 0.5, lty = 2, col = "grey45")
   graphics::text(min(L), 0.5, "chance", pos = 3, offset = 0.2, col = "grey45", cex = 0.8)
+  # Mark where sentiment's decodability first stabilizes (its sustained onset): the
+  # depth the register signal never needed. Formality's onset is layer 1, so its
+  # marker would sit on the axis -- the legend states it instead.
+  fmt_onset <- function(o) if (is.na(o)) "not sustained" else sprintf("L%d", o)
+  if (!is.na(a1$onset_sent) && a1$onset_sent > min(L)) {
+    graphics::abline(v = a1$onset_sent, lty = 3, col = grDevices::adjustcolor(col_sent, 0.55))
+    graphics::text(a1$onset_sent, ylo + 0.02,
+      labels = sprintf("sentiment stabilizes\n(AUC >= %.2f from %s)", a1$thr, fmt_onset(a1$onset_sent)),
+      pos = 4, offset = 0.3, col = col_sent, cex = 0.8, font = 2)
+  }
   draw_series <- function(p, col) {
     graphics::arrows(L, p$lower, L, p$upper, angle = 90, code = 3, length = 0.03,
       col = grDevices::adjustcolor(col, 0.5))
     graphics::lines(L, p$auc, col = col, lwd = 1.5)
     .demo_points(L, p$auc, bg = col, cex = 1.2)
   }
-  draw_series(a1$sentiment, pal[[1]])
-  draw_series(a1$formality, pal[[2]])
+  draw_series(a1$sentiment, col_sent)
+  draw_series(a1$formality, col_form)
   graphics::legend("bottomright",
     legend = c(
-      sprintf("sentiment (peak %.2f @ L%d)", a1$sentiment$best_auc, a1$sentiment$best_layer),
-      sprintf("formality (peak %.2f @ L%d)", a1$formality$best_auc, a1$formality$best_layer)
+      sprintf("sentiment: noisy early, readable from %s", fmt_onset(a1$onset_sent)),
+      sprintf("formality: readable from %s (surface register)", fmt_onset(a1$onset_form))
     ),
-    col = pal, pt.bg = pal, pch = .DEMO_PCH, lwd = 1.5, bty = "n", cex = 0.9
+    col = c(col_sent, col_form), pt.bg = c(col_sent, col_form),
+    pch = .DEMO_PCH, lwd = 1.5, bty = "n", cex = 0.9
   )
-  .demo_subtitle(a1$model, a1$n, extra = "two concepts, one trace | 95% CI")
+  .demo_subtitle(a1$model, a1$n,
+    extra = sprintf("one trace | onset = sustained AUC >= %.2f | 95%% CI", a1$thr))
   invisible(a1)
 }
 
@@ -500,12 +550,17 @@ demo_A_plot <- function(res, file = NULL) {
 # ---- A3: steering dose-response curve ----------------------------------------
 
 # Sweep the steering coefficient over a symmetric committed grid (multiples of the
-# positive-negative gap) at the best steerable layer; generate from the held-out
-# neutral leads and score each continuation through the CLEAN handle (D-016). The
-# FULL swept range is always plotted, including the saturation/degradation tail.
-.demo_A3_run <- function(m, tr, band, best_layer, y, say,
-                         mults = seq(-4, 4, length.out = 9L)) {
-  steer_layer <- min(max(best_layer, 2L), max(band)) # layer 1 is not steerable
+# positive-negative gap) at the committed mid-depth steer layer (.demo_A_steer_layer,
+# NOT best_layer -- see there); generate from the held-out neutral leads and score
+# each continuation through the CLEAN handle (D-016). The grid is dense near zero
+# (for a clean local slope) and reaches a committed tail so the saturation/
+# degradation of over-steering is ALWAYS shown (honesty guard) -- but the dense
+# default region stays in the coherent regime, so the positive side rises to a
+# saturation tail rather than sitting in the degenerate zone.
+.demo_A3_run <- function(m, tr, band, y, say,
+                         mults = c(-2.5, -1.5, -1, -0.5, -0.25, 0,
+                                   0.25, 0.5, 1, 1.5, 2.5)) {
+  steer_layer <- .demo_A_steer_layer(band)
   x <- .demo_A_layer_matrix(tr, steer_layer)
   dir <- .demo_A_direction(x, y)
   proj <- as.numeric(x %*% dir)
@@ -610,21 +665,31 @@ demo_A_plot <- function(res, file = NULL) {
 }
 
 # Ablate top-k residual units vs a matched random-k at the best layer, measuring
-# the mean next-token KL from base over the committed eliciting prompts. Two
-# committed rankings of the units are compared -- the honest core of this figure:
-#   IMPACT   -- units with the largest residual MAGNITUDE (RMS across the contrast
-#               set): the outlier / "rogue" dimensions that carry most of the
-#               residual norm and dominate the model's computation. Ablating them
-#               dwarfs a matched-random set (the WP5 honesty fixture as a figure).
-#   CONCEPT  -- units with the largest |probe coefficient|: where sentiment is most
+# the mean next-token KL from base over the committed eliciting prompts. The MONEY
+# figure (.demo_A4_plot) claims exactly one thing -- ablation is UNIT-SPECIFIC:
+#   IMPACT   -- the top-k units by residual MAGNITUDE (RMS across the contrast set):
+#               the outlier / "massive-activation" dimensions that carry most of the
+#               residual norm and are load-bearing for next-token prediction on ANY
+#               prompt, for any concept. Ablating them dwarfs a matched-random set.
+#               This is the faithful promotion of the WP5 honesty fixture
+#               (calibrate_kl in intervene_kl.rs), whose targeted neurons were ranked
+#               by MEASURED ablation-KL, not probe coefficients -- the RMS ranking is
+#               its zero-cost, trace-derived proxy for that same impact family.
+#   RANDOM   -- averaged over `n_random` size-matched draws so one unlucky draw
+#               (hitting a rogue unit, common at large k) does not dominate it (the
+#               WP5 fixture averages 3 seeds).
+# A third ranking is also RECORDED but is NOT in the money figure (D-022 impl. note):
+#   CONCEPT  -- the top-k units by |probe coefficient|: where sentiment is most
 #               linearly READABLE. On real models this set is nearly disjoint from
-#               the impact set and does NOT dominate random -- decodability is not
-#               the same as the causal locus. A4 shows this rather than hiding it.
-# The matched-random control is averaged over `n_random` size-matched draws so one
-# unlucky draw (hitting a rogue unit, common at large k) does not dominate it (the
-# WP5 fixture averages 3 seeds). Verified on Qwen2.5-0.5B: impact/random ~ 70-2000x
-# across all k, random stays < 0.07, concept ~ 0 -- re-checked on the demo model on
-# the founder's Mac + nightly.
+#               the impact set and is no more disruptive than matched random --
+#               decodability is not the causal locus. That decodability != causality
+#               story (with its A3 reconciliation and the magnitude caveat that makes
+#               "below random" unclaimable) lives in the anatomy-lab vignette; here
+#               the series is kept in the returned data and drawn only by the
+#               supplementary .demo_A4_plot_decodability().
+# The matched-random control hugs zero. Verified on Qwen2.5-0.5B: impact/random ~
+# 70-2000x across all k, random < 0.07, concept ~ random -- re-checked on the demo
+# model on the founder's Mac + nightly.
 .demo_A4_run <- function(m, tr, best_layer, best_dir, say,
                          ks = c(1L, 2L, 4L, 8L, 16L, 32L, 64L),
                          top = 256L, seed = 20240707L, n_random = 5L) {
@@ -679,16 +744,138 @@ demo_A_plot <- function(res, file = NULL) {
   # The acceptance honesty check: the impact-targeted set dominates matched-random.
   p_val <- suppressWarnings(stats::wilcox.test(last_impact, last_random,
     paired = TRUE, alternative = "greater")$p.value)
+  out <- list(ks = ks, layer = best_layer, impact = impact, concept = concept,
+    random = rnd, p_value = p_val, n = length(prompts), model = m$path)
+  out$acceptance <- list(
+    nightly = .demo_A4_accept(out, "nightly"),
+    model = .demo_A4_accept(out, "model")
+  )
+  k8 <- match(8L, ks)
   say(sprintf(
-    "A4: @L%d k=%d KL impact %.3f | concept %.3f | random %.3f (impact>random p=%.3g)",
-    best_layer, max(ks), impact$mean[[length(ks)]], concept$mean[[length(ks)]],
-    rnd$mean[[length(ks)]], p_val
+    "A4: @L%d unit-specificity impact/random = %.0fx @k=8 (impact %.3f vs random %.3f); concept-readout %.3f ~ random (no more disruptive); impact>random p=%.3g",
+    best_layer, out$acceptance$nightly$ratio_k8, impact$mean[[k8]], rnd$mean[[k8]],
+    concept$mean[[k8]], p_val
   ))
-  list(ks = ks, layer = best_layer, impact = impact, concept = concept, random = rnd,
-    p_value = p_val, n = length(prompts), model = m$path)
+  say(sprintf(
+    "A4 acceptance: nightly(0.5B) %s | model(E4B) %s [random_max %.3f, k=8 ratio %.0fx, p %.3g]",
+    if (out$acceptance$nightly$pass) "PASS" else "FAIL",
+    if (out$acceptance$model$pass) "PASS" else "FAIL",
+    out$acceptance$nightly$random_max, out$acceptance$nightly$ratio_k8, p_val
+  ))
+  out
 }
 
+# Executable A4 acceptance thresholds (D-022 implementation note). Two tiers:
+#   "nightly" (Qwen2.5-0.5B Q8_0, the nightly-demo-A gate): the matched-random
+#             pooled mean KL <= 0.10 nats at EVERY k; the impact set >= 10x random at
+#             k = 8; the paired one-sided Wilcoxon p <= 0.01 at max k (its floor at
+#             n = 8 prompts is 1/2^8 = 0.0039, so this needs every prompt to shift
+#             more under impact than random).
+#   "model"  (Gemma 4 E4B on the founder's Mac, the [MODEL] showcase): impact >= 5x
+#             random at k = 8 (the smaller/quantized showcase clears a lower bar).
+# The concept-readout series is RECORDED, never gated: it is an empirical finding
+# that may legitimately differ across models, and gating would freeze it into CI.
+# Returns per-check flags + the measured values; `$pass` is their conjunction.
+.demo_A4_accept <- function(a4, tier = c("nightly", "model")) {
+  tier <- match.arg(tier)
+  k8 <- match(8L, a4$ks)
+  if (is.na(k8)) stop("A4 acceptance requires k = 8 in the sweep")
+  ratio_k8 <- a4$impact$mean[[k8]] / max(a4$random$mean[[k8]], .Machine$double.eps)
+  random_max <- max(a4$random$mean)
+  checks <- list(impact_ratio = ratio_k8 >= if (tier == "nightly") 10 else 5)
+  if (tier == "nightly") {
+    checks$random_hugs_zero <- random_max <= 0.10
+    checks$wilcoxon <- isTRUE(a4$p_value <= 0.01)
+  }
+  list(tier = tier, pass = all(unlist(checks)), checks = checks,
+    ratio_k8 = ratio_k8, random_max = random_max, p_value = a4$p_value)
+}
+
+# Shared A4 log-y KL panel drawer. `series` is a list of list(data, col, cex),
+# drawn back-to-front; the last entry sits on top. Draws the axes, the CI bands, the
+# lines+points, then a legend from `legend`/`legcol`, and the model|n subtitle. Both
+# the two-series money figure and the three-series supplementary figure use it, so
+# they share one axis/floor/scale convention exactly.
+.demo_A4_kl_panel <- function(a4, series, main, legend, legcol, sub_extra) {
+  xx <- log2(a4$ks)
+  .demo_par(mar = c(2.4, 4.6, 3.4, 1.2))
+  # log-y: the effect spans orders of magnitude (impact ~ 1, random/concept ~ 1e-3);
+  # a floor keeps a near-zero value plottable without claiming an exact 0.
+  floor_kl <- 1e-4
+  pos <- function(v) pmax(v, floor_kl)
+  ymax <- max(vapply(series, function(s) max(s[[1]]$upper, na.rm = TRUE), numeric(1)))
+  plot(xx, pos(a4$impact$mean), type = "n", log = "y", yaxt = "n", xaxt = "n",
+    ylim = c(floor_kl, ymax * 1.4), xlab = "", ylab = "Mean next-token KL (log)",
+    main = main)
+  aty <- 10^(seq(floor(log10(floor_kl)), ceiling(log10(ymax))))
+  graphics::axis(2, at = aty, labels = formatC(aty, format = "g"))
+  graphics::abline(h = aty, col = "grey93", lty = 1)
+  for (s in series) {
+    graphics::arrows(xx, pos(s[[1]]$lower), xx, pos(s[[1]]$upper), angle = 90,
+      code = 3, length = 0.03, col = grDevices::adjustcolor(s[[2]], 0.5))
+  }
+  for (s in series) {
+    graphics::lines(xx, pos(s[[1]]$mean), col = s[[2]], lwd = 1.6)
+    .demo_points(xx, pos(s[[1]]$mean), bg = s[[2]], cex = s[[3]])
+  }
+  graphics::legend("topleft", legend = legend, col = legcol, pt.bg = legcol,
+    pch = .DEMO_PCH, lwd = 1.6, bty = "n", cex = 0.85)
+  .demo_subtitle(a4$model, a4$n, extra = sub_extra)
+}
+
+# Shared A4 "top-1 token changed" bottom panel. `series` = list(data, col).
+.demo_A4_changed_panel <- function(a4, series) {
+  xx <- log2(a4$ks)
+  .demo_par(mar = c(4.4, 4.6, 0.6, 1.2))
+  plot(xx, a4$impact$changed, type = "n", ylim = c(0, 1), xaxt = "n",
+    xlab = "neurons ablated (k)", ylab = "Top-1 token changed")
+  for (s in series) {
+    graphics::lines(xx, s[[1]]$changed, col = s[[2]], lwd = 1.4)
+    .demo_points(xx, s[[1]]$changed, bg = s[[2]], cex = 1.0)
+  }
+  graphics::axis(1, at = xx, labels = a4$ks)
+}
+
+# The A4 money figure: TWO series only -- top-RMS "load-bearing" units vs matched
+# random. It claims exactly unit-specificity (D-022 impl. note): which units you
+# remove is everything. The concept-readout series is deliberately absent here (it
+# is recorded and lives in the supplementary decodability figure + the vignette).
 .demo_A4_plot <- function(a4, file = NULL) {
+  if (!is.null(file)) {
+    grDevices::png(file, width = 1050, height = 950, res = 130)
+    on.exit(grDevices::dev.off(), add = TRUE)
+  }
+  op <- graphics::par(no.readonly = TRUE)
+  on.exit(graphics::par(op), add = TRUE)
+  graphics::layout(matrix(c(1L, 2L), nrow = 2L), heights = c(3, 2))
+  pal <- .demo_pal_qual(2)
+  col_impact <- pal[[1]]
+  col_random <- "grey45"
+  ki <- match(if (8L %in% a4$ks) 8L else max(a4$ks), a4$ks)
+  ratio8 <- a4$impact$mean[[ki]] / max(a4$random$mean[[ki]], .Machine$double.eps)
+
+  .demo_A4_kl_panel(a4,
+    series = list(list(a4$random, col_random, 1.3), list(a4$impact, col_impact, 1.3)),
+    main = "Ablation is unit-specific: load-bearing units vs matched random",
+    legend = c("load-bearing units (top-k by residual RMS)",
+      "matched random-k (control, averaged)"),
+    legcol = c(col_impact, col_random),
+    sub_extra = sprintf("ablate L%d | impact %.0fx random @k=%d | p=%.2g",
+      a4$layer, ratio8, a4$ks[[ki]], a4$p_value))
+
+  .demo_A4_changed_panel(a4,
+    list(list(a4$random, col_random), list(a4$impact, col_impact)))
+  invisible(a4)
+}
+
+# The supplementary THREE-series figure (impact + random + concept-readout) for the
+# anatomy-lab vignette's "Reading is not causing" subsection. Adding the concept-
+# readout ranking (top-k by |probe coef|) exposes the decodability != causality gap:
+# the units where sentiment is most READABLE are no more disruptive than matched
+# random. "No more disruptive than random" is the only honest claim -- the count-
+# matched randoms carry a larger typical magnitude, so a "below random" reading is a
+# magnitude confound (the vignette spells this out), not a finding.
+.demo_A4_plot_decodability <- function(a4, file = NULL) {
   if (!is.null(file)) {
     grDevices::png(file, width = 1050, height = 950, res = 130)
     on.exit(grDevices::dev.off(), add = TRUE)
@@ -700,51 +887,20 @@ demo_A_plot <- function(res, file = NULL) {
   col_impact <- pal[[1]]
   col_concept <- pal[[3]]
   col_random <- "grey45"
-  xx <- log2(a4$ks)
 
-  .demo_par(mar = c(2.4, 4.6, 3.4, 1.2))
-  # log-y: the effect spans orders of magnitude (impact ~ 1, random/concept ~ 1e-3);
-  # a floor keeps a near-zero value plottable without claiming an exact 0.
-  floor_kl <- 1e-4
-  pos <- function(v) pmax(v, floor_kl)
-  ymax <- max(a4$impact$upper, a4$random$upper, a4$concept$upper, na.rm = TRUE)
-  plot(xx, pos(a4$impact$mean), type = "n", log = "y", yaxt = "n", xaxt = "n",
-    ylim = c(floor_kl, ymax * 1.4), xlab = "", ylab = "Mean next-token KL (log)",
-    main = "Ablation is surgical: high-magnitude units, not the readable direction")
-  aty <- 10^(seq(floor(log10(floor_kl)), ceiling(log10(ymax))))
-  graphics::axis(2, at = aty, labels = formatC(aty, format = "g"))
-  graphics::abline(h = aty, col = "grey93", lty = 1)
-  band_ci <- function(s, col) graphics::arrows(xx, pos(s$lower), xx, pos(s$upper),
-    angle = 90, code = 3, length = 0.03, col = grDevices::adjustcolor(col, 0.5))
-  line_pts <- function(s, col, cex = 1.3) {
-    graphics::lines(xx, pos(s$mean), col = col, lwd = 1.6)
-    .demo_points(xx, pos(s$mean), bg = col, cex = cex)
-  }
-  band_ci(a4$random, col_random)
-  band_ci(a4$impact, col_impact)
-  line_pts(a4$concept, col_concept, cex = 1.0)
-  line_pts(a4$random, col_random)
-  line_pts(a4$impact, col_impact)
-  graphics::legend("topleft",
-    legend = c("high-magnitude units (top-k by residual RMS)",
+  .demo_A4_kl_panel(a4,
+    series = list(list(a4$random, col_random, 1.3), list(a4$concept, col_concept, 1.0),
+      list(a4$impact, col_impact, 1.3)),
+    main = "Reading is not causing: readable units are not the causal locus",
+    legend = c("load-bearing units (top-k by residual RMS)",
       "matched random-k (control, averaged)",
       "concept-readout units (top-k by |probe coef|)"),
-    col = c(col_impact, col_random, col_concept),
-    pt.bg = c(col_impact, col_random, col_concept),
-    pch = .DEMO_PCH, lwd = 1.6, bty = "n", cex = 0.85)
-  .demo_subtitle(a4$model, a4$n,
-    extra = sprintf("ablate L%d | impact>random p=%.2g | decodability != causal locus",
-      a4$layer, a4$p_value))
+    legcol = c(col_impact, col_random, col_concept),
+    sub_extra = sprintf("ablate L%d | concept-readout ~ matched random", a4$layer))
 
-  .demo_par(mar = c(4.4, 4.6, 0.6, 1.2))
-  plot(xx, a4$impact$changed, type = "n", ylim = c(0, 1), xaxt = "n",
-    xlab = "neurons ablated (k)", ylab = "Top-1 token changed")
-  for (s in list(list(a4$concept, col_concept), list(a4$random, col_random),
-    list(a4$impact, col_impact))) {
-    graphics::lines(xx, s[[1]]$changed, col = s[[2]], lwd = 1.4)
-    .demo_points(xx, s[[1]]$changed, bg = s[[2]], cex = 1.0)
-  }
-  graphics::axis(1, at = xx, labels = a4$ks)
+  .demo_A4_changed_panel(a4,
+    list(list(a4$concept, col_concept), list(a4$random, col_random),
+      list(a4$impact, col_impact)))
   invisible(a4)
 }
 
@@ -783,7 +939,9 @@ demo_A_plot <- function(res, file = NULL) {
     xlab = "Transformer layer", ylab = "Transformer layer",
     main = "Concept-direction geometry: layer x layer cosine")
   graphics::box(col = "grey60")
-  .demo_subtitle(a5$model, length(L), extra = "per-layer probe directions")
+  # Left-anchor the subtitle (adj = 0): a long model name would otherwise reach the
+  # right edge and collide with the "cos" colour-key title above the legend strip.
+  .demo_subtitle(a5$model, length(L), extra = "per-layer probe directions", adj = 0)
 
   .demo_par(mar = c(4.2, 4.4, 1.2, 0.6))
   pal2 <- .demo_pal_qual(1)
@@ -814,11 +972,14 @@ demo_A_plot <- function(res, file = NULL) {
   a2 <- .demo_A2_run(m, best_dir, say)
   .demo_A2_plot(a2, file = fp("demoA-A2-token-layer.png"))
 
-  a3 <- .demo_A3_run(m, tr, band, probe$best_layer, y, say)
+  a3 <- .demo_A3_run(m, tr, band, y, say)
   .demo_A3_plot(a3, file = fp("demoA-A3-dose-response.png"))
 
   a4 <- .demo_A4_run(m, tr, probe$best_layer, best_dir, say)
-  .demo_A4_plot(a4, file = fp("demoA-A4-ablation.png"))
+  .demo_A4_plot(a4, file = fp("demoA-A4-ablation.png")) # money: 2 series (unit-specificity)
+  # Supplementary 3-series figure feeding the vignette's "Reading is not causing"
+  # subsection (impact + random + concept-readout; decodability != causality).
+  .demo_A4_plot_decodability(a4, file = fp("demoA-A4-decodability.png"))
 
   a5 <- .demo_A5_run(probe$dirs, band, m$path, say)
   .demo_A5_plot(a5, file = fp("demoA-A5-geometry.png"))
@@ -828,6 +989,7 @@ demo_A_plot <- function(res, file = NULL) {
     files = c(
       A1 = fp("demoA-A1-multiconcept.png"), A2 = fp("demoA-A2-token-layer.png"),
       A3 = fp("demoA-A3-dose-response.png"), A4 = fp("demoA-A4-ablation.png"),
+      A4_decodability = fp("demoA-A4-decodability.png"),
       A5 = fp("demoA-A5-geometry.png")
     )
   )
@@ -859,7 +1021,7 @@ demo_A_plot <- function(res, file = NULL) {
 
 run_demo_A <- function(model_path = .demo_A_model_path(),
                        layers = NULL, plot_file = NULL,
-                       steer_scale = 4, extended = FALSE, plot_dir = NULL,
+                       steer_scale = 2, extended = FALSE, plot_dir = NULL,
                        verbose = TRUE) {
   if (!requireNamespace("glmnet", quietly = TRUE)) {
     stop("Demo A needs the 'glmnet' package (Suggests). install.packages('glmnet').")
@@ -895,7 +1057,7 @@ run_demo_A <- function(model_path = .demo_A_model_path(),
   demo_A_plot(res, file = plot_file)
 
   # (5) steer along the concept direction; verify on HELD-OUT prompts.
-  res$steer <- .demo_A_steer_check(m, tr, band, best_layer, y, steer_scale, say)
+  res$steer <- .demo_A_steer_check(m, tr, band, y, steer_scale, say)
 
   # (6) the extended analyses (A1-A5), behind extended = TRUE (D-022). They write
   # their PNGs into plot_dir (defaulting to plot_file's directory, else the cwd).
@@ -918,8 +1080,8 @@ run_demo_A <- function(model_path = .demo_A_model_path(),
 # each continuation's sentiment by tracing it through the CLEAN model and
 # projecting onto the probe's sentiment axis. Positive steering should yield
 # more-positive output than negative steering.
-.demo_A_steer_check <- function(m, tr, band, best_layer, y, steer_scale, say) {
-  steer_layer <- min(max(best_layer, 2L), max(band)) # layer 1 is not steerable
+.demo_A_steer_check <- function(m, tr, band, y, steer_scale, say) {
+  steer_layer <- .demo_A_steer_layer(band) # mid-depth steerable layer (see there)
   x <- .demo_A_layer_matrix(tr, steer_layer)
   dir <- .demo_A_direction(x, y) # sentiment axis at this layer
   proj <- as.numeric(x %*% dir)
