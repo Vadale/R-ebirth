@@ -1,9 +1,12 @@
 # tests/demos/demo-utils.R
 #
-# Model-free numerical helpers for the WP7 demos. These are repo scripts, NOT
-# part of the rebirth package. Per D-020 they replace a pROC dependency with a
-# few lines of base R: AUC as the rank-based Mann-Whitney U statistic (exact,
-# average ranks for ties) plus a stratified percentile-bootstrap CI.
+# Model-free helpers for the WP7 / WP7.5b demos. These are repo scripts, NOT part
+# of the rebirth package. Per D-020 they replace a pROC dependency with a few
+# lines of base R: AUC as the rank-based Mann-Whitney U statistic (exact, average
+# ranks for ties) plus a stratified percentile-bootstrap CI. WP7.5b (D-022) adds
+# the shared base-graphics visual style and a handful of self-tested numeric
+# helpers (bootstrap mean CI, cosine matrix, truncated next-token KL, legend
+# breaks) reused by the extended Demo A analyses.
 #
 # Demo A sources this file; vignette A inlines demo_auc() verbatim -- "AUC needs
 # no dependency" is part of the demo's argument. The executable self-test at the
@@ -225,7 +228,9 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
 }
 
 .demo_pal_qual <- function(k) grDevices::hcl.colors(max(as.integer(k), 1L), "Dark 3")
-.demo_pal_seq <- function(n) grDevices::hcl.colors(as.integer(n), "YlOrBr", rev = TRUE)
+# Sequential YlOrBr. rev = TRUE (dark -> light for low -> high) is the D-022
+# default; A2 passes rev = FALSE so a strong positive-sentiment cell reads dark.
+.demo_pal_seq <- function(n, rev = TRUE) grDevices::hcl.colors(as.integer(n), "YlOrBr", rev = rev)
 .demo_pal_div <- function(n) grDevices::hcl.colors(as.integer(n), "Blue-Red 3")
 
 # Points in the house style: a filled pch = 21 marker with a white stroke.
