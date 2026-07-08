@@ -383,12 +383,13 @@ demo_B_terms_table <- function(b2) {
   # anisotropic -- every topic-pair centroid cosine sits high (~0.9 on Qwen) -- so a
   # fixed [-1, 1] scale would wash the whole matrix to one colour. Scaling to the actual
   # off-diagonal range (with the trivial self-similarity diagonal omitted) shows the
-  # RELATIVE near/far structure honestly; the legend prints the true cosine values and
-  # the diverging palette pivots on the typical similarity (the range midpoint).
+  # RELATIVE near/far structure honestly; the legend prints the true cosine values. A
+  # SEQUENTIAL palette (darker = more similar) is honest for these all-positive cosines --
+  # a diverging scale would falsely read a low-but-still-high similarity as "dissimilar".
   z <- b3$cos
   diag(z) <- NA_real_
   breaks <- .demo_legend_breaks(range(b3$cos[upper.tri(b3$cos)]), n_col)
-  pal <- .demo_pal_div(n_col)
+  pal <- .demo_pal_seq(n_col, rev = TRUE) # rev=TRUE: high value -> dark, i.e. more similar = darker
   labs <- .demo_B_short(b3$labels, 15L)
   # Draw order = heatmap (1), dendrogram (2), colour-strip legend (3) LAST -- the
   # legend saves/restores par(), so it must be the final panel (as in A5).

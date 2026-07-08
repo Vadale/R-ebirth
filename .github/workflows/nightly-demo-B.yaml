@@ -92,7 +92,7 @@ jobs:
 
             # extended = TRUE runs B1-B3 as well as the polished B4 map; PNGs go to a
             # temp dir so every figure renders to a device (headless-safe).
-            ext_dir <- file.path(tempdir(), "demoB-extended")
+            ext_dir <- file.path(Sys.getenv("RUNNER_TEMP", unset = tempdir()), "demoB-extended")
             dir.create(ext_dir, showWarnings = FALSE)
             res <- run_demo_B(mp, plot_file = file.path(ext_dir, "demoB-B4-map.png"),
                               extended = TRUE, plot_dir = ext_dir)
