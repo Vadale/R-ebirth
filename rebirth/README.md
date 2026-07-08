@@ -51,14 +51,16 @@ SHA256 (a mismatch is deleted, never used):
 ```r
 library(rebirth)
 
-path <- llm_download("qwen2.5-0.5b-instruct-q8_0")  # ~530 MB, verified
+path <- llm_download("qwen2.5-0.5b-instruct-q8_0")  # ~675 MB, verified
 m <- llm(path)
 m                                            # a one-line summary of the loaded model
 
-llm_generate(m, "The capital of France is", max_tokens = 8, temperature = 0)
-#> [1] "The capital of France is Paris."
+# A raw completion (chat = FALSE) continues the prompt; the return is the
+# continuation only, never the prompt echoed back:
+llm_generate(m, "The capital of France is", chat = FALSE, max_tokens = 8, temperature = 0)
+#> [1] " Paris."
 
-# A chat turn uses the model's own template:
+# The default (chat = TRUE) applies the model's own chat template instead:
 llm_generate(m, "Name three primary colors.", chat = TRUE, max_tokens = 24)
 ```
 
@@ -67,7 +69,7 @@ embed a character vector into a matrix:
 
 ```r
 llm_tokens(m, "café")                       # named integer vector, 1-based ids
-llm_logits(m, "The opposite of hot is", top = 5)   # data.frame: token, logit, prob
+llm_logits(m, "The opposite of hot is", top = 5)   # data.frame: prompt_id, rank, token_id, token, logit, prob
 emb <- llm_embed(m, c("cats", "kittens", "quarterly revenue"))  # 3-row matrix
 tcrossprod(emb)                              # cosine similarities (rows are unit vectors)
 ```

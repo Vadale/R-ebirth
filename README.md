@@ -35,7 +35,7 @@ is text-only. The full plan is in `ROADMAP.md`.
 ```
 rebirth/            the R package (R/, src/ + src/rust/ extendr crate, tests/, vignettes/)
 rust/               Cargo workspace: rebirth-ffi (R <-> Rust boundary), rebirth-llm (engine)
-rebirth/src/llama.cpp/   pinned, patched llama.cpp (vendored; see VENDORING.md)
+rebirth/src/llama.cpp/   pinned, patched llama.cpp (vendored; see its VENDORING.md)
 tests/llm-golden/   Harness B numerical goldens
 tests/demos/        the two reference demos (anatomy lab; topics without Python)
 ```
