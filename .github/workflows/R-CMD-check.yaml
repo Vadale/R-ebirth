@@ -60,6 +60,14 @@ jobs:
           needs: check
           working-directory: rebirth
 
+      # Model-free demo-utils self-test (D-020 / D-022): the base-R AUC/CI helpers
+      # and the WP7.5b analysis helpers (dose-response CI, cosine matrix, truncated
+      # KL, colour-strip legend breaks, ...) are guarded by an executable self-test
+      # that runs on source(). It needs no model and no built package, so it runs
+      # here per-commit -- the demos' numeric core is checked on every push.
+      - name: demo-utils self-test (model-free)
+        run: Rscript -e 'source("tests/demos/demo-utils.R")'
+
       # Lint the R-boundary crate here rather than in rust.yaml: rebirth-ffi's
       # build needs R on the PATH (provided by the steps above). rust.yaml lints
       # the R-free rebirth-llm.
