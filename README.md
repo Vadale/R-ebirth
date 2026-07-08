@@ -10,6 +10,11 @@ embeds a patched `llama.cpp`, exposing local LLMs (loading, generation,
 embeddings, activation tracing, steering, and ablation) as base-R-idiom functions
 returning plain `data.frame`s and `matrix`es.
 
+![relm topic map: eight clusters of scientific abstracts, each named by the model](rebirth/man/figures/topic-map.png)
+
+*Topic modelling with no Python: `llm_embed()` → UMAP → HDBSCAN → the model names
+each cluster. One of two runnable demos — see the [package README](rebirth/README.md).*
+
 > **Using the package?** Start with the [package README](rebirth/README.md)
 > (quickstart, examples, the two demos) and
 > [docs/getting-started.md](docs/getting-started.md) (install options — binaries

@@ -41,7 +41,7 @@ CMake (>= 3.28), and a C compiler, you can install straight from the repo — th
 works today, before any release is tagged:
 
 ```r
-remotes::install_github("Vadale/R-ebirth", subdir = "relm")
+remotes::install_github("Vadale/R-ebirth", subdir = "rebirth")
 # (pak::pak("Vadale/R-ebirth/rebirth") also works)
 ```
 
@@ -109,6 +109,12 @@ reversible** (each derived handle is a fresh context over the same read-only
 weights). If a model's architecture can't support an intervention faithfully,
 `relm` refuses with a classed error rather than silently doing nothing.
 
+![Probe AUC per transformer layer, rising to 1.00 by layer 11](man/figures/anatomy-lab.png)
+
+*The anatomy-lab demo (below), real output: one cross-validated probe per layer
+locates where sentiment becomes linearly readable in Qwen2.5-1.5B — here by layer
+11 (AUC 1.00), with 95% bootstrap CIs. Produced by `run_demo_A()`.*
+
 ## Two worked demos
 
 Both ship as runnable vignettes and reproduce end-to-end on the Apache-2.0 default
@@ -131,6 +137,11 @@ model — no gated downloads, no Python.
   # Follow the vignette, or source tests/demos/demo-B-topics.R from the repo and:
   #   run_demo_B(model_path = model)
   ```
+
+  ![UMAP topic map with eight automatically named clusters](man/figures/topic-map.png)
+
+  *Real `run_demo_B()` output on 500 abstracts: eight well-separated topics, each
+  named by the model itself — a BERTopic-class pipeline, fully local, no Python.*
 
 ## What relm is — and is not
 
