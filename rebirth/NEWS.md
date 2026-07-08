@@ -2,6 +2,22 @@
 
 ## rebirth 0.0.0.9000
 
+* `llm_download()` fetches a pinned model over HTTPS and verifies it by SHA256
+  (WP8a). `model` is either a registry alias
+  (`"qwen2.5-0.5b-instruct-q8_0"`, `"qwen2.5-1.5b-instruct-q4_k_m"` — both
+  Apache-2.0, pinned to an immutable revision in `inst/models.csv`) or a full
+  `https://` URL; only HTTPS is accepted. Verification is **fail-closed**: a
+  registry download whose checksum does not match the pinned value is deleted and
+  raises `rebirth_error_download` (carrying `expected`/`actual`/`url`), so the
+  destination path never holds unverified bytes. `dir = NULL` caches under
+  `tools::R_user_dir("rebirth", "cache")`; an already-present, checksum-matching
+  model is returned without re-downloading (idempotent, offline-friendly), and a
+  corrupt cached file is re-fetched. A bare URL has no pinned checksum, so the file
+  is downloaded and its computed SHA256 reported (never presented as verified).
+  Nothing downloaded is ever executed. The path is returned invisibly. Zero new
+  dependencies — `utils::download.file(method = "libcurl")` and
+  `tools::sha256sum()` only.
+
 * Steering and ablation now work on **any standard-residual decoder**, not a fixed
   architecture list (WP7.5a part-2, D-021). The old hard allow-list
   (`{llama, qwen2, gemma3}`) is replaced by a **runtime sentinel intervention
