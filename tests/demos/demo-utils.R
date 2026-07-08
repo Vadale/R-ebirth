@@ -207,26 +207,6 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
   seq(zlim[1L], zlim[2L], length.out = n + 1L)
 }
 
-# A symmetric zlim about zero covering `z` (for the diverging A5 matrix), or the
-# plain data range with a small pad (for the sequential A2 heatmap).
-.demo_zlim <- function(z, symmetric = FALSE) {
-  z <- z[is.finite(z)]
-  if (length(z) == 0L) {
-    return(c(-1, 1))
-  }
-  if (isTRUE(symmetric)) {
-    a <- max(abs(z))
-    if (a == 0) a <- 1
-    c(-a, a)
-  } else {
-    r <- range(z)
-    if (r[1L] == r[2L]) {
-      r <- r + c(-1, 1) * (if (r[1L] == 0) 1e-8 else abs(r[1L]) * 1e-8)
-    }
-    r
-  }
-}
-
 # ---- WP7.5b Demo-B numeric helpers (topic-quality, terms, structure) ----------
 #
 # All model-free and self-tested at the foot of this file (D-022): every new numeric
@@ -453,8 +433,8 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
 }
 
 # Text with a white halo, so labels stay readable over coloured points/cells.
-# (The shared copy: both Demo A and Demo B now use it -- demo-B's local copy was
-# folded onto this file in WP7.5b part-2.)
+# Part of the shared visual style; Demo B's cluster map draws its topic labels
+# with it (demo-B's local copy was folded onto this file in WP7.5b part-2).
 .demo_halo_text <- function(x, y, labels, col = "black", cex = 1, font = 2,
                             adj = c(0.5, 0.5), ...) {
   off <- 0.006 * diff(graphics::par("usr")[1:2])
@@ -489,6 +469,17 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
     graphics::mtext(title, side = 3, line = 0.5, cex = 0.8, col = "grey25")
   }
   invisible(NULL)
+}
+
+# ---- demo model-path resolution ----------------------------------------------
+
+# Resolve the demo model from the environment: REBIRTH_DEMO_MODEL, then
+# REBIRTH_TEST_MODEL_QWEN; "" when neither is set. Shared by both demos -- used as
+# the run_demo_*() `model_path` default and by each script's auto-run guard.
+.demo_model_path <- function() {
+  p <- Sys.getenv("REBIRTH_DEMO_MODEL", "")
+  if (!nzchar(p)) p <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN", "")
+  p
 }
 
 # ---- Executable self-test ----------------------------------------------------
@@ -633,13 +624,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "a very long model basename is truncated in the subtitle"
   )
 
-  # 12. Symmetric zlim about zero (A5's diverging scale).
-  ok(
-    isTRUE(all.equal(.demo_zlim(c(-2, 1, 0.5), symmetric = TRUE), c(-2, 2))),
-    "symmetric zlim spans +/- max|z|"
-  )
-
-  # 13. Sustained onset (A1 rise-shape): the first layer from which the metric
+  # 12. Sustained onset (A1 rise-shape): the first layer from which the metric
   #     stays >= thr; an early spike that later dips does NOT count; never-sustained
   #     gives NA.
   ok(
@@ -663,14 +648,14 @@ demo_utils_selftest <- function(verbose = TRUE) {
   sil_coords <- rbind(c(0, 0), c(2, 0), c(6, 0), c(10, 0), c(12, 0))
   sil_clus <- c(1L, 1L, 0L, 2L, 2L)
 
-  # 14. Cluster centroids: mean row per cluster, noise excluded.
+  # 13. Cluster centroids: mean row per cluster, noise excluded.
   ok(
     isTRUE(all.equal(unname(.demo_cluster_centroids(sil_coords, sil_clus)),
                      rbind(c(1, 0), c(11, 0)))),
     "cluster centroids must be the per-cluster mean row, excluding noise"
   )
 
-  # 15. Centroid cosine (B3): the cosine matrix of orthogonal cluster centroids is I.
+  # 14. Centroid cosine (B3): the cosine matrix of orthogonal cluster centroids is I.
   cc_emb <- rbind(c(1, 0), c(1, 0), c(0, 1), c(0, 1))
   ok(
     isTRUE(all.equal(unname(.demo_cosine_matrix(.demo_cluster_centroids(cc_emb, c(1, 1, 2, 2)))),
@@ -678,7 +663,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "orthogonal cluster centroids give an identity cosine matrix"
   )
 
-  # 16. Simplified silhouette, hand-computed. (0,0): a=1, b=11 -> 10/11; (2,0): a=1,
+  # 15. Simplified silhouette, hand-computed. (0,0): a=1, b=11 -> 10/11; (2,0): a=1,
   #     b=9 -> 8/9; symmetric for cluster 2. Noise gets NA.
   sil <- .demo_silhouette_simplified(sil_coords, sil_clus)
   ok(
@@ -687,13 +672,13 @@ demo_utils_selftest <- function(verbose = TRUE) {
   )
   ok(is.na(sil[[3]]), "a noise point has silhouette NA")
 
-  # 17. Silhouette is undefined (all NA) with fewer than two clusters.
+  # 16. Silhouette is undefined (all NA) with fewer than two clusters.
   ok(
     all(is.na(.demo_silhouette_simplified(rbind(c(0, 0), c(1, 0)), c(1L, 1L)))),
     "silhouette with a single cluster is all NA"
   )
 
-  # 18. Embedding cohesion = ||mean of unit members||: orthogonal pair -> sqrt(1/2),
+  # 17. Embedding cohesion = ||mean of unit members||: orthogonal pair -> sqrt(1/2),
   #     identical -> 1, opposite -> 0.
   coh <- .demo_embedding_cohesion(
     rbind(c(1, 0), c(0, 1), c(1, 0), c(1, 0), c(1, 0), c(-1, 0)),
@@ -704,7 +689,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "embedding cohesion must equal the resultant length of unit members"
   )
 
-  # 19. Tokenizer: lowercase alphabetic tokens >= min_chars, stopwords dropped.
+  # 18. Tokenizer: lowercase alphabetic tokens >= min_chars, stopwords dropped.
   ok(
     identical(
       .demo_tokenize("The Deep neural-network learns fast; a cat sat.",
@@ -718,7 +703,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "the default stopword list removes abstract boilerplate"
   )
 
-  # 20. Term counts: topics x vocab integer matrix, noise document excluded.
+  # 19. Term counts: topics x vocab integer matrix, noise document excluded.
   tc <- .demo_term_counts(
     list(c("alpha", "alpha", "shared"), c("beta", "shared"), c("gamma")),
     c(1L, 2L, 0L)
@@ -730,14 +715,14 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "term counts must tabulate topics x vocab and drop noise"
   )
 
-  # 21. Informative prior: alpha_w proportional to corpus frequency, alpha_0 = V.
+  # 20. Informative prior: alpha_w proportional to corpus frequency, alpha_0 = V.
   lo_counts <- rbind(c(8, 1, 1), c(1, 1, 8)) # corpus counts 9, 2, 9; total 20; V = 3
   ok(
     isTRUE(all.equal(.demo_informative_prior(lo_counts), c(1.35, 0.3, 1.35))),
     "the informative prior must be V * corpus_freq"
   )
 
-  # 22. Log-odds (Monroe et al.), hand-computed with a uniform prior alpha = 1.
+  # 21. Log-odds (Monroe et al.), hand-computed with a uniform prior alpha = 1.
   #     Topic 1, word 1: odds_topic = 9/4, odds_rest = 2/11 -> delta = log(99/8);
   #     var = 1/9 + 1/2 = 11/18 -> z = log(99/8)/sqrt(11/18).
   lo <- .demo_log_odds(lo_counts, prior = rep(1, 3))
@@ -759,7 +744,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "log-odds z is mirror-symmetric across the two topics and signs its direction"
   )
 
-  # 23. Top terms on a symmetric two-topic corpus (equal totals). Topic 1 over-uses
+  # 22. Top terms on a symmetric two-topic corpus (equal totals). Topic 1 over-uses
   #     "focus", under-uses "anti", and shares "spread"/"filler" evenly: the ranking is
   #     focus (z > 0) > spread/filler (z = 0) > anti (z < 0).
   tt <- .demo_top_terms(
@@ -777,7 +762,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "an under-represented term ranks last; an evenly-split term has z = 0"
   )
 
-  if (isTRUE(verbose)) message("demo-utils self-test: OK (42 checks)")
+  if (isTRUE(verbose)) message("demo-utils self-test: OK (41 checks)")
   invisible(TRUE)
 }
 

@@ -59,12 +59,9 @@ demo_B_data <- function(path = NULL) {
 # ---- cluster naming ----------------------------------------------------------
 
 # Representatives of one cluster: the medoid (point nearest the cluster centroid
-# in the map) and its nearest neighbours within the cluster.
+# in the map, via .demo_B_medoid) and its nearest neighbours within the cluster.
 .demo_B_reps <- function(coords, members, k = 4L) {
-  sub <- coords[members, , drop = FALSE]
-  cen <- colMeans(sub)
-  d2c <- rowSums(sweep(sub, 2, cen)^2)
-  medoid <- members[which.min(d2c)]
+  medoid <- .demo_B_medoid(coords, members)
   d2m <- rowSums(sweep(coords[members, , drop = FALSE], 2, coords[medoid, ])^2)
   members[order(d2m)][seq_len(min(k, length(members)))]
 }
@@ -446,7 +443,7 @@ demo_B_terms_table <- function(b2) {
 
 # ---- the demo ----------------------------------------------------------------
 
-run_demo_B <- function(model_path = .demo_B_model_path(),
+run_demo_B <- function(model_path = .demo_model_path(),
                        abstracts = NULL, n_max = NULL,
                        n_neighbors = 15L, min_dist = 0.1, min_pts = 15L,
                        seed = 20240707L, plot_file = NULL, extended = FALSE,
@@ -522,7 +519,7 @@ run_demo_B <- function(model_path = .demo_B_model_path(),
 # then runs the seeded layout + HDBSCAN + the B1-B3 statistics TWICE on ONE embedding
 # and asserts they match exactly. Figures go to temp files (no stray device). Returns
 # TRUE or stops loudly.
-run_demo_B_reproducible <- function(model_path = .demo_B_model_path(),
+run_demo_B_reproducible <- function(model_path = .demo_model_path(),
                                     abstracts = NULL, seed = 20240707L, verbose = TRUE) {
   say <- function(...) if (isTRUE(verbose)) message(...)
   df <- if (is.null(abstracts)) demo_B_data() else abstracts
@@ -616,16 +613,10 @@ demo_B_plot_selftest <- function(verbose = FALSE) {
   invisible(TRUE)
 }
 
-.demo_B_model_path <- function() {
-  p <- Sys.getenv("REBIRTH_DEMO_MODEL", "")
-  if (!nzchar(p)) p <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN", "")
-  p
-}
-
 # ---- auto-run when a model is available --------------------------------------
 
 if (!nzchar(Sys.getenv("REBIRTH_DEMO_NO_AUTORUN"))) {
-  .mp <- .demo_B_model_path()
+  .mp <- .demo_model_path()
   if (nzchar(.mp) && file.exists(.mp)) {
     demoB <- run_demo_B(.mp, extended = nzchar(Sys.getenv("REBIRTH_DEMO_EXTENDED")))
   } else {
