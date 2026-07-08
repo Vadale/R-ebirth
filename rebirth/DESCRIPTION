@@ -1,6 +1,6 @@
 Package: rebirth
 Title: Local Large Language Models as Base-R Objects
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Alessandro", "Vadala", , "vadale93@gmail.com", role = c("aut", "cre", "cph"))
 Description: Load and run local large language models (through a vendored,
@@ -9,8 +9,11 @@ Description: Load and run local large language models (through a vendored,
     'llm_tokens'), text generation ('llm_generate'), next-token distributions
     ('llm_logits'), text embeddings ('llm_embed'), and mechanistic
     interpretability tools -- activation tracing ('llm_trace'), activation
-    steering ('llm_steer'), and neuron ablation ('llm_ablate').
+    steering ('llm_steer'), and neuron ablation ('llm_ablate'). A
+    checksum-verified downloader ('llm_download') fetches pinned models.
 License: MIT + file LICENSE | Apache License (== 2.0)
+URL: https://github.com/Vadale/R-ebirth
+BugReports: https://github.com/Vadale/R-ebirth/issues
 Depends:
     R (>= 4.5.0)
 Imports:

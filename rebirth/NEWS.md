@@ -1,6 +1,11 @@
-# rebirth (development version)
+# rebirth 0.1.0
 
-## rebirth 0.0.0.9000
+First public release. Local large language models as base-R objects: model
+loading and tokenization, text generation, next-token distributions, text
+embeddings, and a mechanistic-interpretability toolkit -- activation tracing,
+steering, and ablation -- all returning plain `data.frame`s and `matrix`es on
+stock R over a vendored, patched llama.cpp. Text-only; vision is planned for a
+later release.
 
 * `llm_download()` fetches a pinned model over HTTPS and verifies it by SHA256
   (WP8a). `model` is either a registry alias

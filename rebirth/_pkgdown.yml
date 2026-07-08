@@ -1,0 +1,40 @@
+url: https://vadale.r-universe.dev/rebirth
+
+template:
+  bootstrap: 5
+
+reference:
+- title: Models
+  desc: Load a local model, then inspect, summarize, or tokenize it.
+  contents:
+  - llm
+  - summary.llm
+  - close.llm
+  - llm_tokens
+- title: Generation
+  desc: Produce text and read the model's next-token distribution.
+  contents:
+  - llm_generate
+  - llm_logits
+- title: Embeddings
+  desc: Encode text into a numeric matrix.
+  contents:
+  - llm_embed
+- title: Interpretability
+  desc: Observe the model's internals and intervene on them.
+  contents:
+  - llm_trace
+  - as.matrix.rebirth_trace
+  - llm_steer
+  - llm_ablate
+- title: Models on disk
+  desc: Fetch pinned, checksum-verified models.
+  contents:
+  - llm_download
+
+articles:
+- title: Worked demos
+  navbar: Demos
+  contents:
+  - anatomy-lab
+  - topics-without-python
