@@ -16,9 +16,9 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 # The embedding step needs a local GGUF model; UMAP and HDBSCAN need uwot and
 # dbscan. A checker has none of these, so we gate the real pipeline and fall back
 # to an illustrative layout keyed off the sample's known topics. Point
-# REBIRTH_DEMO_MODEL (or REBIRTH_TEST_MODEL_QWEN) at a GGUF file, and install
+# RELM_DEMO_MODEL (or RELM_TEST_MODEL_QWEN) at a GGUF file, and install
 # uwot + dbscan, to render the map from real embeddings.
-model_path <- Sys.getenv("REBIRTH_DEMO_MODEL", Sys.getenv("REBIRTH_TEST_MODEL_QWEN", ""))
+model_path <- Sys.getenv("RELM_DEMO_MODEL", Sys.getenv("RELM_TEST_MODEL_QWEN", ""))
 have_model <- nzchar(model_path) && file.exists(model_path)
 have_uwot <- requireNamespace("uwot", quietly = TRUE)
 have_dbscan <- requireNamespace("dbscan", quietly = TRUE)
@@ -26,7 +26,7 @@ run_real <- have_model && have_uwot && have_dbscan
 ```
 
 A BERTopic-class pipeline --- embed documents, reduce with UMAP, cluster with
-HDBSCAN, name the clusters --- is usually a Python affair. With `rebirth` it is a
+HDBSCAN, name the clusters --- is usually a Python affair. With `relm` it is a
 handful of base-R lines over CRAN packages the R ecosystem already has, running
 fully local with zero Python.
 
@@ -41,7 +41,7 @@ The package ships a small **synthetic** sample so this runs offline; for the rea
 
 ```{r}
 #| label: data
-csv <- system.file("extdata", "abstracts-sample.csv", package = "rebirth")
+csv <- system.file("extdata", "abstracts-sample.csv", package = "relm")
 abstracts <- if (nzchar(csv)) {
   utils::read.csv(csv, stringsAsFactors = FALSE)
 } else {
@@ -61,7 +61,7 @@ is deterministic given the layout. Cluster names come from the model itself.
 ```{r}
 #| label: pipeline-real
 #| eval: !expr run_real
-library(rebirth)
+library(relm)
 m <- llm(model_path)
 
 emb <- llm_embed(m, abstracts$text, pooling = "mean", normalize = TRUE)

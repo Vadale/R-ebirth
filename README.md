@@ -5,7 +5,7 @@ data and AI — mechanistic interpretability ("AI neuroscience"), machine learni
 including topic modelling, and the life sciences — while staying simple for
 researchers.
 
-It is delivered as **`rebirth`**: an R package with a Rust native core that
+It is delivered as **`relm`**: an R package with a Rust native core that
 embeds a patched `llama.cpp`, exposing local LLMs (loading, generation,
 embeddings, activation tracing, steering, and ablation) as base-R-idiom functions
 returning plain `data.frame`s and `matrix`es.
@@ -18,7 +18,7 @@ returning plain `data.frame`s and `matrix`es.
 
 ## Status: v0.1.0 (text-only)
 
-The first public release is here. `rebirth` loads local GGUF models and exposes,
+The first public release is here. `relm` loads local GGUF models and exposes,
 as base-R objects:
 
 - **`llm()`** model loading, **`llm_tokens()`** tokenization;
@@ -60,7 +60,7 @@ for the vendored engine.
 cd rust && cargo test && cargo clippy --all-targets -- -D warnings
 
 # R package
-R CMD build rebirth && R CMD check rebirth_0.1.0.tar.gz
+R CMD build rebirth && R CMD check relm_0.1.0.tar.gz
 ```
 
 ## License

@@ -1,4 +1,4 @@
-# Getting started with rebirth
+# Getting started with relm
 
 This guide has two parts:
 
@@ -7,7 +7,7 @@ This guide has two parts:
 - **Part B — Publish it** (for the maintainer: r-universe, tagging a release, and
   why CRAN comes later).
 
-`rebirth` is a normal R package. The only reason installation needs any thought
+`relm` is a normal R package. The only reason installation needs any thought
 is that it ships a Rust + C++ native engine (a vendored, patched `llama.cpp`), so
 you either install a **prebuilt binary** (nothing to compile) or build **from
 source** (needs a toolchain). Both are covered below.
@@ -23,7 +23,7 @@ no CMake, no compiler:
 
 ```r
 install.packages(
-  "rebirth",
+  "relm",
   repos = c("https://vadale.r-universe.dev", getOption("repos"))
 )
 ```
@@ -70,7 +70,7 @@ This downloads a small, checksum-verified Apache-2.0 model (~675 MB) and generat
 a few tokens. If this works, your install is good:
 
 ```r
-library(rebirth)
+library(relm)
 
 path <- llm_download("qwen2.5-0.5b-instruct-q8_0")   # verified by SHA256
 m <- llm(path)
@@ -86,8 +86,8 @@ close(m)
 Both reproduce end-to-end on the Apache-2.0 model — no Python, no gated download:
 
 ```r
-vignette("topics-without-python", package = "rebirth")  # topic modelling
-vignette("anatomy-lab",           package = "rebirth")  # locating sentiment in a model
+vignette("topics-without-python", package = "relm")  # topic modelling
+vignette("anatomy-lab",           package = "relm")  # locating sentiment in a model
 ```
 
 The runnable demo scripts are in `tests/demos/` in a clone; the larger demo model
@@ -102,7 +102,7 @@ is `llm_download("qwen2.5-1.5b-instruct-q4_k_m")`.
 - **Memory (16 GB Macs)** — stick to the 0.5B / 1.5B models; big `llm_trace()`
   captures spill to disk automatically and never OOM the session.
 - **Ollama running** — stop its server before heavy sessions; it keeps models
-  resident and competes for RAM. (`rebirth` never depends on Ollama.)
+  resident and competes for RAM. (`relm` never depends on Ollama.)
 
 ---
 
@@ -123,14 +123,14 @@ v0.1.0; Windows is a later phase); there is no human review and nothing to be
 
    ```json
    [
-     { "package": "rebirth", "url": "https://github.com/Vadale/R-ebirth", "subdir": "rebirth" }
+     { "package": "relm", "url": "https://github.com/Vadale/R-ebirth", "subdir": "rebirth" }
    ]
    ```
 
    (Confirm the exact field names against the current
    [r-universe docs](https://docs.r-universe.dev) — the `subdir` monorepo option
    is the key detail for our layout.)
-3. Within roughly an hour, `https://<your-universe>.r-universe.dev/rebirth` goes
+3. Within roughly an hour, `https://<your-universe>.r-universe.dev/relm` goes
    live with binaries and a pkgdown site.
 
 If your universe name is **not** `vadale`, tell the maintainer notes / update the
@@ -142,8 +142,8 @@ three places that hardcode the URL: the README badges + install block
 On a machine without the toolchain (or a fresh R), confirm the binary path works:
 
 ```r
-install.packages("rebirth", repos = c("https://<your-universe>.r-universe.dev", getOption("repos")))
-library(rebirth); packageVersion("rebirth")   # 0.1.0
+install.packages("relm", repos = c("https://<your-universe>.r-universe.dev", getOption("repos")))
+library(relm); packageVersion("relm")   # 0.1.0
 ```
 
 Then run the smoke test and one demo from Part A.
@@ -153,7 +153,7 @@ Then run the smoke test and one demo from Part A.
 Once you're happy, tag `v0.1.0` (this is the outward-facing step):
 
 ```sh
-git tag -a v0.1.0 -m "rebirth 0.1.0"
+git tag -a v0.1.0 -m "relm 0.1.0"
 git push origin v0.1.0
 ```
 
