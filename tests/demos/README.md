@@ -23,7 +23,7 @@ The two reference demos, run as scripted acceptance tests
   plus the WP7.5b shared visual style (`hcl.colors` palettes, `pch = 21`
   points, colour-strip legend, halo text, the model | n | seed subtitle) and
   numeric helpers (bootstrap mean CI, cosine matrix, truncated next-token KL,
-  legend breaks). An executable self-test runs on `source()` (23 checks, run
+  legend breaks). An executable self-test runs on `source()` (26 checks, run
   per-commit in CI). No pROC (D-020).
 - **`make-abstracts-sample.R`** — regenerates the shipped synthetic sample
   (`rebirth/inst/extdata/abstracts-sample.csv`) deterministically.

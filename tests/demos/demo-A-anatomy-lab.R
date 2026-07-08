@@ -995,28 +995,6 @@ demo_A_plot <- function(res, file = NULL) {
   )
 }
 
-# A stable numeric digest of a demo_A_result for the reproducibility gate (D-022:
-# fixed seeds => byte-identical numbers). Excludes plots and generated text.
-.demo_A_numeric_digest <- function(res) {
-  d <- list(
-    core_auc = res$auc, core_lower = res$lower, core_upper = res$upper,
-    best_layer = res$best_layer, steer_shift_up = res$steer$shift_up,
-    steer_shift_down = res$steer$shift_down
-  )
-  ext <- res$extended
-  if (!is.null(ext)) {
-    d <- c(d, list(
-      a1_sent_auc = ext$A1$sentiment$auc, a1_form_auc = ext$A1$formality$auc,
-      a2_z = ext$A2$z, a3_means = ext$A3$means, a3_lower = ext$A3$lower,
-      a3_upper = ext$A3$upper, a3_slope = ext$A3$slope,
-      a4_impact_mean = ext$A4$impact$mean, a4_concept_mean = ext$A4$concept$mean,
-      a4_random_mean = ext$A4$random$mean, a4_p = ext$A4$p_value,
-      a5_cos = ext$A5$cos, a5_adjacent = ext$A5$adjacent
-    ))
-  }
-  d
-}
-
 # ---- the demo ----------------------------------------------------------------
 
 run_demo_A <- function(model_path = .demo_A_model_path(),
