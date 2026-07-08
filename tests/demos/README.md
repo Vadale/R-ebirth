@@ -18,6 +18,13 @@ The two reference demos, run as scripted acceptance tests
 - **`demo-B-topics.R`** — topics without Python: public abstracts →
   `llm_embed()` → `uwot::umap()` → `dbscan::hdbscan()` → cluster naming via
   `llm_generate()` → one labelled base-graphics cluster map.
+  `run_demo_B(extended = TRUE)` (or `REBIRTH_DEMO_EXTENDED=1`) adds three
+  BERTopic-report analyses (D-022): **B1** topic-quality metrics (simplified
+  silhouette + embedding cohesion + the noise fraction), **B2** distinctive
+  terms per topic (log-odds z with an informative Dirichlet prior), and **B3**
+  inter-topic structure (centroid-cosine heatmap + `hclust` dendrogram); **B4**
+  is the polished labelled map. `run_demo_B_reproducible()` asserts fixed seeds
+  give byte-identical clustering and statistics.
 - **`demo-utils.R`** — model-free helpers sourced by Demo A and Demo B:
   `demo_auc()` (exact rank-based Mann–Whitney AUC) and `demo_auc_ci()`
   (stratified bootstrap CI), plus the WP7.5b shared visual style (`hcl.colors`
@@ -49,12 +56,14 @@ source("tests/demos/demo-B-topics.R")      # auto-runs and draws the cluster map
 
 Both are seeded for reproducible outputs (fixed `foldid`, bootstrap seeds, greedy
 generation) — two runs give byte-identical numbers. Set `REBIRTH_DEMO_EXTENDED=1`
-(auto-run) or call `run_demo_A(extended = TRUE)` for the five extended figures;
-they add roughly ten minutes on the demo model and write `demoA-A1..A5-*.png`.
-Demo A also runs nightly in CI on the 0.5B model with relaxed thresholds
-(`.github/workflows/nightly-demo-A.yaml`); it is non-gating. The `anatomy-lab`
-and `topics-without-python` package vignettes narrate the same pipelines and
-render with or without a model.
+(auto-run), or call `run_demo_A(extended = TRUE)` for the five Demo A figures
+(`demoA-A1..A5-*.png`) and `run_demo_B(extended = TRUE)` for the three Demo B
+figures (`demoB-B1..B3-*.png`) plus the polished map; each set adds roughly ten
+minutes on the demo model. Both demos also run nightly in CI on the 0.5B model
+with relaxed thresholds (`.github/workflows/nightly-demo-A.yaml`,
+`nightly-demo-B.yaml`); both are non-gating. The `anatomy-lab` and
+`topics-without-python` package vignettes narrate the same pipelines and render
+with or without a model.
 
 Dependencies (per D-020): base R + `rebirth` + `glmnet` (Demo A) + `uwot`,
 `dbscan` (Demo B), each guarded by `requireNamespace()`. Money plots are base

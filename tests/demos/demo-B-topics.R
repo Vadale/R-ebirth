@@ -9,9 +9,17 @@
 # synthetic sample (rebirth/inst/extdata/abstracts-sample.csv); use
 # tests/demos/fetch-abstracts.R for the real ~5,000-abstract arXiv corpus.
 #
+# run_demo_B(extended = TRUE) (or REBIRTH_DEMO_EXTENDED=1) adds three BERTopic-report
+# analyses (D-022), all base graphics via the shared demo-utils style: B1 topic-quality
+# metrics (simplified silhouette + embedding cohesion + noise fraction), B2 distinctive
+# terms per topic (log-odds z with an informative Dirichlet prior), and B3 inter-topic
+# structure (centroid-cosine heatmap + hclust dendrogram). B4 -- the polished labelled
+# map -- is the core, always-drawn figure.
+#
 # Dependencies: base R + rebirth + uwot + dbscan (Suggests, D-020), all guarded.
 # Reproducibility: set.seed + n_sgd_threads = 1 for uwot; HDBSCAN is deterministic
 # given its input; cluster labels use greedy (temperature = 0) generation.
+# run_demo_B_reproducible() asserts fixed seeds => byte-identical clustering + stats.
 
 .demo_dir <- function() {
   args <- commandArgs(FALSE)
