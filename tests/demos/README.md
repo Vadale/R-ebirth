@@ -18,13 +18,16 @@ The two reference demos, run as scripted acceptance tests
 - **`demo-B-topics.R`** — topics without Python: public abstracts →
   `llm_embed()` → `uwot::umap()` → `dbscan::hdbscan()` → cluster naming via
   `llm_generate()` → one labelled base-graphics cluster map.
-- **`demo-utils.R`** — model-free helpers sourced by Demo A: `demo_auc()` (exact
-  rank-based Mann–Whitney AUC) and `demo_auc_ci()` (stratified bootstrap CI),
-  plus the WP7.5b shared visual style (`hcl.colors` palettes, `pch = 21`
-  points, colour-strip legend, halo text, the model | n | seed subtitle) and
-  numeric helpers (bootstrap mean CI, cosine matrix, truncated next-token KL,
-  legend breaks). An executable self-test runs on `source()` (26 checks, run
-  per-commit in CI). No pROC (D-020).
+- **`demo-utils.R`** — model-free helpers sourced by Demo A and Demo B:
+  `demo_auc()` (exact rank-based Mann–Whitney AUC) and `demo_auc_ci()`
+  (stratified bootstrap CI), plus the WP7.5b shared visual style (`hcl.colors`
+  palettes, `pch = 21` points, colour-strip legend, halo text, the
+  model | n | seed subtitle) and numeric helpers: for Demo A (bootstrap mean CI,
+  cosine matrix, truncated next-token KL, legend breaks) and for Demo B
+  (simplified silhouette, embedding-space cohesion, cluster centroids, a
+  regex tokenizer + term-count matrix, and Monroe-et-al. log-odds top terms with
+  an informative Dirichlet prior). An executable self-test runs on `source()`
+  (42 checks, run per-commit in CI). No pROC (D-020).
 - **`make-abstracts-sample.R`** — regenerates the shipped synthetic sample
   (`rebirth/inst/extdata/abstracts-sample.csv`) deterministically.
 - **`fetch-abstracts.R`** — fetches the real ~5,000-abstract arXiv corpus for
