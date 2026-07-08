@@ -197,3 +197,93 @@ The full script adds the quantitative check: a one-sided paired Wilcoxon test on
 the held-out prompts' downstream sentiment read-out, positive vs. negative
 steering. Everything here is base-R idiom over plain data frames and matrices ---
 the model is just another object in your session.
+
+## Reading is not causing
+
+The money plot found where sentiment is *readable*. It is tempting to conclude that
+those readable units are the ones the model *uses* for sentiment. They are not --- and
+seeing the gap is worth a figure, because it is the representation-space cousin of
+"correlation is not causation".
+
+`llm_ablate()` returns a handle with a set of residual units pinned to zero;
+`llm_logits()` reads the next-token distribution before and after. We rank the units
+of the best layer three ways and measure the mean next-token KL from the un-ablated
+model, each against a size-matched **random** control averaged over several draws:
+
+- **load-bearing units** --- the top-*k* by residual RMS: the outlier / "massive
+  activation" dimensions that carry most of the residual norm and are load-bearing for
+  next-token prediction on *any* prompt;
+- **concept-readout units** --- the top-*k* by |probe coefficient|: exactly the units
+  the linear probe reads sentiment from;
+- **matched random-*k*** --- the control.
+
+```{r}
+#| label: decodability-vs-causality
+#| fig-width: 8
+#| fig-height: 5
+#| fig-alt: "Mean next-token KL vs neurons ablated, log scale: load-bearing units far above a matched-random control, while concept-readout units track random."
+# Illustrative of the measured RELATIVE pattern (the absolute KL scale varies with
+# model and layer -- e.g. impact KL ~ O(1) on Qwen2.5-0.5B, ~ O(0.03) on Gemma 4 E4B
+# -- but the orders-of-magnitude separation does not). Reproduce it from your own
+# model with tests/demos/demo-A-anatomy-lab.R: run_demo_A(extended = TRUE) writes the
+# real three-series figure (demoA-A4-decodability.png).
+ks <- c(1, 2, 4, 8, 16, 32, 64)
+load_bearing    <- c(0.05, 0.10, 1.20, 2.00, 3.00, 3.50, 4.00) # top-k by residual RMS
+concept_readout <- c(1e-4, 2e-4, 5e-4, 1.6e-3, 3e-3, 5e-3, 1.5e-2) # top-k by |probe coef|
+matched_random  <- c(4e-4, 7e-4, 2e-3, 6e-3, 1.2e-2, 3e-2, 5e-2) # size-matched control
+
+xx <- log2(ks)
+cols <- c(load = "#D1495B", random = "grey45", concept = "#3B6EA5")
+op <- par(mar = c(4.4, 4.6, 3, 1), mgp = c(2.7, 0.7, 0), las = 1)
+plot(xx, load_bearing, type = "n", log = "y", xaxt = "n",
+     ylim = c(1e-4, 6), xlab = "neurons ablated (k)",
+     ylab = "Mean next-token KL (log)",
+     main = "Reading is not causing: readable units are not the causal locus")
+axis(1, at = xx, labels = ks)
+abline(h = 10^(-4:0), col = "grey93")
+for (s in list(list(matched_random, "random"), list(concept_readout, "concept"),
+               list(load_bearing, "load"))) {
+  lines(xx, s[[1]], col = cols[[s[[2]]]], lwd = 1.6)
+  points(xx, s[[1]], pch = 21, bg = cols[[s[[2]]]], col = "white", cex = 1.3)
+}
+legend("topleft", bty = "n", cex = 0.9, pch = 21, lwd = 1.6, pt.bg = cols, col = cols,
+       legend = c("load-bearing units (top-k residual RMS)",
+                  "matched random-k (control)",
+                  "concept-readout units (top-k |probe coef|)"))
+par(op)
+```
+
+Ablating the load-bearing units dwarfs random by one to three orders of magnitude:
+intervention is extremely **unit-specific** --- *which* units you remove is everything.
+But the concept-readout units --- where sentiment is most *readable* --- are **no more
+disruptive than matched random**. Decodability is not the causal locus.
+
+### Sufficiency is not necessity
+
+Does this contradict the steering result just above? No, and the reconciliation is the
+whole point. Steering **adds** `coef * direction` and demonstrably moves sentiment: the
+readable *direction* is causally **sufficient**. Ablation **pins to zero** the
+direction's top basis *units* and changes almost nothing: those units are not
+**necessary**. Sufficiency is not necessity --- different operation (add vs. pin-to-zero),
+different object (a distributed direction vs. a handful of coordinate units), different
+outcome metric (a concept shift vs. a concept-blind KL). The concept is *distributed*,
+so no small set of readout coordinates is individually load-bearing. A linear probe
+tells you where information is **readable**, not which units the computation **needs**.
+
+### A magnitude caveat
+
+Be careful about the "concept-readout below random" reading in the figure. The KL here
+is **concept-blind** --- it measures total next-token disruption, not sentiment --- and
+zero-ablating a unit perturbs the residual by roughly its own activation magnitude. The
+concept-readout units happen to be low-magnitude, while the random draws are only
+*count*-matched (not *magnitude*-matched) and so carry a larger typical magnitude. The
+honest claim is therefore "**no more disruptive than matched random**", never "below
+random"; a magnitude-matched control would be needed to say more.
+
+### Where unit-level causal importance lives
+
+Ranking units by *measured* causal effect --- ablate a unit (or group), read the KL,
+repeat --- is exactly what activation patching and a probe-with-interventions do. That
+is Phase-4 `llm_probe()` territory; the pattern already exists in the package's own WP5
+honesty fixture (`calibrate_kl` in `intervene_kl.rs`), which selected its targeted
+neurons by a per-neuron ablation-KL scan rather than by any linear readout.
