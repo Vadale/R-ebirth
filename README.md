@@ -10,9 +10,11 @@ embeds a patched `llama.cpp`, exposing local LLMs (loading, generation,
 embeddings, activation tracing, steering, and ablation) as base-R-idiom functions
 returning plain `data.frame`s and `matrix`es.
 
-> **Using the package?** Install from [r-universe](https://vadale.r-universe.dev/rebirth)
-> and start with the [package README](rebirth/README.md) — quickstart, examples,
-> and the two worked demos. This page is the repository/developer overview.
+> **Using the package?** Start with the [package README](rebirth/README.md)
+> (quickstart, examples, the two demos) and
+> [docs/getting-started.md](docs/getting-started.md) (install options — binaries
+> or from source — a first run, and troubleshooting). This page is the
+> repository/developer overview.
 
 ## Status: v0.1.0 (text-only)
 

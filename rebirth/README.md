@@ -36,11 +36,20 @@ install.packages(
 )
 ```
 
+**From source (GitHub).** With a Rust toolchain ([`rustup`](https://rustup.rs)),
+CMake (>= 3.28), and a C compiler, you can install straight from the repo — this
+works today, before any release is tagged:
+
+```r
+remotes::install_github("Vadale/R-ebirth", subdir = "rebirth")
+# (pak::pak("Vadale/R-ebirth/rebirth") also works)
+```
+
 `rebirth` needs R (>= 4.5) and depends only on
-[`nanoarrow`](https://arrow.apache.org/nanoarrow/) (for reading spilled traces).
-The demo helpers use `glmnet`, `uwot`, and `dbscan`, which are optional
-(`Suggests`). Building from source instead is documented in the
-[repository README](https://github.com/Vadale/R-ebirth#readme).
+[`nanoarrow`](https://arrow.apache.org/nanoarrow/) (for reading spilled traces);
+the demo helpers use `glmnet`, `uwot`, and `dbscan` (optional `Suggests`). See
+**[docs/getting-started.md](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)**
+for a first run, the demos, and troubleshooting.
 
 ## Quickstart
 
