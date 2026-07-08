@@ -72,8 +72,8 @@
   (`ablate |> steer` behaves like `steer |> ablate`): steering stacks by summation,
   ablation is a union (last-write-wins per neuron), and a steer never moves an
   ablated neuron. Each derivation allocates a fresh context (a sub-second pause and
-  real memory, not a free copy). Invalid requests -- an unsupported architecture
-  (supported: `llama`, `qwen2`, `gemma3`), an out-of-range layer, steering layer 1
+  real memory, not a free copy). Invalid requests -- an architecture whose
+  intervention mechanism the runtime probe cannot verify, an out-of-range layer, steering layer 1
   (unreachable by the native control vector -- ablate it instead), a wrong-length
   `direction`, out-of-range `neurons`, or the not-yet-supported `positions`/
   `component` values -- raise `rebirth_error_intervention` rather than silently

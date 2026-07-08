@@ -351,7 +351,16 @@ impl LoadedModel {
         let _reclaim = Reclaim(state_ptr);
 
         // Declared after `_reclaim`, so on any early return `ctx` drops first.
-        let ctx = self.create_trace_context(n_ctx, probe_trampoline, state_ptr.cast::<c_void>())?;
+        // A probe context-allocation failure is an INTERVENTION failure, not a trace
+        // one: re-class it (create_trace_context raises RebirthError::Trace) so
+        // llm_steer/llm_ablate surface the documented rebirth_error_intervention.
+        let ctx = self
+            .create_trace_context(n_ctx, probe_trampoline, state_ptr.cast::<c_void>())
+            .map_err(|_| RebirthError::Intervention {
+                reason: "could not allocate a context to verify the intervention (out of \
+                         memory?); free memory, e.g. close() other loaded models, and retry"
+                    .to_string(),
+            })?;
         spec.apply_to_context(ctx.ptr.as_ptr())?;
         let decode_result = ctx.decode_all(&[PROBE_TOKEN]);
         // SAFETY: single-threaded; the callback has finished for this decode.
