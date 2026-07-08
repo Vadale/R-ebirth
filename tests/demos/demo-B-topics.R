@@ -59,12 +59,9 @@ demo_B_data <- function(path = NULL) {
 # ---- cluster naming ----------------------------------------------------------
 
 # Representatives of one cluster: the medoid (point nearest the cluster centroid
-# in the map) and its nearest neighbours within the cluster.
+# in the map, via .demo_B_medoid) and its nearest neighbours within the cluster.
 .demo_B_reps <- function(coords, members, k = 4L) {
-  sub <- coords[members, , drop = FALSE]
-  cen <- colMeans(sub)
-  d2c <- rowSums(sweep(sub, 2, cen)^2)
-  medoid <- members[which.min(d2c)]
+  medoid <- .demo_B_medoid(coords, members)
   d2m <- rowSums(sweep(coords[members, , drop = FALSE], 2, coords[medoid, ])^2)
   members[order(d2m)][seq_len(min(k, length(members)))]
 }
