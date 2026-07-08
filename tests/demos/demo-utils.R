@@ -433,8 +433,8 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
 }
 
 # Text with a white halo, so labels stay readable over coloured points/cells.
-# (The shared copy: both Demo A and Demo B now use it -- demo-B's local copy was
-# folded onto this file in WP7.5b part-2.)
+# Part of the shared visual style; Demo B's cluster map draws its topic labels
+# with it (demo-B's local copy was folded onto this file in WP7.5b part-2).
 .demo_halo_text <- function(x, y, labels, col = "black", cex = 1, font = 2,
                             adj = c(0.5, 0.5), ...) {
   off <- 0.006 * diff(graphics::par("usr")[1:2])
