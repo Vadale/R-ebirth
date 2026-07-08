@@ -14,6 +14,7 @@ use std::thread::ThreadId;
 
 use crate::error::RebirthError;
 use crate::ffi;
+use crate::probe::ProbeCache;
 
 /// D-008 gate G2: the raw llama.cpp handles are confined to the R main thread
 /// (ARCHITECTURE.md section 3). WP4 Step 5 introduces the first background thread
@@ -166,6 +167,12 @@ pub struct Model {
     resolved_backend: BackendKind,
     /// The R main thread the handle was created on (D-008 G2 confinement check).
     owner: ThreadId,
+    /// The sentinel-probe verdict cache (D-021), shared through every `Arc<Model>`
+    /// clone so a derived handle inherits it: the intervention mechanism is proven
+    /// on this model's weights once per (mechanism, layer), then reused. `Mutex`
+    /// only for the `Sync` bound `Arc<Model>` requires — access is on the R main
+    /// thread and always uncontended.
+    probe_cache: Mutex<ProbeCache>,
     _backend: Backend,
 }
 
@@ -646,7 +653,14 @@ impl LoadedModel {
         })
     }
 
-    // --- crate-internal intervention support (intervene.rs) -----------------
+    // --- crate-internal intervention support (intervene.rs / probe.rs) ------
+
+    /// The shared per-model sentinel-probe verdict cache (D-021). Reached through
+    /// the `Arc<Model>`, so the source handle and every derived handle see the same
+    /// cache and pay a layer's probe cost at most once.
+    pub(crate) fn probe_cache(&self) -> &std::sync::Mutex<ProbeCache> {
+        &self.ctx.model.probe_cache
+    }
 
     /// Build a NEW `LoadedModel` sharing this model's weights (an `Arc<Model>`
     /// clone — no reload) with a FRESH generation context of the same
@@ -772,6 +786,7 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
         ptr: model_ptr,
         resolved_backend: req.backend,
         owner: std::thread::current().id(),
+        probe_cache: Mutex::new(ProbeCache::default()),
         _backend: backend,
     });
 

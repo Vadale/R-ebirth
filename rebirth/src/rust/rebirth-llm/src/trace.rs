@@ -560,8 +560,10 @@ impl TraceContext {
 
     /// Decode `ids` as one batch with EVERY token flagged as an output, so every
     /// tapped tensor carries all `n_tokens` rows in token order. The tap fires
-    /// during this call via the installed `cb_eval`.
-    fn decode_all(&self, ids: &[i32]) -> Result<(), RebirthError> {
+    /// during this call via the installed `cb_eval`. `pub(crate)` so the sentinel
+    /// probe (`probe.rs`) drives its single-token forward pass through the same
+    /// cache-clear + all-tokens-output decode the trace path uses.
+    pub(crate) fn decode_all(&self, ids: &[i32]) -> Result<(), RebirthError> {
         self.clear_memory();
         let mut batch = Batch::new(ids.len() as i32)?;
         // `logits_last_only = false`: flag every token (the uniform-indexing trick).

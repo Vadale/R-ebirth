@@ -12,6 +12,8 @@
 //! - [`embed`] — text/token embeddings pooled in Rust (WP3, D-011).
 //! - [`trace`] — activation tracing via the scheduler eval callback (WP4, D-012).
 //! - [`intervene`] — steering + ablation on a fresh context (WP5, D-012/D-016).
+//! - `probe` — the runtime sentinel intervention probe (WP7.5a, D-021) that proves
+//!   interventions take effect on a model, superseding the hard arch allow-list.
 //! - `spill` — Arrow-IPC disk spill for over-budget traces (WP4 Step 5, D-013),
 //!   behind the default-on `spill` feature (a `--no-default-features` build omits
 //!   it and the Arrow crates entirely).
@@ -24,6 +26,7 @@ mod error;
 mod ffi;
 mod generate;
 mod intervene;
+mod probe;
 #[cfg(feature = "spill")]
 mod spill;
 mod trace;

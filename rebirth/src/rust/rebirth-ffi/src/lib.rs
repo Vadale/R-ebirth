@@ -763,9 +763,10 @@ fn rebirth_intervene(
     ablate_values: Vec<f64>,
 ) -> Robj {
     with_model(&ptr, |model| {
-        // Fail fast on an unsupported architecture, before allocating any context
-        // (D-012/D-014: never a silent no-op on an arch without the choke point).
-        model.check_intervention_supported()?;
+        // The architecture allow-list is gone (D-021): `derive_with_interventions`
+        // runs the runtime sentinel probe, which proves the mechanism takes effect on
+        // this model at the requested layers and raises `rebirth_error_intervention`
+        // if it would silently no-op — the same fails-loud guarantee, per model.
 
         // n_embd / n_layer are the model's own dimensions (m$hidden_size / m$layers),
         // always >= 1 for a real model. Route them through the same reject-not-clamp
