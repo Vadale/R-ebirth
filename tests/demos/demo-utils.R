@@ -121,6 +121,23 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
   if (s == 0) v else v / s
 }
 
+# Sustained-onset layer (A1): the smallest `band` value from which every
+# subsequent metric stays >= `thr`. This describes a rise-shape robustly even when
+# the metric saturates at the ceiling (a lone early spike that later dips does NOT
+# count as onset), which a bare which.max peak cannot. Returns NA_integer_ when the
+# metric never stays above the threshold. `metric` and `band` are aligned and
+# ordered by depth.
+.demo_sustained_onset <- function(metric, band, thr) {
+  metric <- as.numeric(metric)
+  if (length(metric) != length(band)) {
+    stop("`metric` and `band` must have the same length")
+  }
+  n <- length(metric)
+  sustained <- rev(cumprod(rev(metric >= thr)) > 0) # TRUE where the tail stays >= thr
+  i <- which(sustained)
+  if (length(i) == 0L) NA_integer_ else as.integer(band[[i[[1L]]]])
+}
+
 # Bootstrap percentile CI of the mean (A3's dose-response aggregation). Resample
 # the values with replacement B times; a fixed seed => byte-identical output
 # across runs (the WP7 reproducibility rule), evaluated hermetically via
@@ -250,10 +267,15 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
   paste(parts, collapse = "  |  ")
 }
 
-.demo_subtitle <- function(model, n, seed = NULL, extra = NULL, line = 0.3, cex = 0.8) {
+# `adj` defaults to NA (mtext's own default => centered over the panel, the look
+# every figure uses). A panel with a full-height legend on its right (A5) passes
+# adj = 0 so a long model name left-anchors and never collides with the legend
+# title.
+.demo_subtitle <- function(model, n, seed = NULL, extra = NULL, line = 0.3,
+                           cex = 0.8, adj = NA) {
   graphics::mtext(
     .demo_subtitle_text(model, n, seed, extra),
-    side = 3, line = line, cex = cex, col = "grey35"
+    side = 3, line = line, cex = cex, col = "grey35", adj = adj
   )
 }
 
@@ -444,7 +466,23 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "symmetric zlim spans +/- max|z|"
   )
 
-  if (isTRUE(verbose)) message("demo-utils self-test: OK (23 checks)")
+  # 13. Sustained onset (A1 rise-shape): the first layer from which the metric
+  #     stays >= thr; an early spike that later dips does NOT count; never-sustained
+  #     gives NA.
+  ok(
+    identical(.demo_sustained_onset(c(0.6, 0.95, 0.8, 0.99, 1.0), 1:5, 0.9), 4L),
+    "sustained onset ignores an early spike that dips back below thr"
+  )
+  ok(
+    identical(.demo_sustained_onset(c(1, 1, 1), 1:3, 0.9), 1L),
+    "a metric at the ceiling everywhere has onset at the first layer"
+  )
+  ok(
+    identical(.demo_sustained_onset(c(0.5, 0.6), 1:2, 0.9), NA_integer_),
+    "a metric that never stays above thr has no onset (NA)"
+  )
+
+  if (isTRUE(verbose)) message("demo-utils self-test: OK (26 checks)")
   invisible(TRUE)
 }
 
