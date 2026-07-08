@@ -68,6 +68,13 @@ jobs:
       - name: demo-utils self-test (model-free)
         run: Rscript -e 'source("tests/demos/demo-utils.R")'
 
+      # Model-free smoke test of Demo B's B1-B4 figure code (D-022): synthesizes
+      # coordinates/clusters/embeddings/texts (no model, no uwot/dbscan) and renders
+      # every analysis to a headless PDF, so a base-graphics regression in the extended
+      # topic figures is caught per-commit (the nightly exercises them on a real model).
+      - name: demo-B plot self-test (model-free)
+        run: Rscript -e 'Sys.setenv(REBIRTH_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
+
       # Lint the R-boundary crate here rather than in rust.yaml: rebirth-ffi's
       # build needs R on the PATH (provided by the steps above). rust.yaml lints
       # the R-free rebirth-llm.

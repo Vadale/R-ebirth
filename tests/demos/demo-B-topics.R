@@ -566,6 +566,55 @@ run_demo_B_reproducible <- function(model_path = .demo_B_model_path(),
   invisible(TRUE)
 }
 
+# Model-free smoke test of the B1-B4 FIGURE code (no model, no uwot/dbscan): synthesize
+# coordinates, cluster labels, an embedding, and texts, then render every analysis to a
+# headless PDF device and assert it is written. Guards the base-graphics code paths per
+# commit (the numeric helpers have their own hand-tests in demo_utils_selftest; the
+# nightly exercises the same figures on a real model). Returns TRUE or stops loudly.
+demo_B_plot_selftest <- function(verbose = FALSE) {
+  set.seed(1L)
+  k <- 5L
+  per <- 30L
+  centers <- cbind(cos(2 * pi * seq_len(k) / k), sin(2 * pi * seq_len(k) / k)) * 6
+  coords <- do.call(rbind, lapply(seq_len(k), function(g) {
+    sweep(matrix(rnorm(per * 2L, sd = 0.5), per, 2L), 2L, centers[g, ], `+`)
+  }))
+  coords <- rbind(coords, matrix(rnorm(20L, sd = 6), 10L, 2L)) # 10 noise points
+  cluster <- c(rep(seq_len(k), each = per), rep(0L, 10L))
+  dd <- 16L
+  dirs <- matrix(rnorm(k * dd), k, dd)
+  dirs <- dirs / sqrt(rowSums(dirs^2))
+  emb <- rbind(
+    dirs[rep(seq_len(k), each = per), ] + matrix(rnorm(k * per * dd, sd = 0.3), k * per, dd),
+    matrix(rnorm(10L * dd), 10L, dd)
+  )
+  emb <- emb / sqrt(rowSums(emb^2))
+  words <- c("alpha", "beta", "gamma", "delta", "epsilon")
+  texts <- c(
+    unlist(lapply(seq_len(k), function(g) rep(paste(words[[g]], "shared common term"), per))),
+    rep("noise text", 10L)
+  )
+  labels <- stats::setNames(paste("topic", seq_len(k)), seq_len(k))
+  say <- function(...) if (isTRUE(verbose)) message(...)
+
+  f <- file.path(tempdir(), "demoB-plot-selftest.pdf")
+  grDevices::pdf(f) # headless-robust device (no cairo/X11 needed)
+  tryCatch(
+    {
+      demo_B_plot(coords, cluster, labels, model = "synthetic.gguf", seed = 1L)
+      .demo_B1_plot(.demo_B1_run(coords, cluster, emb, labels, "synthetic.gguf", say))
+      .demo_B2_plot(.demo_B2_run(texts, cluster, labels, "synthetic.gguf", say))
+      .demo_B3_plot(.demo_B3_run(emb, cluster, labels, "synthetic.gguf", say))
+    },
+    finally = grDevices::dev.off()
+  )
+  if (!file.exists(f) || file.info(f)$size == 0) {
+    stop("demo_B_plot_selftest: a figure failed to render", call. = FALSE)
+  }
+  if (isTRUE(verbose)) message("demo-B plot self-test: OK (B1-B4 rendered)")
+  invisible(TRUE)
+}
+
 .demo_B_model_path <- function() {
   p <- Sys.getenv("REBIRTH_DEMO_MODEL", "")
   if (!nzchar(p)) p <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN", "")
