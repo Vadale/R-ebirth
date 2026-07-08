@@ -1,0 +1,124 @@
+# Nightly Demo B ("topics without Python") acceptance run on the pinned
+# Qwen2.5-0.5B-Instruct Q8_0 GGUF (WP7 / WP7.5b, D-022).
+#
+# WHY A SEPARATE, SCHEDULED WORKFLOW (not part of R-CMD-check.yaml):
+#   Per-commit CI is model-free (the demo-utils self-test runs there). Demo B needs a
+#   real model to embed abstracts, so -- like nightly-demo-A.yaml -- it downloads the
+#   CI-integration model ONCE per night and runs end-to-end on the shipped SYNTHETIC
+#   sample (offline, license-clean). Its OWN file, triggered only by `schedule` +
+#   `workflow_dispatch`, means a nightly demo flake can NEVER gate a PR (non-gating).
+#
+# WHAT IS ASSERTED (backend-robust): run_demo_B(extended = TRUE) exits 0 and produces
+#   B1-B4 (the four figures); at least two topics are discovered with a finite mean
+#   silhouette in [-1, 1]; and the pipeline is REPRODUCIBLE -- fixed seeds give
+#   byte-identical clustering and B1-B3 statistics (D-022 acceptance). We do NOT assert
+#   an exact topic count: the 0.5B model is weak and its embedding separates the eight
+#   synthetic fields imperfectly, so a fixed k would be a backend-brittle overclaim.
+#
+# MODEL PIN (same provenance as nightly-demo-A.yaml): repo
+#   Qwen/Qwen2.5-0.5B-Instruct-GGUF, file qwen2.5-0.5b-instruct-q8_0.gguf,
+#   revision 9217f5db79a29953eb74d5343926648285ec7e67 (immutable), Apache-2.0.
+#   MODEL_SHA256 is the file's git-lfs content hash; the download is verified
+#   FAIL-CLOSED (mismatch => file deleted => job fails) before the demo runs.
+on:
+  schedule:
+    - cron: '30 5 * * *' # 05:30 UTC, nightly (after demo-A at 04:30)
+  workflow_dispatch: {} # manual trigger (founder, on demand)
+
+name: nightly-demo-B.yaml
+
+permissions: read-all
+
+concurrency:
+  group: nightly-demo-B
+  cancel-in-progress: false
+
+jobs:
+  demo-B:
+    runs-on: ubuntu-24.04
+    name: nightly Demo B (topics without Python) on Qwen2.5-0.5B Q8_0
+    timeout-minutes: 90
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      MODEL_URL: https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q8_0.gguf
+      MODEL_SHA256: ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          # Demo B needs uwot + dbscan (Suggests); pkgload comes with devtools.
+          extra-packages: any::devtools any::uwot any::dbscan
+          working-directory: rebirth
+
+      - name: Download + verify the pinned Qwen2.5-0.5B Q8_0 GGUF (fail-closed)
+        run: |
+          set -euo pipefail
+          dest="$RUNNER_TEMP/qwen2.5-0.5b-instruct-q8_0.gguf"
+          echo "Downloading $MODEL_URL"
+          curl -fL --retry 3 --retry-delay 5 -o "$dest" "$MODEL_URL"
+          if ! echo "${MODEL_SHA256}  ${dest}" | sha256sum -c -; then
+            rm -f "$dest"
+            echo "::error::SHA256 mismatch for the pinned Qwen2.5-0.5B Q8_0 GGUF; refusing to run"
+            exit 1
+          fi
+          echo "verified: $(sha256sum "$dest")"
+          echo "REBIRTH_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
+
+      - name: Build rebirth and run Demo B end-to-end (extended + reproducibility)
+        run: |
+          Rscript -e '
+            suppressMessages(pkgload::load_all("rebirth", quiet = TRUE))
+            mp <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN")
+            stopifnot(nzchar(mp), file.exists(mp))
+            # Fail LOUDLY if the model is not the expected one (a nightly that
+            # silently skips is a nightly that lies).
+            m <- llm(mp)
+            stopifnot(identical(m$architecture, "qwen2"), m$layers == 24L)
+            close(m)
+
+            Sys.setenv(REBIRTH_DEMO_NO_AUTORUN = "1")
+            source("tests/demos/demo-B-topics.R") # also runs the demo-utils self-test
+
+            # extended = TRUE runs B1-B3 as well as the polished B4 map; PNGs go to a
+            # temp dir so every figure renders to a device (headless-safe).
+            ext_dir <- file.path(Sys.getenv("RUNNER_TEMP", unset = tempdir()), "demoB-extended")
+            dir.create(ext_dir, showWarnings = FALSE)
+            res <- run_demo_B(mp, plot_file = file.path(ext_dir, "demoB-B4-map.png"),
+                              extended = TRUE, plot_dir = ext_dir)
+
+            cat(sprintf("Demo B: %d topics, %.1f%% noise; mean silhouette %.3f\n",
+                        length(res$labels), 100 * mean(res$cluster == 0L),
+                        res$extended$B1$mean_sil))
+
+            # Backend-robust acceptance: topics found, stats sane, all four figures written.
+            stopifnot(length(res$labels) >= 2L)
+            stopifnot(is.finite(res$extended$B1$mean_sil),
+                      all(abs(res$extended$B1$silhouette) <= 1),
+                      all(res$extended$B1$cohesion >= 0 & res$extended$B1$cohesion <= 1))
+            figs <- c(file.path(ext_dir, "demoB-B4-map.png"),
+                      res$extended$files[c("B1", "B2", "B3")])
+            stopifnot(all(file.exists(figs)), all(file.info(figs)$size > 0))
+
+            # D-022 reproducibility: fixed seeds => byte-identical clustering + stats.
+            run_demo_B_reproducible(mp)
+            cat("Demo B nightly acceptance: PASS\n")
+          '
+
+      - name: Upload the Demo B figures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: demo-B-figures
+          path: ${{ runner.temp }}/**/demoB-*.png
+          if-no-files-found: warn

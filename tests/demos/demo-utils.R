@@ -227,6 +227,179 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
   }
 }
 
+# ---- WP7.5b Demo-B numeric helpers (topic-quality, terms, structure) ----------
+#
+# All model-free and self-tested at the foot of this file (D-022): every new numeric
+# helper carries a hand-computed self-test. Used by the extended Demo B analyses
+# (B1 topic-quality metrics, B2 top terms by log-odds, B3 inter-topic structure).
+
+# Per-cluster centroids (the mean row) of a matrix, EXCLUDING the noise label 0.
+# Rows are ordered by increasing cluster id and named by it -> a k x ncol(M) matrix.
+# Shared by the embedding-cohesion metric (B1) and the inter-topic cosine/dendrogram
+# (B3, via .demo_cosine_matrix on these centroids).
+.demo_cluster_centroids <- function(M, cluster) {
+  M <- as.matrix(M)
+  if (nrow(M) != length(cluster)) stop("`M` rows must match `cluster` length")
+  ids <- sort(setdiff(unique(cluster), 0L))
+  cen <- matrix(NA_real_, nrow = length(ids), ncol = ncol(M),
+                dimnames = list(as.character(ids), colnames(M)))
+  for (i in seq_along(ids)) {
+    cen[i, ] <- colMeans(M[cluster == ids[[i]], , drop = FALSE])
+  }
+  cen
+}
+
+# Simplified silhouette (Vendramin/Campello/Hruschka SSWC, centroid-based, O(n*k)) on
+# the cluster COORDINATES: for each clustered point, a = Euclidean distance to its own
+# cluster centroid, b = distance to the nearest OTHER cluster centroid, and
+# s = (b - a) / max(a, b) in [-1, 1]. This is the dependency-free O(n*k) stand-in for
+# the exact O(n^2) silhouette (the `cluster` package, D-022): it judges each point
+# against compact cluster prototypes rather than all pairwise distances -- so an
+# elongated cluster whose centroid sits off its own mass scores lower, which is an
+# honest weakness signal, not a bug. Noise (label 0) is excluded from the centroids
+# AND receives s = NA (it belongs to no cluster); < 2 clusters gives all-NA (undefined).
+# Returns a per-point vector aligned to the input rows.
+.demo_silhouette_simplified <- function(coords, cluster) {
+  coords <- as.matrix(coords)
+  if (nrow(coords) != length(cluster)) stop("`coords` rows must match `cluster` length")
+  ids <- sort(setdiff(unique(cluster), 0L))
+  sil <- rep(NA_real_, nrow(coords))
+  if (length(ids) < 2L) return(sil)
+  cen <- .demo_cluster_centroids(coords, cluster)
+  d_cen <- vapply(seq_along(ids), function(i) {
+    sqrt(rowSums(sweep(coords, 2, cen[i, ])^2))
+  }, numeric(nrow(coords))) # n x k distances to every centroid
+  for (i in seq_along(ids)) {
+    members <- which(cluster == ids[[i]])
+    a <- d_cen[members, i]
+    b <- apply(d_cen[members, -i, drop = FALSE], 1L, min)
+    denom <- pmax(a, b)
+    sil[members] <- ifelse(denom == 0, 0, (b - a) / denom)
+  }
+  sil
+}
+
+# Embedding-space cohesion (B1): per cluster, the mean cosine similarity of its members
+# to the cluster centroid. With members row-normalized this equals the resultant length
+# ||mean of unit members|| (a directional-statistics identity), in [0, 1] -- 1 = one
+# shared direction, 0 = uniformly spread. Reported ALONGSIDE the UMAP silhouette because
+# UMAP distorts density and the honest cohesion lives in the original embedding space
+# (D-022). Returns a named per-cluster vector.
+.demo_embedding_cohesion <- function(emb, cluster) {
+  emb <- as.matrix(emb)
+  nrm <- sqrt(rowSums(emb^2))
+  nrm[nrm == 0] <- 1
+  cen <- .demo_cluster_centroids(emb / nrm, cluster) # unit rows -> centroid norm = mean cos
+  stats::setNames(sqrt(rowSums(cen^2)), rownames(cen))
+}
+
+# A compact committed English stopword list: function words + academic-abstract
+# boilerplate ("paper", "results", "method", "approach", "using", ...) that would
+# otherwise top every topic. Deliberately small, fixed, and auditable so B2's
+# tokenization is deterministic; it is NOT a linguistic authority. (The informative
+# Dirichlet prior already discounts corpus-common words; this list only spares the
+# reader the most obvious ones.)
+.DEMO_STOPWORDS <- c(
+  "the", "a", "an", "and", "or", "but", "if", "then", "else", "for", "of", "to",
+  "in", "on", "at", "by", "with", "from", "as", "is", "are", "was", "were", "be",
+  "been", "being", "this", "that", "these", "those", "it", "its", "we", "our", "us",
+  "you", "your", "they", "their", "he", "she", "his", "her", "which", "who", "whom",
+  "whose", "what", "when", "where", "how", "than", "so", "such", "can", "could",
+  "may", "might", "will", "would", "shall", "should", "must", "do", "does", "did",
+  "has", "have", "had", "not", "no", "nor", "also", "more", "most", "some", "any",
+  "all", "each", "other", "into", "over", "under", "between", "within", "about",
+  "based", "given", "here", "while", "toward", "towards", "further", "across", "both",
+  "via", "one", "two", "three", "however", "study", "studies", "paper", "present",
+  "results", "result", "method", "methods", "approach", "using", "use", "used",
+  "show", "shows", "shown", "find", "finds", "found", "propose", "proposed", "new",
+  "framework", "model", "models", "analysis", "work", "these", "we"
+)
+
+# Tokenize free text into lowercase alphabetic tokens of >= min_chars letters, dropping
+# stopwords. Pure regex (base R) -> a deterministic character vector; a character vector
+# input is tokenized and concatenated (group-level counting). Intentionally simple (no
+# stemming) so B2's top terms are literal corpus words a reader can check against the
+# abstracts.
+.demo_tokenize <- function(text, stopwords = .DEMO_STOPWORDS, min_chars = 3L) {
+  x <- tolower(text)
+  toks <- unlist(regmatches(x, gregexpr("[[:alpha:]]+", x)), use.names = FALSE)
+  toks <- toks[nchar(toks) >= min_chars]
+  toks[!toks %in% stopwords]
+}
+
+# Build a topics x vocabulary integer count matrix from per-document token vectors
+# (`tokens_list`) and a per-document group id (`groups`; 0 = noise, dropped). Vocabulary
+# = the tokens whose TOTAL corpus count is >= min_count (rare terms dropped to bound the
+# vocab and the log-odds variance). Deterministic; rows named by cluster id, columns by
+# term (sorted).
+.demo_term_counts <- function(tokens_list, groups, min_count = 1L) {
+  ids <- sort(setdiff(unique(groups), 0L))
+  in_topic <- groups %in% ids
+  tab <- table(unlist(tokens_list[in_topic], use.names = FALSE))
+  vocab <- sort(names(tab)[tab >= min_count])
+  counts <- matrix(0L, nrow = length(ids), ncol = length(vocab),
+                   dimnames = list(as.character(ids), vocab))
+  for (i in seq_along(ids)) {
+    gt <- unlist(tokens_list[groups == ids[[i]]], use.names = FALSE)
+    gt <- gt[gt %in% vocab]
+    if (length(gt)) {
+      ct <- table(gt)
+      counts[i, names(ct)] <- as.integer(ct)
+    }
+  }
+  counts
+}
+
+# Informative Dirichlet prior for the log-odds (Monroe et al.): alpha_w proportional to
+# the word's overall corpus frequency, with total prior mass alpha_0 = V (the vocabulary
+# size) -> on average one "virtual corpus-distributed token" per word. A light,
+# scale-adaptive prior; the z-score normalization below makes the ranking robust to
+# alpha_0 within reason. `counts` is the topics x vocab matrix.
+.demo_informative_prior <- function(counts) {
+  cw <- colSums(counts) # y_.w : corpus count per word
+  total <- sum(cw)
+  if (total == 0) return(rep(1, ncol(counts)))
+  ncol(counts) * cw / total # alpha_0 = V, alpha_w proportional to corpus frequency
+}
+
+# Log-odds-ratio with a Dirichlet prior (Monroe, Colaresi & Quinn 2008, "Fightin'
+# Words"): for each topic i (vs the REST of the corpus) and word w, the smoothed
+# log-odds `delta` and its `z`-score. `counts` = topics x vocab; `prior` = alpha_w
+# (length ncol(counts)). Ranking terms per topic by z surfaces the words that
+# DISCRIMINATE the topic (over-represented AND reliably estimated), not merely the
+# frequent ones -- which is exactly why raw frequency is not used (D-022). z = 0 means
+# the word is no more likely in this topic than in the rest. Returns list(delta, z),
+# both topics x vocab.
+.demo_log_odds <- function(counts, prior = .demo_informative_prior(counts)) {
+  counts <- as.matrix(counts)
+  a0 <- sum(prior)
+  ni <- rowSums(counts) # tokens per topic
+  yw <- colSums(counts) # corpus count per word
+  n_total <- sum(counts)
+  alpha <- matrix(prior, nrow(counts), ncol(counts), byrow = TRUE) # alpha_w per cell
+  y <- counts # y_iw : word w in topic i
+  r <- sweep(-y, 2, yw, `+`) # r_iw = y_.w - y_iw : word w in the rest
+  # odds of w within topic i vs within the rest (each smoothed by the prior):
+  odds_topic <- (y + alpha) / ((ni + a0) - y - alpha)
+  odds_rest <- (r + alpha) / ((n_total - ni + a0) - r - alpha)
+  delta <- log(odds_topic) - log(odds_rest)
+  z <- delta / sqrt(1 / (y + alpha) + 1 / (r + alpha))
+  list(delta = delta, z = z)
+}
+
+# Top `n` terms per topic by log-odds z-score (B2). Returns a named list (one entry per
+# topic) of list(terms, z), ordered most- to least-distinctive. Pure numeric on a counts
+# matrix; the demo tokenizes abstracts into it.
+.demo_top_terms <- function(counts, n = 6L, prior = .demo_informative_prior(counts)) {
+  z <- .demo_log_odds(counts, prior)$z
+  vocab <- colnames(counts)
+  out <- lapply(seq_len(nrow(counts)), function(i) {
+    o <- order(z[i, ], decreasing = TRUE)[seq_len(min(as.integer(n), ncol(counts)))]
+    list(terms = vocab[o], z = unname(z[i, o]))
+  })
+  stats::setNames(out, rownames(counts))
+}
+
 # ---- WP7.5b shared visual style (one coherent look across all demo figures) ---
 #
 # The house palette (hcl.colors: qualitative "Dark 3", sequential "YlOrBr",
@@ -280,8 +453,8 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
 }
 
 # Text with a white halo, so labels stay readable over coloured points/cells.
-# (Kept here as the shared copy; demo-B still carries its own until part-2 folds
-# it onto this file.)
+# (The shared copy: both Demo A and Demo B now use it -- demo-B's local copy was
+# folded onto this file in WP7.5b part-2.)
 .demo_halo_text <- function(x, y, labels, col = "black", cex = 1, font = 2,
                             adj = c(0.5, 0.5), ...) {
   off <- 0.006 * diff(graphics::par("usr")[1:2])
@@ -482,7 +655,129 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "a metric that never stays above thr has no onset (NA)"
   )
 
-  if (isTRUE(verbose)) message("demo-utils self-test: OK (26 checks)")
+  # ---- WP7.5b Demo-B helpers (D-022) ----
+
+  # A hand fixture: two well-separated 1-D clusters on the x-axis + one noise point.
+  #   cluster 1 = {(0,0), (2,0)} -> centroid (1,0);  cluster 2 = {(10,0), (12,0)} ->
+  #   centroid (11,0);  (6,0) is noise (label 0).
+  sil_coords <- rbind(c(0, 0), c(2, 0), c(6, 0), c(10, 0), c(12, 0))
+  sil_clus <- c(1L, 1L, 0L, 2L, 2L)
+
+  # 14. Cluster centroids: mean row per cluster, noise excluded.
+  ok(
+    isTRUE(all.equal(unname(.demo_cluster_centroids(sil_coords, sil_clus)),
+                     rbind(c(1, 0), c(11, 0)))),
+    "cluster centroids must be the per-cluster mean row, excluding noise"
+  )
+
+  # 15. Centroid cosine (B3): the cosine matrix of orthogonal cluster centroids is I.
+  cc_emb <- rbind(c(1, 0), c(1, 0), c(0, 1), c(0, 1))
+  ok(
+    isTRUE(all.equal(unname(.demo_cosine_matrix(.demo_cluster_centroids(cc_emb, c(1, 1, 2, 2)))),
+                     diag(2))),
+    "orthogonal cluster centroids give an identity cosine matrix"
+  )
+
+  # 16. Simplified silhouette, hand-computed. (0,0): a=1, b=11 -> 10/11; (2,0): a=1,
+  #     b=9 -> 8/9; symmetric for cluster 2. Noise gets NA.
+  sil <- .demo_silhouette_simplified(sil_coords, sil_clus)
+  ok(
+    isTRUE(all.equal(sil[c(1, 2, 4, 5)], c(10 / 11, 8 / 9, 8 / 9, 10 / 11))),
+    "simplified silhouette must match the hand-computed values"
+  )
+  ok(is.na(sil[[3]]), "a noise point has silhouette NA")
+
+  # 17. Silhouette is undefined (all NA) with fewer than two clusters.
+  ok(
+    all(is.na(.demo_silhouette_simplified(rbind(c(0, 0), c(1, 0)), c(1L, 1L)))),
+    "silhouette with a single cluster is all NA"
+  )
+
+  # 18. Embedding cohesion = ||mean of unit members||: orthogonal pair -> sqrt(1/2),
+  #     identical -> 1, opposite -> 0.
+  coh <- .demo_embedding_cohesion(
+    rbind(c(1, 0), c(0, 1), c(1, 0), c(1, 0), c(1, 0), c(-1, 0)),
+    c(1L, 1L, 2L, 2L, 3L, 3L)
+  )
+  ok(
+    isTRUE(all.equal(unname(coh), c(sqrt(0.5), 1, 0))),
+    "embedding cohesion must equal the resultant length of unit members"
+  )
+
+  # 19. Tokenizer: lowercase alphabetic tokens >= min_chars, stopwords dropped.
+  ok(
+    identical(
+      .demo_tokenize("The Deep neural-network learns fast; a cat sat.",
+                     stopwords = c("the", "a", "sat"), min_chars = 3L),
+      c("deep", "neural", "network", "learns", "fast", "cat")
+    ),
+    "the tokenizer must lowercase, split on non-letters, and drop short/stopwords"
+  )
+  ok(
+    length(.demo_tokenize("We study the model using this method")) == 0L,
+    "the default stopword list removes abstract boilerplate"
+  )
+
+  # 20. Term counts: topics x vocab integer matrix, noise document excluded.
+  tc <- .demo_term_counts(
+    list(c("alpha", "alpha", "shared"), c("beta", "shared"), c("gamma")),
+    c(1L, 2L, 0L)
+  )
+  ok(
+    isTRUE(all.equal(tc, matrix(c(2L, 0L, 0L, 1L, 1L, 1L), 2L, 3L,
+      dimnames = list(c("1", "2"), c("alpha", "beta", "shared"))
+    ))),
+    "term counts must tabulate topics x vocab and drop noise"
+  )
+
+  # 21. Informative prior: alpha_w proportional to corpus frequency, alpha_0 = V.
+  lo_counts <- rbind(c(8, 1, 1), c(1, 1, 8)) # corpus counts 9, 2, 9; total 20; V = 3
+  ok(
+    isTRUE(all.equal(.demo_informative_prior(lo_counts), c(1.35, 0.3, 1.35))),
+    "the informative prior must be V * corpus_freq"
+  )
+
+  # 22. Log-odds (Monroe et al.), hand-computed with a uniform prior alpha = 1.
+  #     Topic 1, word 1: odds_topic = 9/4, odds_rest = 2/11 -> delta = log(99/8);
+  #     var = 1/9 + 1/2 = 11/18 -> z = log(99/8)/sqrt(11/18).
+  lo <- .demo_log_odds(lo_counts, prior = rep(1, 3))
+  ok(
+    isTRUE(all.equal(lo$delta[1, 1], log(99 / 8))),
+    "the smoothed log-odds must match the hand-computed value"
+  )
+  ok(
+    isTRUE(all.equal(lo$z[1, 1], log(99 / 8) / sqrt(11 / 18))),
+    "the log-odds z-score must match the hand-computed value"
+  )
+  ok(
+    isTRUE(all.equal(lo$z[1, 2], 0)),
+    "a word split evenly across topics has log-odds z = 0"
+  )
+  ok(
+    isTRUE(all.equal(lo$z[2, 3], lo$z[1, 1])) &&
+      isTRUE(all.equal(lo$z[1, 3], -lo$z[1, 1])),
+    "log-odds z is mirror-symmetric across the two topics and signs its direction"
+  )
+
+  # 23. Top terms on a symmetric two-topic corpus (equal totals). Topic 1 over-uses
+  #     "focus", under-uses "anti", and shares "spread"/"filler" evenly: the ranking is
+  #     focus (z > 0) > spread/filler (z = 0) > anti (z < 0).
+  tt <- .demo_top_terms(
+    matrix(c(10, 0, 0, 10, 5, 5, 5, 5), 2L, 4L,
+      dimnames = list(NULL, c("focus", "anti", "spread", "filler"))
+    ),
+    n = 4L, prior = rep(1, 4)
+  )
+  ok(
+    identical(tt[[1]]$terms[[1]], "focus"),
+    "the term concentrated in a topic ranks first"
+  )
+  ok(
+    identical(tt[[1]]$terms[[4]], "anti") && isTRUE(all.equal(tt[[1]]$z[[2]], 0)),
+    "an under-represented term ranks last; an evenly-split term has z = 0"
+  )
+
+  if (isTRUE(verbose)) message("demo-utils self-test: OK (42 checks)")
   invisible(TRUE)
 }
 

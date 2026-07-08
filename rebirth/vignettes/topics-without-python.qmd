@@ -102,6 +102,13 @@ coords <- cbind(cx + rnorm(nrow(abstracts), 0, 0.8),
                 cy + rnorm(nrow(abstracts), 0, 0.8))
 cluster <- as.integer(factor(abstracts$label, levels = labs))
 labels <- setNames(labs, seq_along(labs))
+# a synthetic embedding (one direction per topic + noise) so the quality and
+# structure metrics below have something to read without a model
+D <- 24
+dirs <- matrix(rnorm(length(labs) * D), length(labs), D)
+dirs <- dirs / sqrt(rowSums(dirs^2))
+emb <- dirs[cluster, ] + matrix(rnorm(nrow(abstracts) * D, sd = 0.5), nrow(abstracts), D)
+emb <- emb / sqrt(rowSums(emb^2))
 ```
 
 ## The labelled map
@@ -136,6 +143,125 @@ for (j in seq_along(ids)) {
 par(op)
 ```
 
-Each colour is a discovered topic; grey points are HDBSCAN's noise class. The full
-runnable script (naming, tuning, and the arXiv fetcher) is
-`tests/demos/demo-B-topics.R`. No Python was involved at any step.
+Each colour is a discovered topic; grey points are HDBSCAN's noise class. These are
+the model's *suggested* groupings, not ground truth --- so the next three steps give
+the reader ways to judge them.
+
+## How good are the topics?
+
+A map invites the question *how good are these clusters, really?* Two base-R metrics
+answer it, and they disagree in an informative way. **Simplified silhouette** (on the
+UMAP coordinates) scores each point by how much closer it sits to its own topic's centre
+than to the nearest other topic --- separation in the map you see. **Cohesion** is the
+mean cosine of a topic's documents to their centroid in the *original* embedding space,
+where UMAP's density distortion cannot flatter the result.
+
+```{r}
+#| label: quality
+simplified_silhouette <- function(coords, cluster) {
+  ids <- sort(setdiff(unique(cluster), 0))
+  cen <- t(vapply(ids, function(g) colMeans(coords[cluster == g, , drop = FALSE]),
+                  numeric(ncol(coords))))
+  d <- vapply(seq_along(ids), function(i) sqrt(rowSums(sweep(coords, 2, cen[i, ])^2)),
+              numeric(nrow(coords)))
+  sil <- rep(NA_real_, nrow(coords))
+  for (i in seq_along(ids)) {
+    m <- which(cluster == ids[i]); a <- d[m, i]; b <- apply(d[m, -i, drop = FALSE], 1, min)
+    sil[m] <- (b - a) / pmax(a, b)
+  }
+  sil
+}
+cohesion <- function(emb, members) {           # = mean cosine of members to the centroid
+  U <- emb[members, , drop = FALSE]; U <- U / sqrt(rowSums(U^2))
+  sqrt(sum(colMeans(U)^2))
+}
+ids <- sort(setdiff(unique(cluster), 0))
+sil <- simplified_silhouette(coords, cluster)
+quality <- data.frame(
+  topic = labels[as.character(ids)],
+  n = as.integer(table(cluster)[as.character(ids)]),
+  silhouette = round(vapply(ids, function(g) mean(sil[cluster == g]), numeric(1)), 2),
+  cohesion = round(vapply(ids, function(g) cohesion(emb, which(cluster == g)), numeric(1)), 2)
+)
+quality[order(-quality$silhouette), ]
+```
+
+On real decoder-LLM embeddings the two metrics tell different stories: silhouette
+varies from topic to topic (weak, overlapping clusters score lower --- honestly), while
+cohesion is *uniformly high* because these embeddings are anisotropic (every document
+points into a narrow cone of the space). That gap is exactly why both are reported: the
+map can look cleaner than the raw geometry is.
+
+## What is each topic about?
+
+Naming a cluster with the model is one summary; its *distinctive words* are another, and
+they are checkable against the abstracts. Ranking by raw frequency would just return
+corpus-wide common words. Instead we use the **log-odds-ratio with an informative
+Dirichlet prior** (Monroe, Colaresi & Quinn 2008): each word's over-representation in a
+topic versus the rest of the corpus, standardised to a z-score, with the prior shrinking
+common words toward zero. Twenty lines of base R --- no Python, no topic-model package.
+
+```{r}
+#| label: terms
+stopwords <- c("the","a","an","and","or","to","of","in","on","for","with","we","our",
+               "that","this","is","are","be","by","as","from","using","study","results",
+               "method","approach","paper","show","these","which","can","based","present")
+tokenize <- function(t) {
+  w <- unlist(regmatches(tolower(t), gregexpr("[[:alpha:]]+", tolower(t))))
+  w <- w[nchar(w) >= 3]; w[!w %in% stopwords]
+}
+toks <- lapply(abstracts$text, tokenize)
+vocab <- sort(unique(unlist(toks[cluster %in% ids])))
+counts <- vapply(ids, function(g)
+  as.integer(table(factor(unlist(toks[cluster == g]), levels = vocab))),
+  integer(length(vocab)))
+rownames(counts) <- vocab                        # vocabulary x topic counts
+yw <- rowSums(counts); alpha <- length(vocab) * yw / sum(yw)  # informative prior
+a0 <- sum(alpha); N <- sum(counts)
+top_terms <- function(gi, n = 8) {
+  y <- counts[, gi]; ni <- sum(y); r <- yw - y
+  delta <- log((y + alpha) / (ni + a0 - y - alpha)) -
+           log((r + alpha) / (N - ni + a0 - r - alpha))
+  z <- delta / sqrt(1 / (y + alpha) + 1 / (r + alpha))
+  names(sort(z, decreasing = TRUE))[seq_len(n)]
+}
+data.frame(
+  topic = labels[as.character(ids)],
+  distinctive_terms = vapply(seq_along(ids),
+    function(gi) paste(top_terms(gi), collapse = ", "), character(1))
+)
+```
+
+The terms discriminate the topics rather than echo the corpus --- and they let a reader
+judge each cluster for themselves.
+
+## How do the topics relate?
+
+Finally, which topics are near-duplicates and which stand apart? The cosine similarity
+between topic centroids answers it; `hclust()` on `1 - cosine` turns it into a
+dendrogram.
+
+```{r}
+#| label: structure
+#| fig-width: 8
+#| fig-height: 4.5
+#| fig-alt: "Dendrogram of topics clustered by centroid cosine similarity."
+centroids <- t(vapply(ids, function(g) colMeans(emb[cluster == g, , drop = FALSE]),
+                      numeric(ncol(emb))))
+centroids <- centroids / sqrt(rowSums(centroids^2))
+cosm <- pmin(pmax(tcrossprod(centroids), -1), 1)
+short <- function(s) ifelse(nchar(s) > 22, paste0(substr(s, 1, 19), "..."), s)
+hc <- hclust(as.dist(1 - cosm), method = "average")
+hc$labels <- short(labels[as.character(ids)])
+op <- par(mar = c(2, 4, 3, 9), mgp = c(2.5, 0.7, 0))
+plot(as.dendrogram(hc), horiz = TRUE, xlab = "1 - cosine",
+     main = "Which topics are near each other")
+par(op)
+```
+
+Because decoder-LLM embeddings are anisotropic, every centroid pair sits at a high
+absolute cosine; the *relative* structure is what matters, and the demo script draws it
+as a heatmap on a data-driven scale. The full runnable version --- the polished map, the
+quality panel, per-topic term bars, and the centroid-cosine heatmap --- is
+`run_demo_B(extended = TRUE)` in `tests/demos/demo-B-topics.R` (with `fetch-abstracts.R`
+for the real ~5,000-abstract arXiv corpus). No Python was involved at any step.
