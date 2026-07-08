@@ -1,4 +1,4 @@
-# Native workspace for the `rebirth` R package (ADR D-005).
+# Native workspace for the `relm` R package (ADR D-005).
 #
 # Both native crates live here, inside the package, so `R CMD build`/`R CMD check`
 # and CRAN builds are self-contained (ARCHITECTURE.md §9): no path escapes the

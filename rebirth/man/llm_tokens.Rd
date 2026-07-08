@@ -38,17 +38,17 @@ result is a single string. Decoding is UTF-8 correct even when a multi-byte
 character spans two tokens — always decode the whole id vector rather than
 concatenating the piece names, which can split a character.
 
-Token ids are \strong{1-based} in the R API (like every other index in \code{rebirth});
+Token ids are \strong{1-based} in the R API (like every other index in \code{relm});
 subtract 1 to compare them with a raw vocabulary index (llama.cpp / Hugging
 Face). Encoding and decoding are exact inverses:
 \code{llm_tokens(m, llm_tokens(m, txt), decode = TRUE)} reproduces \code{txt}.
 
 The model must carry a tokenizer; a \code{no_vocab} model raises
-\code{rebirth_error_tokenize}.
+\code{relm_error_tokenize}.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 ids <- llm_tokens(m, "The quick brown fox")
 ids
 llm_tokens(m, ids, decode = TRUE)

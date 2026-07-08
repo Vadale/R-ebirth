@@ -1,6 +1,6 @@
 [package]
 name = "rebirth-ffi"
-description = "The R <-> Rust boundary for the rebirth package: the only crate holding unsafe, SEXP marshalling, index conversion, panic catching, and condition mapping (ARCHITECTURE.md §2)."
+description = "The R <-> Rust boundary for the relm package: the only crate holding unsafe, SEXP marshalling, index conversion, panic catching, and condition mapping (ARCHITECTURE.md §2)."
 publish = false
 version.workspace = true
 edition.workspace = true
@@ -8,12 +8,13 @@ license.workspace = true
 authors.workspace = true
 rust-version = "1.71"
 
-# The R-loadable static library keeps the historical name `rebirth`, so the
-# generated entrypoint (R_init_rebirth), NAMESPACE (useDynLib(rebirth, ...)),
-# document.rs (rebirth::get_rebirth_metadata), and Makevars (-lrebirth) are all
-# unchanged by the D-005 layout move.
+# The R-loadable static library is named `relm` (the R package name), so the
+# generated entrypoint (R_init_relm), NAMESPACE (useDynLib(relm, ...)),
+# document.rs (relm::get_relm_metadata), and Makevars (-lrelm) all agree. The
+# crate (`rebirth-ffi`) and workspace are unchanged: only the staticlib name and
+# the R-visible identity are `relm`.
 [lib]
-name = "rebirth"
+name = "relm"
 crate-type = ["rlib", "staticlib"]
 
 [[bin]]

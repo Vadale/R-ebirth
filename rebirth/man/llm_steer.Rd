@@ -37,7 +37,7 @@ see Details.
 Steering is llama.cpp's native control-vector mechanism: a per-layer,
 \code{hidden_size}-wide vector added to the residual at \code{layer}'s output, for \strong{all
 token positions} (hence \code{positions = "all"} is the only supported value in this
-release; a position subset raises \code{rebirth_error_intervention}).
+release; a position subset raises \code{relm_error_intervention}).
 
 \strong{Composition.} Deriving from an already-steered or ablated handle carries its
 full spec forward and adds the new one, then builds a single fresh context from
@@ -51,7 +51,7 @@ forced to the ablation \code{value} (D-016).
 
 \strong{Layer 1 is not steerable.} The native control vector reserves engine index 0
 and has no slot for the first transformer block, so \code{layer = 1} raises
-\code{rebirth_error_intervention}. Steer a later layer (\code{2:m$layers}), or ablate
+\code{relm_error_intervention}. Steer a later layer (\code{2:m$layers}), or ablate
 layer 1 with \code{\link[=llm_ablate]{llm_ablate()}} (ablation covers every layer).
 
 \strong{Not free.} Each \code{llm_steer()}/\code{llm_ablate()} call allocates a fresh context
@@ -62,21 +62,21 @@ intervened handles, not hundreds.
 \strong{Generation/logits only (for now).} Interventions apply to \code{llm_generate()}
 and \code{llm_logits()}. \code{\link[=llm_embed]{llm_embed()}} and \code{\link[=llm_trace]{llm_trace()}} build their own fresh
 contexts that do not inherit the adapters, so calling them on an intervened
-handle raises \code{rebirth_error_embed} / \code{rebirth_error_trace} rather than silently
+handle raises \code{relm_error_embed} / \code{relm_error_trace} rather than silently
 returning base (un-intervened) vectors mislabeled as steered.
 
 \strong{Model support.} Interventions work on any standard-residual decoder. Before
 the handle is returned, a runtime probe verifies on \emph{this} model that steering
 actually shifts the residual at each requested layer; if it would silently do
 nothing (an architecture that does not route its residual through the choke point
-the mechanism hooks), \code{rebirth_error_intervention} is raised instead of a no-op
+the mechanism hooks), \code{relm_error_intervention} is raised instead of a no-op
 handle. The \code{llama} and \code{qwen2} architectures are additionally \emph{behaviorally
 validated} -- they pass the valence-steering and KL-ablation acceptance fixtures;
 any other architecture is enabled the moment it passes the probe.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 # A steering direction is any hidden_size-wide vector (here a placeholder).
 dir <- rep(0.05, m$hidden_size)
 steered <- llm_steer(m, layer = 8, direction = dir, coef = 2)

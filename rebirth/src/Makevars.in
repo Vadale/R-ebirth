@@ -1,11 +1,11 @@
 TARGET_DIR = ./rust/target
 LIBDIR = $(TARGET_DIR)/@LIBDIR@
-STATLIB = $(LIBDIR)/librebirth.a
+STATLIB = $(LIBDIR)/librelm.a
 # @LLAMA_LIBS@ is computed per-OS by tools/config.R: the vendored llama.cpp/ggml
 # static archives (relocated into $(LIBDIR) by rebirth-llm/build.rs, D-006) plus
-# the platform system libraries/frameworks the engine needs. -lrebirth precedes
-# them (GNU ld resolves left-to-right; librebirth.a references the engine).
-PKG_LIBS = -L$(LIBDIR) -lrebirth @LLAMA_LIBS@
+# the platform system libraries/frameworks the engine needs. -lrelm precedes
+# them (GNU ld resolves left-to-right; librelm.a references the engine).
+PKG_LIBS = -L$(LIBDIR) -lrelm @LLAMA_LIBS@
 
 # R would otherwise auto-glob src/*.{c,cc,cpp,...} into OBJECTS, and the vendored
 # `src/llama.cpp/` DIRECTORY matches the *.cpp pattern -- R then tries to compile

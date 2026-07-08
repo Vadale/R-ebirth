@@ -1,4 +1,4 @@
-//! `rebirth` — the native boundary of the R package (extendr).
+//! `relm` — the native boundary of the R package (extendr).
 //!
 //! This is the only crate that speaks R (extendr) and the only one that holds
 //! the boundary `unsafe` (ARCHITECTURE.md §2). Its job for WP1:
@@ -6,10 +6,10 @@
 //! - expose one internal `.Call` entry, [`rebirth_model_load`], that all R-side
 //!   validation has already vetted;
 //! - catch any Rust panic (`catch_unwind`) so it becomes a classed
-//!   `rebirth_error_internal` payload, never a raw panic on the R console;
+//!   `relm_error_internal` payload, never a raw panic on the R console;
 //! - map every [`RebirthError`] variant to a structured payload
 //!   `list(ok, class, message, fields)` **returned** to R — the R helper
-//!   `rebirth_abort()` does the actual `stop()` (condition raising stays in R,
+//!   `relm_abort()` does the actual `stop()` (condition raising stays in R,
 //!   ARCHITECTURE.md §2), while this crate decides the class + fields (§8);
 //! - expose the close / is-closed boundary calls plus the backend-capability
 //!   query R needs to resolve `backend = "auto"`.
@@ -62,7 +62,7 @@ impl LlmHandle {
         self.inner.borrow_mut().take().is_some()
     }
 
-    /// Run `f` against the live model, or `rebirth_error_closed` if the handle
+    /// Run `f` against the live model, or `relm_error_closed` if the handle
     /// has been closed. Keeps `inner` private to this type.
     fn run<F, T>(&self, f: F) -> Result<T, RebirthError>
     where
@@ -94,7 +94,7 @@ fn from_engine_token(id_0based: i32) -> i32 {
 ///
 /// R validates every layer/position/neuron as a positive integer before the
 /// boundary, so a value `< 1` here means R's validation broke. We reject it with
-/// `rebirth_error_internal` — we want that bug report — rather than clamping it (the
+/// `relm_error_internal` — we want that bug report — rather than clamping it (the
 /// old `.max(0)`) into engine index 0, which would silently ablate/trace a
 /// DIFFERENT, valid item (layer 1, neuron 1). At the boundary, out-of-contract input
 /// is an error, never a plausible different request.
@@ -119,7 +119,7 @@ fn from_engine_index(zero_based: u32) -> i32 {
 
 /// A 1-based count/size (e.g. `max_tokens`, `top`, `context_length`) that R
 /// validated as a positive integer before the boundary. A value `< 1` here means R's
-/// validation broke, so reject with `rebirth_error_internal` rather than silently
+/// validation broke, so reject with `relm_error_internal` rather than silently
 /// clamping it (the old `.max(0)`/`.max(1)`) into a different valid request (P-4).
 fn checked_count(value: i32, name: &str) -> Result<usize, RebirthError> {
     if value < 1 {
@@ -252,7 +252,7 @@ fn error_payload(error: RebirthError) -> Robj {
     .into()
 }
 
-/// A caught panic becomes a `rebirth_error_internal` payload with the panic
+/// A caught panic becomes a `relm_error_internal` payload with the panic
 /// message — a panic must never reach the R console raw (ARCHITECTURE.md §2).
 fn panic_payload(panic: Box<dyn Any + Send>) -> Robj {
     let context = panic
@@ -265,7 +265,7 @@ fn panic_payload(panic: Box<dyn Any + Send>) -> Robj {
 
 /// Resolve a `catch_unwind` outcome into the classed payload R receives: a
 /// success passes through, a `RebirthError` becomes its error payload, and a
-/// caught panic becomes a `rebirth_error_internal` payload (§2). Every boundary
+/// caught panic becomes a `relm_error_internal` payload (§2). Every boundary
 /// entry funnels its result through here.
 fn resolve(result: std::thread::Result<Result<Robj, RebirthError>>) -> Robj {
     match result {
@@ -326,7 +326,7 @@ fn rebirth_model_load(
 
     // The entire success path -- load, metadata snapshot, external-pointer and
     // payload construction -- runs inside catch_unwind so a panic anywhere maps
-    // to a classed rebirth_error_internal (ARCHITECTURE.md §2.2), never a generic
+    // to a classed relm_error_internal (ARCHITECTURE.md §2.2), never a generic
     // extendr error.
     resolve(catch_unwind(AssertUnwindSafe(|| {
         let loaded = rebirth_llm::load(request)?;
@@ -543,7 +543,7 @@ fn rebirth_trace(
 }
 
 /// The R payload for a completed trace: the in-memory long-format columns, or a
-/// spill report the R side turns into a lazy `rebirth_trace`.
+/// spill report the R side turns into a lazy `relm_trace`.
 fn trace_output_payload(output: TraceOutput) -> Robj {
     match output {
         TraceOutput::Memory {
@@ -557,7 +557,7 @@ fn trace_output_payload(output: TraceOutput) -> Robj {
 
 /// The R payload for a spilled trace: the file path plus the capture's dimensions
 /// (layers/positions shifted engine 0-based -> R 1-based), so the boundary builds
-/// a lazy `rebirth_trace` whose print/summary need no data load. `n_rows`/
+/// a lazy `relm_trace` whose print/summary need no data load. `n_rows`/
 /// `n_positions` are doubles (R has no u64; exact at these magnitudes).
 #[cfg(feature = "spill")]
 fn spill_payload(report: &rebirth_llm::SpillReport) -> Robj {
@@ -643,7 +643,7 @@ fn build_capture_spec(
     })
 }
 
-/// Expand the captured rows into the `rebirth_trace` payload (API-GRAMMAR §2). The
+/// Expand the captured rows into the `relm_trace` payload (API-GRAMMAR §2). The
 /// per-neuron numeric columns (`prompt_id`/`token_pos`/`layer`/`neuron`/`value`) are
 /// emitted in full; the `token` and `component` labels — constant across a row's
 /// neurons — are INTERNED (D-017): each distinct label crosses the boundary once (a
@@ -765,7 +765,7 @@ fn rebirth_intervene(
     with_model(&ptr, |model| {
         // The architecture allow-list is gone (D-021): `derive_with_interventions`
         // runs the runtime sentinel probe, which proves the mechanism takes effect on
-        // this model at the requested layers and raises `rebirth_error_intervention`
+        // this model at the requested layers and raises `relm_error_intervention`
         // if it would silently no-op — the same fails-loud guarantee, per model.
 
         // n_embd / n_layer are the model's own dimensions (m$hidden_size / m$layers),
@@ -823,7 +823,7 @@ fn rebirth_selftest_new_handle() -> Robj {
 }
 
 // Test-only: force a panic inside the `catch_unwind` path and return the
-// resulting `rebirth_error_internal` payload — proves a panic maps to a classed
+// resulting `relm_error_internal` payload — proves a panic maps to a classed
 // condition instead of reaching R raw. Internal (never in NAMESPACE).
 #[extendr]
 fn rebirth_selftest_panic() -> Robj {
@@ -877,7 +877,7 @@ fn rebirth_selftest_trace_tokens_spill(
 // Macro to generate exports. The functions above are internal `.Call` targets;
 // the user-facing surface is the R `llm()` and its S3 methods.
 extendr_api::extendr_module! {
-    mod rebirth;
+    mod relm;
     fn rebirth_model_load;
     fn rebirth_handle_close;
     fn rebirth_handle_is_closed;
@@ -919,11 +919,11 @@ mod tests {
     #[test]
     fn to_engine_index_rejects_out_of_contract_indices() {
         // M-4/P-4: an index < 1 (R validation broke) is rejected with
-        // rebirth_error_internal, never clamped to engine 0 (which would ablate/trace
+        // relm_error_internal, never clamped to engine 0 (which would ablate/trace
         // a different, valid item). The old `.max(0)` returned 0 for both.
         for bad in [0i32, -1, -7, i32::MIN] {
             let err = to_engine_index(bad).expect_err("index < 1 must reject");
-            assert_eq!(err.class(), "rebirth_error_internal", "bad index {bad}");
+            assert_eq!(err.class(), "relm_error_internal", "bad index {bad}");
         }
     }
 
@@ -936,7 +936,7 @@ mod tests {
         for bad in [0i32, -1, i32::MIN] {
             assert_eq!(
                 checked_count(bad, "top").unwrap_err().class(),
-                "rebirth_error_internal"
+                "relm_error_internal"
             );
         }
     }

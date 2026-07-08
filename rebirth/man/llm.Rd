@@ -51,16 +51,16 @@ finalizer frees it as a safety net otherwise (see \code{\link[=close.llm]{close.
 
 \code{backend = "auto"} resolves to the fastest backend this build supports
 (Metal on Apple silicon, otherwise CPU). Requesting a backend the build was
-not compiled with raises \code{rebirth_error_backend}.
+not compiled with raises \code{relm_error_backend}.
 
 No model ships inside the package yet, so the runnable example is guarded by
-the \code{REBIRTH_TEST_MODEL_QWEN} environment variable (point it at a local
+the \code{RELM_TEST_MODEL_QWEN} environment variable (point it at a local
 Qwen2.5 GGUF to run it). A tiny in-repo model arrives in a later work
 package.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 print(m)
 summary(m)
 close(m)

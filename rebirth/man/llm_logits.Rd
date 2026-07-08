@@ -42,7 +42,7 @@ The result is one long-format \code{data.frame} with \code{top} rows per prompt,
 in prompt order. Within each prompt the rows are ordered by descending logit,
 so \code{rank == 1} is the most likely next token; \code{logit} and \code{prob} are therefore
 non-increasing down the ranks. Token ids are \strong{1-based} (like every index in
-\code{rebirth}, and like \code{\link[=llm_tokens]{llm_tokens()}}), so \code{token_id} round-trips through
+\code{relm}, and like \code{\link[=llm_tokens]{llm_tokens()}}), so \code{token_id} round-trips through
 \code{llm_tokens(m, token_id, decode = TRUE)}.
 
 Active interventions on \code{m} (from \code{\link[=llm_steer]{llm_steer()}}/\code{\link[=llm_ablate]{llm_ablate()}}) apply, so
@@ -50,13 +50,13 @@ Active interventions on \code{m} (from \code{\link[=llm_steer]{llm_steer()}}/\co
 next-token distribution.
 
 The model must carry a tokenizer; a \code{no_vocab} model (such as the in-repo
-synthetic model) raises \code{rebirth_error_tokenize}. No model ships inside the
-package yet, so the runnable example is guarded by the \code{REBIRTH_TEST_MODEL_QWEN}
+synthetic model) raises \code{relm_error_tokenize}. No model ships inside the
+package yet, so the runnable example is guarded by the \code{RELM_TEST_MODEL_QWEN}
 environment variable — point it at a local Qwen2.5 GGUF to run it.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 llm_logits(m, "The capital of France is", top = 5)
 close(m)
 \dontshow{\}) # examplesIf}

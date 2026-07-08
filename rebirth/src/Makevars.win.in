@@ -2,11 +2,11 @@ TARGET = $(subst 64,x86_64,$(subst 32,i686,$(WIN)))-pc-windows-gnu
 
 TARGET_DIR = ./rust/target
 LIBDIR = $(TARGET_DIR)/$(TARGET)/@LIBDIR@
-STATLIB = $(LIBDIR)/librebirth.a
+STATLIB = $(LIBDIR)/librelm.a
 # @LLAMA_LIBS@ (from tools/config.R) carries the vendored llama.cpp/ggml static
 # archives + their system libs. Windows/CUDA is Phase 8: the value is a CPU-only
 # placeholder and this path is not yet exercised in CI (macOS/Linux only).
-PKG_LIBS = -L$(LIBDIR) -lrebirth @LLAMA_LIBS@ -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
+PKG_LIBS = -L$(LIBDIR) -lrelm @LLAMA_LIBS@ -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
 
 # R would otherwise auto-glob src/*.{c,cc,cpp,...} into OBJECTS, and the vendored
 # `src/llama.cpp/` DIRECTORY matches the *.cpp pattern -- R then tries to compile

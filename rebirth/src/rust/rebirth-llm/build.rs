@@ -4,7 +4,7 @@
 //! the `cmake` build-dependency, then:
 //!   1. emits `cargo:rustc-link-*` so cargo-driven links (the `rebirth-llm` tests
 //!      and the `rebirth-ffi` `document` bin) resolve the engine symbols, and
-//!   2. relocates the produced `.a` archives next to `librebirth.a` in the shared
+//!   2. relocates the produced `.a` archives next to `librelm.a` in the shared
 //!      `rust/target/<profile>/` dir so the R shared-object link (Makevars
 //!      `PKG_LIBS`) can find them.
 //!
@@ -117,8 +117,8 @@ fn main() {
     lib_stems.push("ggml-base");
 
     // Relocate the archives to a stable per-build dir (for cargo's own link) and
-    // to the shared profile dir alongside librebirth.a (for the R SHLIB link).
-    let native_dir = dst.join("rebirth-native");
+    // to the shared profile dir alongside librelm.a (for the R SHLIB link).
+    let native_dir = dst.join("relm-native");
     fs::create_dir_all(&native_dir).expect("create native lib dir");
     let profile_dir = profile_target_dir();
 
@@ -153,7 +153,7 @@ fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
         // is scanned, so plain, unordered `-l` flags leave the ggml/llama
         // back-references undefined. `+whole-archive` forces every object in (no
         // group, order-independent) and propagates via `rustc-link-lib`; `-bundle`
-        // keeps the archives OUT of `librebirth.a` so the R SHLIB link (Makevars
+        // keeps the archives OUT of `librelm.a` so the R SHLIB link (Makevars
         // PKG_LIBS, with its own --start-group) remains the single provider and no
         // symbol is defined twice.
         for stem in lib_stems {
@@ -177,7 +177,7 @@ fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
     }
 }
 
-/// The shared `rust/target/<profile>/` directory (alongside `librebirth.a`),
+/// The shared `rust/target/<profile>/` directory (alongside `librelm.a`),
 /// derived from `OUT_DIR = <target>/<profile>/build/<crate>-<hash>/out`.
 fn profile_target_dir() -> Option<PathBuf> {
     let out_dir = PathBuf::from(env::var("OUT_DIR").ok()?);

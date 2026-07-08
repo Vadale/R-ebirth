@@ -19,7 +19,7 @@ Deterministically frees the native memory behind an \code{llm} handle. On a
 memory-constrained machine this lets you release several gigabytes
 immediately rather than waiting for garbage collection (the finalizer remains
 the safety net). A double close is a no-op; any later use of the handle
-raises \code{rebirth_error_closed}.
+raises \code{relm_error_closed}.
 }
 \seealso{
 \code{\link[=llm]{llm()}}
