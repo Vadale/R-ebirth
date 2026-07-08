@@ -75,7 +75,7 @@ jobs:
           echo "verified: $(sha256sum "$dest")"
           echo "REBIRTH_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
 
-      - name: Build rebirth and run Demo A end-to-end (relaxed acceptance)
+      - name: Build rebirth and run Demo A end-to-end (relaxed acceptance + A4 gate)
         run: |
           Rscript -e '
             suppressMessages(pkgload::load_all("rebirth", quiet = TRUE))
@@ -89,7 +89,13 @@ jobs:
 
             Sys.setenv(REBIRTH_DEMO_NO_AUTORUN = "1")
             source("tests/demos/demo-A-anatomy-lab.R") # also runs the demo-utils self-test
-            res <- run_demo_A(mp, plot_file = "demoA-money.png")
+            # extended = TRUE runs A1-A5 too, so the sharpened A4 acceptance is gated
+            # here (D-022 impl note). plot_dir points at a temp dir so every extended
+            # figure renders to a PNG device (headless-safe), never to a screen device.
+            ext_dir <- file.path(tempdir(), "demoA-extended")
+            dir.create(ext_dir, showWarnings = FALSE)
+            res <- run_demo_A(mp, plot_file = "demoA-money.png",
+                              extended = TRUE, plot_dir = ext_dir)
 
             cat(sprintf("Demo A: peak AUC %.3f at layer %d; steer shift up %.3f / down %.3f\n",
                         res$best_auc, res$best_layer, res$steer$shift_up, res$steer$shift_down))
@@ -97,6 +103,15 @@ jobs:
             # Relaxed, backend-robust acceptance (see the header).
             stopifnot(is.finite(res$best_auc), res$best_auc >= 0.70)
             stopifnot(res$steer$shift_up > res$steer$shift_down)
+
+            # WP7.5b (D-022 impl note): gate the sharpened A4 unit-specificity
+            # acceptance on the 0.5B tier -- load-bearing (top-RMS) ablation impact
+            # >= 10x matched-random at k=8, random pooled mean <= 0.10 nats, Wilcoxon
+            # p <= 0.01. The concept-readout series is recorded, never gated.
+            a4 <- res$extended$A4$acceptance$nightly
+            cat(sprintf("Demo A A4: k=8 impact/random %.0fx, random_max %.3f -> %s\n",
+                        a4$ratio_k8, a4$random_max, if (isTRUE(a4$pass)) "PASS" else "FAIL"))
+            stopifnot(isTRUE(a4$pass))
             cat("Demo A nightly acceptance: PASS\n")
           '
 
