@@ -34,7 +34,7 @@ The two reference demos, run as scripted acceptance tests
   (simplified silhouette, embedding-space cohesion, cluster centroids, a
   regex tokenizer + term-count matrix, and Monroe-et-al. log-odds top terms with
   an informative Dirichlet prior). An executable self-test runs on `source()`
-  (42 checks, run per-commit in CI). No pROC (D-020).
+  (41 checks, run per-commit in CI). No pROC (D-020).
 - **`make-abstracts-sample.R`** — regenerates the shipped synthetic sample
   (`rebirth/inst/extdata/abstracts-sample.csv`) deterministically.
 - **`fetch-abstracts.R`** — fetches the real ~5,000-abstract arXiv corpus for
