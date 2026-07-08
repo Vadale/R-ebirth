@@ -147,3 +147,27 @@ test_that("an over-long prompt raises rebirth_error_context_overflow", {
     class = "rebirth_error_context_overflow"
   )
 })
+
+# --- [MODEL] Gemma 4 chat-template fallback (WP7.5a / D-021) -----------------
+
+test_that("chat = TRUE works on a Gemma 4 model via the arch template fallback [MODEL]", {
+  # D-021: Gemma 4's embedded Jinja chat template is not detected by b9726's
+  # applier (its string lacks the `<start_of_turn>` literal the detector keys on),
+  # so chat = TRUE used to fail with `llama_chat_apply_template failed (-1)`. The
+  # resolver now falls back to the "gemma" builtin for a gemma-arch model. Runs
+  # only on the founder's Mac with a text-only Gemma 4 GGUF (REBIRTH_TEST_MODEL_GEMMA4).
+  m <- llm(gemma4_model_path())
+  on.exit(close(m), add = TRUE)
+  skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")
+
+  out <- llm_generate(m, "The capital of France is", max_tokens = 8, temperature = 0, chat = TRUE)
+  expect_type(out, "character")
+  expect_length(out, 1L)
+  # A coherent, non-empty answer: chat no longer errors, and the fallback template
+  # produced a real continuation.
+  expect_true(nzchar(out[[1]]))
+
+  # Chat formatting differs from a raw completion (evidence the template applied).
+  raw <- llm_generate(m, "The capital of France is", max_tokens = 8, temperature = 0, chat = FALSE)
+  expect_false(identical(out[[1]], raw[[1]]))
+})

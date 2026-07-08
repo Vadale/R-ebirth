@@ -472,6 +472,107 @@ test_that("llm_trace() attn_out on a qwen2 model is a classed, honest error [MOD
   )
 })
 
+# --- [MODEL] WP7.5a per-architecture tracing (Gemma 4 / Qwen 3 / Qwen 3.5) ---
+
+test_that("llm_trace() residual on a Gemma 4 model returns plausible activations [MODEL]", {
+  # WP7.5a: gemma4 names `l_out-<il>` on every layer (outside its dense/MoE branch,
+  # gemma4.cpp:398), so residual tracing is uniform. Runs on the founder's Mac with
+  # REBIRTH_TEST_MODEL_GEMMA4.
+  m <- llm(gemma4_model_path())
+  on.exit(close(m), add = TRUE)
+  skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")
+
+  layers <- 1:4
+  tr <- llm_trace(m, "The cat sat on the mat.",
+    layers = layers, positions = "last", components = "residual", spill = FALSE
+  )
+  expect_s3_class(tr, "rebirth_trace")
+  expect_setequal(unique(tr$component), "residual")
+  expect_setequal(unique(tr$layer), layers)
+  # positions = "last" on one prompt => exactly one (layer, position) group per
+  # requested layer, each hidden_size neurons wide.
+  groups <- unique(tr[c("layer", "token_pos")])
+  expect_identical(nrow(groups), length(layers))
+  expect_identical(nrow(tr), length(layers) * m$hidden_size)
+  expect_true(all(tr$neuron >= 1L & tr$neuron <= m$hidden_size))
+  # Plausible magnitudes: finite, non-degenerate residual-stream values.
+  expect_true(all(is.finite(tr$value)))
+  expect_gt(stats::sd(tr$value), 0)
+  mat <- as.matrix(tr, layer = 1L, component = "residual")
+  expect_identical(ncol(mat), m$hidden_size)
+})
+
+test_that("llm_trace() attn_out on a Gemma 4 model is a classed error (name collision) [MODEL]", {
+  # ADVERSARIAL (D-021): gemma4 NAMES an `attn_out-<il>` tensor (gemma4.cpp:288) but it
+  # is the mid-block residual sum ggml_add(attn_post_norm(attn), inpL), NOT the post-Wo
+  # attention output D-014 defines. The matcher must NOT capture it: llm_trace raises
+  # rebirth_error_trace, never a silently mislabeled tensor. (Also locked model-free by
+  # the Rust unit test gemma4_attn_out_name_collision_is_rejected; this is end-to-end.)
+  m <- llm(gemma4_model_path())
+  on.exit(close(m), add = TRUE)
+  skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")
+  expect_error(
+    llm_trace(m, "hello", components = "attn_out"),
+    class = "rebirth_error_trace"
+  )
+})
+
+test_that("llm_trace() mlp_out on a Gemma 4 model is a classed error (MoE layers) [MODEL]", {
+  # WP7.5a: gemma4 names `ffn_out` only on DENSE layers (gemma4.cpp:357); MoE layers
+  # name `ffn_moe_combined` (gemma4.cpp:344), so matching `ffn_out` would silently miss
+  # layers. mlp_out therefore raises rebirth_error_trace rather than returning a partial
+  # capture.
+  m <- llm(gemma4_model_path())
+  on.exit(close(m), add = TRUE)
+  skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")
+  expect_error(
+    llm_trace(m, "hello", components = "mlp_out"),
+    class = "rebirth_error_trace"
+  )
+})
+
+test_that("llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [MODEL]", {
+  # WP7.5a: qwen3 names `l_out-<il>` (residual, qwen3.cpp:138) and `ffn_out-<il>`
+  # (mlp_out, qwen3.cpp:133); attn_out is unavailable (only the pre-Wo kqv_out is named,
+  # as on qwen2). Runs with REBIRTH_TEST_MODEL_QWEN3.
+  m <- llm(qwen3_model_path())
+  on.exit(close(m), add = TRUE)
+  skip_if_not(identical(m$architecture, "qwen3"), "model is not a qwen3 GGUF")
+
+  tr <- llm_trace(m, "The cat sat.",
+    layers = 1:3, positions = "last",
+    components = c("residual", "mlp_out"), spill = FALSE
+  )
+  expect_s3_class(tr, "rebirth_trace")
+  expect_setequal(unique(tr$component), c("residual", "mlp_out"))
+  expect_setequal(unique(tr$layer), 1:3)
+  expect_true(all(is.finite(tr$value)))
+  expect_true(all(tr$neuron >= 1L & tr$neuron <= m$hidden_size))
+  # attn_out is not observable on qwen3 (D-014) -> classed error, never a substitute.
+  expect_error(
+    llm_trace(m, "hello", components = "attn_out"),
+    class = "rebirth_error_trace"
+  )
+})
+
+test_that("llm_trace() residual on a Qwen 3.5 model returns plausible activations [MODEL]", {
+  # WP7.5a: qwen35 is a hybrid (linear + full attention) decoder that still names
+  # `l_out-<il>` on every layer (qwen35.cpp:202), so residual tracing is uniform. Runs
+  # with REBIRTH_TEST_MODEL_QWEN35.
+  m <- llm(qwen35_model_path())
+  on.exit(close(m), add = TRUE)
+  skip_if_not(identical(m$architecture, "qwen35"), "model is not a qwen35 GGUF")
+
+  tr <- llm_trace(m, "The cat sat.",
+    layers = 1:3, positions = "last", components = "residual", spill = FALSE
+  )
+  expect_s3_class(tr, "rebirth_trace")
+  expect_setequal(unique(tr$layer), 1:3)
+  expect_true(all(is.finite(tr$value)))
+  expect_gt(stats::sd(tr$value), 0)
+  expect_true(all(tr$neuron >= 1L & tr$neuron <= m$hidden_size))
+})
+
 test_that("llm_trace() warns when explicit positions are recycled across differing lengths [MODEL]", {
   # ACCEPTANCE (API-GRAMMAR section 4): an explicit `positions` vector is recycled
   # per prompt, "with a warning if lengths differ". A position valid for a long

@@ -45,8 +45,11 @@ pub const TRACE_MATERIALIZED_EXPANSION: u64 = 11;
 pub enum Component {
     /// The block-output residual stream (`l_out-<il>`), post-attention + FFN.
     Residual,
-    /// The attention sub-layer output (`attn_out-<il>` on llama, `kqv_out-<il>` on
-    /// qwen2/gemma3 — see [`component_name`]).
+    /// The attention sub-layer output AFTER the output projection `Wo`
+    /// (TransformerLens `hook_attn_out`, D-014). Only llama NAMES it
+    /// (`attn_out-<il>`); the other supported archs expose only the pre-`Wo`
+    /// tensor (a different quantity), so `attn_out` there is a classed error —
+    /// see [`component_name`].
     AttnOut,
     /// The raw FFN/MLP sub-layer output before the residual add (`ffn_out-<il>`).
     MlpOut,
@@ -254,26 +257,50 @@ pub struct SpillPlan {
 /// The engine tensor name to match for `comp` on architecture `arch`, or `None`
 /// when this component is not observable by name for this architecture.
 ///
-/// Per architecture, exactly ONE name (never a union): on a llama graph BOTH the
-/// post-Wo `attn_out-<il>` AND the pre-Wo `kqv_out-<il>` exist, so a `{attn_out,
-/// kqv_out}` alias would capture the wrong/both tensors. `residual` (`l_out`) and
-/// `mlp_out` (`ffn_out`) are consistent across the supported architectures. `attn_out`
-/// (D-014) is the post-projection attention output: only llama names it; qwen2/gemma3
-/// name only the pre-Wo `kqv_out` (a different quantity, and not `hidden_size` wide on
-/// gemma3), so `attn_out` there returns `None` and is never silently substituted
-/// (verified against b9726: `src/models/{llama,qwen2,gemma3}.cpp`, `src/llama-graph.cpp`).
-/// `None` → the caller raises `rebirth_error_trace`, never a silent empty capture.
+/// Every arm is an EXPLICIT per-architecture name derived from the model graph
+/// source (D-014: never name-trusting — a name is used only after checking, at the
+/// b9726 pin, that the tensor carrying it is the quantity the component defines).
+/// Exactly ONE name per (arch, component), never a union: on a llama graph BOTH the
+/// post-`Wo` `attn_out-<il>` AND the pre-`Wo` `kqv_out-<il>` exist, so a `{attn_out,
+/// kqv_out}` alias would capture the wrong/both tensors. `None` → the caller raises
+/// `rebirth_error_trace`, never a silent or wrong capture.
+///
+/// Sources verified at b9726 (`rebirth/src/llama.cpp/src/models/`):
+/// - `residual` = the block-output residual stream `l_out-<il>` (after `build_cvec`),
+///   named uniformly on every supported arch: `llama.cpp:224`, `qwen2.cpp:130`,
+///   `gemma3.cpp:195`, `qwen3.cpp:138`, `qwen35.cpp:202`, `gemma4.cpp:398` — the last
+///   OUTSIDE gemma4's dense/MoE branch, so it covers every layer.
+/// - `mlp_out` = the FFN sub-layer output `ffn_out-<il>` before the residual add:
+///   `llama.cpp:195`, `qwen2.cpp:125`, `gemma3.cpp:185`, `qwen3.cpp:133`,
+///   `qwen35.cpp:195`. NOT gemma4: there `ffn_out` is emitted only on DENSE layers
+///   (`gemma4.cpp:357`, inside the non-MoE `else`) while MoE layers name
+///   `ffn_moe_combined-<il>` (`gemma4.cpp:344`), so an `ffn_out` match would silently
+///   drop every MoE layer — gemma4 `mlp_out` → `None`.
+/// - `attn_out` (D-014) = the post-projection (`Wo`) attention output, `hidden_size`
+///   wide (TransformerLens `hook_attn_out`). Only llama NAMES it (`attn_out-<il>`,
+///   `llama.cpp:172`). qwen2/gemma3/qwen3/qwen35 build attention through the shared
+///   `build_attn` and name only the pre-`Wo` `kqv_out-<il>` (a different quantity, and
+///   not `hidden_size` wide on gemma3). gemma4 is the dangerous COLLISION: it names a
+///   tensor `attn_out-<il>` (`gemma4.cpp:288`) but that is the mid-block residual sum
+///   `ggml_add(attn_post_norm(attn), inpL)`, NOT the post-`Wo` output — matching it
+///   would silently mislabel a different quantity (the exact D-014 failure). So
+///   `attn_out` stays llama-only; every other arch → `None`.
 fn component_name(arch: &str, comp: Component) -> Option<&'static str> {
-    let supported = matches!(arch, "llama" | "qwen2" | "gemma3");
     match comp {
-        Component::Residual => supported.then_some("l_out"),
-        Component::MlpOut => supported.then_some("ffn_out"),
-        // D-014: `attn_out` is the post-projection (Wo) attention output, hidden_size
-        // wide. Only llama names it (`attn_out-<il>`); qwen2/gemma3 build attention via
-        // the shared `build_attn` and name only the pre-Wo `kqv_out-<il>` — a different
-        // quantity (and not hidden_size wide on gemma3), never substituted silently. So
-        // `attn_out` on those archs returns None -> the caller raises rebirth_error_trace.
+        Component::Residual => match arch {
+            "llama" | "qwen2" | "gemma3" | "qwen3" | "qwen35" | "gemma4" => Some("l_out"),
+            _ => None,
+        },
+        Component::MlpOut => match arch {
+            // gemma4 is intentionally absent: `ffn_out` is dense-only there (a partial
+            // capture that would silently miss MoE layers), so gemma4 `mlp_out` errors.
+            "llama" | "qwen2" | "gemma3" | "qwen3" | "qwen35" => Some("ffn_out"),
+            _ => None,
+        },
         Component::AttnOut => match arch {
+            // llama-only: the ONLY arch that names the post-`Wo` output. gemma4's
+            // same-named `attn_out-<il>` is a different quantity (see above) and is
+            // deliberately NOT matched here.
             "llama" => Some("attn_out"),
             _ => None,
         },
@@ -569,17 +596,24 @@ impl LoadedModel {
             match component_name(&arch, comp) {
                 Some(name) => names.push((name, comp)),
                 None => {
-                    let supported_arch = matches!(arch.as_str(), "llama" | "qwen2" | "gemma3");
-                    let reason = if !supported_arch {
+                    // "Traceable at all" == the residual stream is observable; every
+                    // supported decoder names `l_out-<il>`, so this one query is the
+                    // single source of truth (no second arch list to drift, hard rule
+                    // 8f). The human-readable list below is pinned to this matcher by
+                    // the `arch_allow_list_message_matches_the_matcher` test.
+                    let traceable_arch = component_name(&arch, Component::Residual).is_some();
+                    let reason = if !traceable_arch {
                         format!(
                             "Activation tracing is not supported for the '{arch}' \
-                             architecture (supported: llama, qwen2, gemma3)."
+                             architecture (supported: llama, qwen2, gemma3, qwen3, \
+                             qwen35, gemma4)."
                         )
                     } else {
-                        // Supported architecture, but this component is not observable by
-                        // name at the current engine version: `attn_out` on qwen2/gemma3,
-                        // which name only the pre-projection `kqv_out` — a different
-                        // quantity, never substituted silently (D-014).
+                        // A traceable architecture, but this specific component is not
+                        // observable by name at the current engine version and is NEVER
+                        // substituted silently (D-014): e.g. `attn_out` where only the
+                        // pre-`Wo` tensor is named, or gemma4 `mlp_out` where `ffn_out`
+                        // covers only the dense layers.
                         let available =
                             [Component::Residual, Component::MlpOut, Component::AttnOut]
                                 .into_iter()
@@ -589,10 +623,8 @@ impl LoadedModel {
                                 .join(", ");
                         format!(
                             "The '{}' component is not observable for a '{arch}' model at \
-                             the current engine version: this architecture names only the \
-                             pre-projection attention tensor, a different quantity that is \
-                             not substituted silently. Available components: {available}. \
-                             See ?llm_trace.",
+                             the current engine version, and is never substituted silently. \
+                             Available components: {available}. See ?llm_trace.",
                             comp.as_str()
                         )
                     };
@@ -1014,25 +1046,82 @@ mod tests {
 
     #[test]
     fn component_names_are_per_architecture_never_a_union() {
-        // residual / mlp_out are consistent across the supported architectures.
-        for arch in ["llama", "qwen2", "gemma3"] {
-            assert_eq!(component_name(arch, Component::Residual), Some("l_out"));
-            assert_eq!(component_name(arch, Component::MlpOut), Some("ffn_out"));
+        // residual (`l_out`) is observable on EVERY supported arch, including the
+        // WP7.5a additions qwen3/qwen35/gemma4 (gemma4's `l_out` is named outside its
+        // dense/MoE branch, so it covers every layer).
+        for arch in ["llama", "qwen2", "gemma3", "qwen3", "qwen35", "gemma4"] {
+            assert_eq!(
+                component_name(arch, Component::Residual),
+                Some("l_out"),
+                "residual on {arch}"
+            );
         }
-        // attn_out (D-014) = the post-projection output. Only llama names it; qwen2 and
-        // gemma3 name only the pre-Wo `kqv_out` (a different quantity), so attn_out is
-        // NOT observable there and returns None -> rebirth_error_trace, never a silent
-        // substitute. A `{attn_out, kqv_out}` union would also wrongly capture the pre-Wo
-        // tensor on llama, which carries `kqv_out` too.
+        // mlp_out (`ffn_out`) is observable on the dense archs, INCLUDING qwen3/qwen35,
+        // but NOT gemma4 (there `ffn_out` is dense-only; MoE layers name
+        // `ffn_moe_combined`, so a match would silently drop them).
+        for arch in ["llama", "qwen2", "gemma3", "qwen3", "qwen35"] {
+            assert_eq!(
+                component_name(arch, Component::MlpOut),
+                Some("ffn_out"),
+                "mlp_out on {arch}"
+            );
+        }
+        assert_eq!(component_name("gemma4", Component::MlpOut), None);
+        // attn_out (D-014) = the post-projection output. Only llama names it; every
+        // other arch names only the pre-Wo `kqv_out` (a different quantity), so
+        // attn_out is NOT observable there and returns None -> rebirth_error_trace,
+        // never a silent substitute. A `{attn_out, kqv_out}` union would also wrongly
+        // capture the pre-Wo tensor on llama, which carries `kqv_out` too.
         assert_eq!(
             component_name("llama", Component::AttnOut),
             Some("attn_out")
         );
-        assert_eq!(component_name("qwen2", Component::AttnOut), None);
-        assert_eq!(component_name("gemma3", Component::AttnOut), None);
+        for arch in ["qwen2", "gemma3", "qwen3", "qwen35", "gemma4"] {
+            assert_eq!(
+                component_name(arch, Component::AttnOut),
+                None,
+                "attn_out on {arch}"
+            );
+        }
         // Unsupported architecture: no name for any component (-> rebirth_error_trace).
         for comp in [Component::Residual, Component::AttnOut, Component::MlpOut] {
             assert_eq!(component_name("bert", comp), None);
+        }
+    }
+
+    #[test]
+    fn gemma4_attn_out_name_collision_is_rejected() {
+        // ADVERSARIAL (D-021): gemma4 NAMES a tensor `attn_out-<il>` (gemma4.cpp:288),
+        // but it is the mid-block residual sum `ggml_add(attn_post_norm(attn), inpL)`,
+        // NOT the post-`Wo` output D-014 defines. The matcher must NOT match it — else
+        // `llm_trace(components = "attn_out")` on a gemma4 model would silently capture
+        // and mislabel a different quantity. Lock the collision out forever: attn_out on
+        // gemma4 is None, so the boundary raises rebirth_error_trace.
+        assert_eq!(component_name("gemma4", Component::AttnOut), None);
+        // And the tensor gemma4 DOES name (`attn_out`) is never in a resolved spec for
+        // any requested gemma4 component, so the capture callback cannot match it.
+        for comp in [Component::Residual, Component::MlpOut] {
+            assert_ne!(component_name("gemma4", comp), Some("attn_out"));
+        }
+    }
+
+    #[test]
+    fn arch_allow_list_message_matches_the_matcher() {
+        // Twin-pin (hard rule 8f): the human-readable "supported: ..." list in the
+        // resolve_spec allow-list message must name exactly the archs the matcher can
+        // trace (residual observable). If someone adds an arch to `component_name` but
+        // not the message (or vice versa), this fails. Unsupported archs stay None.
+        for arch in ["llama", "qwen2", "gemma3", "qwen3", "qwen35", "gemma4"] {
+            assert!(
+                component_name(arch, Component::Residual).is_some(),
+                "message lists {arch} as supported, so its residual must be observable"
+            );
+        }
+        for arch in ["bert", "mamba", "rwkv", "qwen2moe", "gemma4-assistant"] {
+            assert!(
+                component_name(arch, Component::Residual).is_none(),
+                "{arch} is not in the supported list, so it must not be traceable"
+            );
         }
     }
 
