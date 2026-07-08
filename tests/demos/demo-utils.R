@@ -239,8 +239,12 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
 }
 
 # The "model | n | seed | ..." subtitle string (pure; drawn by .demo_subtitle()).
+# A very long basename (e.g. an Ollama sha256-<64hex> blob path, which the founder
+# uses during development) is truncated so it does not overflow the plot margin.
 .demo_subtitle_text <- function(model, n, seed = NULL, extra = NULL) {
-  parts <- c(sprintf("model: %s", basename(model)), sprintf("n = %d", as.integer(n)))
+  bn <- basename(model)
+  if (nchar(bn) > 44L) bn <- paste0(substr(bn, 1L, 41L), "...")
+  parts <- c(sprintf("model: %s", bn), sprintf("n = %d", as.integer(n)))
   if (!is.null(seed)) parts <- c(parts, sprintf("seed = %d", as.integer(seed)))
   if (!is.null(extra)) parts <- c(parts, extra)
   paste(parts, collapse = "  |  ")
@@ -425,6 +429,14 @@ demo_utils_selftest <- function(verbose = TRUE) {
     identical(.demo_subtitle_text("x.gguf", 5), "model: x.gguf  |  n = 5"),
     "the subtitle omits the seed when none is given"
   )
+  long_bn <- paste0("sha256-", paste(rep("a", 64L), collapse = ""))
+  ok(
+    identical(
+      .demo_subtitle_text(long_bn, 8),
+      paste0("model: ", substr(long_bn, 1L, 41L), "...  |  n = 8")
+    ),
+    "a very long model basename is truncated in the subtitle"
+  )
 
   # 12. Symmetric zlim about zero (A5's diverging scale).
   ok(
@@ -432,7 +444,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
     "symmetric zlim spans +/- max|z|"
   )
 
-  if (isTRUE(verbose)) message("demo-utils self-test: OK (22 checks)")
+  if (isTRUE(verbose)) message("demo-utils self-test: OK (23 checks)")
   invisible(TRUE)
 }
 
