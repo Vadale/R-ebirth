@@ -997,7 +997,7 @@ demo_A_plot <- function(res, file = NULL) {
 
 # ---- the demo ----------------------------------------------------------------
 
-run_demo_A <- function(model_path = .demo_A_model_path(),
+run_demo_A <- function(model_path = .demo_model_path(),
                        layers = NULL, plot_file = NULL,
                        steer_scale = 2, extended = FALSE, plot_dir = NULL,
                        verbose = TRUE) {
@@ -1109,16 +1109,10 @@ run_demo_A <- function(model_path = .demo_A_model_path(),
   )
 }
 
-.demo_A_model_path <- function() {
-  p <- Sys.getenv("REBIRTH_DEMO_MODEL", "")
-  if (!nzchar(p)) p <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN", "")
-  p
-}
-
 # ---- auto-run when a model is available --------------------------------------
 
 if (!nzchar(Sys.getenv("REBIRTH_DEMO_NO_AUTORUN"))) {
-  .mp <- .demo_A_model_path()
+  .mp <- .demo_model_path()
   if (nzchar(.mp) && file.exists(.mp)) {
     demoA <- run_demo_A(.mp, extended = nzchar(Sys.getenv("REBIRTH_DEMO_EXTENDED")))
   } else {

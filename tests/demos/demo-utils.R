@@ -471,6 +471,17 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
   invisible(NULL)
 }
 
+# ---- demo model-path resolution ----------------------------------------------
+
+# Resolve the demo model from the environment: REBIRTH_DEMO_MODEL, then
+# REBIRTH_TEST_MODEL_QWEN; "" when neither is set. Shared by both demos -- used as
+# the run_demo_*() `model_path` default and by each script's auto-run guard.
+.demo_model_path <- function() {
+  p <- Sys.getenv("REBIRTH_DEMO_MODEL", "")
+  if (!nzchar(p)) p <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN", "")
+  p
+}
+
 # ---- Executable self-test ----------------------------------------------------
 
 demo_utils_selftest <- function(verbose = TRUE) {
