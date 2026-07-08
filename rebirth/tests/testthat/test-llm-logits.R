@@ -1,7 +1,7 @@
 # WP (Phase 2): llm_logits(). Argument validation happens in R before the engine,
 # so it runs in CI on the in-repo synthetic model (a valid open handle even though
 # it has no tokenizer). The actual next-token distribution needs a real tokenizer,
-# so the shape/value checks are [MODEL]-gated on REBIRTH_TEST_MODEL_QWEN. The
+# so the shape/value checks are [MODEL]-gated on RELM_TEST_MODEL_QWEN. The
 # numeric top-k + softmax extraction is gated exactly against the numpy oracle in
 # the Rust suite (tests/synthetic_logits.rs), where the synthetic logits are exact.
 
@@ -12,10 +12,10 @@ synthetic_model_path <- function() {
 }
 
 qwen_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
   p
 }
@@ -23,7 +23,7 @@ qwen_model_path <- function() {
 # --- argument validation (before the engine; runs in CI) --------------------
 
 test_that("llm_logits() rejects a non-llm handle", {
-  expect_error(llm_logits(42, "hi"), class = "rebirth_error_argument")
+  expect_error(llm_logits(42, "hi"), class = "relm_error_argument")
   cnd <- tryCatch(llm_logits(42, "hi"), condition = function(c) c)
   expect_identical(cnd$argument, "m")
 })
@@ -33,36 +33,36 @@ test_that("llm_logits() validates prompt and top before the engine", {
   on.exit(close(m), add = TRUE)
 
   # prompt: non-empty character vector without NA.
-  expect_error(llm_logits(m, character(0)), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, NA_character_), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, 42), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, c("a", NA)), class = "rebirth_error_argument")
+  expect_error(llm_logits(m, character(0)), class = "relm_error_argument")
+  expect_error(llm_logits(m, NA_character_), class = "relm_error_argument")
+  expect_error(llm_logits(m, 42), class = "relm_error_argument")
+  expect_error(llm_logits(m, c("a", NA)), class = "relm_error_argument")
 
   # top: a single positive integer.
-  expect_error(llm_logits(m, "hi", top = 0), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, "hi", top = -1), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, "hi", top = 2.5), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, "hi", top = c(1L, 2L)), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, "hi", top = NA_integer_), class = "rebirth_error_argument")
-  expect_error(llm_logits(m, "hi", top = "5"), class = "rebirth_error_argument")
+  expect_error(llm_logits(m, "hi", top = 0), class = "relm_error_argument")
+  expect_error(llm_logits(m, "hi", top = -1), class = "relm_error_argument")
+  expect_error(llm_logits(m, "hi", top = 2.5), class = "relm_error_argument")
+  expect_error(llm_logits(m, "hi", top = c(1L, 2L)), class = "relm_error_argument")
+  expect_error(llm_logits(m, "hi", top = NA_integer_), class = "relm_error_argument")
+  expect_error(llm_logits(m, "hi", top = "5"), class = "relm_error_argument")
 
   # The offending argument is named in a structured field.
   cnd <- tryCatch(llm_logits(m, "hi", top = 0), condition = function(c) c)
   expect_identical(cnd$argument, "top")
 })
 
-test_that("llm_logits() on a tokenizer-less model raises rebirth_error_tokenize", {
+test_that("llm_logits() on a tokenizer-less model raises relm_error_tokenize", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
   # Arguments are valid; the synthetic model simply has no tokenizer, so the text
   # path reports it as a classed condition rather than crashing.
-  expect_error(llm_logits(m, "hello"), class = "rebirth_error_tokenize")
+  expect_error(llm_logits(m, "hello"), class = "relm_error_tokenize")
 })
 
 test_that("llm_logits() rejects a closed handle", {
   m <- llm(synthetic_model_path())
   close(m)
-  expect_error(llm_logits(m, "hi"), class = "rebirth_error_closed")
+  expect_error(llm_logits(m, "hi"), class = "relm_error_closed")
 })
 
 # --- [MODEL] real-model distribution (Qwen: tokenizer + real logits) ---------

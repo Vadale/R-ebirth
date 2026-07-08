@@ -30,7 +30,7 @@
 # SHA256 only to catch accidental edits.
 #
 # USAGE (from the repo root, with the pinned CI model available):
-#   REBIRTH_TEST_MODEL_QWEN=/path/to/qwen2.5-0.5b-instruct-q8_0.gguf \
+#   RELM_TEST_MODEL_QWEN=/path/to/qwen2.5-0.5b-instruct-q8_0.gguf \
 #     Rscript rebirth/tests/testthat/fixtures/make-valence-direction.R
 # It prints the artifact's SHA256; paste that into DIRECTION_SHA256 in the fixture.
 
@@ -90,9 +90,9 @@ this_script_path <- function() {
 main <- function() {
   out_path <- file.path(dirname(this_script_path()), "valence-direction.csv")
 
-  model_path <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN")
+  model_path <- Sys.getenv("RELM_TEST_MODEL_QWEN")
   if (!nzchar(model_path) || !file.exists(model_path)) {
-    stop("Set REBIRTH_TEST_MODEL_QWEN to the Qwen2.5-0.5B-Instruct Q8_0 GGUF path.")
+    stop("Set RELM_TEST_MODEL_QWEN to the Qwen2.5-0.5B-Instruct Q8_0 GGUF path.")
   }
 
   # Load the package from source so the script runs against the working tree.
@@ -100,7 +100,7 @@ main <- function() {
       file.exists("rebirth/DESCRIPTION")) {
     suppressMessages(devtools::load_all("rebirth", quiet = TRUE))
   } else {
-    library(rebirth)
+    library(relm)
   }
 
   m <- llm(model_path)

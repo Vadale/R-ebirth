@@ -4,7 +4,7 @@
 #' `model` is either a pinned alias from the package's model registry (see the
 #' Details section) or a full `https://` URL. The download is
 #' **fail-closed**: for a registry alias the file's SHA256 must match the pinned
-#' value or the file is deleted and `rebirth_error_download` is raised. Nothing
+#' value or the file is deleted and `relm_error_download` is raised. Nothing
 #' downloaded is ever executed — the file is only written to disk and checksummed.
 #'
 #' @details
@@ -16,7 +16,7 @@
 #' - `"qwen2.5-1.5b-instruct-q4_k_m"` — Qwen2.5 1.5B Instruct, Q4_K_M
 #'   (Apache-2.0); the demo default.
 #'
-#' Passing an unknown alias raises `rebirth_error_download` and lists the known
+#' Passing an unknown alias raises `relm_error_download` and lists the known
 #' aliases. Larger Qwen quantizations (7B) ship as split multi-part GGUFs and are
 #' not in the single-file registry yet; Gemma models are gated by the Gemma Terms
 #' of Use (they require accepting terms and an access token on Hugging Face), so
@@ -29,7 +29,7 @@
 #' unverifiable file as if it had been verified.
 #'
 #' **Caching.** `dir = NULL` uses the per-user cache directory
-#' `tools::R_user_dir("rebirth", "cache")`; the directory is created if missing.
+#' `tools::R_user_dir("relm", "cache")`; the directory is created if missing.
 #' The target file name is the URL's last path segment. If a registry model is
 #' already present and its checksum matches, the download is skipped (idempotent,
 #' offline-friendly); a present-but-mismatching file is treated as corrupt and
@@ -53,13 +53,13 @@
 #' @param quiet Single logical. `TRUE` suppresses the download progress bar and
 #'   the informational messages. Default `FALSE`.
 #' @return The local file path, returned **invisibly**. Errors:
-#'   `rebirth_error_argument` (bad `model`/`dir`/`quiet` type),
-#'   `rebirth_error_download` (non-HTTPS URL, unknown alias, network failure,
+#'   `relm_error_argument` (bad `model`/`dir`/`quiet` type),
+#'   `relm_error_download` (non-HTTPS URL, unknown alias, network failure,
 #'   checksum mismatch, or an unwritable directory).
 #' @seealso [llm()]
 #' @examples
 #' # The default download directory (dir = NULL); no network access is performed:
-#' tools::R_user_dir("rebirth", "cache")
+#' tools::R_user_dir("relm", "cache")
 #'
 #' \dontrun{
 #' # Fetch a pinned, checksum-verified model and load it:
@@ -78,7 +78,7 @@ llm_download <- function(model, dir = NULL, quiet = FALSE) {
     abort_argument("quiet", "`quiet` must be a single logical value (TRUE or FALSE).")
   }
   if (is.null(dir)) {
-    dir <- tools::R_user_dir("rebirth", "cache")
+    dir <- tools::R_user_dir("relm", "cache")
   } else if (!is.character(dir) || length(dir) != 1L || is.na(dir) || !nzchar(dir)) {
     abort_argument(
       "dir",
@@ -96,7 +96,7 @@ llm_download <- function(model, dir = NULL, quiet = FALSE) {
 # license, notes. Read fresh on each resolve (a tiny file); all columns are kept
 # as character so a >2 GB size never coerces to NA and a hash is never re-typed.
 model_registry <- function() {
-  path <- system.file("models.csv", package = "rebirth")
+  path <- system.file("models.csv", package = "relm")
   if (!nzchar(path) || !file.exists(path)) {
     abort_download(
       "The model registry (models.csv) is missing from the installed package."
@@ -234,7 +234,7 @@ download_verify <- function(url, expected, dir, quiet, call = sys.call(-1L)) {
   # to have come from THIS url; it is never reused -- always re-fetched (any file
   # already at `dest` is overwritten by move_into_place once the fetch succeeds).
 
-  tmp <- tempfile(pattern = "rebirth-dl-", tmpdir = dir, fileext = ".part")
+  tmp <- tempfile(pattern = "relm-dl-", tmpdir = dir, fileext = ".part")
   on.exit(unlink(tmp, force = TRUE), add = TRUE)
   fetch_url(url, tmp, quiet, call = call)
 

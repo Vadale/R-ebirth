@@ -18,13 +18,13 @@
 #' character spans two tokens — always decode the whole id vector rather than
 #' concatenating the piece names, which can split a character.
 #'
-#' Token ids are **1-based** in the R API (like every other index in `rebirth`);
+#' Token ids are **1-based** in the R API (like every other index in `relm`);
 #' subtract 1 to compare them with a raw vocabulary index (llama.cpp / Hugging
 #' Face). Encoding and decoding are exact inverses:
 #' `llm_tokens(m, llm_tokens(m, txt), decode = TRUE)` reproduces `txt`.
 #'
 #' The model must carry a tokenizer; a `no_vocab` model raises
-#' `rebirth_error_tokenize`.
+#' `relm_error_tokenize`.
 #'
 #' @param m An `llm` handle.
 #' @param x For encoding, a character vector; for decoding, an integer vector of
@@ -33,8 +33,8 @@
 #'   decodes ids to text.
 #' @return Encoding: a named integer vector (single input) or a list of them
 #'   (several inputs). Decoding: a single string.
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' ids <- llm_tokens(m, "The quick brown fox")
 #' ids
 #' llm_tokens(m, ids, decode = TRUE)
@@ -62,15 +62,15 @@ llm_tokens <- function(m, x, decode = FALSE) {
 # Encode a character vector to (named integer vector | list of them).
 llm_encode_text <- function(m, x) {
   if (!is.character(x)) {
-    rebirth_abort(
-      "rebirth_error_tokenize",
+    relm_abort(
+      "relm_error_tokenize",
       "`x` must be a character vector when decode = FALSE (text to tokenize).",
       list(reason = "x_not_character")
     )
   }
   if (anyNA(x)) {
-    rebirth_abort(
-      "rebirth_error_tokenize",
+    relm_abort(
+      "relm_error_tokenize",
       "`x` contains NA; every element must be a string to tokenize.",
       list(reason = "x_has_na")
     )
@@ -87,7 +87,7 @@ llm_encode_text <- function(m, x) {
 
 # Encode a single string to a named integer vector (names = token pieces).
 encode_one <- function(m, s) {
-  payload <- rebirth_check(rebirth_tokenize(
+  payload <- relm_check(rebirth_tokenize(
     m$ptr, s,
     add_special = FALSE, parse_special = TRUE
   ))
@@ -97,19 +97,19 @@ encode_one <- function(m, s) {
 # Decode a vector of 1-based token ids to a single string.
 llm_decode_ids <- function(m, x) {
   if (!is.numeric(x) || anyNA(x) || any(x != round(x)) || any(!is.finite(x))) {
-    rebirth_abort(
-      "rebirth_error_tokenize",
+    relm_abort(
+      "relm_error_tokenize",
       "`x` must be a vector of whole token ids when decode = TRUE.",
       list(reason = "ids_not_integer")
     )
   }
   if (length(x) > 0L && any(x < 1L)) {
-    rebirth_abort(
-      "rebirth_error_tokenize",
+    relm_abort(
+      "relm_error_tokenize",
       "Token ids are 1-based; every id must be >= 1.",
       list(reason = "ids_not_positive")
     )
   }
-  payload <- rebirth_check(rebirth_detokenize(m$ptr, as.integer(x)))
+  payload <- relm_check(rebirth_detokenize(m$ptr, as.integer(x)))
   payload$text
 }

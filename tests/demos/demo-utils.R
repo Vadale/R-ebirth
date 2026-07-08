@@ -1,7 +1,7 @@
 # tests/demos/demo-utils.R
 #
 # Model-free helpers for the WP7 / WP7.5b demos. These are repo scripts, NOT part
-# of the rebirth package. Per D-020 they replace a pROC dependency with a few
+# of the relm package. Per D-020 they replace a pROC dependency with a few
 # lines of base R: AUC as the rank-based Mann-Whitney U statistic (exact, average
 # ranks for ties) plus a stratified percentile-bootstrap CI. WP7.5b (D-022) adds
 # the shared base-graphics visual style and a handful of self-tested numeric
@@ -473,12 +473,12 @@ demo_auc_ci <- function(scores, labels, positive = NULL,
 
 # ---- demo model-path resolution ----------------------------------------------
 
-# Resolve the demo model from the environment: REBIRTH_DEMO_MODEL, then
-# REBIRTH_TEST_MODEL_QWEN; "" when neither is set. Shared by both demos -- used as
+# Resolve the demo model from the environment: RELM_DEMO_MODEL, then
+# RELM_TEST_MODEL_QWEN; "" when neither is set. Shared by both demos -- used as
 # the run_demo_*() `model_path` default and by each script's auto-run guard.
 .demo_model_path <- function() {
-  p <- Sys.getenv("REBIRTH_DEMO_MODEL", "")
-  if (!nzchar(p)) p <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN", "")
+  p <- Sys.getenv("RELM_DEMO_MODEL", "")
+  if (!nzchar(p)) p <- Sys.getenv("RELM_TEST_MODEL_QWEN", "")
   p
 }
 
@@ -767,7 +767,7 @@ demo_utils_selftest <- function(verbose = TRUE) {
 }
 
 # Run on source() so a broken helper fails loudly and immediately. Set
-# REBIRTH_DEMO_SKIP_SELFTEST=1 to skip (e.g. when only re-defining the funcs).
-if (!nzchar(Sys.getenv("REBIRTH_DEMO_SKIP_SELFTEST"))) {
+# RELM_DEMO_SKIP_SELFTEST=1 to skip (e.g. when only re-defining the funcs).
+if (!nzchar(Sys.getenv("RELM_DEMO_SKIP_SELFTEST"))) {
   demo_utils_selftest()
 }

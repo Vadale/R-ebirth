@@ -1,10 +1,10 @@
 # WP0 smoke test. Real behavioural tests arrive with the first real functions
 # (WP1 onward), each alongside its approved API-GRAMMAR entry and its goldens.
 
-test_that("the rebirth namespace loads with its compiled library", {
-  # library(rebirth) in tests/testthat.R has already run; reaching here means
+test_that("the relm namespace loads with its compiled library", {
+  # library(relm) in tests/testthat.R has already run; reaching here means
   # the package installed and its extendr-registered shared object loaded.
-  expect_true("rebirth" %in% loadedNamespaces())
+  expect_true("relm" %in% loadedNamespaces())
 })
 
 test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", {
@@ -15,7 +15,7 @@ test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", 
   # WP5 (API-GRAMMAR section 4): llm_steer(), llm_ablate(). WP (API-GRAMMAR
   # section 4): llm_logits(). WP8a (API-GRAMMAR section 3): llm_download().
   expect_setequal(
-    getNamespaceExports("rebirth"),
+    getNamespaceExports("relm"),
     c(
       "llm", "llm_tokens", "llm_generate", "llm_embed", "llm_trace",
       "llm_steer", "llm_ablate", "llm_logits", "llm_download"
@@ -23,27 +23,27 @@ test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", 
   )
 })
 
-test_that("the WP4 rebirth_trace S3 methods are registered (API-GRAMMAR section 2/4)", {
-  # print/summary/as.matrix on `rebirth_trace`, plus print on its summary object.
+test_that("the WP4 relm_trace S3 methods are registered (API-GRAMMAR section 2/4)", {
+  # print/summary/as.matrix on `relm_trace`, plus print on its summary object.
   for (m in c(
-    "print.rebirth_trace", "summary.rebirth_trace",
-    "as.matrix.rebirth_trace", "print.summary.rebirth_trace"
+    "print.relm_trace", "summary.relm_trace",
+    "as.matrix.relm_trace", "print.summary.relm_trace"
   )) {
     expect_true(
-      exists(m, envir = asNamespace("rebirth"), inherits = FALSE),
+      exists(m, envir = asNamespace("relm"), inherits = FALSE),
       info = m
     )
   }
-  expect_false(is.null(getS3method("print", "rebirth_trace", optional = TRUE)))
-  expect_false(is.null(getS3method("summary", "rebirth_trace", optional = TRUE)))
-  expect_false(is.null(getS3method("as.matrix", "rebirth_trace", optional = TRUE)))
+  expect_false(is.null(getS3method("print", "relm_trace", optional = TRUE)))
+  expect_false(is.null(getS3method("summary", "relm_trace", optional = TRUE)))
+  expect_false(is.null(getS3method("as.matrix", "relm_trace", optional = TRUE)))
 })
 
 test_that("the WP1 S3 methods are registered (API-GRAMMAR section 3)", {
   # print/summary/close on `llm`, plus print on the summary object.
   for (m in c("print.llm", "summary.llm", "close.llm", "print.summary.llm")) {
     expect_true(
-      exists(m, envir = asNamespace("rebirth"), inherits = FALSE),
+      exists(m, envir = asNamespace("relm"), inherits = FALSE),
       info = m
     )
   }

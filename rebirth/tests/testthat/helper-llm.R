@@ -34,28 +34,28 @@ stub_llm <- function(closed = FALSE, interventions = list(), architecture = "qwe
 # no such model. (`qwen_model_path()`/`synthetic_model_path()` live in
 # test-llm-generate.R; defining these here keeps them available to every test file.)
 gemma4_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_GEMMA4"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_GEMMA4"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_GEMMA4 is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file"
   )
   p
 }
 
 qwen3_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN3"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN3"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN3 is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN3 is not set to an existing GGUF file"
   )
   p
 }
 
 qwen35_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN35"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN35"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN35 is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file"
   )
   p
 }
@@ -65,12 +65,12 @@ qwen35_model_path <- function() {
 # no model file, so the native free is a safe no-op. The metadata values are
 # placeholders — the close tests assert on lifecycle, not on metadata.
 empty_handle_llm <- function() {
-  ptr <- rebirth:::rebirth_selftest_new_handle()
+  ptr <- relm:::rebirth_selftest_new_handle()
   payload <- list(
     ok = TRUE, ptr = ptr, architecture = "x", parameters = 1,
     quantization = "q", layers = 1L, hidden_size = 1L, context_length = 1L,
     backend = "cpu", context_train = 1L, size_bytes = 1, vocab_size = 1L,
     description = ""
   )
-  rebirth:::new_llm(payload, "x.gguf")
+  relm:::new_llm(payload, "x.gguf")
 }

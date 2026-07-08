@@ -27,7 +27,7 @@ fn assert_r_main_thread(owner: ThreadId, what: &str) {
     debug_assert_eq!(
         std::thread::current().id(),
         owner,
-        "rebirth: {what} touched off the R main thread (D-008 G2 violation)"
+        "relm: {what} touched off the R main thread (D-008 G2 violation)"
     );
 }
 
@@ -938,7 +938,7 @@ mod tests {
         // A file with valid bytes but no GGUF magic: the engine must reject it
         // by returning a null model (which we map to ModelLoad), never abort.
         let mut path = std::env::temp_dir();
-        path.push(format!("rebirth-garbage-{}.gguf", std::process::id()));
+        path.push(format!("relm-garbage-{}.gguf", std::process::id()));
         {
             let mut f = std::fs::File::create(&path).expect("write temp garbage file");
             f.write_all(b"this is not a gguf file, just some random bytes \x00\x01\x02")

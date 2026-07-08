@@ -122,7 +122,7 @@ fn reduction_for_model_pooling(meta: Option<i32>) -> Result<Reduction, RebirthEr
         }),
         Some(other) => Err(RebirthError::Embed {
             reason: format!(
-                "This model requests pooling type {other}, which rebirth does not \
+                "This model requests pooling type {other}, which relm does not \
                  support for embeddings (only mean, first-token, and last-token pooling \
                  are supported). Re-run llm_embed() with pooling = \"mean\" or \"last\"."
             ),

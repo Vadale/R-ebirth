@@ -192,7 +192,7 @@ impl RowSink {
 }
 
 /// The result of a planned trace: rows held in memory, or a report of a completed
-/// spill (the boundary reconstructs the lazy `rebirth_trace` from the report
+/// spill (the boundary reconstructs the lazy `relm_trace` from the report
 /// without loading the file).
 #[derive(Debug)]
 pub enum TraceOutput {
@@ -208,7 +208,7 @@ pub enum TraceOutput {
     Spilled(SpillReport),
 }
 
-/// What the R boundary needs to reconstruct a spilled `rebirth_trace` object and
+/// What the R boundary needs to reconstruct a spilled `relm_trace` object and
 /// its lazy reader without loading the file. Indices are engine-native (0-based);
 /// `rebirth-ffi` shifts them to the 1-based R API (ARCHITECTURE.md section 4).
 #[cfg(feature = "spill")]
@@ -263,7 +263,7 @@ pub struct SpillPlan {
 /// Exactly ONE name per (arch, component), never a union: on a llama graph BOTH the
 /// post-`Wo` `attn_out-<il>` AND the pre-`Wo` `kqv_out-<il>` exist, so a `{attn_out,
 /// kqv_out}` alias would capture the wrong/both tensors. `None` → the caller raises
-/// `rebirth_error_trace`, never a silent or wrong capture.
+/// `relm_error_trace`, never a silent or wrong capture.
 ///
 /// Sources verified at b9726 (`rebirth/src/llama.cpp/src/models/`):
 /// - `residual` = the block-output residual stream `l_out-<il>` (after `build_cvec`),
@@ -512,7 +512,7 @@ impl CaptureState {
 /// `catch_unwind`: a panic must NEVER unwind across the C ABI into the ggml
 /// scheduler (undefined behaviour). On a caught panic it records an internal error
 /// and returns `false` to cancel the compute; the engine then surfaces
-/// `rebirth_error_internal` at the `with_model` boundary.
+/// `relm_error_internal` at the `with_model` boundary.
 extern "C" fn trace_trampoline(
     t: *mut ffi::ggml_tensor,
     ask: bool,
@@ -988,7 +988,7 @@ impl LoadedModel {
     /// (`spill = TRUE` over budget), or refuse before allocating (`spill = FALSE`
     /// over budget → `Oom`). The count → estimate → decide → capture ordering keeps
     /// a full trace from OOM-ing the session (the 16 GB rule). Requires a tokenizer
-    /// (a `no_vocab` model raises `rebirth_error_tokenize`).
+    /// (a `no_vocab` model raises `relm_error_tokenize`).
     pub fn trace_texts_spill(
         &self,
         texts: &[&str],
@@ -1071,7 +1071,7 @@ mod tests {
         assert_eq!(component_name("gemma4", Component::MlpOut), None);
         // attn_out (D-014) = the post-projection output. Only llama names it; every
         // other arch names only the pre-Wo `kqv_out` (a different quantity), so
-        // attn_out is NOT observable there and returns None -> rebirth_error_trace,
+        // attn_out is NOT observable there and returns None -> relm_error_trace,
         // never a silent substitute. A `{attn_out, kqv_out}` union would also wrongly
         // capture the pre-Wo tensor on llama, which carries `kqv_out` too.
         assert_eq!(
@@ -1085,7 +1085,7 @@ mod tests {
                 "attn_out on {arch}"
             );
         }
-        // Unsupported architecture: no name for any component (-> rebirth_error_trace).
+        // Unsupported architecture: no name for any component (-> relm_error_trace).
         for comp in [Component::Residual, Component::AttnOut, Component::MlpOut] {
             assert_eq!(component_name("bert", comp), None);
         }
@@ -1098,7 +1098,7 @@ mod tests {
         // NOT the post-`Wo` output D-014 defines. The matcher must NOT match it — else
         // `llm_trace(components = "attn_out")` on a gemma4 model would silently capture
         // and mislabel a different quantity. Lock the collision out forever: attn_out on
-        // gemma4 is None, so the boundary raises rebirth_error_trace.
+        // gemma4 is None, so the boundary raises relm_error_trace.
         assert_eq!(component_name("gemma4", Component::AttnOut), None);
         // And the tensor gemma4 DOES name (`attn_out`) is never in a resolved spec for
         // any requested gemma4 component, so the capture callback cannot match it.

@@ -244,7 +244,7 @@ impl LoadedModel {
     /// actually take effect on THIS model at each requested layer, replacing the
     /// removed hard arch allow-list: a standard-residual decoder is enabled, while a
     /// model where interventions would silently do nothing is refused loudly
-    /// (`rebirth_error_intervention`, the D-012 worst case).
+    /// (`relm_error_intervention`, the D-012 worst case).
     pub fn derive_with_interventions(
         &self,
         spec: &InterventionSpec,

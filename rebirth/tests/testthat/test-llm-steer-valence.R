@@ -8,7 +8,7 @@
 # positive coefficient, negative with a negative one -- on held-out neutral prompts.
 #
 # The synthetic in-repo GGUF is no_vocab (no text generation), so this fixture is
-# [MODEL]-gated on REBIRTH_TEST_MODEL_QWEN (Qwen2.5-0.5B-Instruct Q8_0). It SKIPS
+# [MODEL]-gated on RELM_TEST_MODEL_QWEN (Qwen2.5-0.5B-Instruct Q8_0). It SKIPS
 # cleanly in CI and runs on the founder's Mac / nightly (plan section 10). Greedy
 # decoding (temperature = 0) is deterministic, so the run is reproducible.
 #
@@ -38,10 +38,10 @@ VALENCE_LAYER <- 18L
 VALENCE_COEF <- 10
 
 qwen_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
   p
 }

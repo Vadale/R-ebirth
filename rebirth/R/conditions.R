@@ -1,15 +1,15 @@
-#' Raise a classed rebirth condition
+#' Raise a classed relm condition
 #'
 #' The single place the package turns a `(class, message, fields)` decision into
 #' an R error. The `rebirth-ffi` boundary decides the class and structured
 #' fields; this helper does the actual `stop()`, so condition raising stays in R
-#' (ARCHITECTURE.md sections 2 and 8). Every rebirth error inherits
-#' `c(<specific>, "rebirth_error", "error", "condition")` (API-GRAMMAR.md
+#' (ARCHITECTURE.md sections 2 and 8). Every relm error inherits
+#' `c(<specific>, "relm_error", "error", "condition")` (API-GRAMMAR.md
 #' section 1.8) and carries its structured fields as list elements for
 #' programmatic handling.
 #'
 #' @param class Character scalar: the specific leaf class, e.g.
-#'   `"rebirth_error_model_load"`.
+#'   `"relm_error_model_load"`.
 #' @param message Character scalar: an actionable message (what happened ->
 #'   likely cause -> what to try).
 #' @param fields Named list of structured fields to attach to the condition.
@@ -17,18 +17,18 @@
 #' @return Never returns; always raises.
 #' @keywords internal
 #' @noRd
-rebirth_abort <- function(class, message, fields = list(), call = sys.call(-1L)) {
+relm_abort <- function(class, message, fields = list(), call = sys.call(-1L)) {
   cond <- structure(
     c(list(message = message, call = call), fields),
-    class = c(class, "rebirth_error", "error", "condition")
+    class = c(class, "relm_error", "error", "condition")
   )
   stop(cond)
 }
 
-#' Raise a `rebirth_error_argument` for a specific argument
+#' Raise a `relm_error_argument` for a specific argument
 #'
-#' A thin specialization of [rebirth_abort()] for the common case of an invalid
-#' function argument: it fixes the class to `"rebirth_error_argument"` and
+#' A thin specialization of [relm_abort()] for the common case of an invalid
+#' function argument: it fixes the class to `"relm_error_argument"` and
 #' attaches the offending argument's name as the structured `argument` field, so
 #' each call site states only its argument name and its specific message.
 #'
@@ -41,16 +41,16 @@ rebirth_abort <- function(class, message, fields = list(), call = sys.call(-1L))
 #' @keywords internal
 #' @noRd
 abort_argument <- function(argument, message, call = sys.call(-1L)) {
-  rebirth_abort(
-    "rebirth_error_argument", message, list(argument = argument),
+  relm_abort(
+    "relm_error_argument", message, list(argument = argument),
     call = call
   )
 }
 
-#' Raise a `rebirth_error_intervention` for a failed steer/ablate validation
+#' Raise a `relm_error_intervention` for a failed steer/ablate validation
 #'
-#' A thin specialization of [rebirth_abort()] fixing the class to
-#' `"rebirth_error_intervention"` (API-GRAMMAR.md section 6: dimension/layer
+#' A thin specialization of [relm_abort()] fixing the class to
+#' `"relm_error_intervention"` (API-GRAMMAR.md section 6: dimension/layer
 #' validation for `llm_steer()`/`llm_ablate()`). The intervention-domain checks
 #' (unsupported architecture, out-of-range layer, the layer-1 steer limit,
 #' `direction`/`neurons`/`coef`/`value` shape, position/component restrictions)
@@ -66,19 +66,19 @@ abort_argument <- function(argument, message, call = sys.call(-1L)) {
 #' @keywords internal
 #' @noRd
 abort_intervention <- function(message, fields = list(), call = sys.call(-1L)) {
-  rebirth_abort("rebirth_error_intervention", message, fields, call = call)
+  relm_abort("relm_error_intervention", message, fields, call = call)
 }
 
-#' Raise a `rebirth_error_download` for a failed model download
+#' Raise a `relm_error_download` for a failed model download
 #'
-#' A thin specialization of [rebirth_abort()] fixing the class to
-#' `"rebirth_error_download"` (API-GRAMMAR.md section 6: checksum failures are
+#' A thin specialization of [relm_abort()] fixing the class to
+#' `"relm_error_download"` (API-GRAMMAR.md section 6: checksum failures are
 #' fail-closed). The download-domain rejections (a non-HTTPS URL, an unknown
 #' registry alias, a network failure, a SHA256 mismatch, an unwritable cache
 #' directory) all funnel through here; a checksum mismatch attaches the
 #' structured `expected`/`actual`/`url` fields so callers can react
 #' programmatically. Pure argument-type violations stay
-#' `rebirth_error_argument` — this class is for a download that cannot proceed
+#' `relm_error_argument` — this class is for a download that cannot proceed
 #' or did not verify.
 #'
 #' @param message Character scalar: the specific, actionable message.
@@ -90,7 +90,7 @@ abort_intervention <- function(message, fields = list(), call = sys.call(-1L)) {
 #' @keywords internal
 #' @noRd
 abort_download <- function(message, fields = list(), call = sys.call(-1L)) {
-  rebirth_abort("rebirth_error_download", message, fields, call = call)
+  relm_abort("relm_error_download", message, fields, call = call)
 }
 
 #' Raise from an FFI payload, or return it unchanged on success
@@ -104,11 +104,11 @@ abort_download <- function(message, fields = list(), call = sys.call(-1L)) {
 #' @return The payload (invisibly-usable) when `ok` is `TRUE`.
 #' @keywords internal
 #' @noRd
-rebirth_check <- function(payload, call = sys.call(-1L)) {
+relm_check <- function(payload, call = sys.call(-1L)) {
   if (isFALSE(payload$ok)) {
     fields <- payload$fields
     if (is.null(fields)) fields <- list()
-    rebirth_abort(payload$class, payload$message, fields, call = call)
+    relm_abort(payload$class, payload$message, fields, call = call)
   }
   payload
 }

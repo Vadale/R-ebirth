@@ -45,7 +45,7 @@ Captured from forward hooks, NOT `output_hidden_states`:
 - **`attn_out`** = each layer's `self_attn.o_proj` output (post-projection, D-014).
   **Captured and validated (residual identity) but NOT committed / NOT compared:**
   `llm_trace` does not observe `attn_out` on qwen2 (it names only the
-  pre-projection `kqv_out`, a different quantity) and raises `rebirth_error_trace`
+  pre-projection `kqv_out`, a different quantity) and raises `relm_error_trace`
   — covered by an existing [MODEL] test in `test-llm-trace.R`.
 
 A residual-identity self-check ties the three together:
@@ -65,7 +65,7 @@ fails at that guard before any activation is compared.
 
 `rebirth/tests/testthat/test-llm-trace-golden.R`. The golden-integrity checks
 run in per-commit CI (no model). The numerical comparison is **[MODEL]-gated on
-`REBIRTH_TEST_MODEL_QWEN`** (a local Qwen2.5-0.5B GGUF) — it runs on the founder's
+`RELM_TEST_MODEL_QWEN`** (a local Qwen2.5-0.5B GGUF) — it runs on the founder's
 Mac / nightly, never in per-commit CI, and never downloads a model.
 
 ## Regenerating

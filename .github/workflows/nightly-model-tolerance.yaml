@@ -85,14 +85,14 @@ jobs:
           fi
           echo "verified: $(sha256sum "$dest")"
           # Export the verified path to the test step.
-          echo "REBIRTH_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
+          echo "RELM_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
 
-      - name: Build rebirth and run the [MODEL] tolerance suite
+      - name: Build relm and run the [MODEL] tolerance suite
         working-directory: rebirth
         run: |
           Rscript -e '
             suppressMessages(pkgload::load_all(".", quiet = TRUE))
-            mp <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN")
+            mp <- Sys.getenv("RELM_TEST_MODEL_QWEN")
             stopifnot(nzchar(mp), file.exists(mp))
             # Fail LOUDLY if the downloaded file is not the expected model, so the
             # [MODEL] suite cannot silently skip into a false green (a nightly that

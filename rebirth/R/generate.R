@@ -17,7 +17,7 @@
 #' Generation stops at `max_tokens`, at the model's end-of-generation token, or
 #' as soon as one of the `stop` strings appears (the output is truncated just
 #' before it). A prompt longer than the model's context window raises
-#' `rebirth_error_context_overflow`, whose message states by how much.
+#' `relm_error_context_overflow`, whose message states by how much.
 #'
 #' @param m An `llm` handle from [llm()].
 #' @param prompt A character vector of prompts; the result has one element per
@@ -41,8 +41,8 @@
 #'   element the generated continuation. The seed used is attached as
 #'   `attr(result, "seed")`.
 #' @seealso [llm()], [llm_tokens()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' llm_generate(m, "In one sentence, what is R?", max_tokens = 40, seed = 1)
 #' close(m)
 #' @export
@@ -98,7 +98,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   out <- vapply(
     prompt,
     function(p) {
-      payload <- rebirth_check(rebirth_generate(
+      payload <- relm_check(rebirth_generate(
         m$ptr, p, chat,
         as.integer(max_tokens), as.double(temperature), as.double(top_p),
         seed_val, stop_seqs

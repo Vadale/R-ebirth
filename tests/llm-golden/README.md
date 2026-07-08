@@ -40,7 +40,7 @@ independently recomputable in numpy** — the harness's bedrock.
 
 Two independent producers share one seed:
 
-- **The engine path.** `build_synthetic.py` writes the GGUF; `rebirth::llm()`
+- **The engine path.** `build_synthetic.py` writes the GGUF; `relm::llm()`
   loads it and (in WP2) will produce logits from it.
 - **The oracle path.** `reference_forward.py` reimplements the llama.cpp b9726
   `LLM_ARCH_LLAMA` forward pass in pure numpy and computes the logit goldens.

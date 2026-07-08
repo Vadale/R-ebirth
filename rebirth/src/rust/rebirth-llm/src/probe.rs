@@ -22,7 +22,7 @@
 //!
 //! A pass caches the layer on the shared [`Model`](crate::engine) so the ~two-token
 //! cost is paid once; a fail (or a layer whose residual never responds) raises
-//! `rebirth_error_intervention` naming what was probed and did not respond.
+//! `relm_error_intervention` naming what was probed and did not respond.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::ffi::{c_void, CStr};
@@ -228,7 +228,7 @@ extern "C" fn probe_trampoline(
 
 impl LoadedModel {
     /// Prove the derivation's steering / ablation take effect on THIS model at each
-    /// requested layer (D-021), or return `rebirth_error_intervention` naming what
+    /// requested layer (D-021), or return `relm_error_intervention` naming what
     /// was probed and did not respond — never a silent no-op. Layers already proven
     /// (cached on the shared model) are skipped; a genuine no-op spec (empty, or a
     /// zero steer) has nothing to prove and passes trivially.
@@ -353,7 +353,7 @@ impl LoadedModel {
         // Declared after `_reclaim`, so on any early return `ctx` drops first.
         // A probe context-allocation failure is an INTERVENTION failure, not a trace
         // one: re-class it (create_trace_context raises RebirthError::Trace) so
-        // llm_steer/llm_ablate surface the documented rebirth_error_intervention.
+        // llm_steer/llm_ablate surface the documented relm_error_intervention.
         let ctx = self
             .create_trace_context(n_ctx, probe_trampoline, state_ptr.cast::<c_void>())
             .map_err(|_| RebirthError::Intervention {

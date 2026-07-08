@@ -73,13 +73,13 @@ jobs:
             exit 1
           fi
           echo "verified: $(sha256sum "$dest")"
-          echo "REBIRTH_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
+          echo "RELM_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
 
-      - name: Build rebirth and run Demo A end-to-end (relaxed acceptance + A4 gate)
+      - name: Build relm and run Demo A end-to-end (relaxed acceptance + A4 gate)
         run: |
           Rscript -e '
             suppressMessages(pkgload::load_all("rebirth", quiet = TRUE))
-            mp <- Sys.getenv("REBIRTH_TEST_MODEL_QWEN")
+            mp <- Sys.getenv("RELM_TEST_MODEL_QWEN")
             stopifnot(nzchar(mp), file.exists(mp))
             # Fail LOUDLY if the model is not the expected one (a nightly that
             # silently skips is a nightly that lies).
@@ -87,7 +87,7 @@ jobs:
             stopifnot(identical(m$architecture, "qwen2"), m$layers == 24L)
             close(m)
 
-            Sys.setenv(REBIRTH_DEMO_NO_AUTORUN = "1")
+            Sys.setenv(RELM_DEMO_NO_AUTORUN = "1")
             source("tests/demos/demo-A-anatomy-lab.R") # also runs the demo-utils self-test
             # extended = TRUE runs A1-A5 too, so the sharpened A4 acceptance is gated
             # here (D-022 impl note). plot_dir points at a temp dir so every extended

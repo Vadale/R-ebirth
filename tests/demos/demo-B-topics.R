@@ -9,14 +9,14 @@
 # synthetic sample (rebirth/inst/extdata/abstracts-sample.csv); use
 # tests/demos/fetch-abstracts.R for the real ~5,000-abstract arXiv corpus.
 #
-# run_demo_B(extended = TRUE) (or REBIRTH_DEMO_EXTENDED=1) adds three BERTopic-report
+# run_demo_B(extended = TRUE) (or RELM_DEMO_EXTENDED=1) adds three BERTopic-report
 # analyses (D-022), all base graphics via the shared demo-utils style: B1 topic-quality
 # metrics (simplified silhouette + embedding cohesion + noise fraction), B2 distinctive
 # terms per topic (log-odds z with an informative Dirichlet prior), and B3 inter-topic
 # structure (centroid-cosine heatmap + hclust dendrogram). B4 -- the polished labelled
 # map -- is the core, always-drawn figure.
 #
-# Dependencies: base R + rebirth + uwot + dbscan (Suggests, D-020), all guarded.
+# Dependencies: base R + relm + uwot + dbscan (Suggests, D-020), all guarded.
 # Reproducibility: set.seed + n_sgd_threads = 1 for uwot; HDBSCAN is deterministic
 # given its input; cluster labels use greedy (temperature = 0) generation.
 # run_demo_B_reproducible() asserts fixed seeds => byte-identical clustering + stats.
@@ -46,7 +46,7 @@ local({
 
 demo_B_data <- function(path = NULL) {
   if (is.null(path) || !nzchar(path)) {
-    path <- system.file("extdata", "abstracts-sample.csv", package = "rebirth")
+    path <- system.file("extdata", "abstracts-sample.csv", package = "relm")
     if (!nzchar(path)) {
       path <- file.path(.demo_dir(), "..", "..", "rebirth", "inst",
                         "extdata", "abstracts-sample.csv")
@@ -87,7 +87,7 @@ name_clusters <- function(m, texts, cluster, coords, k = 4L, verbose = TRUE) {
       paste0("- ", texts[reps], collapse = "\n"),
       "\n\nTopic label:"
     )
-    out <- rebirth::llm_generate(m, prompt, max_tokens = 12L, temperature = 0,
+    out <- relm::llm_generate(m, prompt, max_tokens = 12L, temperature = 0,
                                  seed = 1L, chat = TRUE)
     labels[[j]] <- .demo_B_clean_label(out)
     if (isTRUE(verbose)) message(sprintf("  cluster %d (n=%d): %s",
@@ -460,7 +460,7 @@ run_demo_B <- function(model_path = .demo_model_path(),
   if (!is.null(n_max) && n_max < nrow(df)) df <- df[seq_len(n_max), , drop = FALSE]
   say(sprintf("Demo B: %d abstracts", nrow(df)))
 
-  m <- rebirth::llm(model_path)
+  m <- relm::llm(model_path)
   on.exit(close(m), add = TRUE)
 
   # (1) embed. llm_embed returns an L2-normalized matrix by default. A precomputed emb
@@ -468,7 +468,7 @@ run_demo_B <- function(model_path = .demo_model_path(),
   # check, which reuses the first run's embeddings to test the seeded layout + stats.
   if (is.null(emb)) {
     say("embedding ...")
-    emb <- rebirth::llm_embed(m, df$text, pooling = "mean", normalize = TRUE)
+    emb <- relm::llm_embed(m, df$text, pooling = "mean", normalize = TRUE)
   } else {
     stopifnot(nrow(emb) == nrow(df))
     say("using precomputed embeddings ...")
@@ -524,16 +524,16 @@ run_demo_B_reproducible <- function(model_path = .demo_model_path(),
   say <- function(...) if (isTRUE(verbose)) message(...)
   df <- if (is.null(abstracts)) demo_B_data() else abstracts
 
-  m <- rebirth::llm(model_path)
+  m <- relm::llm(model_path)
   # embedding determinism: a small subset embedded twice must be bit-identical.
   sub <- df$text[seq_len(min(16L, nrow(df)))]
-  e1 <- rebirth::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
-  e2 <- rebirth::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
+  e1 <- relm::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
+  e2 <- relm::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
   if (!identical(e1, e2)) {
     close(m)
     stop("embedding is not reproducible across identical calls")
   }
-  emb <- rebirth::llm_embed(m, df$text, pooling = "mean", normalize = TRUE)
+  emb <- relm::llm_embed(m, df$text, pooling = "mean", normalize = TRUE)
   close(m) # run_demo_B opens its own handle for naming; reuse `emb` for the rest
 
   d1 <- file.path(tempdir(), "demoB-repro-1")
@@ -615,14 +615,14 @@ demo_B_plot_selftest <- function(verbose = FALSE) {
 
 # ---- auto-run when a model is available --------------------------------------
 
-if (!nzchar(Sys.getenv("REBIRTH_DEMO_NO_AUTORUN"))) {
+if (!nzchar(Sys.getenv("RELM_DEMO_NO_AUTORUN"))) {
   .mp <- .demo_model_path()
   if (nzchar(.mp) && file.exists(.mp)) {
-    demoB <- run_demo_B(.mp, extended = nzchar(Sys.getenv("REBIRTH_DEMO_EXTENDED")))
+    demoB <- run_demo_B(.mp, extended = nzchar(Sys.getenv("RELM_DEMO_EXTENDED")))
   } else {
     message(
-      "Demo B: no GGUF model found (set REBIRTH_DEMO_MODEL or ",
-      "REBIRTH_TEST_MODEL_QWEN). Functions defined; skipping the end-to-end run."
+      "Demo B: no GGUF model found (set RELM_DEMO_MODEL or ",
+      "RELM_TEST_MODEL_QWEN). Functions defined; skipping the end-to-end run."
     )
   }
 }

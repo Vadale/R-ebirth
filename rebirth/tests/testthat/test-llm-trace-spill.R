@@ -29,7 +29,7 @@ selftest_trace_tokens <- function(m, tokens, spill, budget, spill_dir = NULL) {
   spec_key <- trace_spec_key(m, "tokens", NULL, "all", components)
   spill_path <- if (isTRUE(spill)) next_spill_path(spill_dir) else ""
   trace_id <- if (nzchar(spill_path)) next_trace_id() else ""
-  payload <- rebirth_check(rebirth_selftest_trace_tokens_spill(
+  payload <- relm_check(rebirth_selftest_trace_tokens_spill(
     m$ptr, as.integer(tokens), spill, as.double(budget),
     spill_path, m$path, trace_id, spec_key
   ))
@@ -46,7 +46,7 @@ test_that("a spilled trace's slices equal the in-memory slices exactly", {
   # held in memory -- neuron for neuron. Defect this catches: any writer/reader
   # drift (float32 rounding, index off-by-one, batch mis-assembly, column swap).
   m <- llm(synthetic_model_path())
-  dir <- tempfile("rebirth-spill-test-")
+  dir <- tempfile("relm-spill-test-")
   dir.create(dir)
   on.exit({
     close(m)
@@ -105,7 +105,7 @@ test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spi
   # REV-3: the synthetic model is no_vocab, so a captured row carries no token
   # piece. The in-memory boundary payload must surface `token` as NA_character_
   # (not ""), agreeing with the spill path -- which writes append_null (NA) -- and
-  # the documented rebirth_trace schema. Defect this catches: trace_payload mapping
+  # the documented relm_trace schema. Defect this catches: trace_payload mapping
   # None to "" so the in-memory and spilled `token` columns silently disagree.
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
@@ -125,7 +125,7 @@ test_that("the trace payload carries the positions_recycled signal (Rust->R wiri
   # test in test-llm-trace.R and the Rust signal tests.
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
-  payload <- rebirth_check(rebirth_selftest_trace_tokens_spill(
+  payload <- relm_check(rebirth_selftest_trace_tokens_spill(
     m$ptr, as.integer(synthetic_tokens()), FALSE, Inf, "", m$path, "", "spec"
   ))
   expect_type(payload$positions_recycled, "logical")
@@ -137,7 +137,7 @@ test_that("print() and summary() on a spilled trace never read the file", {
   # Proof: delete the spill file, then print/summary still succeed (they would
   # error if they touched it), while as.matrix -- which must read -- fails cleanly.
   m <- llm(synthetic_model_path())
-  dir <- tempfile("rebirth-spill-test-")
+  dir <- tempfile("relm-spill-test-")
   dir.create(dir)
   on.exit({
     close(m)
@@ -157,7 +157,7 @@ test_that("print() and summary() on a spilled trace never read the file", {
 
   # summary reports per-group n from attributes; mean |value| is NA (needs a load).
   s <- summary(sp)
-  expect_s3_class(s, "summary.rebirth_trace")
+  expect_s3_class(s, "summary.relm_trace")
   expect_identical(nrow(s), 6L) # 2 layers x 3 components
   expect_true(all(s$n == 8 * 32)) # n_positions x n_embd per group
   expect_true(all(is.na(s$mean_abs)))
@@ -165,7 +165,7 @@ test_that("print() and summary() on a spilled trace never read the file", {
   # as.matrix must read, so with the file gone it fails with a classed error.
   expect_error(
     as.matrix(sp, layer = 1, component = "residual"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })
 
@@ -173,9 +173,9 @@ test_that("a spill file whose footer disagrees with the object is rejected", {
   # ACCEPTANCE (ARCHITECTURE section 6): the staleness fail-safe. A reopened file
   # whose capture-spec footer differs from the object's attributes (a file
   # overwritten by a later trace, or from another session) must raise
-  # rebirth_error_trace, never silently return the wrong data.
+  # relm_error_trace, never silently return the wrong data.
   m <- llm(synthetic_model_path())
-  dir <- tempfile("rebirth-spill-test-")
+  dir <- tempfile("relm-spill-test-")
   dir.create(dir)
   on.exit({
     close(m)
@@ -191,7 +191,7 @@ test_that("a spill file whose footer disagrees with the object is rejected", {
   attr(stale, "spill_spec") <- "model=OTHER|layers=all|positions=all|components=residual"
   expect_error(
     as.matrix(stale, layer = 1, component = "residual"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })
 
@@ -222,11 +222,11 @@ test_that("the spec key varies with prompts and the trace id is a nonce (M-2)", 
 
 test_that("a spill file with a truncated/corrupt body fails as a classed condition", {
   # SEC-MEDIUM: a readable header/schema does NOT guarantee readable record-batch
-  # bodies. A spill file whose batches are truncated must raise rebirth_error_trace
+  # bodies. A spill file whose batches are truncated must raise relm_error_trace
   # (with the re-run guidance), never a raw nanoarrow error. Defect this catches:
   # the batch-read loop in read_spill_slice() running unguarded.
   m <- llm(synthetic_model_path())
-  dir <- tempfile("rebirth-spill-test-")
+  dir <- tempfile("relm-spill-test-")
   dir.create(dir)
   on.exit({
     close(m)
@@ -253,7 +253,7 @@ test_that("a spill file with a truncated/corrupt body fails as a classed conditi
   # ...but pulling the truncated batches now surfaces a classed trace error.
   expect_error(
     as.matrix(sp, layer = 1, component = "residual"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })
 
@@ -284,7 +284,7 @@ test_that("a spill file with a tampered column type is rejected (schema check)",
 
   # End to end: a genuine Arrow-IPC file whose metadata still matches the object but
   # whose `value` column is utf8 (index columns int32 so nanoarrow needs no `arrow`).
-  dir <- tempfile("rebirth-spill-test-")
+  dir <- tempfile("relm-spill-test-")
   dir.create(dir)
   on.exit(unlink(dir, recursive = TRUE, force = TRUE), add = TRUE)
   path <- file.path(dir, "tampered.arrow")
@@ -298,8 +298,8 @@ test_that("a spill file with a tampered column type is rejected (schema check)",
       value = nanoarrow::na_string()
     )),
     list(metadata = list(
-      "rebirth.spill_format" = "1", "rebirth.trace_id" = "t",
-      "rebirth.model" = "/m.gguf", "rebirth.spec" = spec_key
+      "relm.spill_format" = "1", "relm.trace_id" = "t",
+      "relm.model" = "/m.gguf", "relm.spec" = spec_key
     ))
   )
   df <- data.frame(
@@ -317,13 +317,13 @@ test_that("a spill file with a tampered column type is rejected (schema check)",
       layer = integer(0), component = character(0), neuron = integer(0),
       value = double(0), stringsAsFactors = FALSE
     ),
-    class = c("rebirth_trace", "data.frame"),
+    class = c("relm_trace", "data.frame"),
     spilled = TRUE, spill_files = path,
     spill_trace_id = "t", spill_spec = spec_key
   )
-  expect_error(verify_spill_integrity(x, path), class = "rebirth_error_trace")
+  expect_error(verify_spill_integrity(x, path), class = "relm_error_trace")
   expect_error(
     as.matrix(x, layer = 1, component = "residual"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })

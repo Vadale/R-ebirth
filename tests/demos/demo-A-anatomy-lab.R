@@ -13,7 +13,7 @@
 # (that is the nightly-CI / Mac acceptance path). With no model it defines the
 # functions and skips, so a checker can source it harmlessly.
 #
-# Dependencies: base R + the rebirth package + glmnet (Suggests, D-020). glmnet
+# Dependencies: base R + the relm package + glmnet (Suggests, D-020). glmnet
 # use is guarded; AUC + CI come from tests/demos/demo-utils.R (no pROC).
 
 # ---- locate + source the model-free helpers (demo_auc / demo_auc_ci) ---------
@@ -356,7 +356,7 @@ demo_A_plot <- function(res, file = NULL) {
   y_sent <- c(rep(TRUE, length(.demo_A_train_pos)), rep(FALSE, length(.demo_A_train_neg)))
   y_form <- c(rep(TRUE, length(.demo_A_formal)), rep(FALSE, length(.demo_A_casual)))
   say("A1: tracing sentiment + formality in one pass ...")
-  tr <- rebirth::llm_trace(m, c(sent, form),
+  tr <- relm::llm_trace(m, c(sent, form),
     layers = NULL, positions = "last", components = "residual"
   )
   band <- sort(unique(tr$layer))
@@ -463,10 +463,10 @@ demo_A_plot <- function(res, file = NULL) {
 
 .demo_A2_run <- function(m, best_dir, say, mem_target = 0.8e9) {
   ex <- .demo_A_exemplars
-  counts <- lengths(rebirth::llm_tokens(m, ex))
+  counts <- lengths(relm::llm_tokens(m, ex))
   n_tok <- sum(counts)
   band <- .demo_A2_layers(m, n_tok, say, mem_target)
-  tr <- rebirth::llm_trace(m, ex, layers = band, positions = "all", components = "residual")
+  tr <- relm::llm_trace(m, ex, layers = band, positions = "all", components = "residual")
   if (isTRUE(attr(tr, "spilled"))) {
     stop("A2 trace spilled unexpectedly; lower the exemplar count or the layer band.")
   }
@@ -570,11 +570,11 @@ demo_A_plot <- function(res, file = NULL) {
     # Extreme steering can degenerate a continuation to empty; llm_trace rejects
     # "" so score such a case at a neutral placeholder rather than crash the sweep.
     txt[!nzchar(trimws(txt))] <- "."
-    trg <- rebirth::llm_trace(m, txt, layers = steer_layer, positions = "last",
+    trg <- relm::llm_trace(m, txt, layers = steer_layer, positions = "last",
       components = "residual")
     as.numeric(.demo_A_layer_matrix(trg, steer_layer) %*% dir)
   }
-  g_base <- rebirth::llm_generate(m, leads, max_tokens = 32L, temperature = 0,
+  g_base <- relm::llm_generate(m, leads, max_tokens = 32L, temperature = 0,
     seed = 1L, chat = TRUE)
   s_base <- sentiment(g_base)
 
@@ -587,9 +587,9 @@ demo_A_plot <- function(res, file = NULL) {
       shift <- rep(0, length(leads))
       samples[[j]] <- g_base
     } else {
-      ms <- rebirth::llm_steer(m, layer = steer_layer, direction = dir, coef = mults[[j]] * gap)
+      ms <- relm::llm_steer(m, layer = steer_layer, direction = dir, coef = mults[[j]] * gap)
       g <- tryCatch(
-        rebirth::llm_generate(ms, leads, max_tokens = 32L, temperature = 0,
+        relm::llm_generate(ms, leads, max_tokens = 32L, temperature = 0,
           seed = 1L, chat = TRUE),
         finally = close(ms)
       )
@@ -699,11 +699,11 @@ demo_A_plot <- function(res, file = NULL) {
   ord_impact <- order(act_rms, decreasing = TRUE)
   ord_concept <- order(abs(best_dir), decreasing = TRUE)
 
-  base_by <- .demo_A_split_logits(rebirth::llm_logits(m, prompts, top = top))
+  base_by <- .demo_A_split_logits(relm::llm_logits(m, prompts, top = top))
   base_top1 <- vapply(base_by, function(v) names(v)[which.max(v)], character(1))
   effect <- function(neurons) {
-    ma <- rebirth::llm_ablate(m, layer = best_layer, neurons = neurons)
-    lg <- tryCatch(rebirth::llm_logits(ma, prompts, top = top), finally = close(ma))
+    ma <- relm::llm_ablate(m, layer = best_layer, neurons = neurons)
+    lg <- tryCatch(relm::llm_logits(ma, prompts, top = top), finally = close(ma))
     by <- .demo_A_split_logits(lg)
     kl <- vapply(seq_along(prompts),
       function(p) .demo_next_token_kl(base_by[[p]], by[[p]]), numeric(1))
@@ -1007,7 +1007,7 @@ run_demo_A <- function(model_path = .demo_model_path(),
   stopifnot(nzchar(model_path), file.exists(model_path))
 
   say <- function(...) if (isTRUE(verbose)) message(...)
-  m <- rebirth::llm(model_path)
+  m <- relm::llm(model_path)
   on.exit(close(m), add = TRUE)
   say(sprintf("Demo A: %s, %d layers x %d dim", basename(model_path), m$layers, m$hidden_size))
 
@@ -1016,7 +1016,7 @@ run_demo_A <- function(model_path = .demo_model_path(),
 
   # (1) One forward pass, last token of each prompt, all layers.
   say("tracing the contrast set ...")
-  tr <- rebirth::llm_trace(m, train, layers = layers, positions = "last",
+  tr <- relm::llm_trace(m, train, layers = layers, positions = "last",
                            components = "residual")
   band <- sort(unique(tr$layer))
 
@@ -1066,8 +1066,8 @@ run_demo_A <- function(model_path = .demo_model_path(),
   gap <- mean(proj[y]) - mean(proj[!y]) # positive-negative gap on the axis
   coef <- steer_scale * gap
 
-  m_pos <- rebirth::llm_steer(m, layer = steer_layer, direction = dir, coef = coef)
-  m_neg <- rebirth::llm_steer(m, layer = steer_layer, direction = dir, coef = -coef)
+  m_pos <- relm::llm_steer(m, layer = steer_layer, direction = dir, coef = coef)
+  m_neg <- relm::llm_steer(m, layer = steer_layer, direction = dir, coef = -coef)
   on.exit({
     close(m_pos)
     close(m_neg)
@@ -1075,13 +1075,13 @@ run_demo_A <- function(model_path = .demo_model_path(),
 
   leads <- .demo_A_neutral
   generate <- function(model) {
-    rebirth::llm_generate(model, leads, max_tokens = 32L, temperature = 0,
+    relm::llm_generate(model, leads, max_tokens = 32L, temperature = 0,
                           seed = 1L, chat = TRUE)
   }
   # Score generated text by tracing it through the CLEAN handle (m) -- never an
   # intervened one -- and projecting the last token onto the sentiment axis.
   sentiment <- function(txt) {
-    trg <- rebirth::llm_trace(m, txt, layers = steer_layer, positions = "last",
+    trg <- relm::llm_trace(m, txt, layers = steer_layer, positions = "last",
                               components = "residual")
     as.numeric(.demo_A_layer_matrix(trg, steer_layer) %*% dir)
   }
@@ -1111,14 +1111,14 @@ run_demo_A <- function(model_path = .demo_model_path(),
 
 # ---- auto-run when a model is available --------------------------------------
 
-if (!nzchar(Sys.getenv("REBIRTH_DEMO_NO_AUTORUN"))) {
+if (!nzchar(Sys.getenv("RELM_DEMO_NO_AUTORUN"))) {
   .mp <- .demo_model_path()
   if (nzchar(.mp) && file.exists(.mp)) {
-    demoA <- run_demo_A(.mp, extended = nzchar(Sys.getenv("REBIRTH_DEMO_EXTENDED")))
+    demoA <- run_demo_A(.mp, extended = nzchar(Sys.getenv("RELM_DEMO_EXTENDED")))
   } else {
     message(
-      "Demo A: no GGUF model found (set REBIRTH_DEMO_MODEL or ",
-      "REBIRTH_TEST_MODEL_QWEN). Functions defined; skipping the end-to-end run."
+      "Demo A: no GGUF model found (set RELM_DEMO_MODEL or ",
+      "RELM_TEST_MODEL_QWEN). Functions defined; skipping the end-to-end run."
     )
   }
 }

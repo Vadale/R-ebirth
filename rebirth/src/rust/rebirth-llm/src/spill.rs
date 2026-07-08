@@ -25,7 +25,7 @@
 //! `nanoarrow` array stream (`read_nanoarrow(path, lazy = TRUE)`), stopping once
 //! it has the batches it needs.
 //!
-//! The schema is the 7 `rebirth_trace` columns (API-GRAMMAR.md section 2).
+//! The schema is the 7 `relm_trace` columns (API-GRAMMAR.md section 2).
 //! `value` is stored as **float32** (the engine truth; R widens it to double on
 //! read, exact) — a nanoarrow-supported primitive that halves the dominant
 //! column at zero information cost (addendum item 5).
@@ -52,7 +52,7 @@
 //! can skip to a slice. The schema metadata carries the integrity strings
 //! (format version, trace id, model, capture-spec key) the R side authored, for
 //! the staleness fail-safe (a reopened file whose spec != the object's
-//! attributes → `rebirth_error_trace`).
+//! attributes → `relm_error_trace`).
 
 use std::collections::HashMap;
 use std::fs::File;
@@ -75,10 +75,10 @@ const CHANNEL_BOUND: usize = 256;
 
 /// Schema-metadata keys for the integrity footer. The R side authors the values
 /// (opaque strings) and compares them on read; the writer treats them as opaque.
-pub const META_FORMAT: &str = "rebirth.spill_format";
-pub const META_TRACE_ID: &str = "rebirth.trace_id";
-pub const META_MODEL: &str = "rebirth.model";
-pub const META_SPEC: &str = "rebirth.spec";
+pub const META_FORMAT: &str = "relm.spill_format";
+pub const META_TRACE_ID: &str = "relm.trace_id";
+pub const META_MODEL: &str = "relm.model";
+pub const META_SPEC: &str = "relm.spec";
 /// Bumped if the on-disk layout changes so an old reader refuses a new file.
 pub const FORMAT_VERSION: &str = "1";
 
@@ -130,7 +130,7 @@ impl SpillSink {
         })?;
         let (sender, receiver) = sync_channel::<CaptureRow>(CHANNEL_BOUND);
         let handle = std::thread::Builder::new()
-            .name("rebirth-spill".to_string())
+            .name("relm-spill".to_string())
             .spawn(move || writer_loop(file, receiver, meta))
             .map_err(|e| RebirthError::Trace {
                 reason: format!("Could not start the disk-spill writer thread ({e})."),
@@ -219,7 +219,7 @@ fn writer_loop(
     Ok(total_rows)
 }
 
-/// The 7-column `rebirth_trace` schema with the on-disk encodings (float32
+/// The 7-column `relm_trace` schema with the on-disk encodings (float32
 /// `value`, plain UTF-8 `token`/`component` — see the module note on why not
 /// dictionary) plus the integrity metadata.
 fn build_schema(meta: &SpillMeta) -> Schema {
@@ -289,7 +289,7 @@ fn flush_group(
 }
 
 /// Map an Arrow error to a classed trace error (the R user sees
-/// `rebirth_error_trace` — a spill write failed).
+/// `relm_error_trace` — a spill write failed).
 fn arrow_err<E: std::fmt::Display>(e: E) -> RebirthError {
     RebirthError::Trace {
         reason: format!(
@@ -346,7 +346,7 @@ mod tests {
         let expected_long_rows = rows.len() as u64 * n_embd as u64;
 
         let mut path = std::env::temp_dir();
-        path.push(format!("rebirth-spill-unit-{}.arrow", std::process::id()));
+        path.push(format!("relm-spill-unit-{}.arrow", std::process::id()));
         let path_str = path.to_string_lossy().to_string();
 
         let sink = SpillSink::new(SpillMeta {
@@ -375,7 +375,7 @@ mod tests {
     #[test]
     fn dropping_a_sink_joins_the_writer_thread() {
         let mut path = std::env::temp_dir();
-        path.push(format!("rebirth-spill-drop-{}.arrow", std::process::id()));
+        path.push(format!("relm-spill-drop-{}.arrow", std::process::id()));
         let path_str = path.to_string_lossy().to_string();
 
         let sink = SpillSink::new(SpillMeta {

@@ -45,12 +45,12 @@ test_that("print.summary.llm renders the richer view", {
 })
 
 test_that("format helpers render human-readable magnitudes", {
-  expect_identical(rebirth:::format_params(494032768), "494 M")
-  expect_identical(rebirth:::format_params(1.5e9), "1.5 B")
-  expect_identical(rebirth:::format_params(151936), "152 K")
-  expect_match(rebirth:::format_bytes(531000000), "MB")
-  expect_match(rebirth:::format_bytes(4.7e9), "GB")
-  expect_identical(rebirth:::format_bytes(512), "512 B")
+  expect_identical(relm:::format_params(494032768), "494 M")
+  expect_identical(relm:::format_params(1.5e9), "1.5 B")
+  expect_identical(relm:::format_params(151936), "152 K")
+  expect_match(relm:::format_bytes(531000000), "MB")
+  expect_match(relm:::format_bytes(4.7e9), "GB")
+  expect_identical(relm:::format_bytes(512), "512 B")
 })
 
 # Twin-pin (Hard rule 8f): format_bytes() (R) and human_bytes() (Rust) format the
@@ -59,11 +59,11 @@ test_that("format helpers render human-readable magnitudes", {
 # rebirth-llm/src/error.rs (`human_bytes_twin_pins_the_r_format_bytes`); keeping the
 # expected strings identical here means neither formula can drift without a failure.
 test_that("format_bytes twin-pins the Rust human_bytes formula", {
-  expect_identical(rebirth:::format_bytes(0), "0 B")
-  expect_identical(rebirth:::format_bytes(512), "512 B")
-  expect_identical(rebirth:::format_bytes(1023), "1023 B")
-  expect_identical(rebirth:::format_bytes(1024), "1.0 KB")
-  expect_identical(rebirth:::format_bytes(531000000), "506.4 MB")
-  expect_identical(rebirth:::format_bytes(4400000000), "4.1 GB")
-  expect_identical(rebirth:::format_bytes(5e12), "4.5 TB")
+  expect_identical(relm:::format_bytes(0), "0 B")
+  expect_identical(relm:::format_bytes(512), "512 B")
+  expect_identical(relm:::format_bytes(1023), "1023 B")
+  expect_identical(relm:::format_bytes(1024), "1.0 KB")
+  expect_identical(relm:::format_bytes(531000000), "506.4 MB")
+  expect_identical(relm:::format_bytes(4400000000), "4.1 GB")
+  expect_identical(relm:::format_bytes(5e12), "4.5 TB")
 })

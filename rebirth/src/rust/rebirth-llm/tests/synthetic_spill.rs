@@ -68,7 +68,7 @@ fn plan(spill: bool, budget_bytes: u64, path: &str) -> SpillPlan {
 
 fn tmp_spill_path(tag: &str) -> String {
     let mut p = std::env::temp_dir();
-    p.push(format!("rebirth-spill-{tag}-{}.arrow", std::process::id()));
+    p.push(format!("relm-spill-{tag}-{}.arrow", std::process::id()));
     p.to_string_lossy().to_string()
 }
 

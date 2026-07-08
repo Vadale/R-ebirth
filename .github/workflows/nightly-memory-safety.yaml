@@ -104,7 +104,7 @@ jobs:
         --show-leak-kinds=definite,indirect
         --track-origins=yes
         --gen-suppressions=all
-        --suppressions=${{ github.workspace }}/tests/valgrind/rebirth.supp
+        --suppressions=${{ github.workspace }}/tests/valgrind/relm.supp
 
     steps:
       - uses: actions/checkout@v4

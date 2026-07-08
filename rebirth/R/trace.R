@@ -2,7 +2,7 @@
 #'
 #' Runs a forward pass over each prompt's tokens (no sampling) and captures the
 #' internal activations selected by the filters, returning a long-format
-#' `rebirth_trace` `data.frame` with one row per
+#' `relm_trace` `data.frame` with one row per
 #' `(prompt, token position, layer, component, neuron)`.
 #'
 #' @details
@@ -23,21 +23,21 @@
 #' Before running, the size of the `data.frame` you would receive is estimated from
 #' the filters (the materialized-object cost, D-017). If it fits the budget
 #' (`min(2 GB, 20% of RAM)`, overridable with
-#' `options(rebirth.trace_budget = <bytes>)`) it is held in memory. If it exceeds the
+#' `options(relm.trace_budget = <bytes>)`) it is held in memory. If it exceeds the
 #' budget and `spill = TRUE` (the default), the capture is streamed to an Arrow-IPC
-#' file under the session cache and the result is a *spilled* `rebirth_trace` that
+#' file under the session cache and the result is a *spilled* `relm_trace` that
 #' loads lazily: `print()`/`summary()` never read the file, and
-#' [as.matrix.rebirth_trace()] reads only the requested `(layer, component)` slice.
-#' If it exceeds the budget and `spill = FALSE`, the call raises `rebirth_error_oom`
+#' [as.matrix.relm_trace()] reads only the requested `(layer, component)` slice.
+#' If it exceeds the budget and `spill = FALSE`, the call raises `relm_error_oom`
 #' *before* any allocation, its `estimate_bytes` field stating the estimate. Spill
 #' files are removed when the R session ends.
 #'
 #' The model must carry a tokenizer; a `no_vocab` model raises
-#' `rebirth_error_tokenize`. As with the other text entry points, the runnable
-#' example is guarded by the `REBIRTH_TEST_MODEL_QWEN` environment variable.
+#' `relm_error_tokenize`. As with the other text entry points, the runnable
+#' example is guarded by the `RELM_TEST_MODEL_QWEN` environment variable.
 #'
 #' Tracing an **intervened** handle (from [llm_steer()]/[llm_ablate()]) raises
-#' `rebirth_error_trace`: interventions currently apply to generation and logits
+#' `relm_error_trace`: interventions currently apply to generation and logits
 #' only, and the trace context does not inherit them, so tracing would capture the
 #' base (un-intervened) forward pass while labeling it intervened. Trace the
 #' original handle.
@@ -55,29 +55,29 @@
 #'   (after the output projection; TransformerLens `hook_attn_out`), and/or the MLP
 #'   sub-layer output. Tracing is supported on the `llama`, `qwen2`, `gemma3`,
 #'   `qwen3`, `qwen35`, and `gemma4` architectures; any other raises
-#'   `rebirth_error_trace`. `"residual"` is available on all of them. `"mlp_out"` is
+#'   `relm_error_trace`. `"residual"` is available on all of them. `"mlp_out"` is
 #'   available on all except `gemma4` (whose mixture-of-experts layers name their FFN
 #'   output differently, so capturing it would silently miss layers). `"attn_out"` is
 #'   currently observable only on llama-family models; on the others (which name only
 #'   the pre-projection attention tensor, a different quantity) requesting it raises
-#'   `rebirth_error_trace` listing the available components rather than silently
+#'   `relm_error_trace` listing the available components rather than silently
 #'   substituting a different tensor.
 #' @param spill Single logical (default `TRUE`). When a capture exceeds the memory
 #'   budget, `TRUE` streams it to a disk file (a lazily-loaded spilled trace) and
-#'   `FALSE` raises `rebirth_error_oom` instead. A within-budget capture is always
+#'   `FALSE` raises `relm_error_oom` instead. A within-budget capture is always
 #'   held in memory regardless of this flag.
 #' @param spill_dir `NULL` (default: a managed per-session directory under the user
 #'   cache, cleaned up when the session ends) or a single directory path in which to
 #'   write spill files (left in place for you to manage).
-#' @return A `rebirth_trace`: a `data.frame` (class `c("rebirth_trace",
+#' @return A `relm_trace`: a `data.frame` (class `c("relm_trace",
 #'   "data.frame")`) with the seven columns above, carrying `model`, `spilled`,
 #'   `spill_files`, and `prompts` attributes. When `spilled` is `TRUE` the rows live
-#'   in `spill_files` (read on demand by [as.matrix.rebirth_trace()]) rather than in
-#'   the frame. See [as.matrix.rebirth_trace()] to extract one `(layer, component)`
+#'   in `spill_files` (read on demand by [as.matrix.relm_trace()]) rather than in
+#'   the frame. See [as.matrix.relm_trace()] to extract one `(layer, component)`
 #'   slice as a numeric matrix.
-#' @seealso [llm()], [llm_embed()], [as.matrix.rebirth_trace()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @seealso [llm()], [llm_embed()], [as.matrix.relm_trace()]
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' tr <- llm_trace(m, c("The cat sat.", "Quarks bind."), layers = 1:4)
 #' tr
 #' summary(tr)
@@ -92,7 +92,7 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
   }
   ensure_open(m)
   guard_not_intervened(
-    m, "rebirth_error_trace",
+    m, "relm_error_trace",
     "Tracing an intervened handle is not yet supported"
   )
 
@@ -163,7 +163,7 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
   spill_path <- if (isTRUE(spill)) next_spill_path(spill_dir) else ""
   trace_id <- if (nzchar(spill_path)) next_trace_id() else ""
 
-  payload <- rebirth_check(rebirth_trace(
+  payload <- relm_check(rebirth_trace(
     m$ptr, as.character(prompts), layers_arg,
     positions_mode, positions_values, as.character(components),
     spill, as.double(budget), spill_path, m$path, trace_id, spec_key
@@ -191,7 +191,7 @@ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
   }
 }
 
-# Assemble an in-memory `rebirth_trace` from the boundary payload (the in-budget
+# Assemble an in-memory `relm_trace` from the boundary payload (the in-budget
 # path). The numeric columns arrive fully expanded; `token`/`component` arrive
 # INTERNED (D-017) -- each distinct label once (a levels table) plus a per-row
 # 1-based code and per-row neuron count -- and are re-expanded here to the exact
@@ -214,7 +214,7 @@ new_inmemory_trace <- function(payload, m, prompts) {
   )
   structure(
     df,
-    class = c("rebirth_trace", "data.frame"),
+    class = c("relm_trace", "data.frame"),
     model = m$path,
     spilled = FALSE,
     spill_files = NULL,
@@ -222,7 +222,7 @@ new_inmemory_trace <- function(payload, m, prompts) {
   )
 }
 
-# Assemble a spilled `rebirth_trace`: an empty (zero-row) data.frame with the exact
+# Assemble a spilled `relm_trace`: an empty (zero-row) data.frame with the exact
 # seven columns, carrying the spill file path plus the capture's dimensions in
 # attributes so print()/summary() report the trace without loading it. as.matrix()
 # reads the requested slice lazily from `spill_files`. `spec_key` is stored for the
@@ -240,7 +240,7 @@ new_spilled_trace <- function(payload, m, prompts, spec_key) {
   )
   structure(
     empty,
-    class = c("rebirth_trace", "data.frame"),
+    class = c("relm_trace", "data.frame"),
     model = m$path,
     spilled = TRUE,
     spill_files = as.character(payload$spill_path),
@@ -262,7 +262,7 @@ new_spilled_trace <- function(payload, m, prompts, spec_key) {
 # NA/encoding-faithful); tools::md5sum() over it -- the only base-R md5 entry, so no
 # added dependency -- yields a compact, low-collision, deterministic fingerprint.
 prompts_digest <- function(prompts) {
-  tf <- tempfile("rebirth-prompts-")
+  tf <- tempfile("relm-prompts-")
   on.exit(unlink(tf), add = TRUE)
   writeBin(serialize(as.character(prompts), connection = NULL), tf)
   unname(tools::md5sum(tf))
@@ -302,7 +302,7 @@ trace_spec_key <- function(m, prompts, layers, positions, components) {
 }
 
 # Validate the `positions` argument and return it unchanged ("last"/"all" or a
-# numeric vector of 1-based positions). Raises rebirth_error_argument otherwise.
+# numeric vector of 1-based positions). Raises relm_error_argument otherwise.
 validate_positions <- function(positions, call = sys.call(-1L)) {
   if (is.character(positions)) {
     if (length(positions) != 1L || is.na(positions) ||
@@ -363,7 +363,7 @@ TRACE_BUDGET_DEFAULT_CAP <- 2 * 1024^3
 # option wins; otherwise min(2 GB, 20% of system RAM), falling back to the 2 GB cap
 # when RAM is unknown.
 trace_budget <- function() {
-  opt <- getOption("rebirth.trace_budget")
+  opt <- getOption("relm.trace_budget")
   if (!is.null(opt) && is.numeric(opt) && length(opt) == 1L && !is.na(opt) && opt > 0) {
     return(as.double(opt))
   }
@@ -378,7 +378,7 @@ trace_budget <- function() {
 
 # Best-effort total system RAM in bytes, or NA when it cannot be determined
 # (never errors -- the caller then uses the 2 GB cap). Only consulted when the
-# rebirth.trace_budget option is unset.
+# relm.trace_budget option is unset.
 system_ram_bytes <- function() {
   ram <- tryCatch(
     {
@@ -399,7 +399,7 @@ system_ram_bytes <- function() {
 }
 
 # Predictive OOM guard for spill = FALSE: estimate the capture's in-memory size
-# from the resolved filters and raise rebirth_error_oom (with estimate_bytes)
+# from the resolved filters and raise relm_error_oom (with estimate_bytes)
 # before any allocation when it exceeds the budget. spill = TRUE proceeds to the
 # engine, which streams to disk instead. `positions = "all"` is deferred to the
 # engine (it has the per-prompt token counts), which raises the same class before
@@ -430,14 +430,14 @@ check_trace_budget <- function(m, prompts, layers, positions, components, spill,
     return(invisible(NULL))
   }
 
-  rebirth_abort(
-    "rebirth_error_oom",
+  relm_abort(
+    "relm_error_oom",
     sprintf(
       paste0(
         "This trace would need about %s in memory, over the %s budget. ",
         "Capture less -- set positions = \"last\", narrow `layers` to a band, or ",
         "drop components -- set spill = TRUE to stream it to disk, or raise ",
-        "options(rebirth.trace_budget=)."
+        "options(relm.trace_budget=)."
       ),
       format_bytes(estimate), format_bytes(budget)
     ),
@@ -486,17 +486,17 @@ trace_dims <- function(x) {
   }
 }
 
-#' @param x A `rebirth_trace` (for `print`/`as.matrix`) or its `summary`.
+#' @param x A `relm_trace` (for `print`/`as.matrix`) or its `summary`.
 #' @param ... Ignored.
 #' @return `print` returns its argument invisibly.
 #' @rdname llm_trace
-#' @method print rebirth_trace
+#' @method print relm_trace
 #' @export
-print.rebirth_trace <- function(x, ...) {
+print.relm_trace <- function(x, ...) {
   spilled <- isTRUE(attr(x, "spilled"))
   d <- trace_dims(x)
   cat(sprintf(
-    "<rebirth_trace> %s activation rows\n",
+    "<relm_trace> %s activation rows\n",
     format(d$n_rows, scientific = FALSE, big.mark = "")
   ))
   cat(sprintf("  prompts:    %d\n", length(attr(x, "prompts"))))
@@ -511,15 +511,15 @@ print.rebirth_trace <- function(x, ...) {
   invisible(x)
 }
 
-#' @param object A `rebirth_trace`.
-#' @return `summary` returns a `data.frame` (class `summary.rebirth_trace`) with one
+#' @param object A `relm_trace`.
+#' @return `summary` returns a `data.frame` (class `summary.relm_trace`) with one
 #'   row per captured `(layer, component)` group: its `n` and mean `|value|`. For a
 #'   spilled trace, `mean_abs` is `NA` (reporting it would force a data load); use
-#'   [as.matrix.rebirth_trace()] to read a slice.
+#'   [as.matrix.relm_trace()] to read a slice.
 #' @rdname llm_trace
-#' @method summary rebirth_trace
+#' @method summary relm_trace
 #' @export
-summary.rebirth_trace <- function(object, ...) {
+summary.relm_trace <- function(object, ...) {
   if (isTRUE(attr(object, "spilled"))) {
     return(summary_spilled_trace(object))
   }
@@ -546,17 +546,17 @@ summary.rebirth_trace <- function(object, ...) {
   )
   structure(
     out,
-    class = c("summary.rebirth_trace", "data.frame"),
+    class = c("summary.relm_trace", "data.frame"),
     spilled = FALSE
   )
 }
 
 #' @rdname llm_trace
-#' @method print summary.rebirth_trace
+#' @method print summary.relm_trace
 #' @export
-print.summary.rebirth_trace <- function(x, ...) {
+print.summary.relm_trace <- function(x, ...) {
   spilled <- isTRUE(attr(x, "spilled"))
-  cat(sprintf("<rebirth_trace summary> %d layer x component groups\n", nrow(x)))
+  cat(sprintf("<relm_trace summary> %d layer x component groups\n", nrow(x)))
   cat("  n and mean |value| per group:\n")
   print(as.data.frame(x), row.names = FALSE)
   cat(sprintf("  storage: %s\n", if (spilled) "spilled (mean |value| via as.matrix())" else "in memory"))
@@ -571,7 +571,7 @@ print.summary.rebirth_trace <- function(x, ...) {
 #' This is the bridge from the long-format trace to matrix tools such as
 #' [stats::prcomp()].
 #'
-#' @param x A `rebirth_trace` from [llm_trace()].
+#' @param x A `relm_trace` from [llm_trace()].
 #' @param layer Required single 1-based layer index; it must be present in the trace.
 #' @param component Single component name (default `"residual"`); it must be present
 #'   in the trace.
@@ -579,14 +579,14 @@ print.summary.rebirth_trace <- function(x, ...) {
 #' @return A numeric `matrix`, rows = captured `(prompt_id, token_pos)` (row names
 #'   `"<prompt_id>.<token_pos>"`), columns = neurons.
 #' @seealso [llm_trace()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' tr <- llm_trace(m, "The cat sat.", layers = 1:2)
 #' as.matrix(tr, layer = 1, component = "residual")
 #' close(m)
-#' @method as.matrix rebirth_trace
+#' @method as.matrix relm_trace
 #' @export
-as.matrix.rebirth_trace <- function(x, layer, component = "residual", ...) {
+as.matrix.relm_trace <- function(x, layer, component = "residual", ...) {
   if (missing(layer)) {
     abort_argument(
       "layer",
@@ -635,8 +635,8 @@ as.matrix.rebirth_trace <- function(x, layer, component = "residual", ...) {
   # so a mismatch here means an unexpected duplicate reached the frame -- fail loud
   # rather than return a wrong matrix.
   if (nrow(sub) != nrow(pts) * n_neuron) {
-    rebirth_abort(
-      "rebirth_error_trace",
+    relm_abort(
+      "relm_error_trace",
       sprintf(
         paste0(
           "This trace slice (layer %s, component \"%s\") holds %d rows, not the ",

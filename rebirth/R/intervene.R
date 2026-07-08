@@ -6,7 +6,7 @@
 # Architecture support is NOT gated in R (D-021): the engine runs a runtime sentinel
 # probe inside derive_with_interventions (probe.rs) that proves steering and ablation
 # actually take effect on THIS model at the requested layers, raising
-# rebirth_error_intervention (never a silent no-op) otherwise -- so any
+# relm_error_intervention (never a silent no-op) otherwise -- so any
 # standard-residual decoder works, without a hand-maintained allow-list.
 #
 # This constant is DOCUMENTATION ONLY; it does NOT gate anything. It names the
@@ -30,7 +30,7 @@ INTERVENTION_VALIDATED_ARCHS <- c("llama", "qwen2")
 #' Steering is llama.cpp's native control-vector mechanism: a per-layer,
 #' `hidden_size`-wide vector added to the residual at `layer`'s output, for **all
 #' token positions** (hence `positions = "all"` is the only supported value in this
-#' release; a position subset raises `rebirth_error_intervention`).
+#' release; a position subset raises `relm_error_intervention`).
 #'
 #' **Composition.** Deriving from an already-steered or ablated handle carries its
 #' full spec forward and adds the new one, then builds a single fresh context from
@@ -44,7 +44,7 @@ INTERVENTION_VALIDATED_ARCHS <- c("llama", "qwen2")
 #'
 #' **Layer 1 is not steerable.** The native control vector reserves engine index 0
 #' and has no slot for the first transformer block, so `layer = 1` raises
-#' `rebirth_error_intervention`. Steer a later layer (`2:m$layers`), or ablate
+#' `relm_error_intervention`. Steer a later layer (`2:m$layers`), or ablate
 #' layer 1 with [llm_ablate()] (ablation covers every layer).
 #'
 #' **Not free.** Each `llm_steer()`/`llm_ablate()` call allocates a fresh context
@@ -55,14 +55,14 @@ INTERVENTION_VALIDATED_ARCHS <- c("llama", "qwen2")
 #' **Generation/logits only (for now).** Interventions apply to `llm_generate()`
 #' and `llm_logits()`. [llm_embed()] and [llm_trace()] build their own fresh
 #' contexts that do not inherit the adapters, so calling them on an intervened
-#' handle raises `rebirth_error_embed` / `rebirth_error_trace` rather than silently
+#' handle raises `relm_error_embed` / `relm_error_trace` rather than silently
 #' returning base (un-intervened) vectors mislabeled as steered.
 #'
 #' **Model support.** Interventions work on any standard-residual decoder. Before
 #' the handle is returned, a runtime probe verifies on *this* model that steering
 #' actually shifts the residual at each requested layer; if it would silently do
 #' nothing (an architecture that does not route its residual through the choke point
-#' the mechanism hooks), `rebirth_error_intervention` is raised instead of a no-op
+#' the mechanism hooks), `relm_error_intervention` is raised instead of a no-op
 #' handle. The `llama` and `qwen2` architectures are additionally *behaviorally
 #' validated* -- they pass the valence-steering and KL-ablation acceptance fixtures;
 #' any other architecture is enabled the moment it passes the probe.
@@ -80,8 +80,8 @@ INTERVENTION_VALIDATED_ARCHS <- c("llama", "qwen2")
 #'   `interventions`; the source handle is returned unchanged. `print()` shows the
 #'   active intervention count and `summary()` lists them.
 #' @seealso [llm_ablate()], [llm()], [llm_generate()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' # A steering direction is any hidden_size-wide vector (here a placeholder).
 #' dir <- rep(0.05, m$hidden_size)
 #' steered <- llm_steer(m, layer = 8, direction = dir, coef = 2)
@@ -185,15 +185,15 @@ llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
 #'
 #' **Generation/logits only (for now).** Interventions apply to `llm_generate()`
 #' and `llm_logits()`. [llm_embed()] and [llm_trace()] on an intervened handle
-#' raise `rebirth_error_embed` / `rebirth_error_trace` rather than silently
+#' raise `relm_error_embed` / `relm_error_trace` rather than silently
 #' returning base vectors mislabeled as ablated.
 #'
 #' Only `component = "residual"` ablation is supported in this release (the shared
-#' choke point); `"attn_out"`/`"mlp_out"` raise `rebirth_error_intervention`.
+#' choke point); `"attn_out"`/`"mlp_out"` raise `relm_error_intervention`.
 #'
 #' **Model support.** Interventions work on any standard-residual decoder; before the
 #' handle is returned, a runtime probe verifies on *this* model that the ablation
-#' takes effect at each requested layer, raising `rebirth_error_intervention` rather
+#' takes effect at each requested layer, raising `relm_error_intervention` rather
 #' than silently doing nothing. `llama` and `qwen2` are additionally *behaviorally
 #' validated* (the valence / KL acceptance fixtures); other architectures are enabled
 #' once they pass the probe.
@@ -209,8 +209,8 @@ llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
 #'   `interventions`; the source handle is returned unchanged. `print()` shows the
 #'   active intervention count and `summary()` lists them.
 #' @seealso [llm_steer()], [llm()], [llm_generate()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' ablated <- llm_ablate(m, layer = 5, neurons = c(10, 42, 128))
 #' # Composition is order-independent: these two derivations behave identically.
 #' dir <- rep(0.05, m$hidden_size)
@@ -278,7 +278,7 @@ llm_ablate <- function(m, layer, neurons, value = 0, component = "residual") {
 # Interventions apply to generation/logits only in this release.
 guard_not_intervened <- function(m, class, what, call = sys.call(-1L)) {
   if (length(m$interventions) > 0L) {
-    rebirth_abort(
+    relm_abort(
       class,
       paste0(
         what, ": interventions currently apply to generation and logits only ",
@@ -317,7 +317,7 @@ validate_intervention_layer <- function(m, layer, call = sys.call(-1L)) {
 derive_intervened <- function(m, entry, call = sys.call(-1L)) {
   interventions <- c(m$interventions, list(entry))
   flat <- flatten_interventions(interventions, m$hidden_size)
-  payload <- rebirth_check(
+  payload <- relm_check(
     rebirth_intervene(
       m$ptr, as.integer(m$hidden_size), as.integer(m$layers),
       flat$steer_layers, flat$steer_vectors,
