@@ -404,7 +404,7 @@ demo_B_terms_table <- function(b2) {
   graphics::axis(1, at = seq_len(k), labels = labs, las = 2L, cex.axis = 0.62, tick = FALSE)
   graphics::axis(2, at = seq_len(k), labels = labs, las = 1L, cex.axis = 0.62, tick = FALSE)
   graphics::box(col = "grey60")
-  .demo_subtitle(b3$model, b3$n, extra = "centroid cosine, self-similarity omitted", adj = 0)
+  .demo_subtitle(b3$model, b3$n, extra = "diagonal omitted", adj = 0)
 
   .demo_par(mar = c(7.6, 4.4, 1.6, 0.6))
   b3$hc$labels <- labs
