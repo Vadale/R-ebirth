@@ -69,6 +69,30 @@ abort_intervention <- function(message, fields = list(), call = sys.call(-1L)) {
   rebirth_abort("rebirth_error_intervention", message, fields, call = call)
 }
 
+#' Raise a `rebirth_error_download` for a failed model download
+#'
+#' A thin specialization of [rebirth_abort()] fixing the class to
+#' `"rebirth_error_download"` (API-GRAMMAR.md section 6: checksum failures are
+#' fail-closed). The download-domain rejections (a non-HTTPS URL, an unknown
+#' registry alias, a network failure, a SHA256 mismatch, an unwritable cache
+#' directory) all funnel through here; a checksum mismatch attaches the
+#' structured `expected`/`actual`/`url` fields so callers can react
+#' programmatically. Pure argument-type violations stay
+#' `rebirth_error_argument` — this class is for a download that cannot proceed
+#' or did not verify.
+#'
+#' @param message Character scalar: the specific, actionable message.
+#' @param fields Named list of structured fields to attach (e.g.
+#'   `list(expected = ..., actual = ..., url = ...)`).
+#' @param call The call to record; defaults to the caller's caller, so the
+#'   condition points at the user-facing function rather than at this helper.
+#' @return Never returns; always raises.
+#' @keywords internal
+#' @noRd
+abort_download <- function(message, fields = list(), call = sys.call(-1L)) {
+  rebirth_abort("rebirth_error_download", message, fields, call = call)
+}
+
 #' Raise from an FFI payload, or return it unchanged on success
 #'
 #' Boundary functions return a list payload. On failure (`ok == FALSE`) this
