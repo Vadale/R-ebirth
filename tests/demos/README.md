@@ -2,13 +2,13 @@
 
 The two reference demos, run as scripted acceptance tests
 (`SOLO-PHASE-PLAN.md` §8, WP7). These live in the repository, not in the
-`rebirth` package tarball.
+`relm` package tarball.
 
 - **`demo-A-anatomy-lab.R`** — the anatomy lab: a fixed, committed sentiment
   contrast set → `llm_trace()` → `prcomp()` concept direction → per-layer
   cross-validated `glmnet` ridge-logistic probe → decodability (AUC + bootstrap
   CI) by layer → the base-graphics money plot → `llm_steer()` verification on
-  held-out prompts. `run_demo_A(extended = TRUE)` (or `REBIRTH_DEMO_EXTENDED=1`)
+  held-out prompts. `run_demo_A(extended = TRUE)` (or `RELM_DEMO_EXTENDED=1`)
   adds five mechanistic-interpretability figures (D-022): **A1** a multi-concept
   decodability overlay (sentiment vs a second committed concept, formality),
   **A2** a token × layer concept heatmap, **A3** a steering dose–response curve
@@ -18,7 +18,7 @@ The two reference demos, run as scripted acceptance tests
 - **`demo-B-topics.R`** — topics without Python: public abstracts →
   `llm_embed()` → `uwot::umap()` → `dbscan::hdbscan()` → cluster naming via
   `llm_generate()` → one labelled base-graphics cluster map.
-  `run_demo_B(extended = TRUE)` (or `REBIRTH_DEMO_EXTENDED=1`) adds three
+  `run_demo_B(extended = TRUE)` (or `RELM_DEMO_EXTENDED=1`) adds three
   BERTopic-report analyses (D-022): **B1** topic-quality metrics (simplified
   silhouette + embedding cohesion + the noise fraction), **B2** distinctive
   terms per topic (log-odds z with an informative Dirichlet prior), and **B3**
@@ -42,20 +42,20 @@ The two reference demos, run as scripted acceptance tests
 
 ## Running them
 
-The demos need a local GGUF model. Point `REBIRTH_DEMO_MODEL` (or
-`REBIRTH_TEST_MODEL_QWEN`) at one; with none set, each script defines its
+The demos need a local GGUF model. Point `RELM_DEMO_MODEL` (or
+`RELM_TEST_MODEL_QWEN`) at one; with none set, each script defines its
 functions and skips the end-to-end run. From the repository root, with the
 package built:
 
 ```r
 pkgload::load_all("rebirth")
-Sys.setenv(REBIRTH_DEMO_MODEL = "/path/to/model.gguf")
+Sys.setenv(RELM_DEMO_MODEL = "/path/to/model.gguf")
 source("tests/demos/demo-A-anatomy-lab.R") # auto-runs and draws the money plot
 source("tests/demos/demo-B-topics.R")      # auto-runs and draws the cluster map
 ```
 
 Both are seeded for reproducible outputs (fixed `foldid`, bootstrap seeds, greedy
-generation) — two runs give byte-identical numbers. Set `REBIRTH_DEMO_EXTENDED=1`
+generation) — two runs give byte-identical numbers. Set `RELM_DEMO_EXTENDED=1`
 (auto-run), or call `run_demo_A(extended = TRUE)` for the five Demo A figures
 (`demoA-A1..A5-*.png`) and `run_demo_B(extended = TRUE)` for the three Demo B
 figures (`demoB-B1..B3-*.png`) plus the polished map; each set adds roughly ten
@@ -65,6 +65,6 @@ with relaxed thresholds (`.github/workflows/nightly-demo-A.yaml`,
 `topics-without-python` package vignettes narrate the same pipelines and render
 with or without a model.
 
-Dependencies (per D-020): base R + `rebirth` + `glmnet` (Demo A) + `uwot`,
+Dependencies (per D-020): base R + `relm` + `glmnet` (Demo A) + `uwot`,
 `dbscan` (Demo B), each guarded by `requireNamespace()`. Money plots are base
 graphics only.

@@ -2,7 +2,7 @@
 # nolint start
 
 #' @usage NULL
-#' @useDynLib rebirth, .registration = TRUE
+#' @useDynLib relm, .registration = TRUE
 NULL
 
 rebirth_model_load <- function(path, context_length, gpu_layers, backend, mmap) .Call(wrap__rebirth_model_load, path, context_length, gpu_layers, backend, mmap)

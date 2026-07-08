@@ -8,7 +8,7 @@
 #   * The synthetic model is no_vocab, so it cannot llm_generate(). The
 #     generation-level acceptances (a steer/ablate changes output, bit-for-bit
 #     reversibility, and derivation-order-independence) are [MODEL]-gated on
-#     REBIRTH_TEST_MODEL_QWEN (the founder's hardware / nightly, plan section 10).
+#     RELM_TEST_MODEL_QWEN (the founder's hardware / nightly, plan section 10).
 # The exact numerical effect + reversibility are proven independently in Rust
 # (tests/synthetic_intervene.rs) against the numpy oracle, not here.
 
@@ -19,10 +19,10 @@ synthetic_model_path <- function() {
 }
 
 qwen_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
   p
 }
@@ -30,13 +30,13 @@ qwen_model_path <- function() {
 # --- argument validation (before the engine; runs in CI) --------------------
 
 test_that("llm_steer() / llm_ablate() reject a non-llm handle", {
-  expect_error(llm_steer(42, 2, 1), class = "rebirth_error_argument")
-  expect_error(llm_ablate(42, 1, 1), class = "rebirth_error_argument")
+  expect_error(llm_steer(42, 2, 1), class = "relm_error_argument")
+  expect_error(llm_ablate(42, 1, 1), class = "relm_error_argument")
 })
 
 # The R-side architecture hard-stop is gone (D-021): interventions are no longer
 # gated by a fixed allow-list. The engine's runtime sentinel probe proves the
-# mechanism takes effect on the specific model and raises rebirth_error_intervention
+# mechanism takes effect on the specific model and raises relm_error_intervention
 # if it would silently no-op. That rejection is exercised on real weights in the Rust
 # integration test tests/synthetic_probe.rs (a steer at a layer the mechanism cannot
 # reach is refused with the classed error); it cannot be tested here, since an
@@ -65,33 +65,33 @@ test_that("llm_steer() validates layer / direction / coef / positions", {
   m <- stub_llm() # qwen2 (supported), layers = 24, hidden_size = 896
 
   # layer out of range
-  expect_error(llm_steer(m, 0, rep(0, 896)), class = "rebirth_error_intervention")
-  expect_error(llm_steer(m, 25, rep(0, 896)), class = "rebirth_error_intervention")
-  expect_error(llm_steer(m, 2.5, rep(0, 896)), class = "rebirth_error_intervention")
-  expect_error(llm_steer(m, c(2, 3), rep(0, 896)), class = "rebirth_error_intervention")
+  expect_error(llm_steer(m, 0, rep(0, 896)), class = "relm_error_intervention")
+  expect_error(llm_steer(m, 25, rep(0, 896)), class = "relm_error_intervention")
+  expect_error(llm_steer(m, 2.5, rep(0, 896)), class = "relm_error_intervention")
+  expect_error(llm_steer(m, c(2, 3), rep(0, 896)), class = "relm_error_intervention")
 
   # layer 1 steer is structurally unreachable (native cvec reserves engine index 0)
   cnd <- tryCatch(llm_steer(m, 1, rep(0, 896)), condition = function(c) c)
-  expect_s3_class(cnd, "rebirth_error_intervention")
+  expect_s3_class(cnd, "relm_error_intervention")
   expect_identical(cnd$argument, "layer")
   expect_match(conditionMessage(cnd), "layer 1", fixed = TRUE)
   expect_match(conditionMessage(cnd), "ablate layer 1", fixed = TRUE) # names the workaround
 
   # direction shape
-  expect_error(llm_steer(m, 2, rep(0, 5)), class = "rebirth_error_intervention")
-  expect_error(llm_steer(m, 2, c(rep(0, 895), NA)), class = "rebirth_error_intervention")
-  expect_error(llm_steer(m, 2, c(rep(0, 895), Inf)), class = "rebirth_error_intervention")
-  expect_error(llm_steer(m, 2, "x"), class = "rebirth_error_intervention")
+  expect_error(llm_steer(m, 2, rep(0, 5)), class = "relm_error_intervention")
+  expect_error(llm_steer(m, 2, c(rep(0, 895), NA)), class = "relm_error_intervention")
+  expect_error(llm_steer(m, 2, c(rep(0, 895), Inf)), class = "relm_error_intervention")
+  expect_error(llm_steer(m, 2, "x"), class = "relm_error_intervention")
 
   # coef shape
-  expect_error(llm_steer(m, 2, rep(0, 896), coef = c(1, 2)), class = "rebirth_error_intervention")
-  expect_error(llm_steer(m, 2, rep(0, 896), coef = NA), class = "rebirth_error_intervention")
+  expect_error(llm_steer(m, 2, rep(0, 896), coef = c(1, 2)), class = "relm_error_intervention")
+  expect_error(llm_steer(m, 2, rep(0, 896), coef = NA), class = "relm_error_intervention")
 
   # positions: only "all" is supported in this release
-  expect_error(llm_steer(m, 2, rep(0, 896), positions = 1:2), class = "rebirth_error_intervention")
+  expect_error(llm_steer(m, 2, rep(0, 896), positions = 1:2), class = "relm_error_intervention")
   expect_error(
     llm_steer(m, 2, rep(0, 896), positions = "last"),
-    class = "rebirth_error_intervention"
+    class = "relm_error_intervention"
   )
 
   # the offending argument is named in a structured field
@@ -102,23 +102,23 @@ test_that("llm_steer() validates layer / direction / coef / positions", {
 test_that("llm_ablate() validates layer / neurons / value / component", {
   m <- stub_llm() # qwen2, layers = 24, hidden_size = 896
 
-  expect_error(llm_ablate(m, 0, 1), class = "rebirth_error_intervention")
-  expect_error(llm_ablate(m, 25, 1), class = "rebirth_error_intervention")
+  expect_error(llm_ablate(m, 0, 1), class = "relm_error_intervention")
+  expect_error(llm_ablate(m, 25, 1), class = "relm_error_intervention")
 
   # neurons shape / range
-  expect_error(llm_ablate(m, 1, integer(0)), class = "rebirth_error_intervention")
-  expect_error(llm_ablate(m, 1, c(0, 5)), class = "rebirth_error_intervention")
-  expect_error(llm_ablate(m, 1, c(5, 999)), class = "rebirth_error_intervention")
-  expect_error(llm_ablate(m, 1, 2.5), class = "rebirth_error_intervention")
-  expect_error(llm_ablate(m, 1, c(3, NA)), class = "rebirth_error_intervention")
+  expect_error(llm_ablate(m, 1, integer(0)), class = "relm_error_intervention")
+  expect_error(llm_ablate(m, 1, c(0, 5)), class = "relm_error_intervention")
+  expect_error(llm_ablate(m, 1, c(5, 999)), class = "relm_error_intervention")
+  expect_error(llm_ablate(m, 1, 2.5), class = "relm_error_intervention")
+  expect_error(llm_ablate(m, 1, c(3, NA)), class = "relm_error_intervention")
 
   # value shape
-  expect_error(llm_ablate(m, 1, 3, value = c(0, 1)), class = "rebirth_error_intervention")
-  expect_error(llm_ablate(m, 1, 3, value = Inf), class = "rebirth_error_intervention")
+  expect_error(llm_ablate(m, 1, 3, value = c(0, 1)), class = "relm_error_intervention")
+  expect_error(llm_ablate(m, 1, 3, value = Inf), class = "relm_error_intervention")
 
   # component: only "residual" is supported in this release
-  expect_error(llm_ablate(m, 1, 3, component = "attn_out"), class = "rebirth_error_intervention")
-  expect_error(llm_ablate(m, 1, 3, component = "mlp_out"), class = "rebirth_error_intervention")
+  expect_error(llm_ablate(m, 1, 3, component = "attn_out"), class = "relm_error_intervention")
+  expect_error(llm_ablate(m, 1, 3, component = "mlp_out"), class = "relm_error_intervention")
 
   cnd <- tryCatch(llm_ablate(m, 1, c(5, 999)), condition = function(c) c)
   expect_identical(cnd$argument, "neurons")
@@ -127,8 +127,8 @@ test_that("llm_ablate() validates layer / neurons / value / component", {
 test_that("interventions reject a closed handle", {
   m <- llm(synthetic_model_path())
   close(m)
-  expect_error(llm_steer(m, 2, rep(0, 32)), class = "rebirth_error_closed")
-  expect_error(llm_ablate(m, 1, 1), class = "rebirth_error_closed")
+  expect_error(llm_steer(m, 2, rep(0, 32)), class = "relm_error_closed")
+  expect_error(llm_ablate(m, 1, 1), class = "relm_error_closed")
 })
 
 # --- derived-handle contract (synthetic model; runs in CI) ------------------
@@ -264,8 +264,8 @@ test_that("embedding / tracing an intervened handle is a classed error (stub)", 
   # The guard fires on any non-empty interventions list, before any tokenization,
   # so a stub with a placeholder entry exercises it with no model.
   s <- stub_llm(interventions = list(list(kind = "steer", layer = 2L)))
-  expect_error(llm_embed(s, "hello"), class = "rebirth_error_embed")
-  expect_error(llm_trace(s, "hello"), class = "rebirth_error_trace")
+  expect_error(llm_embed(s, "hello"), class = "relm_error_embed")
+  expect_error(llm_trace(s, "hello"), class = "relm_error_trace")
 })
 
 test_that("a real intervened handle blocks embed and trace", {
@@ -273,10 +273,10 @@ test_that("a real intervened handle blocks embed and trace", {
   on.exit(close(m), add = TRUE)
   d <- llm_ablate(m, layer = 1, neurons = 1)
   on.exit(close(d), add = TRUE)
-  # A fresh (un-intervened) synthetic handle raises rebirth_error_tokenize on embed;
-  # the intervened handle raises the guard FIRST (rebirth_error_embed / _trace).
-  expect_error(llm_embed(d, "hello"), class = "rebirth_error_embed")
-  expect_error(llm_trace(d, "hello"), class = "rebirth_error_trace")
+  # A fresh (un-intervened) synthetic handle raises relm_error_tokenize on embed;
+  # the intervened handle raises the guard FIRST (relm_error_embed / _trace).
+  expect_error(llm_embed(d, "hello"), class = "relm_error_embed")
+  expect_error(llm_trace(d, "hello"), class = "relm_error_trace")
 })
 
 # --- [MODEL] generation-level acceptance (Qwen; founder hardware / nightly) --

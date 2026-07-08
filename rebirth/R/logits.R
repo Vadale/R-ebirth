@@ -20,7 +20,7 @@
 #' in prompt order. Within each prompt the rows are ordered by descending logit,
 #' so `rank == 1` is the most likely next token; `logit` and `prob` are therefore
 #' non-increasing down the ranks. Token ids are **1-based** (like every index in
-#' `rebirth`, and like [llm_tokens()]), so `token_id` round-trips through
+#' `relm`, and like [llm_tokens()]), so `token_id` round-trips through
 #' `llm_tokens(m, token_id, decode = TRUE)`.
 #'
 #' Active interventions on `m` (from [llm_steer()]/[llm_ablate()]) apply, so
@@ -28,8 +28,8 @@
 #' next-token distribution.
 #'
 #' The model must carry a tokenizer; a `no_vocab` model (such as the in-repo
-#' synthetic model) raises `rebirth_error_tokenize`. No model ships inside the
-#' package yet, so the runnable example is guarded by the `REBIRTH_TEST_MODEL_QWEN`
+#' synthetic model) raises `relm_error_tokenize`. No model ships inside the
+#' package yet, so the runnable example is guarded by the `RELM_TEST_MODEL_QWEN`
 #' environment variable — point it at a local Qwen2.5 GGUF to run it.
 #'
 #' @param m An `llm` handle from [llm()].
@@ -42,8 +42,8 @@
 #'   `token_id` (int, 1-based), `token` (chr, the token piece), `logit` (dbl), and
 #'   `prob` (dbl, softmax over the full vocabulary).
 #' @seealso [llm()], [llm_generate()], [llm_tokens()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' llm_logits(m, "The capital of France is", top = 5)
 #' close(m)
 #' @export
@@ -65,7 +65,7 @@ llm_logits <- function(m, prompt, top = 20) {
   top_i <- as.integer(top)
 
   blocks <- lapply(seq_along(prompt), function(i) {
-    payload <- rebirth_check(rebirth_logits(m$ptr, prompt[[i]], top_i))
+    payload <- relm_check(rebirth_logits(m$ptr, prompt[[i]], top_i))
     n <- length(payload$token_id)
     data.frame(
       prompt_id = rep.int(i, n),

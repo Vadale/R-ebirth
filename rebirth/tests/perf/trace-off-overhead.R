@@ -25,19 +25,19 @@
 #
 # HOW TO RUN. This file lives under tests/perf/ (a subdirectory that neither testthat
 # nor R CMD check sources), so it never runs in the normal suite; it needs a real
-# tokenizer + model, so it is gated on REBIRTH_TEST_MODEL_QWEN. From the package root:
+# tokenizer + model, so it is gated on RELM_TEST_MODEL_QWEN. From the package root:
 #
-#   REBIRTH_TEST_MODEL_QWEN=/path/to/qwen2.5-0.5b-instruct-q8_0.gguf \
+#   RELM_TEST_MODEL_QWEN=/path/to/qwen2.5-0.5b-instruct-q8_0.gguf \
 #     Rscript -e 'devtools::load_all(quiet = TRUE); \
 #                 testthat::test_file("tests/perf/trace-off-overhead.R")'
 #
-# (For an installed package, replace the load_all() with library(rebirth).)
+# (For an installed package, replace the load_all() with library(relm).)
 
 test_that("tap-off generation overhead is < 2% (generation never installs cb_eval)", {
-  model_path <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  model_path <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(model_path) && file.exists(model_path),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
 
   m <- llm(model_path)

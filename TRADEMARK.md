@@ -4,7 +4,7 @@ The R-ebirth **code** is free (MIT OR Apache-2.0). The R-ebirth **name** is not.
 
 This follows the model used by Rust and Firefox: the source is open, but the
 project name and identity are reserved so that users can trust that software
-called "R-ebirth" or "rebirth" is the genuine, unmodified project.
+called "R-ebirth" or "relm" is the genuine, unmodified project.
 
 ## What you may do
 
@@ -17,7 +17,7 @@ called "R-ebirth" or "rebirth" is the genuine, unmodified project.
 
 - If you distribute a **modified** version of the package or its crates, you
   must **rename** it. The distributed artifact may not be called "R-ebirth" or
-  "rebirth", may not use project logos, and may not imply endorsement by the
+  "relm", may not use project logos, and may not imply endorsement by the
   project.
 
 ## No endorsement

@@ -20,8 +20,8 @@ the informational messages. Default \code{FALSE}.}
 }
 \value{
 The local file path, returned \strong{invisibly}. Errors:
-\code{rebirth_error_argument} (bad \code{model}/\code{dir}/\code{quiet} type),
-\code{rebirth_error_download} (non-HTTPS URL, unknown alias, network failure,
+\code{relm_error_argument} (bad \code{model}/\code{dir}/\code{quiet} type),
+\code{relm_error_download} (non-HTTPS URL, unknown alias, network failure,
 checksum mismatch, or an unwritable directory).
 }
 \description{
@@ -29,7 +29,7 @@ Fetches a GGUF model file over HTTPS into a local cache and returns its path.
 \code{model} is either a pinned alias from the package's model registry (see the
 Details section) or a full \verb{https://} URL. The download is
 \strong{fail-closed}: for a registry alias the file's SHA256 must match the pinned
-value or the file is deleted and \code{rebirth_error_download} is raised. Nothing
+value or the file is deleted and \code{relm_error_download} is raised. Nothing
 downloaded is ever executed — the file is only written to disk and checksummed.
 }
 \details{
@@ -42,7 +42,7 @@ the small CI-integration model.
 (Apache-2.0); the demo default.
 }
 
-Passing an unknown alias raises \code{rebirth_error_download} and lists the known
+Passing an unknown alias raises \code{relm_error_download} and lists the known
 aliases. Larger Qwen quantizations (7B) ship as split multi-part GGUFs and are
 not in the single-file registry yet; Gemma models are gated by the Gemma Terms
 of Use (they require accepting terms and an access token on Hugging Face), so
@@ -55,7 +55,7 @@ computed SHA256 is reported so you can pin it — the function never presents an
 unverifiable file as if it had been verified.
 
 \strong{Caching.} \code{dir = NULL} uses the per-user cache directory
-\code{tools::R_user_dir("rebirth", "cache")}; the directory is created if missing.
+\code{tools::R_user_dir("relm", "cache")}; the directory is created if missing.
 The target file name is the URL's last path segment. If a registry model is
 already present and its checksum matches, the download is skipped (idempotent,
 offline-friendly); a present-but-mismatching file is treated as corrupt and
@@ -72,7 +72,7 @@ side-effect contract.
 }
 \examples{
 # The default download directory (dir = NULL); no network access is performed:
-tools::R_user_dir("rebirth", "cache")
+tools::R_user_dir("relm", "cache")
 
 \dontrun{
 # Fetch a pinned, checksum-verified model and load it:

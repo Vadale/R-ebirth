@@ -6,13 +6,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         # nolint start\n\
         \n\
         #' @usage NULL\n\
-        #' @useDynLib rebirth, .registration = TRUE\n\
+        #' @useDynLib relm, .registration = TRUE\n\
         NULL\n\
         \n\
     ";
     let footer = "# nolint end\n";
-    let wrappers = rebirth::get_rebirth_metadata()
-        .make_r_wrappers(true, "rebirth")
+    let wrappers = relm::get_relm_metadata()
+        .make_r_wrappers(true, "relm")
         .map_err(|e| format!("failed to generate wrappers: {e}"))?;
     std::fs::write(wrapper_path, format!("{header}{wrappers}{footer}"))
         .map_err(|e| format!("failed to write {wrapper_path}: {e}"))?;

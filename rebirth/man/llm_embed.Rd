@@ -37,7 +37,7 @@ hidden states are then pooled into one vector per input by \code{pooling}. \code
 averages the token vectors, \code{"last"} takes the final token's vector, and
 \code{"model"} uses the model's own pooling when the GGUF defines one (a purely
 generative model such as Qwen2.5 defines none, so \code{"model"} raises
-\code{rebirth_error_embed} asking for \code{"mean"} or \code{"last"}).
+\code{relm_error_embed} asking for \code{"mean"} or \code{"last"}).
 
 With \code{normalize = TRUE} (the default) each row is L2-normalized to a unit
 vector, so the dot product of two rows is their cosine similarity. A zero vector
@@ -45,19 +45,19 @@ is returned unchanged (never \code{NaN}). \code{normalize} is validated and its 
 explicit — there is no silent normalization.
 
 The model must carry a tokenizer; a \code{no_vocab} model raises
-\code{rebirth_error_tokenize}. No model ships inside the package yet (the in-repo
+\code{relm_error_tokenize}. No model ships inside the package yet (the in-repo
 synthetic model has no tokenizer), so the runnable example is guarded by the
-\code{REBIRTH_TEST_MODEL_QWEN} environment variable — point it at a local Qwen2.5
+\code{RELM_TEST_MODEL_QWEN} environment variable — point it at a local Qwen2.5
 GGUF to run it.
 
 Embedding an \strong{intervened} handle (from \code{\link[=llm_steer]{llm_steer()}}/\code{\link[=llm_ablate]{llm_ablate()}}) raises
-\code{rebirth_error_embed}: interventions currently apply to generation and logits
+\code{relm_error_embed}: interventions currently apply to generation and logits
 only, and the embedding context does not inherit them, so returning base vectors
 labeled as intervened would be silent mislabeling. Embed the original handle.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 e <- llm_embed(m, c(a = "cats and dogs", b = "domestic pets"))
 dim(e)
 close(m)

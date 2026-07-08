@@ -50,7 +50,7 @@ trap below):
     D-014 caveat -- NOT a committed comparable golden for qwen2. On the qwen2
     architecture ``llm_trace`` does NOT observe ``attn_out``: qwen2 names only the
     PRE-projection ``kqv_out-<il>`` (a different quantity), so requesting
-    ``attn_out`` raises ``rebirth_error_trace`` rather than silently substituting
+    ``attn_out`` raises ``relm_error_trace`` rather than silently substituting
     the pre-Wo tensor (trace.rs ``component_name``; covered by the [MODEL] test
     ``llm_trace() attn_out on a qwen2 model is a classed, honest error`` in
     ``rebirth/tests/testthat/test-llm-trace.R``). Therefore only ``residual`` and
@@ -341,7 +341,7 @@ def build_reference():
             "attn_out (self_attn.o_proj output, post-projection, D-014) is CAPTURED "
             "and validated via residual_identity but is NOT written to the golden and "
             "NOT compared: llm_trace does not observe attn_out on qwen2 (it names only "
-            "the pre-projection kqv_out), raising rebirth_error_trace. See the module "
+            "the pre-projection kqv_out), raising relm_error_trace. See the module "
             "docstring and test-llm-trace.R."
         ),
         "per_layer_maxabs_attn_out_reference_only": per_layer_maxabs["attn_out"],
@@ -350,7 +350,7 @@ def build_reference():
             "llm_trace against this fp32 reference: expect looser than the synthetic "
             "1e-2 (quantization + kernel order). The test states the observed max |Δ| "
             "per component and the per-layer rank correlation, and runs [MODEL]-gated "
-            "on REBIRTH_TEST_MODEL_QWEN (founder's Mac / nightly)."
+            "on RELM_TEST_MODEL_QWEN (founder's Mac / nightly)."
         ),
     }
     aux = {"torch": torch, "model": model, "tok": tok, "caps": caps, "acts": acts, "blob": blob}

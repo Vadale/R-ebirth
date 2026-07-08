@@ -1,10 +1,10 @@
 // We need to forward routine registration from C to Rust
 // to avoid the linker removing the static library.
 
-void R_init_rebirth_extendr(void *dll);
+void R_init_relm_extendr(void *dll);
 void register_extendr_panic_hook(void);
 
-void R_init_rebirth(void *dll) {
+void R_init_relm(void *dll) {
     register_extendr_panic_hook();
-    R_init_rebirth_extendr(dll);
+    R_init_relm_extendr(dll);
 }

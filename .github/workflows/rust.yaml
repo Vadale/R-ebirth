@@ -79,7 +79,7 @@ jobs:
 
   # Harness B, part (b): the numpy reference oracle must be deterministic and
   # still agree with the committed logit goldens and the committed synthetic
-  # GGUF. Part (a) — the GGUF loads via rebirth::llm() with the right dims — runs
+  # GGUF. Part (a) — the GGUF loads via relm::llm() with the right dims — runs
   # in R-CMD-check.yaml via tests/testthat/test-llm-synthetic.R. This job installs
   # only the pinned golden tooling (numpy + gguf); it downloads no model.
   golden:

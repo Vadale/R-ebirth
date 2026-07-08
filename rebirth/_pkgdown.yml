@@ -1,4 +1,4 @@
-url: https://vadale.r-universe.dev/rebirth
+url: https://vadale.r-universe.dev/relm
 
 template:
   bootstrap: 5
@@ -24,7 +24,7 @@ reference:
   desc: Observe the model's internals and intervene on them.
   contents:
   - llm_trace
-  - as.matrix.rebirth_trace
+  - as.matrix.relm_trace
   - llm_steer
   - llm_ablate
 - title: Models on disk

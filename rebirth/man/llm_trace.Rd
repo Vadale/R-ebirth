@@ -2,9 +2,9 @@
 % Please edit documentation in R/trace.R
 \name{llm_trace}
 \alias{llm_trace}
-\alias{print.rebirth_trace}
-\alias{summary.rebirth_trace}
-\alias{print.summary.rebirth_trace}
+\alias{print.relm_trace}
+\alias{summary.relm_trace}
+\alias{print.summary.relm_trace}
 \title{Trace a model's activations}
 \usage{
 llm_trace(
@@ -17,11 +17,11 @@ llm_trace(
   spill_dir = NULL
 )
 
-\method{print}{rebirth_trace}(x, ...)
+\method{print}{relm_trace}(x, ...)
 
-\method{summary}{rebirth_trace}(object, ...)
+\method{summary}{relm_trace}(object, ...)
 
-\method{print}{summary.rebirth_trace}(x, ...)
+\method{print}{summary.relm_trace}(x, ...)
 }
 \arguments{
 \item{m}{An \code{llm} handle from \code{\link[=llm]{llm()}}.}
@@ -41,47 +41,47 @@ token of each prompt), \code{"all"}, or a vector of 1-based positions.}
 (after the output projection; TransformerLens \code{hook_attn_out}), and/or the MLP
 sub-layer output. Tracing is supported on the \code{llama}, \code{qwen2}, \code{gemma3},
 \code{qwen3}, \code{qwen35}, and \code{gemma4} architectures; any other raises
-\code{rebirth_error_trace}. \code{"residual"} is available on all of them. \code{"mlp_out"} is
+\code{relm_error_trace}. \code{"residual"} is available on all of them. \code{"mlp_out"} is
 available on all except \code{gemma4} (whose mixture-of-experts layers name their FFN
 output differently, so capturing it would silently miss layers). \code{"attn_out"} is
 currently observable only on llama-family models; on the others (which name only
 the pre-projection attention tensor, a different quantity) requesting it raises
-\code{rebirth_error_trace} listing the available components rather than silently
+\code{relm_error_trace} listing the available components rather than silently
 substituting a different tensor.}
 
 \item{spill}{Single logical (default \code{TRUE}). When a capture exceeds the memory
 budget, \code{TRUE} streams it to a disk file (a lazily-loaded spilled trace) and
-\code{FALSE} raises \code{rebirth_error_oom} instead. A within-budget capture is always
+\code{FALSE} raises \code{relm_error_oom} instead. A within-budget capture is always
 held in memory regardless of this flag.}
 
 \item{spill_dir}{\code{NULL} (default: a managed per-session directory under the user
 cache, cleaned up when the session ends) or a single directory path in which to
 write spill files (left in place for you to manage).}
 
-\item{x}{A \code{rebirth_trace} (for \code{print}/\code{as.matrix}) or its \code{summary}.}
+\item{x}{A \code{relm_trace} (for \code{print}/\code{as.matrix}) or its \code{summary}.}
 
 \item{...}{Ignored.}
 
-\item{object}{A \code{rebirth_trace}.}
+\item{object}{A \code{relm_trace}.}
 }
 \value{
-A \code{rebirth_trace}: a \code{data.frame} (class \code{c("rebirth_trace", "data.frame")}) with the seven columns above, carrying \code{model}, \code{spilled},
+A \code{relm_trace}: a \code{data.frame} (class \code{c("relm_trace", "data.frame")}) with the seven columns above, carrying \code{model}, \code{spilled},
 \code{spill_files}, and \code{prompts} attributes. When \code{spilled} is \code{TRUE} the rows live
-in \code{spill_files} (read on demand by \code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}}) rather than in
-the frame. See \code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}} to extract one \verb{(layer, component)}
+in \code{spill_files} (read on demand by \code{\link[=as.matrix.relm_trace]{as.matrix.relm_trace()}}) rather than in
+the frame. See \code{\link[=as.matrix.relm_trace]{as.matrix.relm_trace()}} to extract one \verb{(layer, component)}
 slice as a numeric matrix.
 
 \code{print} returns its argument invisibly.
 
-\code{summary} returns a \code{data.frame} (class \code{summary.rebirth_trace}) with one
+\code{summary} returns a \code{data.frame} (class \code{summary.relm_trace}) with one
 row per captured \verb{(layer, component)} group: its \code{n} and mean \verb{|value|}. For a
 spilled trace, \code{mean_abs} is \code{NA} (reporting it would force a data load); use
-\code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}} to read a slice.
+\code{\link[=as.matrix.relm_trace]{as.matrix.relm_trace()}} to read a slice.
 }
 \description{
 Runs a forward pass over each prompt's tokens (no sampling) and captures the
 internal activations selected by the filters, returning a long-format
-\code{rebirth_trace} \code{data.frame} with one row per
+\code{relm_trace} \code{data.frame} with one row per
 \verb{(prompt, token position, layer, component, neuron)}.
 }
 \details{
@@ -102,28 +102,28 @@ little (\code{positions = "last"}, \code{components = "residual"}); widen them d
 Before running, the size of the \code{data.frame} you would receive is estimated from
 the filters (the materialized-object cost, D-017). If it fits the budget
 (\verb{min(2 GB, 20\% of RAM)}, overridable with
-\verb{options(rebirth.trace_budget = <bytes>)}) it is held in memory. If it exceeds the
+\verb{options(relm.trace_budget = <bytes>)}) it is held in memory. If it exceeds the
 budget and \code{spill = TRUE} (the default), the capture is streamed to an Arrow-IPC
-file under the session cache and the result is a \emph{spilled} \code{rebirth_trace} that
+file under the session cache and the result is a \emph{spilled} \code{relm_trace} that
 loads lazily: \code{print()}/\code{summary()} never read the file, and
-\code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}} reads only the requested \verb{(layer, component)} slice.
-If it exceeds the budget and \code{spill = FALSE}, the call raises \code{rebirth_error_oom}
+\code{\link[=as.matrix.relm_trace]{as.matrix.relm_trace()}} reads only the requested \verb{(layer, component)} slice.
+If it exceeds the budget and \code{spill = FALSE}, the call raises \code{relm_error_oom}
 \emph{before} any allocation, its \code{estimate_bytes} field stating the estimate. Spill
 files are removed when the R session ends.
 
 The model must carry a tokenizer; a \code{no_vocab} model raises
-\code{rebirth_error_tokenize}. As with the other text entry points, the runnable
-example is guarded by the \code{REBIRTH_TEST_MODEL_QWEN} environment variable.
+\code{relm_error_tokenize}. As with the other text entry points, the runnable
+example is guarded by the \code{RELM_TEST_MODEL_QWEN} environment variable.
 
 Tracing an \strong{intervened} handle (from \code{\link[=llm_steer]{llm_steer()}}/\code{\link[=llm_ablate]{llm_ablate()}}) raises
-\code{rebirth_error_trace}: interventions currently apply to generation and logits
+\code{relm_error_trace}: interventions currently apply to generation and logits
 only, and the trace context does not inherit them, so tracing would capture the
 base (un-intervened) forward pass while labeling it intervened. Trace the
 original handle.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 tr <- llm_trace(m, c("The cat sat.", "Quarks bind."), layers = 1:4)
 tr
 summary(tr)
@@ -133,5 +133,5 @@ close(m)
 \dontshow{\}) # examplesIf}
 }
 \seealso{
-\code{\link[=llm]{llm()}}, \code{\link[=llm_embed]{llm_embed()}}, \code{\link[=as.matrix.rebirth_trace]{as.matrix.rebirth_trace()}}
+\code{\link[=llm]{llm()}}, \code{\link[=llm_embed]{llm_embed()}}, \code{\link[=as.matrix.relm_trace]{as.matrix.relm_trace()}}
 }

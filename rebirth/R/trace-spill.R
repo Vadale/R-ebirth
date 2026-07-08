@@ -1,7 +1,7 @@
-# Spill read/integrity layer for `rebirth_trace` (D-013).
+# Spill read/integrity layer for `relm_trace` (D-013).
 #
 # When a trace exceeds the materialized-bytes budget (D-017) it is streamed to an
-# Arrow-IPC file rather than held in memory; the `rebirth_trace` object then carries
+# Arrow-IPC file rather than held in memory; the `relm_trace` object then carries
 # only its `spill_*` attributes and reads slices lazily. This file holds that read
 # side: the lazy slice reader (`read_spill_slice`), the staleness/integrity fail-safe
 # (`verify_spill_integrity` + `spill_schema_ok`, ARCHITECTURE section 6), and the
@@ -17,8 +17,8 @@
 read_spill_slice <- function(x, layer, component) {
   path <- attr(x, "spill_files")[1]
   if (is.null(path) || is.na(path) || !nzchar(path) || !file.exists(path)) {
-    rebirth_abort(
-      "rebirth_error_trace",
+    relm_abort(
+      "relm_error_trace",
       sprintf(
         paste0(
           "The spill file for this trace is missing (%s). Spilled traces are ",
@@ -36,7 +36,7 @@ read_spill_slice <- function(x, layer, component) {
   # Pull every record batch, keeping only the requested (layer, component) rows. A
   # readable header/schema does NOT guarantee readable batch bodies: a truncated or
   # corrupt file raises a raw nanoarrow error while pulling batches, so catch any
-  # read failure and re-raise it as a classed rebirth_error_trace carrying the same
+  # read failure and re-raise it as a classed relm_error_trace carrying the same
   # re-run guidance as the missing-file / stale-footer branches (never a bare
   # nanoarrow error to the user). The condition is captured and re-raised at this
   # frame so its recorded `call` matches the other branches.
@@ -58,8 +58,8 @@ read_spill_slice <- function(x, layer, component) {
     error = function(e) e
   )
   if (inherits(parts, "condition")) {
-    rebirth_abort(
-      "rebirth_error_trace",
+    relm_abort(
+      "relm_error_trace",
       sprintf(
         paste0(
           "The spill file '%s' could not be read: its record batches are truncated ",
@@ -88,7 +88,7 @@ read_spill_slice <- function(x, layer, component) {
 
 # The staleness fail-safe (ARCHITECTURE section 6): before reading a spilled file,
 # confirm its integrity footer (schema metadata) AND its on-disk schema match the
-# trace object. A file from a different rebirth version (format), one overwritten by
+# trace object. A file from a different relm version (format), one overwritten by
 # a later trace or belonging to another session (trace id / spec), or one whose
 # column names or types have been altered (schema), is rejected rather than silently
 # misread. The schema check matters because matching metadata strings alone do not
@@ -100,30 +100,30 @@ verify_spill_integrity <- function(x, path) {
     error = function(e) NULL
   )
   md <- if (is.null(schema)) NULL else schema$metadata
-  fmt <- if (is.null(md)) NULL else md[["rebirth.spill_format"]]
-  trace_id <- if (is.null(md)) NULL else md[["rebirth.trace_id"]]
-  spec <- if (is.null(md)) NULL else md[["rebirth.spec"]]
+  fmt <- if (is.null(md)) NULL else md[["relm.spill_format"]]
+  trace_id <- if (is.null(md)) NULL else md[["relm.trace_id"]]
+  spec <- if (is.null(md)) NULL else md[["relm.spec"]]
   if (is.null(fmt) || !identical(as.character(fmt), "1")) {
-    rebirth_abort(
-      "rebirth_error_trace",
+    relm_abort(
+      "relm_error_trace",
       sprintf(
         paste0(
-          "The spill file '%s' is not a readable rebirth trace (format %s). It may ",
-          "be from a different rebirth version or a different file; re-run llm_trace()."
+          "The spill file '%s' is not a readable relm trace (format %s). It may ",
+          "be from a different relm version or a different file; re-run llm_trace()."
         ),
         path, if (is.null(fmt)) "<none>" else as.character(fmt)
       )
     )
   }
-  # The on-disk schema must still be the rebirth_trace schema (right column names and
+  # The on-disk schema must still be the relm_trace schema (right column names and
   # types), or the read would coerce to NA/garbage despite matching metadata strings.
   if (!spill_schema_ok(schema)) {
-    rebirth_abort(
-      "rebirth_error_trace",
+    relm_abort(
+      "relm_error_trace",
       sprintf(
         paste0(
-          "The spill file '%s' does not have the expected rebirth_trace columns or ",
-          "column types. It may be from a different rebirth version or a corrupted ",
+          "The spill file '%s' does not have the expected relm_trace columns or ",
+          "column types. It may be from a different relm version or a corrupted ",
           "file; re-run llm_trace()."
         ),
         path
@@ -133,8 +133,8 @@ verify_spill_integrity <- function(x, path) {
   if (is.null(trace_id) ||
     !identical(as.character(trace_id), as.character(attr(x, "spill_trace_id"))) ||
     is.null(spec) || !identical(as.character(spec), as.character(attr(x, "spill_spec")))) {
-    rebirth_abort(
-      "rebirth_error_trace",
+    relm_abort(
+      "relm_error_trace",
       sprintf(
         paste0(
           "The spill file '%s' does not match this trace object: its capture spec or ",
@@ -148,7 +148,7 @@ verify_spill_integrity <- function(x, path) {
   invisible(TRUE)
 }
 
-# Whether a spilled file's Arrow schema is the rebirth_trace schema: the seven
+# Whether a spilled file's Arrow schema is the relm_trace schema: the seven
 # columns in order, each of the expected kind. Types are checked by kind, not exact
 # Arrow type, so the on-disk encoding (D-013: uint32 indices, float32 `value`, utf8
 # strings) can evolve without breaking the guard — but an altered column type (e.g.
@@ -206,7 +206,7 @@ summary_spilled_trace <- function(object) {
   )
   structure(
     out,
-    class = c("summary.rebirth_trace", "data.frame"),
+    class = c("summary.relm_trace", "data.frame"),
     spilled = TRUE
   )
 }

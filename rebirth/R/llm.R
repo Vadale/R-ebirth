@@ -12,10 +12,10 @@
 #'
 #' `backend = "auto"` resolves to the fastest backend this build supports
 #' (Metal on Apple silicon, otherwise CPU). Requesting a backend the build was
-#' not compiled with raises `rebirth_error_backend`.
+#' not compiled with raises `relm_error_backend`.
 #'
 #' No model ships inside the package yet, so the runnable example is guarded by
-#' the `REBIRTH_TEST_MODEL_QWEN` environment variable (point it at a local
+#' the `RELM_TEST_MODEL_QWEN` environment variable (point it at a local
 #' Qwen2.5 GGUF to run it). A tiny in-repo model arrives in a later work
 #' package.
 #'
@@ -29,8 +29,8 @@
 #' @param mmap Logical: memory-map the model file (default `TRUE`).
 #' @return An object of class `llm` (see the package's class documentation).
 #' @seealso [close.llm()], [print.llm()], [summary.llm()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' print(m)
 #' summary(m)
 #' close(m)
@@ -42,16 +42,16 @@ llm <- function(path,
                 mmap = TRUE) {
   # --- path: a single, existing, readable, non-directory file ---
   if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
-    rebirth_abort(
-      "rebirth_error_model_load",
+    relm_abort(
+      "relm_error_model_load",
       "`path` must be a single non-empty string naming a GGUF model file.",
       list(failing_check = "path_type")
     )
   }
   path <- path.expand(path)
   if (!file.exists(path)) {
-    rebirth_abort(
-      "rebirth_error_model_load",
+    relm_abort(
+      "relm_error_model_load",
       sprintf(
         "Model file not found at '%s'. Check the path, or download the model first.",
         path
@@ -60,15 +60,15 @@ llm <- function(path,
     )
   }
   if (dir.exists(path)) {
-    rebirth_abort(
-      "rebirth_error_model_load",
+    relm_abort(
+      "relm_error_model_load",
       sprintf("'%s' is a directory, not a GGUF file. Point `path` at the .gguf file.", path),
       list(failing_check = "path_is_directory")
     )
   }
   if (file.access(path, mode = 4L) != 0L) {
-    rebirth_abort(
-      "rebirth_error_model_load",
+    relm_abort(
+      "relm_error_model_load",
       sprintf("Model file '%s' is not readable. Check its file permissions.", path),
       list(failing_check = "path_readable")
     )
@@ -77,8 +77,8 @@ llm <- function(path,
   # --- context_length: a single positive integer ---
   if (!is_count(context_length) || context_length < 1L ||
     context_length > .Machine$integer.max) {
-    rebirth_abort(
-      "rebirth_error_argument",
+    relm_abort(
+      "relm_error_argument",
       "`context_length` must be a single positive integer (the context window in tokens).",
       list(argument = "context_length")
     )
@@ -87,8 +87,8 @@ llm <- function(path,
   # --- gpu_layers: NULL, or a single non-negative integer ---
   if (!is.null(gpu_layers) &&
     (!is_count(gpu_layers) || gpu_layers < 0L || gpu_layers > .Machine$integer.max)) {
-    rebirth_abort(
-      "rebirth_error_argument",
+    relm_abort(
+      "relm_error_argument",
       "`gpu_layers` must be NULL (auto) or a single non-negative integer.",
       list(argument = "gpu_layers")
     )
@@ -96,8 +96,8 @@ llm <- function(path,
 
   # --- mmap: a single non-NA logical ---
   if (!is.logical(mmap) || length(mmap) != 1L || is.na(mmap)) {
-    rebirth_abort(
-      "rebirth_error_argument",
+    relm_abort(
+      "relm_error_argument",
       "`mmap` must be a single logical value (TRUE or FALSE).",
       list(argument = "mmap")
     )
@@ -116,8 +116,8 @@ llm <- function(path,
     }
   } else if (!(backend %in% available)) {
     available_str <- paste(available, collapse = ", ")
-    rebirth_abort(
-      "rebirth_error_backend",
+    relm_abort(
+      "relm_error_backend",
       sprintf(
         paste0(
           "Backend '%s' is not available in this build (available: %s). ",
@@ -134,7 +134,7 @@ llm <- function(path,
   payload <- rebirth_model_load(
     path, as.integer(context_length), gpu_layers_arg, backend, mmap
   )
-  payload <- rebirth_check(payload)
+  payload <- relm_check(payload)
   new_llm(payload, path)
 }
 
@@ -190,12 +190,12 @@ finalize_llm_state <- function(state) {
   invisible(NULL)
 }
 
-# Raise `rebirth_error_closed` if the handle has been closed. The R-side flag is
+# Raise `relm_error_closed` if the handle has been closed. The R-side flag is
 # the authoritative closed tag every method consults first (ARCHITECTURE.md section 3).
 ensure_open <- function(m, call = sys.call(-1L)) {
   if (isTRUE(m$state$closed)) {
-    rebirth_abort(
-      "rebirth_error_closed",
+    relm_abort(
+      "relm_error_closed",
       "This model handle is closed. Load the model again with llm() to obtain a fresh handle.",
       call = call
     )
@@ -209,7 +209,7 @@ ensure_open <- function(m, call = sys.call(-1L)) {
 #' memory-constrained machine this lets you release several gigabytes
 #' immediately rather than waiting for garbage collection (the finalizer remains
 #' the safety net). A double close is a no-op; any later use of the handle
-#' raises `rebirth_error_closed`.
+#' raises `relm_error_closed`.
 #'
 #' @param con An `llm` handle.
 #' @param ... Ignored (present for compatibility with the `close()` generic).

@@ -50,22 +50,22 @@ not a cheap copy.
 
 \strong{Generation/logits only (for now).} Interventions apply to \code{llm_generate()}
 and \code{llm_logits()}. \code{\link[=llm_embed]{llm_embed()}} and \code{\link[=llm_trace]{llm_trace()}} on an intervened handle
-raise \code{rebirth_error_embed} / \code{rebirth_error_trace} rather than silently
+raise \code{relm_error_embed} / \code{relm_error_trace} rather than silently
 returning base vectors mislabeled as ablated.
 
 Only \code{component = "residual"} ablation is supported in this release (the shared
-choke point); \code{"attn_out"}/\code{"mlp_out"} raise \code{rebirth_error_intervention}.
+choke point); \code{"attn_out"}/\code{"mlp_out"} raise \code{relm_error_intervention}.
 
 \strong{Model support.} Interventions work on any standard-residual decoder; before the
 handle is returned, a runtime probe verifies on \emph{this} model that the ablation
-takes effect at each requested layer, raising \code{rebirth_error_intervention} rather
+takes effect at each requested layer, raising \code{relm_error_intervention} rather
 than silently doing nothing. \code{llama} and \code{qwen2} are additionally \emph{behaviorally
 validated} (the valence / KL acceptance fixtures); other architectures are enabled
 once they pass the probe.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 ablated <- llm_ablate(m, layer = 5, neurons = c(10, 42, 128))
 # Composition is order-independent: these two derivations behave identically.
 dir <- rep(0.05, m$hidden_size)

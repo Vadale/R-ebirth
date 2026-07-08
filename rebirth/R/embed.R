@@ -11,7 +11,7 @@
 #' averages the token vectors, `"last"` takes the final token's vector, and
 #' `"model"` uses the model's own pooling when the GGUF defines one (a purely
 #' generative model such as Qwen2.5 defines none, so `"model"` raises
-#' `rebirth_error_embed` asking for `"mean"` or `"last"`).
+#' `relm_error_embed` asking for `"mean"` or `"last"`).
 #'
 #' With `normalize = TRUE` (the default) each row is L2-normalized to a unit
 #' vector, so the dot product of two rows is their cosine similarity. A zero vector
@@ -19,13 +19,13 @@
 #' explicit — there is no silent normalization.
 #'
 #' The model must carry a tokenizer; a `no_vocab` model raises
-#' `rebirth_error_tokenize`. No model ships inside the package yet (the in-repo
+#' `relm_error_tokenize`. No model ships inside the package yet (the in-repo
 #' synthetic model has no tokenizer), so the runnable example is guarded by the
-#' `REBIRTH_TEST_MODEL_QWEN` environment variable — point it at a local Qwen2.5
+#' `RELM_TEST_MODEL_QWEN` environment variable — point it at a local Qwen2.5
 #' GGUF to run it.
 #'
 #' Embedding an **intervened** handle (from [llm_steer()]/[llm_ablate()]) raises
-#' `rebirth_error_embed`: interventions currently apply to generation and logits
+#' `relm_error_embed`: interventions currently apply to generation and logits
 #' only, and the embedding context does not inherit them, so returning base vectors
 #' labeled as intervened would be silent mislabeling. Embed the original handle.
 #'
@@ -42,8 +42,8 @@
 #'   (columns), with row names `names(x)` when set, else the input positions as
 #'   characters.
 #' @seealso [llm()], [llm_tokens()], [llm_generate()]
-#' @examplesIf nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
-#' m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' e <- llm_embed(m, c(a = "cats and dogs", b = "domestic pets"))
 #' dim(e)
 #' close(m)
@@ -54,7 +54,7 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
   }
   ensure_open(m)
   guard_not_intervened(
-    m, "rebirth_error_embed",
+    m, "relm_error_embed",
     "Embedding an intervened handle is not yet supported"
   )
   pooling <- match.arg(pooling)
@@ -74,7 +74,7 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
     )
   }
 
-  payload <- rebirth_check(rebirth_embed(m$ptr, x, pooling, normalize))
+  payload <- relm_check(rebirth_embed(m$ptr, x, pooling, normalize))
   mat <- matrix(
     payload$values,
     nrow = payload$n_rows, ncol = payload$n_embd, byrow = TRUE

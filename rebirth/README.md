@@ -1,15 +1,15 @@
-# rebirth
+# relm
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/Vadale/R-ebirth/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Vadale/R-ebirth/actions/workflows/R-CMD-check.yaml)
-[![r-universe](https://vadale.r-universe.dev/badges/rebirth)](https://vadale.r-universe.dev/rebirth)
+[![r-universe](https://vadale.r-universe.dev/badges/relm)](https://vadale.r-universe.dev/relm)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](https://github.com/Vadale/R-ebirth/blob/main/LICENSE.md)
 <!-- badges: end -->
 
 **Local large language models as base-R objects.**
 
-`rebirth` runs open-weight LLMs on your own machine — no API keys, no Python — and
+`relm` runs open-weight LLMs on your own machine — no API keys, no Python — and
 hands you the results as plain `data.frame`s and `matrix`es in ordinary base-R
 idiom. It embeds a vendored, patched
 [`llama.cpp`](https://github.com/ggml-org/llama.cpp) in a Rust native core, so the
@@ -17,7 +17,7 @@ heavy compute runs natively while your R session gets tidy objects it already
 knows how to plot, model, and join.
 
 What sets it apart from a plain inference binding is that it opens the model up.
-Alongside generation and embeddings, `rebirth` exposes the model's **internals** as
+Alongside generation and embeddings, `relm` exposes the model's **internals** as
 first-class, tidy data — you can trace activations layer by layer, steer the
 residual stream along a direction you found, and ablate individual units to see
 what they were doing. This is mechanistic interpretability ("AI neuroscience")
@@ -26,12 +26,12 @@ from R, where your statistics and plotting live.
 ## Installation
 
 Prebuilt binaries (macOS, Linux) are published on
-[r-universe](https://vadale.r-universe.dev/rebirth) — **no Rust or C++ toolchain
+[r-universe](https://vadale.r-universe.dev/relm) — **no Rust or C++ toolchain
 required**:
 
 ```r
 install.packages(
-  "rebirth",
+  "relm",
   repos = c("https://vadale.r-universe.dev", getOption("repos"))
 )
 ```
@@ -41,11 +41,11 @@ CMake (>= 3.28), and a C compiler, you can install straight from the repo — th
 works today, before any release is tagged:
 
 ```r
-remotes::install_github("Vadale/R-ebirth", subdir = "rebirth")
+remotes::install_github("Vadale/R-ebirth", subdir = "relm")
 # (pak::pak("Vadale/R-ebirth/rebirth") also works)
 ```
 
-`rebirth` needs R (>= 4.5) and depends only on
+`relm` needs R (>= 4.5) and depends only on
 [`nanoarrow`](https://arrow.apache.org/nanoarrow/) (for reading spilled traces);
 the demo helpers use `glmnet`, `uwot`, and `dbscan` (optional `Suggests`). See
 **[docs/getting-started.md](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)**
@@ -58,7 +58,7 @@ Apache-2.0 licensed and fetched over HTTPS into a per-user cache, verified by
 SHA256 (a mismatch is deleted, never used):
 
 ```r
-library(rebirth)
+library(relm)
 
 path <- llm_download("qwen2.5-0.5b-instruct-q8_0")  # ~675 MB, verified
 m <- llm(path)
@@ -85,13 +85,13 @@ tcrossprod(emb)                              # cosine similarities (rows are uni
 
 ## Look inside the model
 
-The interpretability toolkit is the reason `rebirth` exists. Capture activations
+The interpretability toolkit is the reason `relm` exists. Capture activations
 as a tidy trace, find a direction, then intervene — all in base R:
 
 ```r
 # 1. TRACE: capture the residual stream at every layer over the prompt's last token.
 tr <- llm_trace(m, "The movie was absolutely wonderful.", positions = "last")
-tr                                            # a rebirth_trace data.frame
+tr                                            # a relm_trace data.frame
 as.matrix(tr, layer = 12, component = "residual")   # one slice as a numeric matrix
 
 # 2. STEER: add a direction to the residual stream at a layer (returns a NEW handle;
@@ -107,20 +107,20 @@ m_lesion <- llm_ablate(m, layer = 12, neurons = c(41, 220, 512), value = 0)
 Interventions **compose**, are **order-independent**, and are **exactly
 reversible** (each derived handle is a fresh context over the same read-only
 weights). If a model's architecture can't support an intervention faithfully,
-`rebirth` refuses with a classed error rather than silently doing nothing.
+`relm` refuses with a classed error rather than silently doing nothing.
 
 ## Two worked demos
 
 Both ship as runnable vignettes and reproduce end-to-end on the Apache-2.0 default
 model — no gated downloads, no Python.
 
-- **The anatomy lab** — `vignette("anatomy-lab", "rebirth")`. Trace a sentiment
+- **The anatomy lab** — `vignette("anatomy-lab", "relm")`. Trace a sentiment
   contrast set, fit one cross-validated probe per layer, and plot *where sentiment
   becomes linearly readable* against depth; then steer along that direction and
   confirm the effect on held-out prompts.
 
 - **Topic modelling without Python** — `vignette("topics-without-python",
-  "rebirth")`. Embed a corpus of abstracts with `llm_embed()`, lay it out with
+  "relm")`. Embed a corpus of abstracts with `llm_embed()`, lay it out with
   `uwot::umap()`, cluster with `dbscan::hdbscan()`, name each cluster with
   `llm_generate()`, and draw one labelled map — a BERTopic-class pipeline, fully
   local. A small sample corpus ships with the package, so it runs out of the box:
@@ -132,14 +132,14 @@ model — no gated downloads, no Python.
   #   run_demo_B(model_path = model)
   ```
 
-## What rebirth is — and is not
+## What relm is — and is not
 
-- **It runs on stock R.** No forked interpreter; `rebirth` is an ordinary package.
+- **It runs on stock R.** No forked interpreter; `relm` is an ordinary package.
   The differentiator is how readable and integrated interpretability becomes when
   it lives next to your statistics — not a claim that any of it is impossible
   elsewhere.
 - **Steering and ablation are instruments, not fixes.** The honest framing is
-  always to *audit, investigate, quantify, and localize* model behavior. `rebirth`
+  always to *audit, investigate, quantify, and localize* model behavior. `relm`
   never claims to remove bias or make a model safe.
 - **Text-only, for now.** Vision (image inputs) is planned for a later release;
   v0.1.0 is text.
@@ -149,7 +149,7 @@ model — no gated downloads, no Python.
 
 ## How it works
 
-`rebirth`'s Rust core (`rebirth-ffi` + `rebirth-llm`) embeds a pinned, patched
+`relm`'s Rust core (`rebirth-ffi` + `rebirth-llm`) embeds a pinned, patched
 `llama.cpp`. Activation observation uses the engine's own scheduler callback (no
 patch); steering uses its native control-vector path; ablation is the project's one
 vendored graph patch. Traces too large for memory spill to Arrow-IPC files and load
@@ -161,7 +161,7 @@ decisions are logged in
 ## License
 
 Dual-licensed **MIT OR Apache-2.0** (your choice). The vendored `llama.cpp` is MIT
-(see `NOTICE`). The name *rebirth* is protected: modified redistributions must
+(see `NOTICE`). The name *relm* is protected: modified redistributions must
 rename — see
 [`TRADEMARK.md`](https://github.com/Vadale/R-ebirth/blob/main/TRADEMARK.md).
 </content>

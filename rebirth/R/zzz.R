@@ -6,13 +6,13 @@
 # Per-session state, private to the package. `session_dir` is created lazily on
 # the first spill; `counter` names successive spill files; `sentinel` carries the
 # exit finalizer that removes the session directory.
-.rebirth_state <- new.env(parent = emptyenv())
+.relm_state <- new.env(parent = emptyenv())
 
 # The root under which every session's spill directory lives:
-# <user cache>/rebirth/spill. `tools::R_user_dir()` is the base-R sanctioned
+# <user cache>/relm/spill. `tools::R_user_dir()` is the base-R sanctioned
 # per-user cache location (no extra dependency).
 spill_root_dir <- function() {
-  file.path(tools::R_user_dir("rebirth", "cache"), "spill")
+  file.path(tools::R_user_dir("relm", "cache"), "spill")
 }
 
 # This session's spill directory path, unique per session (process id + a
@@ -21,7 +21,7 @@ spill_root_dir <- function() {
 # the directory when it actually spills, so an in-memory trace (the common case,
 # even at the default spill = TRUE) leaves no empty directory behind.
 spill_session_dir <- function() {
-  dir <- .rebirth_state$session_dir
+  dir <- .relm_state$session_dir
   if (!is.null(dir)) {
     return(dir)
   }
@@ -29,7 +29,7 @@ spill_session_dir <- function() {
   # counter, so it does not touch (or reseed) the user's random-number state.
   token <- paste(Sys.getpid(), basename(tempfile("")), sep = "-")
   dir <- file.path(spill_root_dir(), token)
-  .rebirth_state$session_dir <- dir
+  .relm_state$session_dir <- dir
   dir
 }
 
@@ -39,9 +39,9 @@ spill_session_dir <- function() {
 # exit; a user-supplied directory is left untouched). The engine creates the
 # directory and the file when it actually spills.
 next_spill_path <- function(spill_dir = NULL) {
-  n <- .rebirth_state$counter
+  n <- .relm_state$counter
   n <- if (is.null(n)) 1L else n + 1L
-  .rebirth_state$counter <- n
+  .relm_state$counter <- n
   fname <- sprintf("trace-%d.arrow", n)
   if (is.null(spill_dir)) {
     file.path(spill_session_dir(), fname)
@@ -70,7 +70,7 @@ next_trace_id <- function() {
 # Remove this session's spill directory (called by the exit finalizer). Best
 # effort: never errors, so it is safe during R's shutdown.
 cleanup_spill_session <- function() {
-  dir <- .rebirth_state$session_dir
+  dir <- .relm_state$session_dir
   if (!is.null(dir) && dir.exists(dir)) {
     unlink(dir, recursive = TRUE, force = TRUE)
   }
@@ -86,7 +86,7 @@ sweep_old_spill_dirs <- function(max_age_days = 7) {
     return(invisible(NULL))
   }
   dirs <- list.dirs(root, full.names = TRUE, recursive = FALSE)
-  keep <- .rebirth_state$session_dir
+  keep <- .relm_state$session_dir
   cutoff <- Sys.time() - max_age_days * 24 * 60 * 60
   for (d in dirs) {
     if (!is.null(keep) && normalizePath(d, mustWork = FALSE) ==
@@ -106,7 +106,7 @@ sweep_old_spill_dirs <- function(max_age_days = 7) {
   # onexit = TRUE runs cleanup_spill_session() when R shuts down normally.
   sentinel <- new.env(parent = emptyenv())
   reg.finalizer(sentinel, function(e) cleanup_spill_session(), onexit = TRUE)
-  .rebirth_state$sentinel <- sentinel
+  .relm_state$sentinel <- sentinel
   # Sweep spill directories orphaned by earlier crashed sessions (never errors).
   tryCatch(sweep_old_spill_dirs(), error = function(e) NULL)
   invisible(NULL)

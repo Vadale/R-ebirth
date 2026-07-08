@@ -16,9 +16,9 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 # The heavy steps need a local GGUF model and glmnet; a checker (CRAN,
 # r-universe) has neither. We gate those chunks on availability and fall back to
 # an illustrative curve, so this vignette always renders with a figure. Point
-# REBIRTH_DEMO_MODEL (or REBIRTH_TEST_MODEL_QWEN) at a GGUF file to render the
+# RELM_DEMO_MODEL (or RELM_TEST_MODEL_QWEN) at a GGUF file to render the
 # figure from real activations.
-model_path <- Sys.getenv("REBIRTH_DEMO_MODEL", Sys.getenv("REBIRTH_TEST_MODEL_QWEN", ""))
+model_path <- Sys.getenv("RELM_DEMO_MODEL", Sys.getenv("RELM_TEST_MODEL_QWEN", ""))
 have_model <- nzchar(model_path) && file.exists(model_path)
 have_glmnet <- requireNamespace("glmnet", quietly = TRUE)
 run_real <- have_model && have_glmnet
@@ -107,7 +107,7 @@ prompts) and read its honest out-of-fold AUC.
 ```{r}
 #| label: probe-real
 #| eval: !expr run_real
-library(rebirth)
+library(relm)
 m <- llm(model_path)
 tr <- llm_trace(m, train, positions = "last", components = "residual")
 

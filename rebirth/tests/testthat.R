@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(rebirth)
+library(relm)
 
-test_check("rebirth")
+test_check("relm")

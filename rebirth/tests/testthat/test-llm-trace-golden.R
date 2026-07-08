@@ -9,13 +9,13 @@
 #
 # NOTE on attn_out (D-014): the reference also captures self_attn.o_proj but does
 # NOT commit/compare it, because llm_trace does not observe attn_out on qwen2 (it
-# names only the pre-projection kqv_out) and raises rebirth_error_trace. That honest
+# names only the pre-projection kqv_out) and raises relm_error_trace. That honest
 # error is asserted by an existing [MODEL] test in test-llm-trace.R; it is not
 # duplicated here.
 #
 # What runs where (rule 8e):
 #   * "golden fixture is well-formed" needs no model -> per-commit CI (R CMD check).
-#   * The numerical comparison is [MODEL]-gated on REBIRTH_TEST_MODEL_QWEN (a local
+#   * The numerical comparison is [MODEL]-gated on RELM_TEST_MODEL_QWEN (a local
 #     Qwen2.5-0.5B GGUF, e.g. the Q8_0 CI pin). It runs on the founder's Mac /
 #     nightly and NEVER downloads a model.
 #
@@ -99,10 +99,10 @@ trace_golden_gate <- function(eng, gol) {
 }
 
 qwen_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
   p
 }
@@ -122,7 +122,7 @@ read_golden <- function(path) {
 }
 
 # One (layer, component) slice as a [n_prompts x n_embd] matrix, rows in
-# (prompt, last-position) order -- matching as.matrix.rebirth_trace's row order.
+# (prompt, last-position) order -- matching as.matrix.relm_trace's row order.
 # li0/ci0 are 0-based; the blob is C-order [layer, component, prompt, neuron].
 golden_slice <- function(v, li0, ci0) {
   block <- GOLDEN_N_PROMPTS * GOLDEN_N_EMBD
@@ -156,7 +156,7 @@ test_that("the committed HF activation golden fixture is well-formed and matches
 
 # --- model-free mutation test: the gate has teeth (no model; per-commit CI) --
 # This is the WP6b mutation-test acceptance. It runs in per-commit CI (R CMD check):
-# it reads ONLY the committed golden blob, sets no REBIRTH_TEST_MODEL_QWEN and loads
+# it reads ONLY the committed golden blob, sets no RELM_TEST_MODEL_QWEN and loads
 # no model (rule 8e). It locks in the non-gameability the [MODEL] test can only show
 # with a real model (D-018): feed a DELIBERATELY MUTATED slice through the SAME
 # trace_golden_gate() the [MODEL] test uses and prove the gate REJECTS it -- satisfying
@@ -258,7 +258,7 @@ test_that("llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8
   skip_if_not(
     identical(m$architecture, "qwen2") && m$hidden_size == GOLDEN_N_EMBD &&
       m$layers == GOLDEN_N_LAYERS,
-    "REBIRTH_TEST_MODEL_QWEN is not the Qwen2.5-0.5B the golden was built from"
+    "RELM_TEST_MODEL_QWEN is not the Qwen2.5-0.5B the golden was built from"
   )
 
   # ---- alignment guard (audit L-7): llm_trace must tokenize exactly as the HF
@@ -277,7 +277,7 @@ test_that("llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8
     layers = seq_len(GOLDEN_N_LAYERS), positions = "last",
     components = GOLDEN_COMPONENTS, spill = FALSE
   )
-  expect_s3_class(tr, "rebirth_trace")
+  expect_s3_class(tr, "relm_trace")
   expect_setequal(unique(tr$component), GOLDEN_COMPONENTS)
 
   # ---- alignment guard: the single captured token_pos per prompt is its LAST

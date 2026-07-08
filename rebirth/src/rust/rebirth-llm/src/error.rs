@@ -9,7 +9,7 @@ use std::fmt;
 
 /// A recoverable engine error with the structured fields the R layer surfaces.
 ///
-/// Each variant maps 1:1 onto a `rebirth_error_*` R condition class (see
+/// Each variant maps 1:1 onto a `relm_error_*` R condition class (see
 /// [`RebirthError::class`]). The fields are exactly what the corresponding R
 /// condition carries so callers — and coding models — can branch on them.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -74,20 +74,20 @@ pub enum RebirthError {
 
 impl RebirthError {
     /// The specific R condition class for this error (the leaf of the
-    /// `c(<specific>, "rebirth_error", "error", "condition")` hierarchy).
+    /// `c(<specific>, "relm_error", "error", "condition")` hierarchy).
     pub fn class(&self) -> &'static str {
         match self {
-            RebirthError::ModelLoad { .. } => "rebirth_error_model_load",
-            RebirthError::Backend { .. } => "rebirth_error_backend",
-            RebirthError::Closed => "rebirth_error_closed",
-            RebirthError::Tokenize { .. } => "rebirth_error_tokenize",
-            RebirthError::Generation { .. } => "rebirth_error_generation",
-            RebirthError::ContextOverflow { .. } => "rebirth_error_context_overflow",
-            RebirthError::Embed { .. } => "rebirth_error_embed",
-            RebirthError::Trace { .. } => "rebirth_error_trace",
-            RebirthError::Intervention { .. } => "rebirth_error_intervention",
-            RebirthError::Oom { .. } => "rebirth_error_oom",
-            RebirthError::Internal { .. } => "rebirth_error_internal",
+            RebirthError::ModelLoad { .. } => "relm_error_model_load",
+            RebirthError::Backend { .. } => "relm_error_backend",
+            RebirthError::Closed => "relm_error_closed",
+            RebirthError::Tokenize { .. } => "relm_error_tokenize",
+            RebirthError::Generation { .. } => "relm_error_generation",
+            RebirthError::ContextOverflow { .. } => "relm_error_context_overflow",
+            RebirthError::Embed { .. } => "relm_error_embed",
+            RebirthError::Trace { .. } => "relm_error_trace",
+            RebirthError::Intervention { .. } => "relm_error_intervention",
+            RebirthError::Oom { .. } => "relm_error_oom",
+            RebirthError::Internal { .. } => "relm_error_internal",
         }
     }
 }
@@ -159,13 +159,13 @@ impl fmt::Display for RebirthError {
                 f,
                 "This trace would need about {} in memory, over the {} budget. {suggestion} \
                  Or set spill = TRUE to stream it to disk, or raise \
-                 options(rebirth.trace_budget=).",
+                 options(relm.trace_budget=).",
                 human_bytes(*estimate_bytes),
                 human_bytes(*budget_bytes)
             ),
             RebirthError::Internal { context } => write!(
                 f,
-                "Internal error in the rebirth engine: {context}. \
+                "Internal error in the relm engine: {context}. \
                  This is a bug; please report it with the steps to reproduce."
             ),
         }

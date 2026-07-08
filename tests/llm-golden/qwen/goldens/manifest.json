@@ -212,7 +212,7 @@
     23.800113677978516,
     52.001731872558594
   ],
-  "attn_out_note": "attn_out (self_attn.o_proj output, post-projection, D-014) is CAPTURED and validated via residual_identity but is NOT written to the golden and NOT compared: llm_trace does not observe attn_out on qwen2 (it names only the pre-projection kqv_out), raising rebirth_error_trace. See the module docstring and test-llm-trace.R.",
+  "attn_out_note": "attn_out (self_attn.o_proj output, post-projection, D-014) is CAPTURED and validated via residual_identity but is NOT written to the golden and NOT compared: llm_trace does not observe attn_out on qwen2 (it names only the pre-projection kqv_out), raising relm_error_trace. See the module docstring and test-llm-trace.R.",
   "per_layer_maxabs_attn_out_reference_only": [
     0.4631578326225281,
     1.3447149991989136,
@@ -239,5 +239,5 @@
     3.3651251792907715,
     11.559545516967773
   ],
-  "tolerance_note": "The R comparison (test-llm-trace-golden.R) compares a Q8_0 GGUF via llm_trace against this fp32 reference: expect looser than the synthetic 1e-2 (quantization + kernel order). The test states the observed max |\u0394| per component and the per-layer rank correlation, and runs [MODEL]-gated on REBIRTH_TEST_MODEL_QWEN (founder's Mac / nightly)."
+  "tolerance_note": "The R comparison (test-llm-trace-golden.R) compares a Q8_0 GGUF via llm_trace against this fp32 reference: expect looser than the synthetic 1e-2 (quantization + kernel order). The test states the observed max |\u0394| per component and the per-layer rank correlation, and runs [MODEL]-gated on RELM_TEST_MODEL_QWEN (founder's Mac / nightly)."
 }

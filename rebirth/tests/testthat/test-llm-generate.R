@@ -1,7 +1,7 @@
 # WP2: llm_generate(). Argument validation happens in R before the engine, so it
 # runs in CI on the in-repo synthetic model (which is a valid open handle even
 # though it has no tokenizer). Actual text generation needs a real tokenizer and
-# chat template, so it is [MODEL]-gated on REBIRTH_TEST_MODEL_QWEN.
+# chat template, so it is [MODEL]-gated on RELM_TEST_MODEL_QWEN.
 
 synthetic_model_path <- function() {
   p <- testthat::test_path("fixtures", "synthetic-llama-2l.gguf")
@@ -10,10 +10,10 @@ synthetic_model_path <- function() {
 }
 
 qwen_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
   p
 }
@@ -21,50 +21,50 @@ qwen_model_path <- function() {
 # --- argument validation (before the engine; runs in CI) --------------------
 
 test_that("llm_generate() rejects a non-llm handle", {
-  expect_error(llm_generate(42, "hi"), class = "rebirth_error_argument")
+  expect_error(llm_generate(42, "hi"), class = "relm_error_argument")
 })
 
 test_that("llm_generate() validates its arguments", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
 
-  expect_error(llm_generate(m, character(0)), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, NA_character_), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, 42), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", max_tokens = 0), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", max_tokens = 1.5), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", max_tokens = c(1L, 2L)), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", temperature = -1), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", temperature = NA_real_), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", top_p = 0), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", top_p = 1.5), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", chat = NA), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", chat = "yes"), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", stop = 42), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", stop = NA_character_), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", seed = -1), class = "rebirth_error_argument")
-  expect_error(llm_generate(m, "hi", seed = 1.5), class = "rebirth_error_argument")
+  expect_error(llm_generate(m, character(0)), class = "relm_error_argument")
+  expect_error(llm_generate(m, NA_character_), class = "relm_error_argument")
+  expect_error(llm_generate(m, 42), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", max_tokens = 0), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", max_tokens = 1.5), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", max_tokens = c(1L, 2L)), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", temperature = -1), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", temperature = NA_real_), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", top_p = 0), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", top_p = 1.5), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", chat = NA), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", chat = "yes"), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", stop = 42), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", stop = NA_character_), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", seed = -1), class = "relm_error_argument")
+  expect_error(llm_generate(m, "hi", seed = 1.5), class = "relm_error_argument")
 
   # the offending argument is named in a structured field
   cnd <- tryCatch(llm_generate(m, "hi", max_tokens = 0), condition = function(c) c)
   expect_identical(cnd$argument, "max_tokens")
 })
 
-test_that("llm_generate() on a tokenizer-less model raises rebirth_error_tokenize", {
+test_that("llm_generate() on a tokenizer-less model raises relm_error_tokenize", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
   # Arguments are valid; the synthetic model simply has no tokenizer, so the
   # engine reports it as a classed condition rather than crashing.
   expect_error(
     llm_generate(m, "hello", max_tokens = 4, chat = FALSE),
-    class = "rebirth_error_tokenize"
+    class = "relm_error_tokenize"
   )
 })
 
 test_that("llm_generate() rejects a closed handle", {
   m <- llm(synthetic_model_path())
   close(m)
-  expect_error(llm_generate(m, "hi"), class = "rebirth_error_closed")
+  expect_error(llm_generate(m, "hi"), class = "relm_error_closed")
 })
 
 # --- [MODEL] real-model generation (Qwen: tokenizer + chatml template) -------
@@ -136,7 +136,7 @@ test_that("a prompt longer than the batch size still generates (chunked decode)"
   expect_true(nzchar(out[[1]]))
 })
 
-test_that("an over-long prompt raises rebirth_error_context_overflow", {
+test_that("an over-long prompt raises relm_error_context_overflow", {
   m <- llm(qwen_model_path(), context_length = 64L)
   on.exit(close(m), add = TRUE)
   # llama may enlarge a tiny requested context, so size the prompt against the
@@ -144,7 +144,7 @@ test_that("an over-long prompt raises rebirth_error_context_overflow", {
   long <- paste(rep("word", m$context_length + 50L), collapse = " ")
   expect_error(
     llm_generate(m, long, max_tokens = 4, chat = FALSE),
-    class = "rebirth_error_context_overflow"
+    class = "relm_error_context_overflow"
   )
 })
 
@@ -155,7 +155,7 @@ test_that("chat = TRUE works on a Gemma 4 model via the arch template fallback [
   # applier (its string lacks the `<start_of_turn>` literal the detector keys on),
   # so chat = TRUE used to fail with `llama_chat_apply_template failed (-1)`. The
   # resolver now falls back to the "gemma" builtin for a gemma-arch model. Runs
-  # only on the founder's Mac with a text-only Gemma 4 GGUF (REBIRTH_TEST_MODEL_GEMMA4).
+  # only on the founder's Mac with a text-only Gemma 4 GGUF (RELM_TEST_MODEL_GEMMA4).
   m <- llm(gemma4_model_path())
   on.exit(close(m), add = TRUE)
   skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")

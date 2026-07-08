@@ -1,6 +1,6 @@
 //! WP5 acceptance fixture 2 of 2: ABLATION MEANINGFULLY SHIFTS THE NEXT-TOKEN
 //! DISTRIBUTION (measured as KL divergence). [MODEL]-gated on
-//! REBIRTH_TEST_MODEL_QWEN (docs/wp5-intervention-plan.md sections 7.2/9, Fable-5
+//! RELM_TEST_MODEL_QWEN (docs/wp5-intervention-plan.md sections 7.2/9, Fable-5
 //! addendum #13: the KL honesty fixture is a Rust integration test because
 //! `llm_logits` is not yet an R entry point).
 //!
@@ -88,7 +88,7 @@ const TARGETED_OVER_RANDOM: f64 = 5.0;
 const RANDOM_SEEDS: &[u64] = &[1, 2, 3];
 
 fn qwen_model_path() -> Option<PathBuf> {
-    match std::env::var("REBIRTH_TEST_MODEL_QWEN") {
+    match std::env::var("RELM_TEST_MODEL_QWEN") {
         Ok(p) if !p.is_empty() && Path::new(&p).exists() => Some(PathBuf::from(p)),
         _ => None,
     }
@@ -182,7 +182,7 @@ fn pseudo_random_set(seed: u64, n: usize, k: usize) -> Vec<usize> {
 #[test]
 fn ablation_shifts_next_token_distribution_kl() {
     let Some(path) = qwen_model_path() else {
-        eprintln!("SKIP ablation_shifts_next_token_distribution_kl: REBIRTH_TEST_MODEL_QWEN unset");
+        eprintln!("SKIP ablation_shifts_next_token_distribution_kl: RELM_TEST_MODEL_QWEN unset");
         return;
     };
     let model = load_qwen(path);
@@ -279,7 +279,7 @@ fn ablation_shifts_next_token_distribution_kl() {
 #[ignore = "provenance scan for TARGETED_NEURONS; run explicitly with --ignored"]
 fn calibrate_kl() {
     let Some(path) = qwen_model_path() else {
-        eprintln!("SKIP calibrate_kl: REBIRTH_TEST_MODEL_QWEN unset");
+        eprintln!("SKIP calibrate_kl: RELM_TEST_MODEL_QWEN unset");
         return;
     };
     let model = load_qwen(path);

@@ -1,12 +1,12 @@
-# WP1 Step 8: real-model acceptance. [MODEL]-gated on REBIRTH_TEST_MODEL_QWEN
+# WP1 Step 8: real-model acceptance. [MODEL]-gated on RELM_TEST_MODEL_QWEN
 # pointing at a Qwen2.5-0.5B-Instruct Q8_0 GGUF. Skipped in CI (no model file on
 # the runners) and on CRAN. Values below are that model's published card.
 
 qwen_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
   p
 }

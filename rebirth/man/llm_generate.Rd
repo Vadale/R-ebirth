@@ -65,11 +65,11 @@ and \strong{recorded} — the seed actually used is always returned as
 Generation stops at \code{max_tokens}, at the model's end-of-generation token, or
 as soon as one of the \code{stop} strings appears (the output is truncated just
 before it). A prompt longer than the model's context window raises
-\code{rebirth_error_context_overflow}, whose message states by how much.
+\code{relm_error_context_overflow}, whose message states by how much.
 }
 \examples{
-\dontshow{if (nzchar(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
-m <- llm(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
+m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 llm_generate(m, "In one sentence, what is R?", max_tokens = 40, seed = 1)
 close(m)
 \dontshow{\}) # examplesIf}

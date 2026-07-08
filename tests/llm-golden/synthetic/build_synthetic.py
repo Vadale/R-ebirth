@@ -4,7 +4,7 @@
 Produces ``synthetic-llama-2l.gguf`` next to this script: a tiny, valid,
 download-free ``llama``-architecture model with F32 weights, deterministically
 seeded from ``synthetic_model.CONFIG``. llama.cpp b9726 loads it and
-``rebirth::llm()`` reports its dimensions.
+``relm::llm()`` reports its dimensions.
 
 The tokenizer is ``no_vocab`` (LLAMA_VOCAB_TYPE_NONE): the model carries no real
 tokenizer because the goldens are computed on raw token ids. ``vocab_size`` is

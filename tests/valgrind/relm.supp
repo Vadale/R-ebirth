@@ -8,14 +8,14 @@
 # are already excluded by the job's `--errors-for-leak-kinds=definite,indirect`
 # (reachable/"still reachable"/"possibly lost" do not trip the gate). This file exists
 # for the residual case: a genuinely upstream-internal *definite* loss that is not a
-# rebirth defect and that we choose to suppress with a documented reason.
+# relm defect and that we choose to suppress with a documented reason.
 #
 # DISCIPLINE (owner: test-engineer): keep this file MINIMAL. Every suppression must
 #   1. cite the RustSec/llama.cpp/ggml origin it silences,
 #   2. be scoped by function/object name (never a blanket `...` that could hide a
-#      rebirth-owned leak), and
+#      relm-owned leak), and
 #   3. carry the date + reason it was added.
-# A suppression that could hide a leak on the rebirth intervention path (engine.rs
+# A suppression that could hide a leak on the relm intervention path (engine.rs
 # OwnedContext / intervene.rs / trace.rs frames) is FORBIDDEN — that is exactly what
 # this job is meant to catch.
 #

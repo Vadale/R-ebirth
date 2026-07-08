@@ -1,14 +1,14 @@
 # WP4: llm_trace() activation taps. Written golden-first / TDD: every test below
-# targets the not-yet-implemented `llm_trace()` and the `rebirth_trace` S3
+# targets the not-yet-implemented `llm_trace()` and the `relm_trace` S3
 # methods, so they FAIL now and PASS once the coder implements the approved
 # API-GRAMMAR section 4 surface. Each test names the defect it would catch.
 #
 # What runs where:
 #   * Argument validation, predictive OOM, and the print/summary/as.matrix method
 #     format tests need no engine (a stubbed or a valid open synthetic handle, or
-#     a hand-built rebirth_trace), so they run in per-commit CI.
+#     a hand-built relm_trace), so they run in per-commit CI.
 #   * Real activation values need a real tokenizer + model and are [MODEL]-gated on
-#     REBIRTH_TEST_MODEL_QWEN (run on the founder's hardware / nightly).
+#     RELM_TEST_MODEL_QWEN (run on the founder's hardware / nightly).
 # The synthetic model activations are checked exactly by the Rust de-risking gate
 # (tests/synthetic_trace.rs) against the numpy oracle, not here.
 
@@ -19,15 +19,15 @@ synthetic_model_path <- function() {
 }
 
 qwen_model_path <- function() {
-  p <- path.expand(Sys.getenv("REBIRTH_TEST_MODEL_QWEN"))
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "REBIRTH_TEST_MODEL_QWEN is not set to an existing GGUF file"
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
   )
   p
 }
 
-# A hand-built `rebirth_trace` with the exact 7-column schema and attributes of
+# A hand-built `relm_trace` with the exact 7-column schema and attributes of
 # API-GRAMMAR section 2, so the print/summary/as.matrix contracts can be tested
 # with no engine. Small but non-degenerate: 1 prompt x 2 token positions x
 # 2 layers x 2 components x 4 neurons = 32 rows. Each `value` encodes its own
@@ -68,7 +68,7 @@ make_trace <- function() {
   )
   structure(
     df,
-    class = c("rebirth_trace", "data.frame"),
+    class = c("relm_trace", "data.frame"),
     model = "/models/synthetic-llama-2l.gguf",
     spilled = FALSE,
     spill_files = character(0),
@@ -81,9 +81,9 @@ make_trace <- function() {
 # Guards the in-code fixture itself: if a later edit to make_trace() drifts from
 # the API-GRAMMAR section 2 schema, the method tests below would silently test
 # the wrong shape. This catches that first.
-test_that("the constructed rebirth_trace fixture matches the API-GRAMMAR schema", {
+test_that("the constructed relm_trace fixture matches the API-GRAMMAR schema", {
   x <- make_trace()
-  expect_s3_class(x, "rebirth_trace")
+  expect_s3_class(x, "relm_trace")
   expect_s3_class(x, "data.frame")
   expect_identical(
     names(x),
@@ -106,7 +106,7 @@ test_that("the constructed rebirth_trace fixture matches the API-GRAMMAR schema"
 
 test_that("llm_trace() rejects a non-llm handle", {
   # Defect: forgetting the `m` type guard would send a bad object to the engine.
-  expect_error(llm_trace(42, "hi"), class = "rebirth_error_argument")
+  expect_error(llm_trace(42, "hi"), class = "relm_error_argument")
   cnd <- tryCatch(llm_trace(42, "hi"), condition = function(c) c)
   expect_identical(cnd$argument, "m")
 })
@@ -117,11 +117,11 @@ test_that("llm_trace() validates `prompts`", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
 
-  expect_error(llm_trace(m, 42), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, character(0)), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, NA_character_), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, c("a", NA)), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, c("a", "")), class = "rebirth_error_argument")
+  expect_error(llm_trace(m, 42), class = "relm_error_argument")
+  expect_error(llm_trace(m, character(0)), class = "relm_error_argument")
+  expect_error(llm_trace(m, NA_character_), class = "relm_error_argument")
+  expect_error(llm_trace(m, c("a", NA)), class = "relm_error_argument")
+  expect_error(llm_trace(m, c("a", "")), class = "relm_error_argument")
 
   # The offending argument is named in a structured field (API-GRAMMAR section 6).
   cnd <- tryCatch(llm_trace(m, 42), condition = function(c) c)
@@ -135,12 +135,12 @@ test_that("llm_trace() validates `layers` (type and 1-based range)", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
 
-  expect_error(llm_trace(m, "hi", layers = "one"), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", layers = 0L), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", layers = -1L), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", layers = 1.5), class = "rebirth_error_argument")
+  expect_error(llm_trace(m, "hi", layers = "one"), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", layers = 0L), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", layers = -1L), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", layers = 1.5), class = "relm_error_argument")
   # Out of range: the synthetic model has 2 layers, so 999 cannot be captured.
-  expect_error(llm_trace(m, "hi", layers = 999L), class = "rebirth_error_argument")
+  expect_error(llm_trace(m, "hi", layers = 999L), class = "relm_error_argument")
 
   cnd <- tryCatch(
     llm_trace(m, "hi", layers = "one"),
@@ -155,12 +155,12 @@ test_that("llm_trace() validates `positions`", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
 
-  expect_error(llm_trace(m, "hi", positions = "middle"), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", positions = 0L), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", positions = -2L), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", positions = 1.5), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", positions = NA_integer_), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", positions = c(1L, NA_integer_)), class = "rebirth_error_argument")
+  expect_error(llm_trace(m, "hi", positions = "middle"), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", positions = 0L), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", positions = -2L), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", positions = 1.5), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", positions = NA_integer_), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", positions = c(1L, NA_integer_)), class = "relm_error_argument")
 
   cnd <- tryCatch(
     llm_trace(m, "hi", positions = "middle"),
@@ -187,11 +187,11 @@ test_that("llm_trace() validates `components` (subset of the allowed set)", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
 
-  expect_error(llm_trace(m, "hi", components = "banana"), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", components = c("residual", "banana")), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", components = 1L), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", components = character(0)), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", components = NA_character_), class = "rebirth_error_argument")
+  expect_error(llm_trace(m, "hi", components = "banana"), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", components = c("residual", "banana")), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", components = 1L), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", components = character(0)), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", components = NA_character_), class = "relm_error_argument")
 
   cnd <- tryCatch(
     llm_trace(m, "hi", components = "banana"),
@@ -206,11 +206,11 @@ test_that("llm_trace() validates `spill` and `spill_dir`", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)
 
-  expect_error(llm_trace(m, "hi", spill = "yes"), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", spill = NA), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", spill = c(TRUE, FALSE)), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", spill_dir = 42), class = "rebirth_error_argument")
-  expect_error(llm_trace(m, "hi", spill_dir = c("a", "b")), class = "rebirth_error_argument")
+  expect_error(llm_trace(m, "hi", spill = "yes"), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", spill = NA), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", spill = c(TRUE, FALSE)), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", spill_dir = 42), class = "relm_error_argument")
+  expect_error(llm_trace(m, "hi", spill_dir = c("a", "b")), class = "relm_error_argument")
 
   cnd_spill <- tryCatch(
     llm_trace(m, "hi", spill = "yes"),
@@ -228,20 +228,20 @@ test_that("llm_trace() rejects a closed handle", {
   # Defect: using a freed native handle after close().
   m <- llm(synthetic_model_path())
   close(m)
-  expect_error(llm_trace(m, "hi"), class = "rebirth_error_closed")
+  expect_error(llm_trace(m, "hi"), class = "relm_error_closed")
 })
 
 # --- predictive OOM (no model; runs in CI) ----------------------------------
 
-test_that("llm_trace(spill = FALSE) over budget raises rebirth_error_oom before allocation", {
+test_that("llm_trace(spill = FALSE) over budget raises relm_error_oom before allocation", {
   # ACCEPTANCE (API-GRAMMAR section 4): an over-budget request with spill = FALSE
-  # must raise rebirth_error_oom carrying a numeric `estimate_bytes` field,
+  # must raise relm_error_oom carrying a numeric `estimate_bytes` field,
   # BEFORE any allocation or tokenization -- so it is provable with a stub handle
   # (no native model) and positions = "last" (a length-independent 1-per-prompt
   # estimate). Defect this catches: an OOM that only triggers after the engine
   # has already tried to allocate the full capture (the 16 GB rule's whole point).
   m <- stub_llm() # layers = 24, hidden_size = 896; no native pointer used
-  old <- options(rebirth.trace_budget = 1024) # 1 KB budget
+  old <- options(relm.trace_budget = 1024) # 1 KB budget
   on.exit(options(old), add = TRUE)
 
   cnd <- tryCatch(
@@ -253,7 +253,7 @@ test_that("llm_trace(spill = FALSE) over budget raises rebirth_error_oom before 
     ),
     condition = function(c) c
   )
-  expect_s3_class(cnd, "rebirth_error_oom")
+  expect_s3_class(cnd, "relm_error_oom")
   expect_true(is.numeric(cnd$estimate_bytes))
   expect_length(cnd$estimate_bytes, 1L)
   expect_gt(cnd$estimate_bytes, 1024)
@@ -267,7 +267,7 @@ test_that("the default trace budget is the D-017 materialized-bytes cap (2 GB)",
   # guards against (a) a silent revert to the interim 256 MB stopgap and (b) the
   # pre-D-017 f32-basis 2 GB, which mapped to ~20 GB materialized (the H-1 OOM).
   expect_identical(TRACE_BUDGET_DEFAULT_CAP, 2 * 1024^3)
-  old <- options(rebirth.trace_budget = NULL)
+  old <- options(relm.trace_budget = NULL)
   on.exit(options(old), add = TRUE)
   b <- trace_budget()
   expect_lte(b, TRACE_BUDGET_DEFAULT_CAP) # never exceeds the 2 GB cap
@@ -287,9 +287,9 @@ test_that("TRACE_MATERIALIZED_EXPANSION matches the engine's pinned factor (twin
   expect_identical(TRACE_MATERIALIZED_EXPANSION, 11L)
 })
 
-# --- rebirth_trace S3 methods (constructed object; runs in CI) --------------
+# --- relm_trace S3 methods (constructed object; runs in CI) --------------
 
-test_that("print.rebirth_trace shows dims + capture spec and never dumps the data", {
+test_that("print.relm_trace shows dims + capture spec and never dumps the data", {
   # ACCEPTANCE (API-GRAMMAR section 2): print is a one-screen digest (dimensions +
   # capture spec), never the rows. Defect this catches: falling through to
   # print.data.frame, which would dump every activation (and blow the console /
@@ -313,7 +313,7 @@ test_that("print.rebirth_trace shows dims + capture spec and never dumps the dat
   expect_false(any(grepl(x$token[[1]], out, fixed = TRUE)))
 })
 
-test_that("summary.rebirth_trace digests per (layer, component): n and mean|value|", {
+test_that("summary.relm_trace digests per (layer, component): n and mean|value|", {
   # ACCEPTANCE (API-GRAMMAR section 2): summary reports, per (layer, component),
   # the count n and the mean |value|. Defect this catches: falling through to
   # summary.data.frame (per-column Min/Median/Max), which neither groups by
@@ -352,7 +352,7 @@ test_that("summary.rebirth_trace digests per (layer, component): n and mean|valu
   }
 })
 
-test_that("as.matrix.rebirth_trace extracts one (layer, component) slice as a matrix", {
+test_that("as.matrix.relm_trace extracts one (layer, component) slice as a matrix", {
   # ACCEPTANCE (API-GRAMMAR section 4): as.matrix(x, layer, component) returns one
   # slice -- one row per (prompt_id, token_pos), one column per neuron, rownames
   # "<prompt_id>.<token_pos>". Defect this catches: falling through to
@@ -397,11 +397,11 @@ test_that("as.matrix.rebirth_trace extracts one (layer, component) slice as a ma
   expect_error(as.matrix(x))
 })
 
-test_that("as.matrix.rebirth_trace fails loud on a mis-shaped (duplicated) slice (M-1)", {
+test_that("as.matrix.relm_trace fails loud on a mis-shaped (duplicated) slice (M-1)", {
   # Defect (M-1): duplicate (prompt_id, token_pos, neuron) rows in a slice would make
   # matrix(byrow = TRUE) silently recycle/interleave values under correct row and
   # column labels -- a wrong matrix, no error. The structural invariant
-  # nrow(sub) == n_points * n_neuron must instead raise a classed rebirth_error_trace,
+  # nrow(sub) == n_points * n_neuron must instead raise a classed relm_error_trace,
   # catching any duplication source (a future one, or a defeated upstream dedupe).
   x <- make_trace()
   base <- as.data.frame(x)
@@ -410,7 +410,7 @@ test_that("as.matrix.rebirth_trace fails loud on a mis-shaped (duplicated) slice
   slice <- base[base$layer == 1L & base$component == "residual", ]
   dup <- structure(
     rbind(base, slice),
-    class = c("rebirth_trace", "data.frame"),
+    class = c("relm_trace", "data.frame"),
     model = attr(x, "model"),
     spilled = FALSE,
     spill_files = character(0),
@@ -418,7 +418,7 @@ test_that("as.matrix.rebirth_trace fails loud on a mis-shaped (duplicated) slice
   )
   expect_error(
     as.matrix(dup, layer = 1L, component = "residual"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
   # The guard is slice-local: an untouched (layer, component) slice still works.
   clean <- as.matrix(dup, layer = 2L, component = "attn_out")
@@ -428,10 +428,10 @@ test_that("as.matrix.rebirth_trace fails loud on a mis-shaped (duplicated) slice
 
 # --- [MODEL] real-model trace (Qwen: tokenizer + hidden_size = 896) ----------
 
-test_that("llm_trace() on a real model returns the rebirth_trace schema and slices [MODEL]", {
+test_that("llm_trace() on a real model returns the relm_trace schema and slices [MODEL]", {
   # ACCEPTANCE: a real forward-pass trace yields the exact 7-column schema with
   # the requested layers/components, and as.matrix() returns a hidden_size-wide
-  # slice. Skipped in CI; run on the founder's hardware with REBIRTH_TEST_MODEL_QWEN.
+  # slice. Skipped in CI; run on the founder's hardware with RELM_TEST_MODEL_QWEN.
   m <- llm(qwen_model_path())
   on.exit(close(m), add = TRUE)
 
@@ -441,7 +441,7 @@ test_that("llm_trace() on a real model returns the rebirth_trace schema and slic
     components = c("residual", "mlp_out"), spill = FALSE
   )
 
-  expect_s3_class(tr, "rebirth_trace")
+  expect_s3_class(tr, "relm_trace")
   expect_identical(
     names(tr),
     c("prompt_id", "token_pos", "token", "layer", "component", "neuron", "value")
@@ -462,13 +462,13 @@ test_that("llm_trace() on a real model returns the rebirth_trace schema and slic
 test_that("llm_trace() attn_out on a qwen2 model is a classed, honest error [MODEL]", {
   # D-014: attn_out is the post-projection attention output, which qwen2 does not
   # name (it exposes only the pre-projection kqv_out, a different quantity, not even
-  # hidden_size wide on gemma3). The engine raises rebirth_error_trace naming the
+  # hidden_size wide on gemma3). The engine raises relm_error_trace naming the
   # available components, never silently substituting the pre-Wo tensor.
   m <- llm(qwen_model_path())
   on.exit(close(m), add = TRUE)
   expect_error(
     llm_trace(m, "hello", components = "attn_out"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })
 
@@ -477,7 +477,7 @@ test_that("llm_trace() attn_out on a qwen2 model is a classed, honest error [MOD
 test_that("llm_trace() residual on a Gemma 4 model returns plausible activations [MODEL]", {
   # WP7.5a: gemma4 names `l_out-<il>` on every layer (outside its dense/MoE branch,
   # gemma4.cpp:398), so residual tracing is uniform. Runs on the founder's Mac with
-  # REBIRTH_TEST_MODEL_GEMMA4.
+  # RELM_TEST_MODEL_GEMMA4.
   m <- llm(gemma4_model_path())
   on.exit(close(m), add = TRUE)
   skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")
@@ -486,7 +486,7 @@ test_that("llm_trace() residual on a Gemma 4 model returns plausible activations
   tr <- llm_trace(m, "The cat sat on the mat.",
     layers = layers, positions = "last", components = "residual", spill = FALSE
   )
-  expect_s3_class(tr, "rebirth_trace")
+  expect_s3_class(tr, "relm_trace")
   expect_setequal(unique(tr$component), "residual")
   expect_setequal(unique(tr$layer), layers)
   # positions = "last" on one prompt => exactly one (layer, position) group per
@@ -506,35 +506,35 @@ test_that("llm_trace() attn_out on a Gemma 4 model is a classed error (name coll
   # ADVERSARIAL (D-021): gemma4 NAMES an `attn_out-<il>` tensor (gemma4.cpp:288) but it
   # is the mid-block residual sum ggml_add(attn_post_norm(attn), inpL), NOT the post-Wo
   # attention output D-014 defines. The matcher must NOT capture it: llm_trace raises
-  # rebirth_error_trace, never a silently mislabeled tensor. (Also locked model-free by
+  # relm_error_trace, never a silently mislabeled tensor. (Also locked model-free by
   # the Rust unit test gemma4_attn_out_name_collision_is_rejected; this is end-to-end.)
   m <- llm(gemma4_model_path())
   on.exit(close(m), add = TRUE)
   skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")
   expect_error(
     llm_trace(m, "hello", components = "attn_out"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })
 
 test_that("llm_trace() mlp_out on a Gemma 4 model is a classed error (MoE layers) [MODEL]", {
   # WP7.5a: gemma4 names `ffn_out` only on DENSE layers (gemma4.cpp:357); MoE layers
   # name `ffn_moe_combined` (gemma4.cpp:344), so matching `ffn_out` would silently miss
-  # layers. mlp_out therefore raises rebirth_error_trace rather than returning a partial
+  # layers. mlp_out therefore raises relm_error_trace rather than returning a partial
   # capture.
   m <- llm(gemma4_model_path())
   on.exit(close(m), add = TRUE)
   skip_if_not(identical(m$architecture, "gemma4"), "model is not a gemma4 GGUF")
   expect_error(
     llm_trace(m, "hello", components = "mlp_out"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })
 
 test_that("llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [MODEL]", {
   # WP7.5a: qwen3 names `l_out-<il>` (residual, qwen3.cpp:138) and `ffn_out-<il>`
   # (mlp_out, qwen3.cpp:133); attn_out is unavailable (only the pre-Wo kqv_out is named,
-  # as on qwen2). Runs with REBIRTH_TEST_MODEL_QWEN3.
+  # as on qwen2). Runs with RELM_TEST_MODEL_QWEN3.
   m <- llm(qwen3_model_path())
   on.exit(close(m), add = TRUE)
   skip_if_not(identical(m$architecture, "qwen3"), "model is not a qwen3 GGUF")
@@ -543,7 +543,7 @@ test_that("llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [
     layers = 1:3, positions = "last",
     components = c("residual", "mlp_out"), spill = FALSE
   )
-  expect_s3_class(tr, "rebirth_trace")
+  expect_s3_class(tr, "relm_trace")
   expect_setequal(unique(tr$component), c("residual", "mlp_out"))
   expect_setequal(unique(tr$layer), 1:3)
   expect_true(all(is.finite(tr$value)))
@@ -551,14 +551,14 @@ test_that("llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [
   # attn_out is not observable on qwen3 (D-014) -> classed error, never a substitute.
   expect_error(
     llm_trace(m, "hello", components = "attn_out"),
-    class = "rebirth_error_trace"
+    class = "relm_error_trace"
   )
 })
 
 test_that("llm_trace() residual on a Qwen 3.5 model returns plausible activations [MODEL]", {
   # WP7.5a: qwen35 is a hybrid (linear + full attention) decoder that still names
   # `l_out-<il>` on every layer (qwen35.cpp:202), so residual tracing is uniform. Runs
-  # with REBIRTH_TEST_MODEL_QWEN35.
+  # with RELM_TEST_MODEL_QWEN35.
   m <- llm(qwen35_model_path())
   on.exit(close(m), add = TRUE)
   skip_if_not(identical(m$architecture, "qwen35"), "model is not a qwen35 GGUF")
@@ -566,7 +566,7 @@ test_that("llm_trace() residual on a Qwen 3.5 model returns plausible activation
   tr <- llm_trace(m, "The cat sat.",
     layers = 1:3, positions = "last", components = "residual", spill = FALSE
   )
-  expect_s3_class(tr, "rebirth_trace")
+  expect_s3_class(tr, "relm_trace")
   expect_setequal(unique(tr$layer), 1:3)
   expect_true(all(is.finite(tr$value)))
   expect_gt(stats::sd(tr$value), 0)
@@ -578,7 +578,7 @@ test_that("llm_trace() warns when explicit positions are recycled across differi
   # per prompt, "with a warning if lengths differ". A position valid for a long
   # prompt but out of range for a short one is dropped for the short one, which must
   # warn (once). Keyword positions ("last"/"all") never warn. Skipped in CI (needs a
-  # tokenizer + model); runs on the founder's hardware with REBIRTH_TEST_MODEL_QWEN.
+  # tokenizer + model); runs on the founder's hardware with RELM_TEST_MODEL_QWEN.
   m <- llm(qwen_model_path())
   on.exit(close(m), add = TRUE)
 

@@ -1176,7 +1176,7 @@ mod tests {
     fn apply_template_rejects_an_unsupported_template() {
         let messages = vec![ChatMessage::user("hi")];
         // A template string llama.cpp does not recognize returns an error, not a
-        // panic — the boundary maps it to a classed rebirth_error_generation.
+        // panic — the boundary maps it to a classed relm_error_generation.
         let result = apply_template("not-a-real-template-xyz", &messages, true);
         assert!(result.is_err());
     }
