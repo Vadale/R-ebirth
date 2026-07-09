@@ -99,6 +99,16 @@ fn main() {
             }
         });
         cfg.define("CMAKE_OSX_DEPLOYMENT_TARGET", &deployment_target);
+
+        // Pin the vendored llama.cpp CMake build to the target arch when cross
+        // compiling. r-universe builds the macOS x86_64 (Intel) binary on an arm64
+        // runner; without this CMake defaults to the host arch (arm64), so the
+        // objects are arm64 and the x86_64 link fails with "Undefined symbols for
+        // architecture x86_64". Set it only for x86_64 so the native arm64 build
+        // (the primary target) stays byte-for-byte unchanged.
+        if target_arch == "x86_64" {
+            cfg.define("CMAKE_OSX_ARCHITECTURES", "x86_64");
+        }
     }
 
     let dst = cfg.build();
@@ -168,11 +178,17 @@ fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
             println!("cargo:rustc-link-lib=static={stem}");
         }
         println!("cargo:rustc-link-lib=dylib=c++");
-    }
 
-    if metal {
-        for framework in ["Metal", "MetalKit", "Foundation", "Accelerate"] {
-            println!("cargo:rustc-link-lib=framework={framework}");
+        // ggml's CPU backend links Accelerate (vDSP / BLAS) on every macOS arch, so
+        // it is needed for both arm64 and x86_64 — the cross-compiled x86_64
+        // `document` bin otherwise fails to link with undefined `_vDSP_*` symbols.
+        // Metal and its Obj-C dependencies are only pulled in by the Metal backend
+        // (macOS arm64).
+        println!("cargo:rustc-link-lib=framework=Accelerate");
+        if metal {
+            for framework in ["Metal", "MetalKit", "Foundation"] {
+                println!("cargo:rustc-link-lib=framework={framework}");
+            }
         }
     }
 }
