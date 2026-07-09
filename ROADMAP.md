@@ -71,7 +71,7 @@ GitHub repo (public recommended from first tag); r-universe org (automatic macOS
 | **0** | Foundations | models load on the Mac; CI-green skeleton |
 | **1** | Generation & embeddings | reproducible generation; embeddings usable (topic modelling already possible via CRAN) |
 | **2** | The anatomy lab | traces, steering, ablation — numerically validated |
-| **3** | First public release | `v0.1.0` on r-universe, stranger-installable |
+| **3** | First public release ✅ | `v0.1.0` (`relm`) on r-universe, stranger-installable |
 | **4** | Probe API *(thesis pilot parked)* | `llm_probe()` formula interface working; thesis WP-T parked until assignment (≈ Q1–Q2 2027) |
 | **5** | Async & token streaming | console never blocks; token streams as data |
 | **6** | Live introspection & guardrails | per-token activation monitoring + intervention hooks during generation |
@@ -82,11 +82,11 @@ GitHub repo (public recommended from first tag); r-universe org (automatic macOS
 | **11** | Multimodal models | vision GGUF (mmproj): image+text locally — radiology images unlocked |
 | **12** | Fine-tuning | `llm_finetune()` (LoRA/QLoRA on small models) |
 | **13** | Alignment & RL | preference optimization (DPO-class) on small models, with evals |
-| **14** | Topics & SAE analysis | `rebirth.topics` package; pretrained-SAE features on traces |
+| **14** | Topics & SAE analysis | `relm.topics` package; pretrained-SAE features on traces |
 | **15** | Model export & interop | ONNX export for classical R models; adapter export — "write in R, deploy anywhere" |
 | **16** | Real-time data streams | general tidy-streaming: the "infinite data.frame" on live sources |
 | **17** | Fast data layer | Arrow-native verbs; `reb_compile()`; public benchmarks |
-| **18** | Science verticals (`rebirth.bio`) | native protein/DNA LM inference + **tidy mech-interp of protein LMs** + residue-graphs + zero-shot variant effect — the R answer to graphein/ESM |
+| **18** | Science verticals (`relm.bio`) | native protein/DNA LM inference + **tidy mech-interp of protein LMs** + residue-graphs + zero-shot variant effect — the R answer to graphein/ESM |
 
 **Team track (deliberately last — requires more than one person):**
 
@@ -142,7 +142,7 @@ Tap patch on vendored llama.cpp (residual stream post-block, attention out, MLP 
 Activation goldens; nightly 0.5B tolerance runs; the **mutation test** (injected off-by-one layer index must make the harness fail).
 *Acceptance:* mutation test fails loudly; golden regeneration documented.
 
-### Phase 3 — First public release — v0.1.0, text-only (~2 weeks + WP7.5 ≈ 4 weeks)
+### Phase 3 — First public release — v0.1.0, text-only ✅ SHIPPED 2026-07-09 (~2 weeks + WP7.5 ≈ 4 weeks)
 
 > **WP7.5a/b (D-021 / D-022) are inserted between WP7 and WP8** — modern models usable as text + richer demo analysis/viz. **Vision is deferred to v0.2.0 / Phase 11 (D-023)**; v0.1.0 ships text-only.
 
@@ -151,14 +151,14 @@ Demo A "anatomy lab" (contrast set → trace → `prcomp` → per-layer `glmnet`
 *Acceptance:* Demos A and B each < 10 min on the Mac mini from RStudio; pinned seeds ⇒ identical outputs; Demo A nightly in CI. **Demo C does not gate Phase 3** — it ships if an encoder loads cleanly (makes the biology promise runnable at first release, per D-010), otherwise it becomes the seed of Phase 18.
 
 **WP7.5a — Modern models as text (D-021).** ✅ merged (PRs #19, #20). Day-1 spike (founder's Mac, Metal): pin text-only instruct GGUFs (Gemma 4 up to 12B, Qwen 3.5 up to ~9B, Qwen 3 mid-sizes; Gemma-3-4B text-only as control) → support matrix (`docs/wp7.5-model-matrix.md`, SHA256/license/RSS/tokens-s); `llm_trace` per-arch matcher extension (qwen3/qwen35/gemma4, with the adversarial test rejecting gemma4's same-named `attn_out` collision); a **runtime sentinel intervention probe** replacing the D-016 hard allow-list; WP5 `[MODEL]` valence/KL fixtures on the new families. Engine untouched in the default path; the vendor bump is conditional (trigger-gated, 3-day timebox, revertible).
-*Acceptance:* matrix committed; a text-only Gemma 4 E4B GGUF loads; per-arch trace `[MODEL]` tests + the gemma4-`attn_out` rejection test; the sentinel probe passes on synthetic + all pinned decoders and rejects a no-choke-point case with `rebirth_error_intervention`; original-handle bit-for-bit reversal still green; `cargo test` + `R CMD check` green.
+*Acceptance:* matrix committed; a text-only Gemma 4 E4B GGUF loads; per-arch trace `[MODEL]` tests + the gemma4-`attn_out` rejection test; the sentinel probe passes on synthetic + all pinned decoders and rejects a no-choke-point case with `relm_error_intervention`; original-handle bit-for-bit reversal still green; `cargo test` + `R CMD check` green.
 
 **WP7.5b — Demo analysis & visualization deepening (D-022).** ✅ merged (PRs #21–#23). Five Demo A mech-interp analyses (A1 multi-concept overlay, A2 token×layer heatmap, A3 steering dose–response, A4 targeted-vs-random ablation curve, A5 direction geometry) + Demo B depth (silhouette, log-odds top terms, inter-topic dendrogram) + a base-R visual-polish pass. Behind `extended = TRUE`; **zero new dependencies**.
 *Acceptance:* extended runs ≤ +10 min per demo on the Mac + nightly on 0.5B; fixed seeds ⇒ byte-identical numeric re-runs; extended `demo_utils_selftest()` green per commit; A4 random control near-null while targeted discriminates; vignettes render model-free; no `DESCRIPTION` diff.
 
-**WP8 — Docs + release.** WP8a `llm_download()` ✅ merged (PR #24); WP8b docs (README + pkgdown + NEWS + version bump) in progress; WP8c (create the r-universe org + tag `v0.1.0`) = founder gate.
+**WP8 — Docs + release.** ✅ **COMPLETE — v0.1.0 shipped.** WP8a `llm_download()` (PR #24); WP8b docs — README/pkgdown/NEWS + version bump (PR #25), getting-started (#26), real demo figures (#28); WP8c — rename `rebirth`→`relm` (#27, D-025) + r-universe registry `Vadale/vadale.r-universe.dev` + `v0.1.0` tagged & GitHub release; all merged and verified installing on the founder's M4.
 roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download()` helper for pinned models** (checksums verified); pkgdown site; r-universe live; `NEWS.md`; tag **`v0.1.0`**. Demo default = **Gemma 4 E4B (as text)**, showcased; the **license-clean reproduction path + CI stay on Qwen (Apache-2.0)** (D-023).
-*Acceptance:* `install.packages("rebirth", repos = <r-universe>)` works on clean R 4.6.1; a stranger runs Demo B from the README alone on the Apache-2.0 default (Qwen).
+*Acceptance:* `install.packages("relm", repos = <r-universe>)` works on clean R 4.6.1; a stranger runs Demo B from the README alone on the Apache-2.0 default (Qwen).
 
 > **= `SOLO-PHASE-PLAN.md` Phase 0 exit checklist.**
 
@@ -175,7 +175,7 @@ roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download(
 ### Phase 6 — Live introspection & guardrails *(new — from the founding vision)*
 
 **Goal:** watch and act on the model's internals *while it generates* — the founding document's "live guardrail," delivered as research instrumentation.
-**Scope:** per-token callbacks receiving token, logit summaries, and selected activations (`llm_generate(..., on_token = function(state) ...)`); streaming traces (windowed `rebirth_trace` chunks during generation, spill-aware); intervention hooks callable from the R callback (abort, adjust steering coefficient mid-generation); documented overhead budget.
+**Scope:** per-token callbacks receiving token, logit summaries, and selected activations (`llm_generate(..., on_token = function(state) ...)`); streaming traces (windowed `relm_trace` chunks during generation, spill-aware); intervention hooks callable from the R callback (abort, adjust steering coefficient mid-generation); documented overhead budget.
 **Exit:** demo — live monitoring of a concept-direction score token-by-token during generation; a guardrail *research demo* that halts generation when a probe score crosses a threshold. **Framing rule applies:** the deliverable is the *mechanism*; detection reliability is an open research question, never a safety guarantee.
 
 ### Phase 7 — Types & serving
@@ -207,7 +207,7 @@ roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download(
 **Goal:** preference optimization for small models. **Scope:** DPO/ORPO-class training on top of the Phase 12 backend; reward/eval loops in R; consistent formula-flavored interface. Datacenter PPO/RLHF explicitly out (header list). **Exit:** documented preference-tuning run of a 1–3B model with before/after evals.
 
 ### Phase 14 — Topics & SAE analysis *(where topic modelling and interpretability merge)*
-**Goal:** productize the analysis layers, and close the loop the founding vision asked for — interpretability *inside* topic modelling. **Scope:** `rebirth.topics` satellite (Demo-B pipeline as one function + options); pretrained sparse-autoencoder application to traces (`llm_trace() |> sae_features()`) using public SAE releases; **topic × interpretability integration** — the same local model that embeds documents for clustering also *explains* the clusters, so a topic can be characterized not only by its label (`llm_generate`) but by the internal concepts/SAE features that drive its documents (`llm_trace`/`llm_probe`). **Exit:** topics package on r-universe; SAE-features demo reproducing a known finding on a public SAE; a topic map whose clusters are annotated with the interpretable features that distinguish them.
+**Goal:** productize the analysis layers, and close the loop the founding vision asked for — interpretability *inside* topic modelling. **Scope:** `relm.topics` satellite (Demo-B pipeline as one function + options); pretrained sparse-autoencoder application to traces (`llm_trace() |> sae_features()`) using public SAE releases; **topic × interpretability integration** — the same local model that embeds documents for clustering also *explains* the clusters, so a topic can be characterized not only by its label (`llm_generate`) but by the internal concepts/SAE features that drive its documents (`llm_trace`/`llm_probe`). **Exit:** topics package on r-universe; SAE-features demo reproducing a known finding on a public SAE; a topic map whose clusters are annotated with the interpretable features that distinguish them.
 > **Note:** the *basic* integration (embed + label with one model, probe why documents group) is already possible from Phases 2–4; Phase 14 productizes and deepens it with SAE features.
 
 ### Phase 15 — Model export & interop *(new — "write in R, deploy anywhere")*
@@ -219,13 +219,13 @@ roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download(
 ### Phase 17 — Fast data layer
 **Goal:** the columnar performance story. **Scope:** Arrow-native verbs graduate from behind the flag; `reb_compile()` productization (if Phase 7 ADR said go); public reproducible benchmark suite vs current Python stacks (honest baselines: polars/duckdb, not strawmen). **Exit:** benchmarks published; verbs documented. *(Solo-feasible; a second contributor halves the calendar.)*
 
-### Phase 18 — Science verticals: `rebirth.bio` *(the biology promise — a deliberate white-space bet)*
+### Phase 18 — Science verticals: `relm.bio` *(the biology promise — a deliberate white-space bet)*
 
-**The white space (researched 2026-07-06).** R's structural-bioinformatics leader, `bio3d`, is excellent at *classical* analysis (structure superposition, PCA, dynamic correlation networks) but has no path to protein *language models* or to the geometric-deep-learning-style graph featurization that now dominates the field. Python owns that ground: `graphein` builds residue/atomic graphs wired to PyG/DGL, and pre-trained protein LMs (ESM-2 class) are the frontier — increasingly fused into geometric nets. R's only bridge to protein LMs today (`immLynx`, Bioconductor 3.23) *shells out to Python/HuggingFace*; there is no native engine. That is the gap `rebirth` is uniquely built to close, because a protein LM is a transformer encoder — the exact machinery `llm_embed`/`llm_trace`/`llm_logits`/`llm_probe` already provide.
+**The white space (researched 2026-07-06).** R's structural-bioinformatics leader, `bio3d`, is excellent at *classical* analysis (structure superposition, PCA, dynamic correlation networks) but has no path to protein *language models* or to the geometric-deep-learning-style graph featurization that now dominates the field. Python owns that ground: `graphein` builds residue/atomic graphs wired to PyG/DGL, and pre-trained protein LMs (ESM-2 class) are the frontier — increasingly fused into geometric nets. R's only bridge to protein LMs today (`immLynx`, Bioconductor 3.23) *shells out to Python/HuggingFace*; there is no native engine. That is the gap `relm` is uniquely built to close, because a protein LM is a transformer encoder — the exact machinery `llm_embed`/`llm_trace`/`llm_logits`/`llm_probe` already provide.
 
 **Goal:** make R the best place to *interrogate* protein/DNA language models — not just run them, but open them up with statistics. The differentiator is not "embeddings in R" (that is mere parity); it is **tidy mechanistic interpretability of biological sequence models**, which does not yet exist well anywhere.
 
-**Scope (`rebirth.bio` satellite):**
+**Scope (`relm.bio` satellite):**
 1. **Native protein/DNA LM inference** — load ESM-2-class / DNABERT-class encoder GGUFs through the existing engine; per-residue and pooled embeddings; amino-acid/genomic tokenization helpers. *(Arch-support ADR first: ESM-2 is BERT/RoBERTa-style; stock `llama.cpp` computes BERT-class embeddings but ESM's architecture mapping in `convert_hf_to_gguf.py` is not first-class — resolve via a conversion patch or a minimal vendored arch patch, which is exactly what a patchable vendored engine exists for. Feasible; scoped in the ADR.)*
 2. **The anatomy lab, for proteins** — `llm_trace` + `llm_probe` to localize *which layer encodes which biophysical property* (secondary structure, solvent accessibility, catalytic/binding sites, evolutionary conservation), probed against structural annotations with `glmnet` and honest confidence intervals. This is Demo A applied to biology; it is essentially unpublished as a reproducible tidy workflow.
 3. **Residue-graph analysis, native** — build contact/interaction graphs (the `graphein` value proposition) in R with per-residue LM embeddings/activations as node features, feeding `igraph`/`tidygraph` and R's statistical models. Bridges LM internals to Bioconductor's mature sequence/annotation/structure stack (`Biostrings`, `GenomicRanges`, `bio3d`).
@@ -233,7 +233,7 @@ roxygen2 with runnable examples (run in CI); README quickstart; **`llm_download(
 
 **Why R goes *stronger*, not merely even:** the downstream statistics the protein-ML world routinely under-does are R's home turf — proper CIs on decodability, mixed-effects models across protein families, multiple-testing control, phylogenetic comparative methods, and outcome/econometric models (a natural fit for the founder's health-economics lens) — layered on Bioconductor's annotation infrastructure, which Python has no equal to.
 
-**Exit:** `rebirth.bio` on r-universe; a reproducible demo that (a) localizes secondary-structure decodability by layer in an ESM-2 model and (b) runs a zero-shot variant-effect scan on a small protein — both on the founder's Mac, offline.
+**Exit:** `relm.bio` on r-universe; a reproducible demo that (a) localizes secondary-structure decodability by layer in an ESM-2 model and (b) runs a zero-shot variant-effect scan on a small protein — both on the founder's Mac, offline.
 
 **Early proof-of-concept (optional, needs no reorder):** capabilities 1–2 ride entirely on machinery that exists by **Phase 2–3**. A protein-LM mini-demo ("Demo C") can therefore be shown as soon as an encoder model loads, long before the full satellite — a cheap way to make the biology promise *runnable* early without pulling the whole vertical forward. *(Solo-possible; also the ideal first-contributor on-ramp and a natural bridge to the Bioconductor community.)*
 
@@ -257,7 +257,7 @@ Playbook archived in `DECISIONS.md` (plan v0.1): fork base pinning, patch-first 
 ### 5.1 Session Preamble (paste at every session start; lives in `AGENTS.md`)
 
 ```text
-You are the implementation engineer for R-ebirth, an R package (`rebirth`) with a
+You are the implementation engineer for R-ebirth, an R package (`relm`) with a
 Rust native core that embeds a patched llama.cpp to expose local LLMs — loading,
 generation, embeddings, activation tracing, steering, ablation — as base-R-idiom
 functions returning plain data.frames and matrices.
@@ -377,8 +377,8 @@ STEPS
    CPU elsewhere; CUDA feature-flagged off until Phase 8.
 3. rebirth-llm: model/context lifecycle over the C API (safe Rust, no R types).
 4. rebirth-ffi: every entry point wrapped in catch_unwind; RebirthError ->
-   classed R conditions (rebirth_error_model_load, rebirth_error_backend,
-   rebirth_error_closed, rebirth_error_internal).
+   classed R conditions (relm_error_model_load, relm_error_backend,
+   relm_error_closed, relm_error_internal).
 5. R layer: llm() validation; S3 object with the metadata slots of
    API-GRAMMAR §2; print/summary; close() + GC finalizer (two deallocation
    paths, ARCHITECTURE §3).
@@ -415,7 +415,7 @@ SCOPE
   Italian-language test strings; vectorized generation with names preserved;
   seed contract (seed drawn if NULL, always returned via attr(result,"seed"));
   Gemma + Qwen chat templates; stop sequences;
-  rebirth_error_context_overflow with overflow size in the message.
+  relm_error_context_overflow with overflow size in the message.
 - Out: streaming and async (Phase 5), on_token callbacks (Phase 6),
   llm_logits (its own entry, Phase 2).
 
@@ -445,7 +445,7 @@ SCOPE
 - In: batched embedding; base matrix return (rows = inputs, rownames =
   names(x) else seq_along as character); pooling options incl. the model's
   own pooling when the GGUF defines one; dedicated embedding GGUFs supported;
-  rebirth_error_embed.
+  relm_error_embed.
 - Out: image embeddings (Phase 11), similarity utilities (user territory).
 
 ACCEPTANCE
@@ -496,11 +496,11 @@ CONTEXT
 - Expected repo state: Phase 1 complete (generation + embeddings green with
   goldens).
 - Read first: ARCHITECTURE.md §5 (tap strategy), §6 (spill), §4 (indexing);
-  API-GRAMMAR.md §2 (rebirth_trace schema) + §4.
+  API-GRAMMAR.md §2 (relm_trace schema) + §4.
 - Approved API: llm_trace(m, prompts, layers = NULL, positions = "last",
   components = "residual", spill = TRUE, spill_dir = NULL);
-  as.matrix.rebirth_trace(x, layer, component = "residual");
-  print.rebirth_trace; summary.rebirth_trace.
+  as.matrix.relm_trace(x, layer, component = "residual");
+  print.relm_trace; summary.relm_trace.
 
 STEPS
 1. DAY-1 SPIKE (mandatory, before any implementation): verify Strategy A at
@@ -513,12 +513,12 @@ STEPS
    conversion only in rebirth-ffi (property tests).
 3. The tap: callback matches the spec, copies matching tensors to host
    buffers; bounded channel -> sink thread; zero overhead when off (guarded).
-4. rebirth_trace assembly: exact schema and column order of API-GRAMMAR §2;
+4. relm_trace assembly: exact schema and column order of API-GRAMMAR §2;
    print/summary/as.matrix methods.
 5. Spill: Arrow IPC writer (Rust) + nanoarrow lazy reader (R); session spill
    dir under R_user_dir with cleanup; predictive OOM estimate ->
-   rebirth_error_oom carrying estimate_bytes + filter suggestions; budget =
-   min(2 GB, 20% RAM), option rebirth.trace_budget.
+   relm_error_oom carrying estimate_bytes + filter suggestions; budget =
+   min(2 GB, 20% RAM), option relm.trace_budget.
 6. Activation goldens wired into harness B (coordinate with WP6b).
 
 ACCEPTANCE
@@ -555,7 +555,7 @@ SCOPE
   handle is NEVER mutated — ARCHITECTURE §3); steering via control vectors
   (stacked steers = summed per-layer vectors, computed on our side);
   ablation per the spike ADR; print.llm shows active interventions;
-  rebirth_error_intervention on dimension/layer validation.
+  relm_error_intervention on dimension/layer validation.
 - Out: attention-head ablation (stretch — only if the ADR made it cheap);
   weight editing of any kind (activations only, permanently).
 
@@ -620,7 +620,7 @@ SCOPE
   Phase-18 ADR) -> llm_embed/llm_trace -> a per-layer glmnet probe localizing a
   residue-level property (e.g. secondary structure) -> the Demo-A money-plot on
   biology. Ship it only if an encoder loads cleanly; it does NOT gate Phase 3.
-- Out: README/pkgdown polish (WP8); ESM-2 arch support and rebirth.bio proper
+- Out: README/pkgdown polish (WP8); ESM-2 arch support and relm.bio proper
   (Phase 18); anything that would delay v0.1.0.
 
 ACCEPTANCE
@@ -654,7 +654,7 @@ SCOPE
 - Out: CRAN submission (Phase 9), AI-readable docs bundle (Phase 9).
 
 ACCEPTANCE
-- install.packages("rebirth", repos = <r-universe URL>) works on a clean
+- install.packages("relm", repos = <r-universe URL>) works on a clean
   R 4.6.1 (macOS binary at minimum).
 - A stranger can run Demo B from the README alone.
 - R CMD check --as-cran clean on the built tarball.

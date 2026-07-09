@@ -1,6 +1,6 @@
 # ARCHITECTURE.md — Package Internals
 
-**Document 2 of 3.** How `rebirth` is built inside: the crate layout, the R↔Rust boundary, the activation-tap strategy, memory and spill design, the build pipeline, and the mechanics reserved for later phases. `SOLO-PHASE-PLAN.md` holds the decisions, `API-GRAMMAR.md` holds the surface; this document holds the *how*.
+**Document 2 of 3.** How `relm` is built inside: the crate layout, the R↔Rust boundary, the activation-tap strategy, memory and spill design, the build pipeline, and the mechanics reserved for later phases. `SOLO-PHASE-PLAN.md` holds the decisions, `API-GRAMMAR.md` holds the surface; this document holds the *how*.
 
 - **Status:** v1.0
 - **Date:** 2026-07-04
@@ -34,8 +34,8 @@ Side channels:
 
 ## 2. The three-layer code design
 
-1. **`rebirth` (R package).** All argument validation, defaulting, and condition raising happens in R *before* crossing the boundary — the Rust side receives only well-formed requests. S3 classes, printing, formula handling (`llm_probe`) are pure R. R code never contains "business logic" that numerics depend on.
-2. **`rebirth-ffi`.** The R↔native boundary. Any *R-side* (SEXP) `unsafe` lives here — in practice **none** is needed in WP1, because extendr's safe `ExternalPtr`/`Robj` API abstracts the SEXP handling. Every entry point: (a) catches panics (`catch_unwind`) and converts them to `rebirth_error_internal` with a bug-report message — a panic reaching R is a defect by definition; (b) performs index conversion (see §4); (c) maps `Result<T, RebirthError>` to classed R conditions with structured fields (§8). No engine logic here.
+1. **`relm` (R package).** All argument validation, defaulting, and condition raising happens in R *before* crossing the boundary — the Rust side receives only well-formed requests. S3 classes, printing, formula handling (`llm_probe`) are pure R. R code never contains "business logic" that numerics depend on.
+2. **`rebirth-ffi`.** The R↔native boundary. Any *R-side* (SEXP) `unsafe` lives here — in practice **none** is needed in WP1, because extendr's safe `ExternalPtr`/`Robj` API abstracts the SEXP handling. Every entry point: (a) catches panics (`catch_unwind`) and converts them to `relm_error_internal` with a bug-report message — a panic reaching R is a defect by definition; (b) performs index conversion (see §4); (c) maps `Result<T, RebirthError>` to classed R conditions with structured fields (§8). No engine logic here.
 3. **`rebirth-llm`.** The engine wrapper. It owns the crate suite's *C-side* `unsafe` — the hand-written `extern "C"` calls into vendored llama.cpp — kept minimal and individually SAFETY-commented, with the raw handles confined behind safe `Drop`-managed wrappers. It has **no R types in its API** — it takes/returns plain Rust types — which keeps it independently testable (`cargo test` without R) and independently reusable (dual MIT/Apache-2.0 — the "engine components reusable anywhere" licensing goal depends on this separation).
 
 Bridge: **extendr** (scaffolded by `rextendr`). Fallback if CRAN friction ever demands it: **savvy** — the three-layer split means only `rebirth-ffi` would change (this is why the split exists). Switching is an ADR.
@@ -43,7 +43,7 @@ Bridge: **extendr** (scaffolded by `rextendr`). Fallback if CRAN friction ever d
 ## 3. Object lifecycle and threading model
 
 - An `llm` handle is an R external pointer to `Arc<ModelState>` (weights + tokenizer + backend context). **Interventions never mutate:** `llm_steer`/`llm_ablate` return a new handle = cheap `Arc` clone + an intervention list; weights are shared, never copied. This implements the API-GRAMMAR contract "removal = use the original object".
-- **Two deallocation paths:** R GC finalizer (safety net) and `close.llm` (deterministic — on a 16 GB machine the user must be able to free 5 GB *now*). After close, the pointer is tagged; every FFI entry checks the tag → `rebirth_error_closed`.
+- **Two deallocation paths:** R GC finalizer (safety net) and `close.llm` (deterministic — on a 16 GB machine the user must be able to free 5 GB *now*). After close, the pointer is tagged; every FFI entry checks the tag → `relm_error_closed`.
 - **Threading rules (non-negotiable):** R's C API is single-threaded. Rust may spawn threads (generation, spill writing), but (a) no Rust thread ever calls into R; (b) all SEXP construction happens on the R thread; (c) results cross threads as plain Rust data over channels; (d) Phase 5+ callbacks into R are marshalled to the main thread via the `later` event-loop queue (§10). Violation of these rules is the highest-severity review finding.
 - Long operations hold no R allocations: inputs are copied to Rust-owned buffers at entry, results materialize as SEXPs only at exit.
 
@@ -61,15 +61,15 @@ Bridge: **extendr** (scaffolded by `rextendr`). Fallback if CRAN friction ever d
 
 **Patch budget rule:** whatever the spike finds, the vendored diff stays as small as upstream allows, lives in `vendor/patches/`, and every hunk is annotated with why it exists — this is what keeps the `vendor-bump` skill routine (risk #1 in the roadmap).
 
-**Capture spec → memory estimate (D-017, supersedes the f32 basis):** the budget is measured against the **peak resident cost of the materialized R `data.frame` the caller receives**, not the engine's f32 host buffers. `bytes ≈ n_prompts × n_positions × n_layers × n_components × hidden_size × 4 × K`, where the f32 term (`… × 4`) is the engine activation size and `K` (`TRACE_MATERIALIZED_EXPANSION`, pinned to **11** in both `R/trace.R` and `rebirth-llm/src/trace.rs`, each side unit-tested) is the long-format expansion factor: each captured value becomes one 40-byte row (four i32 columns + one f64 `value` + two character-pointer columns), i.e. 10× the f32 bytes asymptotically; **11** upper-bounds this for every trace a *real* model can materialize (`hidden_size ≥ 896` → ≤ 10.65×) and for all budget-relevant large captures (ratio → 10.0×). (A tiny trace amortizes R's fixed per-vector overhead poorly — a sub-600-row capture on the `hidden=32` synthetic test model reaches ~27.75×, but is < ~22 KB and never approaches any budget.) Computed *before* running; drives the predictive OOM check and the spill decision (§6) symmetrically on both sides. An `object.size(result) ≤ K × f32_bytes` test pins `K` so it cannot silently drift. *Why the change:* the f32 basis under-counted the real object ~10× (transient peak ~30× before the FFI de-dup), so an "in-budget" capture could still OOM the 16 GB session (audit finding H-1). The estimate and the filter suggestion appear verbatim in `rebirth_error_oom`.
+**Capture spec → memory estimate (D-017, supersedes the f32 basis):** the budget is measured against the **peak resident cost of the materialized R `data.frame` the caller receives**, not the engine's f32 host buffers. `bytes ≈ n_prompts × n_positions × n_layers × n_components × hidden_size × 4 × K`, where the f32 term (`… × 4`) is the engine activation size and `K` (`TRACE_MATERIALIZED_EXPANSION`, pinned to **11** in both `R/trace.R` and `rebirth-llm/src/trace.rs`, each side unit-tested) is the long-format expansion factor: each captured value becomes one 40-byte row (four i32 columns + one f64 `value` + two character-pointer columns), i.e. 10× the f32 bytes asymptotically; **11** upper-bounds this for every trace a *real* model can materialize (`hidden_size ≥ 896` → ≤ 10.65×) and for all budget-relevant large captures (ratio → 10.0×). (A tiny trace amortizes R's fixed per-vector overhead poorly — a sub-600-row capture on the `hidden=32` synthetic test model reaches ~27.75×, but is < ~22 KB and never approaches any budget.) Computed *before* running; drives the predictive OOM check and the spill decision (§6) symmetrically on both sides. An `object.size(result) ≤ K × f32_bytes` test pins `K` so it cannot silently drift. *Why the change:* the f32 basis under-counted the real object ~10× (transient peak ~30× before the FFI de-dup), so an "in-budget" capture could still OOM the 16 GB session (audit finding H-1). The estimate and the filter suggestion appear verbatim in `relm_error_oom`.
 
 ## 6. Spill design
 
-- **Format:** Arrow IPC (Feather v2) files, schema = the `rebirth_trace` columns exactly (`API-GRAMMAR.md` §2). Written incrementally by `rebirth-llm`'s sink thread during capture (bounded channel → backpressure, never unbounded buffering).
-- **Location:** `tools::R_user_dir("rebirth", "cache")/spill/<session-id>/trace-<n>.arrow`. Session directory registered for cleanup at R exit (`reg.finalizer` on a session sentinel + startup sweep of orphaned directories older than 7 days).
-- **R side:** a spilled `rebirth_trace` holds file paths in attributes; `nanoarrow` reads lazily on first data access; `as.matrix()` reads only the requested (layer, component) slice. Print/summary never force a full load.
-- **Budget:** default in-memory threshold = `min(2 GB, 20% of system RAM)` of the **materialized `data.frame`** (D-017; ~180 MB of f32 activations resident), overridable via `options(rebirth.trace_budget = <bytes>)`. Above it, `spill = TRUE` streams to disk; `spill = FALSE` raises the predictive `rebirth_error_oom`.
-- **Integrity:** each file footer carries the capture spec + model SHA; reopening a file whose spec doesn't match the object's attributes → `rebirth_error_trace` (tamper/staleness fail-safe).
+- **Format:** Arrow IPC (Feather v2) files, schema = the `relm_trace` columns exactly (`API-GRAMMAR.md` §2). Written incrementally by `rebirth-llm`'s sink thread during capture (bounded channel → backpressure, never unbounded buffering).
+- **Location:** `tools::R_user_dir("relm", "cache")/spill/<session-id>/trace-<n>.arrow`. Session directory registered for cleanup at R exit (`reg.finalizer` on a session sentinel + startup sweep of orphaned directories older than 7 days).
+- **R side:** a spilled `relm_trace` holds file paths in attributes; `nanoarrow` reads lazily on first data access; `as.matrix()` reads only the requested (layer, component) slice. Print/summary never force a full load.
+- **Budget:** default in-memory threshold = `min(2 GB, 20% of system RAM)` of the **materialized `data.frame`** (D-017; ~180 MB of f32 activations resident), overridable via `options(relm.trace_budget = <bytes>)`. Above it, `spill = TRUE` streams to disk; `spill = FALSE` raises the predictive `relm_error_oom`.
+- **Integrity:** each file footer carries the capture spec + model SHA; reopening a file whose spec doesn't match the object's attributes → `relm_error_trace` (tamper/staleness fail-safe).
 
 ## 7. Determinism implementation
 
@@ -77,7 +77,7 @@ Greedy decoding: deterministic per backend by construction. Sampling: the sample
 
 ## 8. Error mapping
 
-`rebirth-llm` returns `Result<T, RebirthError>` (an enum mirroring the condition table in `API-GRAMMAR.md` §6, with structured fields: `estimate_bytes`, `expected`/`actual` checksums, overflow sizes). `rebirth-ffi` converts each variant to the corresponding classed R condition; unknown/panic → `rebirth_error_internal`. Rule: **the R user can always distinguish "you asked wrong" (input conditions) from "we broke" (internal) from "the machine can't" (oom/backend)** — three families, three different "what to try" messages.
+`rebirth-llm` returns `Result<T, RebirthError>` (an enum mirroring the condition table in `API-GRAMMAR.md` §6, with structured fields: `estimate_bytes`, `expected`/`actual` checksums, overflow sizes). `rebirth-ffi` converts each variant to the corresponding classed R condition; unknown/panic → `relm_error_internal`. Rule: **the R user can always distinguish "you asked wrong" (input conditions) from "we broke" (internal) from "the machine can't" (oom/backend)** — three families, three different "what to try" messages.
 
 ## 9. Build pipeline
 
@@ -101,7 +101,7 @@ Generation moves to a Rust worker thread; tokens flow over a bounded channel; th
 
 ## 13. Ladder mechanics (later rungs, so nothing today blocks them)
 
-- **Rung 2 (distribution, Phase 19):** a bundle = official R installer + `rebirth` suite preinstalled + a site profile (auto-attach, pinned r-universe snapshot). Nothing in the package may depend on being "the only R" — no global state outside `tools::R_user_dir` paths and documented options.
+- **Rung 2 (distribution, Phase 19):** a bundle = official R installer + `relm` suite preinstalled + a site profile (auto-attach, pinned r-universe snapshot). Nothing in the package may depend on being "the only R" — no global state outside `tools::R_user_dir` paths and documented options.
 - **Rung 3 (fork, Phase 21):** playbook archived in `DECISIONS.md`; triggers in `ROADMAP.md` §4. The package's only obligation today: keep `rebirth-llm` R-free (§2) so the future fork can link the same engine.
 
 ## 14. Open items (each becomes an ADR when its phase starts)

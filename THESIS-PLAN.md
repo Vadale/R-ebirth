@@ -16,7 +16,7 @@ Three options were considered for turning the R-ebirth project into a thesis:
 
 **Option A — the software project alone as the thesis.** *Rejected.* The committee sits in an economics department and evaluates economic and statistical content. A software artifact, however impressive, is graded on someone else's rubric there. High risk, no fallback.
 
-**Option B — an empirical audit study *using* the software (recommended).** The thesis is a policy-relevant empirical study; the `rebirth` package appears as the methodological contribution (a methods chapter plus a software appendix). This fits the degree exactly (see §2), keeps the empirical question in charge, and gives the thesis two original contributions instead of one: a novel open-source method *and* novel empirical results. The project and the thesis reinforce each other — every improvement to the package strengthens the thesis, and the thesis becomes the package's first published application.
+**Option B — an empirical audit study *using* the software (recommended).** The thesis is a policy-relevant empirical study; the `relm` package appears as the methodological contribution (a methods chapter plus a software appendix). This fits the degree exactly (see §2), keeps the empirical question in charge, and gives the thesis two original contributions instead of one: a novel open-source method *and* novel empirical results. The project and the thesis reinforce each other — every improvement to the package strengthens the thesis, and the thesis becomes the package's first published application.
 
 **Option C — medical document understanding (plan B).** MedGemma 1.5 explicitly targets structured-data extraction from lab reports and medical documents. A thesis on the economics of administrative burden (extraction accuracy vs clerical cost in health systems) is viable and closer to public administration topics. Kept as fallback if the supervisor prefers it; it reuses the same infrastructure.
 
@@ -54,7 +54,7 @@ Mapping of the thesis onto that profile:
 - **RQ2 (internal):** Where and when is demographic information encoded in the model's internal representations (probe decodability by layer), and does it causally influence outputs (steering/ablation as robustness checks)?
 - **RQ3 (economic/policy):** What are the consequences for health systems — asymmetric misclassification costs (the canonical case: under-triaged myocardial infarction in women), equity in AI-assisted screening, and the deployment economics of local open models versus cloud APIs for public healthcare (cost, privacy/GDPR, vendor lock-in)?
 
-RQ1 alone is a publishable audit; RQ2 is the novel methodological layer only `rebirth` makes convenient; RQ3 is what makes it an economics thesis. The three stack — if RQ2 runs late, RQ1+RQ3 already carry the thesis (built-in de-risking).
+RQ1 alone is a publishable audit; RQ2 is the novel methodological layer only `relm` makes convenient; RQ3 is what makes it an economics thesis. The three stack — if RQ2 runs late, RQ1+RQ3 already carry the thesis (built-in de-risking).
 
 ---
 
@@ -83,14 +83,14 @@ RQ1 alone is a publishable audit; RQ2 is the novel methodological layer only `re
 ## 6. Model plan
 
 - **Model:** `google/medgemma-1.5-4b-it` — MedGemma 1.5, announced 2026-01-21, sizes 4B and 27B, text and vision-language variants; state-of-the-art or near-SOTA on 20+ medical benchmarks; open for research and commercial fine-tuning under the Health AI Developer Foundations terms (accept once on Hugging Face).
-- **Format/runtime:** GGUF Q4_K_M (≈2.5 GB) or Q8 on the Mac mini M4 16 GB via `rebirth`'s vendored llama.cpp (Metal). Fully local = the privacy/deployment argument of RQ3 demonstrated live.
+- **Format/runtime:** GGUF Q4_K_M (≈2.5 GB) or Q8 on the Mac mini M4 16 GB via `relm`'s vendored llama.cpp (Metal). Fully local = the privacy/deployment argument of RQ3 demonstrated live.
 - **Fallbacks:** if community GGUF quantizations of 1.5 are missing, quantize locally with llama.cpp's conversion tools; if the 1.5 architecture is not yet supported by the vendored llama.cpp tag, fall back to MedGemma 1.0 4B-it (GGUF quants exist — bartowski et al.) and note the version in the thesis.
 - **Out of scope:** the 27B (does not fit 16 GB); the vision variant (future work — roadmap Phase 11, "Multimodal models", which would extend this audit to actual radiology images).
 
 ## 7. Chapter map
 
 1. **Introduction** — AI adoption in health systems; the black-box problem as an economic and policy problem (accountability, liability, equity).
-2. **Methods I — the audit framework:** the `rebirth` package (architecture summary, the trace→probe→steer workflow), positioned against Python-based interpretability tooling; why local open models matter for health-data governance.
+2. **Methods I — the audit framework:** the `relm` package (architecture summary, the trace→probe→steer workflow), positioned against Python-based interpretability tooling; why local open models matter for health-data governance.
 3. **Methods II — study design:** §4 in full.
 4. **Results** — RQ1 behavioral disparities; RQ2 internal localization and causal checks.
 5. **Economic and policy analysis** — RQ3: cost model, screening equity, deployment economics, GDPR.
@@ -106,7 +106,7 @@ Depends on one missing input: **the thesis deadline** (§13). Anchors (see `ROAD
 
 ## 9. What the thesis needs from the software (dependency list)
 
-| Thesis step | Needs from `rebirth` | Roadmap phase |
+| Thesis step | Needs from `relm` | Roadmap phase |
 |---|---|---|
 | Vignette generation + output extraction | `llm()`, `llm_generate()` (chat templates, seeds) | Phase 1 |
 | Embedding-based report exploration | `llm_embed()` | Phase 1 |

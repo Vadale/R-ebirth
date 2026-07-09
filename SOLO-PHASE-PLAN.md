@@ -17,7 +17,7 @@ Operational companion: **`ROADMAP.md`** — work packages, toolchain, prompts fo
 
 **Decision: capabilities first, language later. Each rung is climbed only when the previous one has proven demand, and nothing built on one rung is discarded on the next.**
 
-- **Rung 1 — the package suite (solo phase, now).** `rebirth` (and later satellite packages) on stock R ≥ 4.5: the native inference engine with activation taps, the tidy-anatomy workflow, embeddings, topic modelling, steering/ablation — everything in the Phase 0–1 deliverables. Installs with one command into the R every researcher already has.
+- **Rung 1 — the package suite (solo phase, now).** `relm` (and later satellite packages) on stock R ≥ 4.5: the native inference engine with activation taps, the tidy-anatomy workflow, embeddings, topic modelling, steering/ablation — everything in the Phase 0–1 deliverables. Installs with one command into the R every researcher already has.
 - **Rung 2 — the distribution (transition).** An installer bundling vanilla R + the R-ebirth suite preinstalled + curated defaults (packages auto-attached via site profile, sensible options, pinned versions). Delivers the "batteries included, feels like a new environment" experience **without forking a single line of R**.
 - **Rung 3 — the fork (community era).** Only for the things a package can never do: new surface syntax (real type annotations, `async`/`await` keywords), changed base defaults, the speculative JIT in the evaluator, allocator/GC work. Entered only when there is a community to share the permanent upstream-merge tax. The v0.1 fork plan (base pinning, patch-first rule, PATCHES.md, upstream `make check` invariant) is preserved verbatim in `DECISIONS.md` as the rung-3 playbook.
 
@@ -50,7 +50,7 @@ The grammar decisions are delivery-independent — identical whether the functio
 9. **Every exported function ships a runnable self-contained example**, executed in CI.
 10. **All identifiers, messages, docs in English.**
 
-Package namespace: **`rebirth`** — verified available on CRAN and unclaimed on GitHub as an R project (checked 2026-07-03). "R-ebirth" remains the umbrella project/brand name.
+Package namespace: **`relm`** — verified available on CRAN and unclaimed on GitHub as an R project (checked 2026-07-03). "R-ebirth" remains the umbrella project/brand name.
 
 ---
 
@@ -117,7 +117,7 @@ r-ebirth/
 **Decision: everything original is dual-licensed `MIT OR Apache-2.0`. The GPL constraint of v0.1 no longer applies.**
 
 - The GPL inheritance in v0.1 came solely from modifying GNU R's sources. A package does not derive from R's code — it is original work using R's public API, and the R ecosystem's settled practice (CRAN hosts MIT/Apache/BSD packages routinely) supports permissive licensing. Result: **the founder's "freest possible license" guideline is now met in full** — any person, lab, startup, or corporation can use, modify, embed, and redistribute, including in proprietary products.
-- `rebirth` (R package), `rebirth-llm`, `rebirth-kernel`, `rebirth-ffi` (Rust crates): **MIT OR Apache-2.0**.
+- `relm` (R package), `rebirth-llm`, `rebirth-kernel`, `rebirth-ffi` (Rust crates): **MIT OR Apache-2.0**.
 - Vendored llama.cpp: MIT — compatible; tracked in `NOTICE`.
 - **Name protection unchanged (`TRADEMARK.md`):** the code is free, the name is not. Modified redistributions must rename (Rust/Firefox model). This remains the correct instrument for "my work must not be confused with someone else's fork."
 - Project self-description: *"R-ebirth — a scientific computing toolkit for R"* on rung 1; the "derived from GNU R" phrasing belongs to rung 3 only. No use of the R Foundation's logo or implied endorsement.
@@ -127,7 +127,7 @@ r-ebirth/
 
 ## 7. Non-goals through end of Phase 1 (updated)
 
-> **Terminology (read this first — it is the single most confusing point in the docs).** "Phase 1" in *this* plan means the plan's own second era = **roadmap Phases 4–9** (see the `ROADMAP.md` mapping line), which ends at `v1.0`. It is **not** roadmap Phase 1. The non-goals below mark the boundary of *that era* — not of the whole solo project. The **full solo track runs through roadmap Phase 18** (fine-tuning, RL, topics+SAE, `rebirth.bio`) before any team phase; nothing below is cancelled, only sequenced after `v1.0`.
+> **Terminology (read this first — it is the single most confusing point in the docs).** "Phase 1" in *this* plan means the plan's own second era = **roadmap Phases 4–9** (see the `ROADMAP.md` mapping line), which ends at `v1.0`. It is **not** roadmap Phase 1. The non-goals below mark the boundary of *that era* — not of the whole solo project. The **full solo track runs through roadmap Phase 18** (fine-tuning, RL, topics+SAE, `relm.bio`) before any team phase; nothing below is cancelled, only sequenced after `v1.0`.
 
 - **No source fork of GNU R** — re-evaluated only at the community rung (D-002).
 - **No new surface syntax** (type annotations, `async`/`await` keywords) — parser work is rung 3; interim function-based forms only.
@@ -168,7 +168,7 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 ## 9. Phase exit checklists (updated)
 
 **Phase 0 exit (~month 3, was ~4 — fork bootstrap no longer exists):**
-- [ ] `install.packages("rebirth", repos = <r-universe>)` works on stock R 4.6.1 (macOS binary at minimum)
+- [ ] `install.packages("relm", repos = <r-universe>)` works on stock R 4.6.1 (macOS binary at minimum)
 - [ ] `R CMD check` clean on macOS arm64 + Linux (Windows may lag until Phase 1)
 - [ ] `llm()`, `llm_generate()`, `llm_embed()`, `llm_trace()` (filters + spill), `llm_steer()`, `llm_ablate()` working on GGUF models (Qwen + Llama families)
 - [ ] Harness B green: logits vs reference llama.cpp, activations vs PyTorch goldens
@@ -182,7 +182,7 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 - [ ] Type declarations as function API (runtime-checked); `reb_compile()` transpiler explored and go/no-go decided
 - [ ] `serve` module v1: an analysis exposed as a typed HTTP endpoint with generated OpenAPI
 - [ ] Windows binaries on r-universe; CUDA green (WSL2 first, then native Windows)
-- [ ] CRAN submission of `rebirth` (Rust vendoring policy compliant)
+- [ ] CRAN submission of `relm` (Rust vendoring policy compliant)
 - [ ] Docs site generated from runnable examples; `llm_*` API declared stable
 - [ ] WP-T (thesis case study) — **parked, not blocking Phase 1 exit** (thesis assignment ≈ Q1–Q2 2027; see `THESIS-PLAN.md`)
 - [ ] Full CI matrix green 30 consecutive days before declaring Phase 1 closed
@@ -193,4 +193,4 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 
 - `ARCHITECTURE.md` (document 2): `rebirth-ffi` unsafe-boundary design; tap-patch maintenance strategy against upstream llama.cpp releases; spill file format; async integration with R's event loop; rung-2 distribution mechanics; rung-3 trigger criteria (what observable success justifies the fork).
 - `API-GRAMMAR.md` (document 3): full signatures and defaults for every `llm_*` function; trace data.frame schema (`layer`, `token_pos`, `component`, `neuron`, `value`, `prompt_id`); condition class hierarchy; print formats.
-- Deferred, tracked in `DECISIONS.md` when opened: Phase 2 training backend (candle vs libtorch), MLX binding scope, satellite package split (`rebirth.topics`?), Positron timing.
+- Deferred, tracked in `DECISIONS.md` when opened: Phase 2 training backend (candle vs libtorch), MLX binding scope, satellite package split (`relm.topics`?), Positron timing.
