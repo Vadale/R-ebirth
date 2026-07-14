@@ -36,6 +36,13 @@
 #' `relm_error_image`; the combined text+image token count must fit
 #' `context_length` (`relm_error_context_overflow` states by how much).
 #'
+#' One content restriction applies to an image-bearing prompt: the literal
+#' string `"<__media__>"` (the engine's internal media marker) is reserved —
+#' relm inserts one marker per image before the text, so a literal marker in
+#' the prompt would corrupt the image placement, and the call raises
+#' `relm_error_argument` naming `prompt`. Prompts without images may contain
+#' the string freely (it is ordinary text there).
+#'
 #' @param m An `llm` handle from [llm()].
 #' @param prompt A character vector of prompts; the result has one element per
 #'   prompt and preserves `names(prompt)`.
@@ -110,6 +117,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   # checks) and require a vision handle + existing files (relm_error_image).
   # NULL images leaves the pre-WP-V2 text path untouched.
   image_sets <- normalize_images(images, length(prompt))
+  check_prompt_markers(prompt, image_sets)
   has_images <- !is.null(image_sets) && any(lengths(image_sets) > 0L)
   max_bytes <- if (has_images) image_max_bytes() else 64 * 1024^2
   check_images_usable(m, image_sets)

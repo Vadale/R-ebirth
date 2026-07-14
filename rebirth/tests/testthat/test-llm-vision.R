@@ -227,6 +227,51 @@ test_that("images on a handle loaded without a projector raise relm_error_image"
   expect_match(conditionMessage(cnd), "projector = ", fixed = TRUE)
 })
 
+test_that("an image-bearing prompt containing the media marker is rejected pre-boundary", {
+  # Reviewer finding (WP-V2 fix round): a literal "<__media__>" in a prompt
+  # that carries images would corrupt the marker/bitmap pairing inside
+  # mtmd_tokenize and used to surface as a misleading relm_error_internal.
+  # The R layer now rejects it BEFORE the boundary as relm_error_argument
+  # naming `prompt` — model-free, per-commit CI (the synthetic handle never
+  # reaches the vision checks because the marker gate fires first).
+  m <- llm(synthetic_model_path())
+  on.exit(close(m), add = TRUE)
+  img <- vision_fixture("red-square.png")
+  cnd <- tryCatch(
+    llm_generate(m, "look: <__media__> what is it?", images = img),
+    condition = function(c) c
+  )
+  expect_s3_class(cnd, "relm_error_argument")
+  expect_identical(cnd$argument, "prompt")
+  expect_match(conditionMessage(cnd), "<__media__>", fixed = TRUE)
+  expect_match(conditionMessage(cnd), "reserved")
+
+  # Scoped to image-bearing prompts only: with NO images the same text is
+  # ordinary content and takes the text path unchanged (this tokenizer-less
+  # model then fails with relm_error_tokenize, exactly like any text call).
+  expect_error(
+    llm_generate(m, "look: <__media__> what is it?", chat = FALSE, max_tokens = 4),
+    class = "relm_error_tokenize"
+  )
+  # And a marker in a prompt whose OWN image set is empty is allowed too.
+  expect_error(
+    llm_generate(m, "plain <__media__> text",
+      chat = FALSE, max_tokens = 4,
+      images = list(character(0))
+    ),
+    class = "relm_error_tokenize"
+  )
+})
+
+test_that("the R media-marker literal twin-pins the engine's marker", {
+  # Hard rule 8f: the marker literal exists in R (images.R) and in the engine.
+  # The chain: this test pins the R constant to "<__media__>"; the ffi.rs ABI
+  # test (per-commit cargo test) pins mtmd_default_marker() to the SAME
+  # literal. A vendor-bump that changes the engine marker fails the Rust leg
+  # loudly, prompting both to move together. [CI] per-commit, model-free.
+  expect_identical(relm:::relm_media_marker, "<__media__>")
+})
+
 test_that("character(0) image sets mean no images and need no projector", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)

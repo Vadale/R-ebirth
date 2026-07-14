@@ -91,6 +91,13 @@ limits, enforced before decoding: at most 64 MB per file by default
 33554432 total pixels. Images on a handle loaded without a projector raise
 \code{relm_error_image}; the combined text+image token count must fit
 \code{context_length} (\code{relm_error_context_overflow} states by how much).
+
+One content restriction applies to an image-bearing prompt: the literal
+string \code{"<__media__>"} (the engine's internal media marker) is reserved —
+relm inserts one marker per image before the text, so a literal marker in
+the prompt would corrupt the image placement, and the call raises
+\code{relm_error_argument} naming \code{prompt}. Prompts without images may contain
+the string freely (it is ordinary text there).
 }
 
 \examples{

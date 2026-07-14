@@ -2,6 +2,48 @@
 # section 3). One normalizer so llm_generate() today and llm_embed() at WP-V3
 # apply the identical pairing contract.
 
+# The engine's media marker literal. Twin-pin (Hard rule 8f): this constant is
+# the same string on three legs — (1) this R literal, (2) the Rust fallback in
+# vision.rs default_marker(), and (3) the ENGINE's own mtmd_default_marker(),
+# which the ffi.rs ABI test pins by value to "<__media__>" on every CI run and
+# vendor-bump. If the engine marker ever changes, the ffi.rs test fails loudly
+# and all three legs are updated together; test-llm-vision.R pins this R leg.
+relm_media_marker <- "<__media__>"
+
+# Reject an image-bearing prompt that contains the literal media marker
+# (reviewer finding, WP-V2 fix round): mtmd_tokenize splits the templated text
+# on every marker occurrence and requires the marker count to equal the image
+# count, so a user-supplied marker would mis-place an image or fail the count
+# check with a misleading internal error. This is a documented content
+# restriction on `prompt` for image-bearing calls only (a marker in a plain
+# text prompt is harmless literal text and stays allowed), so it is raised
+# pre-boundary as relm_error_argument naming `prompt`. The engine keeps its
+# own backstop for non-R callers (vision.rs).
+check_prompt_markers <- function(prompt, image_sets, call = sys.call(-1L)) {
+  if (is.null(image_sets)) {
+    return(invisible(NULL))
+  }
+  for (i in seq_along(prompt)) {
+    if (length(image_sets[[i]]) > 0L &&
+      grepl(relm_media_marker, prompt[[i]], fixed = TRUE)) {
+      abort_argument(
+        "prompt",
+        sprintf(
+          paste0(
+            "`prompt[%d]` contains the reserved media marker \"%s\". On a call ",
+            "with images, relm inserts one marker per image before the text; a ",
+            "literal marker in the prompt would corrupt the image placement. ",
+            "Remove it from the prompt."
+          ),
+          i, relm_media_marker
+        ),
+        call = call
+      )
+    }
+  }
+  invisible(NULL)
+}
+
 # Normalize `images` against `n_inputs` prompts/texts (API-GRAMMAR section 3):
 #   * NULL -> NULL (text-only; the caller takes the unchanged text path).
 #   * a bare character vector -> treated as `list(images)`, i.e. ONE image set;
