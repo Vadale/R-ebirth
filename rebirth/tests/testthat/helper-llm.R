@@ -2,7 +2,8 @@
 # pointer, so print/summary/close *logic* can be tested without a model file
 # (the real-model value checks are WP1 Step 8, env-gated). Mirrors new_llm()'s
 # shape but skips the boundary and the finalizer.
-stub_llm <- function(closed = FALSE, interventions = list(), architecture = "qwen2") {
+stub_llm <- function(closed = FALSE, interventions = list(), architecture = "qwen2",
+                     projector = NULL) {
   state <- new.env(parent = emptyenv())
   state$closed <- closed
   state$ptr <- NULL
@@ -18,6 +19,8 @@ stub_llm <- function(closed = FALSE, interventions = list(), architecture = "qwe
       hidden_size = 896L,
       context_length = 4096L,
       backend = "metal",
+      projector = projector,
+      vision = !is.null(projector),
       interventions = interventions,
       .context_train = 32768L,
       .size_bytes = 531000000,
@@ -56,6 +59,30 @@ qwen35_model_path <- function() {
   skip_if_not(
     nzchar(p) && file.exists(p),
     "RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file"
+  )
+  p
+}
+
+# [MODEL] WP-V2 vision pair: a vision-language model GGUF plus its companion
+# mmproj (projector) GGUF — dev pin Qwen2-VL-2B-Instruct (Apache-2.0) from
+# ggml-org/Qwen2-VL-2B-Instruct-GGUF. Gated on its own pair of environment
+# variables (mirroring RELM_TEST_MODEL_QWEN), so vision tests run only where
+# the founder placed the files (Mac/Metal or the nightly VLM job) and skip in
+# per-commit CI, which has no VLM.
+vlm_model_path <- function() {
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_VLM"))
+  skip_if_not(
+    nzchar(p) && file.exists(p),
+    "RELM_TEST_MODEL_VLM is not set to an existing GGUF file"
+  )
+  p
+}
+
+vlm_mmproj_path <- function() {
+  p <- path.expand(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+  skip_if_not(
+    nzchar(p) && file.exists(p),
+    "RELM_TEST_MMPROJ_VLM is not set to an existing mmproj GGUF file"
   )
   p
 }
