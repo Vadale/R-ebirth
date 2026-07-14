@@ -2,6 +2,16 @@
 
 Development toward the vision/multimodal release (v0.2.0, Phase 11, D-026).
 
+* **Image embeddings (T2).** `llm_embed()` gains `images =`: pair image files
+  with each input (the same pairing contract, formats — **JPEG, PNG, BMP** —
+  and pre-decode limits as `llm_generate(images = )`) and get one matrix row
+  per (text, image) input. An input with an image may have empty text
+  (`x = ""`), embedding the image alone. Pooling with images reduces over the
+  **text positions** (including the model's image-delimiter tokens), which
+  the image conditions through attention — matching the reference llama.cpp
+  behavior at the pinned engine version; text-only inputs are byte-identical
+  to before. Requires a handle loaded with `llm(projector = )`.
+
 * **Image input (T1).** `llm()` gains `projector =`: point it at a
   vision-language model's companion **mmproj GGUF** to enable image input
   (the projector is bound to the loaded model at load time; a projector whose

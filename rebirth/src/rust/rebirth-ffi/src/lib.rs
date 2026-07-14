@@ -1105,10 +1105,10 @@ mod tests {
         // Inconsistencies are out-of-contract boundary input: reject, never
         // pad/truncate (hard rule 8b).
         for (flat, lens, n) in [
-            (s(&["a.png"]), vec![1, 0], 1usize), // lens.len() != n_texts
-            (s(&["a.png"]), vec![2], 1),         // sum > flat
+            (s(&["a.png"]), vec![1, 0], 1usize),  // lens.len() != n_texts
+            (s(&["a.png"]), vec![2], 1),          // sum > flat
             (s(&["a.png", "b.png"]), vec![1], 1), // sum < flat
-            (s(&[]), vec![-1], 1),               // negative length
+            (s(&[]), vec![-1], 1),                // negative length
         ] {
             assert_eq!(
                 split_image_sets(flat, &lens, n).unwrap_err().class(),
