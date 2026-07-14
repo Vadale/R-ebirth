@@ -342,6 +342,47 @@ extern "C" {
     pub fn llama_memory_clear(mem: llama_memory_t, data: bool);
 }
 
+/// Mirror of `struct mtmd_context_params` (tools/mtmd/mtmd.h L86-107, tag
+/// b9726 — the multimodal library vendored by WP-V1, D-026). Returned **by
+/// value** from `mtmd_context_params_default()`, so the layout rules at the
+/// top of this file apply: same field order, C `enum` = `c_int`, callback
+/// fields opaque pointers. Field-by-field against the initializer in
+/// tools/mtmd/mtmd.cpp L240-256. Re-validate on every `vendor-bump`.
+// dead_code: until the WP-V2 image FFI lands, the ABI smoke test below is the
+// only (cfg(test)) consumer.
+#[allow(dead_code)]
+#[repr(C)]
+pub struct mtmd_context_params {
+    pub use_gpu: bool,
+    pub print_timings: bool,
+    pub n_threads: c_int,
+    /// Deprecated upstream in favor of `media_marker`; defaults to NULL.
+    pub image_marker: *const c_char,
+    pub media_marker: *const c_char,
+    /// `enum llama_flash_attn_type` (llama.h L186-190).
+    pub flash_attn_type: c_int,
+    pub warmup: bool,
+    pub image_min_tokens: c_int,
+    pub image_max_tokens: c_int,
+    /// `ggml_backend_sched_eval_callback`; NULL default (T3 vision-tower
+    /// tracing is out of scope, D-026 — WP-V2 never sets it).
+    pub cb_eval: *mut c_void,
+    pub cb_eval_user_data: *mut c_void,
+    pub batch_max_tokens: i32,
+}
+
+extern "C" {
+    // --- multimodal / libmtmd (WP-V1, D-026) ---
+    // WP-V1 declares only the by-value defaults getter: it is the link-time
+    // proof that libmtmd.a is built and linked on every target, and the ABI
+    // smoke test below guards the struct mirror. The T1 image FFI surface
+    // (mtmd_init_from_file, mtmd_tokenize, mtmd_helper_eval_chunks, ...) is
+    // WP-V2 and grows in this section.
+    // dead_code: the sole non-test caller arrives with the WP-V2 image FFI.
+    #[allow(dead_code)]
+    pub fn mtmd_context_params_default() -> mtmd_context_params;
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -380,6 +421,56 @@ mod tests {
             core::mem::size_of::<llama_context_params>(),
             160,
             "llama_context_params size drifted from b9726; re-verify the #[repr(C)] mirror"
+        );
+    }
+
+    /// WP-V1's ABI guard for the new by-value `mtmd_context_params` (the D-011
+    /// `context_params` test's mirror for libmtmd): the struct is obtained and
+    /// passed by value, so a reordered or misaligned `#[repr(C)]` mirror
+    /// surfaces as *wrong default values*, not a link error. Every field's
+    /// b9726 default (tools/mtmd/mtmd.cpp L240-256) is pinned by value, plus
+    /// the total size. Model-free; runs per-commit in CI (`cargo test`) and
+    /// doubles as the link-time proof that libmtmd.a is produced and linked.
+    #[test]
+    fn mtmd_context_params_defaults_have_the_expected_abi() {
+        // SAFETY: default params are a plain by-value C struct we only read.
+        let p = unsafe { mtmd_context_params_default() };
+        assert!(p.use_gpu, "use_gpu default is true");
+        assert!(p.print_timings, "print_timings default is true");
+        assert_eq!(p.n_threads, 4, "n_threads default is 4");
+        assert!(
+            p.image_marker.is_null(),
+            "image_marker (deprecated) is null"
+        );
+        assert!(
+            !p.media_marker.is_null(),
+            "media_marker default is non-null"
+        );
+        // SAFETY: media_marker is a static NUL-terminated string owned by the
+        // engine (mtmd_default_marker(), mtmd.cpp L227-229).
+        let marker = unsafe { std::ffi::CStr::from_ptr(p.media_marker) };
+        assert_eq!(
+            marker.to_str().expect("media_marker is valid UTF-8"),
+            "<__media__>",
+            "media_marker default is mtmd_default_marker()"
+        );
+        assert_eq!(p.flash_attn_type, -1, "LLAMA_FLASH_ATTN_TYPE_AUTO");
+        assert!(p.warmup, "warmup default is true");
+        assert_eq!(p.image_min_tokens, -1, "image_min_tokens default is -1");
+        assert_eq!(p.image_max_tokens, -1, "image_max_tokens default is -1");
+        assert!(p.cb_eval.is_null(), "cb_eval default is null");
+        assert!(
+            p.cb_eval_user_data.is_null(),
+            "cb_eval_user_data default is null"
+        );
+        assert_eq!(p.batch_max_tokens, 1024, "batch_max_tokens default is 1024");
+
+        // Size pin: catches a vendor-bump reordering/appending fields even where
+        // the value checks would still pass by coincidence.
+        assert_eq!(
+            core::mem::size_of::<mtmd_context_params>(),
+            64,
+            "mtmd_context_params size drifted from b9726; re-verify the #[repr(C)] mirror"
         );
     }
 }
