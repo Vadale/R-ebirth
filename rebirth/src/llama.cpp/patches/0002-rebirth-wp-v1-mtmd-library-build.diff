@@ -1,0 +1,71 @@
+rebirth WP-V1 — library-only libmtmd build path (DECISIONS.md D-026 / D-015)
+
+Adds a root CMake option `LLAMA_BUILD_MTMD` (default OFF) that adds the
+tools/mtmd subdirectory even when LLAMA_BUILD_COMMON/LLAMA_BUILD_TOOLS are OFF
+(our build.rs flag set), and guards the mtmd CLI/debug executables plus the
+llama-common FATAL_ERROR check behind LLAMA_BUILD_TOOLS, so a library-only
+configure produces exactly one new target: the `mtmd` static archive (libmtmd
+links only ggml+llama — common/ stays pruned, verified at b9726). The full
+upstream tools path (LLAMA_BUILD_COMMON AND LLAMA_BUILD_TOOLS, which reaches
+tools/mtmd via tools/) is unchanged; on a vendor-bump a conflicting upstream
+CMake change fails loud at re-apply (the D-015-preferred failure mode).
+
+Provenance record (DECISIONS.md D-015): this diff is the human-readable delta
+of the committed, patched `src/llama.cpp/` tree against upstream b9726 for the
+two build files below. `build.rs` compiles the committed tree as-is (no
+build-time patching). `vendor-bump` re-applies this diff to a fresh upstream
+checkout; the CI patch-coherence check reverse-applies it (together with 0001,
+disjoint file sets) and asserts the pre-patch pruned-tree SHA256.
+
+Paths are relative to rebirth/src/llama.cpp/ (git diff --relative), so:
+  git apply       patches/0002-rebirth-wp-v1-mtmd-library-build.diff   # apply
+  git apply -R    patches/0002-rebirth-wp-v1-mtmd-library-build.diff   # revert
+both run from rebirth/src/llama.cpp/.
+
+Hunks (each also carries an inline `rebirth WP-V1` code comment):
+  CMakeLists.txt             option LLAMA_BUILD_MTMD + guarded
+                             add_subdirectory(tools/mtmd)
+  tools/mtmd/CMakeLists.txt  wrap the llama-common FATAL_ERROR check and the
+                             CLI/debug executables in if (LLAMA_BUILD_TOOLS)
+
+--- 8< --- unified diff below --- 8< ---
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9e7b125..7f0a306 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -218,6 +218,14 @@ if (LLAMA_BUILD_COMMON AND LLAMA_BUILD_TOOLS)
+     add_subdirectory(tools)
+ endif()
+ 
++# rebirth WP-V1 (D-026): build the mtmd (multimodal) LIBRARY alone — libmtmd
++# links only ggml+llama, so it needs neither common/ nor the CLI tools. The
++# guard keeps the full-tools path (which reaches tools/mtmd via tools/) intact.
++option(LLAMA_BUILD_MTMD "llama: build the multimodal library without common/tools" OFF)
++if (LLAMA_BUILD_MTMD AND NOT (LLAMA_BUILD_COMMON AND LLAMA_BUILD_TOOLS))
++    add_subdirectory(tools/mtmd)
++endif()
++
+ if (LLAMA_BUILD_APP)
+     add_subdirectory(app)
+ endif()
+diff --git a/tools/mtmd/CMakeLists.txt b/tools/mtmd/CMakeLists.txt
+index 09b6235..0634295 100644
+--- a/tools/mtmd/CMakeLists.txt
++++ b/tools/mtmd/CMakeLists.txt
+@@ -106,6 +106,10 @@ if (TARGET BUILD_INFO)
+     add_dependencies(mtmd-helper BUILD_INFO)
+ endif()
+ 
++# rebirth WP-V1 (D-026): a library-only build (LLAMA_BUILD_MTMD without
++# LLAMA_BUILD_TOOLS) has no llama-common and prunes the CLI/debug sources, so
++# everything from the llama-common FATAL_ERROR check down is tools-only.
++if (LLAMA_BUILD_TOOLS)
+ # if mtmd is linked against llama-common, we throw an error
+ if (TARGET mtmd)
+     get_target_property(libs mtmd LINK_LIBRARIES)
+@@ -134,3 +138,4 @@ add_executable(llama-mtmd-debug debug/mtmd-debug.cpp)
+ set_target_properties(llama-mtmd-debug PROPERTIES OUTPUT_NAME llama-mtmd-debug)
+ target_link_libraries(llama-mtmd-debug PRIVATE llama-common mtmd Threads::Threads)
+ target_compile_features(llama-mtmd-debug PRIVATE cxx_std_17)
++endif() # LLAMA_BUILD_TOOLS (rebirth WP-V1, D-026)

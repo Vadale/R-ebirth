@@ -20,11 +20,14 @@ git apply -R patches/<name>.diff   # revert to pristine upstream
 | Patch | Files/hunks | ADR |
 |---|---|---|
 | `0001-rebirth-wp5-ablation-intervene.diff` | 7 files, 14 hunks — `llama_adapter_intervene` at `build_cvec` for `llm_ablate()` | D-012 / D-016 |
+| `0002-rebirth-wp-v1-mtmd-library-build.diff` | 2 files, 3 hunks — `LLAMA_BUILD_MTMD` library-only libmtmd build path (build files only) | D-026 |
 
-Every hunk also carries an inline `rebirth WP5` code comment stating why it
-exists. The un-intervened forward pass is byte-identical to the unpatched build
-(the `intervene->apply_to` no-op emits no graph node), so the WP2/WP3/WP4
-synthetic goldens pass unchanged after the patch.
+Every hunk also carries an inline `rebirth WP5`/`rebirth WP-V1` code comment
+stating why it exists. The un-intervened forward pass is byte-identical to the
+unpatched build (the `intervene->apply_to` no-op emits no graph node, and 0002
+touches no engine source), so the WP2/WP3/WP4 synthetic goldens pass unchanged
+after the patches. The two patches touch disjoint file sets, so the coherence
+reverse-apply is order-independent.
 
 ## Integrity
 

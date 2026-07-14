@@ -1,3 +1,8 @@
+# relm (development version)
+
+Development toward the vision/multimodal release (v0.2.0, Phase 11, D-026)
+has started; nothing user-visible yet.
+
 # relm 0.1.0
 
 First public release. Local large language models as base-R objects: model

@@ -1,6 +1,6 @@
 Package: relm
 Title: Local Large Language Models as Base-R Objects
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: 
     person("Alessandro", "Vadala", , "vadale93@gmail.com", role = c("aut", "cre", "cph"))
 Description: Load and run local large language models (through a vendored,
