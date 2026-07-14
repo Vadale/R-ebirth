@@ -15,8 +15,12 @@ no vision golden existed before WP-V2.
 ## Files
 
 ```
-goldens/greedy-red-square.txt   the reference continuation, byte-exact, no
-                                trailing newline (18 bytes: "The square is red.")
+goldens/greedy-red-square.txt      the reference continuation, byte-exact, no
+                                   trailing newline (18 bytes: "The square is red.")
+goldens/embed-red-square-mean.csv  the T2 pooled-embedding REGRESSION PIN
+                                   (1536 values, %.8e, one per line) — see the
+                                   "T2 pooled-embedding pin" section for what
+                                   this is and, honestly, what it is not
 ```
 
 ## The reference run (exact reproduction)
@@ -95,6 +99,46 @@ the b9726 sources:
 - **Not per-commit:** no synthetic in-repo vision model exists, so this golden
   is a `[MODEL]`/nightly gate, never per-commit CI (D-026 point 6). The nightly
   workflow wiring is WP-V4.
+## The T2 pooled-embedding pin (WP-V3) — what it is and what it is not
+
+`goldens/embed-red-square-mean.csv` pins the `llm_embed(images=)` pooled
+vector for a fixed input. **It is a same-implementation determinism /
+regression pin, NOT an independent oracle** — stated per the golden-update
+honesty rule, because no independent reference for this object exists at the
+pinned tag:
+
+- the upstream `llama-mtmd-cli` emits **no embeddings** at b9726;
+- the upstream server's `/embeddings` accepts multimodal input but computes
+  its pooled value **in-graph per ubatch**, i.e. over the final decoded
+  segment only (server-context.cpp L1995-2035 + the chunked mtmd decode) — a
+  different object from relm's all-text-rows pooling, so a numeric comparison
+  would be comparing definitions, not implementations.
+
+What anchors T2 numerically instead (the decomposition argument): the image
+encode+decode path is gated by the WP-V2 **byte-exact generation golden**
+(same clip encode, same helper decode); the per-token rows and every pooling
+reduction are gated by the WP3 **synthetic numpy-oracle goldens** (exact);
+new in T2 is only their composition, which this pin freezes against
+regression. The cross-build `mtmd_get_output_embd` ATOL leg is the BINDING
+WP-V4 item (D-026 addendum) and will extend nightly coverage to the encoder
+output itself.
+
+Reproduction (macOS arm64, CPU backend — the values are deterministic on this
+platform; other ISAs/thread pools may differ in the last decimals, which is
+why the gate runs `[MODEL]` on the recording platform with `atol 1e-5`):
+
+```r
+m <- llm("Qwen2-VL-2B-Instruct-Q4_K_M.gguf",
+         projector = "mmproj-Qwen2-VL-2B-Instruct-f16.gguf", backend = "cpu")
+e <- llm_embed(m, "What color is the square?",
+               images = "tests/vision/red-square.png",
+               pooling = "mean", normalize = TRUE)
+writeLines(sprintf("%.8e", e[1, ]), "embed-red-square-mean.csv")
+```
+
+Recorded 2026-07-14: relm WP-V3 branch, macOS 26.5.2 arm64, the same model
+artifacts (SHA256s above); vector L2-norm = 1 (normalized), 1536 dims.
+
 - **Deferred (BINDING at WP-V4):** the D-026 image-embedding tolerance leg
   (`mtmd_get_output_embd` vs the reference within ATOL 1e-3) is not part of
   this WP's golden — the T1 surface deliberately does not declare
