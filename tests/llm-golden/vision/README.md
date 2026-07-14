@@ -95,8 +95,10 @@ the b9726 sources:
 - **Not per-commit:** no synthetic in-repo vision model exists, so this golden
   is a `[MODEL]`/nightly gate, never per-commit CI (D-026 point 6). The nightly
   workflow wiring is WP-V4.
-- **Deferred:** the D-026 image-embedding tolerance leg
+- **Deferred (BINDING at WP-V4):** the D-026 image-embedding tolerance leg
   (`mtmd_get_output_embd` vs the reference within ATOL 1e-3) is not part of
   this WP's golden — the T1 surface deliberately does not declare
-  `mtmd_get_output_embd` (the helper path never needs it); it lands with the
-  WP-V4 nightly wiring if the founder wants the extra leg.
+  `mtmd_get_output_embd` (the helper path never needs it). Per the D-026
+  addendum (founder-approved 2026-07-14) it lands with the WP-V4 nightly
+  wiring as a **binding requirement**: the phase does not close and v0.2.0
+  is not tagged without it.
