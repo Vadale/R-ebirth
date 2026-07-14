@@ -156,7 +156,7 @@ fn checked_budget_bytes(budget_bytes: f64) -> Result<u64, RebirthError> {
 /// the engine additionally enforces its own hard `i32::MAX` ceiling (F6), so an
 /// oversized-but-finite value cannot widen the decode surface.
 fn checked_image_max_bytes(max_bytes: f64) -> Result<u64, RebirthError> {
-    if !(max_bytes > 0.0) {
+    if max_bytes.is_nan() || max_bytes <= 0.0 {
         return Err(RebirthError::Internal {
             context: format!(
                 "the image byte cap reached the FFI boundary as {max_bytes} (not a positive \
