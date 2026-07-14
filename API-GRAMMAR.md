@@ -68,8 +68,8 @@ Classed list: per-layer fitted probes + CV metrics. Methods: `print`, `summary`,
 
 ## 3. Function entries — Phases 0–1 `[approved pending sign-off]`
 
-### `llm(path, context_length = 4096, gpu_layers = NULL, backend = c("auto", "metal", "cuda", "cpu"), mmap = TRUE)` — Phase 0
-Loads a GGUF model; returns an `llm` handle. `gpu_layers = NULL` = auto (all that fit); `backend = "auto"` picks the best available. Errors: `relm_error_argument` (invalid `context_length`/`gpu_layers`/`mmap`), `relm_error_model_load` (missing/corrupt/unsupported file — message names the failing check), `relm_error_backend` (requested backend unavailable).
+### `llm(path, context_length = 4096, gpu_layers = NULL, backend = c("auto", "metal", "cuda", "cpu"), mmap = TRUE, projector = NULL)` — Phase 0 · `projector` approved 2026-07-14 (Phase 11, D-026)
+Loads a GGUF model; returns an `llm` handle. `gpu_layers = NULL` = auto (all that fit); `backend = "auto"` picks the best available. `projector` = a path to an **mmproj GGUF** (or a registry alias resolved to a path) enabling image input; `NULL` (default) = text-only, unchanged. When set, `llm()` also initializes the vision encoder bound to the loaded model — the projector is a session property fixed at load (it shares the model pointer), exactly like the model file, so it belongs on `llm()`, not on each call. A projector whose input embedding size does not match the model raises `relm_error_image` naming both sizes (reject-not-clamp). New handle slots: `projector` (chr path or `NULL`), `vision` (lgl); `print.llm` shows the projector when present. Errors: `relm_error_argument` (invalid `context_length`/`gpu_layers`/`mmap`), `relm_error_model_load` (missing/corrupt/unsupported file — message names the failing check), `relm_error_backend` (requested backend unavailable), `relm_error_image` (projector load failure / mmproj–model mismatch).
 
 ### `close(con, ...)` method `close.llm` — Phase 0
 Frees native memory deterministically (finalizer remains the safety net). Returns `invisible(NULL)`. Subsequent use of the handle → `relm_error_closed`.
@@ -80,11 +80,11 @@ Print: one screen — file, architecture, parameters, quantization, layers × hi
 ### `llm_tokens(m, x, decode = FALSE)` — Phase 1
 `decode = FALSE`: `x` is character (vectorized) → **named integer vector** per prompt (names = token pieces); for `length(x) > 1`, a list of such vectors. `decode = TRUE`: `x` is an integer vector of token ids → single character string. UTF-8 correct (Italian text in the test suite). Errors: `relm_error_tokenize`.
 
-### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL)` — Phase 1
-Vectorized over `prompt`; returns a character vector of the same length (names preserved). `chat = TRUE` applies the model's chat template (Gemma + Qwen verified); `chat = FALSE` = raw completion. `seed = NULL` draws and *records* a seed; the used seed is attached as `attr(result, "seed")` (reproducibility is always recoverable). `stop` = character vector of stop sequences. Active interventions on `m` apply. Errors: `relm_error_generation`, `relm_error_context_overflow` (prompt exceeds `context_length` — message says by how much).
+### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL, images = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
+Vectorized over `prompt`; returns a character vector of the same length (names preserved). `chat = TRUE` applies the model's chat template (Gemma + Qwen verified); `chat = FALSE` = raw completion. `seed = NULL` draws and *records* a seed; the used seed is attached as `attr(result, "seed")` (reproducibility is always recoverable). `stop` = character vector of stop sequences. Active interventions on `m` apply. `images = NULL` (default) = text-only, unchanged. Otherwise a **list parallel to `prompt`**: `images[[i]]` is a character vector of image **file paths** for prompt `i` (`character(0)` for none); a bare character vector is treated as `list(images)` and requires `length(prompt) == 1` (else recycled with a warning if lengths differ — the `llm_trace(positions=)` recycling contract). Each prompt's images are inserted **before** its text (interleaved-marker control is a reserved later capability); one output per prompt (the `prompt_id` mapping is unchanged). Requires a handle loaded with `projector=`. Errors: `relm_error_generation`, `relm_error_context_overflow` (combined text+image tokens exceed `context_length` — message says by how much), `relm_error_image` (decode/parse failure, unsupported/oversized image, images on a non-vision handle), `relm_error_argument` (bad `images` type/length).
 
-### `llm_embed(m, x, pooling = c("mean", "last", "model"), normalize = TRUE)` — Phase 1
-`x` character vector → base `matrix`, `length(x)` rows × embedding-dim columns; rownames = `names(x)` if set, else `seq_along(x)` as character. `pooling = "model"` uses the model's own pooling when the GGUF defines one. Errors: `relm_error_embed`.
+### `llm_embed(m, x, pooling = c("mean", "last", "model"), normalize = TRUE, images = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
+`x` character vector → base `matrix`, `length(x)` rows × embedding-dim columns; rownames = `names(x)` if set, else `seq_along(x)` as character. `pooling = "model"` uses the model's own pooling when the GGUF defines one. `images` pairs with `x` by the **same rule** as `llm_generate(images=)` (a list parallel to `x`; a bare character vector requires `length(x) == 1`, else recycled with a warning): one row per (text, image) input. Requires a handle loaded with `projector=`; images on a text-only handle raise `relm_error_image`. Errors: `relm_error_embed`, `relm_error_image`, `relm_error_argument`.
 
 ### `llm_download(model, dir = NULL, quiet = FALSE)` — Phase 3
 `model` = a pinned alias from the package's model registry (e.g. `"qwen2.5-1.5b-instruct-q4_k_m"`) or a full URL. HTTPS only; SHA256 verified **fail-closed** (mismatch = file deleted + `relm_error_download`); returns the local path invisibly; `dir = NULL` = the user cache directory (`tools::R_user_dir("relm", "cache")`). Never executes downloaded content.
@@ -146,6 +146,7 @@ The standardized decodability figure: metric with CI (y) vs layer (x), base grap
 | `relm_error_intervention` | steer/ablate | dimension/layer validation |
 | `relm_error_probe` | `llm_probe()`, `activations()` | |
 | `relm_error_download` | `llm_download()` | checksum failures are fail-closed |
+| `relm_error_image` | `llm()` (projector load/mismatch), `llm_generate()`, `llm_embed()` | image decode/parse failure, unsupported/oversized image, mmproj–model mismatch (`expected`/`actual` embd sizes), or images on a non-vision handle — a distinct, security-relevant surface (D-026) |
 
 Every condition carries structured fields where useful (e.g. `estimate_bytes` on OOM, `expected`/`actual` on checksum) so code — and coding models — can handle them programmatically.
 
@@ -153,7 +154,7 @@ Every condition carries structured fields where useful (e.g. `estimate_bytes` on
 
 ## 7. Reserved names — `[proposed]`, NOT approved, do not implement
 
-Reserved to keep the namespace coherent; each needs its own approved entry when its phase arrives: `llm_generate(..., on_token = )` and streaming forms (Phase 5–6); `llm_serve()` / serve module surface (Phase 7); type-contract helpers and `reb_compile()` (Phase 7); multimodal arguments to `llm()` / `llm_generate(images = )` (Phase 11); `llm_finetune()` (Phase 12); preference-optimization surface (Phase 13); `sae_features()` and `relm.topics` exports (Phase 14); export/interop surface (Phase 15); streaming-source verbs (Phase 16).
+Reserved to keep the namespace coherent; each needs its own approved entry when its phase arrives: `llm_generate(..., on_token = )` and streaming forms (Phase 5–6); `llm_serve()` / serve module surface (Phase 7); type-contract helpers and `reb_compile()` (Phase 7); the vision-tower (T3) interpretability surface (post-Phase-11 research, D-026 — the Phase-11 `projector=`/`images=` slot was realized as approved §3 amendments on 2026-07-14); `llm_finetune()` (Phase 12); preference-optimization surface (Phase 13); `sae_features()` and `relm.topics` exports (Phase 14); export/interop surface (Phase 15); streaming-source verbs (Phase 16).
 
 ---
 
