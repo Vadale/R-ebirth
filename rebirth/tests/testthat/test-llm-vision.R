@@ -426,6 +426,33 @@ test_that("[MODEL] an intervened handle derived from a vision handle keeps image
   expect_type(answer, "character")
 })
 
+test_that("[MODEL] the CPU greedy continuation matches the unpatched upstream reference", {
+  # The harness-B vision golden (same-implementation leg, D-026 point 6):
+  # reference = the UNPATCHED upstream llama-mtmd-cli at b9726, CPU-only,
+  # greedy on the committed red-square image (tests/llm-golden/vision/ has the
+  # exact reproduction command + tooling). The engine runs on the CPU backend
+  # for comparability with the CPU-only reference build; greedy on identical
+  # CPU code makes byte-exact text the observable equivalent of a
+  # token-for-token match (the CLI does not expose token ids). [MODEL]-gated,
+  # repo layout only (the golden lives at the repo root, outside the package);
+  # nightly workflow wiring is WP-V4 — never per-commit (no synthetic vision
+  # model exists).
+  golden <- file.path(
+    testthat::test_path(), "..", "..", "..",
+    "tests", "llm-golden", "vision", "goldens", "greedy-red-square.txt"
+  )
+  skip_if_not(file.exists(golden), "vision golden not present (repo layout only)")
+  m <- llm(vlm_model_path(), projector = vlm_mmproj_path(), backend = "cpu")
+  on.exit(close(m), add = TRUE)
+  ans <- llm_generate(
+    m, "What color is the square?",
+    images = vision_fixture("red-square.png"),
+    max_tokens = 32, temperature = 0
+  )
+  ref <- readChar(golden, file.size(golden), useBytes = TRUE)
+  expect_identical(ans[[1]], ref)
+})
+
 test_that("[MODEL] a multimodal prompt with a text portion over n_batch decodes (rule 8a)", {
   # Hard rule 8a for the new decode path: the default n_batch is 2048, so a
   # ~2300-token text portion plus the image chunk MUST be split internally by
