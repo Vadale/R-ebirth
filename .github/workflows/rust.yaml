@@ -11,6 +11,10 @@
 #                  PRs). The feed-dependent half (RustSec advisories + cargo audit)
 #                  runs in nightly-supply-chain.yaml so a fresh advisory never gates a
 #                  PR. Config: rebirth/src/rust/deny.toml.
+# - macos-cross-x86: cross-compile + LINK the R-free engine crate's test binaries
+#                  for x86_64-apple-darwin on the arm64 runner — the per-commit home
+#                  of the shipped Intel-mac r-universe leg (PR #30 bug classes:
+#                  wrong-arch vendored objects; missing Accelerate at link).
 # All download only pinned tooling; none downloads a model.
 on:
   push:
@@ -137,3 +141,37 @@ jobs:
       - name: cargo deny — licenses / bans / sources
         working-directory: rebirth/src/rust
         run: cargo-deny check bans licenses sources
+
+  # WP-V1 reviewer finding: the macOS x86_64 (Intel) engine build is a shipped
+  # r-universe artifact, but no per-commit job exercised that leg — a regression
+  # (the PR #30 class: wrong-arch vendored objects, or a framework missing from
+  # the x86_64 link) would surface only post-merge on the r-universe rebuild.
+  # This job cross-compiles the R-free engine crate and LINKS its test binaries
+  # (--no-run) for x86_64-apple-darwin on the arm64 runner; the link step is the
+  # gate. Tests are not executed (cross arch); no R, no model.
+  macos-cross-x86:
+    runs-on: macos-15
+    name: macOS x86_64 cross engine link
+
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+      CMAKE_C_COMPILER_LAUNCHER: "sccache"
+      CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
+
+    defaults:
+      run:
+        working-directory: rebirth/src/rust
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin
+
+      - name: sccache (compiler cache)
+        uses: mozilla-actions/sccache-action@v0.0.9
+
+      - name: cargo test --no-run for x86_64-apple-darwin (link is the gate)
+        run: cargo test -p rebirth-llm --no-run --target x86_64-apple-darwin
