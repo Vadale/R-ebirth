@@ -19,6 +19,21 @@
 #' Qwen2.5 GGUF to run it). A tiny in-repo model arrives in a later work
 #' package.
 #'
+#' @section Image input (vision models):
+#' `projector` enables image input for a vision-language model: point it at the
+#' model's companion **mmproj GGUF** (the vision projector published alongside
+#' the model, e.g. `mmproj-*.gguf`). The projector is a session property fixed
+#' at load — it is bound to the loaded model — so it belongs on `llm()`, not on
+#' each call; a handle loaded with a projector then accepts
+#' [llm_generate()][llm_generate]'s `images` argument. A projector whose input
+#' embedding size does not match the model raises `relm_error_image` naming
+#' both sizes.
+#'
+#' **Trust note:** the projector file is engine-trusted input, exactly like
+#' `path` — a corrupt or hostile GGUF is parsed by native code. Prefer files
+#' whose SHA256 you can verify (e.g. fetched with [llm_download()]); treat a
+#' projector from an unknown source with the same care as a model file.
+#'
 #' @param path Single string: path to a GGUF model file.
 #' @param context_length Positive integer: the active context window in tokens
 #'   (llama.cpp: `n_ctx`). Default 4096.
@@ -27,6 +42,9 @@
 #'   `n_gpu_layers`). Ignored on the CPU backend.
 #' @param backend One of `"auto"`, `"metal"`, `"cuda"`, `"cpu"`.
 #' @param mmap Logical: memory-map the model file (default `TRUE`).
+#' @param projector `NULL` (default: text-only, unchanged) or a single string:
+#'   path to the model's **mmproj GGUF**, enabling image input (see the
+#'   *Image input* section).
 #' @return An object of class `llm` (see the package's class documentation).
 #' @seealso [close.llm()], [print.llm()], [summary.llm()]
 #' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
@@ -39,7 +57,8 @@ llm <- function(path,
                 context_length = 4096,
                 gpu_layers = NULL,
                 backend = c("auto", "metal", "cuda", "cpu"),
-                mmap = TRUE) {
+                mmap = TRUE,
+                projector = NULL) {
   # --- path: a single, existing, readable, non-directory file ---
   if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
     relm_abort(
@@ -103,6 +122,37 @@ llm <- function(path,
     )
   }
 
+  # --- projector: NULL, or a single existing, readable mmproj GGUF file ---
+  # A wrong TYPE is an argument error; a path that cannot be loaded is the
+  # vision-domain relm_error_image (API-GRAMMAR section 3: projector load
+  # failure), mirroring the images= split in llm_generate().
+  if (!is.null(projector)) {
+    if (!is.character(projector) || length(projector) != 1L || is.na(projector) ||
+      !nzchar(projector)) {
+      relm_abort(
+        "relm_error_argument",
+        "`projector` must be NULL or a single non-empty string naming an mmproj GGUF file.",
+        list(argument = "projector")
+      )
+    }
+    projector <- path.expand(projector)
+    if (!file.exists(projector) || dir.exists(projector)) {
+      abort_image(
+        sprintf(
+          "Projector file not found at '%s'. Point `projector` at the model's mmproj GGUF.",
+          projector
+        ),
+        list(path = projector)
+      )
+    }
+    if (file.access(projector, mode = 4L) != 0L) {
+      abort_image(
+        sprintf("Projector file '%s' is not readable. Check its file permissions.", projector),
+        list(path = projector)
+      )
+    }
+  }
+
   # --- backend: a valid choice, resolved and checked against the build ---
   backend <- match.arg(backend)
   available <- rebirth_available_backends()
@@ -129,13 +179,15 @@ llm <- function(path,
     )
   }
 
-  # --- cross the boundary: NULL gpu_layers is the -1 auto sentinel ---
+  # --- cross the boundary: NULL gpu_layers is the -1 auto sentinel; NULL
+  # projector is the "" text-only sentinel ---
   gpu_layers_arg <- if (is.null(gpu_layers)) -1L else as.integer(gpu_layers)
+  projector_arg <- if (is.null(projector)) "" else projector
   payload <- rebirth_model_load(
-    path, as.integer(context_length), gpu_layers_arg, backend, mmap
+    path, as.integer(context_length), gpu_layers_arg, backend, mmap, projector_arg
   )
   payload <- relm_check(payload)
-  new_llm(payload, path)
+  new_llm(payload, path, projector = projector)
 }
 
 # Build the `llm` S3 object from a successful load payload. The mutable closed
@@ -144,8 +196,11 @@ llm <- function(path,
 # `interventions` is empty for a freshly loaded handle and carries the accumulated
 # steering/ablation spec for a derived handle (llm_steer/llm_ablate, D-016); each
 # handle gets its own `state` env + finalizer, so a derived handle frees its
-# distinct native context independently of the source.
-new_llm <- function(payload, path, interventions = list()) {
+# distinct native context independently of the source. `projector` is the mmproj
+# path for a vision handle (NULL = text-only); a derived handle passes the
+# source's — the native vision context lives on the shared model, so the
+# projector carries over structurally (WP-V2, D-026).
+new_llm <- function(payload, path, interventions = list(), projector = NULL) {
   state <- new.env(parent = emptyenv())
   state$closed <- FALSE
   state$ptr <- payload$ptr
@@ -162,6 +217,8 @@ new_llm <- function(payload, path, interventions = list()) {
       hidden_size = payload$hidden_size,
       context_length = payload$context_length,
       backend = payload$backend,
+      projector = projector,
+      vision = !is.null(projector),
       interventions = interventions,
       # Extras surfaced by summary(), kept dot-prefixed to mark them as not part
       # of the API-GRAMMAR section 2 slot set.
@@ -241,6 +298,9 @@ print.llm <- function(x, ...) {
   cat(sprintf("  layers x hidden: %d x %d\n", x$layers, x$hidden_size))
   cat(sprintf("  context:         %d tokens\n", x$context_length))
   cat(sprintf("  backend:         %s\n", x$backend))
+  if (isTRUE(x$vision)) {
+    cat(sprintf("  projector:       %s\n", basename(x$projector)))
+  }
   cat(sprintf("  interventions:   %d active\n", length(x$interventions)))
   invisible(x)
 }

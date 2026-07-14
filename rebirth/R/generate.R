@@ -19,6 +19,23 @@
 #' before it). A prompt longer than the model's context window raises
 #' `relm_error_context_overflow`, whose message states by how much.
 #'
+#' @section Image input (vision models):
+#' On a handle loaded with [llm()]'s `projector` argument, `images` attaches
+#' image files to each prompt: a **list parallel to `prompt`**, where
+#' `images[[i]]` is a character vector of image file paths for prompt `i`
+#' (`character(0)` for none). A bare character vector is treated as
+#' `list(images)` — one image set — and pairs with a single prompt; with
+#' several prompts it is recycled across all of them with a warning. Each
+#' prompt's images are inserted **before** its text. Exactly three file
+#' formats are accepted: **JPEG, PNG, BMP** (anything else — GIF and audio
+#' included — is rejected before any decode with `relm_error_image`). Size
+#' limits, enforced before decoding: at most 64 MB per file by default
+#' (override with `options(relm.image_max_bytes = )`; hard ceiling
+#' 2147483647 bytes), each dimension between 1 and 16384 pixels, and at most
+#' 33554432 total pixels. Images on a handle loaded without a projector raise
+#' `relm_error_image`; the combined text+image token count must fit
+#' `context_length` (`relm_error_context_overflow` states by how much).
+#'
 #' @param m An `llm` handle from [llm()].
 #' @param prompt A character vector of prompts; the result has one element per
 #'   prompt and preserves `names(prompt)`.
@@ -37,6 +54,11 @@
 #'   rather than mis-formatting the prompt.
 #' @param stop `NULL`, or a character vector of stop sequences that end
 #'   generation.
+#' @param images `NULL` (default: text-only, unchanged) or the image file
+#'   paths to attach to each prompt — a list parallel to `prompt`, or a bare
+#'   character vector for a single prompt. Accepted formats: JPEG, PNG, BMP.
+#'   Requires a handle loaded with `llm(projector = )`; see the *Image input*
+#'   section.
 #' @return A character vector the same length as `prompt` (names preserved), each
 #'   element the generated continuation. The seed used is attached as
 #'   `attr(result, "seed")`.
@@ -47,7 +69,8 @@
 #' close(m)
 #' @export
 llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
-                         top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL) {
+                         top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL,
+                         images = NULL) {
   if (!inherits(m, "llm")) {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
@@ -81,6 +104,16 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   }
   stop_seqs <- if (is.null(stop)) character(0) else stop
 
+  # Images (WP-V2, D-026): normalize the pairing (relm_error_argument), then —
+  # only when a prompt actually carries images — validate the byte-cap option
+  # (argument domain, so a broken option is caught even before the vision
+  # checks) and require a vision handle + existing files (relm_error_image).
+  # NULL images leaves the pre-WP-V2 text path untouched.
+  image_sets <- normalize_images(images, length(prompt))
+  has_images <- !is.null(image_sets) && any(lengths(image_sets) > 0L)
+  max_bytes <- if (has_images) image_max_bytes() else 64 * 1024^2
+  check_images_usable(m, image_sets)
+
   if (is.null(seed)) {
     # Draw from R's RNG so set.seed() makes even an unspecified seed reproducible.
     seed_val <- as.double(sample.int(.Machine$integer.max, 1L))
@@ -96,12 +129,13 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   }
 
   out <- vapply(
-    prompt,
-    function(p) {
+    seq_along(prompt),
+    function(i) {
+      imgs <- if (is.null(image_sets)) character(0) else path.expand(image_sets[[i]])
       payload <- relm_check(rebirth_generate(
-        m$ptr, p, chat,
+        m$ptr, prompt[[i]], chat,
         as.integer(max_tokens), as.double(temperature), as.double(top_p),
-        seed_val, stop_seqs
+        seed_val, stop_seqs, imgs, max_bytes
       ))
       payload$text
     },
