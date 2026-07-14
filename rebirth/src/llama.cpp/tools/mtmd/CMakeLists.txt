@@ -106,6 +106,10 @@ if (TARGET BUILD_INFO)
     add_dependencies(mtmd-helper BUILD_INFO)
 endif()
 
+# rebirth WP-V1 (D-026): a library-only build (LLAMA_BUILD_MTMD without
+# LLAMA_BUILD_TOOLS) has no llama-common and prunes the CLI/debug sources, so
+# everything from the llama-common FATAL_ERROR check down is tools-only.
+if (LLAMA_BUILD_TOOLS)
 # if mtmd is linked against llama-common, we throw an error
 if (TARGET mtmd)
     get_target_property(libs mtmd LINK_LIBRARIES)
@@ -134,3 +138,4 @@ add_executable(llama-mtmd-debug debug/mtmd-debug.cpp)
 set_target_properties(llama-mtmd-debug PROPERTIES OUTPUT_NAME llama-mtmd-debug)
 target_link_libraries(llama-mtmd-debug PRIVATE llama-common mtmd Threads::Threads)
 target_compile_features(llama-mtmd-debug PRIVATE cxx_std_17)
+endif() # LLAMA_BUILD_TOOLS (rebirth WP-V1, D-026)

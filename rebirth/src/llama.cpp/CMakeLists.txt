@@ -218,6 +218,14 @@ if (LLAMA_BUILD_COMMON AND LLAMA_BUILD_TOOLS)
     add_subdirectory(tools)
 endif()
 
+# rebirth WP-V1 (D-026): build the mtmd (multimodal) LIBRARY alone — libmtmd
+# links only ggml+llama, so it needs neither common/ nor the CLI tools. The
+# guard keeps the full-tools path (which reaches tools/mtmd via tools/) intact.
+option(LLAMA_BUILD_MTMD "llama: build the multimodal library without common/tools" OFF)
+if (LLAMA_BUILD_MTMD AND NOT (LLAMA_BUILD_COMMON AND LLAMA_BUILD_TOOLS))
+    add_subdirectory(tools/mtmd)
+endif()
+
 if (LLAMA_BUILD_APP)
     add_subdirectory(app)
 endif()
