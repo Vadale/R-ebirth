@@ -282,7 +282,9 @@ impl LoadedModel {
 
 impl LoadedModel {
     /// Clear the KV cache so the next forward pass starts from position 0.
-    fn clear_memory(&self) {
+    /// `pub(crate)` so the multimodal ingest (vision.rs) starts its pass from a
+    /// clean cache exactly like the text paths here.
+    pub(crate) fn clear_memory(&self) {
         // SAFETY: `ctx_ptr` is a live context; `llama_get_memory` returns its
         // (non-owning) memory handle, cleared in place.
         unsafe {
@@ -294,8 +296,9 @@ impl LoadedModel {
     }
 
     /// `n_vocab` as a positive `usize`, or a generation error when the model has
-    /// an empty vocabulary (nothing could be scored or sampled).
-    fn n_vocab_checked(&self) -> Result<usize, RebirthError> {
+    /// an empty vocabulary (nothing could be scored or sampled). `pub(crate)` for
+    /// the multimodal path (vision.rs), which shares the sampler loop.
+    pub(crate) fn n_vocab_checked(&self) -> Result<usize, RebirthError> {
         match self.n_vocab() as usize {
             0 => Err(RebirthError::Generation {
                 reason: "model has empty vocabulary".to_string(),
@@ -404,8 +407,11 @@ impl LoadedModel {
         Ok(())
     }
 
-    /// Copy the logit row the engine stored for output slot `ith`.
-    fn logits_ith(&self, ith: i32, n_vocab: usize) -> Result<Vec<f32>, RebirthError> {
+    /// Copy the logit row the engine stored for output slot `ith`. A negative
+    /// index reads in reverse (`-1` = the last output row, llama.h L1025) — the
+    /// multimodal ingest uses that to fetch the whole-prompt distribution after
+    /// `mtmd_helper_eval_chunks(logits_last = true)`; hence `pub(crate)`.
+    pub(crate) fn logits_ith(&self, ith: i32, n_vocab: usize) -> Result<Vec<f32>, RebirthError> {
         // SAFETY: `ctx_ptr` is live; `llama_get_logits_ith` returns a pointer to
         // `n_vocab` f32 owned by the context (valid until the next decode). Null
         // means the slot did not request logits — an internal inconsistency.
@@ -757,22 +763,39 @@ impl LoadedModel {
             });
         }
         let n_vocab = self.n_vocab_checked()?;
-        let ctx_len = self.context_length() as usize;
 
         // Ingest the prompt in n_batch-sized chunks and take its final-position
         // logits — the shared path with next_token_logits, which also handles the
         // prompt-longer-than-one-batch split. This row is the first sampling step's
         // next-token distribution.
-        let mut logits = self.prompt_last_logits(prompt, n_vocab)?;
+        let logits = self.prompt_last_logits(prompt, n_vocab)?;
+        self.continue_generation(logits, prompt.len() as i32, params)
+    }
 
+    /// The autoregressive sampler loop: from `logits` (the ingested prompt's
+    /// final next-token distribution) sample/argmax, decode one continuation
+    /// token at a time starting at position `start_pos`, and stop on
+    /// EOS/stop-string/window-full/`max_tokens`. Extracted verbatim from
+    /// [`generate`](Self::generate) so the multimodal ingest (vision.rs) can
+    /// continue with the EXISTING loop from the position
+    /// `mtmd_helper_eval_chunks` reports — the text path's behavior is
+    /// byte-identical (same code, same order of operations).
+    pub(crate) fn continue_generation(
+        &self,
+        mut logits: Vec<f32>,
+        start_pos: i32,
+        params: &GenerateParams,
+    ) -> Result<Generation, RebirthError> {
+        let ctx_len = self.context_length() as usize;
         let vocab = self.vocab_ptr();
+        let n_vocab = self.n_vocab_checked()?;
         let mut rng = SplitMix64::new(params.seed);
         let mut out: Vec<i32> = Vec::with_capacity(params.max_tokens);
         let mut stop_reason = StopReason::MaxTokens;
 
         // `n_past` is the position the next continuation token occupies: the
-        // prompt filled 0..prompt.len(), so continuation i lands at prompt.len()+i.
-        for n_past in (prompt.len() as i32..).take(params.max_tokens) {
+        // prompt filled 0..start_pos, so continuation i lands at start_pos + i.
+        for n_past in (start_pos..).take(params.max_tokens) {
             let next = if params.temperature <= 0.0 {
                 argmax(&logits)
             } else {
@@ -845,14 +868,29 @@ impl LoadedModel {
         params: &GenerateParams,
     ) -> Result<Generation, RebirthError> {
         self.require_tokenizer()?;
-        let (text, add_special, parse_special) = if chat {
-            let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
-            (templated.text, templated.add_special, true)
-        } else {
-            (prompt.to_string(), true, false)
-        };
+        let (text, add_special, parse_special) = self.resolve_prompt_text(prompt, chat)?;
         let prompt_ids = self.tokenize(&text, add_special, parse_special)?;
         self.generate(&prompt_ids, params)
+    }
+
+    /// Resolve a user prompt into the exact text the tokenizer receives plus
+    /// its `(add_special, parse_special)` flags: the chat template (with the
+    /// D-021 builtin fallback carried on [`TemplatedPrompt`]) when `chat`, the
+    /// raw completion otherwise. Extracted from
+    /// [`generate_prompt`](Self::generate_prompt) so the multimodal path
+    /// (vision.rs) templates its marker-bearing prompt identically — one
+    /// resolution, no drift.
+    pub(crate) fn resolve_prompt_text(
+        &self,
+        prompt: &str,
+        chat: bool,
+    ) -> Result<(String, bool, bool), RebirthError> {
+        if chat {
+            let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
+            Ok((templated.text, templated.add_special, true))
+        } else {
+            Ok((prompt.to_string(), true, false))
+        }
     }
 }
 

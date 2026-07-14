@@ -43,6 +43,7 @@ fn load_synthetic() -> LoadedModel {
         gpu_layers: None,
         backend: BackendKind::Cpu,
         mmap: true,
+        projector: None,
     })
     .expect("synthetic model loads")
 }

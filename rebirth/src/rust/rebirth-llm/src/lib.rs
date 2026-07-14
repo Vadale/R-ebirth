@@ -30,6 +30,7 @@ mod probe;
 #[cfg(feature = "spill")]
 mod spill;
 mod trace;
+mod vision;
 
 pub use embed::{Embeddings, Pooling};
 pub use engine::{
@@ -46,6 +47,7 @@ pub use trace::{
     parse_tensor_name, CaptureRow, CaptureSpec, Component, Positions, SpillPlan, TraceOutput,
     TRACE_MATERIALIZED_EXPANSION,
 };
+pub use vision::{validate_image_file, IMAGE_HARD_MAX_BYTES, IMAGE_MAX_DIM, IMAGE_MAX_PIXELS};
 
 /// Initialize the process-global llama.cpp + ggml backend.
 ///

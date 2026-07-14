@@ -57,6 +57,20 @@ pub enum RebirthError {
     /// buffer, or a dimension/layer was invalid. `reason` carries the full,
     /// already-actionable message (composed at the failure site, like `Trace`).
     Intervention { reason: String },
+    /// An image / vision failure (WP-V2, D-026): the projector failed to load or
+    /// does not match the model at `llm(projector=)` time, or an image file was
+    /// rejected by the pre-decode gate (unsupported format, over a size cap) or
+    /// failed to decode. `reason` carries the full, already-actionable message
+    /// (composed at the failure site, like `Embed`). The optional fields mirror
+    /// the structured R condition fields (API-GRAMMAR section 6): `path` for a
+    /// per-file failure, `expected`/`actual` for the mmproj-model embedding-size
+    /// mismatch (both sizes are named — reject-not-clamp, hard rule 8b).
+    Image {
+        reason: String,
+        path: Option<String>,
+        expected: Option<i32>,
+        actual: Option<i32>,
+    },
     /// A capture whose predicted in-memory size exceeds the budget, raised BEFORE
     /// the capture is allocated when `spill = false` (the 16 GB rule; API-GRAMMAR
     /// section 4). The R validation layer raises the same class pre-boundary for
@@ -86,6 +100,7 @@ impl RebirthError {
             RebirthError::Embed { .. } => "relm_error_embed",
             RebirthError::Trace { .. } => "relm_error_trace",
             RebirthError::Intervention { .. } => "relm_error_intervention",
+            RebirthError::Image { .. } => "relm_error_image",
             RebirthError::Oom { .. } => "relm_error_oom",
             RebirthError::Internal { .. } => "relm_error_internal",
         }
@@ -151,6 +166,10 @@ impl fmt::Display for RebirthError {
             // (unsupported architecture vs a rejected buffer vs an invalid
             // dimension/layer), so `reason` already holds a complete message.
             RebirthError::Intervention { reason } => write!(f, "{reason}"),
+            // Like `Embed`, each image failure (unsupported format vs a size cap
+            // vs a decode failure vs a projector mismatch) needs its own guidance,
+            // so `reason` already holds a complete message.
+            RebirthError::Image { reason, .. } => write!(f, "{reason}"),
             RebirthError::Oom {
                 estimate_bytes,
                 budget_bytes,

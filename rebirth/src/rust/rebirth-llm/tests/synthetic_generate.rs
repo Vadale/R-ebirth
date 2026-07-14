@@ -69,6 +69,7 @@ fn load_synthetic() -> LoadedModel {
         // CPU so the exact-value path runs identically on every CI platform.
         backend: BackendKind::Cpu,
         mmap: true,
+        projector: None,
     })
     .expect("synthetic model loads")
 }

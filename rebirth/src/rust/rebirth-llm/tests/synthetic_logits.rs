@@ -98,6 +98,7 @@ fn engine_logits_match_numpy_oracle_within_tolerance() {
         // CPU so the exact-value path runs identically on every CI platform.
         backend: BackendKind::Cpu,
         mmap: true,
+        projector: None,
     })
     .expect("synthetic model loads");
 
@@ -195,6 +196,7 @@ fn top_k_extraction_matches_numpy_oracle_at_the_final_position() {
         gpu_layers: None,
         backend: BackendKind::Cpu,
         mmap: true,
+        projector: None,
     })
     .expect("synthetic model loads");
 
@@ -326,6 +328,7 @@ fn chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row() {
             // CPU so the exact-value path runs identically on every CI platform.
             backend: BackendKind::Cpu,
             mmap: true,
+            projector: None,
         },
         Some(4),
     )
@@ -400,6 +403,7 @@ fn chunked_over_batch_teacher_forced_logits_match_the_full_golden_matrix() {
             // CPU so the exact-value path runs identically on every CI platform.
             backend: BackendKind::Cpu,
             mmap: true,
+            projector: None,
         },
         Some(4),
     )

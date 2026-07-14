@@ -110,6 +110,7 @@ fn load_qwen(path: PathBuf) -> LoadedModel {
         gpu_layers: None,
         backend: pick_backend(),
         mmap: true,
+        projector: None,
     })
     .expect("load Qwen2.5-0.5B")
 }
