@@ -10,7 +10,8 @@ llm(
   context_length = 4096,
   gpu_layers = NULL,
   backend = c("auto", "metal", "cuda", "cpu"),
-  mmap = TRUE
+  mmap = TRUE,
+  projector = NULL
 )
 
 \method{print}{llm}(x, ...)
@@ -28,6 +29,10 @@ non-negative integer count of layers to offload (llama.cpp:
 \item{backend}{One of \code{"auto"}, \code{"metal"}, \code{"cuda"}, \code{"cpu"}.}
 
 \item{mmap}{Logical: memory-map the model file (default \code{TRUE}).}
+
+\item{projector}{\code{NULL} (default: text-only, unchanged) or a single string:
+path to the model's \strong{mmproj GGUF}, enabling image input (see the
+\emph{Image input} section).}
 
 \item{x}{An \code{llm} handle.}
 
@@ -58,6 +63,23 @@ the \code{RELM_TEST_MODEL_QWEN} environment variable (point it at a local
 Qwen2.5 GGUF to run it). A tiny in-repo model arrives in a later work
 package.
 }
+\section{Image input (vision models)}{
+
+\code{projector} enables image input for a vision-language model: point it at the
+model's companion \strong{mmproj GGUF} (the vision projector published alongside
+the model, e.g. \verb{mmproj-*.gguf}). The projector is a session property fixed
+at load — it is bound to the loaded model — so it belongs on \code{llm()}, not on
+each call; a handle loaded with a projector then accepts
+\link[=llm_generate]{llm_generate()}'s \code{images} argument. A projector whose input
+embedding size does not match the model raises \code{relm_error_image} naming
+both sizes.
+
+\strong{Trust note:} the projector file is engine-trusted input, exactly like
+\code{path} — a corrupt or hostile GGUF is parsed by native code. Prefer files
+whose SHA256 you can verify (e.g. fetched with \code{\link[=llm_download]{llm_download()}}); treat a
+projector from an unknown source with the same care as a model file.
+}
+
 \examples{
 \dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
 m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))

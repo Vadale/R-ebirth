@@ -5,7 +5,7 @@
 #' @useDynLib relm, .registration = TRUE
 NULL
 
-rebirth_model_load <- function(path, context_length, gpu_layers, backend, mmap) .Call(wrap__rebirth_model_load, path, context_length, gpu_layers, backend, mmap)
+rebirth_model_load <- function(path, context_length, gpu_layers, backend, mmap, projector) .Call(wrap__rebirth_model_load, path, context_length, gpu_layers, backend, mmap, projector)
 
 rebirth_handle_close <- function(ptr) .Call(wrap__rebirth_handle_close, ptr)
 
@@ -17,7 +17,7 @@ rebirth_tokenize <- function(ptr, text, add_special, parse_special) .Call(wrap__
 
 rebirth_detokenize <- function(ptr, ids) .Call(wrap__rebirth_detokenize, ptr, ids)
 
-rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop) .Call(wrap__rebirth_generate, ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop)
+rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop, images, image_max_bytes) .Call(wrap__rebirth_generate, ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop, images, image_max_bytes)
 
 rebirth_logits <- function(ptr, prompt, top) .Call(wrap__rebirth_logits, ptr, prompt, top)
 
@@ -28,6 +28,8 @@ rebirth_trace <- function(ptr, prompts, layers, positions_mode, positions_values
 rebirth_intervene <- function(ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values) .Call(wrap__rebirth_intervene, ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values)
 
 rebirth_selftest_new_handle <- function() .Call(wrap__rebirth_selftest_new_handle)
+
+rebirth_selftest_validate_image <- function(path, max_bytes) .Call(wrap__rebirth_selftest_validate_image, path, max_bytes)
 
 rebirth_selftest_panic <- function() .Call(wrap__rebirth_selftest_panic)
 

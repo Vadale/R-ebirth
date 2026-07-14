@@ -150,6 +150,27 @@ fn checked_budget_bytes(budget_bytes: f64) -> Result<u64, RebirthError> {
     Ok(budget_bytes as u64)
 }
 
+/// The per-image byte cap R validated (`options(relm.image_max_bytes=)`, a
+/// positive finite number). A non-positive or NaN value means R's validation
+/// broke, so reject with `relm_error_internal` rather than clamp (hard rule 8b);
+/// the engine additionally enforces its own hard `i32::MAX` ceiling (F6), so an
+/// oversized-but-finite value cannot widen the decode surface.
+fn checked_image_max_bytes(max_bytes: f64) -> Result<u64, RebirthError> {
+    if max_bytes.is_nan() || max_bytes <= 0.0 {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "the image byte cap reached the FFI boundary as {max_bytes} (not a positive \
+                 number); R validates options(relm.image_max_bytes=) before the call"
+            ),
+        });
+    }
+    Ok(if max_bytes.is_infinite() {
+        u64::MAX
+    } else {
+        max_bytes as u64
+    })
+}
+
 /// Borrow the live model behind `ptr` and run `f`, mapping a closed/foreign
 /// pointer, a `RebirthError`, or a caught panic to the right classed payload.
 fn with_model<F>(ptr: &Robj, f: F) -> Robj
@@ -224,6 +245,26 @@ fn error_fields(error: &RebirthError) -> Robj {
         RebirthError::Intervention { reason } => {
             vec![("reason", Robj::from(reason.as_str()))]
         }
+        // Only the fields the specific failure carries (API-GRAMMAR §6:
+        // `path` on a decode failure, `expected`/`actual` on a mismatch).
+        RebirthError::Image {
+            path,
+            expected,
+            actual,
+            ..
+        } => {
+            let mut pairs: Vec<(&str, Robj)> = Vec::new();
+            if let Some(p) = path {
+                pairs.push(("path", Robj::from(p.as_str())));
+            }
+            if let Some(e) = expected {
+                pairs.push(("expected", Robj::from(*e)));
+            }
+            if let Some(a) = actual {
+                pairs.push(("actual", Robj::from(*a)));
+            }
+            pairs
+        }
         // R has no u64: the two byte sizes surface as doubles (exact for these
         // magnitudes), matching the R-side predictive OOM's `estimate_bytes` field.
         RebirthError::Oom {
@@ -281,7 +322,9 @@ fn resolve(result: std::thread::Result<Result<Robj, RebirthError>>) -> Robj {
 // this call (ARCHITECTURE.md §2); here we only normalize the enum/sentinel args
 // (§4), run the engine under `catch_unwind`, and return a classed payload.
 // `gpu_layers < 0` is the R `NULL` sentinel (auto / all layers). `backend` is a
-// concrete backend name resolved in R — never `"auto"`.
+// concrete backend name resolved in R — never `"auto"`. `projector` is the
+// mmproj GGUF path enabling image input (WP-V2, D-026), or "" for the R `NULL`
+// sentinel (text-only, unchanged).
 // (Plain `//`, not `///`: extendr propagates doc comments into the generated R
 // wrapper; these entries are internal, so their wrappers stay undocumented.)
 #[extendr]
@@ -291,6 +334,7 @@ fn rebirth_model_load(
     gpu_layers: i32,
     backend: &str,
     mmap: bool,
+    projector: &str,
 ) -> Robj {
     let backend = match BackendKind::parse(backend) {
         Some(kind) => kind,
@@ -322,6 +366,11 @@ fn rebirth_model_load(
         },
         backend,
         mmap,
+        projector: if projector.is_empty() {
+            None
+        } else {
+            Some(PathBuf::from(projector))
+        },
     };
 
     // The entire success path -- load, metadata snapshot, external-pointer and
@@ -404,7 +453,11 @@ fn rebirth_detokenize(ptr: Robj, ids: Vec<i32>) -> Robj {
 // catch_unwind, and return the continuation text plus the seed actually used.
 // `stop` is the R character vector of stop sequences (empty for none). `seed`
 // arrives as a double (R has no u64) holding a whole non-negative number.
-// (Eight params: this boundary mirrors the R `llm_generate()` arguments 1:1;
+// `images` is THIS prompt's image file paths (WP-V2, D-026), empty for the
+// text-only path — which then routes through the pre-WP-V2 code unchanged
+// (byte-identical, zero mtmd involvement); `image_max_bytes` is the validated
+// R option `relm.image_max_bytes` (consulted only when images are present).
+// (Ten params: this boundary mirrors the R `llm_generate()` arguments 1:1;
 // extendr maps each to a `.Call` argument, so they cannot be bundled.)
 #[allow(clippy::too_many_arguments)]
 #[extendr]
@@ -417,6 +470,8 @@ fn rebirth_generate(
     top_p: f64,
     seed: f64,
     stop: Vec<String>,
+    images: Vec<String>,
+    image_max_bytes: f64,
 ) -> Robj {
     with_model(&ptr, |model| {
         let params = GenerateParams {
@@ -426,7 +481,12 @@ fn rebirth_generate(
             seed: seed as u64,
             stop,
         };
-        let generation = model.generate_prompt(prompt, chat, &params)?;
+        let generation = if images.is_empty() {
+            model.generate_prompt(prompt, chat, &params)?
+        } else {
+            let max_bytes = checked_image_max_bytes(image_max_bytes)?;
+            model.generate_prompt_with_images(prompt, chat, &images, max_bytes, &params)?
+        };
         Ok(List::from_pairs(vec![
             ("ok", Robj::from(true)),
             ("text", Robj::from(generation.text)),
@@ -822,6 +882,29 @@ fn rebirth_selftest_new_handle() -> Robj {
     ExternalPtr::new(LlmHandle::empty()).into()
 }
 
+// Test-only: run the WP-V2 image pre-decode gate (read once -> magic
+// allow-list -> byte cap -> header-only dimension probe -> dimension/pixel
+// caps) on `path` with NO model, NO projector, and NO decode, returning the
+// classed payload (`relm_error_image` on rejection, the detected format on
+// success). This is what lets the per-commit, model-free R suite assert every
+// adversarial rejection of audit req 4 (audio magics, GIF, garbage, truncated,
+// over-dims) through the real classed-condition plumbing. Internal (never in
+// NAMESPACE).
+#[extendr]
+fn rebirth_selftest_validate_image(path: &str, max_bytes: f64) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(
+        || -> Result<Robj, RebirthError> {
+            let format =
+                rebirth_llm::validate_image_file(path, checked_image_max_bytes(max_bytes)?)?;
+            Ok(List::from_pairs(vec![
+                ("ok", Robj::from(true)),
+                ("format", Robj::from(format)),
+            ])
+            .into())
+        },
+    )))
+}
+
 // Test-only: force a panic inside the `catch_unwind` path and return the
 // resulting `relm_error_internal` payload — proves a panic maps to a classed
 // condition instead of reaching R raw. Internal (never in NAMESPACE).
@@ -890,13 +973,17 @@ extendr_api::extendr_module! {
     fn rebirth_trace;
     fn rebirth_intervene;
     fn rebirth_selftest_new_handle;
+    fn rebirth_selftest_validate_image;
     fn rebirth_selftest_panic;
     fn rebirth_selftest_trace_tokens_spill;
 }
 
 #[cfg(test)]
 mod tests {
-    use super::{checked_budget_bytes, checked_count, from_engine_index, to_engine_index};
+    use super::{
+        checked_budget_bytes, checked_count, checked_image_max_bytes, from_engine_index,
+        to_engine_index,
+    };
     use rebirth_llm::parse_tensor_name;
 
     // The canonical defect class (ARCHITECTURE §4): 1-based <-> 0-based conversion
@@ -937,6 +1024,27 @@ mod tests {
             assert_eq!(
                 checked_count(bad, "top").unwrap_err().class(),
                 "relm_error_internal"
+            );
+        }
+    }
+
+    #[test]
+    fn checked_image_max_bytes_rejects_non_positive_and_nan() {
+        // The image byte-cap guard (WP-V2): reject <= 0 and NaN with
+        // relm_error_internal (R validates the option before the call), pass a
+        // positive finite value, saturate Inf (the engine's own i32::MAX hard
+        // ceiling still applies downstream). Runs per-commit in CI (cargo test).
+        assert_eq!(checked_image_max_bytes(1.0).unwrap(), 1);
+        assert_eq!(
+            checked_image_max_bytes(64.0 * 1024.0 * 1024.0).unwrap(),
+            67_108_864
+        );
+        assert_eq!(checked_image_max_bytes(f64::INFINITY).unwrap(), u64::MAX);
+        for bad in [0.0, -1.0, f64::NAN, f64::NEG_INFINITY] {
+            assert_eq!(
+                checked_image_max_bytes(bad).unwrap_err().class(),
+                "relm_error_internal",
+                "bad cap {bad}"
             );
         }
     }

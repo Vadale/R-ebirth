@@ -69,6 +69,29 @@ abort_intervention <- function(message, fields = list(), call = sys.call(-1L)) {
   relm_abort("relm_error_intervention", message, fields, call = call)
 }
 
+#' Raise a `relm_error_image` for a failed image / vision operation
+#'
+#' A thin specialization of [relm_abort()] fixing the class to
+#' `"relm_error_image"` (API-GRAMMAR.md section 6, D-026): image decode/parse
+#' failure, unsupported/oversized image, projector (mmproj) load failure or
+#' mmproj-model mismatch, or images supplied to a handle loaded without a
+#' projector. Image parsing is a distinct, security-relevant failure surface,
+#' so it gets its own catchable class; pure `images` type/length violations
+#' stay `relm_error_argument`. Structured fields where useful: `path` on a
+#' per-file failure, `expected`/`actual` embedding sizes on a mismatch.
+#'
+#' @param message Character scalar: the specific, actionable message.
+#' @param fields Named list of structured fields to attach (e.g.
+#'   `list(path = ...)`).
+#' @param call The call to record; defaults to the caller's caller, so the
+#'   condition points at the user-facing function rather than at this helper.
+#' @return Never returns; always raises.
+#' @keywords internal
+#' @noRd
+abort_image <- function(message, fields = list(), call = sys.call(-1L)) {
+  relm_abort("relm_error_image", message, fields, call = call)
+}
+
 #' Raise a `relm_error_download` for a failed model download
 #'
 #' A thin specialization of [relm_abort()] fixing the class to

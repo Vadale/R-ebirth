@@ -327,7 +327,10 @@ derive_intervened <- function(m, entry, call = sys.call(-1L)) {
   )
   # Share the source's path (same underlying weights); new_llm() gives the derived
   # handle its own state env + finalizer, so it frees independently of the source.
-  new_llm(payload, m$path, interventions)
+  # The projector carries over: the native vision context lives on the shared
+  # model (WP-V2, D-026), so a handle derived from a vision handle still takes
+  # images — the R slots mirror that engine-side fact.
+  new_llm(payload, m$path, interventions, projector = m$projector)
 }
 
 # Flatten an accumulated interventions list into the dense parallel arrays the

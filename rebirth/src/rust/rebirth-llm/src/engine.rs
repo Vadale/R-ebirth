@@ -15,6 +15,7 @@ use std::thread::ThreadId;
 use crate::error::RebirthError;
 use crate::ffi;
 use crate::probe::ProbeCache;
+use crate::vision::VisionContext;
 
 /// D-008 gate G2: the raw llama.cpp handles are confined to the R main thread
 /// (ARCHITECTURE.md section 3). WP4 Step 5 introduces the first background thread
@@ -23,7 +24,7 @@ use crate::probe::ProbeCache;
 /// future code ever touches a handle from another thread: the `unsafe impl Send +
 /// Sync` below is then no longer sound, and the misuse trips here first.
 #[inline]
-fn assert_r_main_thread(owner: ThreadId, what: &str) {
+pub(crate) fn assert_r_main_thread(owner: ThreadId, what: &str) {
     debug_assert_eq!(
         std::thread::current().id(),
         owner,
@@ -173,6 +174,14 @@ pub struct Model {
     /// only for the `Sync` bound `Arc<Model>` requires — access is on the R main
     /// thread and always uncontended.
     probe_cache: Mutex<ProbeCache>,
+    /// The vision-encoder (mtmd) context bound to this model when it was loaded
+    /// with `llm(projector=)`; `None` for a text-only handle (WP-V2, D-026).
+    /// Living on the `Arc`-shared `Model` — the projector shares the model
+    /// pointer (`mtmd_init_from_file(mmproj, model)`) — means every handle
+    /// derived from these weights, including an intervened handle's fresh
+    /// context (`clone_with_fresh_context`), carries the projector, and it is
+    /// freed exactly once, before the model, when the last handle is gone.
+    vision: Option<VisionContext>,
     _backend: Backend,
 }
 
@@ -266,6 +275,10 @@ impl Model {
 impl Drop for Model {
     fn drop(&mut self) {
         assert_r_main_thread(self.owner, "Model::drop");
+        // Free the vision context BEFORE the model it is bound to (it holds
+        // the model's vocab pointer): fields would otherwise drop after this
+        // body, i.e. after llama_model_free.
+        self.vision.take();
         // SAFETY: `ptr` was produced by `llama_model_load_from_file` and is freed
         // exactly once (this owner is dropped once). Freed after every `Context`
         // that referenced it (contexts hold an `Arc<Model>`).
@@ -653,6 +666,21 @@ impl LoadedModel {
         })
     }
 
+    // --- crate-internal vision support (vision.rs, WP-V2/D-026) -------------
+
+    /// Whether this handle was loaded with a projector (`llm(projector=)`) and
+    /// can take image input. Carries over to a derived (intervened) handle:
+    /// the vision context lives on the `Arc`-shared `Model`.
+    pub fn has_vision(&self) -> bool {
+        self.ctx.model.vision.is_some()
+    }
+
+    /// The live mtmd (vision-encoder) context, if any. Crate-internal like the
+    /// other raw handles (ARCHITECTURE.md §2.2).
+    pub(crate) fn vision_ptr(&self) -> Option<*mut ffi::mtmd_context> {
+        self.ctx.model.vision.as_ref().map(|v| v.as_ptr())
+    }
+
     // --- crate-internal intervention support (intervene.rs / probe.rs) ------
 
     /// The shared per-model sentinel-probe verdict cache (D-021). Reached through
@@ -711,6 +739,9 @@ pub struct LoadRequest {
     pub gpu_layers: Option<i32>,
     pub backend: BackendKind,
     pub mmap: bool,
+    /// `Some(path)` = an mmproj GGUF to load as the vision projector
+    /// (`llm(projector=)`, WP-V2/D-026); `None` = text-only, unchanged.
+    pub projector: Option<PathBuf>,
 }
 
 /// Load a GGUF model into an owned `LoadedModel`, or return a classed error.
@@ -782,13 +813,28 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
     let model_ptr = NonNull::new(model_ptr).ok_or_else(|| RebirthError::ModelLoad {
         failing_check: "model_parse".to_string(),
     })?;
-    let model = Arc::new(Model {
+    // Build the owning Model BEFORE the optional projector load, so an early
+    // return below frees the model through its Drop instead of leaking it.
+    let mut model = Model {
         ptr: model_ptr,
         resolved_backend: req.backend,
         owner: std::thread::current().id(),
         probe_cache: Mutex::new(ProbeCache::default()),
+        vision: None,
         _backend: backend,
-    });
+    };
+
+    // `llm(projector=)`: bind the vision encoder to the loaded model (WP-V2,
+    // D-026). `use_gpu` follows the handle backend; a failure (bad mmproj,
+    // embd-size mismatch) is a classed image error and drops `model` cleanly.
+    if let Some(ref mmproj) = req.projector {
+        model.vision = Some(crate::vision::load_projector(
+            model.ptr.as_ptr(),
+            mmproj,
+            req.backend != BackendKind::Cpu,
+        )?);
+    }
+    let model = Arc::new(model);
 
     // SAFETY: default params are a plain by-value C struct we only tweak.
     let mut cparams = unsafe { ffi::llama_context_default_params() };
@@ -923,6 +969,7 @@ mod tests {
             gpu_layers: None,
             backend: BackendKind::Cpu,
             mmap: true,
+            projector: None,
         };
         match load(req) {
             Err(RebirthError::ModelLoad { failing_check }) => {
@@ -950,6 +997,7 @@ mod tests {
             gpu_layers: None,
             backend: BackendKind::Cpu,
             mmap: true,
+            projector: None,
         };
         let result = load(req);
         let _ = std::fs::remove_file(&path);
@@ -972,6 +1020,7 @@ mod tests {
             gpu_layers: None,
             backend: BackendKind::Cuda,
             mmap: true,
+            projector: None,
         };
         match load(req) {
             Err(RebirthError::Backend {

@@ -348,9 +348,6 @@ extern "C" {
 /// top of this file apply: same field order, C `enum` = `c_int`, callback
 /// fields opaque pointers. Field-by-field against the initializer in
 /// tools/mtmd/mtmd.cpp L240-256. Re-validate on every `vendor-bump`.
-// dead_code: until the WP-V2 image FFI lands, the ABI smoke test below is the
-// only (cfg(test)) consumer.
-#[allow(dead_code)]
 #[repr(C)]
 pub struct mtmd_context_params {
     pub use_gpu: bool,
@@ -371,16 +368,183 @@ pub struct mtmd_context_params {
     pub batch_max_tokens: i32,
 }
 
+/// Opaque handle: `struct mtmd_context` (mtmd.h L61; never dereferenced).
+#[repr(C)]
+pub struct mtmd_context {
+    _opaque: [u8; 0],
+}
+
+/// Opaque handle: `struct mtmd_bitmap` (mtmd.h L62; never dereferenced).
+#[repr(C)]
+pub struct mtmd_bitmap {
+    _opaque: [u8; 0],
+}
+
+/// Opaque handle: `struct mtmd_input_chunk` (mtmd.h L64; never dereferenced).
+#[repr(C)]
+pub struct mtmd_input_chunk {
+    _opaque: [u8; 0],
+}
+
+/// Opaque handle: `struct mtmd_input_chunks` (mtmd.h L65; never dereferenced).
+#[repr(C)]
+pub struct mtmd_input_chunks {
+    _opaque: [u8; 0],
+}
+
+/// Mirror of `struct mtmd_input_text` (mtmd.h L68-72, tag b9726): the prompt
+/// text (with the media markers already inserted) plus how it is tokenized.
+/// Passed by pointer to `mtmd_tokenize`; the borrowed C string must outlive
+/// the call.
+#[repr(C)]
+pub struct mtmd_input_text {
+    pub text: *const c_char,
+    pub add_special: bool,
+    pub parse_special: bool,
+}
+
+/// Mirror of `struct mtmd_helper_bitmap_wrapper` (mtmd-helper.h L34-37, tag
+/// b9726): returned **by value** from `mtmd_helper_bitmap_init_from_buf`. Two
+/// pointers, same layout rules as the param structs above. `video_ctx` is
+/// populated only by the video branch, which is compiled out (`MTMD_VIDEO=OFF`,
+/// build.rs), so it is always null for the image inputs this crate passes.
+#[repr(C)]
+pub struct mtmd_helper_bitmap_wrapper {
+    pub bitmap: *mut mtmd_bitmap,
+    pub video_ctx: *mut c_void,
+}
+
 extern "C" {
-    // --- multimodal / libmtmd (WP-V1, D-026) ---
-    // WP-V1 declares only the by-value defaults getter: it is the link-time
-    // proof that libmtmd.a is built and linked on every target, and the ABI
-    // smoke test below guards the struct mirror. The T1 image FFI surface
-    // (mtmd_init_from_file, mtmd_tokenize, mtmd_helper_eval_chunks, ...) is
-    // WP-V2 and grows in this section.
-    // dead_code: the sole non-test caller arrives with the WP-V2 image FFI.
-    #[allow(dead_code)]
+    // --- multimodal / libmtmd (WP-V1 + WP-V2, D-026) ---
+    // The T1 (llm(projector=) + llm_generate(images=)) surface, kept to the
+    // D-006 minimum: exactly the symbols the vision module calls. Deliberately
+    // NOT declared, per the WP-V1 security audit's binding requirements
+    // (docs/audit-wp-v1-mtmd-2026-07-14.md section 5):
+    //   - `mtmd_helper_bitmap_init_from_file` (req 2: its C-side re-read of the
+    //     path reopens the audio-magic sniff via a TOCTOU/symlink swap — the
+    //     buffer variant below receives the exact bytes Rust already gated);
+    //   - `mtmd_bitmap_init` / `mtmd_bitmap_init_from_audio` (req 6: raw
+    //     dimension/PCM entry points that bypass the decode whose dims they
+    //     must match — the memcpy length contract at mtmd.cpp L42-48);
+    //   - `mtmd_helper_video_*` (req 6: `GGML_ASSERT(false)` abort stubs in an
+    //     MTMD_VIDEO=OFF build, mtmd-helper.cpp L1034/L1044).
+
+    /// mtmd.h L111. By-value defaults; ABI-pinned by the smoke test below.
     pub fn mtmd_context_params_default() -> mtmd_context_params;
+
+    /// mtmd.h L109: the built-in media marker (`"<__media__>"`), a static
+    /// engine-owned string. One marker per image is prepended to the prompt.
+    pub fn mtmd_default_marker() -> *const c_char;
+
+    /// mtmd.h L115-117: load an mmproj GGUF and bind the vision encoder to the
+    /// already-loaded text model (shares the model pointer — no double-load).
+    /// Returns NULL on any failure; the constructor validates the projector's
+    /// embedding size against `llama_model_n_embd_inp(text_model)` itself
+    /// (mtmd.cpp L370-375) and every `std::exception` is caught internally
+    /// (mtmd.cpp L798-803), logged through `mtmd_log_set`.
+    pub fn mtmd_init_from_file(
+        mmproj_fname: *const c_char,
+        text_model: *const llama_model,
+        ctx_params: mtmd_context_params,
+    ) -> *mut mtmd_context;
+
+    /// mtmd.h L119.
+    pub fn mtmd_free(ctx: *mut mtmd_context);
+
+    /// mtmd.h L129: whether the loaded projector has a vision encoder (an
+    /// audio-only mmproj loads fine but must be rejected for image input).
+    pub fn mtmd_support_vision(ctx: *const mtmd_context) -> bool;
+
+    /// mtmd.h L311: route libmtmd/clip logging through `log_callback` (NULL
+    /// restores stderr). Installed once with a capturing ERROR-level filter so
+    /// a projector-load / tokenize failure reason can be surfaced on the
+    /// classed R condition instead of spraying the console.
+    pub fn mtmd_log_set(log_callback: Option<GgmlLogCallback>, user_data: *mut c_void);
+
+    /// mtmd-helper.h L55: decode one image from an in-memory file buffer (stb)
+    /// into an owned RGB bitmap. THE single decode gateway (audit req 2): the
+    /// buffer is the exact byte vector Rust read and gated (magic allow-list +
+    /// size/dimension caps), so the audio sniff inside can never fire. Returns
+    /// a by-value wrapper whose `bitmap` is NULL on failure.
+    pub fn mtmd_helper_bitmap_init_from_buf(
+        ctx: *mut mtmd_context,
+        buf: *const u8,
+        len: usize,
+        placeholder: bool,
+    ) -> mtmd_helper_bitmap_wrapper;
+
+    /// mtmd.h L163.
+    pub fn mtmd_bitmap_free(bitmap: *mut mtmd_bitmap);
+
+    /// mtmd.h L202/L203/L204/L205: the caller-owned chunk-list lifecycle
+    /// `mtmd_tokenize` fills.
+    pub fn mtmd_input_chunks_init() -> *mut mtmd_input_chunks;
+    pub fn mtmd_input_chunks_size(chunks: *const mtmd_input_chunks) -> usize;
+    pub fn mtmd_input_chunks_get(
+        chunks: *const mtmd_input_chunks,
+        idx: usize,
+    ) -> *const mtmd_input_chunk;
+    pub fn mtmd_input_chunks_free(chunks: *mut mtmd_input_chunks);
+
+    /// mtmd.h L214: the chunk's token count (KV-cache slots); summed over all
+    /// chunks it is the combined text+image length checked against `n_ctx`.
+    pub fn mtmd_input_chunk_get_n_tokens(chunk: *const mtmd_input_chunk) -> usize;
+
+    /// mtmd.h L269-273: split the marker-bearing prompt into text/image chunks.
+    /// Returns 0 on success, 1 on a marker/bitmap count mismatch, 2 on an image
+    /// preprocessing error; exceptions are caught internally (mtmd.cpp L1424-1435).
+    pub fn mtmd_tokenize(
+        ctx: *mut mtmd_context,
+        output: *mut mtmd_input_chunks,
+        text: *const mtmd_input_text,
+        bitmaps: *const *const mtmd_bitmap,
+        n_bitmaps: usize,
+    ) -> i32;
+
+    /// mtmd-helper.h L74-81: the tested upstream interleaved ingest — decodes
+    /// text chunks with `llama_decode` and image chunks with
+    /// `mtmd_encode_chunk` -> `mtmd_get_output_embd` -> `llama_decode`,
+    /// chunking BOTH by `n_batch` internally and handling the gemma3
+    /// non-causal mask + qwen-vl M-RoPE positions (never reimplemented in
+    /// Rust — the D-012 fails-silent trap; hard rule 8a chokepoint for this
+    /// path). Returns 0 on success; writes the position after the last
+    /// ingested token to `new_n_past`.
+    pub fn mtmd_helper_eval_chunks(
+        ctx: *mut mtmd_context,
+        lctx: *mut llama_context,
+        chunks: *const mtmd_input_chunks,
+        n_past: llama_pos,
+        seq_id: llama_seq_id,
+        n_batch: i32,
+        logits_last: bool,
+        new_n_past: *mut llama_pos,
+    ) -> i32;
+
+    /// llama.h L563: the model's INPUT embedding width — what an mmproj must
+    /// produce per image token (mtmd.h L284-287). Used to name the expected
+    /// size on the mmproj-model mismatch condition. (mtmd.h exposes NO dim
+    /// getter for the projector side: `clip_n_mmproj_embd` takes a `clip_ctx`
+    /// the C API never surfaces — mtmd.h L61 keeps `mtmd_context` opaque and
+    /// `n_embd_out()` is a private C++ member, mtmd.cpp L746-753 — so the
+    /// projector's actual size is taken from the engine's own mismatch check,
+    /// see vision.rs.)
+    pub fn llama_model_n_embd_inp(model: *const llama_model) -> i32;
+
+    /// stb_image.h L494 (impl L7734), compiled into libmtmd by mtmd-helper.cpp
+    /// L32-33 with external linkage (`STBIDEF` = `extern`: STB_IMAGE_STATIC is
+    /// not defined; symbol presence verified with `nm -gU libmtmd.a` ->
+    /// `T _stbi_info_from_memory`). Parses ONLY the image header from the
+    /// buffer — no pixel allocation — writing the dimensions to `x`/`y`;
+    /// returns 1 on success, 0 on failure. The audit req-3 pre-decode
+    /// dimension probe: it runs on the same gated buffer BEFORE
+    /// `mtmd_helper_bitmap_init_from_buf`, so no oversized decode ever starts.
+    pub fn stbi_info_from_memory(
+        buffer: *const u8,
+        len: c_int,
+        x: *mut c_int,
+        y: *mut c_int,
+        comp: *mut c_int,
+    ) -> c_int;
 }
 
 #[cfg(test)]

@@ -138,6 +138,7 @@ fn engine_activations_match_numpy_oracle_within_tolerance() {
         // CPU so the exact-value path runs identically on every CI platform.
         backend: BackendKind::Cpu,
         mmap: true,
+        projector: None,
     })
     .expect("synthetic model loads");
 

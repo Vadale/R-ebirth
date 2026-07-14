@@ -12,7 +12,8 @@ llm_generate(
   top_p = 0.95,
   seed = NULL,
   chat = TRUE,
-  stop = NULL
+  stop = NULL,
+  images = NULL
 )
 }
 \arguments{
@@ -41,6 +42,12 @@ rather than mis-formatting the prompt.}
 
 \item{stop}{\code{NULL}, or a character vector of stop sequences that end
 generation.}
+
+\item{images}{\code{NULL} (default: text-only, unchanged) or the image file
+paths to attach to each prompt — a list parallel to \code{prompt}, or a bare
+character vector for a single prompt. Accepted formats: JPEG, PNG, BMP.
+Requires a handle loaded with \code{llm(projector = )}; see the \emph{Image input}
+section.}
 }
 \value{
 A character vector the same length as \code{prompt} (names preserved), each
@@ -67,6 +74,32 @@ as soon as one of the \code{stop} strings appears (the output is truncated just
 before it). A prompt longer than the model's context window raises
 \code{relm_error_context_overflow}, whose message states by how much.
 }
+\section{Image input (vision models)}{
+
+On a handle loaded with \code{\link[=llm]{llm()}}'s \code{projector} argument, \code{images} attaches
+image files to each prompt: a \strong{list parallel to \code{prompt}}, where
+\code{images[[i]]} is a character vector of image file paths for prompt \code{i}
+(\code{character(0)} for none). A bare character vector is treated as
+\code{list(images)} — one image set — and pairs with a single prompt; with
+several prompts it is recycled across all of them with a warning. Each
+prompt's images are inserted \strong{before} its text. Exactly three file
+formats are accepted: \strong{JPEG, PNG, BMP} (anything else — GIF and audio
+included — is rejected before any decode with \code{relm_error_image}). Size
+limits, enforced before decoding: at most 64 MB per file by default
+(override with \code{options(relm.image_max_bytes = )}; hard ceiling
+2147483647 bytes), each dimension between 1 and 16384 pixels, and at most
+33554432 total pixels. Images on a handle loaded without a projector raise
+\code{relm_error_image}; the combined text+image token count must fit
+\code{context_length} (\code{relm_error_context_overflow} states by how much).
+
+One content restriction applies to an image-bearing prompt: the literal
+string \code{"<__media__>"} (the engine's internal media marker) is reserved —
+relm inserts one marker per image before the text, so a literal marker in
+the prompt would corrupt the image placement, and the call raises
+\code{relm_error_argument} naming \code{prompt}. Prompts without images may contain
+the string freely (it is ordinary text there).
+}
+
 \examples{
 \dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
 m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))

@@ -1,7 +1,23 @@
 # relm (development version)
 
-Development toward the vision/multimodal release (v0.2.0, Phase 11, D-026)
-has started; nothing user-visible yet.
+Development toward the vision/multimodal release (v0.2.0, Phase 11, D-026).
+
+* **Image input (T1).** `llm()` gains `projector =`: point it at a
+  vision-language model's companion **mmproj GGUF** to enable image input
+  (the projector is bound to the loaded model at load time; a projector whose
+  embedding width does not match the model is refused with `relm_error_image`
+  naming both sizes). `llm_generate()` gains `images =`: a list parallel to
+  `prompt` (or a bare character vector for a single prompt) of image **file
+  paths**, inserted before each prompt's text. Exactly three formats are
+  accepted — **JPEG, PNG, BMP** — enforced on the file bytes in Rust before
+  any decode; anything else (GIF and audio included) raises `relm_error_image`.
+  Pre-decode limits: 64 MB per file by default
+  (`options(relm.image_max_bytes = )` to change, hard ceiling 2147483647
+  bytes), dimensions 1–16384 px per side, at most 33554432 total pixels.
+  `print()` shows the projector on a vision handle; steered/ablated handles
+  derived from a vision handle keep accepting images. Dev-verified with
+  Qwen2-VL-2B-Instruct (Apache-2.0); the pinned registry aliases arrive with
+  the v0.2.0 release work. Text-only calls are byte-identical to before.
 
 # relm 0.1.0
 

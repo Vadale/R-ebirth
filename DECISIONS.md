@@ -287,6 +287,29 @@ Empirical finding (Qwen2.5-0.5B Q8_0 and Gemma 4 E4B, committed eliciting prompt
 - **Why:** vision at b9726 needs no bump (clip already supports the targets), so the risky operation stays a contingency (D-021), not a prerequisite; reusing the tested interleaved-decode helper honors the `n_batch` chokepoint (Hard rule 8a) and avoids a fails-silent M-RoPE reimplementation (D-012); the magic-byte gate + reject-not-clamp dimension checks (Hard rule 8b) keep the untrusted image surface auditable; the byte-identical text goldens + re-asserted tree SHA are the formal "v0.1.0 does not break" guarantee; the dev version keeps `main` honestly labeled while r-universe builds it.
 - **Alternatives rejected:** a vendor bump now (pays the full harness-B re-validation bill for arch support b9726 already has — kept only as the plan-§8 contingency); restoring `common/` (verified unnecessary — libmtmd forbids `llama-common`); reimplementing the interleaved decode in Rust (duplicates tested M-RoPE/non-causal logic, a fails-silent risk); a `build.rs` mtmd source list without a CMake option (manual sync burden across bumps — the fallback, not the default); audio Option B as the default (a second patch is not *necessary* once the magic-byte gate makes audio unreachable — D-012 bias; the auditor can still escalate); folding T3 into this phase (T3 is research and breaks the D-018 residual-decomposition golden on a non-causal encoder — D-023); shipping vision as a v0.1.x patch instead of a versioned phase (mis-sized, D-023).
 
+### D-026 addendum (2026-07-14, founder-approved at the WP-V2 gate)
+
+1. **Image allow-list = JPEG / PNG / BMP — GIF removed** (amending point 4's
+   "JPEG/PNG/BMP/GIF"), on the WP-V1 security-auditor's recommendation
+   (`docs/audit-wp-v1-mtmd-2026-07-14.md` §2b: GIF is the riskiest allow-listed
+   stb decoder — LZW state machine, longest bug tail — for near-zero VLM value,
+   since stb decodes only the first frame). Founder confirmed 2026-07-14; the
+   shipped gate uses the full magics (JPEG `FF D8 FF`, PNG 8-byte, BMP `42 4D`)
+   and the per-commit tests assert a real GIF is rejected.
+2. **The point-6 `mtmd_get_output_embd` `ATOL 1e-3` image-embedding golden leg
+   is deferred to WP-V4 as a BINDING requirement** (founder approved
+   2026-07-14): the phase does not close and `v0.2.0` is not tagged without it.
+   WP-V2's shipped golden gate is the **byte-exact greedy text leg** vs the
+   unpatched b9726 `llama-mtmd-cli` (CPU, `tests/llm-golden/vision/`) — the
+   upstream CLI exposes no token ids, so exact text is the strongest
+   reproducible equality its output supports; the T1 FFI deliberately does not
+   declare `mtmd_get_output_embd` (the helper-based ingest never needs it), so
+   the embedding leg lands with WP-V4's nightly wiring.
+3. **`options(relm.image_max_bytes = )` is the pinned user-facing byte-cap
+   surface** implementing the WP-V1 audit's binding requirement 3a: default
+   64 MB, validated in R, with the hard ceiling `2^31 - 1` bytes enforced in
+   Rust regardless of the option (the stb `int`-length narrowing, audit F6).
+
 ---
 
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
