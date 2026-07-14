@@ -76,23 +76,26 @@ cfg <- if (is_debug) "debug" else "release"
 # read in the Makevars.in file checking
 is_windows <- .Platform[["OS.type"]] == "windows"
 
-# Native link flags for the vendored llama.cpp/ggml static archives (D-006).
-# rebirth-llm/build.rs relocates the archives into $(LIBDIR); here we name them
-# (in dependency order) plus the per-OS system libraries/frameworks the engine
-# needs. build.rs enables Metal only on macOS arm64, so the archive set and the
-# frameworks are matched to that here.
+# Native link flags for the vendored llama.cpp/ggml/mtmd static archives
+# (D-006, D-026). rebirth-llm/build.rs relocates the archives into $(LIBDIR);
+# here we name them (in dependency order: mtmd references llama + ggml, so
+# -lmtmd comes first; ggml-base is the leaf and comes last) plus the per-OS
+# system libraries/frameworks the engine needs. Twin-pinned with `lib_stems`
+# in rebirth-llm/build.rs — keep the two lists consistent. build.rs enables
+# Metal only on macOS arm64, so the archive set and the frameworks are matched
+# to that here.
 sysname <- Sys.info()[["sysname"]]
 arch <- R.version[["arch"]]
 if (is_windows) {
   # Windows/CUDA is Phase 8 and not yet exercised. CPU-only, GNU ld group form.
   .llama_libs <- paste(
     "-Wl,--start-group",
-    "-lllama -lggml -lggml-cpu -lggml-base",
+    "-lmtmd -lllama -lggml -lggml-cpu -lggml-base",
     "-Wl,--end-group -lstdc++"
   )
 } else if (identical(sysname, "Darwin")) {
   is_arm <- arch %in% c("aarch64", "arm64")
-  stems <- c("-lllama", "-lggml", "-lggml-cpu")
+  stems <- c("-lmtmd", "-lllama", "-lggml", "-lggml-cpu")
   if (is_arm) stems <- c(stems, "-lggml-metal")
   stems <- c(stems, "-lggml-base")
   # ggml-cpu uses Accelerate on all Apple targets; the Metal backend adds
@@ -109,7 +112,7 @@ if (is_windows) {
   # between them resolve regardless of order under GNU ld.
   .llama_libs <- paste(
     "-Wl,--start-group",
-    "-lllama -lggml -lggml-cpu -lggml-base",
+    "-lmtmd -lllama -lggml -lggml-cpu -lggml-base",
     "-Wl,--end-group -lstdc++ -lm -ldl"
   )
 }

@@ -59,13 +59,19 @@ fn main() {
     let mut cfg = cmake::Config::new(&llama_src);
     cfg.define("CMAKE_BUILD_TYPE", "Release")
         .define("BUILD_SHARED_LIBS", "OFF")
-        // Only libllama + ggml are needed; skip every extra artifact.
+        // Only libllama + ggml + libmtmd are needed; skip every extra artifact.
         .define("LLAMA_BUILD_TESTS", "OFF")
         .define("LLAMA_BUILD_EXAMPLES", "OFF")
         .define("LLAMA_BUILD_TOOLS", "OFF")
         .define("LLAMA_BUILD_SERVER", "OFF")
         .define("LLAMA_BUILD_COMMON", "OFF")
         .define("LLAMA_BUILD_APP", "OFF")
+        // The multimodal library (WP-V1, D-026): the patch-0002 option builds
+        // libmtmd.a alone — no common/, no CLI tools. MTMD_VIDEO is a cache
+        // option defaulting ON upstream; OFF drops the only external-tool
+        // dependency (ffmpeg via sheredom/subprocess.h, which stays pruned).
+        .define("LLAMA_BUILD_MTMD", "ON")
+        .define("MTMD_VIDEO", "OFF")
         // Keep the produced archive set canonical and deterministic: the ggml
         // Accelerate path (GGML_ACCELERATE) stays on for the CPU backend, but the
         // separate BLAS backend is not built (avoids an extra libggml-blas.a).
@@ -118,9 +124,11 @@ fn main() {
     let build_dir = dst.join("build");
 
     // Dependency order (GNU ld resolves left-to-right): the Rust code references
-    // llama; llama references ggml (registry) + the backends; everything
-    // references ggml-base, which is the leaf and comes last.
-    let mut lib_stems: Vec<&str> = vec!["llama", "ggml", "ggml-cpu"];
+    // mtmd and llama; mtmd references llama + ggml; llama references ggml
+    // (registry) + the backends; everything references ggml-base, which is the
+    // leaf and comes last. Twin-pinned with the R-side link in
+    // rebirth/tools/config.R (@LLAMA_LIBS@) — keep the two lists consistent.
+    let mut lib_stems: Vec<&str> = vec!["mtmd", "llama", "ggml", "ggml-cpu"];
     if metal {
         lib_stems.push("ggml-metal");
     }
