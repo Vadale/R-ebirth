@@ -138,14 +138,20 @@ pub(crate) fn validate_image_bytes(
         )));
     }
 
-    // Stage 4 — dimension and pixel caps, in u64 so no product can wrap.
-    if nx < 1 || ny < 1 {
+    // Stage 4 — dimension and pixel caps, in u64 so no product can wrap. A
+    // negative BMP height is the format's top-down row convention, not a
+    // degenerate size: stb's own decoder takes its absolute value
+    // (stb_image.h L5545-5546), so the caps apply to the magnitude — the
+    // exact size a decode would materialize. Width has no such convention.
+    let w_signed = nx as i64;
+    let h_signed = (ny as i64).abs();
+    if w_signed < 1 || h_signed < 1 {
         return Err(image_err(format!(
             "'{path}' reports a degenerate image size ({nx} x {ny} pixels); \
              every dimension must be at least 1."
         )));
     }
-    let (w, h) = (nx as u64, ny as u64);
+    let (w, h) = (w_signed as u64, h_signed as u64);
     if w > IMAGE_MAX_DIM || h > IMAGE_MAX_DIM {
         return Err(image_err(format!(
             "'{path}' is {w} x {h} pixels; the maximum supported dimension is \
@@ -185,8 +191,11 @@ pub(crate) fn read_and_validate_image(path: &str, max_bytes: u64) -> Result<Vec<
         )));
     }
     if meta.len() > cap {
+        // Same wording as the buffer-level check in validate_image_bytes, so
+        // callers see one message for one condition regardless of which of the
+        // two checks (pre-read metadata / authoritative buffer) fired.
         return Err(image_err(format!(
-            "'{path}' is {} bytes, over the {cap}-byte image cap. If this is a \
+            "'{path}' is {} bytes, over the {cap} image byte cap. If this is a \
              legitimate image, raise options(relm.image_max_bytes = ) — the hard \
              ceiling is {IMAGE_HARD_MAX_BYTES} bytes.",
             meta.len()
@@ -855,6 +864,56 @@ mod tests {
             validate_image_bytes("tall.png", &png_header(1, 16_384), u64::MAX).unwrap(),
             "png"
         );
+    }
+
+    /// A minimal BMP prefix (`BM` + BITMAPINFOHEADER) with a signed height:
+    /// negative = the top-down row convention stb's decoder folds with abs()
+    /// (stb_image.h L5545-5546). Enough for `stbi_info_from_memory`.
+    fn bmp_header(width: i32, height: i32) -> Vec<u8> {
+        let mut v = vec![0x42, 0x4D]; // "BM"
+        v.extend_from_slice(&54u32.to_le_bytes()); // file size (unchecked)
+        v.extend_from_slice(&0u32.to_le_bytes()); // reserved
+        v.extend_from_slice(&54u32.to_le_bytes()); // pixel-data offset
+        v.extend_from_slice(&40u32.to_le_bytes()); // BITMAPINFOHEADER size
+        v.extend_from_slice(&width.to_le_bytes());
+        v.extend_from_slice(&height.to_le_bytes());
+        v.extend_from_slice(&1u16.to_le_bytes()); // planes
+        v.extend_from_slice(&24u16.to_le_bytes()); // bits per pixel
+        v.extend_from_slice(&0u32.to_le_bytes()); // compression = BI_RGB
+        v.extend_from_slice(&[0u8; 20]); // rest of the 40-byte header
+        v
+    }
+
+    #[test]
+    fn a_top_down_bmp_negative_height_is_the_format_convention_not_degenerate() {
+        // grDevices::bmp() (and many writers) emit top-down BMPs with a
+        // negative height; the gate must apply the caps to the magnitude,
+        // exactly like stb's decoder, instead of rejecting the file.
+        assert_eq!(
+            validate_image_bytes("td.bmp", &bmp_header(64, -64), u64::MAX).unwrap(),
+            "bmp"
+        );
+        // The caps still bind on the magnitude…
+        let err = validate_image_bytes("td-big.bmp", &bmp_header(64, -100_000), u64::MAX)
+            .expect_err("over-dim magnitude");
+        match &err {
+            RebirthError::Image { reason, .. } => {
+                assert!(reason.contains("maximum supported dimension"), "{reason}");
+            }
+            other => panic!("expected Image error, got {other:?}"),
+        }
+        // …and a genuinely degenerate width is still rejected.
+        let err = validate_image_bytes("bad.bmp", &bmp_header(0, 64), u64::MAX)
+            .expect_err("zero width");
+        match &err {
+            RebirthError::Image { reason, .. } => {
+                assert!(
+                    reason.contains("degenerate") || reason.contains("header could not be parsed"),
+                    "{reason}"
+                );
+            }
+            other => panic!("expected Image error, got {other:?}"),
+        }
     }
 
     #[test]
