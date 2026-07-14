@@ -528,14 +528,69 @@ fn rebirth_logits(ptr: Robj, prompt: &str, top: i32) -> Robj {
     })
 }
 
+/// Rebuild the per-text image sets from the flat transport R sends
+/// (`images_flat` split by `images_lens`, one length per text). Empty `lens` =
+/// the text-only call. Any inconsistency is an out-of-contract boundary input
+/// (R authors both vectors together), rejected with `relm_error_internal` —
+/// never silently padded or truncated (hard rule 8b).
+fn split_image_sets(
+    flat: Vec<String>,
+    lens: &[i32],
+    n_texts: usize,
+) -> Result<Vec<Vec<String>>, RebirthError> {
+    if lens.len() != n_texts {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "images_lens has {} entries for {} texts; R authors one length per input",
+                lens.len(),
+                n_texts
+            ),
+        });
+    }
+    let mut total: usize = 0;
+    for &l in lens {
+        if l < 0 {
+            return Err(RebirthError::Internal {
+                context: format!("images_lens contains a negative length ({l})"),
+            });
+        }
+        total += l as usize;
+    }
+    if total != flat.len() {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "images_lens sums to {total} but images_flat has {} paths",
+                flat.len()
+            ),
+        });
+    }
+    let mut sets = Vec::with_capacity(n_texts);
+    let mut it = flat.into_iter();
+    for &l in lens {
+        sets.push(it.by_ref().take(l as usize).collect());
+    }
+    Ok(sets)
+}
+
 // Embed a character vector into a row-major matrix. R has validated
-// m/x/pooling/normalize; here we parse the pooling enum, run embed_texts under
-// with_model's catch_unwind, and return the flat values plus the two dimensions.
-// No 1-based<->0-based conversion is needed: llm_embed takes text, not token-id
-// indices (the internal ids never surface to R), so the §4 index boundary is
-// crossed nowhere here.
+// m/x/pooling/normalize (and, for WP-V3 images, the pairing/marker/projector
+// checks); here we parse the pooling enum, rebuild the per-text image sets
+// from the flat transport, run the engine under with_model's catch_unwind,
+// and return the flat values plus the two dimensions. `images_lens` empty =
+// text-only, routed through the pre-WP-V3 embed_texts unchanged
+// (byte-identical). No 1-based<->0-based conversion is needed: llm_embed
+// takes text, not token-id indices, so the §4 index boundary is crossed
+// nowhere here.
 #[extendr]
-fn rebirth_embed(ptr: Robj, texts: Vec<String>, pooling: &str, normalize: bool) -> Robj {
+fn rebirth_embed(
+    ptr: Robj,
+    texts: Vec<String>,
+    pooling: &str,
+    normalize: bool,
+    images_flat: Vec<String>,
+    images_lens: Vec<i32>,
+    image_max_bytes: f64,
+) -> Robj {
     with_model(&ptr, |model| {
         let pool = Pooling::parse(pooling).ok_or_else(|| RebirthError::Internal {
             context: format!(
@@ -543,7 +598,13 @@ fn rebirth_embed(ptr: Robj, texts: Vec<String>, pooling: &str, normalize: bool) 
             ),
         })?;
         let refs: Vec<&str> = texts.iter().map(String::as_str).collect();
-        let emb = model.embed_texts(&refs, pool, normalize)?;
+        let emb = if images_lens.is_empty() {
+            model.embed_texts(&refs, pool, normalize)?
+        } else {
+            let sets = split_image_sets(images_flat, &images_lens, texts.len())?;
+            let max_bytes = checked_image_max_bytes(image_max_bytes)?;
+            model.embed_texts_with_images(&refs, &sets, pool, normalize, max_bytes)?
+        };
         // Upcast f32 -> f64 (R doubles); `values` stays row-major (n_rows x n_embd),
         // consumed by matrix(..., byrow = TRUE) in R.
         let values: Vec<f64> = emb.values.iter().map(|&v| v as f64).collect();
@@ -982,7 +1043,7 @@ extendr_api::extendr_module! {
 mod tests {
     use super::{
         checked_budget_bytes, checked_count, checked_image_max_bytes, from_engine_index,
-        to_engine_index,
+        split_image_sets, to_engine_index,
     };
     use rebirth_llm::parse_tensor_name;
 
@@ -1023,6 +1084,34 @@ mod tests {
         for bad in [0i32, -1, i32::MIN] {
             assert_eq!(
                 checked_count(bad, "top").unwrap_err().class(),
+                "relm_error_internal"
+            );
+        }
+    }
+
+    #[test]
+    fn split_image_sets_rebuilds_the_per_text_sets_and_rejects_inconsistency() {
+        // The WP-V3 flat transport: one length per text, paths in order.
+        // Runs per-commit in CI (cargo test, the R-CMD-check job).
+        let s = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        let sets = split_image_sets(s(&["a.png", "b.png", "c.png"]), &[2, 0, 1], 3)
+            .expect("consistent transport");
+        assert_eq!(sets, vec![s(&["a.png", "b.png"]), s(&[]), s(&["c.png"])]);
+        // All-empty sets are valid (every input text-only).
+        assert_eq!(
+            split_image_sets(vec![], &[0, 0], 2).expect("all empty"),
+            vec![Vec::<String>::new(), Vec::new()]
+        );
+        // Inconsistencies are out-of-contract boundary input: reject, never
+        // pad/truncate (hard rule 8b).
+        for (flat, lens, n) in [
+            (s(&["a.png"]), vec![1, 0], 1usize), // lens.len() != n_texts
+            (s(&["a.png"]), vec![2], 1),         // sum > flat
+            (s(&["a.png", "b.png"]), vec![1], 1), // sum < flat
+            (s(&[]), vec![-1], 1),               // negative length
+        ] {
+            assert_eq!(
+                split_image_sets(flat, &lens, n).unwrap_err().class(),
                 "relm_error_internal"
             );
         }

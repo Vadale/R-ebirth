@@ -21,7 +21,7 @@ rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, 
 
 rebirth_logits <- function(ptr, prompt, top) .Call(wrap__rebirth_logits, ptr, prompt, top)
 
-rebirth_embed <- function(ptr, texts, pooling, normalize) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize)
+rebirth_embed <- function(ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes)
 
 rebirth_trace <- function(ptr, prompts, layers, positions_mode, positions_values, components, spill, budget_bytes, spill_path, model_id, trace_id, spec_key) .Call(wrap__rebirth_trace, ptr, prompts, layers, positions_mode, positions_values, components, spill, budget_bytes, spill_path, model_id, trace_id, spec_key)
 
