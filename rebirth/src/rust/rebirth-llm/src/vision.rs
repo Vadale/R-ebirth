@@ -351,20 +351,42 @@ pub(crate) fn load_projector(
     install_mtmd_log();
     drain_mtmd_log();
 
+    // The load runs in (up to) two stages, both with `cb_eval` left at its
+    // NULL default (audit req 7: no vision-tower tracing, T3 out of scope):
+    //
+    // 1. A CPU PROBE (`use_gpu = false`, `warmup = false`). At the vendored
+    //    tag, every mtmd-constructor validation that fires AFTER the clip
+    //    weights are loaded — the embd-size mismatch (mtmd.cpp L370-376), the
+    //    unsupported-projector checks — throws out of the constructor, which
+    //    never runs the destructor, so the raw `ctx_v` clip context LEAKS
+    //    (upstream bug). On a GPU backend the leaked Metal buffers keep
+    //    residency sets alive and `GGML_ASSERT([rsets->data count] == 0)`
+    //    (ggml-metal-device.m:622) ABORTS the R session at process exit.
+    //    Probing on CPU turns any such leak into plain heap memory on an
+    //    error path — no residency sets, no abort — at zero patch cost.
+    // 2. The REAL context on the handle backend. It only runs on an mmproj
+    //    that already passed every constructor check, so the remaining
+    //    failure mode is clip_init returning NULL (e.g. backend OOM), which
+    //    throws with `ctx_v` still null — nothing leaks. (The projector path
+    //    is engine-trusted input, req 5: a file swapped between the two
+    //    stages is outside the threat model, like the model GGUF itself.)
+
     // SAFETY: default params are a plain by-value C struct we only tweak; the
-    // ffi.rs ABI test pins every field's offset and default. `cb_eval` stays at
-    // its NULL default (audit req 7: no vision-tower tracing, T3 out of scope).
-    let mut params = unsafe { ffi::mtmd_context_params_default() };
-    params.use_gpu = use_gpu;
-    params.print_timings = false;
-    debug_assert!(params.cb_eval.is_null(), "cb_eval must stay NULL (req 7)");
+    // ffi.rs ABI test pins every field's offset and default.
+    let mut probe_params = unsafe { ffi::mtmd_context_params_default() };
+    probe_params.use_gpu = false;
+    probe_params.print_timings = false;
+    probe_params.warmup = false;
+    debug_assert!(
+        probe_params.cb_eval.is_null(),
+        "cb_eval must stay NULL (req 7)"
+    );
 
     // SAFETY: `c_path` outlives the call; `model_ptr` is the caller's live
-    // model; `params` matches the C layout (ABI-pinned). A NULL return means
-    // nothing was created (the constructor cleans up after itself and the
-    // exception is caught internally, mtmd.cpp L798-803).
-    let ctx = unsafe { ffi::mtmd_init_from_file(c_path.as_ptr(), model_ptr, params) };
-    let Some(ptr) = NonNull::new(ctx) else {
+    // model; the params match the C layout (ABI-pinned). A NULL return means
+    // the exception was caught internally (mtmd.cpp L798-803) and logged.
+    let probe = unsafe { ffi::mtmd_init_from_file(c_path.as_ptr(), model_ptr, probe_params) };
+    let Some(probe_ptr) = NonNull::new(probe) else {
         let engine_reason = drain_mtmd_log();
         // SAFETY: `model_ptr` is a live model; read-only scalar getter.
         let n_embd_inp = unsafe { ffi::llama_model_n_embd_inp(model_ptr) };
@@ -397,9 +419,46 @@ pub(crate) fn load_projector(
         ));
     };
 
-    let vision = VisionContext {
-        ptr,
-        owner: std::thread::current().id(),
+    let vision = if use_gpu {
+        // Free the CPU probe before the real init so the mmproj weights are
+        // never resident twice.
+        // SAFETY: `probe_ptr` is the live context just created; freed once.
+        unsafe { ffi::mtmd_free(probe_ptr.as_ptr()) };
+
+        // SAFETY: as above; the GPU context is the one the handle keeps.
+        let mut params = unsafe { ffi::mtmd_context_params_default() };
+        params.use_gpu = true;
+        params.print_timings = false;
+        debug_assert!(params.cb_eval.is_null(), "cb_eval must stay NULL (req 7)");
+        drain_mtmd_log();
+        // SAFETY: same contract as the probe call.
+        let ctx = unsafe { ffi::mtmd_init_from_file(c_path.as_ptr(), model_ptr, params) };
+        let Some(ptr) = NonNull::new(ctx) else {
+            let engine_reason = drain_mtmd_log();
+            let detail = if engine_reason.is_empty() {
+                String::from("no engine detail available")
+            } else {
+                engine_reason
+            };
+            return Err(image_err(
+                format!(
+                    "Failed to initialize the projector '{path_display}' on the GPU \
+                     backend ({detail}). There may not be enough memory; free other \
+                     loaded models first, or load with backend = \"cpu\"."
+                ),
+                None,
+                None,
+            ));
+        };
+        VisionContext {
+            ptr,
+            owner: std::thread::current().id(),
+        }
+    } else {
+        VisionContext {
+            ptr: probe_ptr,
+            owner: std::thread::current().id(),
+        }
     };
 
     // SAFETY: `ptr` is the live context just created.
@@ -903,8 +962,8 @@ mod tests {
             other => panic!("expected Image error, got {other:?}"),
         }
         // …and a genuinely degenerate width is still rejected.
-        let err = validate_image_bytes("bad.bmp", &bmp_header(0, 64), u64::MAX)
-            .expect_err("zero width");
+        let err =
+            validate_image_bytes("bad.bmp", &bmp_header(0, 64), u64::MAX).expect_err("zero width");
         match &err {
             RebirthError::Image { reason, .. } => {
                 assert!(
