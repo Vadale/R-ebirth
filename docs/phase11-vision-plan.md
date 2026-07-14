@@ -1,6 +1,6 @@
 # Phase 11 — Vision / multimodal (v0.2.0): plan, WP breakdown & decision drafts
 
-**Author:** architect agent · **Date:** 2026-07-14 · **Status:** planning artifact for founder review.
+**Author:** architect agent · **Date:** 2026-07-14 · **Status:** **APPROVED by the founder on 2026-07-14** — D-026 accepted (audio = Option A), the §7 grammar entries approved (D-003). The binding records live in `DECISIONS.md` (D-026) and `API-GRAMMAR.md`; this document remains the phase's planning artifact.
 **Scope:** ROADMAP §3 Phase 11 (multimodal, pulled forward to `v0.2.0` per **D-023**). Phase 3 shipped `v0.1.0` (`relm`, text-only). Branch of record for the phase: TBD by the founder; each WP gets its own branch.
 
 This is the **single plan document** for the phase. It contains: the feasibility findings (verified against the upstream `b9726` tarball, not assumed), a ranked risk register, the WP breakdown (WP-V1…V4), a **draft ADR D-026** (`status: proposed`), draft **API-GRAMMAR entries** (`[proposed]`), an honest "what could force a vendor bump" section, and the founder's open inputs.
@@ -232,7 +232,7 @@ Exact GGUF/mmproj artifact URLs + SHA256s are chosen and pinned at WP-V4 impleme
 
 ---
 
-## 7. Draft API-GRAMMAR entries — `[proposed]`, NOT approved, do not implement
+## 7. Draft API-GRAMMAR entries — approved 2026-07-14 (the binding text lives in `API-GRAMMAR.md` §3/§6)
 
 Per D-003's change protocol, these are drafted here and require **founder sign-off** before any code. They realize the reserved slot at API-GRAMMAR §7 L156. **Nothing is implemented until the founder approves these entries.** No other new export.
 
@@ -289,7 +289,7 @@ None of these is expected for the Qwen-VL default (its projector types are first
 
 ---
 
-## Draft ADR — ready to append to `DECISIONS.md` (do not append until accepted)
+## Draft ADR — accepted 2026-07-14 and appended to `DECISIONS.md` as D-026 (the DECISIONS.md text is binding)
 
 ```
 ## D-026 — Vision (v0.2.0): re-vendor libmtmd at b9726, a second native library, T1+T2 only
