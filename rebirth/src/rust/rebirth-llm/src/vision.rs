@@ -170,11 +170,15 @@ pub(crate) fn validate_image_bytes(
 }
 
 /// Read an image file ONCE and run the full pre-decode gate on the bytes that
-/// will be passed onward (the audit req-2 same-buffer contract). A cheap
-/// metadata pre-check rejects an over-cap file before it is read into memory
-/// (the memory-DoS half of req 3a); the authoritative cap check inside
-/// [`validate_image_bytes`] runs on the buffer itself.
+/// will be passed onward (the audit req-2 same-buffer contract). The read
+/// itself is CAP-BOUNDED (`Read::take(cap + 1)`, the auditor's F1 hardening):
+/// even a file that grows after the metadata pre-check can never buffer more
+/// than `cap + 1` bytes — the `+ 1` makes an over-cap file detectable by the
+/// authoritative length check on the bytes actually read, which stays inside
+/// [`validate_image_bytes`].
 pub(crate) fn read_and_validate_image(path: &str, max_bytes: u64) -> Result<Vec<u8>, RebirthError> {
+    use std::io::Read;
+
     let image_err = |reason: String| RebirthError::Image {
         reason,
         path: Some(path.to_string()),
@@ -183,7 +187,12 @@ pub(crate) fn read_and_validate_image(path: &str, max_bytes: u64) -> Result<Vec<
     };
 
     let cap = max_bytes.min(IMAGE_HARD_MAX_BYTES);
-    let meta = std::fs::metadata(Path::new(path))
+    let file = std::fs::File::open(Path::new(path))
+        .map_err(|e| image_err(format!("could not read the image file '{path}': {e}.")))?;
+    // Metadata from the OPEN handle (no path re-resolution): the fast-path
+    // reject for an over-cap file, before any bytes are buffered.
+    let meta = file
+        .metadata()
         .map_err(|e| image_err(format!("could not read the image file '{path}': {e}.")))?;
     if !meta.is_file() {
         return Err(image_err(format!(
@@ -202,7 +211,9 @@ pub(crate) fn read_and_validate_image(path: &str, max_bytes: u64) -> Result<Vec<
         )));
     }
 
-    let bytes = std::fs::read(Path::new(path))
+    let mut bytes = Vec::new();
+    file.take(cap.saturating_add(1))
+        .read_to_end(&mut bytes)
         .map_err(|e| image_err(format!("could not read the image file '{path}': {e}.")))?;
     validate_image_bytes(path, &bytes, max_bytes)?;
     Ok(bytes)
@@ -420,6 +431,9 @@ pub(crate) fn load_projector(
     };
 
     let vision = if use_gpu {
+        // NOTE for the vendor-bump maintainer: a GPU-backend load parses the
+        // mmproj TWICE (the CPU probe above + the real init below) — the cost
+        // of keeping the constructor-leak abort unreachable with zero patch.
         // Free the CPU probe before the real init so the mmproj weights are
         // never resident twice.
         // SAFETY: `probe_ptr` is the live context just created; freed once.
@@ -455,6 +469,10 @@ pub(crate) fn load_projector(
             owner: std::thread::current().id(),
         }
     } else {
+        // The kept CPU-backend context IS the probe, created with
+        // `warmup = false` — a perf-only difference (no dummy warmup encode;
+        // the first real encode pays the graph build instead). Results are
+        // identical.
         VisionContext {
             ptr: probe_ptr,
             owner: std::thread::current().id(),
@@ -640,6 +658,26 @@ impl LoadedModel {
         // 2. One marker per image BEFORE the text, then the usual chat
         //    templating — identical to the text path's resolution.
         let marker = default_marker();
+        // The literal media marker is reserved in an image-bearing prompt:
+        // mtmd_tokenize splits the text on every occurrence and requires the
+        // marker count to equal the bitmap count, so a user-supplied marker
+        // would either mis-place an image or fail the count check. The R layer
+        // rejects this before the boundary (relm_error_argument on `prompt`);
+        // this engine-side backstop keeps the crate safe for non-R callers
+        // (unreachable through the R surface, hence exercised by no R test).
+        if prompt.contains(marker.as_str()) {
+            return Err(RebirthError::Image {
+                reason: format!(
+                    "the prompt contains the reserved media marker '{marker}'. On a \
+                     call with images, the engine inserts one marker per image; a \
+                     literal marker in the text would corrupt the image placement. \
+                     Remove it from the prompt."
+                ),
+                path: None,
+                expected: None,
+                actual: None,
+            });
+        }
         let mut content = marker.repeat(images.len());
         content.push_str(prompt);
         let (text, add_special, parse_special) = self.resolve_prompt_text(&content, chat)?;
@@ -673,12 +711,14 @@ impl LoadedModel {
         };
         match ret {
             0 => {}
-            // Return 1 = marker/bitmap count mismatch. We author exactly one
-            // marker per bitmap, so this is an internal invariant break.
+            // Return 1 = marker/bitmap count mismatch. The engine authors
+            // exactly one marker per bitmap AND rejects a user-supplied marker
+            // above, so this is a genuine internal invariant break.
             1 => {
                 return Err(RebirthError::Internal {
                     context: "mtmd_tokenize reported a marker/bitmap count mismatch; \
-                              the engine authors exactly one marker per image"
+                              the engine authors exactly one marker per image and \
+                              rejects user-supplied markers before tokenizing"
                         .to_string(),
                 })
             }
