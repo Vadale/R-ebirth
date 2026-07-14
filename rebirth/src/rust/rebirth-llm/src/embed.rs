@@ -53,7 +53,7 @@ pub struct Embeddings {
 /// The concrete reduction over per-token rows. `Pooling::Model` collapses to one
 /// of these (or errors); `Mean`/`Last` map directly. Kept internal.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Reduction {
+pub(crate) enum Reduction {
     Mean,
     Last,
     Cls,
@@ -76,7 +76,7 @@ fn mean_reduce(rows: &[Vec<f32>], n_embd: usize) -> Vec<f32> {
 }
 
 /// Reduce the per-token `rows` (non-empty) to one pooled vector.
-fn reduce(rows: &[Vec<f32>], reduction: Reduction, n_embd: usize) -> Vec<f32> {
+pub(crate) fn reduce(rows: &[Vec<f32>], reduction: Reduction, n_embd: usize) -> Vec<f32> {
     match reduction {
         Reduction::Mean => mean_reduce(rows, n_embd),
         Reduction::Last => rows[rows.len() - 1].clone(),
@@ -86,7 +86,7 @@ fn reduce(rows: &[Vec<f32>], reduction: Reduction, n_embd: usize) -> Vec<f32> {
 
 /// L2-normalize `v` in place: `v /= sqrt(Σ v²)`, computed in f64 for stability.
 /// A zero vector is left unchanged (all zeros) — never producing `NaN` (D-011).
-fn l2_normalize(v: &mut [f32]) {
+pub(crate) fn l2_normalize(v: &mut [f32]) {
     let norm = v
         .iter()
         .map(|&x| (x as f64) * (x as f64))
@@ -136,7 +136,7 @@ impl EmbeddingContext {
     /// Clear the KV cache so the next sequence starts from position 0. Sequences
     /// in one `llm_embed` call share this context, so it must be cleared between
     /// them (a harmless no-op on the first, freshly created context).
-    fn clear_memory(&self) {
+    pub(crate) fn clear_memory(&self) {
         // SAFETY: `self.ptr` is a live context; `llama_get_memory` returns its
         // (non-owning) memory handle, cleared in place.
         unsafe {
@@ -149,7 +149,7 @@ impl EmbeddingContext {
 
     /// Decode `ids` as one all-tokens-flagged batch and return the per-token
     /// post-final-norm rows (`n_tokens` x `n_embd`, engine-native order).
-    fn per_token(&self, ids: &[i32]) -> Result<Vec<Vec<f32>>, RebirthError> {
+    pub(crate) fn per_token(&self, ids: &[i32]) -> Result<Vec<Vec<f32>>, RebirthError> {
         if ids.is_empty() {
             return Err(RebirthError::Embed {
                 reason: "Cannot embed an empty input: it has no tokens to encode. \
@@ -186,7 +186,7 @@ impl EmbeddingContext {
     }
 
     /// Copy the `n_embd` post-final-norm row the engine stored for output slot `ith`.
-    fn embeddings_ith(&self, ith: i32) -> Result<Vec<f32>, RebirthError> {
+    pub(crate) fn embeddings_ith(&self, ith: i32) -> Result<Vec<f32>, RebirthError> {
         // SAFETY: `self.ptr` is a live context; `llama_get_embeddings_ith` returns
         // a pointer to `n_embd` f32 owned by the context (valid until the next
         // decode). NULL means the slot produced no embedding — an inconsistency,
@@ -238,7 +238,7 @@ impl LoadedModel {
     /// Resolve the per-call `pooling` to a concrete reduction, once, before the
     /// per-input loop. `"model"` reads the GGUF `<arch>.pooling_type` metadata and
     /// maps it (erroring on NONE/absent, RANK, and unknown values).
-    fn resolve_reduction(&self, pooling: Pooling) -> Result<Reduction, RebirthError> {
+    pub(crate) fn resolve_reduction(&self, pooling: Pooling) -> Result<Reduction, RebirthError> {
         match pooling {
             Pooling::Mean => Ok(Reduction::Mean),
             Pooling::Last => Ok(Reduction::Last),
@@ -249,7 +249,7 @@ impl LoadedModel {
     /// The context size for a batch whose longest input is `longest` tokens: the
     /// input length (at least 1) capped at the handle's context window. Sizing to
     /// the batch keeps the compute buffers small (the 16 GB rule, D-011).
-    fn embedding_n_ctx(&self, longest: usize) -> u32 {
+    pub(crate) fn embedding_n_ctx(&self, longest: usize) -> u32 {
         // Clamp before narrowing so a `longest` beyond u32::MAX could never truncate
         // to a wrong small value. Callers already run `check_embed_fits`, but this
         // makes the narrowing safe by construction rather than by precondition.
@@ -258,7 +258,7 @@ impl LoadedModel {
 
     /// `RebirthError::Embed` if `len` tokens do not fit the context window, naming
     /// both sizes (checked before any allocation).
-    fn check_embed_fits(&self, len: usize) -> Result<(), RebirthError> {
+    pub(crate) fn check_embed_fits(&self, len: usize) -> Result<(), RebirthError> {
         let ctx = self.context_length();
         if len as u64 > ctx as u64 {
             return Err(RebirthError::Embed {

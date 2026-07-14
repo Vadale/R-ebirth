@@ -31,9 +31,11 @@ use std::ptr::NonNull;
 use std::sync::{Mutex, Once, PoisonError};
 use std::thread::ThreadId;
 
-use crate::engine::{assert_r_main_thread, LoadedModel};
+use crate::embed::{l2_normalize, reduce, Embeddings, Pooling};
+use crate::engine::{assert_r_main_thread, EmbeddingContext, LoadedModel};
 use crate::error::RebirthError;
 use crate::ffi;
+use crate::generate::Batch;
 use crate::generate::GenerateParams;
 use crate::generate::Generation;
 
@@ -575,6 +577,146 @@ fn default_marker() -> String {
         .into_owned()
 }
 
+/// The engine-side backstop against a user-supplied media marker: mtmd_tokenize
+/// splits the text on every occurrence and requires the marker count to equal
+/// the bitmap count, so a literal marker would mis-place an image or fail the
+/// count check. The R layer rejects this pre-boundary (`relm_error_argument`);
+/// this keeps the crate safe for non-R callers.
+fn check_no_user_marker(text: &str, marker: &str) -> Result<(), RebirthError> {
+    if text.contains(marker) {
+        return Err(RebirthError::Image {
+            reason: format!(
+                "the input contains the reserved media marker '{marker}'. On a call \
+                 with images, the engine inserts one marker per image; a literal \
+                 marker in the text would corrupt the image placement. Remove it \
+                 from the input."
+            ),
+            path: None,
+            expected: None,
+            actual: None,
+        });
+    }
+    Ok(())
+}
+
+// --- shared image ingest building blocks (T1 generate + T2 embed) -------------
+
+impl LoadedModel {
+    /// Read + gate each image file once and decode the SAME buffer into an
+    /// owned bitmap (audit reqs 1-3; the single decode gateway). Shared by the
+    /// T1 generate path and the T2 embed path so the gate is never forked.
+    fn decode_bitmaps(
+        &self,
+        mctx: *mut ffi::mtmd_context,
+        images: &[String],
+        image_max_bytes: u64,
+    ) -> Result<Vec<Bitmap>, RebirthError> {
+        let mut bitmaps: Vec<Bitmap> = Vec::with_capacity(images.len());
+        for path in images {
+            let bytes = read_and_validate_image(path, image_max_bytes)?;
+            drain_mtmd_log();
+            // SAFETY: `mctx` is the live vision context; `bytes` is the gated
+            // buffer, borrowed only for the call (the helper copies what it
+            // keeps). `placeholder = false` decodes for real.
+            let wrapper = unsafe {
+                ffi::mtmd_helper_bitmap_init_from_buf(mctx, bytes.as_ptr(), bytes.len(), false)
+            };
+            // MTMD_VIDEO=OFF: the only branch that sets video_ctx is compiled out.
+            debug_assert!(wrapper.video_ctx.is_null());
+            let ptr = NonNull::new(wrapper.bitmap).ok_or_else(|| {
+                let engine_reason = drain_mtmd_log();
+                let detail = if engine_reason.is_empty() {
+                    String::from("no engine detail available")
+                } else {
+                    engine_reason
+                };
+                RebirthError::Image {
+                    reason: format!(
+                        "'{path}' passed the format gate but could not be decoded \
+                         ({detail}). The file is likely corrupt; re-export the \
+                         image and try again."
+                    ),
+                    path: Some(path.clone()),
+                    expected: None,
+                    actual: None,
+                }
+            })?;
+            bitmaps.push(Bitmap { ptr });
+        }
+        Ok(bitmaps)
+    }
+
+    /// Split marker-bearing `text` plus the decoded `bitmaps` into interleaved
+    /// text/image chunks via `mtmd_tokenize`. Shared by T1 and T2; the caller
+    /// authors exactly one marker per bitmap and has already rejected
+    /// user-supplied markers.
+    fn tokenize_with_images(
+        &self,
+        mctx: *mut ffi::mtmd_context,
+        text: &str,
+        add_special: bool,
+        parse_special: bool,
+        bitmaps: &[Bitmap],
+    ) -> Result<Chunks, RebirthError> {
+        let c_text = CString::new(text).map_err(|_| RebirthError::Generation {
+            reason: "the prompt contains an interior NUL byte".to_string(),
+        })?;
+        let input = ffi::mtmd_input_text {
+            text: c_text.as_ptr(),
+            add_special,
+            parse_special,
+        };
+        let chunks = Chunks::new()?;
+        let bitmap_ptrs: Vec<*const ffi::mtmd_bitmap> = bitmaps
+            .iter()
+            .map(|b| b.ptr.as_ptr() as *const ffi::mtmd_bitmap)
+            .collect();
+        drain_mtmd_log();
+        // SAFETY: every pointer is live for the call: `mctx` and the chunk
+        // list are owned above, `input.text` borrows `c_text`, and the bitmap
+        // array borrows `bitmaps` (all dropped after).
+        let ret = unsafe {
+            ffi::mtmd_tokenize(
+                mctx,
+                chunks.as_ptr(),
+                &input,
+                bitmap_ptrs.as_ptr(),
+                bitmap_ptrs.len(),
+            )
+        };
+        match ret {
+            0 => Ok(chunks),
+            // Return 1 = marker/bitmap count mismatch. The engine authors
+            // exactly one marker per bitmap AND rejects a user-supplied marker
+            // first, so this is a genuine internal invariant break.
+            1 => Err(RebirthError::Internal {
+                context: "mtmd_tokenize reported a marker/bitmap count mismatch; \
+                          the engine authors exactly one marker per image and \
+                          rejects user-supplied markers before tokenizing"
+                    .to_string(),
+            }),
+            _ => {
+                let engine_reason = drain_mtmd_log();
+                let detail = if engine_reason.is_empty() {
+                    String::from("no engine detail available")
+                } else {
+                    engine_reason
+                };
+                Err(RebirthError::Image {
+                    reason: format!(
+                        "Image preprocessing failed ({detail}). The image may use \
+                         an aspect ratio or size this model's preprocessor cannot \
+                         handle; try a different image."
+                    ),
+                    path: None,
+                    expected: None,
+                    actual: None,
+                })
+            }
+        }
+    }
+}
+
 // --- the T1 ingest ------------------------------------------------------------
 
 impl LoadedModel {
@@ -621,126 +763,24 @@ impl LoadedModel {
 
         install_mtmd_log();
 
-        // 1. Read + gate each file once, decode the SAME buffer (reqs 1-3).
-        let mut bitmaps: Vec<Bitmap> = Vec::with_capacity(images.len());
-        for path in images {
-            let bytes = read_and_validate_image(path, image_max_bytes)?;
-            drain_mtmd_log();
-            // SAFETY: `mctx` is the live vision context; `bytes` is the gated
-            // buffer, borrowed only for the call (the helper copies what it
-            // keeps). `placeholder = false` decodes for real.
-            let wrapper = unsafe {
-                ffi::mtmd_helper_bitmap_init_from_buf(mctx, bytes.as_ptr(), bytes.len(), false)
-            };
-            // MTMD_VIDEO=OFF: the only branch that sets video_ctx is compiled out.
-            debug_assert!(wrapper.video_ctx.is_null());
-            let ptr = NonNull::new(wrapper.bitmap).ok_or_else(|| {
-                let engine_reason = drain_mtmd_log();
-                let detail = if engine_reason.is_empty() {
-                    String::from("no engine detail available")
-                } else {
-                    engine_reason
-                };
-                RebirthError::Image {
-                    reason: format!(
-                        "'{path}' passed the format gate but could not be decoded \
-                         ({detail}). The file is likely corrupt; re-export the \
-                         image and try again."
-                    ),
-                    path: Some(path.clone()),
-                    expected: None,
-                    actual: None,
-                }
-            })?;
-            bitmaps.push(Bitmap { ptr });
-        }
-
-        // 2. One marker per image BEFORE the text, then the usual chat
-        //    templating — identical to the text path's resolution.
+        // 1. Reject a user-supplied media marker (the R layer rejects it
+        //    before the boundary as relm_error_argument on `prompt`; this
+        //    engine-side backstop keeps the crate safe for non-R callers —
+        //    unreachable through the R surface, hence exercised by no R test).
         let marker = default_marker();
-        // The literal media marker is reserved in an image-bearing prompt:
-        // mtmd_tokenize splits the text on every occurrence and requires the
-        // marker count to equal the bitmap count, so a user-supplied marker
-        // would either mis-place an image or fail the count check. The R layer
-        // rejects this before the boundary (relm_error_argument on `prompt`);
-        // this engine-side backstop keeps the crate safe for non-R callers
-        // (unreachable through the R surface, hence exercised by no R test).
-        if prompt.contains(marker.as_str()) {
-            return Err(RebirthError::Image {
-                reason: format!(
-                    "the prompt contains the reserved media marker '{marker}'. On a \
-                     call with images, the engine inserts one marker per image; a \
-                     literal marker in the text would corrupt the image placement. \
-                     Remove it from the prompt."
-                ),
-                path: None,
-                expected: None,
-                actual: None,
-            });
-        }
+        check_no_user_marker(prompt, &marker)?;
+
+        // 2. Read + gate each file once, decode the SAME buffer (reqs 1-3).
+        let bitmaps = self.decode_bitmaps(mctx, images, image_max_bytes)?;
+
+        // 3. One marker per image BEFORE the text, then the usual chat
+        //    templating — identical to the text path's resolution — and the
+        //    split into interleaved text/image chunks.
         let mut content = marker.repeat(images.len());
         content.push_str(prompt);
         let (text, add_special, parse_special) = self.resolve_prompt_text(&content, chat)?;
-        let c_text = CString::new(text).map_err(|_| RebirthError::Generation {
-            reason: "the prompt contains an interior NUL byte".to_string(),
-        })?;
-        let input = ffi::mtmd_input_text {
-            text: c_text.as_ptr(),
-            add_special,
-            parse_special,
-        };
-
-        // 3. Tokenize into interleaved text/image chunks.
-        let chunks = Chunks::new()?;
-        let bitmap_ptrs: Vec<*const ffi::mtmd_bitmap> = bitmaps
-            .iter()
-            .map(|b| b.ptr.as_ptr() as *const ffi::mtmd_bitmap)
-            .collect();
-        drain_mtmd_log();
-        // SAFETY: every pointer is live for the call: `mctx` and the chunk
-        // list are owned above, `input.text` borrows `c_text`, and the bitmap
-        // array borrows `bitmaps` (all dropped after).
-        let ret = unsafe {
-            ffi::mtmd_tokenize(
-                mctx,
-                chunks.as_ptr(),
-                &input,
-                bitmap_ptrs.as_ptr(),
-                bitmap_ptrs.len(),
-            )
-        };
-        match ret {
-            0 => {}
-            // Return 1 = marker/bitmap count mismatch. The engine authors
-            // exactly one marker per bitmap AND rejects a user-supplied marker
-            // above, so this is a genuine internal invariant break.
-            1 => {
-                return Err(RebirthError::Internal {
-                    context: "mtmd_tokenize reported a marker/bitmap count mismatch; \
-                              the engine authors exactly one marker per image and \
-                              rejects user-supplied markers before tokenizing"
-                        .to_string(),
-                })
-            }
-            _ => {
-                let engine_reason = drain_mtmd_log();
-                let detail = if engine_reason.is_empty() {
-                    String::from("no engine detail available")
-                } else {
-                    engine_reason
-                };
-                return Err(RebirthError::Image {
-                    reason: format!(
-                        "Image preprocessing failed ({detail}). The image may use \
-                         an aspect ratio or size this model's preprocessor cannot \
-                         handle; try a different image."
-                    ),
-                    path: None,
-                    expected: None,
-                    actual: None,
-                });
-            }
-        }
+        let chunks =
+            self.tokenize_with_images(mctx, &text, add_special, parse_special, &bitmaps)?;
 
         // The tokenizer preprocessed the bitmaps into the chunks' own storage;
         // free the decoded RGB buffers now (grammar rule 6: image buffers are
@@ -791,6 +831,229 @@ impl LoadedModel {
         //    which is exactly why new_n_past comes from the helper).
         let logits = self.logits_ith(-1, n_vocab)?;
         self.continue_generation(logits, new_n_past, params)
+    }
+}
+
+// --- the T2 multimodal embed (WP-V3, D-026.5; mechanism: docs/wp-v3-embed-spike.md)
+
+impl LoadedModel {
+    /// Pooled embeddings for (text, image) inputs — `llm_embed(images=)`.
+    /// Runs inside the D-011 embeddings context; per input, the marker-bearing
+    /// text is split into chunks, image chunks are delegated UNCHANGED to the
+    /// upstream single-chunk helper (M-RoPE / non-causal handling stays
+    /// upstream's), text chunks are decoded by the crate's own flag-all batch
+    /// so every TEXT position yields a per-token row, and the reduction pools
+    /// over those text rows (image content conditions them through attention —
+    /// the text-scoped semantics the WP-V3 spike fixed; image-position rows
+    /// are structurally unreachable at the pinned tag). Inputs with an empty
+    /// image set take the exact text path (`per_token`), byte-identical to
+    /// `embed_texts`.
+    pub fn embed_texts_with_images(
+        &self,
+        texts: &[&str],
+        image_sets: &[Vec<String>],
+        pooling: Pooling,
+        normalize: bool,
+        image_max_bytes: u64,
+    ) -> Result<Embeddings, RebirthError> {
+        debug_assert_eq!(texts.len(), image_sets.len());
+        self.require_tokenizer()?;
+        let reduction = self.resolve_reduction(pooling)?;
+        let Some(mctx) = self.vision_ptr() else {
+            return Err(RebirthError::Image {
+                reason: "This model was loaded without a projector, so it cannot \
+                         take image input. Reload it with llm(path, projector = \
+                         <mmproj GGUF>) to enable images."
+                    .to_string(),
+                path: None,
+                expected: None,
+                actual: None,
+            });
+        };
+        install_mtmd_log();
+        let marker = default_marker();
+
+        // Phase 1 — per input: gate + decode the images, split into chunks,
+        // and check the combined token count, so the context (phase 2) can be
+        // sized to the longest input like the text path (D-011). Bitmap RGB
+        // buffers are freed as soon as each input is tokenized (grammar rule
+        // 6); the chunks keep only the preprocessed image tokens.
+        enum Prepared {
+            Text(Vec<i32>),
+            Multi(Chunks),
+        }
+        let mut prepared: Vec<Prepared> = Vec::with_capacity(texts.len());
+        let mut longest = 0usize;
+        for (text, images) in texts.iter().zip(image_sets.iter()) {
+            if images.is_empty() {
+                let ids = self.tokenize(text, true, false)?;
+                self.check_embed_fits(ids.len())?;
+                longest = longest.max(ids.len());
+                prepared.push(Prepared::Text(ids));
+            } else {
+                check_no_user_marker(text, &marker)?;
+                let bitmaps = self.decode_bitmaps(mctx, images, image_max_bytes)?;
+                let mut content = marker.repeat(images.len());
+                content.push_str(text);
+                // Same tokenization contract as the text embed path
+                // (add_special = true, parse_special = false): the input is
+                // embedded verbatim, never chat-templated.
+                let chunks = self.tokenize_with_images(mctx, &content, true, false, &bitmaps)?;
+                drop(bitmaps);
+                let total = chunks.total_tokens();
+                self.check_embed_fits(total)?;
+                longest = longest.max(total);
+                prepared.push(Prepared::Multi(chunks));
+            }
+        }
+
+        // Phase 2 — one embeddings-mode context for the whole batch (D-011).
+        let ectx = self.create_embedding_context(self.embedding_n_ctx(longest))?;
+
+        // Phase 3 — rows -> reduce -> normalize, one pooled row per input.
+        let n_embd = ectx.n_embd;
+        let mut values = Vec::with_capacity(texts.len() * n_embd);
+        for p in &prepared {
+            let rows = match p {
+                Prepared::Text(ids) => ectx.per_token(ids)?,
+                Prepared::Multi(chunks) => self.multimodal_text_rows(&ectx, mctx, chunks)?,
+            };
+            if rows.is_empty() {
+                // Reachable only if a projector produced no image-delimiter
+                // text tokens AND the input text was empty (see the spike doc
+                // §4) — a classed error, never a silent zero vector.
+                return Err(RebirthError::Embed {
+                    reason: "This input produced no text positions to pool: the \
+                             text is empty and this projector wraps images with \
+                             no delimiter tokens. Provide non-empty text in `x` \
+                             for this input."
+                        .to_string(),
+                });
+            }
+            let mut pooled = reduce(&rows, reduction, n_embd);
+            if normalize {
+                l2_normalize(&mut pooled);
+            }
+            values.extend_from_slice(&pooled);
+        }
+        Ok(Embeddings {
+            values,
+            n_rows: texts.len(),
+            n_embd,
+        })
+    }
+
+    /// Decode one multimodal chunk list inside the embeddings context and
+    /// return the per-token post-final-norm rows of every TEXT position.
+    /// Mirrors `mtmd_helper_eval_chunks`' own sequencing (mtmd-helper.cpp
+    /// L410-434): image/audio chunks are delegated unchanged to the upstream
+    /// single-chunk helper (their rows can never be flagged — see the spike
+    /// doc), text chunks go through the crate's flag-all [`Batch`] at the
+    /// helper-accounted positions (upstream's own text loop uses plain 1-D
+    /// `pos = n_past++` even for M-RoPE models, L361), and `n_past` advances
+    /// by `mtmd_input_chunk_get_n_pos` exactly as upstream does (L331/L378).
+    /// Every text chunk fits one batch by construction: the context's
+    /// `n_batch = n_ubatch = n_ctx` (D-011) and the combined token count was
+    /// checked against `n_ctx` pre-flight — the same structural argument as
+    /// the text embed path (embed.rs header); the over-limit case is the
+    /// classed pre-flight reject, tested model-free.
+    fn multimodal_text_rows(
+        &self,
+        ectx: &EmbeddingContext,
+        mctx: *mut ffi::mtmd_context,
+        chunks: &Chunks,
+    ) -> Result<Vec<Vec<f32>>, RebirthError> {
+        ectx.clear_memory();
+        // SAFETY: `ectx.ptr` is a live context; read-only getter.
+        let n_batch = (unsafe { ffi::llama_n_batch(ectx.ptr.as_ptr()) }).max(1) as i32;
+        let mut rows: Vec<Vec<f32>> = Vec::new();
+        let mut n_past: ffi::llama_pos = 0;
+        // SAFETY: `chunks` is a live owned list; per-chunk pointers are owned
+        // by it and valid while it lives.
+        let n_chunks = unsafe { ffi::mtmd_input_chunks_size(chunks.as_ptr()) };
+        for idx in 0..n_chunks {
+            // SAFETY: `idx < n_chunks`; the chunk pointer is list-owned.
+            let chunk = unsafe { ffi::mtmd_input_chunks_get(chunks.as_ptr(), idx) };
+            if chunk.is_null() {
+                continue;
+            }
+            // SAFETY: `chunk` is non-null and list-owned.
+            let ctype = unsafe { ffi::mtmd_input_chunk_get_type(chunk) };
+            if ctype == ffi::MTMD_INPUT_CHUNK_TYPE_TEXT {
+                let mut n_tokens: usize = 0;
+                // SAFETY: `chunk` is a live TEXT chunk; the token array is
+                // chunk-owned and valid while the list lives; `n_tokens` is a
+                // valid out-pointer.
+                let toks_ptr =
+                    unsafe { ffi::mtmd_input_chunk_get_tokens_text(chunk, &mut n_tokens) };
+                if toks_ptr.is_null() || n_tokens == 0 {
+                    continue;
+                }
+                // SAFETY: `toks_ptr` names `n_tokens` valid llama_token.
+                let toks = unsafe { std::slice::from_raw_parts(toks_ptr, n_tokens) };
+                let mut batch = Batch::new(n_tokens as i32)?;
+                // Flag EVERY token: one post-final-norm row per text position
+                // (the whole point of decoding text chunks ourselves).
+                batch.fill(toks, n_past, false);
+                // SAFETY: `ectx.ptr` is live; `batch.raw` is fully populated
+                // and its arrays outlive the call (owned by `batch`).
+                let status =
+                    unsafe { ffi::llama_decode(ectx.ptr.as_ptr(), std::ptr::read(&batch.raw)) };
+                if status != 0 {
+                    return Err(RebirthError::Embed {
+                        reason: format!(
+                            "The engine failed to compute embeddings for a text \
+                             segment (llama_decode returned {status}). Try a \
+                             shorter input, or reload the model with a larger \
+                             context_length."
+                        ),
+                    });
+                }
+                for i in 0..n_tokens {
+                    rows.push(ectx.embeddings_ith(i as i32)?);
+                }
+                // Position accounting follows upstream (n_pos == n_tokens for
+                // text today; the getter is authoritative).
+                // SAFETY: `chunk` is live.
+                n_past += unsafe { ffi::mtmd_input_chunk_get_n_pos(chunk) };
+            } else {
+                // Image (audio is unreachable through the R gate): upstream
+                // owns the M-RoPE positions and the non-causal toggle;
+                // `logits_last = false` — image rows are never outputs.
+                drain_mtmd_log();
+                // SAFETY: `mctx`/`ectx.ptr`/`chunk` are live; `n_past` is a
+                // valid in/out pointer the helper advances by the chunk's
+                // n_pos.
+                let status = unsafe {
+                    ffi::mtmd_helper_eval_chunk_single(
+                        mctx,
+                        ectx.ptr.as_ptr(),
+                        chunk,
+                        n_past,
+                        0,
+                        n_batch,
+                        false,
+                        &mut n_past,
+                    )
+                };
+                if status != 0 {
+                    let engine_reason = drain_mtmd_log();
+                    let detail = if engine_reason.is_empty() {
+                        String::from("no engine detail available")
+                    } else {
+                        engine_reason
+                    };
+                    return Err(RebirthError::Embed {
+                        reason: format!(
+                            "The engine failed to encode an image for embedding \
+                             (status {status}: {detail}). Try a different image, \
+                             or reload the model with a larger context_length."
+                        ),
+                    });
+                }
+            }
+        }
+        Ok(rows)
     }
 }
 

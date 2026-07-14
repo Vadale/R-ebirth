@@ -386,6 +386,11 @@ pub struct mtmd_input_chunk {
     _opaque: [u8; 0],
 }
 
+/// `MTMD_INPUT_CHUNK_TYPE_TEXT` (mtmd.h L54-58, first enumerator = 0): the
+/// only chunk type the T2 embed loop handles itself; everything else is
+/// delegated to the upstream single-chunk helper. Re-validate on vendor-bump.
+pub const MTMD_INPUT_CHUNK_TYPE_TEXT: c_int = 0;
+
 /// Opaque handle: `struct mtmd_input_chunks` (mtmd.h L65; never dereferenced).
 #[repr(C)]
 pub struct mtmd_input_chunks {
@@ -490,6 +495,27 @@ extern "C" {
     /// chunks it is the combined text+image length checked against `n_ctx`.
     pub fn mtmd_input_chunk_get_n_tokens(chunk: *const mtmd_input_chunk) -> usize;
 
+    /// mtmd.h L211: the chunk's kind — `enum mtmd_input_chunk_type` (mtmd.h
+    /// L54-58: TEXT = 0, IMAGE = 1, AUDIO = 2). The T2 embed loop branches on
+    /// TEXT vs media; the constant below pins the only value compared against.
+    pub fn mtmd_input_chunk_get_type(chunk: *const mtmd_input_chunk) -> c_int;
+
+    /// mtmd.h L212: the text chunk's token array (chunk-owned, valid while the
+    /// chunk list lives), its length written to `n_tokens_output`. The T2 embed
+    /// path decodes these through the crate's own flag-all `Batch` so every
+    /// text position yields a per-token embedding row (the upstream helper
+    /// flags none — see vision.rs / docs/wp-v3-embed-spike.md).
+    pub fn mtmd_input_chunk_get_tokens_text(
+        chunk: *const mtmd_input_chunk,
+        n_tokens_output: *mut usize,
+    ) -> *const llama_token;
+
+    /// mtmd.h L218: the chunk's POSITION advance — equal to its token count
+    /// for text, but smaller for M-RoPE image chunks (qwen-vl), which is why
+    /// `n_past` accounting must use this, never the token count (matching
+    /// mtmd-helper.cpp L331/L378).
+    pub fn mtmd_input_chunk_get_n_pos(chunk: *const mtmd_input_chunk) -> llama_pos;
+
     /// mtmd.h L269-273: split the marker-bearing prompt into text/image chunks.
     /// Returns 0 on success, 1 on a marker/bitmap count mismatch, 2 on an image
     /// preprocessing error; exceptions are caught internally (mtmd.cpp L1424-1435).
@@ -513,6 +539,22 @@ extern "C" {
         ctx: *mut mtmd_context,
         lctx: *mut llama_context,
         chunks: *const mtmd_input_chunks,
+        n_past: llama_pos,
+        seq_id: llama_seq_id,
+        n_batch: i32,
+        logits_last: bool,
+        new_n_past: *mut llama_pos,
+    ) -> i32;
+
+    /// mtmd-helper.h L85-92: `mtmd_helper_eval_chunks` for ONE chunk. The T2
+    /// embed path delegates each IMAGE chunk here unchanged (upstream owns the
+    /// M-RoPE 2-D positions + the gemma3 non-causal toggle) while decoding the
+    /// text chunks itself with all positions flagged for per-token rows — the
+    /// mechanism the WP-V3 spike fixed (docs/wp-v3-embed-spike.md).
+    pub fn mtmd_helper_eval_chunk_single(
+        ctx: *mut mtmd_context,
+        lctx: *mut llama_context,
+        chunk: *const mtmd_input_chunk,
         n_past: llama_pos,
         seq_id: llama_seq_id,
         n_batch: i32,
