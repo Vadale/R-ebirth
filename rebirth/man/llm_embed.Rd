@@ -4,13 +4,20 @@
 \alias{llm_embed}
 \title{Embed text with a model}
 \usage{
-llm_embed(m, x, pooling = c("mean", "last", "model"), normalize = TRUE)
+llm_embed(
+  m,
+  x,
+  pooling = c("mean", "last", "model"),
+  normalize = TRUE,
+  images = NULL
+)
 }
 \arguments{
 \item{m}{An \code{llm} handle from \code{\link[=llm]{llm()}}.}
 
 \item{x}{A character vector of one or more non-empty strings to embed; \code{NA} and
-empty strings (\code{""}) are rejected. \code{names(x)} become the row names.}
+empty strings (\code{""}) are rejected (an empty string is allowed only for an
+input that carries at least one image). \code{names(x)} become the row names.}
 
 \item{pooling}{How to reduce each input's per-token vectors to one vector:
 \code{"mean"} (average), \code{"last"} (final token), or \code{"model"} (the model's own
@@ -19,6 +26,11 @@ pooling when the GGUF defines one; otherwise an error asking for
 
 \item{normalize}{Single logical. \code{TRUE} (default) L2-normalizes each row so
 rows are unit vectors and dot products are cosine similarities.}
+
+\item{images}{\code{NULL} (default: text-only, unchanged) or the image file paths
+to pair with each input — a list parallel to \code{x}, or a bare character
+vector for a single input. Accepted formats: JPEG, PNG, BMP. Requires a
+handle loaded with \code{llm(projector = )}; see the \emph{Image input} section.}
 }
 \value{
 A numeric \code{matrix}, \code{length(x)} rows by the model's embedding size
@@ -55,6 +67,31 @@ Embedding an \strong{intervened} handle (from \code{\link[=llm_steer]{llm_steer(
 only, and the embedding context does not inherit them, so returning base vectors
 labeled as intervened would be silent mislabeling. Embed the original handle.
 }
+\section{Image input (vision models)}{
+
+On a handle loaded with \code{\link[=llm]{llm()}}'s \code{projector} argument, \code{images} embeds each
+(text, image) pair into one row: a \strong{list parallel to \code{x}}, where
+\code{images[[i]]} is a character vector of image file paths for input \code{i}
+(\code{character(0)} for none), or a bare character vector for a single input
+(recycled across several inputs with a warning) — the same pairing contract
+as \code{\link[=llm_generate]{llm_generate()}}'s \code{images}. Images are inserted \strong{before} the text.
+The accepted formats and pre-decode limits are exactly \code{\link[=llm_generate]{llm_generate()}}'s:
+\strong{JPEG, PNG, BMP} only, at most 64 MB per file by default
+(\code{options(relm.image_max_bytes = )}), dimensions 1--16384 px per side, at
+most 33554432 total pixels; the literal marker \code{"<__media__>"} is reserved
+in an image-bearing input (\code{relm_error_argument}). An input that carries an
+image may have empty text (\code{x = ""}) — the image alone is embedded; empty
+text without an image is still rejected.
+
+Pooling semantics with images: the per-token vectors reduced by \code{pooling}
+are those of the \strong{text positions} (including the model's own
+image-delimiter tokens); the image conditions those vectors through
+attention. This matches the reference llama.cpp behavior at the pinned
+engine version — image patch positions expose no per-token hidden states —
+and text-only inputs are completely unchanged. Images on a handle loaded
+without a projector raise \code{relm_error_image}.
+}
+
 \examples{
 \dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
 m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))

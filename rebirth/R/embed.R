@@ -29,15 +29,43 @@
 #' only, and the embedding context does not inherit them, so returning base vectors
 #' labeled as intervened would be silent mislabeling. Embed the original handle.
 #'
+#' @section Image input (vision models):
+#' On a handle loaded with [llm()]'s `projector` argument, `images` embeds each
+#' (text, image) pair into one row: a **list parallel to `x`**, where
+#' `images[[i]]` is a character vector of image file paths for input `i`
+#' (`character(0)` for none), or a bare character vector for a single input
+#' (recycled across several inputs with a warning) — the same pairing contract
+#' as [llm_generate()]'s `images`. Images are inserted **before** the text.
+#' The accepted formats and pre-decode limits are exactly [llm_generate()]'s:
+#' **JPEG, PNG, BMP** only, at most 64 MB per file by default
+#' (`options(relm.image_max_bytes = )`), dimensions 1--16384 px per side, at
+#' most 33554432 total pixels; the literal marker `"<__media__>"` is reserved
+#' in an image-bearing input (`relm_error_argument`). An input that carries an
+#' image may have empty text (`x = ""`) — the image alone is embedded; empty
+#' text without an image is still rejected.
+#'
+#' Pooling semantics with images: the per-token vectors reduced by `pooling`
+#' are those of the **text positions** (including the model's own
+#' image-delimiter tokens); the image conditions those vectors through
+#' attention. This matches the reference llama.cpp behavior at the pinned
+#' engine version — image patch positions expose no per-token hidden states —
+#' and text-only inputs are completely unchanged. Images on a handle loaded
+#' without a projector raise `relm_error_image`.
+#'
 #' @param m An `llm` handle from [llm()].
 #' @param x A character vector of one or more non-empty strings to embed; `NA` and
-#'   empty strings (`""`) are rejected. `names(x)` become the row names.
+#'   empty strings (`""`) are rejected (an empty string is allowed only for an
+#'   input that carries at least one image). `names(x)` become the row names.
 #' @param pooling How to reduce each input's per-token vectors to one vector:
 #'   `"mean"` (average), `"last"` (final token), or `"model"` (the model's own
 #'   pooling when the GGUF defines one; otherwise an error asking for
 #'   `"mean"`/`"last"`).
 #' @param normalize Single logical. `TRUE` (default) L2-normalizes each row so
 #'   rows are unit vectors and dot products are cosine similarities.
+#' @param images `NULL` (default: text-only, unchanged) or the image file paths
+#'   to pair with each input — a list parallel to `x`, or a bare character
+#'   vector for a single input. Accepted formats: JPEG, PNG, BMP. Requires a
+#'   handle loaded with `llm(projector = )`; see the *Image input* section.
 #' @return A numeric `matrix`, `length(x)` rows by the model's embedding size
 #'   (columns), with row names `names(x)` when set, else the input positions as
 #'   characters.
@@ -48,7 +76,8 @@
 #' dim(e)
 #' close(m)
 #' @export
-llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TRUE) {
+llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TRUE,
+                      images = NULL) {
   if (!inherits(m, "llm")) {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
@@ -61,12 +90,6 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
   if (!is.character(x) || length(x) == 0L || anyNA(x)) {
     abort_argument("x", "`x` must be a non-empty character vector without NA.")
   }
-  if (any(!nzchar(x))) {
-    abort_argument(
-      "x",
-      "`x` must not contain empty strings (\"\"); every element needs text to embed."
-    )
-  }
   if (!is.logical(normalize) || length(normalize) != 1L || is.na(normalize)) {
     abort_argument(
       "normalize",
@@ -74,7 +97,40 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
     )
   }
 
-  payload <- relm_check(rebirth_embed(m$ptr, x, pooling, normalize))
+  # Images (WP-V3, D-026.5): the same pairing/marker/projector contract as
+  # llm_generate(images=), through the same shared helpers (never forked).
+  image_sets <- normalize_images(images, length(x))
+  check_prompt_markers(x, image_sets)
+  has_image <- if (is.null(image_sets)) {
+    rep(FALSE, length(x))
+  } else {
+    lengths(image_sets) > 0L
+  }
+  # An empty string is embeddable only when its input carries an image (the
+  # image alone is embedded); text-only empty strings stay rejected as before.
+  if (any(!nzchar(x) & !has_image)) {
+    abort_argument(
+      "x",
+      "`x` must not contain empty strings (\"\"); every element needs text to embed (or an image in `images`)."
+    )
+  }
+  max_bytes <- if (any(has_image)) image_max_bytes() else 64 * 1024^2
+  check_images_usable(m, image_sets)
+
+  # All-empty sets (e.g. images = list(character(0))) are a text-only call:
+  # send the empty transport so the boundary routes through the unchanged
+  # text path (and no projector is required), exactly like images = NULL.
+  if (is.null(image_sets) || !any(has_image)) {
+    images_flat <- character(0)
+    images_lens <- integer(0)
+  } else {
+    images_flat <- path.expand(as.character(unlist(image_sets, use.names = FALSE)))
+    images_lens <- as.integer(lengths(image_sets))
+  }
+
+  payload <- relm_check(rebirth_embed(
+    m$ptr, x, pooling, normalize, images_flat, images_lens, max_bytes
+  ))
   mat <- matrix(
     payload$values,
     nrow = payload$n_rows, ncol = payload$n_embd, byrow = TRUE
