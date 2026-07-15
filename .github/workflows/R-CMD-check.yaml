@@ -75,6 +75,60 @@ jobs:
       - name: demo-B plot self-test (model-free)
         run: Rscript -e 'Sys.setenv(RELM_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
 
+      # The COMMITTED golden sidecars, verified from the checkout (D-026 fifth
+      # addendum). The testthat suite cannot do this per-commit: the goldens live
+      # at the repo root, outside the built tarball, so under R CMD check that
+      # test skips -- and a skip is the wrong answer for the one check that
+      # validates the real artifact rather than the mechanism. Re-recording a
+      # golden and forgetting its sidecar would then merge green and surface only
+      # in that night's vision job.
+      #
+      # Possible only because verify_golden_sidecar() takes explicit paths: it
+      # needs no testthat context, no built package, and no model, so the real
+      # function runs here on the real files -- no reimplementation in shell, and
+      # therefore no R-vs-shell twin to drift (rule 8f).
+      - name: committed golden sidecars (model-free)
+        shell: bash
+        run: |
+          Rscript - <<'RS'
+          source("rebirth/tests/testthat/helper-llm.R")
+          # The annotation must be emitted BEFORE stop(): R prefixes its own
+          # "Error: ", so a ::error:: inside the message never starts a line and
+          # GitHub never parses it. Exit 1 is what actually gates; this only buys
+          # the PR-UI annotation.
+          fail <- function(...) {
+            msg <- sprintf(...)
+            cat(sprintf("::error::%s\n", msg), file = stderr())
+            stop(msg, call. = FALSE)
+          }
+          sidecars <- Sys.glob("tests/llm-golden/*/goldens/*.machine")
+          # A gate that silently verifies zero files is the failure this step is about.
+          if (length(sidecars) == 0L) fail("no golden sidecars found; the glob is wrong or they were deleted")
+          for (s in sidecars) {
+            golden <- sub("\\.machine$", "", s)
+            # verify_golden_sidecar() deliberately tolerates an absent golden (so
+            # R CMD check does not break), so the orphan case is caught here.
+            if (!file.exists(golden)) fail("orphan sidecar '%s': its golden '%s' does not exist", s, golden)
+            # Errors loudly on a stale or digest-less sidecar; that is the gate.
+            # Wrapped, not called bare: those stops are raised INSIDE the helper,
+            # so without this they would exit 1 (the gate holds) but never reach
+            # fail() and never annotate -- an annotator covering four of six
+            # failure modes, silently missing the two that matter most.
+            machine <- tryCatch(
+              verify_golden_sidecar(golden, s),
+              error = function(e) fail("%s", conditionMessage(e))
+            )
+            if (is.na(machine) || !nzchar(machine)) fail("sidecar '%s' names no machine", s)
+            # UNKNOWN_CPU comes from the sourced helper, never retyped here: a
+            # bare literal would keep "passing" if the sentinel were renamed.
+            if (grepl(UNKNOWN_CPU, machine, fixed = TRUE)) {
+              fail("sidecar '%s' records '%s', which is not an identity: two unrelated machines would match it", s, UNKNOWN_CPU)
+            }
+            cat(sprintf("verified %s -> %s\n", basename(golden), machine))
+          }
+          cat(sprintf("%d golden sidecar(s) verified against their goldens\n", length(sidecars)))
+          RS
+
       # Lint the R-boundary crate here rather than in rust.yaml: rebirth-ffi's
       # build needs R on the PATH (provided by the steps above). rust.yaml lints
       # the R-free rebirth-llm.

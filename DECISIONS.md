@@ -390,6 +390,14 @@ point 8, which named "Apache-2.0 **Qwen2.5-VL-3B**".
 
 ### D-026 fourth addendum (2026-07-15, founder-approved at the WP-V4 release gate)
 
+> **Two claims below were overtaken by the fifth addendum (2026-07-16) — read it
+> before citing either.** (a) Point 1's "undiagnosed" and point 2's untested
+> hypothesis: the cross-ISA divergence is now **diagnosed** — SIMD path alone,
+> measured on one runner. (b) Point 3's `RELM_VISION_RECORDING_MACHINE` gate: the
+> T2 pin is now gated on a **derived machine fingerprint** (it was an operator
+> assertion, and the pin consequently ran nowhere). The text below stands as
+> written — this log is append-only, and it records what was known at the time.
+
 **A float reference is specific to the MACHINE that produced it, not to its
 OS/arch. So the encoder leg builds its reference on the machine that runs it,
 and stays exact everywhere.** Amending point 6 (the vision golden category) and
@@ -497,6 +505,89 @@ scoping *where* the first addendum's BINDING leg is asserted.
   addendum before the max-over-all-values rewrite exposed `8.71`. **A gate that
   reports the first violation instead of the worst one does not just fail to
   inform — it actively misleads.** The leg now reports the max.
+
+### D-026 fifth addendum (2026-07-16) — the cross-ISA gap is diagnosed, and the T2 gate is derived
+
+Two loose ends from the fourth addendum, closed. Both were tracked as
+non-blocking after `v0.2.0`; neither changes shipped behavior.
+
+**1. The encoder's cross-ISA divergence is no longer "undiagnosed".** The fourth
+addendum recorded a hypothesis and marked it untested: x86 SIMD width changes the
+reduction order and a ViT amplifies it. Tested (diag run 29455236480,
+`diag-simd-reduction.yaml`, since deleted): pristine b9726 built **three times on
+one AMD EPYC 7763 runner** (avx2 + fma, no avx512), changing nothing but the
+vector path ggml compiles for.
+
+| comparison (one machine, one source) | `max \|Δ\|` | cosine | exactly equal |
+|---|---|---|---|
+| native vs AVX2+FMA forced | `0.000000` | `1.000000000` | **98304 / 98304** |
+| native (AVX2+FMA) vs baseline x86-64 (SSE2, no FMA) | **`1.624`** | `0.999822` | **0 / 98304** |
+| committed arm64 (M4) vs this runner's native — *for scale* | `3.300` | `0.999350` | 0 / 98304 |
+
+- **The mechanism is confirmed — by the signature, not the magnitude.** Changing
+  only the vector path moves **every one of 98,304 values**, `max |Δ| = 1.624`.
+  What ties that to the cross-ISA gap (`3.300`) is that both show the same
+  fingerprint of float reordering: all 98,304 values move, cosine of the same
+  order (`0.99982` / `0.99935`), and the biggest gaps land on the biggest values
+  (ratio 9.7x / 11.2x) — which is what reordering does and what a computational
+  bug does not. **Row 3 is not a controlled comparison** and the 2x is not
+  attributed: arm-vs-x86 changes the kernels, `GGML_ACCELERATE` (on by default on
+  Apple; `-DGGML_BLAS=OFF` does not disable it), SME/SVE runtime dispatch (point
+  2 below establishes that as an independent float-moving mechanism) and the
+  compiler/libm, all at once. Which of those dominates was not measured, and
+  reordering divergence has no reason to be magnitude-conserving across different
+  kernel sets — expecting `1.624 ≈ 3.300` would be the error. Rows 1–2 establish
+  **sufficiency** on one machine; the signature is what carries the claim to arm.
+- **`native == avx2` bit-for-bit** is the internal control: forcing the flags this
+  hardware actually has reproduces `-march=native` exactly, so the three builds
+  differ in the intended variable and nothing else.
+- **It also explains the observation that most resisted explanation** — the gap
+  was not constant across two `ubuntu-24.04` runners (`3.30` vs `8.71`). The
+  pristine build never passes `-DGGML_NATIVE=OFF`, so ggml compiles `-march=native`
+  and **each runner bakes in its own ISA**; GitHub's pool is heterogeneous (this
+  one is an EPYC without AVX-512). Two runners under one label were never the same
+  float machine. *Still an inference:* that the `8.71` runner had AVX-512 was not
+  measured, only predicted by this mechanism.
+- **"Benign" needs saying carefully, because the sloppy version of this sentence
+  is what started the whole episode.** Benign at the level that ships: cosine
+  `0.9998`, and the byte-exact T1 text golden passes cross-ISA — identical
+  semantics. **Not** benign as "differs in the last decimals": individual values
+  move by tens of percent (the worst bulk gap here is `0.470` on a value of
+  `0.997` — **47% relative**). The honest claim is that this is upstream's
+  arithmetic being float-path-dependent, not ours being wrong, and that the
+  aggregate is stable while individual values are not.
+- **Nothing to fix, therefore nothing changed.** relm contributes zero divergence
+  on the machines tested (fourth addendum), the nightly's same-machine design
+  already removes the question from CI, and no tolerance was invented. The
+  diagnostic workflow is deleted; this table is its result.
+
+**2. The T2 pooled-embedding pin is now gated on a derived machine fingerprint**
+(hard rule 8d). The fourth addendum's `RELM_VISION_RECORDING_MACHINE=1` was an
+operator assertion, and it had 8d's predicted failure mode: **the pin ran
+nowhere** — skipped by design in the nightly, and skipped on the founder's Mac
+because nobody remembers an env var. `helper-llm.R::machine_fingerprint()` now
+derives `Darwin | arm64 | Apple M4` from the machine; the recording machine is
+committed as `goldens/embed-red-square-mean.csv.machine`; the test compares and
+runs or skips on the answer. Verified with the env var unset: the pin **runs**
+(suite 34 passed / 0 skipped / 0 failed, was 32 / 1 / 0), a foreign fingerprint
+skips with a message naming both machines, and an unrecorded golden reports `NA`.
+Three model-free tests lock the mechanism into per-commit CI, since the pin itself
+executes on exactly one machine in the world.
+
+- **Why the CPU model and not the arch** (`Darwin && arm64` had already failed
+  once, missing the pin by 600x the tolerance on a non-M4 arm64 runner): ggml
+  keeps `GGML_ACCELERATE` on for the macOS CPU backend and dispatches on runtime
+  CPU features (`ggml_cpu_has_sme`, `ggml_cpu_has_sve`). The founder's M4 reports
+  `FEAT_SME = 1` and `FEAT_SME2 = 1`; earlier Apple Silicon has neither. **Two
+  arm64 machines do not run the same instructions.** Same family as point 1, one
+  level down.
+- **Also corrected:** the test's old comment blamed "thread-pool reduction order".
+  relm never sets `n_threads`, so it is 4 everywhere — thread count was never the
+  variable. A plausible guess, written as if it were a finding.
+- **What it does not claim:** a machine identity, not proof of float equivalence.
+  A compiler or Accelerate update under a stable CPU name would go unnoticed by
+  the key — and then the pin runs and **fails loudly**, which is what a golden is
+  for. The dangerous direction (a pin silently not running) is the one this closes.
 
 ---
 

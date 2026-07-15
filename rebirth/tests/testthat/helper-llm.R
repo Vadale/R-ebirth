@@ -71,6 +71,188 @@ vision_golden_path <- function(name) {
   )
 }
 
+# Which machine is this, for the purposes of a bit-exact float pin?
+#
+# WHY THIS EXISTS (hard rule 8d; D-026 fourth addendum). A float golden belongs
+# to the machine that recorded it, so a pin like the T2 pooled embedding has to
+# know whether it is home. The first version of that check asked the OPERATOR --
+# `RELM_VISION_RECORDING_MACHINE=1` -- which is an echoed assertion, exactly the
+# shape rule 8d forbids, and it had the failure mode rule 8d predicts: the pin
+# ran nowhere, because nobody remembers an env var. This derives the answer from
+# the machine instead.
+#
+# WHY THE CPU MODEL AND NOT THE ARCH. `Darwin && arm64` was the original gate and
+# it was wrong: a non-M4 arm64 runner (same OS, same arch, same n_threads -- relm
+# never sets it, so it is 4 everywhere) measured `max |d| = 6.05e-3` against the
+# M4-recorded pin. The reason is below the arch: ggml's CPU backend keeps
+# GGML_ACCELERATE on for macOS (build.rs) and dispatches on runtime CPU features
+# (`ggml_cpu_has_sme`, `ggml_cpu_has_sve`) -- and SME exists on the M4 but not on
+# earlier Apple Silicon. Two arm64 machines therefore do not run the same
+# instructions, and float equality was never promised across them.
+#
+# WHAT THIS DOES AND DOES NOT GUARANTEE. It is a machine IDENTITY, not a proof of
+# float equivalence: it cannot know that a compiler or Accelerate update changed
+# the arithmetic under a stable CPU name. That case is safe by direction -- the
+# fingerprint matches, the pin runs, and it FAILS loudly, which is the outcome we
+# want from a golden. The dangerous direction (a pin silently not running) is the
+# one this closes. Kept as a readable string rather than a hash so a skip message
+# says something a human can act on.
+#
+# "unknown-cpu" IS NOT AN IDENTITY. Where the CPU cannot be read, two unrelated
+# machines would fingerprint alike and a pin recorded on one would RUN on the
+# other -- an accidental match, the one way this gate could produce a false
+# failure instead of a safe skip. The aarch64 branch below exists because
+# /proc/cpuinfo carries no "model name" there (arch/arm64 emits CPU
+# implementer/part instead), which is the founder's UTM/lima VMs and r-universe's
+# Linux aarch64 build. The remaining fallback is contained by never letting a
+# committed sidecar hold "unknown-cpu" (asserted per-commit in
+# test-llm-vision-embed.R), so such a machine matches nothing and always skips.
+# The sentinel machine_fingerprint() falls back to when the CPU cannot be read.
+# Defined once and referenced by every guard against it (this file, the vision
+# tests, R-CMD-check.yaml's sidecar step, which sources this file). As a bare
+# literal in each place it was rule 8f's shape across R and YAML, with the worst
+# failure mode available: rename the fallback and all three guards keep passing
+# while checking nothing -- a silent no-op, which is this mechanism's own subject.
+UNKNOWN_CPU <- "unknown-cpu"
+
+# The /proc/cpuinfo half, as a pure function of the file's LINES so it can be
+# tested off the hardware that produces them. CI is ubuntu-24.04 (x86_64) +
+# macos-15, so the aarch64 branch below runs on no CI machine and no assertion
+# about it could otherwise exist (rule 8e) -- the exact "a gate that runs
+# nowhere" shape this file exists to fix. Committed fixtures drive both branches
+# per-commit, on every platform, with no hardware.
+cpu_from_cpuinfo <- function(lines) {
+  line <- grep("^model name", lines, value = TRUE)[1]
+  if (!is.na(line)) {
+    return(trimws(sub("^model name\\s*:", "", line)))
+  }
+  # aarch64 Linux has no "model name": arch/arm64/kernel/cpuinfo.c emits CPU
+  # implementer/part instead. Those identify the core design, which is what
+  # decides the kernels ggml dispatches to.
+  parts <- vapply(
+    c("^CPU implementer", "^CPU part", "^CPU architecture"),
+    function(k) {
+      l <- grep(k, lines, value = TRUE)[1]
+      if (is.na(l)) NA_character_ else trimws(sub("^[^:]*:", "", l))
+    },
+    character(1)
+  )
+  if (all(is.na(parts))) NA_character_ else paste(parts[!is.na(parts)], collapse = "/")
+}
+
+machine_fingerprint <- function() {
+  info <- Sys.info()
+  cpu <- tryCatch(
+    {
+      if (identical(info[["sysname"]], "Darwin")) {
+        # Absolute path first: in a PATH-stripped session (R.app, launchd) a bare
+        # "sysctl" fails to resolve and the fingerprint would degrade to
+        # unknown-cpu -- i.e. the founder's own GUI R would silently stop running
+        # the pin. Fall back to PATH for non-standard layouts.
+        sysctl <- if (file.exists("/usr/sbin/sysctl")) "/usr/sbin/sysctl" else "sysctl"
+        system2(sysctl, c("-n", "machdep.cpu.brand_string"),
+          stdout = TRUE, stderr = FALSE
+        )[1]
+      } else if (file.exists("/proc/cpuinfo")) {
+        cpu_from_cpuinfo(readLines("/proc/cpuinfo"))
+      } else {
+        NA_character_
+      }
+    },
+    error = function(e) NA_character_,
+    warning = function(w) NA_character_
+  )
+  if (length(cpu) != 1L || is.na(cpu) || !nzchar(cpu)) cpu <- UNKNOWN_CPU
+  paste(info[["sysname"]], info[["machine"]], cpu, sep = " | ")
+}
+
+# Which machine recorded `golden_path`, per `sidecar_path` -- or NA if there is
+# no sidecar to say. THE WHOLE MECHANISM, as a pure function of two paths.
+#
+# PATHS ARE INJECTED, NOT LOOKED UP, because the alternative does not run.
+# The first version took a golden's name and resolved both paths internally, so
+# its tests had to mock the resolver -- and `local_mocked_bindings()` CANNOT mock
+# a helper-file binding: testthat searches the namespace, its parent, and
+# globalenv, never the testing env where helper-*.R is sourced. Both tests
+# aborted under R CMD check on both runners and passed locally only because an
+# earlier `source()` had polluted globalenv. The tests proving this PR's thesis
+# were themselves gates that ran nowhere. Injection removes the mock, the
+# testthat-version coupling, and the failure mode in one move.
+#
+# THE DIGEST IS THE POINT (hard rule 8d: integrity keys are content digests). A
+# filename only finds the sidecar; what binds it to the golden is `golden-md5`,
+# verified on every read. Without it, re-recording the golden on a NEW machine
+# while leaving the sidecar naming the OLD one leaves a pin that matches nothing
+# and skips everywhere, silently, forever -- reachable by following the sanctioned
+# golden-update procedure one hardware refresh later. With it, a stale sidecar is
+# a loud error on every platform, per-commit. md5 via base `tools` (no new
+# dependency): this catches an operator forgetting a step, not an adversary, so
+# collision resistance is not the property needed.
+verify_golden_sidecar <- function(golden_path, sidecar_path) {
+  if (!file.exists(sidecar_path)) {
+    return(NA_character_)
+  }
+  lines <- grep("^\\s*(#|$)", readLines(sidecar_path), value = TRUE, invert = TRUE)
+  keys <- trimws(sub(":.*$", "", lines))
+  vals <- trimws(sub("^[^:]*:", "", lines))
+  side <- stats::setNames(as.list(vals), keys)
+
+  if (is.null(side[["machine"]])) {
+    return(NA_character_)
+  }
+  recorded_md5 <- side[["golden-md5"]]
+  if (is.null(recorded_md5)) {
+    stop(sprintf(
+      "sidecar '%s' has no golden-md5: it cannot be known which golden it describes (rule 8d)",
+      basename(sidecar_path)
+    ), call. = FALSE)
+  }
+  # Absent golden: nothing to verify against, and erroring would break R CMD
+  # check, where the goldens live outside the tarball. The caller skips on the
+  # golden's own file.exists() before it gates on anything.
+  if (file.exists(golden_path)) {
+    actual <- unname(tools::md5sum(golden_path))
+    if (!identical(actual, recorded_md5)) {
+      stop(sprintf(
+        paste0(
+          "STALE SIDECAR: '%s' records golden-md5 %s but the golden is %s.\n",
+          "  The golden was re-recorded and the sidecar was not. Its 'machine: %s' is\n",
+          "  therefore unverified, and trusting it would gate the pin on the wrong\n",
+          "  machine. Regenerate both together (see the golden-update skill)."
+        ),
+        basename(sidecar_path), recorded_md5, actual, side[["machine"]]
+      ), call. = FALSE)
+    }
+  }
+  side[["machine"]]
+}
+
+# The repo-layout resolver over the above. Thin on purpose: everything worth
+# testing lives in verify_golden_sidecar(), which needs no repo and no mock.
+golden_machine <- function(name) {
+  verify_golden_sidecar(
+    vision_golden_path(name),
+    vision_golden_path(paste0(name, ".machine"))
+  )
+}
+
+# Skip unless this machine recorded `name`. The gate a bit-exact float pin needs.
+skip_if_not_recording_machine <- function(name) {
+  recorded <- golden_machine(name)
+  here <- machine_fingerprint()
+  skip_if_not(
+    !is.na(recorded),
+    sprintf("no machine fingerprint recorded for '%s' (see the golden-update skill)", name)
+  )
+  skip_if_not(
+    identical(recorded, here),
+    sprintf(
+      "exact float pin: recorded on [%s], this is [%s] -- different machines do not agree bit-for-bit",
+      recorded, here
+    )
+  )
+}
+
 # [MODEL] model-path helpers for the WP7.5a modern-model families. Each is gated
 # on its own environment variable pointing at a local text-only instruct GGUF, so
 # these tests run only on the founder's Mac (Metal) and skip in CI/CRAN, which have

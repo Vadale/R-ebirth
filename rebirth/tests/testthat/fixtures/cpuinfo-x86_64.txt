@@ -1,0 +1,11 @@
+# A real x86_64 /proc/cpuinfo (the AMD EPYC 7763 that GitHub's ubuntu-24.04 pool
+# served for diag run 29455236480 -- the machine that diagnosed the cross-ISA
+# gap, D-026 fifth addendum). Has "model name", so it drives the other branch of
+# cpu_from_cpuinfo(). Trimmed to the fields the parser reads plus context.
+processor	: 0
+vendor_id	: AuthenticAMD
+cpu family	: 25
+model		: 1
+model name	: AMD EPYC 7763 64-Core Processor
+stepping	: 1
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep sse2 avx avx2 fma

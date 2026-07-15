@@ -1,0 +1,15 @@
+# A real aarch64 /proc/cpuinfo (Ampere Altra, Neoverse N1). Committed as a
+# FIXTURE because CI runs ubuntu-24.04 (x86_64) + macos-15, so this branch of
+# cpu_from_cpuinfo() executes on no CI machine (rule 8e). Note there is NO
+# "model name" field: arch/arm64/kernel/cpuinfo.c does not emit one, which is
+# what made the first version of the fingerprint return "unknown-cpu" here --
+# and two unrelated aarch64 boxes both returning that would have matched each
+# other. Shape matters, values do not: any aarch64 kernel emits these keys.
+processor	: 0
+BogoMIPS	: 50.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x3
+CPU part	: 0xd0c
+CPU revision	: 1

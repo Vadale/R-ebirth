@@ -14,6 +14,136 @@
 # Shared helpers (synthetic_model_path, vision_fixture, vlm_model_path,
 # vlm_mmproj_path) live in helper-llm.R.
 
+# --- [CI] the machine gate that decides whether the T2 pin runs ---------------
+
+# The MECHANISM tests here run per-commit, model-free, on every platform: they
+# are the reason the pin below is trustworthy, since the pin itself executes on
+# one machine in the world and whatever decides that must be checked where
+# everything runs. They touch no repo golden -- tempfiles and fixtures only --
+# which is exactly why they run under R CMD check. The one test that reads the
+# COMMITTED sidecar cannot (goldens live outside the tarball); it says so, and
+# R-CMD-check.yaml's "committed golden sidecars" step covers those files instead.
+# Rule 8d: the key is derived from the machine, never asserted by an operator.
+
+test_that("the machine fingerprint is derived, well-formed, and stable", {
+  fp <- machine_fingerprint()
+  expect_type(fp, "character")
+  expect_length(fp, 1L)
+  expect_match(fp, "^[^|]+ \\| [^|]+ \\| .+$")
+  # Deriving it twice on one machine must agree, or every pin gated on it would
+  # flap.
+  expect_identical(fp, machine_fingerprint())
+})
+
+test_that("on macOS the fingerprint names the CPU, not just the platform", {
+  # Scoped to Darwin deliberately. `unknown-cpu` is CORRECT gate behavior where
+  # the CPU is unreadable -- it matches no committed sidecar, so the pin skips,
+  # which is the safe answer. Asserting against it unconditionally would fail on
+  # platforms this project ships to and where the derivation legitimately cannot
+  # name a CPU. Here it IS load-bearing: macOS is where the pin actually runs,
+  # and a PATH-stripped session (R.app, launchd) that lost `sysctl` would
+  # silently stop running it. That must be loud.
+  skip_if_not(identical(Sys.info()[["sysname"]], "Darwin"), "macOS-only assertion")
+  expect_false(grepl(UNKNOWN_CPU, machine_fingerprint(), fixed = TRUE))
+})
+
+test_that("the committed T2 sidecar names a real machine and matches its golden", {
+  # WHERE THIS RUNS (rule 8e): the nightly vision job and a repo checkout -- NOT
+  # per-commit, because the goldens live at the repo root, outside the built
+  # tarball, so R CMD check skips it here. An earlier version of this comment
+  # claimed per-commit and was simply false; the skip counts proved it.
+  #
+  # The per-commit gate on these same files is the "committed golden sidecars"
+  # step in R-CMD-check.yaml, which calls verify_golden_sidecar() on the checkout
+  # -- possible because that function takes explicit paths. This test is the same
+  # check from inside the suite; the mechanism itself is covered per-commit by
+  # the tempfile tests above, which need no repo at all.
+  skip_if_not(
+    file.exists(vision_golden_path("embed-red-square-mean.csv")),
+    "vision goldens not present (outside the tarball; see the R-CMD-check step)"
+  )
+  # This also exercises the digest check: golden_machine() errors on a stale
+  # sidecar, so a bare call passing IS the assertion that the two are in sync.
+  recorded <- golden_machine("embed-red-square-mean.csv")
+  expect_false(is.na(recorded))
+  expect_match(recorded, "^[^|]+ \\| [^|]+ \\| .+$")
+  # The sidecar is comment-led; the parse must take the value, not a "#".
+  expect_false(startsWith(recorded, "#"))
+  # A COMMITTED fingerprint must name a CPU. `unknown-cpu` is tolerable as a
+  # live answer (it just skips) but never as a recorded key: two unrelated
+  # machines would both derive it, match each other, and run a pin recorded on
+  # neither -- the one accidental-match hole in this gate.
+  expect_false(grepl(UNKNOWN_CPU, recorded, fixed = TRUE))
+})
+
+# A golden + sidecar on disk for the pure verify_golden_sidecar() below. No
+# mocking: `local_mocked_bindings()` cannot rebind a helper-file function
+# (testthat searches the namespace, its parent and globalenv -- never the testing
+# env where helper-*.R is sourced), so the mocked version of these tests ABORTED
+# under R CMD check on both runners and passed locally only on a polluted
+# globalenv. Paths are injected instead, which is why these now run everywhere.
+# Files land in tempdir(), which R removes on exit.
+sidecar_pair <- function(...) {
+  golden <- tempfile(fileext = ".csv")
+  side <- paste0(golden, ".machine")
+  writeLines(c("1.0", "2.0"), golden)
+  writeLines(c(...), side)
+  list(golden = golden, sidecar = side)
+}
+
+test_that("a sidecar that does not match its golden is a loud error, not a skip", {
+  # The failure this whole mechanism exists to prevent, in miniature: the golden
+  # gets re-recorded on a new machine and the sidecar is left behind. Without the
+  # digest that is a pin gated on a machine that no longer exists -- skipping
+  # everywhere, silently, forever. Self-contained on tempfiles: no repo golden,
+  # so it runs in the per-commit job its [CI] header claims.
+  p <- sidecar_pair("machine: Fake | test | CPU", "golden-md5: not-the-right-digest")
+  expect_error(verify_golden_sidecar(p$golden, p$sidecar), "STALE SIDECAR")
+})
+
+test_that("a matching digest returns the recorded machine", {
+  # The positive control: same code path, correct digest. Without it, "errors on
+  # mismatch" would also be satisfied by a function that always errors.
+  golden <- tempfile(fileext = ".csv")
+  writeLines(c("1.0", "2.0"), golden)
+  side <- paste0(golden, ".machine")
+  writeLines(
+    c("machine: Fake | test | CPU", paste("golden-md5:", unname(tools::md5sum(golden)))),
+    side
+  )
+  expect_identical(verify_golden_sidecar(golden, side), "Fake | test | CPU")
+})
+
+test_that("a sidecar with no digest is refused rather than trusted", {
+  p <- sidecar_pair("machine: Fake | test | CPU")
+  expect_error(verify_golden_sidecar(p$golden, p$sidecar), "no golden-md5")
+})
+
+test_that("an absent sidecar reports NA rather than crashing", {
+  expect_true(is.na(verify_golden_sidecar(tempfile(), tempfile())))
+  expect_true(is.na(golden_machine("no-such-golden-exists.csv")))
+})
+
+test_that("the CPU is parsed from both /proc/cpuinfo shapes", {
+  # Rule 8e: CI is ubuntu-24.04 (x86_64) + macos-15, so the aarch64 branch runs
+  # on no CI machine. Committed fixtures drive both branches per-commit on every
+  # platform, off the hardware entirely.
+  x86 <- cpu_from_cpuinfo(readLines(test_path("fixtures", "cpuinfo-x86_64.txt")))
+  expect_identical(x86, "AMD EPYC 7763 64-Core Processor")
+
+  # aarch64 has no "model name" -- returning "unknown-cpu" here (the first
+  # version) meant two unrelated aarch64 machines matched each other and would
+  # run a pin recorded on neither.
+  arm <- cpu_from_cpuinfo(readLines(test_path("fixtures", "cpuinfo-aarch64.txt")))
+  expect_identical(arm, "0x41/0xd0c/8")
+  expect_false(grepl(UNKNOWN_CPU, arm, fixed = TRUE))
+  expect_false(identical(arm, x86))
+
+  # Nothing recognizable -> NA, which machine_fingerprint() turns into the
+  # never-matches-a-sidecar fallback.
+  expect_true(is.na(cpu_from_cpuinfo(c("processor\t: 0", "BogoMIPS\t: 50.00"))))
+})
+
 # --- [CI] llm_embed(images=) — the T2 surface (WP-V3) --------------------------
 
 test_that("llm_embed() applies the shared images pairing contract", {
@@ -155,24 +285,26 @@ test_that("[MODEL] the pooled multimodal embedding matches the committed pin", {
   # not to its OS/arch — D-026 fourth addendum. The first real nightly measured
   # max |d| = 6.05e-3 against it on a *non-M4 arm64 runner*, 600x the tolerance,
   # while the same run's byte-exact text golden passed: identical semantics,
-  # different floats (thread-pool reduction order plus chaotic amplification
-  # through 28 layers). The old `Darwin && arm64` gate was therefore never the
+  # different floats. The old `Darwin && arm64` gate was therefore never the
   # right one — it named a platform where the recording machine was meant.
+  # The mechanism is below the arch: ggml keeps GGML_ACCELERATE on for the macOS
+  # CPU backend and dispatches on runtime CPU features, and the M4 has SME/SME2
+  # where earlier Apple Silicon does not. Two arm64 machines, different
+  # instructions.
   #
   # Unlike the encoder leg, this pin cannot be rebuilt on another machine: no
   # upstream reference exists for a pooled multimodal embedding at b9726 (second
   # addendum), so there is nothing to regenerate from. It stays an exact pin on
   # its recording machine. The nightly's T2 coverage is instead the cat-vs-car
   # SEMANTIC gate above, which holds on any machine and needs no tolerance.
+  #
+  # The gate is DERIVED from this machine (hard rule 8d), not asserted by an
+  # operator: the previous `RELM_VISION_RECORDING_MACHINE=1` was an echoed
+  # assertion, and it had rule 8d's predicted failure mode — the pin ran nowhere,
+  # because nobody remembers an env var. It now runs here with no ceremony.
   golden <- vision_golden_path("embed-red-square-mean.csv")
   skip_if_not(file.exists(golden), "embedding pin not present (repo layout only)")
-  skip_if_not(
-    nzchar(Sys.getenv("RELM_VISION_RECORDING_MACHINE")),
-    paste(
-      "the exact embedding pin only holds bit-for-bit on the machine that recorded it;",
-      "set RELM_VISION_RECORDING_MACHINE=1 there (the founder's M4, CPU)"
-    )
-  )
+  skip_if_not_recording_machine("embed-red-square-mean.csv")
   m <- llm(vlm_model_path(), projector = vlm_mmproj_path(), backend = "cpu")
   on.exit(close(m), add = TRUE)
   e <- llm_embed(m, "What color is the square?",

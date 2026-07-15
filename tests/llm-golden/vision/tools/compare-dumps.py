@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Compare two dump-encode.c outputs and say WHERE they diverge, not just how much.
 
-Written for the D-026 fourth addendum's open question: upstream's image encoder
-differs across machines by `max |Δ|` 3.3-8.7, undiagnosed. A single max is not
-enough to judge that number -- 8.71 is 5.2 sigma of this tensor's own value
-distribution, which sounds alarming, but the tensor also holds a few values near
-100. Whether the gap is benign turns on which of those it lands on.
+Written for what was the D-026 fourth addendum's open question -- upstream's image
+encoder differs across machines by `max |Δ|` 3.3-8.7 -- and it is what answered
+it: the fifth addendum's diagnosis (SIMD path alone moves every value; 1.624
+between AVX2+FMA and baseline SSE2 on one runner) rests on the bulk/tail split
+below. Kept because the question recurs on every vendor bump.
+
+A single max cannot judge such a number: 8.71 is 5.2 sigma of this tensor's own
+value distribution, which sounds alarming, but the tensor also holds a few values
+near 100. Whether a gap is benign turns on which of those it lands on.
 
 So this prints the max alongside the magnitude of the value it landed on, the
 relative error there, and the worst gap within the bulk of the distribution
