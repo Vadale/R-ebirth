@@ -440,14 +440,19 @@ pub(crate) fn load_projector(
         ));
     };
 
+    // From here on the probe is RAII-owned: any early return frees it.
+    let probe = VisionContext {
+        ptr: probe_ptr,
+        owner: std::thread::current().id(),
+    };
+
     let vision = if use_gpu {
         // NOTE for the vendor-bump maintainer: a GPU-backend load parses the
         // mmproj TWICE (the CPU probe above + the real init below) — the cost
         // of keeping the constructor-leak abort unreachable with zero patch.
-        // Free the CPU probe before the real init so the mmproj weights are
-        // never resident twice.
-        // SAFETY: `probe_ptr` is the live context just created; freed once.
-        unsafe { ffi::mtmd_free(probe_ptr.as_ptr()) };
+        // Drop (free) the CPU probe before the real init so the mmproj
+        // weights are never resident twice.
+        drop(probe);
 
         // SAFETY: as above; the GPU context is the one the handle keeps.
         let mut params = unsafe { ffi::mtmd_context_params_default() };
@@ -478,10 +483,7 @@ pub(crate) fn load_projector(
         // `warmup = false` — a perf-only difference (no dummy warmup encode;
         // the first real encode pays the graph build instead). Results are
         // identical.
-        VisionContext {
-            ptr: probe_ptr,
-            owner: std::thread::current().id(),
-        }
+        probe
     };
 
     // SAFETY: `ptr` is the live context just created.
