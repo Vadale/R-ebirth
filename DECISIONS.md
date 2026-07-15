@@ -524,12 +524,20 @@ vector path ggml compiles for.
 | native (AVX2+FMA) vs baseline x86-64 (SSE2, no FMA) | **`1.624`** | `0.999822` | **0 / 98304** |
 | committed arm64 (M4) vs this runner's native — *for scale* | `3.300` | `0.999350` | 0 / 98304 |
 
-- **The mechanism is confirmed.** Changing only the vector path moves **every one
-  of 98,304 values**, `max |Δ| = 1.624` — the same order and the same signature
-  as the cross-ISA gap (`3.300`), which is bigger because arm-vs-x86 swaps whole
-  kernels, not just a width. The biggest gaps land on the biggest values in both
-  (ratio 9.7x and 11.2x), which is what float reordering does and what a
-  computational bug does not.
+- **The mechanism is confirmed — by the signature, not the magnitude.** Changing
+  only the vector path moves **every one of 98,304 values**, `max |Δ| = 1.624`.
+  What ties that to the cross-ISA gap (`3.300`) is that both show the same
+  fingerprint of float reordering: all 98,304 values move, cosine of the same
+  order (`0.99982` / `0.99935`), and the biggest gaps land on the biggest values
+  (ratio 9.7x / 11.2x) — which is what reordering does and what a computational
+  bug does not. **Row 3 is not a controlled comparison** and the 2x is not
+  attributed: arm-vs-x86 changes the kernels, `GGML_ACCELERATE` (on by default on
+  Apple; `-DGGML_BLAS=OFF` does not disable it), SME/SVE runtime dispatch (point
+  2 below establishes that as an independent float-moving mechanism) and the
+  compiler/libm, all at once. Which of those dominates was not measured, and
+  reordering divergence has no reason to be magnitude-conserving across different
+  kernel sets — expecting `1.624 ≈ 3.300` would be the error. Rows 1–2 establish
+  **sufficiency** on one machine; the signature is what carries the claim to arm.
 - **`native == avx2` bit-for-bit** is the internal control: forcing the flags this
   hardware actually has reproduces `-march=native` exactly, so the three builds
   differ in the intended variable and nothing else.

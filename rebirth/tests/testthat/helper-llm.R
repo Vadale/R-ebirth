@@ -97,17 +97,47 @@ vision_golden_path <- function(name) {
 # want from a golden. The dangerous direction (a pin silently not running) is the
 # one this closes. Kept as a readable string rather than a hash so a skip message
 # says something a human can act on.
+#
+# "unknown-cpu" IS NOT AN IDENTITY. Where the CPU cannot be read, two unrelated
+# machines would fingerprint alike and a pin recorded on one would RUN on the
+# other -- an accidental match, the one way this gate could produce a false
+# failure instead of a safe skip. The aarch64 branch below exists because
+# /proc/cpuinfo carries no "model name" there (arch/arm64 emits CPU
+# implementer/part instead), which is the founder's UTM/lima VMs and r-universe's
+# Linux aarch64 build. The remaining fallback is contained by never letting a
+# committed sidecar hold "unknown-cpu" (asserted per-commit in
+# test-llm-vision-embed.R), so such a machine matches nothing and always skips.
 machine_fingerprint <- function() {
   info <- Sys.info()
   cpu <- tryCatch(
     {
       if (identical(info[["sysname"]], "Darwin")) {
-        system2("sysctl", c("-n", "machdep.cpu.brand_string"),
+        # Absolute path first: in a PATH-stripped session (R.app, launchd) a bare
+        # "sysctl" fails to resolve and the fingerprint would degrade to
+        # unknown-cpu -- i.e. the founder's own GUI R would silently stop running
+        # the pin. Fall back to PATH for non-standard layouts.
+        sysctl <- if (file.exists("/usr/sbin/sysctl")) "/usr/sbin/sysctl" else "sysctl"
+        system2(sysctl, c("-n", "machdep.cpu.brand_string"),
           stdout = TRUE, stderr = FALSE
         )[1]
       } else if (file.exists("/proc/cpuinfo")) {
-        line <- grep("^model name", readLines("/proc/cpuinfo"), value = TRUE)[1]
-        if (is.na(line)) NA_character_ else trimws(sub("^model name\\s*:", "", line))
+        ci <- readLines("/proc/cpuinfo")
+        line <- grep("^model name", ci, value = TRUE)[1]
+        if (!is.na(line)) {
+          trimws(sub("^model name\\s*:", "", line))
+        } else {
+          # aarch64 Linux: no "model name" field. Implementer + part identify the
+          # core design, which is what decides the kernels ggml dispatches to.
+          parts <- vapply(
+            c("^CPU implementer", "^CPU part", "^CPU architecture"),
+            function(k) {
+              l <- grep(k, ci, value = TRUE)[1]
+              if (is.na(l)) NA_character_ else trimws(sub("^[^:]*:", "", l))
+            },
+            character(1)
+          )
+          if (all(is.na(parts))) NA_character_ else paste(parts[!is.na(parts)], collapse = "/")
+        }
       } else {
         NA_character_
       }
@@ -119,15 +149,60 @@ machine_fingerprint <- function() {
   paste(info[["sysname"]], info[["machine"]], cpu, sep = " | ")
 }
 
-# The fingerprint of the machine a golden was recorded on, or NA if unrecorded.
-# Sidecar rather than a header line: these goldens are parsed as bare numbers.
-golden_machine <- function(name) {
+# The sidecar recording which machine produced a golden, and which golden it
+# describes. `key: value` lines; comments and blanks ignored.
+read_golden_sidecar <- function(name) {
   p <- vision_golden_path(paste0(name, ".machine"))
   if (!file.exists(p)) {
+    return(NULL)
+  }
+  lines <- grep("^\\s*(#|$)", readLines(p), value = TRUE, invert = TRUE)
+  keys <- trimws(sub(":.*$", "", lines))
+  vals <- trimws(sub("^[^:]*:", "", lines))
+  stats::setNames(as.list(vals), keys)
+}
+
+# The fingerprint of the machine a golden was recorded on, or NA if unrecorded.
+# Sidecar rather than a header line: these goldens are parsed as bare numbers.
+#
+# THE DIGEST IS THE POINT (hard rule 8d: integrity keys are content digests). The
+# filename only finds the sidecar; what binds it to the golden is `golden-md5`,
+# verified here on every read. Without it, re-recording the golden on a NEW
+# machine while leaving the sidecar naming the OLD one leaves a pin that matches
+# nothing and skips everywhere, silently, forever -- this PR's own defect,
+# reachable through the sanctioned golden-update procedure one hardware refresh
+# later. With it, a stale sidecar is a loud error on every platform, per-commit,
+# rather than a silence on the one machine that would have run the pin. md5 via
+# base `tools` (no new dependency): this detects an operator forgetting a step,
+# not an adversary, so collision resistance is not the property needed.
+golden_machine <- function(name) {
+  side <- read_golden_sidecar(name)
+  if (is.null(side) || is.null(side[["machine"]])) {
     return(NA_character_)
   }
-  line <- grep("^\\s*(#|$)", readLines(p), value = TRUE, invert = TRUE)[1]
-  if (is.na(line)) NA_character_ else trimws(line)
+  recorded_md5 <- side[["golden-md5"]]
+  golden <- vision_golden_path(name)
+  if (is.null(recorded_md5)) {
+    stop(sprintf(
+      "sidecar for '%s' has no golden-md5: it cannot be known which golden it describes (rule 8d)",
+      name
+    ), call. = FALSE)
+  }
+  if (file.exists(golden)) {
+    actual <- unname(tools::md5sum(golden))
+    if (!identical(actual, recorded_md5)) {
+      stop(sprintf(
+        paste0(
+          "STALE SIDECAR: '%s.machine' records golden-md5 %s but the golden is %s.\n",
+          "  The golden was re-recorded and the sidecar was not. Its 'machine: %s' is\n",
+          "  therefore unverified, and trusting it would gate the pin on the wrong\n",
+          "  machine. Regenerate both together (see the golden-update skill)."
+        ),
+        name, recorded_md5, actual, side[["machine"]]
+      ), call. = FALSE)
+    }
+  }
+  side[["machine"]]
 }
 
 # Skip unless this machine recorded `name`. The gate a bit-exact float pin needs.

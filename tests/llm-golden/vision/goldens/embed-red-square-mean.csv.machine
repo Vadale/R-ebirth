@@ -1,10 +1,15 @@
-# The machine that recorded embed-red-square-mean.csv, as
-# helper-llm.R::machine_fingerprint() reports it. The T2 pin is bit-exact only
-# here; the test derives this from the running machine and skips elsewhere,
-# rather than asking an operator to assert it (hard rule 8d).
+# Which machine recorded embed-red-square-mean.csv, and which golden this
+# describes. Read by helper-llm.R::golden_machine(); `key: value`, comments
+# ignored. REGENERATE BOTH FILES TOGETHER -- the golden-update skill covers it.
 #
-# First non-comment line = the fingerprint. Regenerate both files together --
-# see the golden-update skill and tests/llm-golden/vision/README.md.
+# machine    = helper-llm.R::machine_fingerprint() on the recording machine. The
+#              T2 pin is bit-exact only there; the test derives this string here
+#              and skips elsewhere, rather than asking an operator to assert it
+#              (hard rule 8d).
+# golden-md5 = binds this sidecar to the golden's CONTENT (rule 8d again). If the
+#              golden is re-recorded and this file is not, the mismatch is a LOUD
+#              error on every platform -- not a pin that silently skips forever
+#              because it is still gated on a machine that no longer exists.
 #
 # Why the CPU model is in the key and the arch is not enough: this pin measured
 # max |d| = 6.05e-3 on a *non-M4 arm64* runner (same OS, same arch, same
@@ -12,4 +17,5 @@
 # dispatches on runtime CPU features; this machine reports FEAT_SME = 1 and
 # FEAT_SME2 = 1, which earlier Apple Silicon does not have. Same architecture,
 # different instructions, different floats -- by design, not by defect.
-Darwin | arm64 | Apple M4
+machine: Darwin | arm64 | Apple M4
+golden-md5: b940fb2fe9961d35ecc48ecb238388b1

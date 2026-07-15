@@ -29,24 +29,71 @@ test_that("the machine fingerprint is derived, well-formed, and stable", {
   # Deriving it twice on one machine must agree, or every pin gated on it would
   # flap.
   expect_identical(fp, machine_fingerprint())
-  # It must name the CPU, not just the platform: `Darwin && arm64` was the gate
-  # that failed (a non-M4 arm64 runner missed the M4-recorded pin by 600x the
-  # tolerance, because SME/SVE dispatch differs below the arch).
-  expect_false(grepl("unknown-cpu", fp, fixed = TRUE))
 })
 
-test_that("the committed T2 sidecar parses to exactly one fingerprint", {
-  # A corrupt or truncated sidecar must be caught HERE -- per-commit, on every
-  # platform -- and not on the one machine that would have run the pin.
+test_that("on macOS the fingerprint names the CPU, not just the platform", {
+  # Scoped to Darwin deliberately. `unknown-cpu` is CORRECT gate behavior where
+  # the CPU is unreadable -- it matches no committed sidecar, so the pin skips,
+  # which is the safe answer. Asserting against it unconditionally would fail on
+  # platforms this project ships to and where the derivation legitimately cannot
+  # name a CPU. Here it IS load-bearing: macOS is where the pin actually runs,
+  # and a PATH-stripped session (R.app, launchd) that lost `sysctl` would
+  # silently stop running it. That must be loud.
+  skip_if_not(identical(Sys.info()[["sysname"]], "Darwin"), "macOS-only assertion")
+  expect_false(grepl("unknown-cpu", machine_fingerprint(), fixed = TRUE))
+})
+
+test_that("the committed T2 sidecar names a real machine and matches its golden", {
+  # A corrupt, stale, or truncated sidecar must be caught HERE -- per-commit, on
+  # every platform -- and not on the one machine that would have run the pin.
   skip_if_not(
     file.exists(vision_golden_path("embed-red-square-mean.csv")),
     "vision goldens not present (repo layout only)"
   )
+  # This also exercises the digest check: golden_machine() errors on a stale
+  # sidecar, so a bare call passing IS the assertion that the two are in sync.
   recorded <- golden_machine("embed-red-square-mean.csv")
   expect_false(is.na(recorded))
   expect_match(recorded, "^[^|]+ \\| [^|]+ \\| .+$")
-  # The sidecar is comment-led; the parse must take the fingerprint, not a "#".
+  # The sidecar is comment-led; the parse must take the value, not a "#".
   expect_false(startsWith(recorded, "#"))
+  # A COMMITTED fingerprint must name a CPU. `unknown-cpu` is tolerable as a
+  # live answer (it just skips) but never as a recorded key: two unrelated
+  # machines would both derive it, match each other, and run a pin recorded on
+  # neither -- the one accidental-match hole in this gate.
+  expect_false(grepl("unknown-cpu", recorded, fixed = TRUE))
+})
+
+test_that("a sidecar that does not match its golden is a loud error, not a skip", {
+  # The failure this whole mechanism exists to prevent, in miniature: the golden
+  # gets re-recorded on a new machine and the sidecar is left behind. Without the
+  # digest that is a pin gated on a machine that no longer exists -- skipping
+  # everywhere, silently, forever.
+  skip_if_not(
+    file.exists(vision_golden_path("embed-red-square-mean.csv")),
+    "vision goldens not present (repo layout only)"
+  )
+  golden <- tempfile(fileext = ".csv")
+  side <- paste0(golden, ".machine")
+  on.exit(unlink(c(golden, side)), add = TRUE)
+  writeLines(c("1.0", "2.0"), golden)
+  writeLines(c("machine: Fake | test | CPU", "golden-md5: not-the-right-digest"), side)
+  local_mocked_bindings(vision_golden_path = function(name) {
+    if (endsWith(name, ".machine")) side else golden
+  })
+  expect_error(golden_machine(basename(golden)), "STALE SIDECAR")
+})
+
+test_that("a sidecar with no digest is refused rather than trusted", {
+  golden <- tempfile(fileext = ".csv")
+  side <- paste0(golden, ".machine")
+  on.exit(unlink(c(golden, side)), add = TRUE)
+  writeLines("1.0", golden)
+  writeLines("machine: Fake | test | CPU", side)
+  local_mocked_bindings(vision_golden_path = function(name) {
+    if (endsWith(name, ".machine")) side else golden
+  })
+  expect_error(golden_machine(basename(golden)), "no golden-md5")
 })
 
 test_that("an unrecorded golden reports NA rather than crashing", {
