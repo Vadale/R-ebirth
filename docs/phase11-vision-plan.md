@@ -225,7 +225,7 @@ The registry needs a **model + mmproj pair** per VLM. Since `llm_download` fetch
 | Role | Alias(es) | Approx size | License | Notes |
 |---|---|---|---|---|
 | **License-clean default (showcase + reproduction)** | `qwen2.5-vl-3b-instruct-q4_k_m` + `qwen2.5-vl-3b-instruct-mmproj-f16` | ~1.9 GB + ~1.35 GB (≈ 3.3 GB) | **Apache-2.0** (Qwen2.5-VL-3B; **founder verifies** — the 3B/7B are Apache-2.0, the 72B is the Qwen license) | Fits the 16 GB Mac (~10–11 GB free) with Ollama stopped. |
-| *(Superseded at WP-V4 — founder signs at the release gate)* | `qwen2-vl-2b-instruct-q4_k_m` + `qwen2-vl-2b-instruct-mmproj-f16` | ~0.99 GB + ~1.33 GB | **Apache-2.0** (verified from the HF card of `ggml-org/Qwen2-VL-2B-Instruct-GGUF`, tag `license:apache-2.0`) | The 3B row above was written on the "founder verifies" assumption; verification found **Qwen2.5-VL-3B is NOT Apache-2.0** (its license is the Qwen Research License class), so the shipped v0.2.0 registry default is the **Qwen2-VL-2B** pair — Apache-2.0, and the exact artifacts every WP-V2/V3/V4 acceptance and golden was validated against. |
+| **SHIPPED — supersedes the row above** (D-026 **third addendum**, founder-approved 2026-07-14 at the WP-V4 release gate) | `qwen2-vl-2b-instruct-q4_k_m` + `qwen2-vl-2b-instruct-mmproj-f16` | ~0.99 GB + ~1.33 GB | **Apache-2.0** (verified from the HF card of `ggml-org/Qwen2-VL-2B-Instruct-GGUF`, tag `license:apache-2.0`) | The 3B row above was written on the "founder verifies" assumption; verification found **Qwen2.5-VL-3B is NOT Apache-2.0** (its license is the Qwen Research License class), so the shipped v0.2.0 registry default is the **Qwen2-VL-2B** pair — Apache-2.0, and the exact artifacts every WP-V2/V3/V4 acceptance and golden was validated against. Pinned at the immutable revision `bb307c03…`, twin-pinned registry ↔ `nightly-vision-golden.yaml`. |
 | **Lighter option (founder's Mac / smaller nightly)** | `qwen2-vl-2b-instruct-q4_k_m` + `qwen2-vl-2b-instruct-mmproj-f16` | ~1.5 GB + ~0.9 GB | Apache-2.0 | The smallest reasonable VLM; there is **no sub-1 GB VLM**, so vision goldens are `[MODEL]`/nightly, never per-commit (§5 WP-V2). |
 | **Quality option (not CI, not auto-download)** | Gemma 3 4B vision / **MedGemma-4B** + mmproj | ~3–4 GB | Gemma Terms of Use (gated) | **Local path only** (D-023 CI/reproduction split; a plain libcurl fetch 401s on the ToU token gate, D-024). Thesis-era; parked. |
 
@@ -281,8 +281,8 @@ None of these is expected for the Qwen-VL default (its projector types are first
 3. **Audio-surface call (§3.3):** Option A (zero-patch, vendor miniaudio, magic-byte gate) vs Option B (a second patch dropping miniaudio). Recommendation: Option A, with the security-auditor empowered to escalate to Option B at the WP-V1 gate.
 
 **Founder inputs (needed by WP-V4, not by WP-V1):**
-4. **Verify the exact Qwen-VL license + pin the GGUF/mmproj SHA256** (§6) — Qwen2.5-VL-3B is expected Apache-2.0; confirm the specific artifact.
-5. **HF / Gemma ToU** for the MedGemma / Gemma-vision **quality option** (local path only, non-blocking; thesis-era, parked).
+4. ~~**Verify the exact Qwen-VL license + pin the GGUF/mmproj SHA256** (§6) — Qwen2.5-VL-3B is expected Apache-2.0; confirm the specific artifact.~~ **CLOSED at WP-V4:** the expectation was wrong — Qwen2.5-VL-3B is under the Qwen Research License, not Apache-2.0. The default moved to the **Qwen2-VL-2B** pair (Apache-2.0 verified, SHA256-pinned at an immutable revision) — D-026 third addendum, founder-approved 2026-07-14. See the §6 table.
+5. **HF / Gemma ToU** for the MedGemma / Gemma-vision **quality option** (local path only, non-blocking; thesis-era, parked). *(WP-V4: Gemma 4 E2B is documented as the ToU-gated local-path quality tier in the vision vignette — the founder fetches it himself; no registry alias, per the third addendum.)*
 
 **Nothing here relitigates an accepted decision.** D-023 (vision as a dedicated v0.2.0 phase; T3 out), D-006 (vendoring + minimal FFI), D-015 (patch discipline), D-018 (golden acceptance logic), D-024 (download/registry) all stand; D-026 is additive and cites them. The one substantive correction to a prior assumption — `common/` is **not** needed — is flagged in §2 (it makes the phase cheaper, not different in shape) and does not require superseding D-023, which described the scope at the goal level.
 
@@ -343,6 +343,9 @@ None of these is expected for the Qwen-VL default (its projector types are first
   8. Model pins (SHA256 pinned at WP-V4 via D-024): default = Apache-2.0 Qwen2.5-VL-3B
      + its mmproj (two aliases, no models.csv schema change); Gemma/MedGemma the local-
      path quality option (ToU-gated, per D-023's CI/reproduction split).
+     [AMENDED by the D-026 third addendum, 2026-07-14: the 3B is NOT Apache-2.0 (Qwen
+     Research License) — the shipped default is the Qwen2-VL-2B pair. The Gemma tier is
+     Gemma 4 E2B, documented as a local path, never a registry alias.]
 - **Why:** vision at b9726 needs no bump (clip already supports the targets), so the
   risky operation stays a contingency (D-021), not a prerequisite; reusing the tested
   interleaved-decode helper honors the n_batch chokepoint (hard rule 8a) and avoids a

@@ -343,6 +343,51 @@ engine's flag-all batch at helper-accounted positions.
    the **binding** WP-V4 `mtmd_get_output_embd` ATOL leg (first addendum,
    point 2) extends nightly coverage to the encoder output.
 
+### D-026 third addendum (2026-07-14, founder-approved at the WP-V4 release gate)
+
+**The registry default is Qwen2-VL-2B-Instruct, not Qwen2.5-VL-3B** — amending
+point 8, which named "Apache-2.0 **Qwen2.5-VL-3B**".
+
+1. **Why the plan's model was dropped: the licence assumption was wrong.**
+   Point 8 was written assuming Qwen2.5-VL-3B is Apache-2.0. It is not: the
+   3B is released under the **Qwen Research License** (non-commercial,
+   research-only), verified on the Hugging Face model card at WP-V4. Only the
+   **2B and 7B** Qwen2-VL are Apache-2.0. A research-licensed default would
+   have contradicted D-026 point 8's own stated requirement (an Apache-2.0
+   default, so `llm_download()` hands every user a model they may actually
+   use), and put a non-free artifact in the CI/nightly path.
+2. **The substitution:** default = **Qwen2-VL-2B-Instruct Q4_K_M** + its
+   f16 mmproj (aliases `qwen2-vl-2b-instruct-q4_k_m` /
+   `qwen2-vl-2b-instruct-mmproj-f16`, ~2.3 GB for the pair), from
+   `ggml-org/Qwen2-VL-2B-Instruct-GGUF` at the immutable revision
+   `bb307c03…`, Apache-2.0 verified from the card. Every WP-V2..V4 test,
+   golden, and pin is already recorded against this pair — it is the model
+   the phase was actually validated on, so this addendum corrects the
+   register to what shipped, and no golden moves.
+3. **The Gemma quality tier stays a documented local-path route, not a
+   registry alias** (founder's call, refining point 8's "Gemma/MedGemma the
+   local-path quality option"): **Gemma 4 E2B** is the showcased quality
+   model in the vision docs, loaded from a user-supplied path. It is not
+   downloadable through `llm_download()` because Google gates the weights
+   behind a click-through ToU acceptance — a checksum-pinned registry alias
+   would either break for anyone who has not accepted, or invite relm to
+   route around the gate. The D-023 CI/reproduction split already draws this
+   line: the automated tier is Apache-2.0 and fetchable; the quality tier is
+   ToU-gated and manual.
+- **Why record it:** point 8 is the shipped contract for `llm_download()`'s
+  vision default; leaving the register naming a model that neither ships nor
+  is freely licensed is exactly the docs-vs-diff drift Hard rule 8g exists to
+  catch (reviewer finding, WP-V4 gate).
+- **Alternatives rejected:** shipping the 3B under its research licence
+  (contradicts point 8's own Apache-2.0 requirement, and would taint CI);
+  Qwen2-VL-7B as the default (Apache-2.0, but ~4.5 GB more to fetch on every
+  nightly and on the 16 GB primary machine, for a default whose job is to be
+  cheap and reproducible — it stays available as a local path); a registry
+  alias for Gemma 4 E2B (the ToU gate makes a pinned auto-download either
+  broken or evasive); delaying v0.2.0 to find an Apache-2.0 2.5-generation
+  VLM (the 2B is validated, pinned, and green today — a newer generation is
+  a v0.3.0 model-matrix question, not a release blocker).
+
 ---
 
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
