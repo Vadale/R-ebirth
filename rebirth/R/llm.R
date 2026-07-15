@@ -52,6 +52,15 @@
 #' print(m)
 #' summary(m)
 #' close(m)
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+#' # A vision-language model: pass its companion mmproj as the projector
+#' # (e.g. llm_download("qwen2-vl-2b-instruct-q4_k_m") and
+#' # llm_download("qwen2-vl-2b-instruct-mmproj-f16")).
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+#'   projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+#' )
+#' print(m)
+#' close(m)
 #' @export
 llm <- function(path,
                 context_length = 4096,

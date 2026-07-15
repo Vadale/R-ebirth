@@ -75,6 +75,20 @@
 #' e <- llm_embed(m, c(a = "cats and dogs", b = "domestic pets"))
 #' dim(e)
 #' close(m)
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+#' # Image embeddings (requires a projector -- see llm()).
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+#'   projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+#' )
+#' img <- file.path(tempdir(), "square.png")
+#' png(img, width = 224, height = 224)
+#' par(mar = c(0, 0, 0, 0))
+#' plot.new()
+#' rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
+#' dev.off()
+#' e <- llm_embed(m, "", images = img) # the image alone, one row
+#' dim(e)
+#' close(m)
 #' @export
 llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TRUE,
                       images = NULL) {

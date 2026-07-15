@@ -87,6 +87,16 @@ print(m)
 summary(m)
 close(m)
 \dontshow{\}) # examplesIf}
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))) withAutoprint(\{ # examplesIf}
+# A vision-language model: pass its companion mmproj as the projector
+# (e.g. llm_download("qwen2-vl-2b-instruct-q4_k_m") and
+# llm_download("qwen2-vl-2b-instruct-mmproj-f16")).
+m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+  projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+)
+print(m)
+close(m)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=close.llm]{close.llm()}}, \code{\link[=print.llm]{print.llm()}}, \code{\link[=summary.llm]{summary.llm()}}

@@ -106,6 +106,23 @@ m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 llm_generate(m, "In one sentence, what is R?", max_tokens = 40, seed = 1)
 close(m)
 \dontshow{\}) # examplesIf}
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))) withAutoprint(\{ # examplesIf}
+# Image input (requires a projector -- see llm()).
+m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+  projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+)
+img <- file.path(tempdir(), "square.png")
+png(img, width = 224, height = 224)
+par(mar = c(0, 0, 0, 0))
+plot.new()
+rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
+dev.off()
+llm_generate(m, "What color is the square?",
+  images = img,
+  max_tokens = 16, temperature = 0
+)
+close(m)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \code{\link[=llm]{llm()}}, \code{\link[=llm_tokens]{llm_tokens()}}
