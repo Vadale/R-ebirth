@@ -14,6 +14,45 @@
 # Shared helpers (synthetic_model_path, vision_fixture, vlm_model_path,
 # vlm_mmproj_path) live in helper-llm.R.
 
+# --- [CI] the machine gate that decides whether the T2 pin runs ---------------
+
+# These run per-commit, model-free, and they are the reason the pin below is
+# trustworthy: the pin itself only executes on one machine in the world, so the
+# mechanism deciding that has to be checked somewhere that runs everywhere.
+# Rule 8d: the key is derived from the machine, never asserted by an operator.
+
+test_that("the machine fingerprint is derived, well-formed, and stable", {
+  fp <- machine_fingerprint()
+  expect_type(fp, "character")
+  expect_length(fp, 1L)
+  expect_match(fp, "^[^|]+ \\| [^|]+ \\| .+$")
+  # Deriving it twice on one machine must agree, or every pin gated on it would
+  # flap.
+  expect_identical(fp, machine_fingerprint())
+  # It must name the CPU, not just the platform: `Darwin && arm64` was the gate
+  # that failed (a non-M4 arm64 runner missed the M4-recorded pin by 600x the
+  # tolerance, because SME/SVE dispatch differs below the arch).
+  expect_false(grepl("unknown-cpu", fp, fixed = TRUE))
+})
+
+test_that("the committed T2 sidecar parses to exactly one fingerprint", {
+  # A corrupt or truncated sidecar must be caught HERE -- per-commit, on every
+  # platform -- and not on the one machine that would have run the pin.
+  skip_if_not(
+    file.exists(vision_golden_path("embed-red-square-mean.csv")),
+    "vision goldens not present (repo layout only)"
+  )
+  recorded <- golden_machine("embed-red-square-mean.csv")
+  expect_false(is.na(recorded))
+  expect_match(recorded, "^[^|]+ \\| [^|]+ \\| .+$")
+  # The sidecar is comment-led; the parse must take the fingerprint, not a "#".
+  expect_false(startsWith(recorded, "#"))
+})
+
+test_that("an unrecorded golden reports NA rather than crashing", {
+  expect_true(is.na(golden_machine("no-such-golden-exists.csv")))
+})
+
 # --- [CI] llm_embed(images=) — the T2 surface (WP-V3) --------------------------
 
 test_that("llm_embed() applies the shared images pairing contract", {
@@ -155,24 +194,26 @@ test_that("[MODEL] the pooled multimodal embedding matches the committed pin", {
   # not to its OS/arch — D-026 fourth addendum. The first real nightly measured
   # max |d| = 6.05e-3 against it on a *non-M4 arm64 runner*, 600x the tolerance,
   # while the same run's byte-exact text golden passed: identical semantics,
-  # different floats (thread-pool reduction order plus chaotic amplification
-  # through 28 layers). The old `Darwin && arm64` gate was therefore never the
+  # different floats. The old `Darwin && arm64` gate was therefore never the
   # right one — it named a platform where the recording machine was meant.
+  # The mechanism is below the arch: ggml keeps GGML_ACCELERATE on for the macOS
+  # CPU backend and dispatches on runtime CPU features, and the M4 has SME/SME2
+  # where earlier Apple Silicon does not. Two arm64 machines, different
+  # instructions.
   #
   # Unlike the encoder leg, this pin cannot be rebuilt on another machine: no
   # upstream reference exists for a pooled multimodal embedding at b9726 (second
   # addendum), so there is nothing to regenerate from. It stays an exact pin on
   # its recording machine. The nightly's T2 coverage is instead the cat-vs-car
   # SEMANTIC gate above, which holds on any machine and needs no tolerance.
+  #
+  # The gate is DERIVED from this machine (hard rule 8d), not asserted by an
+  # operator: the previous `RELM_VISION_RECORDING_MACHINE=1` was an echoed
+  # assertion, and it had rule 8d's predicted failure mode — the pin ran nowhere,
+  # because nobody remembers an env var. It now runs here with no ceremony.
   golden <- vision_golden_path("embed-red-square-mean.csv")
   skip_if_not(file.exists(golden), "embedding pin not present (repo layout only)")
-  skip_if_not(
-    nzchar(Sys.getenv("RELM_VISION_RECORDING_MACHINE")),
-    paste(
-      "the exact embedding pin only holds bit-for-bit on the machine that recorded it;",
-      "set RELM_VISION_RECORDING_MACHINE=1 there (the founder's M4, CPU)"
-    )
-  )
+  skip_if_not_recording_machine("embed-red-square-mean.csv")
   m <- llm(vlm_model_path(), projector = vlm_mmproj_path(), backend = "cpu")
   on.exit(close(m), add = TRUE)
   e <- llm_embed(m, "What color is the square?",

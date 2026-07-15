@@ -1,0 +1,15 @@
+# The machine that recorded embed-red-square-mean.csv, as
+# helper-llm.R::machine_fingerprint() reports it. The T2 pin is bit-exact only
+# here; the test derives this from the running machine and skips elsewhere,
+# rather than asking an operator to assert it (hard rule 8d).
+#
+# First non-comment line = the fingerprint. Regenerate both files together --
+# see the golden-update skill and tests/llm-golden/vision/README.md.
+#
+# Why the CPU model is in the key and the arch is not enough: this pin measured
+# max |d| = 6.05e-3 on a *non-M4 arm64* runner (same OS, same arch, same
+# n_threads = 4). ggml keeps GGML_ACCELERATE on for the macOS CPU backend and
+# dispatches on runtime CPU features; this machine reports FEAT_SME = 1 and
+# FEAT_SME2 = 1, which earlier Apple Silicon does not have. Same architecture,
+# different instructions, different floats -- by design, not by defect.
+Darwin | arm64 | Apple M4

@@ -140,19 +140,34 @@ regression. The cross-build `mtmd_get_output_embd` ATOL leg — the BINDING
 WP-V4 item (D-026 first addendum) — extends nightly coverage to the encoder
 output itself; it is delivered, and documented in the section below.
 
-**Running it (D-026 fourth addendum).** The pin holds bit-for-bit only on the
-machine that recorded it, so it skips unless you say you are on that machine:
+**Running it (D-026 fourth addendum + fifth).** The pin holds bit-for-bit only on
+the machine that recorded it, and it works out for itself whether it is there —
+nothing to remember, nothing to export:
 
 ```sh
-RELM_VISION_RECORDING_MACHINE=1 Rscript -e 'devtools::test(filter = "vision")'
+Rscript -e 'devtools::test(filter = "vision")'
 ```
+
+`goldens/embed-red-square-mean.csv.machine` records the recording machine as
+`helper-llm.R::machine_fingerprint()` reports it (`Darwin | arm64 | Apple M4`);
+the test derives the same string here and compares. On any other machine it
+skips, naming both. An earlier version asked the operator to assert this with
+`RELM_VISION_RECORDING_MACHINE=1` — an echoed assertion, the shape hard rule 8d
+forbids, with rule 8d's predicted failure mode: **the pin ran nowhere**, because
+nobody remembers an env var. Regenerate the two files together (`.csv` and
+`.csv.machine`); the golden-update skill covers it.
 
 "Other ISAs may differ in the last decimals" — the original wording here — turned
 out to understate it by two orders of magnitude: a *non-M4 arm64* runner (same
 OS, same arch) measured `max |d| = 6.05e-3` against this pin, 600× the tolerance,
 while the byte-exact text golden passed in the same run. The old
 `Darwin && arm64` gate was therefore never right: it named a platform where a
-**machine** was meant. Unlike the encoder leg, this pin cannot be regenerated on
+**machine** was meant — and the mechanism sits below the arch: ggml keeps
+`GGML_ACCELERATE` on for the macOS CPU backend and dispatches on runtime CPU
+features (`ggml_cpu_has_sme`, `ggml_cpu_has_sve`). The M4 reports `FEAT_SME = 1`
+and `FEAT_SME2 = 1`; earlier Apple Silicon does not have them. Two arm64
+machines, different instructions, different floats — by design, not by defect.
+Unlike the encoder leg, this pin cannot be regenerated on
 another machine — no upstream reference exists for a pooled multimodal embedding
 at b9726 (D-026 second addendum), so there is nothing to regenerate *from*. The
 nightly's T2 coverage is the cat-vs-car semantic gate instead, which holds

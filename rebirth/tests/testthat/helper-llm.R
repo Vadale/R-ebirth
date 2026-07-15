@@ -71,6 +71,82 @@ vision_golden_path <- function(name) {
   )
 }
 
+# Which machine is this, for the purposes of a bit-exact float pin?
+#
+# WHY THIS EXISTS (hard rule 8d; D-026 fourth addendum). A float golden belongs
+# to the machine that recorded it, so a pin like the T2 pooled embedding has to
+# know whether it is home. The first version of that check asked the OPERATOR --
+# `RELM_VISION_RECORDING_MACHINE=1` -- which is an echoed assertion, exactly the
+# shape rule 8d forbids, and it had the failure mode rule 8d predicts: the pin
+# ran nowhere, because nobody remembers an env var. This derives the answer from
+# the machine instead.
+#
+# WHY THE CPU MODEL AND NOT THE ARCH. `Darwin && arm64` was the original gate and
+# it was wrong: a non-M4 arm64 runner (same OS, same arch, same n_threads -- relm
+# never sets it, so it is 4 everywhere) measured `max |d| = 6.05e-3` against the
+# M4-recorded pin. The reason is below the arch: ggml's CPU backend keeps
+# GGML_ACCELERATE on for macOS (build.rs) and dispatches on runtime CPU features
+# (`ggml_cpu_has_sme`, `ggml_cpu_has_sve`) -- and SME exists on the M4 but not on
+# earlier Apple Silicon. Two arm64 machines therefore do not run the same
+# instructions, and float equality was never promised across them.
+#
+# WHAT THIS DOES AND DOES NOT GUARANTEE. It is a machine IDENTITY, not a proof of
+# float equivalence: it cannot know that a compiler or Accelerate update changed
+# the arithmetic under a stable CPU name. That case is safe by direction -- the
+# fingerprint matches, the pin runs, and it FAILS loudly, which is the outcome we
+# want from a golden. The dangerous direction (a pin silently not running) is the
+# one this closes. Kept as a readable string rather than a hash so a skip message
+# says something a human can act on.
+machine_fingerprint <- function() {
+  info <- Sys.info()
+  cpu <- tryCatch(
+    {
+      if (identical(info[["sysname"]], "Darwin")) {
+        system2("sysctl", c("-n", "machdep.cpu.brand_string"),
+          stdout = TRUE, stderr = FALSE
+        )[1]
+      } else if (file.exists("/proc/cpuinfo")) {
+        line <- grep("^model name", readLines("/proc/cpuinfo"), value = TRUE)[1]
+        if (is.na(line)) NA_character_ else trimws(sub("^model name\\s*:", "", line))
+      } else {
+        NA_character_
+      }
+    },
+    error = function(e) NA_character_,
+    warning = function(w) NA_character_
+  )
+  if (length(cpu) != 1L || is.na(cpu) || !nzchar(cpu)) cpu <- "unknown-cpu"
+  paste(info[["sysname"]], info[["machine"]], cpu, sep = " | ")
+}
+
+# The fingerprint of the machine a golden was recorded on, or NA if unrecorded.
+# Sidecar rather than a header line: these goldens are parsed as bare numbers.
+golden_machine <- function(name) {
+  p <- vision_golden_path(paste0(name, ".machine"))
+  if (!file.exists(p)) {
+    return(NA_character_)
+  }
+  line <- grep("^\\s*(#|$)", readLines(p), value = TRUE, invert = TRUE)[1]
+  if (is.na(line)) NA_character_ else trimws(line)
+}
+
+# Skip unless this machine recorded `name`. The gate a bit-exact float pin needs.
+skip_if_not_recording_machine <- function(name) {
+  recorded <- golden_machine(name)
+  here <- machine_fingerprint()
+  skip_if_not(
+    !is.na(recorded),
+    sprintf("no machine fingerprint recorded for '%s' (see the golden-update skill)", name)
+  )
+  skip_if_not(
+    identical(recorded, here),
+    sprintf(
+      "exact float pin: recorded on [%s], this is [%s] -- different machines do not agree bit-for-bit",
+      recorded, here
+    )
+  )
+}
+
 # [MODEL] model-path helpers for the WP7.5a modern-model families. Each is gated
 # on its own environment variable pointing at a local text-only instruct GGUF, so
 # these tests run only on the founder's Mac (Metal) and skip in CI/CRAN, which have
