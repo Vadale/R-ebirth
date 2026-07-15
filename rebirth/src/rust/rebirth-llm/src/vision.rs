@@ -837,6 +837,103 @@ impl LoadedModel {
     }
 }
 
+// --- the raw encoder output (WP-V4, the BINDING embd-ATOL golden leg) --------
+
+impl LoadedModel {
+    /// The raw image-encoder output embeddings for one gated image file:
+    /// `(values, n_tokens, n_embd_inp)`, row-major (token-major), straight
+    /// from `mtmd_encode_chunk` + `mtmd_get_output_embd` with NO llama decode
+    /// involved. Exists for the D-026 first-addendum BINDING golden leg — the
+    /// `[MODEL]` test compares these values against the unpatched upstream
+    /// reference (tests/llm-golden/vision/tools/dump-encode.c) within
+    /// ATOL 1e-3 on CPU. The encoder output depends only on the bitmap and
+    /// the projector, so the chunk is produced from a marker-only text
+    /// (`add_special = false`), exactly like the reference harness.
+    pub fn image_encoder_output(
+        &self,
+        image: &str,
+        image_max_bytes: u64,
+    ) -> Result<(Vec<f32>, usize, usize), RebirthError> {
+        let Some(mctx) = self.vision_ptr() else {
+            return Err(RebirthError::Image {
+                reason: "This model was loaded without a projector, so it has no \
+                         image encoder. Reload it with llm(path, projector = \
+                         <mmproj GGUF>)."
+                    .to_string(),
+                path: None,
+                expected: None,
+                actual: None,
+            });
+        };
+        install_mtmd_log();
+        let marker = default_marker();
+        let bitmaps = self.decode_bitmaps(mctx, &[image.to_string()], image_max_bytes)?;
+        let chunks = self.tokenize_with_images(mctx, &marker, false, false, &bitmaps)?;
+        drop(bitmaps);
+
+        // SAFETY: `chunks` is a live owned list; per-chunk pointers are owned
+        // by it and valid while it lives.
+        let n_chunks = unsafe { ffi::mtmd_input_chunks_size(chunks.as_ptr()) };
+        for idx in 0..n_chunks {
+            // SAFETY: `idx < n_chunks`; the chunk pointer is list-owned.
+            let chunk = unsafe { ffi::mtmd_input_chunks_get(chunks.as_ptr(), idx) };
+            if chunk.is_null() {
+                continue;
+            }
+            // SAFETY: `chunk` is non-null and list-owned.
+            if unsafe { ffi::mtmd_input_chunk_get_type(chunk) } == ffi::MTMD_INPUT_CHUNK_TYPE_TEXT {
+                continue;
+            }
+            drain_mtmd_log();
+            // SAFETY: `mctx` and `chunk` are live; encode runs the clip graph
+            // inside the mtmd context (no llama context involved).
+            let status = unsafe { ffi::mtmd_encode_chunk(mctx, chunk) };
+            if status != 0 {
+                let engine_reason = drain_mtmd_log();
+                let detail = if engine_reason.is_empty() {
+                    String::from("no engine detail available")
+                } else {
+                    engine_reason
+                };
+                return Err(RebirthError::Image {
+                    reason: format!(
+                        "The vision encoder failed on '{image}' (status {status}: {detail})."
+                    ),
+                    path: Some(image.to_string()),
+                    expected: None,
+                    actual: None,
+                });
+            }
+            // SAFETY: `chunk` is live; read-only count getter.
+            let n_tokens = unsafe { ffi::mtmd_input_chunk_get_n_tokens(chunk) };
+            // SAFETY: `model_ptr` is a live model; read-only scalar getter.
+            let n_embd = unsafe { ffi::llama_model_n_embd_inp(self.model_ptr()) };
+            if n_tokens == 0 || n_embd <= 0 {
+                return Err(RebirthError::Internal {
+                    context: format!("encoder produced a degenerate shape ({n_tokens} x {n_embd})"),
+                });
+            }
+            // SAFETY: `mctx` is live; the pointer names
+            // n_tokens * n_embd valid f32 owned by the context (mtmd.h
+            // L284-287), copied out before any further mtmd call.
+            let ptr = unsafe { ffi::mtmd_get_output_embd(mctx) };
+            if ptr.is_null() {
+                return Err(RebirthError::Internal {
+                    context: "mtmd_get_output_embd returned NULL after a successful encode"
+                        .to_string(),
+                });
+            }
+            let len = n_tokens * n_embd as usize;
+            // SAFETY: as above; `len` is the documented reading size.
+            let values = unsafe { std::slice::from_raw_parts(ptr, len) }.to_vec();
+            return Ok((values, n_tokens, n_embd as usize));
+        }
+        Err(RebirthError::Internal {
+            context: "mtmd_tokenize produced no image chunk for a marker-only text".to_string(),
+        })
+    }
+}
+
 // --- the T2 multimodal embed (WP-V3, D-026.5; mechanism: docs/wp-v3-embed-spike.md)
 
 impl LoadedModel {
