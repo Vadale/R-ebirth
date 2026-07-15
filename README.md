@@ -21,21 +21,27 @@ each cluster. One of two runnable demos — see the [package README](rebirth/REA
 > or from source — a first run, and troubleshooting). This page is the
 > repository/developer overview.
 
-## Status: v0.1.0 (text-only)
+## Status: v0.2.0 — vision (text + image input), pending tag
 
-The first public release is here. `relm` loads local GGUF models and exposes,
-as base-R objects:
+v0.1.0 (text-only) shipped in July 2026; v0.2.0 adds **vision** — a
+vision-language model loaded with its projector answers questions about
+images and embeds them — and is release-prepared on `main`, pending the tag.
+`relm` loads local GGUF models and exposes, as base-R objects:
 
-- **`llm()`** model loading, **`llm_tokens()`** tokenization;
+- **`llm()`** model loading (now also with `projector =` for image input),
+  **`llm_tokens()`** tokenization;
 - **`llm_generate()`** text generation, **`llm_logits()`** next-token distributions;
-- **`llm_embed()`** text embeddings;
+- **`llm_embed()`** embeddings;
 - **`llm_trace()`** activation tracing, **`llm_steer()`** steering, **`llm_ablate()`**
   ablation — the mechanistic-interpretability core;
 - **`llm_download()`** checksum-verified fetch of pinned models.
 
-Every numerical feature is validated value-for-value against an independent
-reference (harness B). Vision (image inputs) is the next release (v0.2.0); v0.1.0
-is text-only. The full plan is in `ROADMAP.md`.
+v0.2.0 exports **no new function**: the same surface gains new arguments
+(`llm(projector =)`, `llm_generate(images =)`, `llm_embed(images =)`), with
+text-only behavior byte-identical to 0.1.0. Every numerical feature is
+validated value-for-value against an independent reference (harness B).
+Vision-tower interpretability (tracing or steering inside the image encoder)
+is **not** part of this release. The full plan is in `ROADMAP.md`.
 
 ## Repository layout
 
@@ -65,7 +71,7 @@ for the vendored engine.
 cd rust && cargo test && cargo clippy --all-targets -- -D warnings
 
 # R package
-R CMD build rebirth && R CMD check relm_0.1.0.tar.gz
+R CMD build rebirth && R CMD check relm_0.2.0.tar.gz
 ```
 
 ## License
