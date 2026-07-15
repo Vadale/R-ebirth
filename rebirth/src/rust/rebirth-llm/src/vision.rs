@@ -536,24 +536,29 @@ impl Chunks {
         self.ptr.as_ptr()
     }
 
-    /// The combined text+image token count (KV-cache slots) across all chunks,
-    /// checked against the context window before any decode.
-    fn total_tokens(&self) -> usize {
+    /// The non-null chunk pointers, in list order. The pointers are owned by
+    /// the list and stay valid exactly as long as `self` lives — every caller
+    /// consumes them before `self` drops.
+    fn chunk_ptrs(&self) -> Vec<*const ffi::mtmd_input_chunk> {
         // SAFETY: `ptr` is a live chunk list; per-chunk pointers are owned by
         // it and valid while it lives.
         unsafe {
             let n = ffi::mtmd_input_chunks_size(self.ptr.as_ptr());
             (0..n)
-                .map(|i| {
-                    let chunk = ffi::mtmd_input_chunks_get(self.ptr.as_ptr(), i);
-                    if chunk.is_null() {
-                        0
-                    } else {
-                        ffi::mtmd_input_chunk_get_n_tokens(chunk)
-                    }
-                })
-                .sum()
+                .map(|i| ffi::mtmd_input_chunks_get(self.ptr.as_ptr(), i))
+                .filter(|chunk| !chunk.is_null())
+                .collect()
         }
+    }
+
+    /// The combined text+image token count (KV-cache slots) across all chunks,
+    /// checked against the context window before any decode.
+    fn total_tokens(&self) -> usize {
+        self.chunk_ptrs()
+            .into_iter()
+            // SAFETY: `chunk` is non-null and list-owned (chunk_ptrs).
+            .map(|chunk| unsafe { ffi::mtmd_input_chunk_get_n_tokens(chunk) })
+            .sum()
     }
 }
 
@@ -859,16 +864,8 @@ impl LoadedModel {
         let chunks = self.tokenize_with_images(mctx, &marker, false, false, &bitmaps)?;
         drop(bitmaps);
 
-        // SAFETY: `chunks` is a live owned list; per-chunk pointers are owned
-        // by it and valid while it lives.
-        let n_chunks = unsafe { ffi::mtmd_input_chunks_size(chunks.as_ptr()) };
-        for idx in 0..n_chunks {
-            // SAFETY: `idx < n_chunks`; the chunk pointer is list-owned.
-            let chunk = unsafe { ffi::mtmd_input_chunks_get(chunks.as_ptr(), idx) };
-            if chunk.is_null() {
-                continue;
-            }
-            // SAFETY: `chunk` is non-null and list-owned.
+        for chunk in chunks.chunk_ptrs() {
+            // SAFETY: `chunk` is non-null and list-owned (chunk_ptrs).
             if unsafe { ffi::mtmd_input_chunk_get_type(chunk) } == ffi::MTMD_INPUT_CHUNK_TYPE_TEXT {
                 continue;
             }
@@ -1067,16 +1064,8 @@ impl LoadedModel {
         let n_batch = (unsafe { ffi::llama_n_batch(ectx.ptr.as_ptr()) }).max(1) as i32;
         let mut rows: Vec<Vec<f32>> = Vec::new();
         let mut n_past: ffi::llama_pos = 0;
-        // SAFETY: `chunks` is a live owned list; per-chunk pointers are owned
-        // by it and valid while it lives.
-        let n_chunks = unsafe { ffi::mtmd_input_chunks_size(chunks.as_ptr()) };
-        for idx in 0..n_chunks {
-            // SAFETY: `idx < n_chunks`; the chunk pointer is list-owned.
-            let chunk = unsafe { ffi::mtmd_input_chunks_get(chunks.as_ptr(), idx) };
-            if chunk.is_null() {
-                continue;
-            }
-            // SAFETY: `chunk` is non-null and list-owned.
+        for chunk in chunks.chunk_ptrs() {
+            // SAFETY: `chunk` is non-null and list-owned (chunk_ptrs).
             let ctype = unsafe { ffi::mtmd_input_chunk_get_type(chunk) };
             if ctype == ffi::MTMD_INPUT_CHUNK_TYPE_TEXT {
                 let mut n_tokens: usize = 0;
