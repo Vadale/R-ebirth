@@ -326,5 +326,5 @@ is honest and it works.
 close(m)
 ```
 
-Everything above ran on local hardware with no Python and no API: two GGUF
+Everything here runs on local hardware with no Python and no API: two GGUF
 files, base graphics, and three functions you already knew.
