@@ -64,40 +64,72 @@ test_that("the committed T2 sidecar names a real machine and matches its golden"
   expect_false(grepl("unknown-cpu", recorded, fixed = TRUE))
 })
 
+# A golden + sidecar on disk for the pure verify_golden_sidecar() below. No
+# mocking: `local_mocked_bindings()` cannot rebind a helper-file function
+# (testthat searches the namespace, its parent and globalenv -- never the testing
+# env where helper-*.R is sourced), so the mocked version of these tests ABORTED
+# under R CMD check on both runners and passed locally only on a polluted
+# globalenv. Paths are injected instead, which is why these now run everywhere.
+# Files land in tempdir(), which R removes on exit.
+sidecar_pair <- function(...) {
+  golden <- tempfile(fileext = ".csv")
+  side <- paste0(golden, ".machine")
+  writeLines(c("1.0", "2.0"), golden)
+  writeLines(c(...), side)
+  list(golden = golden, sidecar = side)
+}
+
 test_that("a sidecar that does not match its golden is a loud error, not a skip", {
   # The failure this whole mechanism exists to prevent, in miniature: the golden
   # gets re-recorded on a new machine and the sidecar is left behind. Without the
   # digest that is a pin gated on a machine that no longer exists -- skipping
-  # everywhere, silently, forever.
-  skip_if_not(
-    file.exists(vision_golden_path("embed-red-square-mean.csv")),
-    "vision goldens not present (repo layout only)"
-  )
+  # everywhere, silently, forever. Self-contained on tempfiles: no repo golden,
+  # so it runs in the per-commit job its [CI] header claims.
+  p <- sidecar_pair("machine: Fake | test | CPU", "golden-md5: not-the-right-digest")
+  expect_error(verify_golden_sidecar(p$golden, p$sidecar), "STALE SIDECAR")
+})
+
+test_that("a matching digest returns the recorded machine", {
+  # The positive control: same code path, correct digest. Without it, "errors on
+  # mismatch" would also be satisfied by a function that always errors.
   golden <- tempfile(fileext = ".csv")
-  side <- paste0(golden, ".machine")
-  on.exit(unlink(c(golden, side)), add = TRUE)
   writeLines(c("1.0", "2.0"), golden)
-  writeLines(c("machine: Fake | test | CPU", "golden-md5: not-the-right-digest"), side)
-  local_mocked_bindings(vision_golden_path = function(name) {
-    if (endsWith(name, ".machine")) side else golden
-  })
-  expect_error(golden_machine(basename(golden)), "STALE SIDECAR")
+  side <- paste0(golden, ".machine")
+  writeLines(
+    c("machine: Fake | test | CPU", paste("golden-md5:", unname(tools::md5sum(golden)))),
+    side
+  )
+  expect_identical(verify_golden_sidecar(golden, side), "Fake | test | CPU")
 })
 
 test_that("a sidecar with no digest is refused rather than trusted", {
-  golden <- tempfile(fileext = ".csv")
-  side <- paste0(golden, ".machine")
-  on.exit(unlink(c(golden, side)), add = TRUE)
-  writeLines("1.0", golden)
-  writeLines("machine: Fake | test | CPU", side)
-  local_mocked_bindings(vision_golden_path = function(name) {
-    if (endsWith(name, ".machine")) side else golden
-  })
-  expect_error(golden_machine(basename(golden)), "no golden-md5")
+  p <- sidecar_pair("machine: Fake | test | CPU")
+  expect_error(verify_golden_sidecar(p$golden, p$sidecar), "no golden-md5")
 })
 
-test_that("an unrecorded golden reports NA rather than crashing", {
+test_that("an absent sidecar reports NA rather than crashing", {
+  expect_true(is.na(verify_golden_sidecar(tempfile(), tempfile())))
   expect_true(is.na(golden_machine("no-such-golden-exists.csv")))
+})
+
+test_that("the CPU is parsed from both /proc/cpuinfo shapes", {
+  # Rule 8e: CI is ubuntu-24.04 (x86_64) + macos-15, so the aarch64 branch runs
+  # on no CI machine. Committed fixtures drive both branches per-commit on every
+  # platform, off the hardware entirely.
+  x86 <- cpu_from_cpuinfo(readLines(test_path("fixtures", "cpuinfo-x86_64.txt")))
+  expect_identical(x86, "AMD EPYC 7763 64-Core Processor")
+
+  # aarch64 has no "model name" -- returning "unknown-cpu" here (the first
+  # version) meant two unrelated aarch64 machines matched each other and would
+  # run a pin recorded on neither.
+  arm <- cpu_from_cpuinfo(readLines(test_path("fixtures", "cpuinfo-aarch64.txt")))
+  expect_identical(arm, "0x41/0xd0c/8")
+  expect_false(grepl("unknown", arm, fixed = TRUE))
+  expect_false(identical(arm, x86))
+
+  # Nothing recognizable -> NA, which machine_fingerprint() turns into the
+  # never-matches-a-sidecar fallback.
+  expect_true(is.na(cpu_from_cpuinfo(c("processor\t: 0", "BogoMIPS\t: 50.00"))))
 })
 
 # --- [CI] llm_embed(images=) — the T2 surface (WP-V3) --------------------------
