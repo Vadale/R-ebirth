@@ -124,6 +124,24 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
     assert_eq!(n_tokens, ref_tokens, "token count matches the reference");
     assert_eq!(n_embd, ref_embd, "embedding width matches the reference");
 
+    // Diagnostic seam (diag-vision-encoder-isa.yaml): dump THIS machine's engine
+    // output in the reference harness's own format, so it can be compared
+    // against a pristine-upstream reference built on the SAME machine — the only
+    // comparison that separates an implementation difference from an ISA one.
+    // Off unless asked for; it never alters the assertions below.
+    if let Ok(dest) = std::env::var("RELM_DUMP_ENCODER_TO") {
+        use std::fmt::Write as _;
+        let mut out = format!("{n_tokens} {n_embd}\n");
+        for v in &values {
+            let _ = writeln!(out, "{v:.8e}");
+        }
+        std::fs::write(&dest, out).expect("write engine encoder dump");
+        eprintln!(
+            "dumped engine encoder output to {dest} ({} values)",
+            values.len()
+        );
+    }
+
     const ATOL: f32 = 1e-3;
     let (mut max_abs, mut worst) = (0.0f32, 0usize);
     for (i, (&a, &b)) in values.iter().zip(reference.iter()).enumerate() {
