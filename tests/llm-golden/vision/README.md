@@ -140,9 +140,26 @@ regression. The cross-build `mtmd_get_output_embd` ATOL leg — the BINDING
 WP-V4 item (D-026 first addendum) — extends nightly coverage to the encoder
 output itself; it is delivered, and documented in the section below.
 
-Reproduction (macOS arm64, CPU backend — the values are deterministic on this
-platform; other ISAs/thread pools may differ in the last decimals, which is
-why the gate runs `[MODEL]` on the recording platform with `atol 1e-5`):
+**Running it (D-026 fourth addendum).** The pin holds bit-for-bit only on the
+machine that recorded it, so it skips unless you say you are on that machine:
+
+```sh
+RELM_VISION_RECORDING_MACHINE=1 Rscript -e 'devtools::test(filter = "vision")'
+```
+
+"Other ISAs may differ in the last decimals" — the original wording here — turned
+out to understate it by two orders of magnitude: a *non-M4 arm64* runner (same
+OS, same arch) measured `max |d| = 6.05e-3` against this pin, 600× the tolerance,
+while the byte-exact text golden passed in the same run. The old
+`Darwin && arm64` gate was therefore never right: it named a platform where a
+**machine** was meant. Unlike the encoder leg, this pin cannot be regenerated on
+another machine — no upstream reference exists for a pooled multimodal embedding
+at b9726 (D-026 second addendum), so there is nothing to regenerate *from*. The
+nightly's T2 coverage is the cat-vs-car semantic gate instead, which holds
+anywhere.
+
+Reproduction (macOS arm64, CPU backend — the values are deterministic on the
+recording machine; see above for what "other platforms" really costs):
 
 ```r
 m <- llm("Qwen2-VL-2B-Instruct-Q4_K_M.gguf",
@@ -158,13 +175,35 @@ artifacts (SHA256s above); vector L2-norm = 1 (normalized), 1536 dims.
 
 ## The BINDING embd-ATOL leg (WP-V4, D-026 first addendum — DELIVERED)
 
-`goldens/encode-red-square-f32.txt` is the **unpatched-upstream reference**
-for the raw image-encoder output (`mtmd_encode_chunk` →
-`mtmd_get_output_embd`) of the committed red-square image under the pinned
-projector. Reproduction, exactly as run on 2026-07-15 (macOS 26.5.2 arm64,
+`goldens/encode-red-square-f32.txt` is an **unpatched-upstream reference** for
+the raw image-encoder output (`mtmd_encode_chunk` → `mtmd_get_output_embd`) of
+the committed red-square image under the pinned projector — the one recorded on
+the founder's M4.
+
+**It is not the only reference, and it is not the one the nightly uses**
+(D-026 fourth addendum). A float reference belongs to the machine that produced
+it: this file is bit-exact on the M4 and *cannot* pass anywhere else, because
+the same pristine upstream build disagrees with its own arm64 self by `3.30`
+across ISAs — and by different amounts on different runners of the same label
+(the nightly's larger `8.71` is an *inference*, not an isolation: that run
+compared relm-x86 against this arm reference, conflating ISA and
+implementation — D-026 fourth addendum point 2). So the nightly rebuilds the
+pristine b9726 tarball on its own runner,
+produces the reference *there*, and points `RELM_VISION_ENCODER_REFERENCE` at
+it. The gate then stays **exact everywhere**, with no tolerance to tune:
+
+```
+relm vs upstream, SAME machine  ->  max |d| = 0.0   (M4 and x86_64 alike)
+```
+
+This committed file remains the fast path on the recording machine — no
+12-minute pristine build for a local check — and the honest, loud failure
+anywhere else.
+
+Reproduction, exactly as run on 2026-07-15 (macOS 26.5.2 arm64,
 Apple clang 21.0.0; `$REF` = the pristine b9726 tree extracted from the
 SHA-verified tarball and built CPU-only with the same cmake line as the
-mtmd-cli section above):
+mtmd-cli section above). The nightly runs these same two commands on its runner:
 
 ```sh
 cc -O2 -o dump-encode tests/llm-golden/vision/tools/dump-encode.c \
@@ -179,10 +218,26 @@ cc -O2 -o dump-encode tests/llm-golden/vision/tools/dump-encode.c \
 The engine gate is the `[MODEL]` cargo test
 `rebirth-llm/tests/vlm_golden.rs::encoder_output_matches_the_unpatched_reference_within_atol`
 (CPU backend): every one of the 64 x 1536 values within **ATOL 1e-3**.
-Observed at delivery: **max |Δ| = 0.0 exactly** (same code, same CPU backend;
-`%.8e` round-trips f32 exactly) — the full 1e-3 tolerance is headroom for
-future cross-machine/threading variation, per D-018 same-implementation
-logic.
+Observed: **max |Δ| = 0.0 exactly** — on the M4 at delivery, and on both
+`ubuntu-24.04` and `macos-15` once each compares against a reference built on
+its own runner (same code, same CPU backend; `%.8e` round-trips f32 exactly).
+
+The 1e-3 is **not** headroom for cross-machine variation, as this section
+originally claimed. Cross-machine variation reaches **8.7** — some 8700x that
+"headroom" — so no tolerance can absorb it and stay meaningful: one loose enough
+for 8.7 would pass a genuinely broken encoder (D-026 fourth addendum). The
+tolerance only ever has to cover same-machine, same-build noise, which is
+measured at zero. It is kept at 1e-3 rather than tightened to 0 because a
+future compiler or ggml revision may legitimately reorder a reduction on the
+same machine; **cross-machine drift is handled by rebuilding the reference, not
+by widening this number.**
+
+**Scope, honestly:** this leg gates relm's *libmtmd API usage*. relm's patches
+(`0001`) are entirely llama-side, so clip/mtmd/ggml compile from source
+byte-identical to pristine b9726 — bit-exactness here is the expected result and
+says nothing about `build_cvec`, which the encoder path never reaches. The gates
+that carry cross-ISA correctness are the byte-exact T1 text golden and the
+token-ids pin.
 
 ## The T1 token-ids pin (WP-V4)
 

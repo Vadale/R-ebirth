@@ -2,9 +2,8 @@
 //!
 //! 1. The BINDING embd-ATOL leg (D-026 first addendum): the raw image-encoder
 //!    output for the committed red-square image matches the UNPATCHED upstream
-//!    reference (tests/llm-golden/vision/goldens/encode-red-square-f32.txt,
-//!    produced by tools/dump-encode.c against the pristine b9726 build) within
-//!    ATOL 1e-3 on CPU.
+//!    b9726 reference (produced by tools/dump-encode.c) within ATOL 1e-3 on CPU
+//!    — against a reference from THIS machine; see "WHICH REFERENCE" below.
 //! 2. The T1 token-ids pin: greedy generation on the golden image + prompt
 //!    reproduces the committed engine token ids byte-for-byte (an
 //!    engine-vs-engine regression pin alongside the reference text leg).
@@ -15,6 +14,38 @@
 //! Env-gated on RELM_TEST_MODEL_VLM + RELM_TEST_MMPROJ_VLM; skips otherwise
 //! (hard rule 8e: the founder's Mac + the nightly vision workflow, never
 //! per-commit CI). CPU backend for comparability with the CPU-only reference.
+//!
+//! WHICH REFERENCE (D-026 fourth addendum) — the encoder leg is exact on EVERY
+//! machine, because the reference it compares against is built on the machine
+//! running it. This is not a refinement; it is the whole design, and it is what
+//! the measurements forced:
+//!   - relm vs upstream on the SAME machine is **bit-exact**: `max |Δ| = 0.0`
+//!     on the founder's M4 AND on an x86_64 runner (diag run 29427129990).
+//!   - upstream vs ITSELF across machines is not: the same pristine b9726 build
+//!     differs from its arm64 self by `max |Δ| = 3.30` on one x86 runner. The
+//!     nightly's `8.71` on another runner is an INFERENCE, not an isolation —
+//!     it compared relm-x86 against the committed arm reference, which conflates
+//!     ISA and implementation. Either way the gap is not a constant across
+//!     runners of the same label.
+//!
+//! So comparing relm-here against a reference recorded elsewhere measures the
+//! machine, and no fixed tolerance can separate that from a regression. Compare
+//! against a reference from THIS machine and the tolerance question disappears:
+//! the gate is exact everywhere, with nothing to tune.
+//!
+//! WHAT THIS LEG GATES (D-026 fourth addendum point 1): relm's libmtmd API
+//! usage, and only that. The encoder path carries none of relm's patch (`0001`
+//! is llama-side; clip/mtmd/ggml are byte-identical to pristine b9726), so
+//! `max |Δ| = 0.0` here is the expected result and is blind by construction to
+//! `build_cvec` — which lives on the decode side this leg never enters. What
+//! supports shipping vision cross-ISA is the byte-exact T1 text golden and the
+//! token-ids pin below, not this leg.
+//!
+//! `RELM_VISION_ENCODER_REFERENCE` overrides the reference path; the nightly
+//! points it at a pristine b9726 build made on the runner. Unset, the leg uses
+//! the committed golden — correct on the machine that recorded it (the founder's
+//! Mac, where the BINDING leg of the first addendum passes bit-exact) and a
+//! loud, honest failure anywhere else.
 
 use std::path::PathBuf;
 
@@ -69,13 +100,22 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
         eprintln!("SKIP encoder_output_matches: RELM_TEST_MODEL_VLM/MMPROJ unset");
         return;
     };
-    let golden = goldens_dir().join("encode-red-square-f32.txt");
+    // The nightly points this at a pristine b9726 build made on the runner, so
+    // the comparison is same-machine and stays exact there too; unset, the leg
+    // uses the committed golden (correct on the machine that recorded it).
+    let golden = match std::env::var("RELM_VISION_ENCODER_REFERENCE") {
+        Ok(p) => PathBuf::from(p),
+        Err(_) => goldens_dir().join("encode-red-square-f32.txt"),
+    };
     if !golden.exists() {
-        eprintln!("SKIP encoder_output_matches: golden not present (repo layout only)");
+        eprintln!(
+            "SKIP encoder_output_matches: reference not present at {} (repo layout only)",
+            golden.display()
+        );
         return;
     }
 
-    let text = std::fs::read_to_string(&golden).expect("read encoder golden");
+    let text = std::fs::read_to_string(&golden).expect("read encoder reference");
     let mut lines = text.lines();
     let header = lines.next().expect("golden header");
     let mut dims = header
@@ -93,11 +133,12 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
     assert_eq!(n_tokens, ref_tokens, "token count matches the reference");
     assert_eq!(n_embd, ref_embd, "embedding width matches the reference");
 
-    // Diagnostic seam (diag-vision-encoder-isa.yaml): dump THIS machine's engine
-    // output in the reference harness's own format, so it can be compared
-    // against a pristine-upstream reference built on the SAME machine — the only
-    // comparison that separates an implementation difference from an ISA one.
-    // Off unless asked for; it never alters the assertions below.
+    // Dump THIS machine's engine output in the reference harness's own format.
+    // Written for the ISA diagnostic that produced the D-026 fourth addendum's
+    // numbers, and kept afterwards: it is what makes an encoder divergence
+    // investigable at all — without it, answering "is this the ISA or is it us?"
+    // means writing this seam first, which is a day. Off unless asked for; it
+    // never alters the assertions below.
     if let Ok(dest) = std::env::var("RELM_DUMP_ENCODER_TO") {
         use std::fmt::Write as _;
         let mut out = format!("{n_tokens} {n_embd}\n");
@@ -112,20 +153,33 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
     }
 
     const ATOL: f32 = 1e-3;
-    let mut max_abs = 0.0f32;
+    let (mut max_abs, mut worst) = (0.0f32, 0usize);
     for (i, (&a, &b)) in values.iter().zip(reference.iter()).enumerate() {
         let d = (a - b).abs();
         if d > max_abs {
             max_abs = d;
+            worst = i;
         }
-        assert!(
-            d <= ATOL,
-            "encoder value {i} diverges: engine {a} vs reference {b} (|Δ| = {d} > {ATOL})"
-        );
     }
+
+    // The BINDING leg (D-026 first addendum). Exact, on every machine — because
+    // the reference above comes from this one. Max over ALL values, never the
+    // first violation: the original per-element assert reported value 0's small
+    // |Δ| and hid a 200x larger one further in, which is how a cross-machine gap
+    // got misread as float noise in the first place.
+    assert!(
+        max_abs <= ATOL,
+        "encoder value {worst} diverges: engine {} vs reference {} (|Δ| = {max_abs} > {ATOL}). \
+         If this machine did not produce the reference, that is the bug -- floats differ \
+         between machines by far more than {ATOL} (measured: up to 8.7 across x86/arm), so \
+         point RELM_VISION_ENCODER_REFERENCE at a pristine b9726 build made HERE.",
+        values[worst],
+        reference[worst]
+    );
     eprintln!(
-        "embd-ATOL leg: max |Δ| = {max_abs:.3e} over {} values (atol {ATOL:.0e})",
-        values.len()
+        "embd-ATOL leg: max |Δ| = {max_abs:.3e} over {} values (atol {ATOL:.0e}) vs {}",
+        values.len(),
+        golden.display()
     );
 }
 

@@ -9,18 +9,47 @@
 # WHAT IT RUNS (the [MODEL] vision suite, WP-V2..V4):
 #   R side  — tests/testthat filter "vision": the T1 byte-exact greedy text leg vs
 #             the unpatched b9726 reference, the mmproj-mismatch and degenerate-dims
-#             contracts, the rule-8a over-n_batch multimodal decode, the T2
-#             similarity fixture + pooled-embedding pin (the pin itself is
-#             arm64-gated and runs on the macOS leg).
-#   cargo   — rebirth-llm vlm_golden (the BINDING embd-ATOL leg, D-026 first
-#             addendum: raw encoder output vs the upstream reference within
-#             ATOL 1e-3 on CPU; plus the T1 token-ids pin) and vlm_embed (the T2
-#             mechanics probe). A grep on the test output asserts the ATOL leg
-#             actually RAN — a nightly that silently skips is a nightly that lies.
+#             contracts, the rule-8a over-n_batch multimodal decode, and the T2
+#             cat-vs-car similarity gate. (The T2 exact pooled pin skips here by
+#             design — it is bit-specific to its recording machine; see below.)
+#   cargo   — rebirth-llm vlm_golden (the encoder leg vs a pristine upstream
+#             b9726 built ON THIS RUNNER, exact; plus the T1 token-ids pin) and
+#             vlm_embed (the T2 mechanics probe). A grep on the test output
+#             asserts each gate actually RAN, and that the encoder leg used this
+#             machine's reference — a nightly that silently skips, or that
+#             quietly compares against another machine, is a nightly that lies.
 #
 # RUNNERS: ubuntu-24.04 (CPU) + macos-15 (arm64; the R suite exercises the Metal
 #   default backend, the golden/pin tests force CPU in-test for comparability).
 #   Model + mmproj ~2.2 GB on disk, well within both runners.
+#
+# WHY THIS JOB BUILDS UPSTREAM ITSELF (D-026 fourth addendum): a float reference
+#   is specific to the MACHINE that produced it, not to its OS/arch, so the
+#   encoder leg brings its reference with it instead of trusting a committed one.
+#   The measurements that forced this (this workflow's first real run + diag run
+#   29427129990):
+#     relm vs upstream, SAME machine  -> max |Δ| = 0.0        (M4 AND x86_64)
+#     upstream vs ITSELF, x86 vs arm  -> max |Δ| = 3.30 (diagnostic runner). The
+#                                        nightly's 8.71 is an INFERENCE, not an
+#                                        isolation: it only ever ran relm-x86 vs
+#                                        the committed arm reference, never
+#                                        upstream against itself. Either way the
+#                                        gap is not constant across two runners
+#                                        carrying the same ubuntu-24.04 label.
+#   So relm's IMAGE ENCODER contributes exactly zero divergence on the machines
+#   tested — and only that: the encoder path carries none of relm's patch (0001
+#   is llama-side), so 0.0 is expected there and blind to build_cvec. What gates
+#   Linux vision is the byte-exact T1 text golden + token-ids pin below, not this
+#   leg. See D-026 fourth addendum point 1 before citing this comparison.
+#   A reference from elsewhere measures the runner. Rebuilding pristine b9726
+#   HERE costs ~12 min and makes the gate exact with nothing to tune — a
+#   tolerance loose enough for 8.71 would pass a genuinely broken encoder.
+#
+#   The T2 pooled pin cannot be rebuilt this way (no upstream reference exists
+#   for a pooled multimodal embedding at b9726 — D-026 second addendum), so it
+#   stays an exact pin on its recording machine and its coverage here is the
+#   cat-vs-car SEMANTIC gate, which holds on any machine. The byte-exact text
+#   golden and the token-ids pin hold cross-ISA and stay exact on both runners.
 #
 # MODEL PIN (fail-closed; matches inst/models.csv): repo
 #   ggml-org/Qwen2-VL-2B-Instruct-GGUF, revision
@@ -52,6 +81,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      TARBALL_URL: https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9726.tar.gz
+      TARBALL_SHA256: 117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0
       MODEL_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/Qwen2-VL-2B-Instruct-Q4_K_M.gguf
       MODEL_SHA256: 5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7
       MMPROJ_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/mmproj-Qwen2-VL-2B-Instruct-f16.gguf
@@ -98,76 +129,121 @@ jobs:
         working-directory: rebirth
         shell: bash
         run: |
-          Rscript -e '
-            suppressMessages(pkgload::load_all(".", quiet = TRUE))
-            mp <- Sys.getenv("RELM_TEST_MODEL_VLM"); pp <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
-            stopifnot(nzchar(mp), file.exists(mp), nzchar(pp), file.exists(pp))
-            # Fail LOUDLY if the verified files are not the expected pair, so the
-            # suite cannot silently skip into a false green.
-            m <- llm(mp, projector = pp)
-            stopifnot(
-              identical(m$architecture, "qwen2vl"),
-              m$hidden_size == 1536L, isTRUE(m$vision)
-            )
-            close(m)
-            library(testthat)
-            res <- test_dir("tests/testthat",
-              filter = "vision", reporter = "summary", stop_on_failure = TRUE
-            )
-            df <- as.data.frame(res)
-            # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
-            # but a test that SKIPS (missing model, wrong arch, absent golden)
-            # leaves the suite green while gating nothing — the false green this
-            # workflow exists to prevent. Each named gate is asserted present,
-            # non-failing, and with real passing expectations.
-            # `skipped` is read directly rather than inferred from passed == 0:
-            # a test that skips AFTER some passing expectations reports
-            # skipped = TRUE with passed > 0, which an inferred check would wave
-            # through. Today neither asserted test has an expectation before its
-            # skip, but that is an invariant of the test bodies, not of testthat.
-            must_have_run <- function(pattern, what) {
-              hit <- df[grepl(pattern, df$test, fixed = TRUE), ]
-              ok <- nrow(hit) == 1L &&
-                !isTRUE(hit$skipped) && hit$failed == 0L && hit$passed > 0L
-              if (!ok) {
-                stop(sprintf(
-                  "::error::%s did not run (%d matching tests, skipped=%s, %d passed, %d failed); refusing a false green",
-                  what, nrow(hit), paste(hit$skipped, collapse = ","),
-                  sum(hit$passed), sum(hit$failed)
-                ))
-              }
+          # A quoted heredoc, NOT Rscript -e '...': inside a single-quoted
+          # shell argument any apostrophe -- in a test name, in a comment --
+          # silently ends the string and the step dies on a shell syntax error.
+          # <<'RS' passes every byte through verbatim, so the class is gone.
+          Rscript - <<'RS'
+          suppressMessages(pkgload::load_all(".", quiet = TRUE))
+          mp <- Sys.getenv("RELM_TEST_MODEL_VLM"); pp <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
+          stopifnot(nzchar(mp), file.exists(mp), nzchar(pp), file.exists(pp))
+          # Fail LOUDLY if the verified files are not the expected pair, so the
+          # suite cannot silently skip into a false green.
+          m <- llm(mp, projector = pp)
+          stopifnot(
+            identical(m$architecture, "qwen2vl"),
+            m$hidden_size == 1536L, isTRUE(m$vision)
+          )
+          close(m)
+          library(testthat)
+          res <- test_dir("tests/testthat",
+            filter = "vision", reporter = "summary", stop_on_failure = TRUE
+          )
+          df <- as.data.frame(res)
+          # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
+          # but a test that SKIPS (missing model, wrong arch, absent golden)
+          # leaves the suite green while gating nothing — the false green this
+          # workflow exists to prevent. Each named gate is asserted present,
+          # non-failing, and with real passing expectations.
+          # `skipped` is read directly rather than inferred from passed == 0:
+          # a test that skips AFTER some passing expectations reports
+          # skipped = TRUE with passed > 0, which an inferred check would wave
+          # through. Today neither asserted test has an expectation before its
+          # skip, but that is an invariant of the test bodies, not of testthat.
+          must_have_run <- function(pattern, what) {
+            hit <- df[grepl(pattern, df$test, fixed = TRUE), ]
+            ok <- nrow(hit) == 1L &&
+              !isTRUE(hit$skipped) && hit$failed == 0L && hit$passed > 0L
+            if (!ok) {
+              stop(sprintf(
+                "::error::%s did not run (%d matching tests, skipped=%s, %d passed, %d failed); refusing a false green",
+                what, nrow(hit), paste(hit$skipped, collapse = ","),
+                sum(hit$passed), sum(hit$failed)
+              ))
             }
-            # The T1 upstream-reference golden: both runners.
-            must_have_run("unpatched upstream reference", "the T1 reference-text golden")
-            # The T2 pooled-embedding pin is recorded on macOS arm64 and skips
-            # by design elsewhere, so it is only assertable on the macOS leg.
-            if (Sys.info()[["sysname"]] == "Darwin") {
-              must_have_run(
-                "pooled multimodal embedding matches the committed pin",
-                "the T2 pooled-embedding pin"
-              )
-            }
-            cat(sprintf(
-              "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
-              sum(df$passed), sum(df$skipped), sum(df$failed)
-            ))
-          '
+          }
+          # Both gates hold on any machine and run on BOTH runners. The T2
+          # exact pin is deliberately NOT among them: it is bit-specific to
+          # its recording machine and skips here by design (D-026 fourth
+          # addendum), so the T2 coverage in this job is the semantic one.
+          must_have_run("unpatched upstream reference", "the T1 reference-text golden")
+          must_have_run("the cat image embeds closer to", "the T2 semantic gate")
+          cat(sprintf(
+            "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
+            sum(df$passed), sum(df$skipped), sum(df$failed)
+          ))
+          RS
+
+      - name: Build the PRISTINE upstream b9726 and make THIS machine's reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha() { if command -v sha256sum >/dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi; }
+          cd "$RUNNER_TEMP"
+          curl -fL --retry 3 --retry-delay 5 -o llama.tar.gz "$TARBALL_URL"
+          got="$(sha llama.tar.gz | awk '{print $1}')"
+          if [ "$got" != "$TARBALL_SHA256" ]; then
+            echo "::error::pristine tarball SHA256 mismatch (got $got); the reference would be meaningless"
+            exit 1
+          fi
+          echo "pristine b9726 tarball verified: $got"
+          tar xzf llama.tar.gz && mv llama.cpp-b9726 pristine && cd pristine
+          # The same cmake line the committed reference was built with
+          # (tests/llm-golden/vision/README.md), CPU-only for comparability.
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+                -DGGML_METAL=OFF -DGGML_BLAS=OFF -DGGML_OPENMP=OFF \
+                -DLLAMA_BUILD_TOOLS=ON -DLLAMA_BUILD_COMMON=ON \
+                -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF \
+                -DLLAMA_BUILD_SERVER=OFF -DLLAMA_CURL=OFF > /dev/null
+          cmake --build build --target llama-mtmd-cli -j 4 > /dev/null
+          cd "$GITHUB_WORKSPACE"
+          REF="$RUNNER_TEMP/pristine"
+          cc -O2 -o "$RUNNER_TEMP/dump-encode" tests/llm-golden/vision/tools/dump-encode.c \
+             -I"$REF/include" -I"$REF/ggml/include" -I"$REF/tools/mtmd" \
+             -L"$REF/build/bin" -lmtmd -lllama -lggml -Wl,-rpath,"$REF/build/bin"
+          "$RUNNER_TEMP/dump-encode" "$RELM_TEST_MODEL_VLM" "$RELM_TEST_MMPROJ_VLM" \
+             tests/vision/red-square.png "$RUNNER_TEMP/upstream-here.txt"
+          echo "RELM_VISION_ENCODER_REFERENCE=$RUNNER_TEMP/upstream-here.txt" >> "$GITHUB_ENV"
+          echo "this machine's upstream reference: $(head -1 "$RUNNER_TEMP/upstream-here.txt")"
 
       - name: Run the engine-side golden gates (embd-ATOL leg + token-ids pin + T2 probe)
         working-directory: rebirth/src/rust
         shell: bash
         run: |
           set -euo pipefail
+          # Fail loudly rather than silently falling back to the committed
+          # (M4-recorded) reference, which cannot pass here.
+          if [ ! -s "${RELM_VISION_ENCODER_REFERENCE:-}" ]; then
+            echo "::error::the pristine reference for this machine is missing; refusing to compare against another machine's"
+            exit 1
+          fi
           cargo test -p rebirth-llm --release --test vlm_golden --test vlm_embed -- --nocapture 2>&1 | tee vlm-tests.log
           # Must-have-RUN assertions, same reason as the R side: every skip path
           # in these tests returns early and still reports "ok", so the exit code
           # alone cannot tell a real gate from a silent skip. Each gate prints a
           # marker line only after its assertion has passed.
+          # -F: the patterns carry dots (".txt") and slashes; as a BRE a dot
+          # matches any character, so an over-match could pass on the wrong line.
           must_have_run() {
-            if ! grep -q "$1" vlm-tests.log; then
+            if ! grep -qF "$1" vlm-tests.log; then
               echo "::error::$2 did not run; refusing a false green"
               exit 1
             fi
           }
           must_have_run "embd-ATOL leg: max" "the BINDING embd-ATOL golden leg"
           must_have_run "T1 token-ids pin:" "the T1 token-ids pin"
+          # The leg names the reference it compared against; require it to be
+          # THIS machine's pristine build. Without this, a lost env var would
+          # silently fall back to the committed M4 reference and turn the gate
+          # back into the cross-machine comparison that started all of this.
+          must_have_run "vs $RUNNER_TEMP/upstream-here.txt" "the same-machine reference"

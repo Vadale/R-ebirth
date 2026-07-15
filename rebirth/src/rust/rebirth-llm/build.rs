@@ -197,8 +197,66 @@ fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
             for framework in ["Metal", "MetalKit", "Foundation"] {
                 println!("cargo:rustc-link-lib=framework={framework}");
             }
+            link_clang_runtime();
         }
     }
+}
+
+/// Link clang's darwin runtime for the Metal backend's Obj-C `@available()`
+/// checks.
+///
+/// `ggml-metal-device.m` guards features with `@available(macOS 15.0, ...)`
+/// (and several `macOS 10.12` checks). Above the deployment target those cannot
+/// be folded away at compile time, so clang emits a call to
+/// `___isPlatformVersionAtLeast`, which lives in `libclang_rt.osx.a`.
+///
+/// The R SHLIB link never noticed: R drives it through the compiler driver,
+/// which adds the runtime automatically. A cargo-driven link (this crate's
+/// tests, the `rebirth-ffi` `document` bin) invokes the linker without it, so
+/// every macOS-arm64 cargo test binary that pulls in the Metal objects fails to
+/// link with an undefined `___isPlatformVersionAtLeast`. That is why the
+/// nightly's engine-side gates had never once executed on a macOS runner — the
+/// step was always reached after an earlier failure had already stopped the job,
+/// so nothing reported it.
+///
+/// Best-effort by design: if the runtime cannot be located we emit nothing and
+/// leave the link exactly as it was, since the R build path does not need this
+/// and must not break because a toolchain moved.
+fn link_clang_runtime() {
+    let Some(dir) = clang_runtime_dir() else {
+        println!("cargo:warning=clang darwin runtime not found; a cargo-driven macOS link may fail on ___isPlatformVersionAtLeast");
+        return;
+    };
+    if dir.join("libclang_rt.osx.a").is_file() {
+        println!("cargo:rustc-link-search=native={}", dir.display());
+        println!("cargo:rustc-link-lib=static=clang_rt.osx");
+    }
+}
+
+/// `<clang resource dir>/lib/darwin`, via `clang -print-resource-dir` (the
+/// toolchain's own answer — the path embeds a clang version that changes with
+/// every Xcode update, so it is never hard-coded).
+fn clang_runtime_dir() -> Option<PathBuf> {
+    // CC may carry arguments (R's Makeconf sets things like `clang -arch arm64`),
+    // so split it the way the cmake/cc crates do — passing the whole string as a
+    // program name fails to spawn, and the fallback would silently drop the flags.
+    let cc = env::var("CC").unwrap_or_else(|_| "clang".to_string());
+    let mut parts = cc.split_whitespace();
+    let program = parts.next()?;
+    let out = std::process::Command::new(program)
+        .args(parts)
+        .arg("-print-resource-dir")
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let resource_dir = String::from_utf8(out.stdout).ok()?;
+    Some(
+        PathBuf::from(resource_dir.trim())
+            .join("lib")
+            .join("darwin"),
+    )
 }
 
 /// The shared `rust/target/<profile>/` directory (alongside `librelm.a`),

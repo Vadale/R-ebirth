@@ -149,15 +149,29 @@ test_that("[MODEL] the pooled multimodal embedding matches the committed pin", {
   # The T2 regression pin (tests/llm-golden/vision/README.md — a
   # same-implementation determinism pin, NOT an independent oracle; the
   # cross-build encoder ATOL leg is the independent one, in the cargo
-  # vlm_golden suite). Recorded on macOS arm64, CPU backend; atol 1e-5 covers
-  # run-to-run identity on the recording platform. [MODEL] + repo-layout gated;
-  # the nightly-vision-golden.yaml macOS leg asserts this test actually ran.
+  # vlm_golden suite).
+  #
+  # This vector is specific to the MACHINE that recorded it (the founder's M4),
+  # not to its OS/arch — D-026 fourth addendum. The first real nightly measured
+  # max |d| = 6.05e-3 against it on a *non-M4 arm64 runner*, 600x the tolerance,
+  # while the same run's byte-exact text golden passed: identical semantics,
+  # different floats (thread-pool reduction order plus chaotic amplification
+  # through 28 layers). The old `Darwin && arm64` gate was therefore never the
+  # right one — it named a platform where the recording machine was meant.
+  #
+  # Unlike the encoder leg, this pin cannot be rebuilt on another machine: no
+  # upstream reference exists for a pooled multimodal embedding at b9726 (second
+  # addendum), so there is nothing to regenerate from. It stays an exact pin on
+  # its recording machine. The nightly's T2 coverage is instead the cat-vs-car
+  # SEMANTIC gate above, which holds on any machine and needs no tolerance.
   golden <- vision_golden_path("embed-red-square-mean.csv")
   skip_if_not(file.exists(golden), "embedding pin not present (repo layout only)")
   skip_if_not(
-    Sys.info()[["sysname"]] == "Darwin" &&
-      R.version[["arch"]] %in% c("aarch64", "arm64"),
-    "the embedding pin is recorded on macOS arm64 (CPU)"
+    nzchar(Sys.getenv("RELM_VISION_RECORDING_MACHINE")),
+    paste(
+      "the exact embedding pin only holds bit-for-bit on the machine that recorded it;",
+      "set RELM_VISION_RECORDING_MACHINE=1 there (the founder's M4, CPU)"
+    )
   )
   m <- llm(vlm_model_path(), projector = vlm_mmproj_path(), backend = "cpu")
   on.exit(close(m), add = TRUE)
