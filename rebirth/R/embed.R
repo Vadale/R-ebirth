@@ -34,7 +34,8 @@
 #' (text, image) pair into one row: a **list parallel to `x`**, where
 #' `images[[i]]` is a character vector of image file paths for input `i`
 #' (`character(0)` for none), or a bare character vector for a single input
-#' (recycled across several inputs with a warning) — the same pairing contract
+#' (recycled across several inputs with a warning; an empty vector is the same
+#' as `NULL`) — the same pairing contract
 #' as [llm_generate()]'s `images`. Images are inserted **before** the text.
 #' The accepted formats and pre-decode limits are exactly [llm_generate()]'s:
 #' **JPEG, PNG, BMP** only, at most 64 MB per file by default

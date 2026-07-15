@@ -49,6 +49,8 @@ check_prompt_markers <- function(prompt, image_sets, arg_name,
 
 # Normalize `images` against `n_inputs` prompts/texts (API-GRAMMAR section 3):
 #   * NULL -> NULL (text-only; the caller takes the unchanged text path).
+#   * character(0) -> NULL too: an empty vector supplies no images at all, so
+#     it takes the text path silently (there is nothing to recycle-warn about).
 #   * a bare character vector -> treated as `list(images)`, i.e. ONE image set;
 #     with `n_inputs == 1` it pairs silently, otherwise it is recycled across
 #     all inputs with a warning (the llm_trace(positions=) recycling contract).
@@ -65,6 +67,9 @@ normalize_images <- function(images, n_inputs, call = sys.call(-1L)) {
   }
 
   if (is.character(images)) {
+    if (length(images) == 0L) {
+      return(NULL)
+    }
     if (anyNA(images)) {
       abort_argument(
         "images", "`images` must not contain NA paths.",

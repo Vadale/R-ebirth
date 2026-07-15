@@ -284,6 +284,27 @@ test_that("character(0) image sets mean no images and need no projector", {
   )
 })
 
+test_that("an empty bare images vector means no images and never warns", {
+  # character(0) supplies no images at all: it must take the text path exactly
+  # like images = NULL — in particular WITHOUT the bare-vector recycling
+  # warning, which would be noise about a no-op (phase-end simplifier fix;
+  # model-free, per-commit CI).
+  m <- llm(synthetic_model_path())
+  on.exit(close(m), add = TRUE)
+  expect_no_warning(
+    expect_error(
+      llm_generate(m, c("a", "b"), max_tokens = 4, chat = FALSE, images = character(0)),
+      class = "relm_error_tokenize"
+    )
+  )
+  expect_no_warning(
+    expect_error(
+      llm_embed(m, c("a", "b"), images = character(0)),
+      class = "relm_error_tokenize"
+    )
+  )
+})
+
 test_that("images = NULL leaves the text path byte-identical (same classed error)", {
   m <- llm(synthetic_model_path())
   on.exit(close(m), add = TRUE)

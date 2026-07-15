@@ -73,7 +73,8 @@ On a handle loaded with \code{\link[=llm]{llm()}}'s \code{projector} argument, \
 (text, image) pair into one row: a \strong{list parallel to \code{x}}, where
 \code{images[[i]]} is a character vector of image file paths for input \code{i}
 (\code{character(0)} for none), or a bare character vector for a single input
-(recycled across several inputs with a warning) — the same pairing contract
+(recycled across several inputs with a warning; an empty vector is the same
+as \code{NULL}) — the same pairing contract
 as \code{\link[=llm_generate]{llm_generate()}}'s \code{images}. Images are inserted \strong{before} the text.
 The accepted formats and pre-decode limits are exactly \code{\link[=llm_generate]{llm_generate()}}'s:
 \strong{JPEG, PNG, BMP} only, at most 64 MB per file by default

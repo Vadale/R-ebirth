@@ -81,7 +81,8 @@ image files to each prompt: a \strong{list parallel to \code{prompt}}, where
 \code{images[[i]]} is a character vector of image file paths for prompt \code{i}
 (\code{character(0)} for none). A bare character vector is treated as
 \code{list(images)} — one image set — and pairs with a single prompt; with
-several prompts it is recycled across all of them with a warning. Each
+several prompts it is recycled across all of them with a warning (an empty
+vector is the same as \code{NULL}: no images, no warning). Each
 prompt's images are inserted \strong{before} its text. Exactly three file
 formats are accepted: \strong{JPEG, PNG, BMP} (anything else — GIF and audio
 included — is rejected before any decode with \code{relm_error_image}). Size

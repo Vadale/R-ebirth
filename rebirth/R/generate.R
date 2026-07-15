@@ -25,7 +25,8 @@
 #' `images[[i]]` is a character vector of image file paths for prompt `i`
 #' (`character(0)` for none). A bare character vector is treated as
 #' `list(images)` — one image set — and pairs with a single prompt; with
-#' several prompts it is recycled across all of them with a warning. Each
+#' several prompts it is recycled across all of them with a warning (an empty
+#' vector is the same as `NULL`: no images, no warning). Each
 #' prompt's images are inserted **before** its text. Exactly three file
 #' formats are accepted: **JPEG, PNG, BMP** (anything else — GIF and audio
 #' included — is rejected before any decode with `relm_error_image`). Size
