@@ -25,21 +25,23 @@
 //! the D-012 fails-silent trap).
 //!
 //! Maintainer note — the vendored clip reads two environment variables that
-//! relm neither sets nor forwards, but which silently change what this module
-//! observes (WP-V1 audit F-2, `docs/audit-wp-v1-mtmd-2026-07-14.md` §3):
-//! - `MTMD_BACKEND_DEVICE` (`clip.cpp:184`) picks the clip backend by device
-//!   name, overriding the backend `llm(backend=)` resolved for the text model.
-//!   Set in the ambient environment, it makes the vision tower run somewhere
-//!   else than the caller asked — the goldens' `backend = "cpu"` no longer
-//!   means CPU, so an unexplained ATOL/pin failure is worth an `env | grep
-//!   MTMD_` before it is read as a numerical regression.
-//! - `MTMD_DEBUG_EMBEDDINGS` (`clip.cpp:224`) dumps encoder embeddings to the
-//!   log; harmless to correctness, noisy in a trace.
+//! relm neither sets nor forwards (`docs/audit-wp-v1-mtmd-2026-07-14.md` §2(d),
+//! which flagged them as informational and deferred documenting them here):
+//! - `MTMD_BACKEND_DEVICE` (`clip.cpp:184`) selects clip's GPU backend by
+//!   device name; a name that fails to initialize warns and falls back to the
+//!   default GPU. It is read **only on a GPU load** — the getenv sits inside
+//!   `if (ctx_params.use_gpu)` (`clip.cpp:183`) — so it redirects which GPU a
+//!   GPU load picks, and can never move a CPU load onto a GPU. On
+//!   `backend = "cpu"`, which keeps the `use_gpu = false` probe context built
+//!   below and which every vision golden forces, it is not read at all: the
+//!   goldens are immune to it.
+//! - `MTMD_DEBUG_EMBEDDINGS` (`clip.cpp:224`) is read unconditionally and dumps
+//!   encoder embeddings to the log (a read-only tensor read + `LOG_INF` at
+//!   `clip.cpp:4414`): harmless to correctness, noisy in a trace.
 //!
 //! They are upstream debug seams, left unpatched deliberately (D-026: no source
 //! patch without cause). Nothing in relm's API exposes them; treat a set value
-//! as an operator action, and expect the vision goldens to be the first thing
-//! it breaks.
+//! as an operator action.
 
 use std::ffi::{c_void, CStr, CString};
 use std::os::raw::{c_char, c_int};

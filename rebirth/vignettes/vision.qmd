@@ -299,9 +299,10 @@ m <- llm("~/models/my-vlm.gguf", projector = "~/models/mmproj-my-vlm.gguf")
 
 The quality tier we point people at is **Gemma 4 E2B**: the engine embedded in
 `relm` carries Gemma's vision projector, and `gemma4` has been a supported text
-architecture since v0.1.0 — so the pair loads and answers through exactly the
-code path shown above, with no extra arguments. Two honest caveats, both
-structural rather than incidental:
+architecture since v0.1.0, so the pair should load and answer through exactly
+the code path shown above, with no extra arguments — "should", because we have
+not run that checkpoint ourselves. Two honest caveats, both structural rather
+than incidental:
 
 - **You fetch it yourself.** Google gates Gemma's weights behind a
   click-through Terms of Use. `relm` therefore ships no `llm_download()` alias

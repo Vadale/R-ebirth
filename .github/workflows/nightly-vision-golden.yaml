@@ -120,12 +120,20 @@ jobs:
             # leaves the suite green while gating nothing — the false green this
             # workflow exists to prevent. Each named gate is asserted present,
             # non-failing, and with real passing expectations.
+            # `skipped` is read directly rather than inferred from passed == 0:
+            # a test that skips AFTER some passing expectations reports
+            # skipped = TRUE with passed > 0, which an inferred check would wave
+            # through. Today neither asserted test has an expectation before its
+            # skip, but that is an invariant of the test bodies, not of testthat.
             must_have_run <- function(pattern, what) {
               hit <- df[grepl(pattern, df$test, fixed = TRUE), ]
-              if (nrow(hit) != 1L || hit$failed != 0L || hit$passed <= 0L) {
+              ok <- nrow(hit) == 1L &&
+                !isTRUE(hit$skipped) && hit$failed == 0L && hit$passed > 0L
+              if (!ok) {
                 stop(sprintf(
-                  "::error::%s did not run (%d matching tests, %d passed, %d failed); refusing a false green",
-                  what, nrow(hit), sum(hit$passed), sum(hit$failed)
+                  "::error::%s did not run (%d matching tests, skipped=%s, %d passed, %d failed); refusing a false green",
+                  what, nrow(hit), paste(hit$skipped, collapse = ","),
+                  sum(hit$passed), sum(hit$failed)
                 ))
               }
             }
