@@ -64,8 +64,11 @@ Reference command (greedy, temperature 0; the image is the committed
 ```
 
 Model artifacts (from `https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF`,
-branch `main`, Apache-2.0; SHA256 observed at download on 2026-07-14 — the
-fail-closed registry pin is WP-V4):
+Apache-2.0; SHA256 observed at download on 2026-07-14). WP-V4 pinned these same
+two files fail-closed in `rebirth/inst/models.csv` (aliases
+`qwen2-vl-2b-instruct-q4_k_m` + `qwen2-vl-2b-instruct-mmproj-f16`), at the
+immutable revision `bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd` rather than
+`main`, so the reference run above and `llm_download()` fetch identical bytes:
 
 ```
 5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7  Qwen2-VL-2B-Instruct-Q4_K_M.gguf
@@ -109,8 +112,10 @@ the b9726 sources:
   strongest reproducible equality its output supports is exact text, stated
   honestly.
 - **Not per-commit:** no synthetic in-repo vision model exists, so this golden
-  is a `[MODEL]`/nightly gate, never per-commit CI (D-026 point 6). The nightly
-  workflow wiring is WP-V4.
+  is a `[MODEL]`/nightly gate, never per-commit CI (D-026 point 6). It runs in
+  `.github/workflows/nightly-vision-golden.yaml`, which asserts this test
+  actually ran rather than skipped.
+
 ## The T2 pooled-embedding pin (WP-V3) — what it is and what it is not
 
 `goldens/embed-red-square-mean.csv` pins the `llm_embed(images=)` pooled
@@ -131,9 +136,9 @@ encode+decode path is gated by the WP-V2 **byte-exact generation golden**
 (same clip encode, same helper decode); the per-token rows and every pooling
 reduction are gated by the WP3 **synthetic numpy-oracle goldens** (exact);
 new in T2 is only their composition, which this pin freezes against
-regression. The cross-build `mtmd_get_output_embd` ATOL leg is the BINDING
-WP-V4 item (D-026 addendum) and will extend nightly coverage to the encoder
-output itself.
+regression. The cross-build `mtmd_get_output_embd` ATOL leg — the BINDING
+WP-V4 item (D-026 first addendum) — extends nightly coverage to the encoder
+output itself; it is delivered, and documented in the section below.
 
 Reproduction (macOS arm64, CPU backend — the values are deterministic on this
 platform; other ISAs/thread pools may differ in the last decimals, which is

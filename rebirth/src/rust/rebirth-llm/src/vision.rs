@@ -23,6 +23,23 @@
 //! (n_batch-aware for both text and image chunks — the hard-rule-8a chokepoint
 //! for this path; M-RoPE / non-causal handling is never reimplemented in Rust,
 //! the D-012 fails-silent trap).
+//!
+//! Maintainer note — the vendored clip reads two environment variables that
+//! relm neither sets nor forwards, but which silently change what this module
+//! observes (WP-V1 audit F-2, `docs/audit-wp-v1-mtmd-2026-07-14.md` §3):
+//! - `MTMD_BACKEND_DEVICE` (`clip.cpp:184`) picks the clip backend by device
+//!   name, overriding the backend `llm(backend=)` resolved for the text model.
+//!   Set in the ambient environment, it makes the vision tower run somewhere
+//!   else than the caller asked — the goldens' `backend = "cpu"` no longer
+//!   means CPU, so an unexplained ATOL/pin failure is worth an `env | grep
+//!   MTMD_` before it is read as a numerical regression.
+//! - `MTMD_DEBUG_EMBEDDINGS` (`clip.cpp:224`) dumps encoder embeddings to the
+//!   log; harmless to correctness, noisy in a trace.
+//!
+//! They are upstream debug seams, left unpatched deliberately (D-026: no source
+//! patch without cause). Nothing in relm's API exposes them; treat a set value
+//! as an operator action, and expect the vision goldens to be the first thing
+//! it breaks.
 
 use std::ffi::{c_void, CStr, CString};
 use std::os::raw::{c_char, c_int};
