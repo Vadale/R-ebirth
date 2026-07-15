@@ -237,8 +237,14 @@ fn link_clang_runtime() {
 /// toolchain's own answer — the path embeds a clang version that changes with
 /// every Xcode update, so it is never hard-coded).
 fn clang_runtime_dir() -> Option<PathBuf> {
+    // CC may carry arguments (R's Makeconf sets things like `clang -arch arm64`),
+    // so split it the way the cmake/cc crates do — passing the whole string as a
+    // program name fails to spawn, and the fallback would silently drop the flags.
     let cc = env::var("CC").unwrap_or_else(|_| "clang".to_string());
-    let out = std::process::Command::new(cc)
+    let mut parts = cc.split_whitespace();
+    let program = parts.next()?;
+    let out = std::process::Command::new(program)
+        .args(parts)
         .arg("-print-resource-dir")
         .output()
         .ok()?;

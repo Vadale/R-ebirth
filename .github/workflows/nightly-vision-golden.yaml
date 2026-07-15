@@ -224,8 +224,10 @@ jobs:
           # in these tests returns early and still reports "ok", so the exit code
           # alone cannot tell a real gate from a silent skip. Each gate prints a
           # marker line only after its assertion has passed.
+          # -F: the patterns carry dots (".txt") and slashes; as a BRE a dot
+          # matches any character, so an over-match could pass on the wrong line.
           must_have_run() {
-            if ! grep -q "$1" vlm-tests.log; then
+            if ! grep -qF "$1" vlm-tests.log; then
               echo "::error::$2 did not run; refusing a false green"
               exit 1
             fi

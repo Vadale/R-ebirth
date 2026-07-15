@@ -215,10 +215,26 @@ cc -O2 -o dump-encode tests/llm-golden/vision/tools/dump-encode.c \
 The engine gate is the `[MODEL]` cargo test
 `rebirth-llm/tests/vlm_golden.rs::encoder_output_matches_the_unpatched_reference_within_atol`
 (CPU backend): every one of the 64 x 1536 values within **ATOL 1e-3**.
-Observed at delivery: **max |Δ| = 0.0 exactly** (same code, same CPU backend;
-`%.8e` round-trips f32 exactly) — the full 1e-3 tolerance is headroom for
-future cross-machine/threading variation, per D-018 same-implementation
-logic.
+Observed: **max |Δ| = 0.0 exactly** — on the M4 at delivery, and on both
+`ubuntu-24.04` and `macos-15` once each compares against a reference built on
+its own runner (same code, same CPU backend; `%.8e` round-trips f32 exactly).
+
+The 1e-3 is **not** headroom for cross-machine variation, as this section
+originally claimed. Cross-machine variation reaches **8.7** — some 8700x that
+"headroom" — so no tolerance can absorb it and stay meaningful: one loose enough
+for 8.7 would pass a genuinely broken encoder (D-026 fourth addendum). The
+tolerance only ever has to cover same-machine, same-build noise, which is
+measured at zero. It is kept at 1e-3 rather than tightened to 0 because a
+future compiler or ggml revision may legitimately reorder a reduction on the
+same machine; **cross-machine drift is handled by rebuilding the reference, not
+by widening this number.**
+
+**Scope, honestly:** this leg gates relm's *libmtmd API usage*. relm's patches
+(`0001`) are entirely llama-side, so clip/mtmd/ggml compile from source
+byte-identical to pristine b9726 — bit-exactness here is the expected result and
+says nothing about `build_cvec`, which the encoder path never reaches. The gates
+that carry cross-ISA correctness are the byte-exact T1 text golden and the
+token-ids pin.
 
 ## The T1 token-ids pin (WP-V4)
 

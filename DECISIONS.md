@@ -401,16 +401,45 @@ scoping *where* the first addendum's BINDING leg is asserted.
    | comparison | what it isolates | result |
    |---|---|---|
    | relm vs upstream, **same machine** | implementation only | `max \|Δ\| = 0.0`, cos `1.000000000` — on the founder's M4 **and** on x86_64 |
-   | upstream vs **itself**, x86 vs arm | ISA only | `max \|Δ\| = 3.30`, cos `0.999350281` |
+   | upstream vs **itself**, x86 vs arm | ISA only | `max \|Δ\| = 3.30`, cos `0.999350281` — *diagnostic runner only* |
    | relm-x86 vs the committed arm reference | both, conflated | `max \|Δ\| = 3.30`, cos `0.999350281` — *identical to the row above* |
 
-   The last two rows match to nine digits: **relm contributes exactly zero
-   divergence.** The engine is bit-exact against unpatched upstream on every
-   machine tested. There is no x86 bug; v0.2.0 ships Linux vision.
+   The last two rows match to nine digits: **relm's image encoder contributes
+   exactly zero divergence** on the two machines tested.
 
-2. **Why no tolerance is set:** the ISA gap is not a constant. The nightly runner
-   measured `max |Δ| = 8.71` (cos `0.995`) where the diagnostic runner measured
-   `3.30` (cos `0.99935`) — two machines carrying the same `ubuntu-24.04` label.
+   **What that does and does not establish** (reviewer catch at this gate; the
+   first draft of this addendum claimed "the engine is bit-exact ... there is no
+   x86 bug", which is wider than the measurement and wrong in a checkable way):
+   - **It gates relm's libmtmd API usage**, and only that. The encoder path
+     carries **none of relm's patch** — `0001` touches `include/llama.h`,
+     `llama-adapter.*`, `llama-context.*`, `llama-graph.*` (all llama-side);
+     `0002` touches two `CMakeLists.txt`. Clip/mtmd/ggml are byte-identical
+     source to pristine b9726, so `max |Δ| = 0.0` there is the **expected**
+     result and is blind by construction to `build_cvec`, the one thing relm
+     changes — which lives on the decode side this leg never enters.
+   - **"No x86 bug" ≠ "no relm x86 bug".** Upstream's own encoder differs from
+     its arm64 self by `max |Δ|` 3.3–8.7 (cos 0.995–0.9994). That is real,
+     undiagnosed, and — now that both sides of the nightly comparison are built
+     on the same machine — **structurally invisible to CI**, by design. relm
+     ships that upstream behavior to Linux users. Leading hypothesis (untested):
+     x86 SIMD width changes the reduction order, and a ViT amplifies it;
+     consistent with the gap not being constant across runners of one label.
+   - **What supports shipping Linux vision** is therefore not this leg but the
+     genuine cross-ISA gates: the **byte-exact T1 text golden** and the
+     **token-ids pin**, both passing on `ubuntu-24.04` against an *arm-recorded*
+     reference, plus the cat-vs-car semantic gate. Identical semantics across
+     ISAs is the claim that carries the release; encoder bit-exactness is a
+     narrower, separate one.
+
+2. **Why no tolerance is set:** the ISA gap is not a constant. The diagnostic
+   runner isolated it at `max |Δ| = 3.30` (cos `0.99935`); the nightly runner
+   showed `8.71` (cos `0.995`) — two machines carrying the same `ubuntu-24.04`
+   label. **The `8.71` is an inference, not an isolation:** the nightly only ever
+   ran relm-x86 against the committed arm reference (the conflated row), never
+   upstream against itself. Attributing it to the ISA rests on relm ≡ upstream
+   holding bit-exactly on the diagnostic x86 runner; it was not separately
+   isolated on the nightly's. Stated as such because this addendum's own closing
+   paragraph is about a number that got written up as fact.
    Any fixed floor would have to sit below the worst runner never yet sampled,
    and a tolerance loose enough for `8.71` would pass a genuinely broken encoder.
    Comparing against a reference built **here** removes the question: the gate is
