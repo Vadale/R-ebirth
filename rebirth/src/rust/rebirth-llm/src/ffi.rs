@@ -513,7 +513,7 @@ extern "C" {
     /// mtmd.h L218: the chunk's POSITION advance — equal to its token count
     /// for text, but smaller for M-RoPE image chunks (qwen-vl), which is why
     /// `n_past` accounting must use this, never the token count (matching
-    /// mtmd-helper.cpp L331/L378).
+    /// mtmd-helper.cpp L329-L330/L378).
     pub fn mtmd_input_chunk_get_n_pos(chunk: *const mtmd_input_chunk) -> llama_pos;
 
     /// mtmd.h L269-273: split the marker-bearing prompt into text/image chunks.

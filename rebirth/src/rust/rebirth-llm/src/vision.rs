@@ -767,6 +767,9 @@ impl LoadedModel {
         //    before the boundary as relm_error_argument on `prompt`; this
         //    engine-side backstop keeps the crate safe for non-R callers —
         //    unreachable through the R surface, hence exercised by no R test).
+        //    Deliberately moved BEFORE the image decoding during the WP-V3
+        //    extraction: visible only to non-R crate callers, whose marker
+        //    error now wins over a broken-image-path error.
         let marker = default_marker();
         check_no_user_marker(prompt, &marker)?;
 
@@ -967,7 +970,7 @@ impl LoadedModel {
     /// doc), text chunks go through the crate's flag-all [`Batch`] at the
     /// helper-accounted positions (upstream's own text loop uses plain 1-D
     /// `pos = n_past++` even for M-RoPE models, L361), and `n_past` advances
-    /// by `mtmd_input_chunk_get_n_pos` exactly as upstream does (L331/L378).
+    /// by `mtmd_input_chunk_get_n_pos` exactly as upstream does (L329-L330/L378).
     /// Every text chunk fits one batch by construction: the context's
     /// `n_batch = n_ubatch = n_ctx` (D-011) and the combined token count was
     /// checked against `n_ctx` pre-flight — the same structural argument as

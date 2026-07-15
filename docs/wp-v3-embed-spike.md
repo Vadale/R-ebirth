@@ -77,7 +77,7 @@ upstream's own multimodal-embedding semantics at the pinned tag.
    flag-all `Batch` at the helper-accounted positions — upstream's own text
    loop uses plain 1-D `pos = n_past++` even for M-RoPE models (L361; llama
    expands text positions internally), and `n_past` advances by
-   `mtmd_input_chunk_get_n_pos` exactly as the helper does (L331, L378).
+   `mtmd_input_chunk_get_n_pos` exactly as the helper does (L329-L330, L378).
    Nothing image-side is hand-rolled.
 6. **Working probe on the pinned 2B VLM** (Qwen2-VL-2B-Instruct Q4_K_M +
    mmproj-f16, the WP-V2 dev artifacts): the env-gated integration test
