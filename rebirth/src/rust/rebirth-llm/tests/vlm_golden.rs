@@ -2,9 +2,8 @@
 //!
 //! 1. The BINDING embd-ATOL leg (D-026 first addendum): the raw image-encoder
 //!    output for the committed red-square image matches the UNPATCHED upstream
-//!    reference (tests/llm-golden/vision/goldens/encode-red-square-f32.txt,
-//!    produced by tools/dump-encode.c against the pristine b9726 build) within
-//!    ATOL 1e-3 on CPU.
+//!    b9726 reference (produced by tools/dump-encode.c) within ATOL 1e-3 on CPU
+//!    — against a reference from THIS machine; see "WHICH REFERENCE" below.
 //! 2. The T1 token-ids pin: greedy generation on the golden image + prompt
 //!    reproduces the committed engine token ids byte-for-byte (an
 //!    engine-vs-engine regression pin alongside the reference text leg).
@@ -124,11 +123,12 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
     assert_eq!(n_tokens, ref_tokens, "token count matches the reference");
     assert_eq!(n_embd, ref_embd, "embedding width matches the reference");
 
-    // Diagnostic seam (diag-vision-encoder-isa.yaml): dump THIS machine's engine
-    // output in the reference harness's own format, so it can be compared
-    // against a pristine-upstream reference built on the SAME machine — the only
-    // comparison that separates an implementation difference from an ISA one.
-    // Off unless asked for; it never alters the assertions below.
+    // Dump THIS machine's engine output in the reference harness's own format.
+    // Written for the ISA diagnostic that produced the D-026 fourth addendum's
+    // numbers, and kept afterwards: it is what makes an encoder divergence
+    // investigable at all — without it, answering "is this the ISA or is it us?"
+    // means writing this seam first, which is a day. Off unless asked for; it
+    // never alters the assertions below.
     if let Ok(dest) = std::env::var("RELM_DUMP_ENCODER_TO") {
         use std::fmt::Write as _;
         let mut out = format!("{n_tokens} {n_embd}\n");
