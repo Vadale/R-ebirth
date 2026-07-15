@@ -169,4 +169,9 @@ fn greedy_generation_reproduces_the_committed_token_ids() {
         generation.tokens, ref_ids,
         "engine token ids match the committed pin byte-for-byte"
     );
+    // Every return above this point is a SKIP, so a nightly that never reaches
+    // the assertion is indistinguishable from a passing one by exit code alone.
+    // The workflow greps for this line to prove the pin ran (same discipline as
+    // the "embd-ATOL leg" print).
+    eprintln!("T1 token-ids pin: {} ids match the golden", ref_ids.len());
 }

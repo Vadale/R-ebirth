@@ -115,9 +115,30 @@ jobs:
               filter = "vision", reporter = "summary", stop_on_failure = TRUE
             )
             df <- as.data.frame(res)
-            # The T1 upstream-reference golden MUST have RUN, not skipped.
-            golden <- df[grepl("unpatched upstream reference", df$test), ]
-            stopifnot(nrow(golden) == 1L, golden$failed == 0L, golden$passed > 0L)
+            # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
+            # but a test that SKIPS (missing model, wrong arch, absent golden)
+            # leaves the suite green while gating nothing — the false green this
+            # workflow exists to prevent. Each named gate is asserted present,
+            # non-failing, and with real passing expectations.
+            must_have_run <- function(pattern, what) {
+              hit <- df[grepl(pattern, df$test, fixed = TRUE), ]
+              if (nrow(hit) != 1L || hit$failed != 0L || hit$passed <= 0L) {
+                stop(sprintf(
+                  "::error::%s did not run (%d matching tests, %d passed, %d failed); refusing a false green",
+                  what, nrow(hit), sum(hit$passed), sum(hit$failed)
+                ))
+              }
+            }
+            # The T1 upstream-reference golden: both runners.
+            must_have_run("unpatched upstream reference", "the T1 reference-text golden")
+            # The T2 pooled-embedding pin is recorded on macOS arm64 and skips
+            # by design elsewhere, so it is only assertable on the macOS leg.
+            if (Sys.info()[["sysname"]] == "Darwin") {
+              must_have_run(
+                "pooled multimodal embedding matches the committed pin",
+                "the T2 pooled-embedding pin"
+              )
+            }
             cat(sprintf(
               "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
               sum(df$passed), sum(df$skipped), sum(df$failed)
@@ -130,8 +151,15 @@ jobs:
         run: |
           set -euo pipefail
           cargo test -p rebirth-llm --release --test vlm_golden --test vlm_embed -- --nocapture 2>&1 | tee vlm-tests.log
-          # The BINDING ATOL leg must have RUN (its skip path only prints SKIP).
-          if ! grep -q "embd-ATOL leg: max" vlm-tests.log; then
-            echo "::error::the embd-ATOL golden leg did not run; refusing a false green"
-            exit 1
-          fi
+          # Must-have-RUN assertions, same reason as the R side: every skip path
+          # in these tests returns early and still reports "ok", so the exit code
+          # alone cannot tell a real gate from a silent skip. Each gate prints a
+          # marker line only after its assertion has passed.
+          must_have_run() {
+            if ! grep -q "$1" vlm-tests.log; then
+              echo "::error::$2 did not run; refusing a false green"
+              exit 1
+            fi
+          }
+          must_have_run "embd-ATOL leg: max" "the BINDING embd-ATOL golden leg"
+          must_have_run "T1 token-ids pin:" "the T1 token-ids pin"
