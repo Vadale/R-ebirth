@@ -15,10 +15,53 @@
 //! Env-gated on RELM_TEST_MODEL_VLM + RELM_TEST_MMPROJ_VLM; skips otherwise
 //! (hard rule 8e: the founder's Mac + the nightly vision workflow, never
 //! per-commit CI). CPU backend for comparability with the CPU-only reference.
+//!
+//! TWO ACCEPTANCE MODES for the float leg (D-026 fourth addendum) — because a
+//! float golden is specific to the MACHINE that recorded it, not merely to its
+//! OS/arch. The first real nightly proved it: against the reference recorded on
+//! the founder's M4, the encoder diverged by |Δ| = 3.96e-2 on an x86_64 runner
+//! (40x the tolerance) and the T2 pooled vector by 6.05e-3 on a non-M4 arm64
+//! runner (600x) — while that same run's token-ids pin and byte-exact text leg
+//! passed on BOTH. The semantics are identical across machines; only the floats
+//! differ (ISA kernels, thread-pool reduction order, and chaotic amplification
+//! of ~1e-7 differences through 28 layers). So:
+//!   - DEFAULT (the recording machine, `[MODEL]`): exact `|Δ| <= ATOL`. This is
+//!     the BINDING leg of the D-026 first addendum; it passes bit-exact.
+//!   - `RELM_VISION_GOLDEN_CROSS_PLATFORM=1` (the nightly, any runner): a
+//!     machine-robust cosine floor instead. A real encoder regression collapses
+//!     the cosine; ISA noise does not. Same dual-reference logic as D-018.
+//!
+//! Strict is the DEFAULT and the relaxed mode must be asked for explicitly, so
+//! a forgotten variable can only make the gate stricter, never weaker.
 
 use std::path::PathBuf;
 
 use rebirth_llm::{load, BackendKind, GenerateParams, LoadRequest};
+
+/// Cosine floor for the cross-machine leg. PROVISIONAL — set from measurement on
+/// the real runners before this branch merges, never guessed: D-018 is the
+/// project's own evidence that the intuitive "0.999" is wrong for this class of
+/// comparison (it found ~0.94 for a cross-implementation reference). This value
+/// is the measurement probe.
+const COS_FLOOR: f64 = 0.999;
+
+/// The nightly runs on machines that did not record the goldens; it opts into
+/// the machine-robust acceptance explicitly.
+fn cross_platform_mode() -> bool {
+    std::env::var("RELM_VISION_GOLDEN_CROSS_PLATFORM").is_ok()
+}
+
+/// Cosine similarity in f64 (the inputs are f32 and the sums run to ~1e5 terms,
+/// so the accumulator must not be the thing that loses precision).
+fn cosine(a: &[f32], b: &[f32]) -> f64 {
+    let (mut dot, mut na, mut nb) = (0.0f64, 0.0f64, 0.0f64);
+    for (&x, &y) in a.iter().zip(b.iter()) {
+        dot += f64::from(x) * f64::from(y);
+        na += f64::from(x) * f64::from(x);
+        nb += f64::from(y) * f64::from(y);
+    }
+    dot / (na.sqrt() * nb.sqrt())
+}
 
 fn vlm_paths() -> Option<(PathBuf, PathBuf)> {
     let model = std::env::var("RELM_TEST_MODEL_VLM").ok()?;
@@ -94,21 +137,47 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
     assert_eq!(n_embd, ref_embd, "embedding width matches the reference");
 
     const ATOL: f32 = 1e-3;
-    let mut max_abs = 0.0f32;
+    let (mut max_abs, mut worst) = (0.0f32, 0usize);
     for (i, (&a, &b)) in values.iter().zip(reference.iter()).enumerate() {
         let d = (a - b).abs();
         if d > max_abs {
             max_abs = d;
+            worst = i;
         }
+    }
+    let cos = cosine(&values, &reference);
+
+    if cross_platform_mode() {
+        // Machine-robust leg: the reference was recorded elsewhere, so the raw
+        // floats are expected to differ. What must NOT differ is the direction
+        // of the 98304-dim encoder output — a regression that actually breaks
+        // the encoder moves it, ISA noise does not.
         assert!(
-            d <= ATOL,
-            "encoder value {i} diverges: engine {a} vs reference {b} (|Δ| = {d} > {ATOL})"
+            cos >= COS_FLOOR,
+            "encoder output diverges in DIRECTION, not just precision: cos = {cos:.9} < {COS_FLOOR} \
+             (max |Δ| = {max_abs:.3e} at value {worst}). Cross-machine float noise cannot do this; \
+             suspect a real encoder regression."
+        );
+        eprintln!(
+            "embd-cosine leg: cos = {cos:.9} (floor {COS_FLOOR}), max |Δ| = {max_abs:.3e} over {} values \
+             [cross-platform mode: the reference is recorded on another machine]",
+            values.len()
+        );
+    } else {
+        // The BINDING leg (D-026 first addendum), on the recording machine.
+        assert!(
+            max_abs <= ATOL,
+            "encoder value {worst} diverges: engine {} vs reference {} (|Δ| = {max_abs} > {ATOL}). \
+             If this machine did not record the golden, the nightly's \
+             RELM_VISION_GOLDEN_CROSS_PLATFORM=1 mode is the right gate here.",
+            values[worst],
+            reference[worst]
+        );
+        eprintln!(
+            "embd-ATOL leg: max |Δ| = {max_abs:.3e} over {} values (atol {ATOL:.0e}); cos = {cos:.9}",
+            values.len()
         );
     }
-    eprintln!(
-        "embd-ATOL leg: max |Δ| = {max_abs:.3e} over {} values (atol {ATOL:.0e})",
-        values.len()
-    );
 }
 
 #[test]

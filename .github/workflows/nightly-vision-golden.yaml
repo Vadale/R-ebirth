@@ -12,15 +12,27 @@
 #             contracts, the rule-8a over-n_batch multimodal decode, the T2
 #             similarity fixture + pooled-embedding pin (the pin itself is
 #             arm64-gated and runs on the macOS leg).
-#   cargo   — rebirth-llm vlm_golden (the BINDING embd-ATOL leg, D-026 first
-#             addendum: raw encoder output vs the upstream reference within
-#             ATOL 1e-3 on CPU; plus the T1 token-ids pin) and vlm_embed (the T2
-#             mechanics probe). A grep on the test output asserts the ATOL leg
+#   cargo   — rebirth-llm vlm_golden (the encoder leg vs the unpatched upstream
+#             reference on CPU; plus the T1 token-ids pin) and vlm_embed (the T2
+#             mechanics probe). A grep on the test output asserts each gate
 #             actually RAN — a nightly that silently skips is a nightly that lies.
 #
 # RUNNERS: ubuntu-24.04 (CPU) + macos-15 (arm64; the R suite exercises the Metal
 #   default backend, the golden/pin tests force CPU in-test for comparability).
 #   Model + mmproj ~2.2 GB on disk, well within both runners.
+#
+# WHY THE FLOAT LEGS ARE DIFFERENT HERE (D-026 fourth addendum): a float golden
+#   is specific to the MACHINE that recorded it, not to its OS/arch. The
+#   references come from the founder's M4; this workflow's first real run
+#   measured, against them, |Δ| = 3.96e-2 for the encoder on x86_64 (40x the
+#   ATOL) and 6.05e-3 for the T2 pooled vector on a non-M4 arm64 runner (600x)
+#   — while the SAME run's token-ids pin and byte-exact text leg passed on both.
+#   Identical semantics, different floats. So the exact float gates stay on the
+#   recording machine ([MODEL], where the encoder leg is BINDING per the D-026
+#   first addendum and passes bit-exact), and here the two float legs assert a
+#   machine-robust cosine floor instead — a real regression moves the vector's
+#   DIRECTION, ISA noise does not. The exact-semantic gates (byte-exact text,
+#   token ids) hold cross-ISA and stay exact on both runners.
 #
 # MODEL PIN (fail-closed; matches inst/models.csv): repo
 #   ggml-org/Qwen2-VL-2B-Instruct-GGUF, revision
@@ -52,6 +64,12 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      # No runner recorded the float goldens (they come from the founder's M4),
+      # so both float legs use their machine-robust acceptance here. See the
+      # "WHY THE FLOAT LEGS ARE DIFFERENT HERE" note above. This variable makes
+      # the gate WEAKER, so it is set only in this workflow and never in a
+      # developer or [MODEL] environment, where strict is the default.
+      RELM_VISION_GOLDEN_CROSS_PLATFORM: '1'
       MODEL_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/Qwen2-VL-2B-Instruct-Q4_K_M.gguf
       MODEL_SHA256: 5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7
       MMPROJ_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/mmproj-Qwen2-VL-2B-Instruct-f16.gguf
@@ -137,16 +155,14 @@ jobs:
                 ))
               }
             }
-            # The T1 upstream-reference golden: both runners.
+            # Both gates run on BOTH runners: the text leg is exact cross-ISA,
+            # and the T2 pin is in its cross-platform (cosine) mode here, so it
+            # no longer skips off its recording machine.
             must_have_run("unpatched upstream reference", "the T1 reference-text golden")
-            # The T2 pooled-embedding pin is recorded on macOS arm64 and skips
-            # by design elsewhere, so it is only assertable on the macOS leg.
-            if (Sys.info()[["sysname"]] == "Darwin") {
-              must_have_run(
-                "pooled multimodal embedding matches the committed pin",
-                "the T2 pooled-embedding pin"
-              )
-            }
+            must_have_run(
+              "pooled multimodal embedding matches the committed pin",
+              "the T2 pooled-embedding pin"
+            )
             cat(sprintf(
               "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
               sum(df$passed), sum(df$skipped), sum(df$failed)
@@ -169,5 +185,10 @@ jobs:
               exit 1
             fi
           }
-          must_have_run "embd-ATOL leg: max" "the BINDING embd-ATOL golden leg"
+          # RELM_VISION_GOLDEN_CROSS_PLATFORM is set for this workflow, so the
+          # encoder leg prints the cosine marker, not the ATOL one. Requiring
+          # the cosine marker specifically also proves the mode switch reached
+          # the test: a green run that printed "embd-ATOL leg" would mean the
+          # variable was lost, and this grep turns that into a failure.
+          must_have_run "embd-cosine leg: cos" "the encoder cosine leg"
           must_have_run "T1 token-ids pin:" "the T1 token-ids pin"
