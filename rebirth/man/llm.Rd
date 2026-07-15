@@ -69,8 +69,8 @@ package.
 model's companion \strong{mmproj GGUF} (the vision projector published alongside
 the model, e.g. \verb{mmproj-*.gguf}). The projector is a session property fixed
 at load — it is bound to the loaded model — so it belongs on \code{llm()}, not on
-each call; a handle loaded with a projector then accepts
-\link[=llm_generate]{llm_generate()}'s \code{images} argument. A projector whose input
+each call; a handle loaded with a projector then accepts the \code{images}
+argument of both \code{\link[=llm_generate]{llm_generate()}} and \code{\link[=llm_embed]{llm_embed()}}. A projector whose input
 embedding size does not match the model raises \code{relm_error_image} naming
 both sizes.
 

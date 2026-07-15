@@ -24,8 +24,8 @@
 #' model's companion **mmproj GGUF** (the vision projector published alongside
 #' the model, e.g. `mmproj-*.gguf`). The projector is a session property fixed
 #' at load — it is bound to the loaded model — so it belongs on `llm()`, not on
-#' each call; a handle loaded with a projector then accepts
-#' [llm_generate()][llm_generate]'s `images` argument. A projector whose input
+#' each call; a handle loaded with a projector then accepts the `images`
+#' argument of both [llm_generate()] and [llm_embed()]. A projector whose input
 #' embedding size does not match the model raises `relm_error_image` naming
 #' both sizes.
 #'

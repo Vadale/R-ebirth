@@ -7,10 +7,12 @@ Description: Load and run local large language models (through a vendored,
     patched 'llama.cpp') from R and work with them as plain data frames and
     matrices in base-R idiom. Provides model loading and tokenization ('llm',
     'llm_tokens'), text generation ('llm_generate'), next-token distributions
-    ('llm_logits'), text embeddings ('llm_embed'), and mechanistic
+    ('llm_logits'), embeddings ('llm_embed'), and mechanistic
     interpretability tools -- activation tracing ('llm_trace'), activation
-    steering ('llm_steer'), and neuron ablation ('llm_ablate'). A
-    checksum-verified downloader ('llm_download') fetches pinned models.
+    steering ('llm_steer'), and neuron ablation ('llm_ablate'). Vision-language
+    models loaded with their projector take image input in generation and
+    embeddings. A checksum-verified downloader ('llm_download') fetches pinned
+    models.
 License: MIT + file LICENSE | Apache License (== 2.0)
 URL: https://github.com/Vadale/R-ebirth
 BugReports: https://github.com/Vadale/R-ebirth/issues

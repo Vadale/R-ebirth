@@ -16,7 +16,7 @@ returning plain `data.frame`s and `matrix`es.
 each cluster. One of two runnable demos — see the [package README](rebirth/README.md).*
 
 > **Using the package?** Start with the [package README](rebirth/README.md)
-> (quickstart, examples, the two demos) and
+> (quickstart, examples, the worked demos) and
 > [docs/getting-started.md](docs/getting-started.md) (install options — binaries
 > or from source — a first run, and troubleshooting). This page is the
 > repository/developer overview.
