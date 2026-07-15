@@ -483,13 +483,11 @@ test_that("[MODEL] the CPU greedy continuation matches the unpatched upstream re
   # for comparability with the CPU-only reference build; greedy on identical
   # CPU code makes byte-exact text the observable equivalent of a
   # token-for-token match (the CLI does not expose token ids). [MODEL]-gated,
-  # repo layout only (the golden lives at the repo root, outside the package);
-  # nightly workflow wiring is WP-V4 — never per-commit (no synthetic vision
-  # model exists).
-  golden <- file.path(
-    testthat::test_path(), "..", "..", "..",
-    "tests", "llm-golden", "vision", "goldens", "greedy-red-square.txt"
-  )
+  # repo layout only (the golden lives at the repo root, outside the package).
+  # Runs on the founder's Mac and in .github/workflows/nightly-vision-golden.yaml
+  # (which asserts this test actually ran) — never per-commit, since no synthetic
+  # vision model exists.
+  golden <- vision_golden_path("greedy-red-square.txt")
   skip_if_not(file.exists(golden), "vision golden not present (repo layout only)")
   m <- llm(vlm_model_path(), projector = vlm_mmproj_path(), backend = "cpu")
   on.exit(close(m), add = TRUE)

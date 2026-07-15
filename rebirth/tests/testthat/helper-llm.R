@@ -56,6 +56,21 @@ vision_fixture <- function(name) {
   p
 }
 
+# The vision goldens live at the REPO root (tests/llm-golden/vision/goldens),
+# outside the package tree — three levels above tests/testthat. They are present
+# in a repo checkout and absent under R CMD check or an installed package, where
+# the caller skips on file.exists(). Written once here so the repo-root walk is
+# not hand-rolled per test file; normalized so a failure names an absolute path.
+vision_golden_path <- function(name) {
+  normalizePath(
+    file.path(
+      testthat::test_path(), "..", "..", "..",
+      "tests", "llm-golden", "vision", "goldens", name
+    ),
+    mustWork = FALSE
+  )
+}
+
 # [MODEL] model-path helpers for the WP7.5a modern-model families. Each is gated
 # on its own environment variable pointing at a local text-only instruct GGUF, so
 # these tests run only on the founder's Mac (Metal) and skip in CI/CRAN, which have
@@ -95,6 +110,19 @@ qwen35_model_path <- function() {
 # alias's file in the default llm_download() cache — so a machine that ran
 # llm_download("qwen2-vl-2b-instruct-q4_k_m") needs no env vars. Skips
 # otherwise; per-commit CI has no VLM either way.
+#
+# Fail-closed cache reuse (WP-V4 security audit, F-1): a cache hit is used only
+# if the file still matches its registry SHA256. llm_download() verifies on
+# download, but nothing re-verifies afterwards — a truncated, half-written or
+# swapped cache entry would otherwise feed the [MODEL] goldens a different model
+# and be read as a numerical regression rather than a corrupt file. A mismatch
+# warns and skips instead. The RELM_TEST_MODEL_VLM / RELM_TEST_MMPROJ_VLM route
+# is the founder's explicit local override and is deliberately not hash-gated:
+# it is how an unpinned or hand-built VLM is tried. Hashing ~1 GB costs a few
+# seconds, so the verdict is memoised for the session — every [MODEL] vision
+# test calls this.
+vlm_cache_verified <- new.env(parent = emptyenv())
+
 vlm_alias_in_cache <- function(alias) {
   reg <- tryCatch(relm:::model_registry(), error = function(e) NULL)
   if (is.null(reg)) {
@@ -105,7 +133,24 @@ vlm_alias_in_cache <- function(alias) {
     return("")
   }
   p <- file.path(tools::R_user_dir("relm", "cache"), basename(row$url))
-  if (file.exists(p)) p else ""
+  if (!file.exists(p)) {
+    return("")
+  }
+  if (!isTRUE(vlm_cache_verified[[alias]])) {
+    got <- tolower(unname(tools::sha256sum(p)))
+    if (!identical(got, tolower(row$sha256))) {
+      warning(
+        sprintf(
+          "cached '%s' does not match its registry SHA256 (got %s); ignoring it",
+          alias, got
+        ),
+        call. = FALSE
+      )
+      return("")
+    }
+    vlm_cache_verified[[alias]] <- TRUE
+  }
+  p
 }
 
 vlm_model_path <- function() {

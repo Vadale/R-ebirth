@@ -148,13 +148,11 @@ test_that("[MODEL] the cat image embeds closer to 'a cat' than to 'a car'", {
 test_that("[MODEL] the pooled multimodal embedding matches the committed pin", {
   # The T2 regression pin (tests/llm-golden/vision/README.md — a
   # same-implementation determinism pin, NOT an independent oracle; the
-  # cross-build ATOL leg is the binding WP-V4 item). Recorded on macOS arm64,
-  # CPU backend; atol 1e-5 covers run-to-run identity on the recording
-  # platform. [MODEL] + repo-layout gated; nightly wiring is WP-V4.
-  golden <- file.path(
-    testthat::test_path(), "..", "..", "..",
-    "tests", "llm-golden", "vision", "goldens", "embed-red-square-mean.csv"
-  )
+  # cross-build encoder ATOL leg is the independent one, in the cargo
+  # vlm_golden suite). Recorded on macOS arm64, CPU backend; atol 1e-5 covers
+  # run-to-run identity on the recording platform. [MODEL] + repo-layout gated;
+  # the nightly-vision-golden.yaml macOS leg asserts this test actually ran.
+  golden <- vision_golden_path("embed-red-square-mean.csv")
   skip_if_not(file.exists(golden), "embedding pin not present (repo layout only)")
   skip_if_not(
     Sys.info()[["sysname"]] == "Darwin" &&
