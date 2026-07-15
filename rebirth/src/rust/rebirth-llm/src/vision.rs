@@ -27,14 +27,15 @@
 //! Maintainer note — the vendored clip reads two environment variables that
 //! relm neither sets nor forwards (`docs/audit-wp-v1-mtmd-2026-07-14.md` §2(d),
 //! which flagged them as informational and deferred documenting them here):
-//! - `MTMD_BACKEND_DEVICE` (`clip.cpp:184`) selects clip's GPU backend by
-//!   device name; a name that fails to initialize warns and falls back to the
-//!   default GPU. It is read **only on a GPU load** — the getenv sits inside
-//!   `if (ctx_params.use_gpu)` (`clip.cpp:183`) — so it redirects which GPU a
-//!   GPU load picks, and can never move a CPU load onto a GPU. On
-//!   `backend = "cpu"`, which keeps the `use_gpu = false` probe context built
-//!   below and which every vision golden forces, it is not read at all: the
-//!   goldens are immune to it.
+//! - `MTMD_BACKEND_DEVICE` (`clip.cpp:184`) names clip's backend device, which
+//!   `ggml_backend_init_by_name` resolves against ANY registered device — so on
+//!   a GPU load it can send the vision tower to a different GPU, or even to the
+//!   CPU; an unresolvable name warns and falls back to the default GPU
+//!   (`clip.cpp:187-194`). It is read **only on a GPU load**: the getenv sits
+//!   inside `if (ctx_params.use_gpu)` (`clip.cpp:183`), so it can never move a
+//!   CPU load onto a GPU. On `backend = "cpu"` — which keeps the
+//!   `use_gpu = false` probe context built below, and which every vision golden
+//!   forces — it is not read at all: the goldens are immune to it.
 //! - `MTMD_DEBUG_EMBEDDINGS` (`clip.cpp:224`) is read unconditionally and dumps
 //!   encoder embeddings to the log (a read-only tensor read + `LOG_INF` at
 //!   `clip.cpp:4414`): harmless to correctness, noisy in a trace.
