@@ -10,16 +10,19 @@
 # and all three legs are updated together; test-llm-vision.R pins this R leg.
 relm_media_marker <- "<__media__>"
 
-# Reject an image-bearing prompt that contains the literal media marker
+# Reject an image-bearing input that contains the literal media marker
 # (reviewer finding, WP-V2 fix round): mtmd_tokenize splits the templated text
 # on every marker occurrence and requires the marker count to equal the image
 # count, so a user-supplied marker would mis-place an image or fail the count
 # check with a misleading internal error. This is a documented content
-# restriction on `prompt` for image-bearing calls only (a marker in a plain
-# text prompt is harmless literal text and stays allowed), so it is raised
-# pre-boundary as relm_error_argument naming `prompt`. The engine keeps its
-# own backstop for non-R callers (vision.rs).
-check_prompt_markers <- function(prompt, image_sets, call = sys.call(-1L)) {
+# restriction for image-bearing calls only (a marker in a plain text input is
+# harmless literal text and stays allowed), raised pre-boundary as
+# relm_error_argument naming the CALLER'S argument via `arg_name` —
+# `"prompt"` from llm_generate(), `"x"` from llm_embed() (reviewer finding,
+# WP-V3 round: one shared helper, the right name in the condition). The
+# engine keeps its own backstop for non-R callers (vision.rs).
+check_prompt_markers <- function(prompt, image_sets, arg_name,
+                                 call = sys.call(-1L)) {
   if (is.null(image_sets)) {
     return(invisible(NULL))
   }
@@ -27,15 +30,15 @@ check_prompt_markers <- function(prompt, image_sets, call = sys.call(-1L)) {
     if (length(image_sets[[i]]) > 0L &&
       grepl(relm_media_marker, prompt[[i]], fixed = TRUE)) {
       abort_argument(
-        "prompt",
+        arg_name,
         sprintf(
           paste0(
-            "`prompt[%d]` contains the reserved media marker \"%s\". On a call ",
+            "`%s[%d]` contains the reserved media marker \"%s\". On a call ",
             "with images, relm inserts one marker per image before the text; a ",
-            "literal marker in the prompt would corrupt the image placement. ",
-            "Remove it from the prompt."
+            "literal marker in the input would corrupt the image placement. ",
+            "Remove it from `%s`."
           ),
-          i, relm_media_marker
+          arg_name, i, relm_media_marker, arg_name
         ),
         call = call
       )

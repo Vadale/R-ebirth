@@ -100,7 +100,7 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
   # Images (WP-V3, D-026.5): the same pairing/marker/projector contract as
   # llm_generate(images=), through the same shared helpers (never forked).
   image_sets <- normalize_images(images, length(x))
-  check_prompt_markers(x, image_sets)
+  check_prompt_markers(x, image_sets, arg_name = "x")
   has_image <- if (is.null(image_sets)) {
     rep(FALSE, length(x))
   } else {

@@ -525,13 +525,16 @@ test_that("llm_embed() applies the shared images pairing contract", {
     ),
     "recycled across all 2 prompts"
   )
-  # The reserved marker in an image-bearing input.
+  # The reserved marker in an image-bearing input: the condition names the
+  # CALLER'S argument — `x` here, not llm_generate's `prompt` (reviewer
+  # finding, WP-V3 round; the helper stays shared, only the name is passed).
   cnd <- tryCatch(
     llm_embed(m, "look <__media__> here", images = img),
     condition = function(c) c
   )
   expect_s3_class(cnd, "relm_error_argument")
-  expect_identical(cnd$argument, "prompt")
+  expect_identical(cnd$argument, "x")
+  expect_match(conditionMessage(cnd), "`x[1]`", fixed = TRUE)
 })
 
 test_that("llm_embed() images on a projector-less handle raise relm_error_image", {
