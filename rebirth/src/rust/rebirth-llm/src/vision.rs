@@ -785,9 +785,9 @@ impl LoadedModel {
         //    before the boundary as relm_error_argument on `prompt`; this
         //    engine-side backstop keeps the crate safe for non-R callers —
         //    unreachable through the R surface, hence exercised by no R test).
-        //    Deliberately moved BEFORE the image decoding during the WP-V3
-        //    extraction: visible only to non-R crate callers, whose marker
-        //    error now wins over a broken-image-path error.
+        //    Ordering invariant: this check runs BEFORE any image decode, so
+        //    a non-R caller passing both a literal marker and a broken image
+        //    path always sees the marker error.
         let marker = default_marker();
         check_no_user_marker(prompt, &marker)?;
 
