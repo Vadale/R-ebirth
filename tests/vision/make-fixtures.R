@@ -73,6 +73,48 @@ render(
   file.path(fixture_dir, "red-square.bmp")
 )
 
+# --- the cat scene (WP-V3): a deterministic cartoon cat for the embedding
+# similarity fixture (cosine(embed(image), embed("a cat")) must beat
+# embed("a car")). Drawn with base graphics only; committed bytes canonical. --
+draw_cat <- function() {
+  op <- par(mar = c(0, 0, 0, 0))
+  on.exit(par(op), add = TRUE)
+  plot.new()
+  plot.window(xlim = c(0, 1), ylim = c(0, 1), xaxs = "i", yaxs = "i")
+  rect(0, 0, 1, 1, col = "white", border = NA)
+  orange <- "#E8853A"
+  # ears (triangles), then head over their base
+  polygon(c(0.28, 0.40, 0.22), c(0.62, 0.72, 0.82), col = orange, border = "black")
+  polygon(c(0.72, 0.60, 0.78), c(0.62, 0.72, 0.82), col = orange, border = "black")
+  polygon(c(0.31, 0.37, 0.27), c(0.66, 0.71, 0.77), col = "pink", border = NA)
+  polygon(c(0.69, 0.63, 0.73), c(0.66, 0.71, 0.77), col = "pink", border = NA)
+  symbols(0.5, 0.52, circles = 0.24, inches = FALSE, add = TRUE,
+    bg = orange, fg = "black"
+  )
+  # eyes (green with slit pupils), nose, mouth, whiskers
+  symbols(c(0.41, 0.59), c(0.58, 0.58), circles = c(0.045, 0.045),
+    inches = FALSE, add = TRUE, bg = "#9ACD32", fg = "black"
+  )
+  segments(c(0.41, 0.59), c(0.545, 0.545), c(0.41, 0.59), c(0.615, 0.615), lwd = 3)
+  polygon(c(0.475, 0.525, 0.5), c(0.485, 0.485, 0.455), col = "pink", border = "black")
+  segments(0.5, 0.455, 0.5, 0.42, lwd = 2)
+  segments(0.5, 0.42, 0.45, 0.40, lwd = 2)
+  segments(0.5, 0.42, 0.55, 0.40, lwd = 2)
+  segments(
+    rep(0.44, 3), c(0.46, 0.44, 0.42), rep(0.16, 3), c(0.50, 0.44, 0.38),
+    lwd = 1.5
+  )
+  segments(
+    rep(0.56, 3), c(0.46, 0.44, 0.42), rep(0.84, 3), c(0.50, 0.44, 0.38),
+    lwd = 1.5
+  )
+}
+cat_png <- file.path(canonical_dir, "cat.png")
+png(cat_png, width = 224, height = 224)
+draw_cat()
+invisible(dev.off())
+stopifnot(file.copy(cat_png, file.path(fixture_dir, "cat.png"), overwrite = TRUE))
+
 # --- degenerate-but-legal dimensions (audit req 4: classed error or success,
 # never abort — exercised against the pinned VLM under the [MODEL] gate) ------
 solid_png <- function(path, width, height) {

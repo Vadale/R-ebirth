@@ -206,3 +206,41 @@ fn engine_embeddings_match_numpy_oracle_within_tolerance() {
 
     eprintln!("engine-vs-oracle embeddings max |Δ| = {max_abs:.3e} (atol {ATOL:.1e})");
 }
+
+/// The crate-boundary length contract of `embed_texts_with_images` (WP-V3
+/// reviewer finding): a texts/image_sets length mismatch must be a REAL
+/// classed rejection in every build profile — a release build must never
+/// silently truncate the pairing (which would let R's matrix() recycle values
+/// into wrong rows). Model-free per-commit CI (`cargo test`, run in release
+/// there — exactly the profile where a debug_assert would have vanished); the
+/// check fires before the tokenizer/vision requirements, so the in-repo
+/// synthetic model suffices.
+#[test]
+fn embed_texts_with_images_rejects_a_length_mismatch() {
+    let gguf = synthetic_gguf();
+    assert!(gguf.exists(), "synthetic GGUF missing");
+    let model = load(LoadRequest {
+        path: gguf,
+        context_length: 512,
+        gpu_layers: None,
+        backend: BackendKind::Cpu,
+        mmap: true,
+        projector: None,
+    })
+    .expect("synthetic model loads");
+
+    for (texts, sets) in [
+        (vec!["a", "b"], vec![Vec::<String>::new()]),
+        (vec!["a"], vec![Vec::<String>::new(), Vec::new()]),
+        (vec!["a"], vec![]),
+    ] {
+        let err = model
+            .embed_texts_with_images(&texts, &sets, Pooling::Mean, true, 64 * 1024 * 1024)
+            .expect_err("length mismatch must reject, never truncate");
+        assert_eq!(err.class(), "relm_error_internal", "{texts:?} vs {sets:?}");
+        assert!(
+            err.to_string().contains("image set"),
+            "the message names the contract: {err}"
+        );
+    }
+}

@@ -117,7 +117,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   # checks) and require a vision handle + existing files (relm_error_image).
   # NULL images leaves the pre-WP-V2 text path untouched.
   image_sets <- normalize_images(images, length(prompt))
-  check_prompt_markers(prompt, image_sets)
+  check_prompt_markers(prompt, image_sets, arg_name = "prompt")
   has_images <- !is.null(image_sets) && any(lengths(image_sets) > 0L)
   max_bytes <- if (has_images) image_max_bytes() else 64 * 1024^2
   check_images_usable(m, image_sets)
