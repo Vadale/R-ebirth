@@ -98,6 +98,39 @@ test_that("the CI-integration alias pins the same SHA256 the nightly workflow us
   )
 })
 
+test_that("the vision aliases pin the same SHA256s the nightly vision workflow uses", {
+  # Twin-pin (recurring-guard f), same pattern and reason as the 0.5B alias
+  # above: keep in sync with MODEL_SHA256 / MMPROJ_SHA256 in
+  # .github/workflows/nightly-vision-golden.yaml. Registry and workflow are the
+  # two places the D-026.8 vision pins are written down; if they drift, the
+  # nightly verifies a different pair than llm_download() hands the user, and
+  # the [MODEL] gate silently stops covering the shipped default. The model and
+  # its projector are pinned independently — a matched pair is the contract.
+  reg <- relm:::model_registry()
+
+  model <- reg[reg$alias == "qwen2-vl-2b-instruct-q4_k_m", , drop = FALSE]
+  expect_identical(nrow(model), 1L)
+  expect_identical(
+    model$sha256,
+    "5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7"
+  )
+
+  mmproj <- reg[reg$alias == "qwen2-vl-2b-instruct-mmproj-f16", , drop = FALSE]
+  expect_identical(nrow(mmproj), 1L)
+  expect_identical(
+    mmproj$sha256,
+    "ecb20cabcdd8dbc277de06bd6eb980aeb2adfaaba9f199a434e328d205675d03"
+  )
+
+  # Both come from one immutable HF revision: a moved revision would invalidate
+  # the pins above, so pin the revision the URLs must carry as well.
+  expect_true(all(grepl(
+    "/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/",
+    c(model$url, mmproj$url),
+    fixed = TRUE
+  )))
+})
+
 # --- resolve_model() (offline; runs in per-commit CI) -----------------------
 
 test_that("resolve_model() maps a known alias to its pinned URL and checksum", {
