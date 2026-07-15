@@ -16,52 +16,31 @@
 //! (hard rule 8e: the founder's Mac + the nightly vision workflow, never
 //! per-commit CI). CPU backend for comparability with the CPU-only reference.
 //!
-//! TWO ACCEPTANCE MODES for the float leg (D-026 fourth addendum) — because a
-//! float golden is specific to the MACHINE that recorded it, not merely to its
-//! OS/arch. The first real nightly proved it: against the reference recorded on
-//! the founder's M4, the encoder diverged by |Δ| = 3.96e-2 on an x86_64 runner
-//! (40x the tolerance) and the T2 pooled vector by 6.05e-3 on a non-M4 arm64
-//! runner (600x) — while that same run's token-ids pin and byte-exact text leg
-//! passed on BOTH. The semantics are identical across machines; only the floats
-//! differ (ISA kernels, thread-pool reduction order, and chaotic amplification
-//! of ~1e-7 differences through 28 layers). So:
-//!   - DEFAULT (the recording machine, `[MODEL]`): exact `|Δ| <= ATOL`. This is
-//!     the BINDING leg of the D-026 first addendum; it passes bit-exact.
-//!   - `RELM_VISION_GOLDEN_CROSS_PLATFORM=1` (the nightly, any runner): a
-//!     machine-robust cosine floor instead. A real encoder regression collapses
-//!     the cosine; ISA noise does not. Same dual-reference logic as D-018.
+//! WHICH REFERENCE (D-026 fourth addendum) — the encoder leg is exact on EVERY
+//! machine, because the reference it compares against is built on the machine
+//! running it. This is not a refinement; it is the whole design, and it is what
+//! the measurements forced:
+//!   - relm vs upstream on the SAME machine is **bit-exact**: `max |Δ| = 0.0`
+//!     on the founder's M4 AND on an x86_64 runner (diag run 29427129990).
+//!   - upstream vs ITSELF across machines is not: the same pristine b9726 build
+//!     differs from its arm64 self by `max |Δ| = 3.30` on one x86 runner, and
+//!     the nightly saw `8.71` on another — the ISA gap is not even a constant
+//!     across runners of the same label.
 //!
-//! Strict is the DEFAULT and the relaxed mode must be asked for explicitly, so
-//! a forgotten variable can only make the gate stricter, never weaker.
+//! So comparing relm-here against a reference recorded elsewhere measures the
+//! machine, and no fixed tolerance can separate that from a regression. Compare
+//! against a reference from THIS machine and the tolerance question disappears:
+//! the gate is exact everywhere, with nothing to tune.
+//!
+//! `RELM_VISION_ENCODER_REFERENCE` overrides the reference path; the nightly
+//! points it at a pristine b9726 build made on the runner. Unset, the leg uses
+//! the committed golden — correct on the machine that recorded it (the founder's
+//! Mac, where the BINDING leg of the first addendum passes bit-exact) and a
+//! loud, honest failure anywhere else.
 
 use std::path::PathBuf;
 
 use rebirth_llm::{load, BackendKind, GenerateParams, LoadRequest};
-
-/// Cosine floor for the cross-machine leg. PROVISIONAL — set from measurement on
-/// the real runners before this branch merges, never guessed: D-018 is the
-/// project's own evidence that the intuitive "0.999" is wrong for this class of
-/// comparison (it found ~0.94 for a cross-implementation reference). This value
-/// is the measurement probe.
-const COS_FLOOR: f64 = 0.999;
-
-/// The nightly runs on machines that did not record the goldens; it opts into
-/// the machine-robust acceptance explicitly.
-fn cross_platform_mode() -> bool {
-    std::env::var("RELM_VISION_GOLDEN_CROSS_PLATFORM").is_ok()
-}
-
-/// Cosine similarity in f64 (the inputs are f32 and the sums run to ~1e5 terms,
-/// so the accumulator must not be the thing that loses precision).
-fn cosine(a: &[f32], b: &[f32]) -> f64 {
-    let (mut dot, mut na, mut nb) = (0.0f64, 0.0f64, 0.0f64);
-    for (&x, &y) in a.iter().zip(b.iter()) {
-        dot += f64::from(x) * f64::from(y);
-        na += f64::from(x) * f64::from(x);
-        nb += f64::from(y) * f64::from(y);
-    }
-    dot / (na.sqrt() * nb.sqrt())
-}
 
 fn vlm_paths() -> Option<(PathBuf, PathBuf)> {
     let model = std::env::var("RELM_TEST_MODEL_VLM").ok()?;
@@ -91,66 +70,6 @@ fn red_square() -> String {
         .to_string()
 }
 
-// --- cosine unit tests (model-free: these RUN in per-commit CI) --------------
-//
-// The cross-machine leg rests entirely on one claim: float noise leaves the
-// cosine at ~1, a real regression collapses it. That claim is the gate, so it
-// is tested here rather than assumed -- the [MODEL] leg above cannot check it
-// (per-commit CI has no VLM, and a nightly only ever sees the healthy case).
-
-#[test]
-fn cosine_is_one_for_identical_and_scaled_vectors() {
-    let a = [1.0f32, -2.0, 3.5, 0.25];
-    assert!((cosine(&a, &a) - 1.0).abs() < 1e-12);
-    // Scale invariance is why the leg survives a machine that computes the same
-    // direction with slightly different magnitudes.
-    let scaled: Vec<f32> = a.iter().map(|v| v * 7.5).collect();
-    assert!((cosine(&a, &scaled) - 1.0).abs() < 1e-12);
-}
-
-#[test]
-fn cosine_matches_a_hand_computed_value() {
-    // (1,0) vs (1,1) = 1/sqrt(2); an independent value, not a property.
-    let cos = cosine(&[1.0, 0.0], &[1.0, 1.0]);
-    assert!(
-        (cos - std::f64::consts::FRAC_1_SQRT_2).abs() < 1e-12,
-        "{cos}"
-    );
-    assert!((cosine(&[1.0, 0.0], &[0.0, 1.0])).abs() < 1e-12); // orthogonal -> 0
-    assert!((cosine(&[1.0, 2.0], &[-1.0, -2.0]) + 1.0).abs() < 1e-12); // opposite -> -1
-}
-
-#[test]
-fn cosine_tolerates_noise_but_collapses_on_a_broken_vector() {
-    // A 4096-value stand-in for an encoder output.
-    let base: Vec<f32> = (0..4096).map(|i| ((i % 97) as f32 - 48.0) * 0.1).collect();
-
-    // Noise at 100x the worst cross-machine divergence this leg has seen
-    // (3.96e-2 on x86_64) must still leave the cosine essentially at 1 --
-    // otherwise the floor would be measuring the runner, not the code.
-    let noisy: Vec<f32> = base
-        .iter()
-        .enumerate()
-        .map(|(i, v)| v + if i % 2 == 0 { 4.0 } else { -4.0 })
-        .collect();
-    let cos_noise = cosine(&base, &noisy);
-
-    // A regression that scrambles the output must be caught. Reversal keeps
-    // every value, the mean, and the norm identical -- only the direction
-    // changes, so an ATOL-style check on sorted stats could miss it.
-    let reversed: Vec<f32> = base.iter().rev().copied().collect();
-    let cos_broken = cosine(&base, &reversed);
-
-    assert!(
-        cos_broken < cos_noise,
-        "a scrambled vector must score below a noisy one: broken {cos_broken}, noisy {cos_noise}"
-    );
-    assert!(
-        cos_broken < 0.9,
-        "cosine failed to collapse on a scrambled vector: {cos_broken}"
-    );
-}
-
 fn load_vlm_cpu() -> Option<rebirth_llm::LoadedModel> {
     let (model_path, mmproj_path) = vlm_paths()?;
     Some(
@@ -172,13 +91,22 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
         eprintln!("SKIP encoder_output_matches: RELM_TEST_MODEL_VLM/MMPROJ unset");
         return;
     };
-    let golden = goldens_dir().join("encode-red-square-f32.txt");
+    // The nightly points this at a pristine b9726 build made on the runner, so
+    // the comparison is same-machine and stays exact there too; unset, the leg
+    // uses the committed golden (correct on the machine that recorded it).
+    let golden = match std::env::var("RELM_VISION_ENCODER_REFERENCE") {
+        Ok(p) => PathBuf::from(p),
+        Err(_) => goldens_dir().join("encode-red-square-f32.txt"),
+    };
     if !golden.exists() {
-        eprintln!("SKIP encoder_output_matches: golden not present (repo layout only)");
+        eprintln!(
+            "SKIP encoder_output_matches: reference not present at {} (repo layout only)",
+            golden.display()
+        );
         return;
     }
 
-    let text = std::fs::read_to_string(&golden).expect("read encoder golden");
+    let text = std::fs::read_to_string(&golden).expect("read encoder reference");
     let mut lines = text.lines();
     let header = lines.next().expect("golden header");
     let mut dims = header
@@ -196,24 +124,6 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
     assert_eq!(n_tokens, ref_tokens, "token count matches the reference");
     assert_eq!(n_embd, ref_embd, "embedding width matches the reference");
 
-    // Diagnostic seam (diag-vision-encoder-isa.yaml): dump THIS machine's engine
-    // output in the reference harness's own format, so it can be compared
-    // against a pristine-upstream reference built on the SAME machine. That is
-    // the only comparison that separates an implementation difference from an
-    // ISA one. Off unless asked for; it never alters the assertions below.
-    if let Ok(dest) = std::env::var("RELM_DUMP_ENCODER_TO") {
-        use std::fmt::Write as _;
-        let mut out = format!("{n_tokens} {n_embd}\n");
-        for v in &values {
-            let _ = writeln!(out, "{v:.8e}");
-        }
-        std::fs::write(&dest, out).expect("write engine encoder dump");
-        eprintln!(
-            "dumped engine encoder output to {dest} ({} values)",
-            values.len()
-        );
-    }
-
     const ATOL: f32 = 1e-3;
     let (mut max_abs, mut worst) = (0.0f32, 0usize);
     for (i, (&a, &b)) in values.iter().zip(reference.iter()).enumerate() {
@@ -223,39 +133,26 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
             worst = i;
         }
     }
-    let cos = cosine(&values, &reference);
 
-    if cross_platform_mode() {
-        // Machine-robust leg: the reference was recorded elsewhere, so the raw
-        // floats are expected to differ. What must NOT differ is the direction
-        // of the 98304-dim encoder output — a regression that actually breaks
-        // the encoder moves it, ISA noise does not.
-        assert!(
-            cos >= COS_FLOOR,
-            "encoder output diverges in DIRECTION, not just precision: cos = {cos:.9} < {COS_FLOOR} \
-             (max |Δ| = {max_abs:.3e} at value {worst}). Cross-machine float noise cannot do this; \
-             suspect a real encoder regression."
-        );
-        eprintln!(
-            "embd-cosine leg: cos = {cos:.9} (floor {COS_FLOOR}), max |Δ| = {max_abs:.3e} over {} values \
-             [cross-platform mode: the reference is recorded on another machine]",
-            values.len()
-        );
-    } else {
-        // The BINDING leg (D-026 first addendum), on the recording machine.
-        assert!(
-            max_abs <= ATOL,
-            "encoder value {worst} diverges: engine {} vs reference {} (|Δ| = {max_abs} > {ATOL}). \
-             If this machine did not record the golden, the nightly's \
-             RELM_VISION_GOLDEN_CROSS_PLATFORM=1 mode is the right gate here.",
-            values[worst],
-            reference[worst]
-        );
-        eprintln!(
-            "embd-ATOL leg: max |Δ| = {max_abs:.3e} over {} values (atol {ATOL:.0e}); cos = {cos:.9}",
-            values.len()
-        );
-    }
+    // The BINDING leg (D-026 first addendum). Exact, on every machine — because
+    // the reference above comes from this one. Max over ALL values, never the
+    // first violation: the original per-element assert reported value 0's small
+    // |Δ| and hid a 200x larger one further in, which is how a cross-machine gap
+    // got misread as float noise in the first place.
+    assert!(
+        max_abs <= ATOL,
+        "encoder value {worst} diverges: engine {} vs reference {} (|Δ| = {max_abs} > {ATOL}). \
+         If this machine did not produce the reference, that is the bug -- floats differ \
+         between machines by far more than {ATOL} (measured: up to 8.7 across x86/arm), so \
+         point RELM_VISION_ENCODER_REFERENCE at a pristine b9726 build made HERE.",
+        values[worst],
+        reference[worst]
+    );
+    eprintln!(
+        "embd-ATOL leg: max |Δ| = {max_abs:.3e} over {} values (atol {ATOL:.0e}) vs {}",
+        values.len(),
+        golden.display()
+    );
 }
 
 #[test]

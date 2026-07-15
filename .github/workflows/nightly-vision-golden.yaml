@@ -9,30 +9,39 @@
 # WHAT IT RUNS (the [MODEL] vision suite, WP-V2..V4):
 #   R side  — tests/testthat filter "vision": the T1 byte-exact greedy text leg vs
 #             the unpatched b9726 reference, the mmproj-mismatch and degenerate-dims
-#             contracts, the rule-8a over-n_batch multimodal decode, the T2
-#             similarity fixture + pooled-embedding pin (the pin itself is
-#             arm64-gated and runs on the macOS leg).
-#   cargo   — rebirth-llm vlm_golden (the encoder leg vs the unpatched upstream
-#             reference on CPU; plus the T1 token-ids pin) and vlm_embed (the T2
-#             mechanics probe). A grep on the test output asserts each gate
-#             actually RAN — a nightly that silently skips is a nightly that lies.
+#             contracts, the rule-8a over-n_batch multimodal decode, and the T2
+#             cat-vs-car similarity gate. (The T2 exact pooled pin skips here by
+#             design — it is bit-specific to its recording machine; see below.)
+#   cargo   — rebirth-llm vlm_golden (the encoder leg vs a pristine upstream
+#             b9726 built ON THIS RUNNER, exact; plus the T1 token-ids pin) and
+#             vlm_embed (the T2 mechanics probe). A grep on the test output
+#             asserts each gate actually RAN, and that the encoder leg used this
+#             machine's reference — a nightly that silently skips, or that
+#             quietly compares against another machine, is a nightly that lies.
 #
 # RUNNERS: ubuntu-24.04 (CPU) + macos-15 (arm64; the R suite exercises the Metal
 #   default backend, the golden/pin tests force CPU in-test for comparability).
 #   Model + mmproj ~2.2 GB on disk, well within both runners.
 #
-# WHY THE FLOAT LEGS ARE DIFFERENT HERE (D-026 fourth addendum): a float golden
-#   is specific to the MACHINE that recorded it, not to its OS/arch. The
-#   references come from the founder's M4; this workflow's first real run
-#   measured, against them, |Δ| = 3.96e-2 for the encoder on x86_64 (40x the
-#   ATOL) and 6.05e-3 for the T2 pooled vector on a non-M4 arm64 runner (600x)
-#   — while the SAME run's token-ids pin and byte-exact text leg passed on both.
-#   Identical semantics, different floats. So the exact float gates stay on the
-#   recording machine ([MODEL], where the encoder leg is BINDING per the D-026
-#   first addendum and passes bit-exact), and here the two float legs assert a
-#   machine-robust cosine floor instead — a real regression moves the vector's
-#   DIRECTION, ISA noise does not. The exact-semantic gates (byte-exact text,
-#   token ids) hold cross-ISA and stay exact on both runners.
+# WHY THIS JOB BUILDS UPSTREAM ITSELF (D-026 fourth addendum): a float reference
+#   is specific to the MACHINE that produced it, not to its OS/arch, so the
+#   encoder leg brings its reference with it instead of trusting a committed one.
+#   The measurements that forced this (this workflow's first real run + diag run
+#   29427129990):
+#     relm vs upstream, SAME machine  -> max |Δ| = 0.0        (M4 AND x86_64)
+#     upstream vs ITSELF, x86 vs arm  -> max |Δ| = 3.30 ... 8.71, and the gap is
+#                                        not even constant between two runners
+#                                        carrying the same ubuntu-24.04 label.
+#   So relm contributes exactly zero divergence, and a reference from elsewhere
+#   measures the runner. Rebuilding pristine b9726 HERE costs ~12 min and makes
+#   the gate exact with nothing to tune — a tolerance loose enough for 8.71
+#   would pass a genuinely broken encoder.
+#
+#   The T2 pooled pin cannot be rebuilt this way (no upstream reference exists
+#   for a pooled multimodal embedding at b9726 — D-026 second addendum), so it
+#   stays an exact pin on its recording machine and its coverage here is the
+#   cat-vs-car SEMANTIC gate, which holds on any machine. The byte-exact text
+#   golden and the token-ids pin hold cross-ISA and stay exact on both runners.
 #
 # MODEL PIN (fail-closed; matches inst/models.csv): repo
 #   ggml-org/Qwen2-VL-2B-Instruct-GGUF, revision
@@ -64,12 +73,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      # No runner recorded the float goldens (they come from the founder's M4),
-      # so both float legs use their machine-robust acceptance here. See the
-      # "WHY THE FLOAT LEGS ARE DIFFERENT HERE" note above. This variable makes
-      # the gate WEAKER, so it is set only in this workflow and never in a
-      # developer or [MODEL] environment, where strict is the default.
-      RELM_VISION_GOLDEN_CROSS_PLATFORM: '1'
+      TARBALL_URL: https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9726.tar.gz
+      TARBALL_SHA256: 117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0
       MODEL_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/Qwen2-VL-2B-Instruct-Q4_K_M.gguf
       MODEL_SHA256: 5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7
       MMPROJ_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/mmproj-Qwen2-VL-2B-Instruct-f16.gguf
@@ -155,13 +160,14 @@ jobs:
                 ))
               }
             }
-            # Both gates run on BOTH runners: the text leg is exact cross-ISA,
-            # and the T2 pin is in its cross-platform (cosine) mode here, so it
-            # no longer skips off its recording machine.
+            # Both gates hold on any machine and run on BOTH runners. The T2
+            # exact pin is deliberately NOT among them: it is bit-specific to
+            # its recording machine and skips here by design (D-026 fourth
+            # addendum), so T2's coverage in this job is the semantic one.
             must_have_run("unpatched upstream reference", "the T1 reference-text golden")
             must_have_run(
-              "pooled multimodal embedding matches the committed pin",
-              "the T2 pooled-embedding pin"
+              "the cat image embeds closer to 'a cat' than to 'a car'",
+              "the T2 semantic gate"
             )
             cat(sprintf(
               "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
@@ -169,11 +175,49 @@ jobs:
             ))
           '
 
+      - name: Build the PRISTINE upstream b9726 and make THIS machine's reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha() { if command -v sha256sum >/dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi; }
+          cd "$RUNNER_TEMP"
+          curl -fL --retry 3 --retry-delay 5 -o llama.tar.gz "$TARBALL_URL"
+          got="$(sha llama.tar.gz | awk '{print $1}')"
+          if [ "$got" != "$TARBALL_SHA256" ]; then
+            echo "::error::pristine tarball SHA256 mismatch (got $got); the reference would be meaningless"
+            exit 1
+          fi
+          echo "pristine b9726 tarball verified: $got"
+          tar xzf llama.tar.gz && mv llama.cpp-b9726 pristine && cd pristine
+          # The same cmake line the committed reference was built with
+          # (tests/llm-golden/vision/README.md), CPU-only for comparability.
+          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+                -DGGML_METAL=OFF -DGGML_BLAS=OFF -DGGML_OPENMP=OFF \
+                -DLLAMA_BUILD_TOOLS=ON -DLLAMA_BUILD_COMMON=ON \
+                -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF \
+                -DLLAMA_BUILD_SERVER=OFF -DLLAMA_CURL=OFF > /dev/null
+          cmake --build build --target llama-mtmd-cli -j 4 > /dev/null
+          cd "$GITHUB_WORKSPACE"
+          REF="$RUNNER_TEMP/pristine"
+          cc -O2 -o "$RUNNER_TEMP/dump-encode" tests/llm-golden/vision/tools/dump-encode.c \
+             -I"$REF/include" -I"$REF/ggml/include" -I"$REF/tools/mtmd" \
+             -L"$REF/build/bin" -lmtmd -lllama -lggml -Wl,-rpath,"$REF/build/bin"
+          "$RUNNER_TEMP/dump-encode" "$RELM_TEST_MODEL_VLM" "$RELM_TEST_MMPROJ_VLM" \
+             tests/vision/red-square.png "$RUNNER_TEMP/upstream-here.txt"
+          echo "RELM_VISION_ENCODER_REFERENCE=$RUNNER_TEMP/upstream-here.txt" >> "$GITHUB_ENV"
+          echo "this machine's upstream reference: $(head -1 "$RUNNER_TEMP/upstream-here.txt")"
+
       - name: Run the engine-side golden gates (embd-ATOL leg + token-ids pin + T2 probe)
         working-directory: rebirth/src/rust
         shell: bash
         run: |
           set -euo pipefail
+          # Fail loudly rather than silently falling back to the committed
+          # (M4-recorded) reference, which cannot pass here.
+          if [ ! -s "${RELM_VISION_ENCODER_REFERENCE:-}" ]; then
+            echo "::error::the pristine reference for this machine is missing; refusing to compare against another machine's"
+            exit 1
+          fi
           cargo test -p rebirth-llm --release --test vlm_golden --test vlm_embed -- --nocapture 2>&1 | tee vlm-tests.log
           # Must-have-RUN assertions, same reason as the R side: every skip path
           # in these tests returns early and still reports "ok", so the exit code
@@ -185,10 +229,10 @@ jobs:
               exit 1
             fi
           }
-          # RELM_VISION_GOLDEN_CROSS_PLATFORM is set for this workflow, so the
-          # encoder leg prints the cosine marker, not the ATOL one. Requiring
-          # the cosine marker specifically also proves the mode switch reached
-          # the test: a green run that printed "embd-ATOL leg" would mean the
-          # variable was lost, and this grep turns that into a failure.
-          must_have_run "embd-cosine leg: cos" "the encoder cosine leg"
+          must_have_run "embd-ATOL leg: max" "the BINDING embd-ATOL golden leg"
           must_have_run "T1 token-ids pin:" "the T1 token-ids pin"
+          # The leg names the reference it compared against; require it to be
+          # THIS machine's pristine build. Without this, a lost env var would
+          # silently fall back to the committed M4 reference and turn the gate
+          # back into the cross-machine comparison that started all of this.
+          must_have_run "vs $RUNNER_TEMP/upstream-here.txt" "the same-machine reference"

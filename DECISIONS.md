@@ -390,66 +390,82 @@ point 8, which named "Apache-2.0 **Qwen2.5-VL-3B**".
 
 ### D-026 fourth addendum (2026-07-15, founder-approved at the WP-V4 release gate)
 
-**A float golden is specific to the MACHINE that recorded it, not to its
-OS/arch — so the exact float legs run on the recording machine, and the nightly
-gets a machine-robust cosine leg instead.** Amending point 6 (the vision golden
-category) and scoping *where* the first addendum's BINDING leg is asserted.
+**A float reference is specific to the MACHINE that produced it, not to its
+OS/arch. So the encoder leg builds its reference on the machine that runs it,
+and stays exact everywhere.** Amending point 6 (the vision golden category) and
+scoping *where* the first addendum's BINDING leg is asserted.
 
-1. **The evidence** (`nightly-vision-golden.yaml` run 29420676427, the workflow's
-   first execution on real runners, 2026-07-15). Against the references
-   recorded on the founder's M4:
-   - the encoder ATOL leg diverged by `|Δ| = 3.96e-2` on `ubuntu-24.04`
-     (x86_64) — **40×** the 1e-3 tolerance;
-   - the T2 pooled pin diverged by `max |Δ| = 6.05e-3` on `macos-15` — **600×**
-     the 1e-5 tolerance — *despite already being gated to `Darwin && arm64`*:
-     the runner is not an M4.
-   - **In the same runs, the byte-exact text golden and the token-ids pin
-     passed on both runners.** Identical semantics, different floats.
-2. **Root cause, and why it is not a bug:** ISA kernels (NEON vs AVX), thread
-   pool size and hence reduction order, and chaotic amplification of ~1e-7
-   differences through 28 layers. The T2 pin's failure is the sharper lesson:
-   `Darwin && arm64` was never the recording platform — *the founder's M4 with
-   its core count* was. The exact float legs are therefore machine gates, and
-   calling them platform gates was the error.
+1. **The measurements** (`nightly-vision-golden.yaml` run 29420676427, the
+   workflow's first execution on real runners; diagnostic run 29427129990):
+
+   | comparison | what it isolates | result |
+   |---|---|---|
+   | relm vs upstream, **same machine** | implementation only | `max \|Δ\| = 0.0`, cos `1.000000000` — on the founder's M4 **and** on x86_64 |
+   | upstream vs **itself**, x86 vs arm | ISA only | `max \|Δ\| = 3.30`, cos `0.999350281` |
+   | relm-x86 vs the committed arm reference | both, conflated | `max \|Δ\| = 3.30`, cos `0.999350281` — *identical to the row above* |
+
+   The last two rows match to nine digits: **relm contributes exactly zero
+   divergence.** The engine is bit-exact against unpatched upstream on every
+   machine tested. There is no x86 bug; v0.2.0 ships Linux vision.
+
+2. **Why no tolerance is set:** the ISA gap is not a constant. The nightly runner
+   measured `max |Δ| = 8.71` (cos `0.995`) where the diagnostic runner measured
+   `3.30` (cos `0.99935`) — two machines carrying the same `ubuntu-24.04` label.
+   Any fixed floor would have to sit below the worst runner never yet sampled,
+   and a tolerance loose enough for `8.71` would pass a genuinely broken encoder.
+   Comparing against a reference built **here** removes the question: the gate is
+   exact, with nothing to tune.
+
 3. **The decision:**
-   - **Exact float legs run on the recording machine** (`[MODEL]`, the founder's
-     Mac), which is where the first addendum's BINDING encoder leg already
-     passes bit-exact (`max |Δ| = 0.000e0` over 98304 values). **The binding
-     requirement is unchanged and satisfied** — this addendum states where it is
-     asserted, per Hard rule 8e.
-   - **The nightly asserts a machine-robust cosine floor** on both float legs
-     (`RELM_VISION_GOLDEN_CROSS_PLATFORM=1`, set only in that workflow). A real
-     regression moves the vector's *direction*; float noise does not. Same
-     dual-reference logic as **D-018**.
-   - **Strict is the default**; the relaxed mode must be requested explicitly,
-     so a lost variable can only make a gate stricter, never weaker. The nightly
-     greps for the *cosine* marker specifically, so a run that silently fell back
-     to the ATOL marker fails.
-   - **The cosine floors are set from measurement on the real runners, never
-     guessed** — D-018 is this project's own evidence that the intuitive `0.999`
-     is wrong for this class of comparison (it measured ~0.94 against a
-     cross-implementation reference). Measured values and their margins are
-     recorded in `tests/llm-golden/vision/README.md`.
-   - **The cross-ISA-valid gates stay exact on both runners**: the byte-exact
-     upstream text golden and the token-ids pin. Linux keeps full *semantic*
-     encoder coverage.
+   - The nightly **builds the SHA-verified pristine b9726 on its own runner**
+     (~12 min) and points `RELM_VISION_ENCODER_REFERENCE` at it. The leg keeps
+     its exact `|Δ| <= 1e-3` assertion — **the BINDING requirement of the first
+     addendum is unchanged, and now holds on every runner, not just one.**
+   - The committed golden remains the fast path on its recording machine
+     (`[MODEL]`, the founder's M4), where it is bit-exact.
+   - **The T2 pooled pin cannot be rebuilt this way** — no upstream reference
+     exists for a pooled multimodal embedding at b9726 (second addendum), so
+     there is nothing to regenerate from. It stays an exact pin gated to its
+     recording machine (`RELM_VISION_RECORDING_MACHINE`), and the nightly's T2
+     coverage is the **cat-vs-car semantic gate**, which holds on any machine
+     (observed margin 0.047 against a 0.01 floor).
+   - The exact-semantic gates — the byte-exact upstream text golden and the
+     token-ids pin — hold cross-ISA and stay exact on both runners.
+   - **No cosine floor is introduced anywhere.** An earlier draft of this
+     addendum proposed one; the diagnostic made it unnecessary, and it was
+     deleted rather than kept "just in case".
+
+4. **A second defect the same run exposed:** the cargo golden gates had **never
+   executed on a macOS runner**, in any run. `ggml-metal-device.m` guards
+   features with `@available(macOS 15.0, ...)`, which above the deployment target
+   emits `___isPlatformVersionAtLeast` from `libclang_rt.osx.a`; R's SHLIB link
+   picks the runtime up through the compiler driver, a cargo-driven link does
+   not. The step was only ever reached after an earlier failure had already
+   stopped the job, so nothing reported it. `build.rs` now links clang's darwin
+   runtime (path from `clang -print-resource-dir`, never hard-coded).
+
 - **Why:** comparing a float vector against a reference from another machine
-  measures the machine, not the implementation — the same "comparing
-  definitions, not implementations" trap the second addendum already named for
-  T2. The nightly's job is to catch regressions; a gate that cannot pass on the
-  machine it runs on catches nothing and gets muted.
-- **Alternatives rejected:** re-recording the goldens per runner (GitHub rotates
-  runner CPUs without notice, so the reference would silently go stale and get
-  "fixed" instead of the code — a golden you re-record when the platform moves
-  is a snapshot, not a golden); dropping the float legs from the nightly
-  entirely (loses all encoder coverage on Linux for no gain over the cosine
-  leg); widening the exact tolerance to cover cross-machine noise (a tolerance
-  loose enough for 4e-2 would pass a genuinely broken encoder — it destroys the
-  leg's only value).
-- **Cost of the lesson:** the defect shipped because per-commit CI is
-  model-free, so no gate before the first real nightly could have caught it —
-  the reviewer and the security-auditor both passed the branch. It was found 11
-  minutes into the first run of the workflow it was blocking a tag on.
+  measures the machine, not the implementation — the same "comparing definitions,
+  not implementations" trap the second addendum named for T2. A gate that cannot
+  pass on the machine it runs on catches nothing and gets muted.
+- **Alternatives rejected:** a cosine floor in the nightly (the ISA gap varies
+  by runner, so the floor would be fitted to the worst sample seen rather than
+  derived — and D-018 is this project's own evidence that guessing this class of
+  threshold goes wrong); re-recording the committed goldens per runner (GitHub
+  rotates runner CPUs without notice, so the reference would silently go stale
+  and get "fixed" instead of the code — a golden you re-record when the platform
+  moves is a snapshot, not a golden); dropping the float legs from the nightly
+  (loses all encoder coverage on Linux); widening the exact tolerance (a
+  tolerance that admits 8.71 admits anything).
+- **Cost of the lesson:** the defects shipped because per-commit CI is
+  model-free, so no gate before the first real nightly could have caught them —
+  the reviewer and the security-auditor both passed the branch. Worse, the first
+  diagnosis was wrong: the original per-element assert reported value 0's
+  `|Δ| = 3.96e-2` and stopped, hiding a 200x larger divergence further in, and
+  that small number was written up as "ISA noise" in an earlier draft of this
+  addendum before the max-over-all-values rewrite exposed `8.71`. **A gate that
+  reports the first violation instead of the worst one does not just fail to
+  inform — it actively misleads.** The leg now reports the max.
 
 ---
 

@@ -151,26 +151,27 @@ test_that("[MODEL] the pooled multimodal embedding matches the committed pin", {
   # cross-build encoder ATOL leg is the independent one, in the cargo
   # vlm_golden suite).
   #
-  # Two acceptance modes (D-026 fourth addendum), because this vector is
-  # specific to the MACHINE that recorded it, not to its OS/arch: the pin was
-  # recorded on the founder's M4, and the first real nightly measured
-  # max |Δ| = 6.05e-3 against it on a non-M4 arm64 runner — 600x the tolerance —
-  # while the same run's byte-exact text golden passed. Identical semantics,
+  # This vector is specific to the MACHINE that recorded it (the founder's M4),
+  # not to its OS/arch — D-026 fourth addendum. The first real nightly measured
+  # max |d| = 6.05e-3 against it on a *non-M4 arm64 runner*, 600x the tolerance,
+  # while the same run's byte-exact text golden passed: identical semantics,
   # different floats (thread-pool reduction order plus chaotic amplification
-  # through 28 layers). So:
-  #   - default (the recording machine): the exact atol 1e-5 pin.
-  #   - RELM_VISION_GOLDEN_CROSS_PLATFORM=1 (the nightly): a machine-robust
-  #     cosine floor, which a broken pooling composition collapses and float
-  #     noise does not.
-  # [MODEL] + repo-layout gated; the nightly asserts this test actually ran.
+  # through 28 layers). The old `Darwin && arm64` gate was therefore never the
+  # right one — it named a platform where the recording machine was meant.
+  #
+  # Unlike the encoder leg, this pin cannot be rebuilt on another machine: no
+  # upstream reference exists for a pooled multimodal embedding at b9726 (second
+  # addendum), so there is nothing to regenerate from. It stays an exact pin on
+  # its recording machine. The nightly's T2 coverage is instead the cat-vs-car
+  # SEMANTIC gate above, which holds on any machine and needs no tolerance.
   golden <- vision_golden_path("embed-red-square-mean.csv")
   skip_if_not(file.exists(golden), "embedding pin not present (repo layout only)")
-  cross_platform <- nzchar(Sys.getenv("RELM_VISION_GOLDEN_CROSS_PLATFORM"))
   skip_if_not(
-    cross_platform ||
-      (Sys.info()[["sysname"]] == "Darwin" &&
-        R.version[["arch"]] %in% c("aarch64", "arm64")),
-    "the exact embedding pin only holds on the machine that recorded it (macOS arm64, CPU)"
+    nzchar(Sys.getenv("RELM_VISION_RECORDING_MACHINE")),
+    paste(
+      "the exact embedding pin only holds bit-for-bit on the machine that recorded it;",
+      "set RELM_VISION_RECORDING_MACHINE=1 there (the founder's M4, CPU)"
+    )
   )
   m <- llm(vlm_model_path(), projector = vlm_mmproj_path(), backend = "cpu")
   on.exit(close(m), add = TRUE)
@@ -180,19 +181,7 @@ test_that("[MODEL] the pooled multimodal embedding matches the committed pin", {
   )
   ref <- as.numeric(readLines(golden))
   expect_identical(length(ref), ncol(e))
-  got <- e[1, ]
-  cos <- sum(got * ref) / sqrt(sum(got^2) * sum(ref^2))
-  if (cross_platform) {
-    cat(sprintf(
-      "T2 pooled pin (cross-platform): cos = %.9f, max |d| = %.3e\n",
-      cos, max(abs(got - ref))
-    ))
-    # Both vectors are L2-normalized, so cosine is the honest direction check:
-    # a broken pooling composition points somewhere else entirely.
-    expect_gt(cos, relm_t2_cos_floor)
-  } else {
-    expect_lt(max(abs(got - ref)), 1e-5)
-  }
+  expect_lt(max(abs(e[1, ] - ref)), 1e-5)
 })
 
 test_that("[MODEL] multimodal embed over the context window is a classed error", {

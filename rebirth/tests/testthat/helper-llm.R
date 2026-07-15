@@ -56,15 +56,6 @@ vision_fixture <- function(name) {
   p
 }
 
-# Cosine floor for the T2 pooled pin's cross-machine mode (D-026 fourth
-# addendum). PROVISIONAL — set from measurement on the real runners before the
-# branch merges, never guessed: D-018 is the project's own evidence that the
-# intuitive "0.999" is wrong for this class of comparison. Twin-pinned in spirit
-# with COS_FLOOR in rebirth-llm/tests/vlm_golden.rs (a different object — the
-# raw encoder output vs the pooled embedding — so the two values are measured
-# and justified separately, not kept equal).
-relm_t2_cos_floor <- 0.999
-
 # The vision goldens live at the REPO root (tests/llm-golden/vision/goldens),
 # outside the package tree — three levels above tests/testthat. They are present
 # in a repo checkout and absent under R CMD check or an installed package, where
