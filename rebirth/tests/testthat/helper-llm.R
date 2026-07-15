@@ -64,25 +64,46 @@ qwen35_model_path <- function() {
 }
 
 # [MODEL] WP-V2 vision pair: a vision-language model GGUF plus its companion
-# mmproj (projector) GGUF — dev pin Qwen2-VL-2B-Instruct (Apache-2.0) from
-# ggml-org/Qwen2-VL-2B-Instruct-GGUF. Gated on its own pair of environment
-# variables (mirroring RELM_TEST_MODEL_QWEN), so vision tests run only where
-# the founder placed the files (Mac/Metal or the nightly VLM job) and skip in
-# per-commit CI, which has no VLM.
+# mmproj (projector) GGUF — the registry default Qwen2-VL-2B-Instruct
+# (Apache-2.0, aliases qwen2-vl-2b-instruct-q4_k_m /
+# qwen2-vl-2b-instruct-mmproj-f16, D-026.8). Resolution order: the explicit
+# environment variable (mirroring RELM_TEST_MODEL_QWEN), else the registry
+# alias's file in the default llm_download() cache — so a machine that ran
+# llm_download("qwen2-vl-2b-instruct-q4_k_m") needs no env vars. Skips
+# otherwise; per-commit CI has no VLM either way.
+vlm_alias_in_cache <- function(alias) {
+  reg <- tryCatch(relm:::model_registry(), error = function(e) NULL)
+  if (is.null(reg)) {
+    return("")
+  }
+  row <- reg[reg$alias == alias, , drop = FALSE]
+  if (nrow(row) != 1L) {
+    return("")
+  }
+  p <- file.path(tools::R_user_dir("relm", "cache"), basename(row$url))
+  if (file.exists(p)) p else ""
+}
+
 vlm_model_path <- function() {
   p <- path.expand(Sys.getenv("RELM_TEST_MODEL_VLM"))
+  if (!nzchar(p) || !file.exists(p)) {
+    p <- vlm_alias_in_cache("qwen2-vl-2b-instruct-q4_k_m")
+  }
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "RELM_TEST_MODEL_VLM is not set to an existing GGUF file"
+    "no VLM: set RELM_TEST_MODEL_VLM or llm_download(\"qwen2-vl-2b-instruct-q4_k_m\")"
   )
   p
 }
 
 vlm_mmproj_path <- function() {
   p <- path.expand(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+  if (!nzchar(p) || !file.exists(p)) {
+    p <- vlm_alias_in_cache("qwen2-vl-2b-instruct-mmproj-f16")
+  }
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "RELM_TEST_MMPROJ_VLM is not set to an existing mmproj GGUF file"
+    "no mmproj: set RELM_TEST_MMPROJ_VLM or llm_download(\"qwen2-vl-2b-instruct-mmproj-f16\")"
   )
   p
 }
