@@ -17,10 +17,22 @@ no vision golden existed before WP-V2.
 ```
 goldens/greedy-red-square.txt      the reference continuation, byte-exact, no
                                    trailing newline (18 bytes: "The square is red.")
+goldens/greedy-red-square-ids.txt  the ENGINE token ids for the same greedy run
+                                   (engine-vs-engine secondary pin, WP-V4; the
+                                   text leg above stays the upstream-reference
+                                   primary gate)
 goldens/embed-red-square-mean.csv  the T2 pooled-embedding REGRESSION PIN
                                    (1536 values, %.8e, one per line) — see the
                                    "T2 pooled-embedding pin" section for what
                                    this is and, honestly, what it is not
+goldens/encode-red-square-f32.txt  the BINDING embd-ATOL leg's reference: the
+                                   raw image-encoder output from the UNPATCHED
+                                   upstream b9726 build (line 1 = "n_tokens
+                                   n_embd", then one %.8e float per line,
+                                   token-major; 64 x 1536 for the pinned pair)
+tools/dump-encode.c                the reference harness that produced it —
+                                   upstream C API only, built against the
+                                   pristine tarball, never the vendored tree
 ```
 
 ## The reference run (exact reproduction)
@@ -139,10 +151,40 @@ writeLines(sprintf("%.8e", e[1, ]), "embed-red-square-mean.csv")
 Recorded 2026-07-14: relm WP-V3 branch, macOS 26.5.2 arm64, the same model
 artifacts (SHA256s above); vector L2-norm = 1 (normalized), 1536 dims.
 
-- **Deferred (BINDING at WP-V4):** the D-026 image-embedding tolerance leg
-  (`mtmd_get_output_embd` vs the reference within ATOL 1e-3) is not part of
-  this WP's golden — the T1 surface deliberately does not declare
-  `mtmd_get_output_embd` (the helper path never needs it). Per the D-026
-  addendum (founder-approved 2026-07-14) it lands with the WP-V4 nightly
-  wiring as a **binding requirement**: the phase does not close and v0.2.0
-  is not tagged without it.
+## The BINDING embd-ATOL leg (WP-V4, D-026 first addendum — DELIVERED)
+
+`goldens/encode-red-square-f32.txt` is the **unpatched-upstream reference**
+for the raw image-encoder output (`mtmd_encode_chunk` →
+`mtmd_get_output_embd`) of the committed red-square image under the pinned
+projector. Reproduction, exactly as run on 2026-07-15 (macOS 26.5.2 arm64,
+Apple clang 21.0.0; `$REF` = the pristine b9726 tree extracted from the
+SHA-verified tarball and built CPU-only with the same cmake line as the
+mtmd-cli section above):
+
+```sh
+cc -O2 -o dump-encode tests/llm-golden/vision/tools/dump-encode.c \
+   -I$REF/include -I$REF/ggml/include -I$REF/tools/mtmd \
+   -L$REF/build/bin -lmtmd -lllama -lggml -Wl,-rpath,$REF/build/bin
+./dump-encode Qwen2-VL-2B-Instruct-Q4_K_M.gguf \
+              mmproj-Qwen2-VL-2B-Instruct-f16.gguf \
+              tests/vision/red-square.png \
+              tests/llm-golden/vision/goldens/encode-red-square-f32.txt
+```
+
+The engine gate is the `[MODEL]` cargo test
+`rebirth-llm/tests/vlm_golden.rs::encoder_output_matches_the_unpatched_reference_within_atol`
+(CPU backend): every one of the 64 x 1536 values within **ATOL 1e-3**.
+Observed at delivery: **max |Δ| = 0.0 exactly** (same code, same CPU backend;
+`%.8e` round-trips f32 exactly) — the full 1e-3 tolerance is headroom for
+future cross-machine/threading variation, per D-018 same-implementation
+logic.
+
+## The T1 token-ids pin (WP-V4)
+
+`goldens/greedy-red-square-ids.txt` records the ENGINE's greedy token ids for
+the T1 golden run (5 ids for "The square is red." + EOG handling) as an
+engine-vs-engine secondary pin; the byte-exact TEXT leg vs the upstream CLI
+remains the primary gate. Gate + sanctioned regeneration seam:
+`rebirth-llm/tests/vlm_golden.rs::greedy_generation_reproduces_the_committed_token_ids`
+(regenerate deliberately with `RELM_UPDATE_VISION_IDS=1`, then commit with
+the stated reason — the golden-update discipline).
