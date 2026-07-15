@@ -121,59 +121,60 @@ jobs:
         working-directory: rebirth
         shell: bash
         run: |
-          Rscript -e '
-            suppressMessages(pkgload::load_all(".", quiet = TRUE))
-            mp <- Sys.getenv("RELM_TEST_MODEL_VLM"); pp <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
-            stopifnot(nzchar(mp), file.exists(mp), nzchar(pp), file.exists(pp))
-            # Fail LOUDLY if the verified files are not the expected pair, so the
-            # suite cannot silently skip into a false green.
-            m <- llm(mp, projector = pp)
-            stopifnot(
-              identical(m$architecture, "qwen2vl"),
-              m$hidden_size == 1536L, isTRUE(m$vision)
-            )
-            close(m)
-            library(testthat)
-            res <- test_dir("tests/testthat",
-              filter = "vision", reporter = "summary", stop_on_failure = TRUE
-            )
-            df <- as.data.frame(res)
-            # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
-            # but a test that SKIPS (missing model, wrong arch, absent golden)
-            # leaves the suite green while gating nothing — the false green this
-            # workflow exists to prevent. Each named gate is asserted present,
-            # non-failing, and with real passing expectations.
-            # `skipped` is read directly rather than inferred from passed == 0:
-            # a test that skips AFTER some passing expectations reports
-            # skipped = TRUE with passed > 0, which an inferred check would wave
-            # through. Today neither asserted test has an expectation before its
-            # skip, but that is an invariant of the test bodies, not of testthat.
-            must_have_run <- function(pattern, what) {
-              hit <- df[grepl(pattern, df$test, fixed = TRUE), ]
-              ok <- nrow(hit) == 1L &&
-                !isTRUE(hit$skipped) && hit$failed == 0L && hit$passed > 0L
-              if (!ok) {
-                stop(sprintf(
-                  "::error::%s did not run (%d matching tests, skipped=%s, %d passed, %d failed); refusing a false green",
-                  what, nrow(hit), paste(hit$skipped, collapse = ","),
-                  sum(hit$passed), sum(hit$failed)
-                ))
-              }
+          # A quoted heredoc, NOT Rscript -e '...': inside a single-quoted
+          # shell argument any apostrophe -- in a test name, in a comment --
+          # silently ends the string and the step dies on a shell syntax error.
+          # <<'RS' passes every byte through verbatim, so the class is gone.
+          Rscript - <<'RS'
+          suppressMessages(pkgload::load_all(".", quiet = TRUE))
+          mp <- Sys.getenv("RELM_TEST_MODEL_VLM"); pp <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
+          stopifnot(nzchar(mp), file.exists(mp), nzchar(pp), file.exists(pp))
+          # Fail LOUDLY if the verified files are not the expected pair, so the
+          # suite cannot silently skip into a false green.
+          m <- llm(mp, projector = pp)
+          stopifnot(
+            identical(m$architecture, "qwen2vl"),
+            m$hidden_size == 1536L, isTRUE(m$vision)
+          )
+          close(m)
+          library(testthat)
+          res <- test_dir("tests/testthat",
+            filter = "vision", reporter = "summary", stop_on_failure = TRUE
+          )
+          df <- as.data.frame(res)
+          # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
+          # but a test that SKIPS (missing model, wrong arch, absent golden)
+          # leaves the suite green while gating nothing — the false green this
+          # workflow exists to prevent. Each named gate is asserted present,
+          # non-failing, and with real passing expectations.
+          # `skipped` is read directly rather than inferred from passed == 0:
+          # a test that skips AFTER some passing expectations reports
+          # skipped = TRUE with passed > 0, which an inferred check would wave
+          # through. Today neither asserted test has an expectation before its
+          # skip, but that is an invariant of the test bodies, not of testthat.
+          must_have_run <- function(pattern, what) {
+            hit <- df[grepl(pattern, df$test, fixed = TRUE), ]
+            ok <- nrow(hit) == 1L &&
+              !isTRUE(hit$skipped) && hit$failed == 0L && hit$passed > 0L
+            if (!ok) {
+              stop(sprintf(
+                "::error::%s did not run (%d matching tests, skipped=%s, %d passed, %d failed); refusing a false green",
+                what, nrow(hit), paste(hit$skipped, collapse = ","),
+                sum(hit$passed), sum(hit$failed)
+              ))
             }
-            # Both gates hold on any machine and run on BOTH runners. The T2
-            # exact pin is deliberately NOT among them: it is bit-specific to
-            # its recording machine and skips here by design (D-026 fourth
-            # addendum), so T2's coverage in this job is the semantic one.
-            must_have_run("unpatched upstream reference", "the T1 reference-text golden")
-            must_have_run(
-              "the cat image embeds closer to 'a cat' than to 'a car'",
-              "the T2 semantic gate"
-            )
-            cat(sprintf(
-              "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
-              sum(df$passed), sum(df$skipped), sum(df$failed)
-            ))
-          '
+          }
+          # Both gates hold on any machine and run on BOTH runners. The T2
+          # exact pin is deliberately NOT among them: it is bit-specific to
+          # its recording machine and skips here by design (D-026 fourth
+          # addendum), so the T2 coverage in this job is the semantic one.
+          must_have_run("unpatched upstream reference", "the T1 reference-text golden")
+          must_have_run("the cat image embeds closer to", "the T2 semantic gate")
+          cat(sprintf(
+            "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
+            sum(df$passed), sum(df$skipped), sum(df$failed)
+          ))
+          RS
 
       - name: Build the PRISTINE upstream b9726 and make THIS machine's reference
         shell: bash
