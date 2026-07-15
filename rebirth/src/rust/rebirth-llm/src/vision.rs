@@ -856,7 +856,23 @@ impl LoadedModel {
         normalize: bool,
         image_max_bytes: u64,
     ) -> Result<Embeddings, RebirthError> {
-        debug_assert_eq!(texts.len(), image_sets.len());
+        // A real check, not a debug_assert (reviewer finding, WP-V3 round): in
+        // release a shorter `image_sets` would silently truncate the zip below
+        // while `n_rows` stayed `texts.len()`, so R's matrix() would recycle
+        // values into wrong rows. The R boundary (split_image_sets) already
+        // guarantees the lengths; this is the crate-boundary contract for any
+        // non-R caller — reject, never truncate (hard rule 8b). Checked first
+        // so it is testable on the tokenizer-less synthetic model.
+        if texts.len() != image_sets.len() {
+            return Err(RebirthError::Internal {
+                context: format!(
+                    "embed_texts_with_images received {} texts but {} image sets; \
+                     the caller must pass one image set per text",
+                    texts.len(),
+                    image_sets.len()
+                ),
+            });
+        }
         self.require_tokenizer()?;
         let reduction = self.resolve_reduction(pooling)?;
         let Some(mctx) = self.vision_ptr() else {
