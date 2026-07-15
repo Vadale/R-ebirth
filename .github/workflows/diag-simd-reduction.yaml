@@ -1,0 +1,175 @@
+# One-shot diagnostic: does SIMD width alone move the image encoder's output by
+# the magnitude we saw across machines?
+#
+# THE OPEN QUESTION (D-026 fourth addendum point 1): pristine upstream b9726
+# disagrees with its own arm64 self by `max |Δ| = 3.30` where that was isolated,
+# and cross-machine values reached `8.71` -- real, undiagnosed, shipped to Linux
+# users, and invisible to the same-machine nightly by construction. The addendum
+# records a leading hypothesis, untested: x86 SIMD width changes the reduction
+# order, and a ViT amplifies it.
+#
+# WHY THIS IS A SAME-MACHINE TEST. The obvious experiment -- run upstream on two
+# machines -- is what produced the ambiguous numbers in the first place: it
+# varies the CPU, the microcode, the SIMD level and the runner all at once. This
+# job instead builds pristine b9726 THREE times on ONE runner, changing nothing
+# but the vector path ggml compiles for, so anything that moves is attributable.
+#
+#   native   : whatever this runner has (AVX-512 or AVX2 -- GitHub's ubuntu-24.04
+#              pool is heterogeneous, which is the point; see below)
+#   avx2     : AVX2 + FMA, forced, regardless of what the runner supports
+#   baseline : x86-64 SSE2, no AVX, no FMA
+#
+# WHAT WE ALREADY SUSPECT, AND WHY. The nightly's pristine build does not pass
+# -DGGML_NATIVE=OFF, so ggml compiles with `-march=native` and each runner gets
+# its own best ISA. nightly-memory-safety.yaml's own header already notes that a
+# GitHub runner may or may not have AVX-512. If that is the mechanism, then two
+# runners carrying the same `ubuntu-24.04` label were never the same float
+# machine -- which would explain the one thing that most resisted explanation:
+# the gap was not constant across them (3.30 on one, 8.71 on another).
+#
+# HOW TO READ THE RESULT:
+#   - gaps of ~3-8 between these builds  => the hypothesis holds. The
+#     cross-machine gap is same-mechanism float reordering, benign, and the
+#     addendum's "untested" can be retired.
+#   - gaps ~0                            => SIMD width is NOT it. The hypothesis
+#     is dead and the divergence is still unexplained -- which would be worth
+#     knowing, since we ship it.
+# Either way compare-dumps.py reports WHERE the gaps land: reordering piles them
+# onto the large values, a bug does not care.
+#
+# Manual only. Delete once the answer is recorded in DECISIONS.md, exactly as
+# diag-vision-encoder-isa.yaml was.
+
+name: diag — SIMD reduction hypothesis
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Pins copied verbatim from nightly-vision-golden.yaml -- the same tarball and
+# the same model pair, so a dump made here is comparable with one made there.
+env:
+  TARBALL_URL: https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9726.tar.gz
+  TARBALL_SHA256: 117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0
+  MODEL_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/Qwen2-VL-2B-Instruct-Q4_K_M.gguf
+  MODEL_SHA256: 5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7
+  MMPROJ_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/mmproj-Qwen2-VL-2B-Instruct-f16.gguf
+  MMPROJ_SHA256: ecb20cabcdd8dbc277de06bd6eb980aeb2adfaaba9f199a434e328d205675d03
+
+jobs:
+  simd:
+    name: SIMD reduction diagnostic (x86_64)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: What CPU is this runner, actually?
+        run: |
+          echo "=== model ==="
+          grep -m1 "model name" /proc/cpuinfo
+          echo "=== the flags that matter for this question ==="
+          for f in sse2 avx avx2 fma avx512f avx512vl avx512bw; do
+            if grep -qm1 " $f " /proc/cpuinfo; then echo "  $f: YES"; else echo "  $f: no"; fi
+          done
+          echo "=== cores ==="
+          nproc
+
+      - name: Fetch and verify the pristine b9726 tarball
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl -fL --retry 3 --retry-delay 5 -o llama.tar.gz "$TARBALL_URL"
+          got="$(sha256sum llama.tar.gz | awk '{print $1}')"
+          if [ "$got" != "$TARBALL_SHA256" ]; then
+            echo "::error::pristine tarball SHA256 mismatch (got $got); every dump below would be meaningless"
+            exit 1
+          fi
+          echo "pristine b9726 verified: $got"
+
+      - name: Download + verify the pinned VLM + mmproj (fail-closed)
+        run: |
+          set -euo pipefail
+          fetch() {
+            local url="$1" want="$2" dest="$3"
+            curl -fL --retry 3 --retry-delay 5 -o "$dest" "$url"
+            got="$(sha256sum "$dest" | awk '{print $1}')"
+            if [ "$got" != "$want" ]; then
+              rm -f "$dest"
+              echo "::error::SHA256 mismatch for $dest (got $got, want $want); refusing to run"
+              exit 1
+            fi
+            echo "verified: $got  $dest"
+          }
+          fetch "$MODEL_URL"  "$MODEL_SHA256"  "$RUNNER_TEMP/model.gguf"
+          fetch "$MMPROJ_URL" "$MMPROJ_SHA256" "$RUNNER_TEMP/mmproj.gguf"
+
+      - name: Build pristine b9726 three ways and dump the encoder from each
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+
+          build_and_dump() {
+            local name="$1"; shift
+            echo "::group::build $name"
+            rm -rf "src-$name"
+            tar xzf llama.tar.gz && mv llama.cpp-b9726 "src-$name"
+            cd "src-$name"
+            # Same base line as the nightly's pristine build (CPU-only, no BLAS,
+            # no OpenMP) so only the vector flags below differ from it.
+            cmake -B build -DCMAKE_BUILD_TYPE=Release \
+                  -DGGML_METAL=OFF -DGGML_BLAS=OFF -DGGML_OPENMP=OFF \
+                  -DLLAMA_BUILD_TOOLS=ON -DLLAMA_BUILD_COMMON=ON \
+                  -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF \
+                  -DLLAMA_BUILD_SERVER=OFF -DLLAMA_CURL=OFF \
+                  "$@" > "$RUNNER_TEMP/cmake-$name.log" 2>&1
+            cmake --build build --target llama-mtmd-cli -j "$(nproc)" > /dev/null
+            cd "$RUNNER_TEMP"
+            cc -O2 -o "dump-$name" "$GITHUB_WORKSPACE/tests/llm-golden/vision/tools/dump-encode.c" \
+               -I"src-$name/include" -I"src-$name/ggml/include" -I"src-$name/tools/mtmd" \
+               -L"src-$name/build/bin" -lmtmd -lllama -lggml -Wl,-rpath,"$RUNNER_TEMP/src-$name/build/bin"
+            "./dump-$name" "$RUNNER_TEMP/model.gguf" "$RUNNER_TEMP/mmproj.gguf" \
+               "$GITHUB_WORKSPACE/tests/vision/red-square.png" "encode-$name.txt" 2>&1 \
+               | grep -iE "AVX|SSE|NEON|FMA|F16C|BLAS|repack|CPU" | head -5 || true
+            echo "  -> encode-$name.txt: $(head -1 "encode-$name.txt")"
+            echo "::endgroup::"
+          }
+
+          # 1. native: whatever this runner has. This is what the nightly builds.
+          build_and_dump native
+          # 2. AVX2 + FMA forced on, AVX-512 explicitly off.
+          build_and_dump avx2 -DGGML_NATIVE=OFF -DGGML_AVX=ON -DGGML_AVX2=ON \
+                              -DGGML_FMA=ON -DGGML_F16C=ON -DGGML_AVX512=OFF
+          # 3. baseline x86-64: SSE2 only, no AVX, no FMA.
+          build_and_dump baseline -DGGML_NATIVE=OFF -DGGML_AVX=OFF -DGGML_AVX2=OFF \
+                                  -DGGML_FMA=OFF -DGGML_F16C=OFF -DGGML_AVX512=OFF
+
+      - name: The answer
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          cmp="$GITHUB_WORKSPACE/tests/llm-golden/vision/tools/compare-dumps.py"
+          echo "##################### native vs baseline (the widest gap in vector path)"
+          python3 "$cmp" encode-native.txt encode-baseline.txt "native (this runner's best ISA)" "baseline x86-64 (SSE2, no FMA)"
+          echo
+          echo "##################### native vs avx2 (isolates AVX-512, if this runner has it)"
+          python3 "$cmp" encode-native.txt encode-avx2.txt "native" "AVX2+FMA forced"
+          echo
+          echo "##################### avx2 vs baseline (isolates width+FMA, no AVX-512 either side)"
+          python3 "$cmp" encode-avx2.txt encode-baseline.txt "AVX2+FMA" "baseline x86-64"
+          echo
+          echo "##################### for scale: the committed arm64 reference vs this runner's native"
+          python3 "$cmp" "$GITHUB_WORKSPACE/tests/llm-golden/vision/goldens/encode-red-square-f32.txt" \
+                         encode-native.txt "committed arm64 (founder's M4)" "this runner, native"
+
+      - name: Keep the dumps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simd-encoder-dumps
+          path: |
+            ${{ runner.temp }}/encode-*.txt
+            ${{ runner.temp }}/cmake-*.log
+          retention-days: 14
