@@ -5,6 +5,12 @@ across generation and embeddings, on the same vendored engine (no version
 bump) and with the text-only paths byte-identical to 0.1.0 (Phase 11,
 D-026 + addenda).
 
+* **Vision vignette.** `vignette("vision", "relm")` — "Seeing machines" —
+  walks the whole path: download the pinned pair, load with the projector,
+  ask about an image, and run an image-vs-text similarity check with
+  multimodal embeddings. Fully self-contained (it draws its own test images
+  with base graphics) and renders with or without a local model.
+
 * **Vision model registry.** Two new `llm_download()` aliases pin the
   Apache-2.0 default pair (license verified on the artifact repo's model
   card): `"qwen2-vl-2b-instruct-q4_k_m"` (the model) and
