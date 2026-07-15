@@ -21,11 +21,12 @@ each cluster. One of two runnable demos — see the [package README](rebirth/REA
 > or from source — a first run, and troubleshooting). This page is the
 > repository/developer overview.
 
-## Status: v0.2.0 — vision (text + image input), pending tag
+## Status: v0.2.0 — vision (text + image input), shipped
 
-v0.1.0 (text-only) shipped in July 2026; v0.2.0 adds **vision** — a
+v0.1.0 (text-only) shipped in July 2026; **v0.2.0 adds vision** — a
 vision-language model loaded with its projector answers questions about
-images and embeds them — and is release-prepared on `main`, pending the tag.
+images and embeds them — and is [released](https://github.com/Vadale/R-ebirth/releases/tag/v0.2.0),
+with binaries on r-universe for macOS (Apple Silicon + Intel) and Linux.
 `relm` loads local GGUF models and exposes, as base-R objects:
 
 - **`llm()`** model loading (now also with `projector =` for image input),
