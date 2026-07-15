@@ -310,6 +310,39 @@ Empirical finding (Qwen2.5-0.5B Q8_0 and Gemma 4 E4B, committed eliciting prompt
    64 MB, validated in R, with the hard ceiling `2^31 - 1` bytes enforced in
    Rust regardless of the option (the stb `int`-length narrowing, audit F6).
 
+### D-026 second addendum (2026-07-14, founder-approved at the WP-V3 gate)
+
+**The T2 mechanism** (spike evidence: `docs/wp-v3-embed-spike.md`, citations
+reviewer-verified against the pristine b9726 tarball): `llm_embed(images=)`
+runs inside the D-011 embeddings context; image chunks are delegated
+unchanged to `mtmd_helper_eval_chunk_single` (upstream owns the M-RoPE
+positions and the gemma3 non-causal toggle), text chunks are decoded by the
+engine's flag-all batch at helper-accounted positions.
+
+1. **Amending D-011's "pool over all positions" for image-bearing inputs
+   only: pooling reduces over the TEXT-position rows** (including the
+   projector's image-delimiter tokens, e.g. `<|vision_start|>`/
+   `<|vision_end|>`); image content conditions those rows through attention.
+   Image patch positions expose no per-token hidden states at the pinned
+   tag — the upstream helper's output flags are hard-coded false for image
+   batches, and both routes around that (a vendored patch; an M-RoPE batch
+   reimplementation) are barred by D-015 discipline and D-026.5
+   respectively. The upstream server's own multimodal `/embeddings` at b9726
+   is text-scoped in the same way. Text-only inputs are byte-identical to
+   D-011 (all positions are text positions).
+2. **`x = ""` is allowed for an input that carries at least one image** (the
+   image alone is embedded via its delimiter-token rows); an empty string
+   without an image stays rejected. An input yielding zero text rows raises
+   `relm_error_embed` — never a silent zero vector.
+3. **The T2 golden is a same-implementation regression pin, not an
+   independent oracle** (none exists for this object at b9726: the upstream
+   CLI emits no embeddings; the server pools in-graph per ubatch — a
+   different object). Numeric anchoring is by decomposition — the WP-V2
+   byte-exact generation golden gates the image encode+decode; the WP3
+   synthetic numpy goldens gate the per-token rows and reductions — until
+   the **binding** WP-V4 `mtmd_get_output_embd` ATOL leg (first addendum,
+   point 2) extends nightly coverage to the encoder output.
+
 ---
 
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
