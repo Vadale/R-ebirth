@@ -29,13 +29,21 @@
 #   The measurements that forced this (this workflow's first real run + diag run
 #   29427129990):
 #     relm vs upstream, SAME machine  -> max |Δ| = 0.0        (M4 AND x86_64)
-#     upstream vs ITSELF, x86 vs arm  -> max |Δ| = 3.30 ... 8.71, and the gap is
-#                                        not even constant between two runners
+#     upstream vs ITSELF, x86 vs arm  -> max |Δ| = 3.30 (diagnostic runner). The
+#                                        nightly's 8.71 is an INFERENCE, not an
+#                                        isolation: it only ever ran relm-x86 vs
+#                                        the committed arm reference, never
+#                                        upstream against itself. Either way the
+#                                        gap is not constant across two runners
 #                                        carrying the same ubuntu-24.04 label.
-#   So relm contributes exactly zero divergence, and a reference from elsewhere
-#   measures the runner. Rebuilding pristine b9726 HERE costs ~12 min and makes
-#   the gate exact with nothing to tune — a tolerance loose enough for 8.71
-#   would pass a genuinely broken encoder.
+#   So relm's IMAGE ENCODER contributes exactly zero divergence on the machines
+#   tested — and only that: the encoder path carries none of relm's patch (0001
+#   is llama-side), so 0.0 is expected there and blind to build_cvec. What gates
+#   Linux vision is the byte-exact T1 text golden + token-ids pin below, not this
+#   leg. See D-026 fourth addendum point 1 before citing this comparison.
+#   A reference from elsewhere measures the runner. Rebuilding pristine b9726
+#   HERE costs ~12 min and makes the gate exact with nothing to tune — a
+#   tolerance loose enough for 8.71 would pass a genuinely broken encoder.
 #
 #   The T2 pooled pin cannot be rebuilt this way (no upstream reference exists
 #   for a pooled multimodal embedding at b9726 — D-026 second addendum), so it

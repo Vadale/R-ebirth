@@ -22,14 +22,24 @@
 //!   - relm vs upstream on the SAME machine is **bit-exact**: `max |Δ| = 0.0`
 //!     on the founder's M4 AND on an x86_64 runner (diag run 29427129990).
 //!   - upstream vs ITSELF across machines is not: the same pristine b9726 build
-//!     differs from its arm64 self by `max |Δ| = 3.30` on one x86 runner, and
-//!     the nightly saw `8.71` on another — the ISA gap is not even a constant
-//!     across runners of the same label.
+//!     differs from its arm64 self by `max |Δ| = 3.30` on one x86 runner. The
+//!     nightly's `8.71` on another runner is an INFERENCE, not an isolation —
+//!     it compared relm-x86 against the committed arm reference, which conflates
+//!     ISA and implementation. Either way the gap is not a constant across
+//!     runners of the same label.
 //!
 //! So comparing relm-here against a reference recorded elsewhere measures the
 //! machine, and no fixed tolerance can separate that from a regression. Compare
 //! against a reference from THIS machine and the tolerance question disappears:
 //! the gate is exact everywhere, with nothing to tune.
+//!
+//! WHAT THIS LEG GATES (D-026 fourth addendum point 1): relm's libmtmd API
+//! usage, and only that. The encoder path carries none of relm's patch (`0001`
+//! is llama-side; clip/mtmd/ggml are byte-identical to pristine b9726), so
+//! `max |Δ| = 0.0` here is the expected result and is blind by construction to
+//! `build_cvec` — which lives on the decode side this leg never enters. What
+//! supports shipping vision cross-ISA is the byte-exact T1 text golden and the
+//! token-ids pin below, not this leg.
 //!
 //! `RELM_VISION_ENCODER_REFERENCE` overrides the reference path; the nightly
 //! points it at a pristine b9726 build made on the runner. Unset, the leg uses

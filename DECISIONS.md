@@ -418,7 +418,9 @@ scoping *where* the first addendum's BINDING leg is asserted.
      result and is blind by construction to `build_cvec`, the one thing relm
      changes — which lives on the decode side this leg never enters.
    - **"No x86 bug" ≠ "no relm x86 bug".** Upstream's own encoder differs from
-     its arm64 self by `max |Δ|` 3.3–8.7 (cos 0.995–0.9994). That is real,
+     its arm64 self by `max |Δ| = 3.30` (cos `0.99935`) where that was isolated;
+     cross-machine values reach `8.71` (cos `0.995`), attributed to the ISA by
+     inference, not isolation (point 2). That is real,
      undiagnosed, and — now that both sides of the nightly comparison are built
      on the same machine — **structurally invisible to CI**, by design. relm
      ships that upstream behavior to Linux users. Leading hypothesis (untested):

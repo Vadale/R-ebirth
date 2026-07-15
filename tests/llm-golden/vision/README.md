@@ -183,9 +183,12 @@ the founder's M4.
 **It is not the only reference, and it is not the one the nightly uses**
 (D-026 fourth addendum). A float reference belongs to the machine that produced
 it: this file is bit-exact on the M4 and *cannot* pass anywhere else, because
-the same pristine upstream build disagrees with its own arm64 self by up to
-`8.71` across ISAs — and by different amounts on different runners of the same
-label. So the nightly rebuilds the pristine b9726 tarball on its own runner,
+the same pristine upstream build disagrees with its own arm64 self by `3.30`
+across ISAs — and by different amounts on different runners of the same label
+(the nightly's larger `8.71` is an *inference*, not an isolation: that run
+compared relm-x86 against this arm reference, conflating ISA and
+implementation — D-026 fourth addendum point 2). So the nightly rebuilds the
+pristine b9726 tarball on its own runner,
 produces the reference *there*, and points `RELM_VISION_ENCODER_REFERENCE` at
 it. The gate then stays **exact everywhere**, with no tolerance to tune:
 
