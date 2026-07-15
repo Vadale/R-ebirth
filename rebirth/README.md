@@ -194,8 +194,11 @@ models — no gated downloads, no Python.
   layers only — tracing, steering, or ablating inside the vision tower is
   **not** part of this release.
 - **Reproducible by construction.** Pinned models are checksum-verified; greedy
-  generation is deterministic; every numerical feature is validated value-for-value
-  against an independent reference.
+  generation is deterministic; numerical features are validated value-for-value
+  against independent references — and where no independent oracle exists for a
+  composed value (the pooled multimodal embedding), its parts are validated
+  independently and the composition is pinned against regression, stated as such
+  in the golden tests.
 
 ## How it works
 

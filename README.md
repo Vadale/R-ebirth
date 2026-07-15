@@ -38,8 +38,11 @@ images and embeds them — and is release-prepared on `main`, pending the tag.
 
 v0.2.0 exports **no new function**: the same surface gains new arguments
 (`llm(projector =)`, `llm_generate(images =)`, `llm_embed(images =)`), with
-text-only behavior byte-identical to 0.1.0. Every numerical feature is
-validated value-for-value against an independent reference (harness B).
+text-only behavior byte-identical to 0.1.0. Numerical features are validated
+value-for-value against independent references (harness B); where no
+independent oracle exists for a composed value (the pooled multimodal
+embedding), its parts are validated independently and the composition is
+pinned against regression.
 Vision-tower interpretability (tracing or steering inside the image encoder)
 is **not** part of this release. The full plan is in `ROADMAP.md`.
 
