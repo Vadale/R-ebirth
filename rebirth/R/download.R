@@ -15,6 +15,12 @@
 #'   the small CI-integration model.
 #' - `"qwen2.5-1.5b-instruct-q4_k_m"` — Qwen2.5 1.5B Instruct, Q4_K_M
 #'   (Apache-2.0); the demo default.
+#' - `"qwen2-vl-2b-instruct-q4_k_m"` — Qwen2-VL 2B Instruct, Q4_K_M
+#'   (Apache-2.0); the vision default. Pair it with the projector alias below:
+#'   `llm(path, projector = )`.
+#' - `"qwen2-vl-2b-instruct-mmproj-f16"` — the mmproj (vision projector)
+#'   companion of the alias above (Apache-2.0, same pinned revision); pass its
+#'   path as `llm()`'s `projector`.
 #'
 #' Passing an unknown alias raises `relm_error_download` and lists the known
 #' aliases. Larger Qwen quantizations (7B) ship as split multi-part GGUFs and are

@@ -1,0 +1,173 @@
+# Nightly vision-golden run on the pinned Qwen2-VL-2B-Instruct + mmproj pair.
+#
+# WHY A SEPARATE, SCHEDULED WORKFLOW (not part of R-CMD-check.yaml):
+#   Per-commit CI is model-free and no sub-1-GB VLM exists (D-026 point 6), so the
+#   vision goldens are a [MODEL]/nightly gate, NEVER per-commit. Its own file with
+#   `schedule` + `workflow_dispatch` triggers only means a nightly numerical flake
+#   can never gate a PR (the nightly-model-tolerance.yaml discipline).
+#
+# WHAT IT RUNS (the [MODEL] vision suite, WP-V2..V4):
+#   R side  — tests/testthat filter "vision": the T1 byte-exact greedy text leg vs
+#             the unpatched b9726 reference, the mmproj-mismatch and degenerate-dims
+#             contracts, the rule-8a over-n_batch multimodal decode, the T2
+#             similarity fixture + pooled-embedding pin (the pin itself is
+#             arm64-gated and runs on the macOS leg).
+#   cargo   — rebirth-llm vlm_golden (the BINDING embd-ATOL leg, D-026 first
+#             addendum: raw encoder output vs the upstream reference within
+#             ATOL 1e-3 on CPU; plus the T1 token-ids pin) and vlm_embed (the T2
+#             mechanics probe). A grep on the test output asserts the ATOL leg
+#             actually RAN — a nightly that silently skips is a nightly that lies.
+#
+# RUNNERS: ubuntu-24.04 (CPU) + macos-15 (arm64; the R suite exercises the Metal
+#   default backend, the golden/pin tests force CPU in-test for comparability).
+#   Model + mmproj ~2.2 GB on disk, well within both runners.
+#
+# MODEL PIN (fail-closed; matches inst/models.csv): repo
+#   ggml-org/Qwen2-VL-2B-Instruct-GGUF, revision
+#   bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd (immutable), license Apache-2.0.
+#   SHA256 mismatch => file deleted => job fails BEFORE any test runs.
+on:
+  schedule:
+    - cron: '0 5 * * *' # 05:00 UTC, nightly (offset from the 0.5B tolerance run)
+  workflow_dispatch: {} # manual trigger (founder, on demand)
+
+name: nightly-vision-golden.yaml
+
+permissions: read-all
+
+concurrency:
+  group: nightly-vision-golden
+  cancel-in-progress: false
+
+jobs:
+  vision-golden:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    name: nightly vision golden (${{ matrix.os }})
+    timeout-minutes: 120
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      MODEL_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/Qwen2-VL-2B-Instruct-Q4_K_M.gguf
+      MODEL_SHA256: 5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7
+      MMPROJ_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/mmproj-Qwen2-VL-2B-Instruct-f16.gguf
+      MMPROJ_SHA256: ecb20cabcdd8dbc277de06bd6eb980aeb2adfaaba9f199a434e328d205675d03
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::devtools
+          working-directory: rebirth
+
+      - name: Download + verify the pinned VLM + mmproj (fail-closed)
+        shell: bash
+        run: |
+          set -euo pipefail
+          sha() { if command -v sha256sum >/dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi; }
+          fetch() {
+            local url="$1" want="$2" dest="$3"
+            echo "Downloading $url"
+            curl -fL --retry 3 --retry-delay 5 -o "$dest" "$url"
+            got="$(sha "$dest" | awk '{print $1}')"
+            if [ "$got" != "$want" ]; then
+              rm -f "$dest"
+              echo "::error::SHA256 mismatch for $dest (got $got, want $want); refusing to run"
+              exit 1
+            fi
+            echo "verified: $got  $dest"
+          }
+          fetch "$MODEL_URL"  "$MODEL_SHA256"  "$RUNNER_TEMP/Qwen2-VL-2B-Instruct-Q4_K_M.gguf"
+          fetch "$MMPROJ_URL" "$MMPROJ_SHA256" "$RUNNER_TEMP/mmproj-Qwen2-VL-2B-Instruct-f16.gguf"
+          echo "RELM_TEST_MODEL_VLM=$RUNNER_TEMP/Qwen2-VL-2B-Instruct-Q4_K_M.gguf" >> "$GITHUB_ENV"
+          echo "RELM_TEST_MMPROJ_VLM=$RUNNER_TEMP/mmproj-Qwen2-VL-2B-Instruct-f16.gguf" >> "$GITHUB_ENV"
+
+      - name: Build relm and run the [MODEL] vision suite (R side)
+        working-directory: rebirth
+        shell: bash
+        run: |
+          Rscript -e '
+            suppressMessages(pkgload::load_all(".", quiet = TRUE))
+            mp <- Sys.getenv("RELM_TEST_MODEL_VLM"); pp <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
+            stopifnot(nzchar(mp), file.exists(mp), nzchar(pp), file.exists(pp))
+            # Fail LOUDLY if the verified files are not the expected pair, so the
+            # suite cannot silently skip into a false green.
+            m <- llm(mp, projector = pp)
+            stopifnot(
+              identical(m$architecture, "qwen2vl"),
+              m$hidden_size == 1536L, isTRUE(m$vision)
+            )
+            close(m)
+            library(testthat)
+            res <- test_dir("tests/testthat",
+              filter = "vision", reporter = "summary", stop_on_failure = TRUE
+            )
+            df <- as.data.frame(res)
+            # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
+            # but a test that SKIPS (missing model, wrong arch, absent golden)
+            # leaves the suite green while gating nothing — the false green this
+            # workflow exists to prevent. Each named gate is asserted present,
+            # non-failing, and with real passing expectations.
+            # `skipped` is read directly rather than inferred from passed == 0:
+            # a test that skips AFTER some passing expectations reports
+            # skipped = TRUE with passed > 0, which an inferred check would wave
+            # through. Today neither asserted test has an expectation before its
+            # skip, but that is an invariant of the test bodies, not of testthat.
+            must_have_run <- function(pattern, what) {
+              hit <- df[grepl(pattern, df$test, fixed = TRUE), ]
+              ok <- nrow(hit) == 1L &&
+                !isTRUE(hit$skipped) && hit$failed == 0L && hit$passed > 0L
+              if (!ok) {
+                stop(sprintf(
+                  "::error::%s did not run (%d matching tests, skipped=%s, %d passed, %d failed); refusing a false green",
+                  what, nrow(hit), paste(hit$skipped, collapse = ","),
+                  sum(hit$passed), sum(hit$failed)
+                ))
+              }
+            }
+            # The T1 upstream-reference golden: both runners.
+            must_have_run("unpatched upstream reference", "the T1 reference-text golden")
+            # The T2 pooled-embedding pin is recorded on macOS arm64 and skips
+            # by design elsewhere, so it is only assertable on the macOS leg.
+            if (Sys.info()[["sysname"]] == "Darwin") {
+              must_have_run(
+                "pooled multimodal embedding matches the committed pin",
+                "the T2 pooled-embedding pin"
+              )
+            }
+            cat(sprintf(
+              "nightly vision [MODEL] suite: %d passed, %d skipped, %d failed\n",
+              sum(df$passed), sum(df$skipped), sum(df$failed)
+            ))
+          '
+
+      - name: Run the engine-side golden gates (embd-ATOL leg + token-ids pin + T2 probe)
+        working-directory: rebirth/src/rust
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test -p rebirth-llm --release --test vlm_golden --test vlm_embed -- --nocapture 2>&1 | tee vlm-tests.log
+          # Must-have-RUN assertions, same reason as the R side: every skip path
+          # in these tests returns early and still reports "ok", so the exit code
+          # alone cannot tell a real gate from a silent skip. Each gate prints a
+          # marker line only after its assertion has passed.
+          must_have_run() {
+            if ! grep -q "$1" vlm-tests.log; then
+              echo "::error::$2 did not run; refusing a false green"
+              exit 1
+            fi
+          }
+          must_have_run "embd-ATOL leg: max" "the BINDING embd-ATOL golden leg"
+          must_have_run "T1 token-ids pin:" "the T1 token-ids pin"

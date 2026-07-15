@@ -516,6 +516,18 @@ extern "C" {
     /// mtmd-helper.cpp L329-L330/L378).
     pub fn mtmd_input_chunk_get_n_pos(chunk: *const mtmd_input_chunk) -> llama_pos;
 
+    /// mtmd.h L281-282: run the vision encoder on one media chunk (0 on
+    /// success, 1 on error; a text chunk is silently ignored). Declared for
+    /// the WP-V4 BINDING embd-ATOL golden leg (D-026 first addendum): the raw
+    /// encoder output is compared against the unpatched upstream reference.
+    pub fn mtmd_encode_chunk(ctx: *mut mtmd_context, chunk: *const mtmd_input_chunk) -> i32;
+
+    /// mtmd.h L284-287: the last encode pass's output embeddings, context-owned
+    /// and valid until the next encode; the reading size is
+    /// `llama_model_n_embd_inp(model) * mtmd_input_chunk_get_n_tokens(chunk)`
+    /// floats.
+    pub fn mtmd_get_output_embd(ctx: *mut mtmd_context) -> *mut f32;
+
     /// mtmd.h L269-273: split the marker-bearing prompt into text/image chunks.
     /// Returns 0 on success, 1 on a marker/bitmap count mismatch, 2 on an image
     /// preprocessing error; exceptions are caught internally (mtmd.cpp L1424-1435).

@@ -1,0 +1,364 @@
+---
+title: "Seeing machines: a VLM answering questions about an image, locally"
+format: html
+engine: knitr
+vignette: >
+  %\VignetteIndexEntry{Seeing machines: a VLM answering questions about an image, locally}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+
+# The live steps need the ~2.3 GB vision model pair; a checker (CRAN,
+# r-universe) does not have it, and this vignette must never download
+# gigabytes on its own. We therefore gate the model-touching chunks: they run
+# when the pinned pair is already present (RELM_TEST_MODEL_VLM /
+# RELM_TEST_MMPROJ_VLM point at the files, or the registry aliases are in the
+# default llm_download() cache), and otherwise the recorded outputs of the
+# same chunks -- from the pinned pair on the founder's machine -- are shown as
+# text, clearly labelled. The images themselves are always drawn live.
+have_env <- nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) &&
+  nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+cache_dir <- tools::R_user_dir("relm", "cache")
+have_cache <- file.exists(file.path(cache_dir, "Qwen2-VL-2B-Instruct-Q4_K_M.gguf")) &&
+  file.exists(file.path(cache_dir, "mmproj-Qwen2-VL-2B-Instruct-f16.gguf"))
+run_real <- have_env || have_cache
+run_download <- have_cache && !have_env # a cache hit: cheap, offline, verified
+if (have_env) {
+  model <- Sys.getenv("RELM_TEST_MODEL_VLM")
+  mmproj <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
+}
+if (run_real) suppressPackageStartupMessages(library(relm))
+```
+
+Since v0.2.0, `relm` runs **vision-language models** (VLMs): language models
+with an attached image encoder, so a prompt can include pictures as well as
+text. Everything happens on your own machine — the image never leaves it —
+and the API is the one you already know: the same `llm()`, `llm_generate()`,
+and `llm_embed()`, each with one new argument.
+
+This vignette answers one question: *how do I ask a local model something
+about an image, from R?* We download a small open VLM, draw a test image with
+base graphics (so the whole document is self-contained), ask the model about
+it, and then use multimodal embeddings — an embedding is a numeric vector
+summarizing an input so that similar inputs get nearby vectors — for a tiny
+image-vs-text similarity check.
+
+`r if (run_real) "The model outputs below were produced live when this page was rendered." else "The model pair was not available when this page was rendered, so the model outputs below are the *recorded* outputs of these exact chunks on the pinned pair (Apple-silicon Metal). Run the code on your machine to reproduce them."`
+
+## Get the model (once)
+
+A VLM in GGUF form ships as **two** files: the language model itself and its
+companion **projector** (an `mmproj-*.gguf`) — the small network that
+translates the image encoder's output into the token-embedding space the
+language model reads. `relm`'s model registry pins an Apache-2.0 pair,
+downloaded over HTTPS and verified against a pinned SHA256 (a mismatch is
+deleted, never used):
+
+```{r}
+#| label: download
+#| eval: !expr run_download
+library(relm)
+
+model  <- llm_download("qwen2-vl-2b-instruct-q4_k_m")     # ~1 GB, verified
+mmproj <- llm_download("qwen2-vl-2b-instruct-mmproj-f16") # ~1.3 GB, verified
+```
+
+Both calls are idempotent: a cached, checksum-matching file is returned
+without re-downloading, so this cell costs seconds after the first run.
+
+**Trust note.** The projector file is *engine-trusted input*, exactly like the
+model GGUF itself: a corrupt or hostile file is parsed by native code. Prefer
+the SHA256-verified registry aliases; treat a projector from any other source
+with the same care as a model file.
+
+## Load it with the projector
+
+The projector is bound to the model once, at load time — that is why it is an
+argument of `llm()`, not of each call. A handle loaded this way accepts
+images everywhere; a plain text handle refuses them with a classed error
+(`relm_error_image`), never silently ignoring the image.
+
+```{r}
+#| label: load
+#| eval: !expr run_real
+m <- llm(model, projector = mmproj)
+m
+```
+
+```{r}
+#| label: load-recorded
+#| eval: !expr isFALSE(run_real)
+#| echo: false
+# Recorded output of the chunk above (pinned pair, Apple-silicon Metal).
+cat('<llm> Qwen2-VL-2B-Instruct-Q4_K_M.gguf
+  architecture:    qwen2vl
+  parameters:      1.5 B
+  quantization:    Q4_K_M
+  layers x hidden: 28 x 1536
+  context:         4096 tokens
+  backend:         metal
+  projector:       mmproj-Qwen2-VL-2B-Instruct-f16.gguf
+  interventions:   0 active
+')
+```
+
+## Draw an image, ask a question
+
+No photo download needed: base `grDevices` can draw the test image right
+here, which also makes the answer checkable at a glance.
+
+```{r}
+#| label: draw-square
+#| fig-width: 3
+#| fig-height: 3
+#| fig-alt: "A red square centered on a white background."
+draw_square <- function() {
+  op <- par(mar = c(0, 0, 0, 0))
+  on.exit(par(op))
+  plot.new()
+  plot.window(xlim = c(0, 1), ylim = c(0, 1), xaxs = "i", yaxs = "i")
+  rect(0, 0, 1, 1, col = "white", border = NA)
+  rect(0.215, 0.215, 0.785, 0.785, col = "red", border = NA)
+}
+draw_square() # shown here ...
+
+img <- file.path(tempdir(), "red-square.png")
+png(img, width = 224, height = 224) # ... and saved as the file we hand the model
+draw_square()
+invisible(dev.off())
+```
+
+`images` attaches image files to a prompt; each prompt's images are inserted
+**before** its text. With `temperature = 0` decoding is greedy — the model
+always picks its single most likely next token, so the run is deterministic:
+
+```{r}
+#| label: ask
+#| eval: !expr run_real
+answer <- llm_generate(m, "What color is the square?",
+  images = img, max_tokens = 32, temperature = 0
+)
+cat(answer)
+```
+
+```{r}
+#| label: ask-recorded
+#| eval: !expr isFALSE(run_real)
+#| echo: false
+# Recorded output of the chunk above (pinned pair; greedy, so reproducible).
+cat("The square is red.\n")
+```
+
+That exact sentence is also this pair's reference output in the package's
+golden tests (the engine is checked byte-for-byte against an unpatched
+upstream build on the same image and prompt). A free-form question works the
+same way:
+
+```{r}
+#| label: describe
+#| eval: !expr run_real
+llm_generate(m, "Describe this image in one short sentence.",
+  images = img, max_tokens = 40, temperature = 0
+) |> cat()
+```
+
+```{r}
+#| label: describe-recorded
+#| eval: !expr isFALSE(run_real)
+#| echo: false
+cat("A red square on a white background.\n")
+```
+
+**How the pairing works.** `images` is a list parallel to `prompt` —
+`images[[i]]` holds the image paths for prompt `i`, `character(0)` for none.
+A bare character vector (as above) is shorthand for one prompt's image set;
+with several prompts it is recycled across all of them, with a warning.
+
+## Accepted formats and size caps
+
+Exactly three file formats are accepted — **JPEG, PNG, BMP** — checked on the
+file's leading bytes *before* any decoding starts; anything else (GIF and
+audio files included) raises `relm_error_image`. Three pre-decode limits also
+apply, so a hostile or accidental monster file is rejected before it can
+allocate anything:
+
+- at most **64 MB per file** by default — raise or lower it with
+  `options(relm.image_max_bytes = )` (the engine keeps a hard ceiling of
+  2147483647 bytes regardless);
+- each dimension between **1 and 16384 pixels**;
+- at most **33554432 total pixels** (≈ 33.5 megapixels).
+
+One content restriction: on an image-bearing prompt the literal string
+`"<__media__>"` (the engine's internal media marker) is reserved and raises
+`relm_error_argument`. Prompts without images may contain it freely.
+
+## Multimodal embeddings: is this image more "cat" than "car"?
+
+`llm_embed()` takes the same `images` argument, giving one matrix row per
+(text, image) input — and an input that carries an image may have **empty
+text** (`x = ""`), which embeds the image alone. Time to draw a cat:
+
+```{r}
+#| label: draw-cat
+#| fig-width: 3
+#| fig-height: 3
+#| fig-alt: "A cartoon cat face: orange head, triangular ears, green eyes, whiskers."
+draw_cat <- function() {
+  op <- par(mar = c(0, 0, 0, 0))
+  on.exit(par(op))
+  plot.new()
+  plot.window(xlim = c(0, 1), ylim = c(0, 1), xaxs = "i", yaxs = "i")
+  rect(0, 0, 1, 1, col = "white", border = NA)
+  orange <- "#E8853A"
+  polygon(c(0.28, 0.40, 0.22), c(0.62, 0.72, 0.82), col = orange, border = "black")
+  polygon(c(0.72, 0.60, 0.78), c(0.62, 0.72, 0.82), col = orange, border = "black")
+  polygon(c(0.31, 0.37, 0.27), c(0.66, 0.71, 0.77), col = "pink", border = NA)
+  polygon(c(0.69, 0.63, 0.73), c(0.66, 0.71, 0.77), col = "pink", border = NA)
+  symbols(0.5, 0.52, circles = 0.24, inches = FALSE, add = TRUE,
+    bg = orange, fg = "black"
+  )
+  symbols(c(0.41, 0.59), c(0.58, 0.58), circles = c(0.045, 0.045),
+    inches = FALSE, add = TRUE, bg = "#9ACD32", fg = "black"
+  )
+  segments(c(0.41, 0.59), c(0.545, 0.545), c(0.41, 0.59), c(0.615, 0.615), lwd = 3)
+  polygon(c(0.475, 0.525, 0.5), c(0.485, 0.485, 0.455), col = "pink", border = "black")
+  segments(0.5, 0.455, 0.5, 0.42, lwd = 2)
+  segments(0.5, 0.42, 0.45, 0.40, lwd = 2)
+  segments(0.5, 0.42, 0.55, 0.40, lwd = 2)
+  segments(rep(0.44, 3), c(0.46, 0.44, 0.42), rep(0.16, 3), c(0.50, 0.44, 0.38), lwd = 1.5)
+  segments(rep(0.56, 3), c(0.46, 0.44, 0.42), rep(0.84, 3), c(0.50, 0.44, 0.38), lwd = 1.5)
+}
+draw_cat()
+
+cat_img <- file.path(tempdir(), "cat.png")
+png(cat_img, width = 224, height = 224)
+draw_cat()
+invisible(dev.off())
+```
+
+Embed the image alone, embed two candidate captions as plain text, and
+compare. Rows are unit vectors (the default `normalize = TRUE`), so a dot
+product is a cosine similarity:
+
+```{r}
+#| label: similarity
+#| eval: !expr run_real
+e_img <- llm_embed(m, "", images = cat_img) # the image alone: one row
+e_txt <- llm_embed(m, c(cat = "a cat", car = "a car"))
+sims <- drop(tcrossprod(e_img, e_txt))
+round(sims, 3)
+```
+
+```{r}
+#| label: similarity-recorded
+#| eval: !expr isFALSE(run_real)
+#| echo: false
+# Recorded output of the chunk above (pinned pair, Apple-silicon Metal).
+cat("  cat   car \n0.319 0.275 \n")
+```
+
+The drawing lands closer to *"a cat"* than to *"a car"* — the ranking is the
+signal here, not the absolute level. Decoder-LLM embeddings are anisotropic
+(every vector points into a narrow cone of the space), so absolute cosines
+run high across the board and the exact decimals vary a little by backend;
+the *ordering* is what is stable. The package pins this very check as a
+committed test fixture, drawn by the same base-graphics code.
+
+## What an image-bearing embedding actually is (honesty section)
+
+One paragraph of truth in advertising. When an input carries an image, the
+pooled vector is reduced over the **text positions** of the sequence
+(including the model's own image-delimiter tokens); the image conditions
+those positions through **attention** — the mechanism that lets each position
+of a transformer read information from every earlier position. Image patch
+positions themselves expose no per-token hidden states at the pinned engine
+version, and this text-position pooling matches the reference llama.cpp
+behavior exactly (see `NEWS.md` and decision D-026 in the repository). So an
+"image-alone" embedding (`x = ""`) is, precisely: *what the model's text side
+took away from looking at the image* — which is exactly what the cat/car
+check above measures. Text-only inputs are byte-identical to a text-only
+handle. This is not a CLIP-style contrastive image encoder, and `relm` does
+not claim it is one; for ranking and clustering work like the check above, it
+is honest and it works.
+
+## Beyond the default: bring your own pair
+
+The registry pair above is the *reproducible* default: Apache-2.0, small
+enough to download in a vignette, and the pair every `relm` vision test and
+golden runs against. It is not a ceiling. `projector =` takes a plain path, so
+any VLM plus its matching `mmproj-*.gguf` loads the same way:
+
+```r
+m <- llm("~/models/my-vlm.gguf", projector = "~/models/mmproj-my-vlm.gguf")
+```
+
+The quality tier we point people at is **Gemma 4 E2B**: the engine embedded in
+`relm` carries Gemma's vision projector, and `gemma4` has been a supported text
+architecture since v0.1.0, so the pair should load and answer through exactly
+the code path shown above, with no extra arguments — "should", because we have
+not run that checkpoint ourselves. Two honest caveats, both structural rather
+than incidental:
+
+- **You fetch it yourself.** Google gates Gemma's weights behind a
+  click-through Terms of Use. `relm` therefore ships no `llm_download()` alias
+  for it: a checksum-pinned auto-download would either break for everyone who
+  has not accepted the terms, or route around a gate that is not ours to route
+  around. Accept the terms, download the model and its `mmproj`, pass the
+  paths.
+- **It is not one of our gated models.** The nightly vision goldens — the
+  byte-exact reference leg and the encoder tolerance leg — run on the pinned
+  Apache-2.0 pair, because a ToU-gated model cannot be fetched by CI. A
+  supported architecture running an untested checkpoint is a reasonable
+  expectation, not a guarantee we measure. If a projector does not match its
+  model, you will hear about it: the load is refused with both embedding
+  widths named, never a silent wrong answer.
+
+The same two caveats apply to any other local pair, MedGemma included.
+
+## Memory guidance (16 GB Macs)
+
+- The pinned pair is ~2.3 GB on disk (~1 GB model + ~1.3 GB f16 projector)
+  and runs comfortably inside a 16 GB machine.
+- The image encoder allocates its working graph briefly while a picture is
+  ingested; after that, an image only occupies context positions like any
+  other tokens (the 224 × 224 drawings above cost 64 positions each under
+  this projector). The combined text + image tokens must fit
+  `context_length`; overflowing it raises `relm_error_context_overflow`
+  stating by how much.
+- `close()` handles you are done with, and run one model at a time. If you
+  use Ollama, stop its server before a heavy session — it keeps models
+  resident and competes for the same unified memory.
+
+## Pitfalls
+
+- **Images on a text-only handle fail loudly.** A handle loaded without
+  `projector =` raises `relm_error_image` — reload with the projector; no
+  call ever silently drops an image.
+- **A failed projector load leaks a bounded amount of memory.** A projector
+  that fails to load (e.g. an mmproj built for a different model) is refused
+  with `relm_error_image`, but the failed attempt leaks the projector weights
+  on the CPU side once per attempt — an upstream llama.cpp constructor issue
+  at the pinned engine version. The session stays healthy; fix the argument
+  and reload, but do not retry a failing projector in a loop.
+- **Match the projector to the model.** An mmproj whose embedding width does
+  not match the model is rejected with both sizes named. Use the paired
+  registry aliases, or the mmproj published alongside your exact GGUF.
+- **The vision tower is not yet inspectable.** `llm_trace()`, `llm_steer()`,
+  and `llm_ablate()` operate on the language model's layers only; v0.2.0
+  ships no tracing, steering, or ablation *inside* the image encoder (that is
+  tracked as later research — see the roadmap). Steered or ablated handles
+  derived from a vision handle do keep accepting images.
+
+```{r}
+#| label: close
+#| eval: !expr run_real
+close(m)
+```
+
+Everything here runs on local hardware with no Python and no API: two GGUF
+files, base graphics, and three functions you already knew.

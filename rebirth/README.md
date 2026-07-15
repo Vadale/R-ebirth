@@ -109,16 +109,47 @@ reversible** (each derived handle is a fresh context over the same read-only
 weights). If a model's architecture can't support an intervention faithfully,
 `relm` refuses with a classed error rather than silently doing nothing.
 
+## Now with eyes — ask about an image
+
+Since v0.2.0, `relm` runs **vision-language models**: load a model together
+with its companion **projector** (the `mmproj-*.gguf` published alongside a
+VLM — the small network that translates images into the space the language
+model reads), and `llm_generate()` and `llm_embed()` both take an `images`
+argument. The pinned default pair is Apache-2.0 and checksum-verified:
+
+```r
+model  <- llm_download("qwen2-vl-2b-instruct-q4_k_m")     # ~1 GB, verified
+mmproj <- llm_download("qwen2-vl-2b-instruct-mmproj-f16") # ~1.3 GB, its projector
+v <- llm(model, projector = mmproj)                       # projector => image input
+
+# Draw a test image with base graphics (any JPEG, PNG, or BMP file works):
+png(img <- tempfile(fileext = ".png"), width = 224, height = 224)
+par(mar = c(0, 0, 0, 0)); plot.new()
+rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
+dev.off()
+
+llm_generate(v, "What color is the square?", images = img, temperature = 0)
+#> [1] "The square is red."
+
+llm_embed(v, "", images = img)   # embed the image alone: a 1-row matrix
+```
+
+Exactly three image formats are accepted — **JPEG, PNG, BMP** — checked on
+the file bytes before any decoding, with pre-decode size caps
+(`?llm_generate` has the details). Everything else about the API is
+unchanged; text-only calls behave byte-for-byte as before. The full walk-through
+is `vignette("vision", "relm")`.
+
 ![Probe AUC per transformer layer, rising to 1.00 by layer 11](man/figures/anatomy-lab.png)
 
 *The anatomy-lab demo (below), real output: one cross-validated probe per layer
 locates where sentiment becomes linearly readable in Qwen2.5-1.5B — here by layer
 11 (AUC 1.00), with 95% bootstrap CIs. Produced by `run_demo_A()`.*
 
-## Two worked demos
+## Three worked demos
 
-Both ship as runnable vignettes and reproduce end-to-end on the Apache-2.0 default
-model — no gated downloads, no Python.
+All ship as runnable vignettes and reproduce end-to-end on Apache-2.0 default
+models — no gated downloads, no Python.
 
 - **The anatomy lab** — `vignette("anatomy-lab", "relm")`. Trace a sentiment
   contrast set, fit one cross-validated probe per layer, and plot *where sentiment
@@ -143,6 +174,11 @@ model — no gated downloads, no Python.
   *Real `run_demo_B()` output on 500 abstracts: eight well-separated topics, each
   named by the model itself — a BERTopic-class pipeline, fully local, no Python.*
 
+- **Seeing machines** — `vignette("vision", "relm")`. Download the pinned
+  vision pair, draw a test image with base graphics, ask the model about it,
+  and run an image-vs-text similarity check with multimodal embeddings —
+  fully self-contained (the vignette draws its own images).
+
 ## What relm is — and is not
 
 - **It runs on stock R.** No forked interpreter; `relm` is an ordinary package.
@@ -152,11 +188,17 @@ model — no gated downloads, no Python.
 - **Steering and ablation are instruments, not fixes.** The honest framing is
   always to *audit, investigate, quantify, and localize* model behavior. `relm`
   never claims to remove bias or make a model safe.
-- **Text-only, for now.** Vision (image inputs) is planned for a later release;
-  v0.1.0 is text.
+- **Text and image input, since v0.2.0.** A vision-language model loaded with
+  its projector answers questions about images and embeds them (JPEG, PNG,
+  BMP). The *interpretability* toolkit still operates on the language model's
+  layers only — tracing, steering, or ablating inside the vision tower is
+  **not** part of this release.
 - **Reproducible by construction.** Pinned models are checksum-verified; greedy
-  generation is deterministic; every numerical feature is validated value-for-value
-  against an independent reference.
+  generation is deterministic; numerical features are validated value-for-value
+  against independent references — and where no independent oracle exists for a
+  composed value (the pooled multimodal embedding), its parts are validated
+  independently and the composition is pinned against regression, stated as such
+  in the golden tests.
 
 ## How it works
 

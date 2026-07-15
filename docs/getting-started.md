@@ -93,6 +93,23 @@ vignette("anatomy-lab",           package = "relm")  # locating sentiment in a m
 The runnable demo scripts are in `tests/demos/` in a clone; the larger demo model
 is `llm_download("qwen2.5-1.5b-instruct-q4_k_m")`.
 
+### Try vision (v0.2.0)
+
+Since v0.2.0 a vision-language model answers questions about images. Two
+registry aliases fetch the pinned Apache-2.0 pair — the model and its
+**projector** (the `mmproj-*.gguf` companion that enables image input):
+
+```r
+model <- llm_download("qwen2-vl-2b-instruct-q4_k_m")                  # ~1 GB, verified
+v <- llm(model, projector = llm_download("qwen2-vl-2b-instruct-mmproj-f16"))
+llm_generate(v, "What is in this picture?", images = "photo.jpg")     # any JPEG/PNG/BMP
+```
+
+The fully self-contained walk-through (it draws its own test images) is
+`vignette("vision", package = "relm")`. No install step changes: r-universe
+rebuilds the binaries from `main` automatically, so the same
+`install.packages()` line from Option 1 delivers the vision build.
+
 ### Troubleshooting
 
 - **"cargo/rustc not found" or a CMake error while installing** — you're building
@@ -111,9 +128,9 @@ is `llm_download("qwen2.5-1.5b-instruct-q4_k_m")`.
 ### Publish to r-universe (no review, cannot be rejected)
 
 r-universe is an **automatic build service**, not a gatekept repository like CRAN.
-You point it at this repo and it builds and hosts binaries (macOS and Linux for
-v0.1.0; Windows is a later phase); there is no human review and nothing to be
-"accepted" or "rejected." Steps:
+You point it at this repo and it builds and hosts binaries (macOS — Apple
+silicon and Intel — and Linux; Windows is a later phase); there is no human
+review and nothing to be "accepted" or "rejected." Steps:
 
 1. Sign in at [r-universe.dev](https://r-universe.dev) with your GitHub account.
 2. Because this package lives in the **`rebirth/` subdirectory** of the repo (not
@@ -143,18 +160,19 @@ On a machine without the toolchain (or a fresh R), confirm the binary path works
 
 ```r
 install.packages("relm", repos = c("https://<your-universe>.r-universe.dev", getOption("repos")))
-library(relm); packageVersion("relm")   # 0.1.0
+library(relm); packageVersion("relm")   # the current release, e.g. 0.2.0
 ```
 
 Then run the smoke test and one demo from Part A.
 
 ### Tag the release
 
-Once you're happy, tag `v0.1.0` (this is the outward-facing step):
+Once you're happy, tag the release (this is the outward-facing step; the
+`release` skill in `.claude/skills/` walks the full checklist):
 
 ```sh
-git tag -a v0.1.0 -m "relm 0.1.0"
-git push origin v0.1.0
+git tag -a v0.2.0 -m "relm 0.2.0"
+git push origin v0.2.0
 ```
 
 ### Why not CRAN yet

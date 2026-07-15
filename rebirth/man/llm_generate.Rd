@@ -81,7 +81,8 @@ image files to each prompt: a \strong{list parallel to \code{prompt}}, where
 \code{images[[i]]} is a character vector of image file paths for prompt \code{i}
 (\code{character(0)} for none). A bare character vector is treated as
 \code{list(images)} — one image set — and pairs with a single prompt; with
-several prompts it is recycled across all of them with a warning. Each
+several prompts it is recycled across all of them with a warning (an empty
+vector is the same as \code{NULL}: no images, no warning). Each
 prompt's images are inserted \strong{before} its text. Exactly three file
 formats are accepted: \strong{JPEG, PNG, BMP} (anything else — GIF and audio
 included — is rejected before any decode with \code{relm_error_image}). Size
@@ -104,6 +105,23 @@ the string freely (it is ordinary text there).
 \dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
 m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 llm_generate(m, "In one sentence, what is R?", max_tokens = 40, seed = 1)
+close(m)
+\dontshow{\}) # examplesIf}
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))) withAutoprint(\{ # examplesIf}
+# Image input (requires a projector -- see llm()).
+m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+  projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+)
+img <- file.path(tempdir(), "square.png")
+png(img, width = 224, height = 224)
+par(mar = c(0, 0, 0, 0))
+plot.new()
+rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
+dev.off()
+llm_generate(m, "What color is the square?",
+  images = img,
+  max_tokens = 16, temperature = 0
+)
 close(m)
 \dontshow{\}) # examplesIf}
 }

@@ -25,7 +25,8 @@
 #' `images[[i]]` is a character vector of image file paths for prompt `i`
 #' (`character(0)` for none). A bare character vector is treated as
 #' `list(images)` — one image set — and pairs with a single prompt; with
-#' several prompts it is recycled across all of them with a warning. Each
+#' several prompts it is recycled across all of them with a warning (an empty
+#' vector is the same as `NULL`: no images, no warning). Each
 #' prompt's images are inserted **before** its text. Exactly three file
 #' formats are accepted: **JPEG, PNG, BMP** (anything else — GIF and audio
 #' included — is rejected before any decode with `relm_error_image`). Size
@@ -74,6 +75,22 @@
 #' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' llm_generate(m, "In one sentence, what is R?", max_tokens = 40, seed = 1)
 #' close(m)
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+#' # Image input (requires a projector -- see llm()).
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+#'   projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+#' )
+#' img <- file.path(tempdir(), "square.png")
+#' png(img, width = 224, height = 224)
+#' par(mar = c(0, 0, 0, 0))
+#' plot.new()
+#' rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
+#' dev.off()
+#' llm_generate(m, "What color is the square?",
+#'   images = img,
+#'   max_tokens = 16, temperature = 0
+#' )
+#' close(m)
 #' @export
 llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
                          top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL,
@@ -119,7 +136,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   image_sets <- normalize_images(images, length(prompt))
   check_prompt_markers(prompt, image_sets, arg_name = "prompt")
   has_images <- !is.null(image_sets) && any(lengths(image_sets) > 0L)
-  max_bytes <- if (has_images) image_max_bytes() else 64 * 1024^2
+  max_bytes <- if (has_images) image_max_bytes() else relm_image_max_bytes_default
   check_images_usable(m, image_sets)
 
   if (is.null(seed)) {

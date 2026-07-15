@@ -49,6 +49,8 @@ check_prompt_markers <- function(prompt, image_sets, arg_name,
 
 # Normalize `images` against `n_inputs` prompts/texts (API-GRAMMAR section 3):
 #   * NULL -> NULL (text-only; the caller takes the unchanged text path).
+#   * character(0) -> NULL too: an empty vector supplies no images at all, so
+#     it takes the text path silently (there is nothing to recycle-warn about).
 #   * a bare character vector -> treated as `list(images)`, i.e. ONE image set;
 #     with `n_inputs == 1` it pairs silently, otherwise it is recycled across
 #     all inputs with a warning (the llm_trace(positions=) recycling contract).
@@ -65,6 +67,9 @@ normalize_images <- function(images, n_inputs, call = sys.call(-1L)) {
   }
 
   if (is.character(images)) {
+    if (length(images) == 0L) {
+      return(NULL)
+    }
     if (anyNA(images)) {
       abort_argument(
         "images", "`images` must not contain NA paths.",
@@ -160,13 +165,18 @@ check_images_usable <- function(m, image_sets, call = sys.call(-1L)) {
   invisible(NULL)
 }
 
+# The default per-image byte cap (64 MB, documented on llm_generate/llm_embed).
+# One binding so the option default below and the callers' images-absent
+# placeholder (the boundary ignores it on the text-only path) can never drift.
+relm_image_max_bytes_default <- 64 * 1024^2
+
 # The per-image byte cap consulted only when images are present: the documented
 # override `options(relm.image_max_bytes=)`, default 64 MB. The engine
 # additionally enforces its own hard ceiling (2^31 - 1 bytes) and the
 # dimension/pixel caps regardless of this option. Validated here so a broken
 # option is a classed R error, not a boundary reject.
 image_max_bytes <- function(call = sys.call(-1L)) {
-  cap <- getOption("relm.image_max_bytes", 64 * 1024^2)
+  cap <- getOption("relm.image_max_bytes", relm_image_max_bytes_default)
   if (!is.numeric(cap) || length(cap) != 1L || is.na(cap) || cap <= 0) {
     abort_argument(
       "relm.image_max_bytes",

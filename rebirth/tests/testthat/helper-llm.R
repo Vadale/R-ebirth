@@ -31,11 +31,50 @@ stub_llm <- function(closed = FALSE, interventions = list(), architecture = "qwe
   )
 }
 
+# Shared model/fixture path helpers for the vision test files
+# (test-llm-vision.R + test-llm-vision-embed.R). Several older test files still
+# carry identical file-local copies of the first two, which harmlessly shadow
+# these within those files.
+synthetic_model_path <- function() {
+  p <- testthat::test_path("fixtures", "synthetic-llama-2l.gguf")
+  skip_if_not(file.exists(p), "synthetic GGUF fixture is missing")
+  p
+}
+
+qwen_model_path <- function() {
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+  skip_if_not(
+    nzchar(p) && file.exists(p),
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
+  )
+  p
+}
+
+vision_fixture <- function(name) {
+  p <- testthat::test_path("fixtures", "vision", name)
+  skip_if_not(file.exists(p), sprintf("vision fixture '%s' is missing", name))
+  p
+}
+
+# The vision goldens live at the REPO root (tests/llm-golden/vision/goldens),
+# outside the package tree — three levels above tests/testthat. They are present
+# in a repo checkout and absent under R CMD check or an installed package, where
+# the caller skips on file.exists(). Written once here so the repo-root walk is
+# not hand-rolled per test file; normalized so a failure names an absolute path.
+vision_golden_path <- function(name) {
+  normalizePath(
+    file.path(
+      testthat::test_path(), "..", "..", "..",
+      "tests", "llm-golden", "vision", "goldens", name
+    ),
+    mustWork = FALSE
+  )
+}
+
 # [MODEL] model-path helpers for the WP7.5a modern-model families. Each is gated
 # on its own environment variable pointing at a local text-only instruct GGUF, so
 # these tests run only on the founder's Mac (Metal) and skip in CI/CRAN, which have
-# no such model. (`qwen_model_path()`/`synthetic_model_path()` live in
-# test-llm-generate.R; defining these here keeps them available to every test file.)
+# no such model.
 gemma4_model_path <- function() {
   p <- path.expand(Sys.getenv("RELM_TEST_MODEL_GEMMA4"))
   skip_if_not(
@@ -64,25 +103,76 @@ qwen35_model_path <- function() {
 }
 
 # [MODEL] WP-V2 vision pair: a vision-language model GGUF plus its companion
-# mmproj (projector) GGUF — dev pin Qwen2-VL-2B-Instruct (Apache-2.0) from
-# ggml-org/Qwen2-VL-2B-Instruct-GGUF. Gated on its own pair of environment
-# variables (mirroring RELM_TEST_MODEL_QWEN), so vision tests run only where
-# the founder placed the files (Mac/Metal or the nightly VLM job) and skip in
-# per-commit CI, which has no VLM.
+# mmproj (projector) GGUF — the registry default Qwen2-VL-2B-Instruct
+# (Apache-2.0, aliases qwen2-vl-2b-instruct-q4_k_m /
+# qwen2-vl-2b-instruct-mmproj-f16, D-026.8). Resolution order: the explicit
+# environment variable (mirroring RELM_TEST_MODEL_QWEN), else the registry
+# alias's file in the default llm_download() cache — so a machine that ran
+# llm_download("qwen2-vl-2b-instruct-q4_k_m") needs no env vars. Skips
+# otherwise; per-commit CI has no VLM either way.
+#
+# Fail-closed cache reuse (WP-V4 security audit, F-1): a cache hit is used only
+# if the file still matches its registry SHA256. llm_download() verifies on
+# download, but nothing re-verifies afterwards — a truncated, half-written or
+# swapped cache entry would otherwise feed the [MODEL] goldens a different model
+# and be read as a numerical regression rather than a corrupt file. A mismatch
+# warns and skips instead. The RELM_TEST_MODEL_VLM / RELM_TEST_MMPROJ_VLM route
+# is the founder's explicit local override and is deliberately not hash-gated:
+# it is how an unpinned or hand-built VLM is tried. Hashing ~1 GB costs a few
+# seconds, so the verdict is memoised for the session — every [MODEL] vision
+# test calls this.
+vlm_cache_verified <- new.env(parent = emptyenv())
+
+vlm_alias_in_cache <- function(alias) {
+  reg <- tryCatch(relm:::model_registry(), error = function(e) NULL)
+  if (is.null(reg)) {
+    return("")
+  }
+  row <- reg[reg$alias == alias, , drop = FALSE]
+  if (nrow(row) != 1L) {
+    return("")
+  }
+  p <- file.path(tools::R_user_dir("relm", "cache"), basename(row$url))
+  if (!file.exists(p)) {
+    return("")
+  }
+  if (!isTRUE(vlm_cache_verified[[alias]])) {
+    got <- tolower(unname(tools::sha256sum(p)))
+    if (!identical(got, tolower(row$sha256))) {
+      warning(
+        sprintf(
+          "cached '%s' does not match its registry SHA256 (got %s); ignoring it",
+          alias, got
+        ),
+        call. = FALSE
+      )
+      return("")
+    }
+    vlm_cache_verified[[alias]] <- TRUE
+  }
+  p
+}
+
 vlm_model_path <- function() {
   p <- path.expand(Sys.getenv("RELM_TEST_MODEL_VLM"))
+  if (!nzchar(p) || !file.exists(p)) {
+    p <- vlm_alias_in_cache("qwen2-vl-2b-instruct-q4_k_m")
+  }
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "RELM_TEST_MODEL_VLM is not set to an existing GGUF file"
+    "no VLM: set RELM_TEST_MODEL_VLM or llm_download(\"qwen2-vl-2b-instruct-q4_k_m\")"
   )
   p
 }
 
 vlm_mmproj_path <- function() {
   p <- path.expand(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+  if (!nzchar(p) || !file.exists(p)) {
+    p <- vlm_alias_in_cache("qwen2-vl-2b-instruct-mmproj-f16")
+  }
   skip_if_not(
     nzchar(p) && file.exists(p),
-    "RELM_TEST_MMPROJ_VLM is not set to an existing mmproj GGUF file"
+    "no mmproj: set RELM_TEST_MMPROJ_VLM or llm_download(\"qwen2-vl-2b-instruct-mmproj-f16\")"
   )
   p
 }

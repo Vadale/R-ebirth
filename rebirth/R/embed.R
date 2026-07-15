@@ -34,7 +34,8 @@
 #' (text, image) pair into one row: a **list parallel to `x`**, where
 #' `images[[i]]` is a character vector of image file paths for input `i`
 #' (`character(0)` for none), or a bare character vector for a single input
-#' (recycled across several inputs with a warning) — the same pairing contract
+#' (recycled across several inputs with a warning; an empty vector is the same
+#' as `NULL`) — the same pairing contract
 #' as [llm_generate()]'s `images`. Images are inserted **before** the text.
 #' The accepted formats and pre-decode limits are exactly [llm_generate()]'s:
 #' **JPEG, PNG, BMP** only, at most 64 MB per file by default
@@ -73,6 +74,20 @@
 #' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' e <- llm_embed(m, c(a = "cats and dogs", b = "domestic pets"))
+#' dim(e)
+#' close(m)
+#' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
+#' # Image embeddings (requires a projector -- see llm()).
+#' m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+#'   projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+#' )
+#' img <- file.path(tempdir(), "square.png")
+#' png(img, width = 224, height = 224)
+#' par(mar = c(0, 0, 0, 0))
+#' plot.new()
+#' rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
+#' dev.off()
+#' e <- llm_embed(m, "", images = img) # the image alone, one row
 #' dim(e)
 #' close(m)
 #' @export
@@ -114,7 +129,7 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
       "`x` must not contain empty strings (\"\"); every element needs text to embed (or an image in `images`)."
     )
   }
-  max_bytes <- if (any(has_image)) image_max_bytes() else 64 * 1024^2
+  max_bytes <- if (any(has_image)) image_max_bytes() else relm_image_max_bytes_default
   check_images_usable(m, image_sets)
 
   # All-empty sets (e.g. images = list(character(0))) are a text-only call:

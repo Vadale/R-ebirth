@@ -23,6 +23,26 @@
 //! (n_batch-aware for both text and image chunks — the hard-rule-8a chokepoint
 //! for this path; M-RoPE / non-causal handling is never reimplemented in Rust,
 //! the D-012 fails-silent trap).
+//!
+//! Maintainer note — the vendored clip reads two environment variables that
+//! relm neither sets nor forwards (`docs/audit-wp-v1-mtmd-2026-07-14.md` §2(d),
+//! which flagged them as informational and deferred documenting them here):
+//! - `MTMD_BACKEND_DEVICE` (`clip.cpp:184`) names clip's backend device, which
+//!   `ggml_backend_init_by_name` resolves against ANY registered device — so on
+//!   a GPU load it can send the vision tower to a different GPU, or even to the
+//!   CPU; an unresolvable name warns and falls back to the default GPU
+//!   (`clip.cpp:187-194`). It is read **only on a GPU load**: the getenv sits
+//!   inside `if (ctx_params.use_gpu)` (`clip.cpp:183`), so it can never move a
+//!   CPU load onto a GPU. On `backend = "cpu"` — which keeps the
+//!   `use_gpu = false` probe context built below, and which every vision golden
+//!   forces — it is not read at all: the goldens are immune to it.
+//! - `MTMD_DEBUG_EMBEDDINGS` (`clip.cpp:224`) is read unconditionally and dumps
+//!   encoder embeddings to the log (a read-only tensor read + `LOG_INF` at
+//!   `clip.cpp:4414`): harmless to correctness, noisy in a trace.
+//!
+//! They are upstream debug seams, left unpatched deliberately (D-026: no source
+//! patch without cause). Nothing in relm's API exposes them; treat a set value
+//! as an operator action.
 
 use std::ffi::{c_void, CStr, CString};
 use std::os::raw::{c_char, c_int};
@@ -274,6 +294,17 @@ fn drain_mtmd_log() -> String {
     std::mem::take(&mut *buf).trim().to_string()
 }
 
+/// [`drain_mtmd_log`] with the fixed fallback every mtmd failure message
+/// embeds when the engine logged nothing.
+fn drain_mtmd_detail() -> String {
+    let engine_reason = drain_mtmd_log();
+    if engine_reason.is_empty() {
+        String::from("no engine detail available")
+    } else {
+        engine_reason
+    }
+}
+
 /// Parse the engine's own mmproj-model mismatch message into the two sizes.
 /// The format string is pinned at the vendored tag (mtmd.cpp L372-376):
 /// `"mismatch between text model (n_embd = %d) and mmproj (n_embd = %d)\n..."`.
@@ -400,10 +431,12 @@ pub(crate) fn load_projector(
     // the exception was caught internally (mtmd.cpp L798-803) and logged.
     let probe = unsafe { ffi::mtmd_init_from_file(c_path.as_ptr(), model_ptr, probe_params) };
     let Some(probe_ptr) = NonNull::new(probe) else {
-        let engine_reason = drain_mtmd_log();
+        // The fallback detail never parses as a mismatch, so running the parse
+        // on it (instead of on the raw drained log) changes nothing.
+        let detail = drain_mtmd_detail();
         // SAFETY: `model_ptr` is a live model; read-only scalar getter.
         let n_embd_inp = unsafe { ffi::llama_model_n_embd_inp(model_ptr) };
-        if let Some((text_embd, clip_embd)) = parse_embd_mismatch(&engine_reason) {
+        if let Some((text_embd, clip_embd)) = parse_embd_mismatch(&detail) {
             return Err(image_err(
                 format!(
                     "The projector '{path_display}' does not match this model: the \
@@ -415,11 +448,6 @@ pub(crate) fn load_projector(
                 Some(clip_embd),
             ));
         }
-        let detail = if engine_reason.is_empty() {
-            String::from("no engine detail available")
-        } else {
-            engine_reason
-        };
         return Err(image_err(
             format!(
                 "Failed to load the projector '{path_display}' ({detail}). The file \
@@ -432,14 +460,19 @@ pub(crate) fn load_projector(
         ));
     };
 
+    // From here on the probe is RAII-owned: any early return frees it.
+    let probe = VisionContext {
+        ptr: probe_ptr,
+        owner: std::thread::current().id(),
+    };
+
     let vision = if use_gpu {
         // NOTE for the vendor-bump maintainer: a GPU-backend load parses the
         // mmproj TWICE (the CPU probe above + the real init below) — the cost
         // of keeping the constructor-leak abort unreachable with zero patch.
-        // Free the CPU probe before the real init so the mmproj weights are
-        // never resident twice.
-        // SAFETY: `probe_ptr` is the live context just created; freed once.
-        unsafe { ffi::mtmd_free(probe_ptr.as_ptr()) };
+        // Drop (free) the CPU probe before the real init so the mmproj
+        // weights are never resident twice.
+        drop(probe);
 
         // SAFETY: as above; the GPU context is the one the handle keeps.
         let mut params = unsafe { ffi::mtmd_context_params_default() };
@@ -450,12 +483,7 @@ pub(crate) fn load_projector(
         // SAFETY: same contract as the probe call.
         let ctx = unsafe { ffi::mtmd_init_from_file(c_path.as_ptr(), model_ptr, params) };
         let Some(ptr) = NonNull::new(ctx) else {
-            let engine_reason = drain_mtmd_log();
-            let detail = if engine_reason.is_empty() {
-                String::from("no engine detail available")
-            } else {
-                engine_reason
-            };
+            let detail = drain_mtmd_detail();
             return Err(image_err(
                 format!(
                     "Failed to initialize the projector '{path_display}' on the GPU \
@@ -475,10 +503,7 @@ pub(crate) fn load_projector(
         // `warmup = false` — a perf-only difference (no dummy warmup encode;
         // the first real encode pays the graph build instead). Results are
         // identical.
-        VisionContext {
-            ptr: probe_ptr,
-            owner: std::thread::current().id(),
-        }
+        probe
     };
 
     // SAFETY: `ptr` is the live context just created.
@@ -533,24 +558,29 @@ impl Chunks {
         self.ptr.as_ptr()
     }
 
-    /// The combined text+image token count (KV-cache slots) across all chunks,
-    /// checked against the context window before any decode.
-    fn total_tokens(&self) -> usize {
+    /// The non-null chunk pointers, in list order. The pointers are owned by
+    /// the list and stay valid exactly as long as `self` lives — every caller
+    /// consumes them before `self` drops.
+    fn chunk_ptrs(&self) -> Vec<*const ffi::mtmd_input_chunk> {
         // SAFETY: `ptr` is a live chunk list; per-chunk pointers are owned by
         // it and valid while it lives.
         unsafe {
             let n = ffi::mtmd_input_chunks_size(self.ptr.as_ptr());
             (0..n)
-                .map(|i| {
-                    let chunk = ffi::mtmd_input_chunks_get(self.ptr.as_ptr(), i);
-                    if chunk.is_null() {
-                        0
-                    } else {
-                        ffi::mtmd_input_chunk_get_n_tokens(chunk)
-                    }
-                })
-                .sum()
+                .map(|i| ffi::mtmd_input_chunks_get(self.ptr.as_ptr(), i))
+                .filter(|chunk| !chunk.is_null())
+                .collect()
         }
+    }
+
+    /// The combined text+image token count (KV-cache slots) across all chunks,
+    /// checked against the context window before any decode.
+    fn total_tokens(&self) -> usize {
+        self.chunk_ptrs()
+            .into_iter()
+            // SAFETY: `chunk` is non-null and list-owned (chunk_ptrs).
+            .map(|chunk| unsafe { ffi::mtmd_input_chunk_get_n_tokens(chunk) })
+            .sum()
     }
 }
 
@@ -599,6 +629,32 @@ fn check_no_user_marker(text: &str, marker: &str) -> Result<(), RebirthError> {
     Ok(())
 }
 
+/// The classed reject shared verbatim by the T1 (generate) and T2 (embed)
+/// entry points for image input on a handle loaded without `llm(projector=)`.
+/// The R layer raises the same message pre-boundary; this is the engine-side
+/// contract for non-R callers.
+fn no_projector_error() -> RebirthError {
+    RebirthError::Image {
+        reason: "This model was loaded without a projector, so it cannot \
+                 take image input. Reload it with llm(path, projector = \
+                 <mmproj GGUF>) to enable images."
+            .to_string(),
+        path: None,
+        expected: None,
+        actual: None,
+    }
+}
+
+/// One media marker per image BEFORE the text — the grammar's images-before-
+/// text placement (interleaved-marker control is a reserved later capability),
+/// authored identically by T1 and T2 so `mtmd_tokenize` always sees exactly
+/// one marker per bitmap.
+fn markers_then_text(marker: &str, n_images: usize, text: &str) -> String {
+    let mut content = marker.repeat(n_images);
+    content.push_str(text);
+    content
+}
+
 // --- shared image ingest building blocks (T1 generate + T2 embed) -------------
 
 impl LoadedModel {
@@ -624,12 +680,7 @@ impl LoadedModel {
             // MTMD_VIDEO=OFF: the only branch that sets video_ctx is compiled out.
             debug_assert!(wrapper.video_ctx.is_null());
             let ptr = NonNull::new(wrapper.bitmap).ok_or_else(|| {
-                let engine_reason = drain_mtmd_log();
-                let detail = if engine_reason.is_empty() {
-                    String::from("no engine detail available")
-                } else {
-                    engine_reason
-                };
+                let detail = drain_mtmd_detail();
                 RebirthError::Image {
                     reason: format!(
                         "'{path}' passed the format gate but could not be decoded \
@@ -696,12 +747,7 @@ impl LoadedModel {
                     .to_string(),
             }),
             _ => {
-                let engine_reason = drain_mtmd_log();
-                let detail = if engine_reason.is_empty() {
-                    String::from("no engine detail available")
-                } else {
-                    engine_reason
-                };
+                let detail = drain_mtmd_detail();
                 Err(RebirthError::Image {
                     reason: format!(
                         "Image preprocessing failed ({detail}). The image may use \
@@ -742,15 +788,7 @@ impl LoadedModel {
         }
         self.require_tokenizer()?;
         let Some(mctx) = self.vision_ptr() else {
-            return Err(RebirthError::Image {
-                reason: "This model was loaded without a projector, so it cannot \
-                         take image input. Reload it with llm(path, projector = \
-                         <mmproj GGUF>) to enable images."
-                    .to_string(),
-                path: None,
-                expected: None,
-                actual: None,
-            });
+            return Err(no_projector_error());
         };
         if params.max_tokens == 0 {
             return Ok(Generation {
@@ -767,9 +805,9 @@ impl LoadedModel {
         //    before the boundary as relm_error_argument on `prompt`; this
         //    engine-side backstop keeps the crate safe for non-R callers —
         //    unreachable through the R surface, hence exercised by no R test).
-        //    Deliberately moved BEFORE the image decoding during the WP-V3
-        //    extraction: visible only to non-R crate callers, whose marker
-        //    error now wins over a broken-image-path error.
+        //    Ordering invariant: this check runs BEFORE any image decode, so
+        //    a non-R caller passing both a literal marker and a broken image
+        //    path always sees the marker error.
         let marker = default_marker();
         check_no_user_marker(prompt, &marker)?;
 
@@ -779,8 +817,7 @@ impl LoadedModel {
         // 3. One marker per image BEFORE the text, then the usual chat
         //    templating — identical to the text path's resolution — and the
         //    split into interleaved text/image chunks.
-        let mut content = marker.repeat(images.len());
-        content.push_str(prompt);
+        let content = markers_then_text(&marker, images.len(), prompt);
         let (text, add_special, parse_special) = self.resolve_prompt_text(&content, chat)?;
         let chunks =
             self.tokenize_with_images(mctx, &text, add_special, parse_special, &bitmaps)?;
@@ -816,12 +853,7 @@ impl LoadedModel {
             )
         };
         if status != 0 {
-            let engine_reason = drain_mtmd_log();
-            let detail = if engine_reason.is_empty() {
-                String::from("no engine detail available")
-            } else {
-                engine_reason
-            };
+            let detail = drain_mtmd_detail();
             return Err(RebirthError::Generation {
                 reason: format!("multimodal ingest failed (status {status}: {detail})"),
             });
@@ -834,6 +866,90 @@ impl LoadedModel {
         //    which is exactly why new_n_past comes from the helper).
         let logits = self.logits_ith(-1, n_vocab)?;
         self.continue_generation(logits, new_n_past, params)
+    }
+}
+
+// --- the raw encoder output (WP-V4, the BINDING embd-ATOL golden leg) --------
+
+impl LoadedModel {
+    /// The raw image-encoder output embeddings for one gated image file:
+    /// `(values, n_tokens, n_embd_inp)`, row-major (token-major), straight
+    /// from `mtmd_encode_chunk` + `mtmd_get_output_embd` with NO llama decode
+    /// involved. Exists for the D-026 first-addendum BINDING golden leg — the
+    /// `[MODEL]` test compares these values against the unpatched upstream
+    /// reference (tests/llm-golden/vision/tools/dump-encode.c) within
+    /// ATOL 1e-3 on CPU. The encoder output depends only on the bitmap and
+    /// the projector, so the chunk is produced from a marker-only text
+    /// (`add_special = false`), exactly like the reference harness.
+    pub fn image_encoder_output(
+        &self,
+        image: &str,
+        image_max_bytes: u64,
+    ) -> Result<(Vec<f32>, usize, usize), RebirthError> {
+        let Some(mctx) = self.vision_ptr() else {
+            return Err(RebirthError::Image {
+                reason: "This model was loaded without a projector, so it has no \
+                         image encoder. Reload it with llm(path, projector = \
+                         <mmproj GGUF>)."
+                    .to_string(),
+                path: None,
+                expected: None,
+                actual: None,
+            });
+        };
+        install_mtmd_log();
+        let marker = default_marker();
+        let bitmaps = self.decode_bitmaps(mctx, &[image.to_string()], image_max_bytes)?;
+        let chunks = self.tokenize_with_images(mctx, &marker, false, false, &bitmaps)?;
+        drop(bitmaps);
+
+        for chunk in chunks.chunk_ptrs() {
+            // SAFETY: `chunk` is non-null and list-owned (chunk_ptrs).
+            if unsafe { ffi::mtmd_input_chunk_get_type(chunk) } == ffi::MTMD_INPUT_CHUNK_TYPE_TEXT {
+                continue;
+            }
+            drain_mtmd_log();
+            // SAFETY: `mctx` and `chunk` are live; encode runs the clip graph
+            // inside the mtmd context (no llama context involved).
+            let status = unsafe { ffi::mtmd_encode_chunk(mctx, chunk) };
+            if status != 0 {
+                let detail = drain_mtmd_detail();
+                return Err(RebirthError::Image {
+                    reason: format!(
+                        "The vision encoder failed on '{image}' (status {status}: {detail})."
+                    ),
+                    path: Some(image.to_string()),
+                    expected: None,
+                    actual: None,
+                });
+            }
+            // SAFETY: `chunk` is live; read-only count getter.
+            let n_tokens = unsafe { ffi::mtmd_input_chunk_get_n_tokens(chunk) };
+            // SAFETY: `model_ptr` is a live model; read-only scalar getter.
+            let n_embd = unsafe { ffi::llama_model_n_embd_inp(self.model_ptr()) };
+            if n_tokens == 0 || n_embd <= 0 {
+                return Err(RebirthError::Internal {
+                    context: format!("encoder produced a degenerate shape ({n_tokens} x {n_embd})"),
+                });
+            }
+            // SAFETY: `mctx` is live; the pointer names
+            // n_tokens * n_embd valid f32 owned by the context (mtmd.h
+            // L284-287), copied out before any further mtmd call.
+            let ptr = unsafe { ffi::mtmd_get_output_embd(mctx) };
+            if ptr.is_null() {
+                return Err(RebirthError::Internal {
+                    context: "mtmd_get_output_embd returned NULL after a successful encode"
+                        .to_string(),
+                });
+            }
+            let len = n_tokens * n_embd as usize;
+            // SAFETY: as above; `len` is the documented reading size.
+            let values = unsafe { std::slice::from_raw_parts(ptr, len) }.to_vec();
+            return Ok((values, n_tokens, n_embd as usize));
+        }
+        Err(RebirthError::Internal {
+            context: "mtmd_tokenize produced no image chunk for a marker-only text".to_string(),
+        })
     }
 }
 
@@ -879,15 +995,7 @@ impl LoadedModel {
         self.require_tokenizer()?;
         let reduction = self.resolve_reduction(pooling)?;
         let Some(mctx) = self.vision_ptr() else {
-            return Err(RebirthError::Image {
-                reason: "This model was loaded without a projector, so it cannot \
-                         take image input. Reload it with llm(path, projector = \
-                         <mmproj GGUF>) to enable images."
-                    .to_string(),
-                path: None,
-                expected: None,
-                actual: None,
-            });
+            return Err(no_projector_error());
         };
         install_mtmd_log();
         let marker = default_marker();
@@ -912,8 +1020,7 @@ impl LoadedModel {
             } else {
                 check_no_user_marker(text, &marker)?;
                 let bitmaps = self.decode_bitmaps(mctx, images, image_max_bytes)?;
-                let mut content = marker.repeat(images.len());
-                content.push_str(text);
+                let content = markers_then_text(&marker, images.len(), text);
                 // Same tokenization contract as the text embed path
                 // (add_special = true, parse_special = false): the input is
                 // embedded verbatim, never chat-templated.
@@ -987,16 +1094,8 @@ impl LoadedModel {
         let n_batch = (unsafe { ffi::llama_n_batch(ectx.ptr.as_ptr()) }).max(1) as i32;
         let mut rows: Vec<Vec<f32>> = Vec::new();
         let mut n_past: ffi::llama_pos = 0;
-        // SAFETY: `chunks` is a live owned list; per-chunk pointers are owned
-        // by it and valid while it lives.
-        let n_chunks = unsafe { ffi::mtmd_input_chunks_size(chunks.as_ptr()) };
-        for idx in 0..n_chunks {
-            // SAFETY: `idx < n_chunks`; the chunk pointer is list-owned.
-            let chunk = unsafe { ffi::mtmd_input_chunks_get(chunks.as_ptr(), idx) };
-            if chunk.is_null() {
-                continue;
-            }
-            // SAFETY: `chunk` is non-null and list-owned.
+        for chunk in chunks.chunk_ptrs() {
+            // SAFETY: `chunk` is non-null and list-owned (chunk_ptrs).
             let ctype = unsafe { ffi::mtmd_input_chunk_get_type(chunk) };
             if ctype == ffi::MTMD_INPUT_CHUNK_TYPE_TEXT {
                 let mut n_tokens: usize = 0;
@@ -1056,12 +1155,7 @@ impl LoadedModel {
                     )
                 };
                 if status != 0 {
-                    let engine_reason = drain_mtmd_log();
-                    let detail = if engine_reason.is_empty() {
-                        String::from("no engine detail available")
-                    } else {
-                        engine_reason
-                    };
+                    let detail = drain_mtmd_detail();
                     return Err(RebirthError::Embed {
                         reason: format!(
                             "The engine failed to encode an image for embedding \

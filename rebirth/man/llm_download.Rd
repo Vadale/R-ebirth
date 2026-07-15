@@ -40,6 +40,12 @@ of license-clean, checksum-pinned models. The current aliases are:
 the small CI-integration model.
 \item \code{"qwen2.5-1.5b-instruct-q4_k_m"} — Qwen2.5 1.5B Instruct, Q4_K_M
 (Apache-2.0); the demo default.
+\item \code{"qwen2-vl-2b-instruct-q4_k_m"} — Qwen2-VL 2B Instruct, Q4_K_M
+(Apache-2.0); the vision default. Pair it with the projector alias below:
+\code{llm(path, projector = )}.
+\item \code{"qwen2-vl-2b-instruct-mmproj-f16"} — the mmproj (vision projector)
+companion of the alias above (Apache-2.0, same pinned revision); pass its
+path as \code{llm()}'s \code{projector}.
 }
 
 Passing an unknown alias raises \code{relm_error_download} and lists the known

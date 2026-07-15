@@ -1,6 +1,35 @@
-# relm (development version)
+# relm 0.2.0
 
-Development toward the vision/multimodal release (v0.2.0, Phase 11, D-026).
+Vision. A handle loaded with a model's **mmproj projector** takes image input
+across generation and embeddings, on the same vendored engine (no version
+bump) and with the text-only paths byte-identical to 0.1.0 (Phase 11,
+D-026 + addenda).
+
+* **Vision vignette.** `vignette("vision", "relm")` — "Seeing machines" —
+  walks the whole path: download the pinned pair, load with the projector,
+  ask about an image, and run an image-vs-text similarity check with
+  multimodal embeddings. Fully self-contained (it draws its own test images
+  with base graphics) and renders with or without a local model.
+
+* **Vision model registry.** Two new `llm_download()` aliases pin the
+  Apache-2.0 default pair (license verified on the artifact repo's model
+  card): `"qwen2-vl-2b-instruct-q4_k_m"` (the model) and
+  `"qwen2-vl-2b-instruct-mmproj-f16"` (its projector), both SHA256-pinned to
+  an immutable revision and verified fail-closed. Load with
+  `llm(llm_download("qwen2-vl-2b-instruct-q4_k_m"),
+  projector = llm_download("qwen2-vl-2b-instruct-mmproj-f16"))`.
+
+* **Projector trust note.** The `projector` file is engine-trusted input,
+  exactly like the model GGUF itself — a corrupt or hostile file is parsed by
+  native code. Prefer the SHA256-verified registry aliases; treat any other
+  source with the same care as a model file.
+
+* **Known limitation (documented, upstream).** A projector that FAILS to load
+  (for example an mmproj built for a different model) is refused with a
+  classed `relm_error_image`, but the failed attempt leaks a bounded amount
+  of CPU memory once per attempt (the projector weights; an upstream
+  llama.cpp constructor issue at the pinned engine version). The session
+  stays healthy; fix the argument and reload.
 
 * **Image embeddings (T2).** `llm_embed()` gains `images =`: pair image files
   with each input (the same pairing contract, formats — **JPEG, PNG, BMP** —
@@ -25,9 +54,9 @@ Development toward the vision/multimodal release (v0.2.0, Phase 11, D-026).
   (`options(relm.image_max_bytes = )` to change, hard ceiling 2147483647
   bytes), dimensions 1–16384 px per side, at most 33554432 total pixels.
   `print()` shows the projector on a vision handle; steered/ablated handles
-  derived from a vision handle keep accepting images. Dev-verified with
-  Qwen2-VL-2B-Instruct (Apache-2.0); the pinned registry aliases arrive with
-  the v0.2.0 release work. Text-only calls are byte-identical to before.
+  derived from a vision handle keep accepting images. Verified against
+  Qwen2-VL-2B-Instruct (Apache-2.0; the pinned registry aliases above).
+  Text-only calls are byte-identical to before.
 
 # relm 0.1.0
 

@@ -73,7 +73,8 @@ On a handle loaded with \code{\link[=llm]{llm()}}'s \code{projector} argument, \
 (text, image) pair into one row: a \strong{list parallel to \code{x}}, where
 \code{images[[i]]} is a character vector of image file paths for input \code{i}
 (\code{character(0)} for none), or a bare character vector for a single input
-(recycled across several inputs with a warning) — the same pairing contract
+(recycled across several inputs with a warning; an empty vector is the same
+as \code{NULL}) — the same pairing contract
 as \code{\link[=llm_generate]{llm_generate()}}'s \code{images}. Images are inserted \strong{before} the text.
 The accepted formats and pre-decode limits are exactly \code{\link[=llm_generate]{llm_generate()}}'s:
 \strong{JPEG, PNG, BMP} only, at most 64 MB per file by default
@@ -96,6 +97,21 @@ without a projector raise \code{relm_error_image}.
 \dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
 m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 e <- llm_embed(m, c(a = "cats and dogs", b = "domestic pets"))
+dim(e)
+close(m)
+\dontshow{\}) # examplesIf}
+\dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))) withAutoprint(\{ # examplesIf}
+# Image embeddings (requires a projector -- see llm()).
+m <- llm(Sys.getenv("RELM_TEST_MODEL_VLM"),
+  projector = Sys.getenv("RELM_TEST_MMPROJ_VLM")
+)
+img <- file.path(tempdir(), "square.png")
+png(img, width = 224, height = 224)
+par(mar = c(0, 0, 0, 0))
+plot.new()
+rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
+dev.off()
+e <- llm_embed(m, "", images = img) # the image alone, one row
 dim(e)
 close(m)
 \dontshow{\}) # examplesIf}
