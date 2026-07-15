@@ -668,15 +668,11 @@ impl LoadedModel {
 
     // --- crate-internal vision support (vision.rs, WP-V2/D-026) -------------
 
-    /// Whether this handle was loaded with a projector (`llm(projector=)`) and
-    /// can take image input. Carries over to a derived (intervened) handle:
-    /// the vision context lives on the `Arc`-shared `Model`.
-    pub fn has_vision(&self) -> bool {
-        self.ctx.model.vision.is_some()
-    }
-
     /// The live mtmd (vision-encoder) context, if any. Crate-internal like the
-    /// other raw handles (ARCHITECTURE.md §2.2).
+    /// other raw handles (ARCHITECTURE.md §2.2). `Some` iff the model was
+    /// loaded with a projector (`llm(projector=)`); carries over to a derived
+    /// (intervened) handle — the vision context lives on the `Arc`-shared
+    /// `Model`.
     pub(crate) fn vision_ptr(&self) -> Option<*mut ffi::mtmd_context> {
         self.ctx.model.vision.as_ref().map(|v| v.as_ptr())
     }
