@@ -274,6 +274,17 @@ fn drain_mtmd_log() -> String {
     std::mem::take(&mut *buf).trim().to_string()
 }
 
+/// [`drain_mtmd_log`] with the fixed fallback every mtmd failure message
+/// embeds when the engine logged nothing.
+fn drain_mtmd_detail() -> String {
+    let engine_reason = drain_mtmd_log();
+    if engine_reason.is_empty() {
+        String::from("no engine detail available")
+    } else {
+        engine_reason
+    }
+}
+
 /// Parse the engine's own mmproj-model mismatch message into the two sizes.
 /// The format string is pinned at the vendored tag (mtmd.cpp L372-376):
 /// `"mismatch between text model (n_embd = %d) and mmproj (n_embd = %d)\n..."`.
@@ -400,10 +411,12 @@ pub(crate) fn load_projector(
     // the exception was caught internally (mtmd.cpp L798-803) and logged.
     let probe = unsafe { ffi::mtmd_init_from_file(c_path.as_ptr(), model_ptr, probe_params) };
     let Some(probe_ptr) = NonNull::new(probe) else {
-        let engine_reason = drain_mtmd_log();
+        // The fallback detail never parses as a mismatch, so running the parse
+        // on it (instead of on the raw drained log) changes nothing.
+        let detail = drain_mtmd_detail();
         // SAFETY: `model_ptr` is a live model; read-only scalar getter.
         let n_embd_inp = unsafe { ffi::llama_model_n_embd_inp(model_ptr) };
-        if let Some((text_embd, clip_embd)) = parse_embd_mismatch(&engine_reason) {
+        if let Some((text_embd, clip_embd)) = parse_embd_mismatch(&detail) {
             return Err(image_err(
                 format!(
                     "The projector '{path_display}' does not match this model: the \
@@ -415,11 +428,6 @@ pub(crate) fn load_projector(
                 Some(clip_embd),
             ));
         }
-        let detail = if engine_reason.is_empty() {
-            String::from("no engine detail available")
-        } else {
-            engine_reason
-        };
         return Err(image_err(
             format!(
                 "Failed to load the projector '{path_display}' ({detail}). The file \
@@ -450,12 +458,7 @@ pub(crate) fn load_projector(
         // SAFETY: same contract as the probe call.
         let ctx = unsafe { ffi::mtmd_init_from_file(c_path.as_ptr(), model_ptr, params) };
         let Some(ptr) = NonNull::new(ctx) else {
-            let engine_reason = drain_mtmd_log();
-            let detail = if engine_reason.is_empty() {
-                String::from("no engine detail available")
-            } else {
-                engine_reason
-            };
+            let detail = drain_mtmd_detail();
             return Err(image_err(
                 format!(
                     "Failed to initialize the projector '{path_display}' on the GPU \
@@ -624,12 +627,7 @@ impl LoadedModel {
             // MTMD_VIDEO=OFF: the only branch that sets video_ctx is compiled out.
             debug_assert!(wrapper.video_ctx.is_null());
             let ptr = NonNull::new(wrapper.bitmap).ok_or_else(|| {
-                let engine_reason = drain_mtmd_log();
-                let detail = if engine_reason.is_empty() {
-                    String::from("no engine detail available")
-                } else {
-                    engine_reason
-                };
+                let detail = drain_mtmd_detail();
                 RebirthError::Image {
                     reason: format!(
                         "'{path}' passed the format gate but could not be decoded \
@@ -696,12 +694,7 @@ impl LoadedModel {
                     .to_string(),
             }),
             _ => {
-                let engine_reason = drain_mtmd_log();
-                let detail = if engine_reason.is_empty() {
-                    String::from("no engine detail available")
-                } else {
-                    engine_reason
-                };
+                let detail = drain_mtmd_detail();
                 Err(RebirthError::Image {
                     reason: format!(
                         "Image preprocessing failed ({detail}). The image may use \
@@ -816,12 +809,7 @@ impl LoadedModel {
             )
         };
         if status != 0 {
-            let engine_reason = drain_mtmd_log();
-            let detail = if engine_reason.is_empty() {
-                String::from("no engine detail available")
-            } else {
-                engine_reason
-            };
+            let detail = drain_mtmd_detail();
             return Err(RebirthError::Generation {
                 reason: format!("multimodal ingest failed (status {status}: {detail})"),
             });
@@ -889,12 +877,7 @@ impl LoadedModel {
             // inside the mtmd context (no llama context involved).
             let status = unsafe { ffi::mtmd_encode_chunk(mctx, chunk) };
             if status != 0 {
-                let engine_reason = drain_mtmd_log();
-                let detail = if engine_reason.is_empty() {
-                    String::from("no engine detail available")
-                } else {
-                    engine_reason
-                };
+                let detail = drain_mtmd_detail();
                 return Err(RebirthError::Image {
                     reason: format!(
                         "The vision encoder failed on '{image}' (status {status}: {detail})."
@@ -1153,12 +1136,7 @@ impl LoadedModel {
                     )
                 };
                 if status != 0 {
-                    let engine_reason = drain_mtmd_log();
-                    let detail = if engine_reason.is_empty() {
-                        String::from("no engine detail available")
-                    } else {
-                        engine_reason
-                    };
+                    let detail = drain_mtmd_detail();
                     return Err(RebirthError::Embed {
                         reason: format!(
                             "The engine failed to encode an image for embedding \
