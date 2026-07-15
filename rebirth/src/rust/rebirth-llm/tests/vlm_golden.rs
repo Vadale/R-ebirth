@@ -91,6 +91,66 @@ fn red_square() -> String {
         .to_string()
 }
 
+// --- cosine unit tests (model-free: these RUN in per-commit CI) --------------
+//
+// The cross-machine leg rests entirely on one claim: float noise leaves the
+// cosine at ~1, a real regression collapses it. That claim is the gate, so it
+// is tested here rather than assumed -- the [MODEL] leg above cannot check it
+// (per-commit CI has no VLM, and a nightly only ever sees the healthy case).
+
+#[test]
+fn cosine_is_one_for_identical_and_scaled_vectors() {
+    let a = [1.0f32, -2.0, 3.5, 0.25];
+    assert!((cosine(&a, &a) - 1.0).abs() < 1e-12);
+    // Scale invariance is why the leg survives a machine that computes the same
+    // direction with slightly different magnitudes.
+    let scaled: Vec<f32> = a.iter().map(|v| v * 7.5).collect();
+    assert!((cosine(&a, &scaled) - 1.0).abs() < 1e-12);
+}
+
+#[test]
+fn cosine_matches_a_hand_computed_value() {
+    // (1,0) vs (1,1) = 1/sqrt(2); an independent value, not a property.
+    let cos = cosine(&[1.0, 0.0], &[1.0, 1.0]);
+    assert!(
+        (cos - std::f64::consts::FRAC_1_SQRT_2).abs() < 1e-12,
+        "{cos}"
+    );
+    assert!((cosine(&[1.0, 0.0], &[0.0, 1.0])).abs() < 1e-12); // orthogonal -> 0
+    assert!((cosine(&[1.0, 2.0], &[-1.0, -2.0]) + 1.0).abs() < 1e-12); // opposite -> -1
+}
+
+#[test]
+fn cosine_tolerates_noise_but_collapses_on_a_broken_vector() {
+    // A 4096-value stand-in for an encoder output.
+    let base: Vec<f32> = (0..4096).map(|i| ((i % 97) as f32 - 48.0) * 0.1).collect();
+
+    // Noise at 100x the worst cross-machine divergence this leg has seen
+    // (3.96e-2 on x86_64) must still leave the cosine essentially at 1 --
+    // otherwise the floor would be measuring the runner, not the code.
+    let noisy: Vec<f32> = base
+        .iter()
+        .enumerate()
+        .map(|(i, v)| v + if i % 2 == 0 { 4.0 } else { -4.0 })
+        .collect();
+    let cos_noise = cosine(&base, &noisy);
+
+    // A regression that scrambles the output must be caught. Reversal keeps
+    // every value, the mean, and the norm identical -- only the direction
+    // changes, so an ATOL-style check on sorted stats could miss it.
+    let reversed: Vec<f32> = base.iter().rev().copied().collect();
+    let cos_broken = cosine(&base, &reversed);
+
+    assert!(
+        cos_broken < cos_noise,
+        "a scrambled vector must score below a noisy one: broken {cos_broken}, noisy {cos_noise}"
+    );
+    assert!(
+        cos_broken < 0.9,
+        "cosine failed to collapse on a scrambled vector: {cos_broken}"
+    );
+}
+
 fn load_vlm_cpu() -> Option<rebirth_llm::LoadedModel> {
     let (model_path, mmproj_path) = vlm_paths()?;
     Some(
