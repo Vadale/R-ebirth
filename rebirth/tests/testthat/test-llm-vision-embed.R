@@ -44,7 +44,7 @@ test_that("on macOS the fingerprint names the CPU, not just the platform", {
   # and a PATH-stripped session (R.app, launchd) that lost `sysctl` would
   # silently stop running it. That must be loud.
   skip_if_not(identical(Sys.info()[["sysname"]], "Darwin"), "macOS-only assertion")
-  expect_false(grepl("unknown-cpu", machine_fingerprint(), fixed = TRUE))
+  expect_false(grepl(UNKNOWN_CPU, machine_fingerprint(), fixed = TRUE))
 })
 
 test_that("the committed T2 sidecar names a real machine and matches its golden", {
@@ -73,7 +73,7 @@ test_that("the committed T2 sidecar names a real machine and matches its golden"
   # live answer (it just skips) but never as a recorded key: two unrelated
   # machines would both derive it, match each other, and run a pin recorded on
   # neither -- the one accidental-match hole in this gate.
-  expect_false(grepl("unknown-cpu", recorded, fixed = TRUE))
+  expect_false(grepl(UNKNOWN_CPU, recorded, fixed = TRUE))
 })
 
 # A golden + sidecar on disk for the pure verify_golden_sidecar() below. No
@@ -136,7 +136,7 @@ test_that("the CPU is parsed from both /proc/cpuinfo shapes", {
   # run a pin recorded on neither.
   arm <- cpu_from_cpuinfo(readLines(test_path("fixtures", "cpuinfo-aarch64.txt")))
   expect_identical(arm, "0x41/0xd0c/8")
-  expect_false(grepl("unknown", arm, fixed = TRUE))
+  expect_false(grepl(UNKNOWN_CPU, arm, fixed = TRUE))
   expect_false(identical(arm, x86))
 
   # Nothing recognizable -> NA, which machine_fingerprint() turns into the

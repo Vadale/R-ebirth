@@ -107,6 +107,14 @@ vision_golden_path <- function(name) {
 # Linux aarch64 build. The remaining fallback is contained by never letting a
 # committed sidecar hold "unknown-cpu" (asserted per-commit in
 # test-llm-vision-embed.R), so such a machine matches nothing and always skips.
+# The sentinel machine_fingerprint() falls back to when the CPU cannot be read.
+# Defined once and referenced by every guard against it (this file, the vision
+# tests, R-CMD-check.yaml's sidecar step, which sources this file). As a bare
+# literal in each place it was rule 8f's shape across R and YAML, with the worst
+# failure mode available: rename the fallback and all three guards keep passing
+# while checking nothing -- a silent no-op, which is this mechanism's own subject.
+UNKNOWN_CPU <- "unknown-cpu"
+
 # The /proc/cpuinfo half, as a pure function of the file's LINES so it can be
 # tested off the hardware that produces them. CI is ubuntu-24.04 (x86_64) +
 # macos-15, so the aarch64 branch below runs on no CI machine and no assertion
@@ -154,7 +162,7 @@ machine_fingerprint <- function() {
     error = function(e) NA_character_,
     warning = function(w) NA_character_
   )
-  if (length(cpu) != 1L || is.na(cpu) || !nzchar(cpu)) cpu <- "unknown-cpu"
+  if (length(cpu) != 1L || is.na(cpu) || !nzchar(cpu)) cpu <- UNKNOWN_CPU
   paste(info[["sysname"]], info[["machine"]], cpu, sep = " | ")
 }
 

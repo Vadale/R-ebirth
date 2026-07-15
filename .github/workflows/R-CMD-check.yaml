@@ -92,20 +92,37 @@ jobs:
         run: |
           Rscript - <<'RS'
           source("rebirth/tests/testthat/helper-llm.R")
+          # The annotation must be emitted BEFORE stop(): R prefixes its own
+          # "Error: ", so a ::error:: inside the message never starts a line and
+          # GitHub never parses it. Exit 1 is what actually gates; this only buys
+          # the PR-UI annotation.
+          fail <- function(...) {
+            msg <- sprintf(...)
+            cat(sprintf("::error::%s\n", msg), file = stderr())
+            stop(msg, call. = FALSE)
+          }
           sidecars <- Sys.glob("tests/llm-golden/*/goldens/*.machine")
-          if (length(sidecars) == 0L) stop("no golden sidecars found; the glob is wrong or they were deleted")
+          # A gate that silently verifies zero files is the failure this step is about.
+          if (length(sidecars) == 0L) fail("no golden sidecars found; the glob is wrong or they were deleted")
           for (s in sidecars) {
             golden <- sub("\\.machine$", "", s)
-            if (!file.exists(golden)) {
-              stop(sprintf("::error::orphan sidecar '%s': its golden '%s' does not exist", s, golden))
-            }
+            # verify_golden_sidecar() deliberately tolerates an absent golden (so
+            # R CMD check does not break), so the orphan case is caught here.
+            if (!file.exists(golden)) fail("orphan sidecar '%s': its golden '%s' does not exist", s, golden)
             # Errors loudly on a stale or digest-less sidecar; that is the gate.
-            machine <- verify_golden_sidecar(golden, s)
-            if (is.na(machine) || !nzchar(machine)) {
-              stop(sprintf("::error::sidecar '%s' names no machine", s))
-            }
-            if (grepl("unknown-cpu", machine, fixed = TRUE)) {
-              stop(sprintf("::error::sidecar '%s' records 'unknown-cpu', which is not an identity: two unrelated machines would match it", s))
+            # Wrapped, not called bare: those stops are raised INSIDE the helper,
+            # so without this they would exit 1 (the gate holds) but never reach
+            # fail() and never annotate -- an annotator covering four of six
+            # failure modes, silently missing the two that matter most.
+            machine <- tryCatch(
+              verify_golden_sidecar(golden, s),
+              error = function(e) fail("%s", conditionMessage(e))
+            )
+            if (is.na(machine) || !nzchar(machine)) fail("sidecar '%s' names no machine", s)
+            # UNKNOWN_CPU comes from the sourced helper, never retyped here: a
+            # bare literal would keep "passing" if the sentinel were renamed.
+            if (grepl(UNKNOWN_CPU, machine, fixed = TRUE)) {
+              fail("sidecar '%s' records '%s', which is not an identity: two unrelated machines would match it", s, UNKNOWN_CPU)
             }
             cat(sprintf("verified %s -> %s\n", basename(golden), machine))
           }
