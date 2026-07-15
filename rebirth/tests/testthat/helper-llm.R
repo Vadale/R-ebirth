@@ -31,11 +31,35 @@ stub_llm <- function(closed = FALSE, interventions = list(), architecture = "qwe
   )
 }
 
+# Shared model/fixture path helpers for the vision test files
+# (test-llm-vision.R + test-llm-vision-embed.R). Several older test files still
+# carry identical file-local copies of the first two, which harmlessly shadow
+# these within those files.
+synthetic_model_path <- function() {
+  p <- testthat::test_path("fixtures", "synthetic-llama-2l.gguf")
+  skip_if_not(file.exists(p), "synthetic GGUF fixture is missing")
+  p
+}
+
+qwen_model_path <- function() {
+  p <- path.expand(Sys.getenv("RELM_TEST_MODEL_QWEN"))
+  skip_if_not(
+    nzchar(p) && file.exists(p),
+    "RELM_TEST_MODEL_QWEN is not set to an existing GGUF file"
+  )
+  p
+}
+
+vision_fixture <- function(name) {
+  p <- testthat::test_path("fixtures", "vision", name)
+  skip_if_not(file.exists(p), sprintf("vision fixture '%s' is missing", name))
+  p
+}
+
 # [MODEL] model-path helpers for the WP7.5a modern-model families. Each is gated
 # on its own environment variable pointing at a local text-only instruct GGUF, so
 # these tests run only on the founder's Mac (Metal) and skip in CI/CRAN, which have
-# no such model. (`qwen_model_path()`/`synthetic_model_path()` live in
-# test-llm-generate.R; defining these here keeps them available to every test file.)
+# no such model.
 gemma4_model_path <- function() {
   p <- path.expand(Sys.getenv("RELM_TEST_MODEL_GEMMA4"))
   skip_if_not(
