@@ -160,13 +160,18 @@ check_images_usable <- function(m, image_sets, call = sys.call(-1L)) {
   invisible(NULL)
 }
 
+# The default per-image byte cap (64 MB, documented on llm_generate/llm_embed).
+# One binding so the option default below and the callers' images-absent
+# placeholder (the boundary ignores it on the text-only path) can never drift.
+relm_image_max_bytes_default <- 64 * 1024^2
+
 # The per-image byte cap consulted only when images are present: the documented
 # override `options(relm.image_max_bytes=)`, default 64 MB. The engine
 # additionally enforces its own hard ceiling (2^31 - 1 bytes) and the
 # dimension/pixel caps regardless of this option. Validated here so a broken
 # option is a classed R error, not a boundary reject.
 image_max_bytes <- function(call = sys.call(-1L)) {
-  cap <- getOption("relm.image_max_bytes", 64 * 1024^2)
+  cap <- getOption("relm.image_max_bytes", relm_image_max_bytes_default)
   if (!is.numeric(cap) || length(cap) != 1L || is.na(cap) || cap <= 0) {
     abort_argument(
       "relm.image_max_bytes",

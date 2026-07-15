@@ -128,7 +128,7 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
       "`x` must not contain empty strings (\"\"); every element needs text to embed (or an image in `images`)."
     )
   }
-  max_bytes <- if (any(has_image)) image_max_bytes() else 64 * 1024^2
+  max_bytes <- if (any(has_image)) image_max_bytes() else relm_image_max_bytes_default
   check_images_usable(m, image_sets)
 
   # All-empty sets (e.g. images = list(character(0))) are a text-only call:

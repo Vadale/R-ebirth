@@ -135,7 +135,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   image_sets <- normalize_images(images, length(prompt))
   check_prompt_markers(prompt, image_sets, arg_name = "prompt")
   has_images <- !is.null(image_sets) && any(lengths(image_sets) > 0L)
-  max_bytes <- if (has_images) image_max_bytes() else 64 * 1024^2
+  max_bytes <- if (has_images) image_max_bytes() else relm_image_max_bytes_default
   check_images_usable(m, image_sets)
 
   if (is.null(seed)) {
