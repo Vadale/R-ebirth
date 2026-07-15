@@ -607,6 +607,32 @@ fn check_no_user_marker(text: &str, marker: &str) -> Result<(), RebirthError> {
     Ok(())
 }
 
+/// The classed reject shared verbatim by the T1 (generate) and T2 (embed)
+/// entry points for image input on a handle loaded without `llm(projector=)`.
+/// The R layer raises the same message pre-boundary; this is the engine-side
+/// contract for non-R callers.
+fn no_projector_error() -> RebirthError {
+    RebirthError::Image {
+        reason: "This model was loaded without a projector, so it cannot \
+                 take image input. Reload it with llm(path, projector = \
+                 <mmproj GGUF>) to enable images."
+            .to_string(),
+        path: None,
+        expected: None,
+        actual: None,
+    }
+}
+
+/// One media marker per image BEFORE the text — the grammar's images-before-
+/// text placement (interleaved-marker control is a reserved later capability),
+/// authored identically by T1 and T2 so `mtmd_tokenize` always sees exactly
+/// one marker per bitmap.
+fn markers_then_text(marker: &str, n_images: usize, text: &str) -> String {
+    let mut content = marker.repeat(n_images);
+    content.push_str(text);
+    content
+}
+
 // --- shared image ingest building blocks (T1 generate + T2 embed) -------------
 
 impl LoadedModel {
@@ -740,15 +766,7 @@ impl LoadedModel {
         }
         self.require_tokenizer()?;
         let Some(mctx) = self.vision_ptr() else {
-            return Err(RebirthError::Image {
-                reason: "This model was loaded without a projector, so it cannot \
-                         take image input. Reload it with llm(path, projector = \
-                         <mmproj GGUF>) to enable images."
-                    .to_string(),
-                path: None,
-                expected: None,
-                actual: None,
-            });
+            return Err(no_projector_error());
         };
         if params.max_tokens == 0 {
             return Ok(Generation {
@@ -777,8 +795,7 @@ impl LoadedModel {
         // 3. One marker per image BEFORE the text, then the usual chat
         //    templating — identical to the text path's resolution — and the
         //    split into interleaved text/image chunks.
-        let mut content = marker.repeat(images.len());
-        content.push_str(prompt);
+        let content = markers_then_text(&marker, images.len(), prompt);
         let (text, add_special, parse_special) = self.resolve_prompt_text(&content, chat)?;
         let chunks =
             self.tokenize_with_images(mctx, &text, add_special, parse_special, &bitmaps)?;
@@ -956,15 +973,7 @@ impl LoadedModel {
         self.require_tokenizer()?;
         let reduction = self.resolve_reduction(pooling)?;
         let Some(mctx) = self.vision_ptr() else {
-            return Err(RebirthError::Image {
-                reason: "This model was loaded without a projector, so it cannot \
-                         take image input. Reload it with llm(path, projector = \
-                         <mmproj GGUF>) to enable images."
-                    .to_string(),
-                path: None,
-                expected: None,
-                actual: None,
-            });
+            return Err(no_projector_error());
         };
         install_mtmd_log();
         let marker = default_marker();
@@ -989,8 +998,7 @@ impl LoadedModel {
             } else {
                 check_no_user_marker(text, &marker)?;
                 let bitmaps = self.decode_bitmaps(mctx, images, image_max_bytes)?;
-                let mut content = marker.repeat(images.len());
-                content.push_str(text);
+                let content = markers_then_text(&marker, images.len(), text);
                 // Same tokenization contract as the text embed path
                 // (add_special = true, parse_special = false): the input is
                 // embedded verbatim, never chat-templated.
