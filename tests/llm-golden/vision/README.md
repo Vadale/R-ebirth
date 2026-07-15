@@ -140,9 +140,26 @@ regression. The cross-build `mtmd_get_output_embd` ATOL leg — the BINDING
 WP-V4 item (D-026 first addendum) — extends nightly coverage to the encoder
 output itself; it is delivered, and documented in the section below.
 
-Reproduction (macOS arm64, CPU backend — the values are deterministic on this
-platform; other ISAs/thread pools may differ in the last decimals, which is
-why the gate runs `[MODEL]` on the recording platform with `atol 1e-5`):
+**Running it (D-026 fourth addendum).** The pin holds bit-for-bit only on the
+machine that recorded it, so it skips unless you say you are on that machine:
+
+```sh
+RELM_VISION_RECORDING_MACHINE=1 Rscript -e 'devtools::test(filter = "vision")'
+```
+
+"Other ISAs may differ in the last decimals" — the original wording here — turned
+out to understate it by two orders of magnitude: a *non-M4 arm64* runner (same
+OS, same arch) measured `max |d| = 6.05e-3` against this pin, 600× the tolerance,
+while the byte-exact text golden passed in the same run. The old
+`Darwin && arm64` gate was therefore never right: it named a platform where a
+**machine** was meant. Unlike the encoder leg, this pin cannot be regenerated on
+another machine — no upstream reference exists for a pooled multimodal embedding
+at b9726 (D-026 second addendum), so there is nothing to regenerate *from*. The
+nightly's T2 coverage is the cat-vs-car semantic gate instead, which holds
+anywhere.
+
+Reproduction (macOS arm64, CPU backend — the values are deterministic on the
+recording machine; see above for what "other platforms" really costs):
 
 ```r
 m <- llm("Qwen2-VL-2B-Instruct-Q4_K_M.gguf",
@@ -158,13 +175,32 @@ artifacts (SHA256s above); vector L2-norm = 1 (normalized), 1536 dims.
 
 ## The BINDING embd-ATOL leg (WP-V4, D-026 first addendum — DELIVERED)
 
-`goldens/encode-red-square-f32.txt` is the **unpatched-upstream reference**
-for the raw image-encoder output (`mtmd_encode_chunk` →
-`mtmd_get_output_embd`) of the committed red-square image under the pinned
-projector. Reproduction, exactly as run on 2026-07-15 (macOS 26.5.2 arm64,
+`goldens/encode-red-square-f32.txt` is an **unpatched-upstream reference** for
+the raw image-encoder output (`mtmd_encode_chunk` → `mtmd_get_output_embd`) of
+the committed red-square image under the pinned projector — the one recorded on
+the founder's M4.
+
+**It is not the only reference, and it is not the one the nightly uses**
+(D-026 fourth addendum). A float reference belongs to the machine that produced
+it: this file is bit-exact on the M4 and *cannot* pass anywhere else, because
+the same pristine upstream build disagrees with its own arm64 self by up to
+`8.71` across ISAs — and by different amounts on different runners of the same
+label. So the nightly rebuilds the pristine b9726 tarball on its own runner,
+produces the reference *there*, and points `RELM_VISION_ENCODER_REFERENCE` at
+it. The gate then stays **exact everywhere**, with no tolerance to tune:
+
+```
+relm vs upstream, SAME machine  ->  max |d| = 0.0   (M4 and x86_64 alike)
+```
+
+This committed file remains the fast path on the recording machine — no
+12-minute pristine build for a local check — and the honest, loud failure
+anywhere else.
+
+Reproduction, exactly as run on 2026-07-15 (macOS 26.5.2 arm64,
 Apple clang 21.0.0; `$REF` = the pristine b9726 tree extracted from the
 SHA-verified tarball and built CPU-only with the same cmake line as the
-mtmd-cli section above):
+mtmd-cli section above). The nightly runs these same two commands on its runner:
 
 ```sh
 cc -O2 -o dump-encode tests/llm-golden/vision/tools/dump-encode.c \
