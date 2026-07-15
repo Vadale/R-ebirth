@@ -75,6 +75,43 @@ jobs:
       - name: demo-B plot self-test (model-free)
         run: Rscript -e 'Sys.setenv(RELM_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
 
+      # The COMMITTED golden sidecars, verified from the checkout (D-026 fifth
+      # addendum). The testthat suite cannot do this per-commit: the goldens live
+      # at the repo root, outside the built tarball, so under R CMD check that
+      # test skips -- and a skip is the wrong answer for the one check that
+      # validates the real artifact rather than the mechanism. Re-recording a
+      # golden and forgetting its sidecar would then merge green and surface only
+      # in that night's vision job.
+      #
+      # Possible only because verify_golden_sidecar() takes explicit paths: it
+      # needs no testthat context, no built package, and no model, so the real
+      # function runs here on the real files -- no reimplementation in shell, and
+      # therefore no R-vs-shell twin to drift (rule 8f).
+      - name: committed golden sidecars (model-free)
+        shell: bash
+        run: |
+          Rscript - <<'RS'
+          source("rebirth/tests/testthat/helper-llm.R")
+          sidecars <- Sys.glob("tests/llm-golden/*/goldens/*.machine")
+          if (length(sidecars) == 0L) stop("no golden sidecars found; the glob is wrong or they were deleted")
+          for (s in sidecars) {
+            golden <- sub("\\.machine$", "", s)
+            if (!file.exists(golden)) {
+              stop(sprintf("::error::orphan sidecar '%s': its golden '%s' does not exist", s, golden))
+            }
+            # Errors loudly on a stale or digest-less sidecar; that is the gate.
+            machine <- verify_golden_sidecar(golden, s)
+            if (is.na(machine) || !nzchar(machine)) {
+              stop(sprintf("::error::sidecar '%s' names no machine", s))
+            }
+            if (grepl("unknown-cpu", machine, fixed = TRUE)) {
+              stop(sprintf("::error::sidecar '%s' records 'unknown-cpu', which is not an identity: two unrelated machines would match it", s))
+            }
+            cat(sprintf("verified %s -> %s\n", basename(golden), machine))
+          }
+          cat(sprintf("%d golden sidecar(s) verified against their goldens\n", length(sidecars)))
+          RS
+
       # Lint the R-boundary crate here rather than in rust.yaml: rebirth-ffi's
       # build needs R on the PATH (provided by the steps above). rust.yaml lints
       # the R-free rebirth-llm.

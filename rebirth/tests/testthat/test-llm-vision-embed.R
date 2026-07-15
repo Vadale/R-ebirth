@@ -16,9 +16,13 @@
 
 # --- [CI] the machine gate that decides whether the T2 pin runs ---------------
 
-# These run per-commit, model-free, and they are the reason the pin below is
-# trustworthy: the pin itself only executes on one machine in the world, so the
-# mechanism deciding that has to be checked somewhere that runs everywhere.
+# The MECHANISM tests here run per-commit, model-free, on every platform: they
+# are the reason the pin below is trustworthy, since the pin itself executes on
+# one machine in the world and whatever decides that must be checked where
+# everything runs. They touch no repo golden -- tempfiles and fixtures only --
+# which is exactly why they run under R CMD check. The one test that reads the
+# COMMITTED sidecar cannot (goldens live outside the tarball); it says so, and
+# R-CMD-check.yaml's "committed golden sidecars" step covers those files instead.
 # Rule 8d: the key is derived from the machine, never asserted by an operator.
 
 test_that("the machine fingerprint is derived, well-formed, and stable", {
@@ -44,11 +48,19 @@ test_that("on macOS the fingerprint names the CPU, not just the platform", {
 })
 
 test_that("the committed T2 sidecar names a real machine and matches its golden", {
-  # A corrupt, stale, or truncated sidecar must be caught HERE -- per-commit, on
-  # every platform -- and not on the one machine that would have run the pin.
+  # WHERE THIS RUNS (rule 8e): the nightly vision job and a repo checkout -- NOT
+  # per-commit, because the goldens live at the repo root, outside the built
+  # tarball, so R CMD check skips it here. An earlier version of this comment
+  # claimed per-commit and was simply false; the skip counts proved it.
+  #
+  # The per-commit gate on these same files is the "committed golden sidecars"
+  # step in R-CMD-check.yaml, which calls verify_golden_sidecar() on the checkout
+  # -- possible because that function takes explicit paths. This test is the same
+  # check from inside the suite; the mechanism itself is covered per-commit by
+  # the tempfile tests above, which need no repo at all.
   skip_if_not(
     file.exists(vision_golden_path("embed-red-square-mean.csv")),
-    "vision goldens not present (repo layout only)"
+    "vision goldens not present (outside the tarball; see the R-CMD-check step)"
   )
   # This also exercises the digest check: golden_machine() errors on a stale
   # sidecar, so a bare call passing IS the assertion that the two are in sync.
