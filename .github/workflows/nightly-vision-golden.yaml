@@ -89,7 +89,7 @@ jobs:
       MMPROJ_SHA256: ecb20cabcdd8dbc277de06bd6eb980aeb2adfaaba9f199a434e328d205675d03
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
 

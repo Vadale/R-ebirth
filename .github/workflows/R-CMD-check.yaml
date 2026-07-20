@@ -35,7 +35,7 @@ jobs:
       CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -45,7 +45,7 @@ jobs:
       # rustc through sccache so the C++ engine isn't recompiled from scratch each
       # run. Content-keyed, so it survives R CMD check's temp build dir + cleanup.
       - name: sccache (compiler cache)
-        uses: mozilla-actions/sccache-action@v0.0.9
+        uses: mozilla-actions/sccache-action@v0.0.10
 
       - uses: r-lib/actions/setup-pandoc@v2
 

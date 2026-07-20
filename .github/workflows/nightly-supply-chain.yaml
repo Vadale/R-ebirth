@@ -35,7 +35,7 @@ jobs:
         working-directory: rebirth/src/rust
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -103,7 +103,7 @@ jobs:
     name: cargo deny check advisories
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Install a PREBUILT cargo-deny binary (~seconds). The Docker-based
       # cargo-deny-action rebuilds its image ~10 min/run (measured on the per-PR
