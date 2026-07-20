@@ -41,7 +41,7 @@ jobs:
         working-directory: rebirth/src/rust
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
         with:
@@ -52,7 +52,7 @@ jobs:
       # route rustc and the engine's cmake build through sccache; the GHA backend
       # stores the cache. The dominant CI cost is recompiling llama.cpp each run.
       - name: sccache (compiler cache)
-        uses: mozilla-actions/sccache-action@v0.0.9
+        uses: mozilla-actions/sccache-action@v0.0.10
 
       # rebirth-ffi is the extendr boundary crate: building it requires R (the
       # extendr-ffi build script locates R). This R-free job therefore builds,
@@ -91,9 +91,9 @@ jobs:
     name: harness B golden self-check
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
 
@@ -112,7 +112,7 @@ jobs:
     name: vendored tree integrity (G4 + patch coherence)
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: verify vendored llama.cpp tree SHA256 + patch coherence
         run: sh rebirth/src/llama.cpp/patches/verify_vendored_tree.sh
@@ -129,7 +129,7 @@ jobs:
     name: supply-chain (cargo-deny licenses/bans/sources)
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Install a PREBUILT cargo-deny binary (~seconds) instead of the Docker-based
       # cargo-deny-action, whose image build cost ~10 min/run while the check itself is
@@ -164,14 +164,14 @@ jobs:
         working-directory: rebirth/src/rust
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-apple-darwin
 
       - name: sccache (compiler cache)
-        uses: mozilla-actions/sccache-action@v0.0.9
+        uses: mozilla-actions/sccache-action@v0.0.10
 
       - name: cargo test --no-run for x86_64-apple-darwin (link is the gate)
         run: cargo test -p rebirth-llm --no-run --target x86_64-apple-darwin

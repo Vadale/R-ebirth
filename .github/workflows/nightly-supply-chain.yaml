@@ -35,7 +35,7 @@ jobs:
         working-directory: rebirth/src/rust
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -51,13 +51,48 @@ jobs:
       - name: Run cargo audit (fail loud on any vulnerability)
         run: |
           set -uo pipefail
+
+          # dtolnay/rust-toolchain exports CARGO_TERM_COLOR=always, so cargo audit
+          # emits SGR escapes even through a pipe -- the scan line reaches the log as
+          # "Scanning\e[0m Cargo.lock ...", and the plain-text pattern below never
+          # matched it. That turned this job red on every run from the day it was
+          # added until 2026-07-20 (13/13), which is worse than the false green it
+          # guards against: a permanently red nightly hides a REAL advisory. Strip the
+          # escapes before matching; do not depend on any tool's colour flag.
+          scanned_nonempty_lockfile() { # $1 = a cargo-audit log file
+            local plain
+            plain=$(sed -e $'s/\033\\[[0-9;]*m//g' "$1")
+            grep -Eq "Scanning Cargo\.lock for vulnerabilities \([1-9][0-9]* crate" <<<"$plain"
+          }
+
+          # Self-test the matcher on both outcomes before trusting it on the real log.
+          # A gate that cannot pass is what broke here; a gate that cannot fail is what
+          # it exists to prevent. Both are now checked every night, on real bytes (the
+          # accept sample is copied verbatim from run 29726898989).
+          printf '\033[0m\033[1m\033[32m    Scanning\033[0m Cargo.lock for vulnerabilities (76 crate dependencies)\n' > selftest-accept.log
+          printf '\033[0m\033[1m\033[32m    Scanning\033[0m Cargo.lock for vulnerabilities (0 crate dependencies)\n' > selftest-reject.log
+          if ! scanned_nonempty_lockfile selftest-accept.log; then
+            echo "::error::self-test: the scan matcher rejects a known-good cargo audit line — fix the matcher, not the sample."
+            exit 1
+          fi
+          if scanned_nonempty_lockfile selftest-reject.log; then
+            echo "::error::self-test: the scan matcher accepts a 0-crate scan — it can no longer detect a false green."
+            exit 1
+          fi
+
+          # GitHub runs this block as `bash -e`, and pipefail makes a failing audit fail
+          # the pipeline -- so without this bracket the step aborts HERE and the triage
+          # annotation below is never printed, on exactly the run that needs it. The
+          # exit code still gated correctly, which is why it went unnoticed.
+          set +e
           cargo audit 2>&1 | tee audit.log
           status=${PIPESTATUS[0]}
+          set -e
           if [ "$status" -ne 0 ]; then
             echo "::error::cargo audit reported a security vulnerability in the dependency tree (exit $status). Triage the advisory above; do not ignore it without a documented reason in deny.toml."
             exit 1
           fi
-          if ! grep -Eq "Scanning Cargo.lock for vulnerabilities \([1-9][0-9]* crate" audit.log; then
+          if ! scanned_nonempty_lockfile audit.log; then
             echo "::error::cargo audit did not scan the lockfile (0 crates) — refusing a false green."
             exit 1
           fi
@@ -68,7 +103,7 @@ jobs:
     name: cargo deny check advisories
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Install a PREBUILT cargo-deny binary (~seconds). The Docker-based
       # cargo-deny-action rebuilds its image ~10 min/run (measured on the per-PR
