@@ -59,7 +59,7 @@ tests/demos/        the two reference demos (anatomy lab; topics without Python)
 
 ## Planning documents (the single source of truth)
 
-`CLAUDE.md`, `SOLO-PHASE-PLAN.md`, `ROADMAP.md`, `API-GRAMMAR.md`,
+`SOLO-PHASE-PLAN.md`, `ROADMAP.md`, `API-GRAMMAR.md`,
 `ARCHITECTURE.md`, `DECISIONS.md`, and `THESIS-PLAN.md`. If anything else
 disagrees with these files, the files win.
 

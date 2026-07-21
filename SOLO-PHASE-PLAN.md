@@ -90,7 +90,6 @@ r-ebirth/
 │   └── demos/            # the two reference demos as executable acceptance tests
 ├── docs/
 ├── DECISIONS.md          # decision log (D-001 grammar, D-002 ladder pivot, ...)
-└── CLAUDE.md             # AI session context
 ```
 
 - **Build:** cargo invoked from the package's `src/Makevars`; vendored crates for CRAN compliance later; the llama.cpp tap patch set versioned in `vendor/`.
@@ -106,7 +105,6 @@ r-ebirth/
 ## 5. Decision log and AI-assisted workflow (unchanged)
 
 - **`DECISIONS.md`** — append-only ADR-lite (`ID / date / decision / why / alternatives rejected`). D-002 (this pivot) is its first major entry; the v0.1 fork playbook is archived there for rung 3.
-- **`CLAUDE.md`** — standing AI-session context: current phase, constraints (§2 grammar, §3 memory budget, §6 licensing), pointers to the three documents.
 - **Spec-first rule:** no exported function before its `API-GRAMMAR.md` entry is accepted by the founder.
 - **Golden-first rule:** the correctness golden exists before the feature it validates is merged.
 
@@ -174,7 +172,7 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 - [ ] Harness B green: logits vs reference llama.cpp, activations vs PyTorch goldens
 - [ ] Demo A and Demo B pass as scripted acceptance tests on the Mac mini (RStudio)
 - [ ] Seeded generation reproducible run-to-run
-- [ ] `DECISIONS.md`, `CLAUDE.md` in active use
+- [ ] `DECISIONS.md` in active use
 
 **Phase 1 exit (~month 10–12):**
 - [ ] Async generation integrated with the console event loop (session never blocks; `promises`-style API)

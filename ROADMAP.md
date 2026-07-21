@@ -26,7 +26,7 @@ Operational companion to `SOLO-PHASE-PLAN.md` (decisions) and `THESIS-PLAN.md` (
 4. Founder reviews with the checklist (§5.4), runs acceptance locally, commits.
 5. WP acceptance fully green → mark done here → next WP. All WPs of a phase done → tag a release.
 
-### Ground rules (bind every session — also in `AGENTS.md`)
+### Ground rules (bind every session)
 1. Everything in **English** (code, identifiers, comments, docs, commits).
 2. API grammar per `SOLO-PHASE-PLAN.md` §2: base-R idiom, S3, plain `data.frame`/`matrix`, `llm_*` prefix, native `|>`.
 3. **Spec-first:** no exported function before its `API-GRAMMAR.md` entry is approved.
@@ -105,7 +105,7 @@ GitHub repo (public recommended from first tag); r-universe org (automatic macOS
 ### Phase 0 — Foundations (~3 weeks)
 
 **WP0 — Repository bootstrap (week 1).**
-`git init`; layout per plan §4 (`rebirth/` scaffolded with `rextendr::use_extendr()`, `rust/` workspace with `rebirth-ffi`, `rebirth-llm`; `vendor/`, `tests/llm-golden/`, `tests/demos/`, `docs/`); `LICENSE` (dual MIT OR Apache-2.0), `TRADEMARK.md`, `NOTICE`; seed `DECISIONS.md` (D-001 grammar, D-002 ladder) and `AGENTS.md` (= §5.1); GitHub Actions: `R CMD check` (macOS arm64 + Ubuntu), `cargo test` + `clippy` + `rustfmt --check`.
+`git init`; layout per plan §4 (`rebirth/` scaffolded with `rextendr::use_extendr()`, `rust/` workspace with `rebirth-ffi`, `rebirth-llm`; `vendor/`, `tests/llm-golden/`, `tests/demos/`, `docs/`); `LICENSE` (dual MIT OR Apache-2.0), `TRADEMARK.md`, `NOTICE`; seed `DECISIONS.md` (D-001 grammar, D-002 ladder); GitHub Actions: `R CMD check` (macOS arm64 + Ubuntu), `cargo test` + `clippy` + `rustfmt --check`.
 *Acceptance:* clean `R CMD check` (0 errors/warnings) with the stub package on both platforms; workspace builds; README states scope honestly.
 
 **WP1 — Vendored engine + model loading (weeks 1–3).**
@@ -256,7 +256,7 @@ Playbook archived in `DECISIONS.md` (plan v0.1): fork base pinning, patch-first 
 
 ## 5. Prompting guide for the coding model
 
-### 5.1 Session Preamble (paste at every session start; lives in `AGENTS.md`)
+### 5.1 Session Preamble (paste at every session start)
 
 ```text
 You are the implementation engineer for R-ebirth, an R package (`relm`) with a
@@ -329,7 +329,7 @@ TASK: Implement WP0 — Repository bootstrap, per ROADMAP.md §3, Phase 0.
 
 CONTEXT
 - Expected repo state: planning documents only (no code, no git yet).
-- Read first: CLAUDE.md; SOLO-PHASE-PLAN.md §2+§4; ROADMAP.md §0 + §3 (WP0);
+- Read first: SOLO-PHASE-PLAN.md §2+§4; ROADMAP.md §0 + §3 (WP0);
   ARCHITECTURE.md §2 + §9.
 
 SCOPE
@@ -664,7 +664,7 @@ ACCEPTANCE
 
 FORBIDDEN
 - Documenting unimplemented behavior; registry entries without verified
-  SHA256; marketing claims that violate CLAUDE.md's honesty limits.
+  SHA256; marketing claims that violate the project's honesty limits.
 ```
 
 ### 5.4 Founder review checklist (before every commit)

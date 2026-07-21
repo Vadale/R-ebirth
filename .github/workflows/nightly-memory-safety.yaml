@@ -6,7 +6,7 @@
 # it must NEVER gate a PR (a false finding cannot block a merge). Kept in its OWN
 # file, triggered only by `schedule` + `workflow_dispatch`, exactly like
 # nightly-model-tolerance.yaml. It is download-free: it exercises ONLY the committed
-# synthetic 2-layer GGUF (CLAUDE.md CI budget — no model download here).
+# synthetic 2-layer GGUF (CI budget: no model download here).
 #
 # ─────────────────────────────────────────────────────────────────────────────────
 # MECHANISM: Valgrind memcheck on the NORMAL build, running the intervention-path

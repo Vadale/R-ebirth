@@ -1,7 +1,7 @@
 # Nightly Harness B tolerance run on the pinned Qwen2.5-0.5B-Instruct Q8_0 GGUF.
 #
 # WHY A SEPARATE, SCHEDULED WORKFLOW (not part of R-CMD-check.yaml):
-#   Per-commit CI is model-free (synthetic model only -- CLAUDE.md CI budget: "per-commit
+#   Per-commit CI is model-free (synthetic model only -- CI budget: "per-commit
 #   jobs use only the synthetic model; 0.5B runs are nightly"). This job is the tolerance
 #   HALF of Harness B: it downloads the CI-integration model ONCE per night and runs the
 #   [MODEL]-gated suite (the HF fp32 activation-golden comparison plus the WP5

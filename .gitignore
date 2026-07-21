@@ -34,3 +34,12 @@ graphify-out/.graphify_root
 
 # --- editors / scratch ---
 Untitled.rtf
+
+# Materiale di lavoro — solo locale, mai pubblicato
+.claude/
+CLAUDE.md
+AGENTS.md
+HANDOFF.md
+diary/
+notes/
+AVVIO-PROGETTO-*.md
