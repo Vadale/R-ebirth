@@ -12,7 +12,7 @@ Append-only log of decisions that would be expensive to reverse. Format: `ID / d
 
 ## D-002 — Delivery is the three-rung ladder; rung 1 = package on stock R
 - **Date:** 2026-07-03 · **Status:** accepted
-- **Decision:** ship as the `rebirth` package suite on unmodified R ≥ 4.5 (rung 1); a curated distribution later (rung 2); a fork of GNU R only in the community era (rung 3, team-gated — see Appendix A and `ROADMAP.md` Phase 21).
+- **Decision:** ship as the `rebirth` package suite on unmodified R ≥ 4.5 (rung 1); a curated distribution later (rung 2); a fork of GNU R only in the community era (rung 3, team-gated — see Appendix A and the work-package plans under `docs/` Phase 21).
 - **Why:** adoption (`install.packages` vs replace-your-R), zero compatibility risk, no permanent upstream-merge tax, Windows drastically cheaper, and permissive licensing becomes possible (D-002 side effect: everything original is dual MIT OR Apache-2.0).
 - **Alternatives rejected:** day-1 deep fork of GNU R (GPL inheritance, merge tax, hardest-platform costs, adoption friction); from-scratch language (the FastR/Renjin graveyard: the C-API/ecosystem bridge is the product, and a new language starts with zero ecosystem).
 
@@ -268,7 +268,7 @@ Empirical finding (Qwen2.5-0.5B Q8_0 and Gemma 4 E4B, committed eliciting prompt
 - **Kept internal (deliberately unchanged — not user-visible):** the Rust crate names `rebirth-ffi`/`rebirth-llm`, the internal `#[extendr]` FFI function names (`rebirth_model_load`, …), the `RebirthError` Rust type, the vendored llama.cpp patch's C ABI symbol `rebirth_set_intervene` (renaming needs a re-patch + the vendor gate), and the synthetic-model fixture name `rebirth-synthetic-llama-2l` (baked into the committed golden GGUF; renaming needs a golden regeneration). Tracked for a later low-priority cleanup.
 - **Why `relm` (and not `LLR`, the founder's first idea):** a scan of 24,204 CRAN packages showed `relm` free and `LLMR` (the cleaner "LLM for R" expansion) already taken. `LLR` was rejected on three grounds: it collides with a standard statistics acronym (log-likelihood ratio / local linear regression) in the exact target audience; it is three consonants, hence unpronounceable; and "Large Language for R" positions the package as yet-another LLM binding, hiding its interpretability differentiator. `relm` encodes R+LLM, reads as a word, is free on CRAN, and is brandable.
 - **Alternatives rejected:** `LLR` / `LLMR` (above); keeping `rebirth` (the founder wanted a name that says what it does); renaming the whole project/repo to `relm` (kept "R-ebirth" as the umbrella/vision brand); renaming the internal crates/FFI symbols/fixture now (deferred — needs a vendor re-patch and a golden regeneration for no user-visible gain).
-- **Follow-up (tracked):** sync the internal governance docs that still say "rebirth" in prose (`ROADMAP.md`, `ARCHITECTURE.md`, `SOLO-PHASE-PLAN.md`, `API-GRAMMAR.md`) to "relm", preserving the "R-ebirth" project name and the append-only `DECISIONS.md` history.
+- **Follow-up (tracked):** sync the internal governance docs that still say "rebirth" in prose (the work-package plans under `docs/`, `ARCHITECTURE.md`, `SOLO-PHASE-PLAN.md`, `API-GRAMMAR.md`) to "relm", preserving the "R-ebirth" project name and the append-only `DECISIONS.md` history.
 
 ---
 

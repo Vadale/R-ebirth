@@ -181,7 +181,7 @@ CRAN is the restrictive, human-reviewed repository. This package is exactly the
 kind CRAN scrutinizes hardest: a **vendored Rust crate**, a **patched, vendored
 `llama.cpp`**, a **large native build**, and non-trivial `SystemRequirements`.
 CRAN also expects a mature, stable API and a clean `R CMD check --as-cran`, and
-submissions often take several rounds. The plan (see `ROADMAP.md`, Phase 9) is
+submissions often take several rounds. The plan (see the work-package plans under `docs/`, Phase 9) is
 therefore: **r-universe now** for real, installable binaries with zero acceptance
 risk; **CRAN later**, once the package is stable and has users. How the code was
 written (with or without AI assistance) is irrelevant to either — r-universe does

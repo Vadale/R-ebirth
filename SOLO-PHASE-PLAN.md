@@ -2,7 +2,7 @@
 
 **Document 1 of 3** — operational decisions for the solo-development period (Phase 0 through end of Phase 1).
 Companion documents (to be written): `ARCHITECTURE.md` (document 2 — package internals, native boundary, ladder mechanics) and `API-GRAMMAR.md` (document 3 — final function signatures and naming rules).
-Operational companion: **`ROADMAP.md`** — work packages, toolchain, prompts for the coding model, and the thesis case study (WP-T). This plan states *decisions*; the roadmap states *execution*.
+Operational companion: the work-package plans under `docs/` — toolchain, sequencing, and the thesis case study (WP-T). This plan states *decisions*; the roadmap states *execution*.
 
 - **Status:** draft **v0.2** for founder review
 - **Date:** 2026-07-03 (v0.1 same day; superseded)
@@ -125,7 +125,7 @@ r-ebirth/
 
 ## 7. Non-goals through end of Phase 1 (updated)
 
-> **Terminology (read this first — it is the single most confusing point in the docs).** "Phase 1" in *this* plan means the plan's own second era = **roadmap Phases 4–9** (see the `ROADMAP.md` mapping line), which ends at `v1.0`. It is **not** roadmap Phase 1. The non-goals below mark the boundary of *that era* — not of the whole solo project. The **full solo track runs through roadmap Phase 18** (fine-tuning, RL, topics+SAE, `relm.bio`) before any team phase; nothing below is cancelled, only sequenced after `v1.0`.
+> **Terminology (read this first — it is the single most confusing point in the docs).** "Phase 1" in *this* plan means the plan's own second era = **roadmap Phases 4–9** (see the the work-package plans under `docs/` mapping line), which ends at `v1.0`. It is **not** roadmap Phase 1. The non-goals below mark the boundary of *that era* — not of the whole solo project. The **full solo track runs through roadmap Phase 18** (fine-tuning, RL, topics+SAE, `relm.bio`) before any team phase; nothing below is cancelled, only sequenced after `v1.0`.
 
 - **No source fork of GNU R** — re-evaluated only at the community rung (D-002).
 - **No new surface syntax** (type annotations, `async`/`await` keywords) — parser work is rung 3; interim function-based forms only.

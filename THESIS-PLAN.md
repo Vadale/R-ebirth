@@ -1,6 +1,6 @@
 # Thesis Plan — Auditing a Medical LLM with R-ebirth
 
-Standalone thesis document: the recommendation, the full study design, and everything needed to pitch and execute the master's thesis. Execution hooks live in `ROADMAP.md` (the thesis has its own phase there); binding project decisions live in `SOLO-PHASE-PLAN.md`.
+Standalone thesis document: the recommendation, the full study design, and everything needed to pitch and execute the master's thesis. Execution hooks live in the work-package plans under `docs/` (the thesis has its own phase there); binding project decisions live in `SOLO-PHASE-PLAN.md`.
 
 - **Status:** v1.0 — **PARKED (2026-07-04):** thesis assignment expected in ~6–8 months (≈ Q1–Q2 2027); this plan resumes unchanged then. By that time the software will be ahead of the thesis's needs (only roadmap Phases 1–2 plus `llm_probe` are required).
 - **Date:** 2026-07-03
@@ -99,7 +99,7 @@ RQ1 alone is a publishable audit; RQ2 is the novel methodological layer only `re
 
 ## 8. Timeline hooks
 
-Depends on one missing input: **the thesis deadline** (§13). Anchors (see `ROADMAP.md` phase table):
+Depends on one missing input: **the thesis deadline** (§13). Anchors (see the work-package plans under `docs/` phase table):
 - Supervisor pitch: as soon as possible — the design is adaptable *before* code is aimed at it.
 - Pilot study: possible right after the anatomy-lab phase (traces + steering working) — probe API (`llm_probe`) is scheduled immediately after the first public release precisely for the thesis.
 - Full runs + writing: after the probe phase; manuscript in Quarto from day one (methods sections can be drafted while phases complete).

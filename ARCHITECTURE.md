@@ -4,7 +4,7 @@
 
 - **Status:** v1.0
 - **Date:** 2026-07-04
-- **Audience:** the coding model implementing Phases 0–4, and any human reviewing it.
+- **Audience:** whoever implements Phases 0–4, and anyone reviewing that work.
 
 ---
 
@@ -102,7 +102,7 @@ Generation moves to a Rust worker thread; tokens flow over a bounded channel; th
 ## 13. Ladder mechanics (later rungs, so nothing today blocks them)
 
 - **Rung 2 (distribution, Phase 19):** a bundle = official R installer + `relm` suite preinstalled + a site profile (auto-attach, pinned r-universe snapshot). Nothing in the package may depend on being "the only R" — no global state outside `tools::R_user_dir` paths and documented options.
-- **Rung 3 (fork, Phase 21):** playbook archived in `DECISIONS.md`; triggers in `ROADMAP.md` §4. The package's only obligation today: keep `rebirth-llm` R-free (§2) so the future fork can link the same engine.
+- **Rung 3 (fork, Phase 21):** playbook archived in `DECISIONS.md`; triggers documented in `DECISIONS.md`. The package's only obligation today: keep `rebirth-llm` R-free (§2) so the future fork can link the same engine.
 
 ## 14. Open items (each becomes an ADR when its phase starts)
 

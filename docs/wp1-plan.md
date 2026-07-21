@@ -186,7 +186,7 @@ I have **no web access** and cannot verify current tag numbers or their SHA256; 
 
 Refines the ROADMAP §5.3 WP1 prompt into ordered sub-steps. Each step notes its TDD entry point, the `API-GRAMMAR.md` entries it realizes, the WP1 acceptance criteria it advances, and whether it is **[NOW]** (buildable/testable today) or **[MODEL]** (blocked on the founder supplying local GGUF paths for Qwen2.5-0.5B-Instruct Q8_0 and MedGemma-1.5-4B Q4) or **[TAG]** (needs the founder to finalize the pinned llama.cpp tag, D-006).
 
-Guiding rule (Session Preamble): tests first where practical; small steps; no export absent from `API-GRAMMAR.md`; a Rust panic reaching R is a bug.
+Guiding rule: tests first where practical; small steps; no export absent from `API-GRAMMAR.md`; a Rust panic reaching R is a bug.
 
 ### Step 0 — Land the D-005 layout move (prerequisite) — [NOW]
 Apply the D-005 mechanical diff (consolidate the workspace under `rebirth/src/rust/`, rename the ffi package to `rebirth-ffi` keeping `[lib] name = "rebirth"`, wire the `rebirth-llm` path dep, move `[profile.release]` to the workspace root, `Makevars` `-p rebirth-ffi`, repoint `rust.yaml` to `rebirth/src/rust`, delete top-level `rust/`).

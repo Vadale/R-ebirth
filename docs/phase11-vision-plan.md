@@ -5,7 +5,7 @@
 
 This is the **single plan document** for the phase. It contains: the feasibility findings (verified against the upstream `b9726` tarball, not assumed), a ranked risk register, the WP breakdown (WP-V1…V4), a **draft ADR D-026** (`status: proposed`), draft **API-GRAMMAR entries** (`[proposed]`), an honest "what could force a vendor bump" section, and the founder's open inputs.
 
-**I write only this file.** I do not edit `DECISIONS.md`, `API-GRAMMAR.md`, `ROADMAP.md`, `ARCHITECTURE.md`, or any source. The founder appends the accepted ADR and approves the grammar entries **before** any code is written (D-003 change protocol). Nothing here changes an accepted decision; where my tarball inspection contradicts a ROADMAP/D-023 assumption, I flag it in §2 (Corrections) rather than silently adapting.
+**I write only this file.** I do not edit `DECISIONS.md`, `API-GRAMMAR.md`, the work-package plans under `docs/`, `ARCHITECTURE.md`, or any source. The founder appends the accepted ADR and approves the grammar entries **before** any code is written (D-003 change protocol). Nothing here changes an accepted decision; where my tarball inspection contradicts a ROADMAP/D-023 assumption, I flag it in §2 (Corrections) rather than silently adapting.
 
 The precedent doc for structure is `docs/wp3-embed-plan.md`.
 

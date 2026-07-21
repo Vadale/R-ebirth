@@ -45,7 +45,7 @@ independent oracle exists for a composed value (the pooled multimodal
 embedding), its parts are validated independently and the composition is
 pinned against regression.
 Vision-tower interpretability (tracing or steering inside the image encoder)
-is **not** part of this release. The full plan is in `ROADMAP.md`.
+is **not** part of this release. The full plan lives in the work-package documents under `docs/`.
 
 ## Repository layout
 
@@ -59,7 +59,7 @@ tests/demos/        the two reference demos (anatomy lab; topics without Python)
 
 ## Planning documents (the single source of truth)
 
-`SOLO-PHASE-PLAN.md`, `ROADMAP.md`, `API-GRAMMAR.md`,
+`SOLO-PHASE-PLAN.md`, the work-package plans under `docs/`, `API-GRAMMAR.md`,
 `ARCHITECTURE.md`, `DECISIONS.md`, and `THESIS-PLAN.md`. If anything else
 disagrees with these files, the files win.
 
