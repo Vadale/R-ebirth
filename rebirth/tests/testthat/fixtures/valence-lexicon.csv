@@ -3,7 +3,7 @@
 # Hand-authored for the WP5 valence-steering acceptance fixture
 # (test-llm-steer-valence.R). It is NOT derived from AFINN, SentiWordNet, VADER,
 # LIWC, Bing/opinion-lexicon, or any other third-party sentiment resource -- those
-# carry licensing constraints and would add an undeclared dependency (CLAUDE.md
+# carry licensing constraints and would add an undeclared dependency (project
 # hard rule 5 / DECISIONS.md). Every word here was chosen by the author as a
 # clearly positive- or negative-affect English term, then confirmed to appear in
 # Qwen2.5-0.5B's steered output during the 2026-07-06 calibration.

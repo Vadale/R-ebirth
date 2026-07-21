@@ -9,7 +9,7 @@
 //! This fixture proves the SEMANTIC claim on a real model: ablating a small set of
 //! residual neurons *chosen for impact* measurably moves the next-token distribution,
 //! whereas random neurons and a no-op barely move it -- the statistical-honesty
-//! evidence that keeps the ablation claim ("audit / localize", CLAUDE.md) honest.
+//! evidence that keeps the ablation claim ("audit / localize") honest.
 //!
 //! The synthetic in-repo GGUF is no_vocab (no tokenizer), so this fixture is
 //! [MODEL]-gated: it SKIPS cleanly in CI (`cargo test` compiles it and it returns

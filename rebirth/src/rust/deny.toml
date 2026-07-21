@@ -14,7 +14,7 @@
 #
 # The allow-list below is the MINIMAL set the actual dependency tree resolves to
 # (verified with `cargo deny list`, 2026-07-07). The package itself is dual
-# MIT OR Apache-2.0 (CLAUDE.md Stack row); the vendored llama.cpp is MIT.
+# MIT OR Apache-2.0 (project stack policy); the vendored llama.cpp is MIT.
 
 [graph]
 # Evaluate every optional dependency (the default-on `spill` feature pulls the arrow

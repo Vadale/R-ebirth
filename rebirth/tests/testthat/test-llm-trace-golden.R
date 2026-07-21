@@ -36,7 +36,7 @@
 # The gates sit a clear margin below those and FAR above a real defect (a wrong tensor
 # / off-by-one layer / BOS shift collapses cosine & Spearman toward 0; an off-by-one
 # also blows the per-(layer,comp) |delta| bound where the residual scale jumps between
-# adjacent layers). HONESTY: this does NOT reach CLAUDE.md's "rank-correlation >=
+# adjacent layers). HONESTY: this does NOT reach the project's "rank-correlation >=
 # 0.999/layer on real models" -- that is unachievable against an INDEPENDENT (HF)
 # implementation on 0.5B; 0.999 would need the same-implementation unpatched-llama.cpp
 # leg, or a larger/less-sensitive model. Flagged for doc reconciliation (WP6b handoff).

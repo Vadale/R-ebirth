@@ -477,9 +477,9 @@ Everything else is specified: the steering path (native cvec, §1.1), the ablati
 
 ---
 
-## Addendum — Fable 5 review (2026-07-06): accepted corrections
+## Addendum — independent review (2026-07-06): accepted corrections
 
-The founder delegated the WP5 calls to Fable 5, which verified every source citation at b9726, concurred with both recommendations (D-015 Option 1; layer-1 Option A), and surfaced corrections — three genuinely missed by §0–§12. These are **accepted and binding on the implementer**; where they differ from the body above, they win. Recorded as accepted **D-015** (with strengthenings) + **D-016** in `DECISIONS.md`.
+The founder delegated the WP5 calls to an independent review, which verified every source citation at b9726, concurred with both recommendations (D-015 Option 1; layer-1 Option A), and surfaced corrections — three genuinely missed by §0–§12. These are **accepted and binding on the implementer**; where they differ from the body above, they win. Recorded as accepted **D-015** (with strengthenings) + **D-016** in `DECISIONS.md`.
 
 **D-015 strengthenings (patch application):**
 1. `VENDORING.md` records **three** SHAs, not two: upstream tarball SHA, the current **pre-patch** pruned-tree SHA (keep the existing row), and the new **post-patch** pruned-tree SHA (the value G4 asserts).

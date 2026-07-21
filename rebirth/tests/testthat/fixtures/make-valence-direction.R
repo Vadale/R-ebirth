@@ -3,7 +3,7 @@
 # direction the WP5 acceptance fixture (`test-llm-steer-valence.R`) steers along.
 #
 # This is the ONLY sanctioned way to (re)generate the artifact (golden discipline,
-# CLAUDE.md / the `golden-update` skill): no value in `valence-direction.csv` is
+# the golden-update procedure): no value in `valence-direction.csv` is
 # hand-edited; this script emits every one. Regeneration requires a documented
 # reason (a new/updated pinned model, or a deliberate method change).
 #

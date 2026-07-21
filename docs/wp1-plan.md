@@ -34,7 +34,7 @@ Two binding constraints must be reconciled:
 - **ARCHITECTURE §2 (three-layer separation):** `rebirth-ffi` is the extendr boundary crate holding *all* `unsafe`; `rebirth-llm` is a normal safe crate with **no R types**, independently `cargo test`-able and reusable under the permissive licence (the future-fork-links-the-same-engine guarantee, §13). This separation is a settled design property, not negotiable in WP1.
 - **ARCHITECTURE §9 (self-contained build for R CMD check / CRAN):** `R CMD build` tars only the `rebirth/` package directory, and `R CMD check` unpacks it into a private tempdir. Anything referenced by a path that escapes `rebirth/` (`../rust`, `../vendor`) **does not exist at check/CRAN build time** → the build fails. CRAN additionally forbids network access and out-of-package references and requires vendored crates.
 
-The top-level `rust/` location (sketched in `SOLO-PHASE-PLAN.md` §4 and CLAUDE.md's stack table) is therefore **incompatible with the self-containment requirement** as a *build source*. This is a genuine technical fact that invalidates the §4 layout sketch for build purposes; this ADR supersedes that sketch and its acceptance implies a one-line update to §4 and CLAUDE.md (founder territory — see "Consequences").
+The top-level `rust/` location (sketched in `SOLO-PHASE-PLAN.md` §4 and the stack table) is therefore **incompatible with the self-containment requirement** as a *build source*. This is a genuine technical fact that invalidates the §4 layout sketch for build purposes; this ADR supersedes that sketch and its acceptance implies a one-line update to §4 (founder territory — see "Consequences").
 
 ### Name-coupling facts (must be preserved to keep churn ≈ 0)
 
@@ -108,7 +108,7 @@ Concrete mechanical consequences (the entire diff of the layout move):
 
 ### Consequences (founder-territory follow-ups this ADR implies — I do not edit these)
 
-- `SOLO-PHASE-PLAN.md` §4 layout sketch and CLAUDE.md's "Stack"/layout references show a top-level `rust/` and `vendor/`. On accepting D-005 (+ D-006), update them to note that the **build-consumed** workspace and vendored engine live under `rebirth/src/` (self-containment), and that a top-level `vendor/` — if retained — is provenance/records only (see D-006). This is an explicit supersession of a plan *sketch*, not a settled DECISIONS.md entry, so no prior ADR is contradicted.
+- `SOLO-PHASE-PLAN.md` §4 layout sketch and the "Stack"/layout references show a top-level `rust/` and `vendor/`. On accepting D-005 (+ D-006), update them to note that the **build-consumed** workspace and vendored engine live under `rebirth/src/` (self-containment), and that a top-level `vendor/` — if retained — is provenance/records only (see D-006). This is an explicit supersession of a plan *sketch*, not a settled DECISIONS.md entry, so no prior ADR is contradicted.
 - `rebirth-kernel` (Phase 17) is a *future* workspace member; the workspace is structured to accept it, but it is **not** created in WP1 (scope discipline; roadmap risk #7).
 
 ---
@@ -270,4 +270,4 @@ Any llama.cpp source patch (taps are WP4); any generation/tokenization/embedding
 4. **Supply the two local GGUF paths** (Qwen2.5-0.5B-Instruct Q8_0, MedGemma-1.5-4B Q4) and accept MedGemma HF terms — unblocks the Step 8 real-model acceptance (not needed for Steps 0–7).
 
 ### Exact next action
-Founder reviews D-005 and D-006 above; on acceptance, I integrate both into `DECISIONS.md` as accepted entries (and note the implied one-line `SOLO-PHASE-PLAN.md` §4 / CLAUDE.md layout updates), then the `coder` agent starts WP1 at **Step 0** (the layout move) using the §5.3 WP1 prompt. Steps 1–2 proceed as soon as the founder confirms the pinned tag; the real-model acceptance (Step 8) waits on the GGUF paths.
+Founder reviews D-005 and D-006 above; on acceptance, I integrate both into `DECISIONS.md` as accepted entries (and note the implied one-line `SOLO-PHASE-PLAN.md` §4 layout updates), then the `coder` agent starts WP1 at **Step 0** (the layout move) using the §5.3 WP1 prompt. Steps 1–2 proceed as soon as the founder confirms the pinned tag; the real-model acceptance (Step 8) waits on the GGUF paths.
