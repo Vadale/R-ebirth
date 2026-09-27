@@ -27,8 +27,10 @@ mod ffi;
 mod generate;
 mod intervene;
 mod probe;
+mod schema;
 #[cfg(feature = "spill")]
 mod spill;
+mod structured;
 mod trace;
 mod vision;
 
@@ -41,6 +43,12 @@ pub use generate::{
     top_k_logits, ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason, TokenLogit,
 };
 pub use intervene::InterventionSpec;
+pub use schema::CompiledSchema;
+pub use structured::{
+    STRUCTURED_MAX_OUTPUT_BYTES, STRUCTURED_MAX_PROMPTS, STRUCTURED_MAX_PROMPT_BYTES,
+    STRUCTURED_MAX_SCHEMA_BYTES, STRUCTURED_MAX_TOKENS, STRUCTURED_MAX_TOTAL_OUTPUT_BYTES,
+    STRUCTURED_MAX_TOTAL_PROMPT_BYTES,
+};
 #[cfg(feature = "spill")]
 pub use trace::SpillReport;
 pub use trace::{

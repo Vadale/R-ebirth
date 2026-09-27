@@ -14,10 +14,50 @@
 #' and **recorded** — the seed actually used is always returned as
 #' `attr(result, "seed")`, so any generation can be replayed.
 #'
-#' Generation stops at `max_tokens`, at the model's end-of-generation token, or
+#' Without a schema, generation stops at `max_tokens`, at the model's
+#' end-of-generation token, or
 #' as soon as one of the `stop` strings appears (the output is truncated just
 #' before it). A prompt longer than the model's context window raises
 #' `relm_error_context_overflow`, whose message states by how much.
+#'
+#' @section Structured output:
+#' Supply `schema` as JSON text to constrain text generation to a bounded subset
+#' of JSON Schema 2020-12. The root must be a non-nullable object with explicit
+#' `properties`, `required` listing every property exactly once, and
+#' `additionalProperties: false`. Nested objects follow the same rules. Supported
+#' values are bounded strings (`maxLength`, optional `minLength`), non-nullable
+#' string enums, integers with explicit `minimum` and `maximum` in the signed
+#' 32-bit range, booleans, null, and nullable versions of these types. Nullable
+#' enums, arrays, fractional numbers and all other keywords (including
+#' annotations) are rejected. Optional root `$schema` must be
+#' `"https://json-schema.org/draft/2020-12/schema"`.
+#'
+#' The schema is compiled once per call; each prompt uses fresh grammar state
+#' and the same scalar seed. Every successful element is complete, independently
+#' validated JSON text. Keys are generated in UTF-8 lexicographic order. String
+#' lengths count decoded Unicode scalar values; duplicate keys and invalid
+#' Unicode are rejected. Describe the task and fields in the prompt: a schema
+#' constrains output structure, not factual correctness.
+#'
+#' Nonempty `stop` or image collections cannot be combined with a schema. Empty
+#' collections count as absent, and vision handles may make text-only structured
+#' requests. Generation returns when the root object is complete, including on
+#' the last allowed token. It does not retry, repair or return incomplete JSON.
+#' Malformed, unsupported or oversized schemas raise `relm_error_schema` with
+#' `reason` and `schema_path` (a JSON pointer). Generation failure raises
+#' `relm_error_structured_output` with `reason`, 1-based `prompt_id`, `seed`,
+#' `generated_tokens` and bounded `partial_bytes` (a raw vector). The first
+#' failed prompt aborts the call; no partial result vector is returned. Input
+#' context overflow retains `relm_error_context_overflow`.
+#'
+#' Hard limits: schema text 64 KiB, nesting 8, schema nodes 128, 16 properties
+#' per object and 64 total; 32 enum members of at most 128 Unicode scalar values;
+#' string `maxLength` 2048; compiled grammar 512 KiB and 65536 elements. A call
+#' accepts at most 128 prompts, 1 MiB per prompt and 16 MiB total UTF-8 input,
+#' with `max_tokens <= 8192`. Temperature must be finite and fit a 32-bit float;
+#' an explicit seed must be finite and less than `2^64` (subject to R's numeric
+#' precision). Output is limited to 64 KiB per prompt and 8 MiB
+#' per call. `schema = NULL` preserves ordinary text and vision generation.
 #'
 #' @section Image input (vision models):
 #' On a handle loaded with [llm()]'s `projector` argument, `images` attaches
@@ -67,6 +107,9 @@
 #'   character vector for a single prompt. Accepted formats: JPEG, PNG, BMP.
 #'   Requires a handle loaded with `llm(projector = )`; see the *Image input*
 #'   section.
+#' @param schema `NULL` (default) or one non-NA UTF-8 string containing JSON
+#'   Schema text in the supported profile. This is JSON text, not a file path or
+#'   R list; one schema applies to every prompt. See *Structured output*.
 #' @return A character vector the same length as `prompt` (names preserved), each
 #'   element the generated continuation. The seed used is attached as
 #'   `attr(result, "seed")`.
@@ -74,6 +117,11 @@
 #' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' llm_generate(m, "In one sentence, what is R?", max_tokens = 40, seed = 1)
+#' schema <- paste0('{"type":"object","properties":{"answer":',
+#'   '{"type":"string","enum":["yes","no"]}},',
+#'   '"required":["answer"],"additionalProperties":false}')
+#' llm_generate(m, 'Is R a programming language? Return an object with "answer".',
+#'   schema = schema, max_tokens = 64, temperature = 0, seed = 1)
 #' close(m)
 #' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
 #' # Image input (requires a projector -- see llm()).
@@ -94,11 +142,23 @@
 #' @export
 llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
                          top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL,
-                         images = NULL) {
+                         images = NULL, schema = NULL) {
   if (!inherits(m, "llm")) {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
+
+  if (!is.null(schema)) {
+    # Complex numbers satisfy is.numeric() but cannot enter the ordered real
+    # comparisons below. Keep the ordinary generation path unchanged.
+    scalars <- list(max_tokens = max_tokens, temperature = temperature,
+      top_p = top_p, seed = seed)
+    for (argument in names(scalars)) {
+      if (is.complex(scalars[[argument]])) {
+        abort_argument(argument, sprintf("`%s` must be a real number.", argument))
+      }
+    }
+  }
 
   if (!is.character(prompt) || length(prompt) == 0L || anyNA(prompt)) {
     abort_argument(
@@ -128,14 +188,65 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   }
   stop_seqs <- if (is.null(stop)) character(0) else stop
 
+  if (!is.null(schema)) {
+    if (!is.character(schema) || length(schema) != 1L || is.na(schema)) {
+      abort_argument("schema", "`schema` must be NULL or one non-NA UTF-8 string of JSON text.")
+    }
+    # Bound the supplied bytes before any encoding conversion or native copy.
+    if (nchar(schema, type = "bytes") > relm_structured_max_schema_bytes) {
+      relm_abort("relm_error_schema", "`schema` exceeds the 64 KiB limit.",
+        list(reason = "schema_bytes", schema_path = ""))
+    }
+    if (Encoding(schema) == "bytes" || !validUTF8(schema)) {
+      relm_abort("relm_error_schema", "`schema` must contain valid UTF-8 text.",
+        list(reason = "invalid_utf8", schema_path = ""))
+    }
+    schema <- enc2utf8(schema)
+    if (nchar(schema, type = "bytes") > relm_structured_max_schema_bytes) {
+      relm_abort("relm_error_schema", "`schema` exceeds the 64 KiB UTF-8 limit.",
+        list(reason = "schema_bytes", schema_path = ""))
+    }
+    if (length(prompt) > relm_structured_max_prompts) {
+      abort_argument("prompt", "Structured generation accepts at most 128 prompts per call.")
+    }
+    prompt_bytes <- nchar(prompt, type = "bytes")
+    if (any(prompt_bytes > relm_structured_max_prompt_bytes) ||
+      sum(prompt_bytes) > relm_structured_max_total_prompt_bytes) {
+      abort_argument("prompt", "Structured prompts are limited to 1 MiB each and 16 MiB per call.")
+    }
+    if (any(Encoding(prompt) == "bytes") || !all(validUTF8(prompt))) {
+      abort_argument("prompt", "Structured prompts must contain valid UTF-8 text.")
+    }
+    prompt <- enc2utf8(prompt)
+    prompt_bytes <- nchar(prompt, type = "bytes")
+    if (any(prompt_bytes > relm_structured_max_prompt_bytes) ||
+      sum(prompt_bytes) > relm_structured_max_total_prompt_bytes) {
+      abort_argument("prompt", "Structured prompts are limited to 1 MiB each and 16 MiB per call in UTF-8.")
+    }
+    if (max_tokens > relm_structured_max_tokens) {
+      abort_argument("max_tokens", "Structured generation requires `max_tokens <= 8192`.")
+    }
+    if (!is.finite(temperature) || temperature > relm_structured_max_temperature) {
+      abort_argument("temperature", "Structured generation requires a finite temperature that fits a 32-bit float.")
+    }
+    if (length(stop_seqs) > 0L) {
+      abort_argument("stop", "`stop` must be empty when `schema` is supplied.")
+    }
+    # Unlike a malformed pairing, a completely empty list carries no images.
+    if (is.list(images) && length(images) == 0L) images <- NULL
+  }
+
   # Images (WP-V2, D-026): normalize the pairing (relm_error_argument), then —
   # only when a prompt actually carries images — validate the byte-cap option
   # (argument domain, so a broken option is caught even before the vision
   # checks) and require a vision handle + existing files (relm_error_image).
   # NULL images leaves the pre-WP-V2 text path untouched.
   image_sets <- normalize_images(images, length(prompt))
-  check_prompt_markers(prompt, image_sets, arg_name = "prompt")
   has_images <- !is.null(image_sets) && any(lengths(image_sets) > 0L)
+  if (!is.null(schema) && has_images) {
+    abort_argument("images", "Image-bearing requests cannot be combined with `schema`.")
+  }
+  check_prompt_markers(prompt, image_sets, arg_name = "prompt")
   max_bytes <- if (has_images) image_max_bytes() else relm_image_max_bytes_default
   check_images_usable(m, image_sets)
 
@@ -150,10 +261,20 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
         "`seed` must be NULL or a single non-negative whole number."
       )
     }
+    if (!is.null(schema) && (!is.finite(seed) || seed >= relm_structured_seed_limit)) {
+      abort_argument("seed", "Structured generation requires a finite seed less than 2^64.")
+    }
     seed_val <- as.double(seed)
   }
 
-  out <- vapply(
+  out <- if (!is.null(schema)) {
+    payload <- relm_check(rebirth_generate_structured(
+      m$ptr, prompt, chat,
+      as.integer(max_tokens), as.double(temperature), as.double(top_p),
+      seed_val, schema
+    ))
+    payload$text
+  } else vapply(
     seq_along(prompt),
     function(i) {
       imgs <- if (is.null(image_sets)) character(0) else path.expand(image_sets[[i]])
@@ -172,3 +293,13 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   attr(out, "seed") <- seed_val
   out
 }
+
+# D-030 bounds duplicated at the native boundary; Rust tests twin-pin these
+# decimal literals so neither side can silently drift.
+relm_structured_max_schema_bytes <- 65536
+relm_structured_max_prompts <- 128
+relm_structured_max_prompt_bytes <- 1048576
+relm_structured_max_total_prompt_bytes <- 16777216
+relm_structured_max_tokens <- 8192
+relm_structured_max_temperature <- 3.4028234663852886e38
+relm_structured_seed_limit <- 18446744073709551616

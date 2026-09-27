@@ -33,6 +33,8 @@ fn main() {
 
     // Rerun only when the pin or this script changes (the vendored tree is pinned).
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=native/grammar.cpp");
+    println!("cargo:rerun-if-changed=native/CMakeLists.txt");
     println!(
         "cargo:rerun-if-changed={}",
         llama_src.join("CMakeLists.txt").display()
@@ -119,6 +121,29 @@ fn main() {
 
     let dst = cfg.build();
 
+    // Separate relm-owned exception boundary, built with the existing CMake
+    // dependency. No vendored engine source or new build crate is required.
+    let mut bridge = cmake::Config::new(manifest_dir.join("native"));
+    bridge
+        .out_dir(dst.join("grammar-bridge"))
+        .define("CMAKE_BUILD_TYPE", "Release")
+        .define("RELM_LLAMA_SOURCE", &llama_src);
+    if target_os == "macos" {
+        let floor = if target_arch == "aarch64" {
+            "11.0"
+        } else {
+            "10.15"
+        };
+        bridge.define(
+            "CMAKE_OSX_DEPLOYMENT_TARGET",
+            env::var("MACOSX_DEPLOYMENT_TARGET").unwrap_or_else(|_| floor.to_string()),
+        );
+        if target_arch == "x86_64" {
+            bridge.define("CMAKE_OSX_ARCHITECTURES", "x86_64");
+        }
+    }
+    let bridge_dst = bridge.build();
+
     // The cmake crate builds under `<dst>/build`; llama.cpp's install target does
     // not copy static archives, so locate them directly in the build tree.
     let build_dir = dst.join("build");
@@ -128,7 +153,7 @@ fn main() {
     // (registry) + the backends; everything references ggml-base, which is the
     // leaf and comes last. Twin-pinned with the R-side link in
     // rebirth/tools/config.R (@LLAMA_LIBS@) — keep the two lists consistent.
-    let mut lib_stems: Vec<&str> = vec!["mtmd", "llama", "ggml", "ggml-cpu"];
+    let mut lib_stems: Vec<&str> = vec!["relm-grammar", "mtmd", "llama", "ggml", "ggml-cpu"];
     if metal {
         lib_stems.push("ggml-metal");
     }
@@ -142,7 +167,12 @@ fn main() {
 
     for stem in &lib_stems {
         let file_name = format!("lib{stem}.a");
-        let found = find_file(&build_dir, &file_name).unwrap_or_else(|| {
+        let search_dir = if *stem == "relm-grammar" {
+            &bridge_dst
+        } else {
+            &build_dir
+        };
+        let found = find_file(search_dir, &file_name).unwrap_or_else(|| {
             panic!(
                 "expected static archive {file_name} not produced by the llama.cpp build under {}",
                 build_dir.display()

@@ -23,8 +23,8 @@
 #   the coef=0 no-op, are within-backend and therefore backend-robust.) Flagged in the
 #   WP6b handoff.
 #
-# MODEL PIN (recorded HERE -- there is no inst/models.csv registry yet; that is Phase
-#   3/WP8): repo Qwen/Qwen2.5-0.5B-Instruct-GGUF, file qwen2.5-0.5b-instruct-q8_0.gguf,
+# MODEL PIN (also verified against rebirth/inst/models.csv by the S1 driver):
+#   repo Qwen/Qwen2.5-0.5B-Instruct-GGUF, file qwen2.5-0.5b-instruct-q8_0.gguf,
 #   revision 9217f5db79a29953eb74d5343926648285ec7e67 (immutable), license Apache-2.0.
 #   MODEL_SHA256 is the file's git-lfs content hash (source of truth); the download is
 #   verified FAIL-CLOSED (mismatch => file deleted => job fails) before any test runs.
@@ -115,3 +115,29 @@ jobs:
               sum(df$passed), sum(df$skipped), sum(df$failed)
             ))
           '
+
+      - name: Constrained context and sampler boundary regression
+        working-directory: rebirth/src/rust
+        run: cargo test --locked -p rebirth-llm --lib structured_context_boundary_and_masked_sampling_model
+
+      - name: Install release build for the S1 operational comparison
+        env:
+          DEBUG: ""
+        run: |
+          mkdir -p "$RUNNER_TEMP/relm-s1-library"
+          R CMD INSTALL --library="$RUNNER_TEMP/relm-s1-library" rebirth
+
+      - name: S1 schema, latency and memory comparison (Linux CPU)
+        run: >-
+          python3 tests/structured-output/run-model.py
+          --model "$RELM_TEST_MODEL_QWEN" --backend cpu
+          --r-library "$RUNNER_TEMP/relm-s1-library"
+          --output "$RUNNER_TEMP/relm-s1-cpu"
+
+      - name: Preserve S1 measurements and outputs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: structured-output-cpu
+          path: ${{ runner.temp }}/relm-s1-cpu
+          if-no-files-found: warn

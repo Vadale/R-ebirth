@@ -1,5 +1,12 @@
 # relm 0.2.0.9000
 
+* `llm_generate()` accepts `schema` as JSON text for bounded structured output:
+  closed objects, bounded strings and integers, string enums, booleans and null.
+  Successful calls return complete validated JSON strings with prompt names and
+  the existing seed attribute. Unsupported schemas and incomplete generation
+  raise classed conditions; nonempty stop/image inputs are rejected in this mode.
+  Schema enforcement does not establish factual correctness. The default
+  `schema = NULL` preserves ordinary text and vision generation.
 * Spill files have unique names across R sessions, including caller-supplied
   directories. Existing files and symlinks are refused without overwriting them.
 * Trace slice layers and token positions reject fractional, non-finite, and
@@ -13,7 +20,7 @@
 * Source installation requires Rust >= 1.85.0, matching the locked default
   dependencies. CI covers R release and oldrel, including the Rust minimum.
 * Clarified disk-trace access and the exploratory interpretation of Demo A's
-  probe estimates. Numerical goldens and public signatures are unchanged.
+  probe estimates. Existing numerical goldens are unchanged.
 
 # relm 0.2.0
 

@@ -31,6 +31,17 @@ pub enum RebirthError {
     /// Generation failed inside the engine (a `llama_decode` error, a batch that
     /// could not be allocated, etc.). `reason` names the failing step.
     Generation { reason: String },
+    /// Malformed, unsupported or over-budget structured-output schema (D-030).
+    Schema { reason: String, schema_path: String },
+    /// A constrained continuation failed; partial bytes are diagnostic, never
+    /// a successful result. `prompt_id` is already 1-based for the R condition.
+    StructuredOutput {
+        reason: String,
+        prompt_id: usize,
+        seed: u64,
+        generated_tokens: usize,
+        partial_bytes: Vec<u8>,
+    },
     /// The prompt (plus any special tokens) is longer than the context window.
     /// `prompt_tokens`/`context_length` give the two sizes; `overflow` is the
     /// excess (`prompt_tokens - context_length`).
@@ -96,6 +107,8 @@ impl RebirthError {
             RebirthError::Closed => "relm_error_closed",
             RebirthError::Tokenize { .. } => "relm_error_tokenize",
             RebirthError::Generation { .. } => "relm_error_generation",
+            RebirthError::Schema { .. } => "relm_error_schema",
+            RebirthError::StructuredOutput { .. } => "relm_error_structured_output",
             RebirthError::ContextOverflow { .. } => "relm_error_context_overflow",
             RebirthError::Embed { .. } => "relm_error_embed",
             RebirthError::Trace { .. } => "relm_error_trace",
@@ -142,7 +155,22 @@ impl fmt::Display for RebirthError {
                 f,
                 "Generation failed ({reason}). \
                  This usually means the engine could not evaluate the prompt. \
-                 Try a shorter prompt or reload the model with llm()."
+                Try a shorter prompt or reload the model with llm()."
+            ),
+            RebirthError::Schema {
+                reason,
+                schema_path,
+            } => write!(
+                f,
+                "Invalid structured-output schema at '{schema_path}': {reason}. \
+                    Supply a schema in relm's supported bounded profile."
+            ),
+            RebirthError::StructuredOutput {
+                reason, prompt_id, ..
+            } => write!(
+                f,
+                "Structured output failed for prompt {prompt_id}: {reason}. \
+                    No partial JSON is returned as a successful result."
             ),
             RebirthError::ContextOverflow {
                 prompt_tokens,

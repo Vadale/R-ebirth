@@ -677,6 +677,75 @@ executes on exactly one machine in the world.
 
 ---
 
+## D-029 — Milestone-based delivery and proportionate verification
+
+- **Date:** 2026-09-27
+- **Status:** approved by the founder's explicit workflow instruction.
+- **Decision:** retain the Claude planning/specification/review workflow while
+  working in substantial coherent WPs, batching pushes at meaningful milestones,
+  selecting agents according to complexity and token cost, and matching tests to
+  changed behavior and risk. Small local commits do not imply separate tasks or
+  remote CI runs. See [development workflow](docs/development-workflow.md).
+- **Review/verification:** use one integrated review for a substantial deliverable;
+  repeat broad checks only for material new changes, failures or unresolved risk.
+  Documentation and fixture-only changes do not require recompiling unchanged
+  native code locally. Line count alone does not mandate an extra agent.
+- **Preserved gates:** no unapproved public API/dependency, no weakened numerical
+  reference, no omitted critical memory/boundary/security regression, and no
+  merge before required CI passes. Tests are reported honestly.
+- **Why:** minimize orchestration, repeated context and CI waiting without
+  sacrificing correctness or producing long review/test loops for minor edits.
+- **Alternatives rejected:** pushing every microtask; automatically dispatching
+  all agent roles; repeatedly testing an unchanged candidate; removing important
+  checks merely to reduce elapsed time.
+
+---
+
+## D-030 — Bounded structured generation for the funding pilot
+
+- **Date:** 2026-09-27
+- **Status:** approved by the founder on 2026-09-27 (explicit “approvo” in the project conversation).
+- **Recommendation:** append `schema = NULL` to `llm_generate()`. A supplied
+  schema is UTF-8 JSON text in an explicitly limited 2020-12 profile; successful
+  outputs remain named character vectors with the existing seed attribute.
+  Preserve the default sampler and unconstrained goldens. Exact profile,
+  conditions, bounds, native completion and acceptance are in
+  [the S0 contract](docs/s0-output-contract.md).
+- **Proposed dependencies:** direct Rust `serde = 1.0.228` and
+  `serde_json = 1.0.145`, with default features disabled and `std` enabled, in
+  `rebirth-llm`. Resolve, lock, MSRV-check and audit transitives during S1. No R
+  dependency or new exported helper. No manifest/lockfile change made for S0.
+- **Mechanism:** an RAII-owned b9726 grammar sampler masks candidates before the
+  existing selection step. A small profile-to-GBNF compiler and separate output
+  validation reuse Serde JSON parsing, including duplicate-key rejection.
+  Unsupported constructs and incomplete outputs fail with classed conditions.
+- **Application:** the 32-case contract pilot, evidence anchors and grouped
+  partitions are committed reference artifacts, not a representative quality
+  benchmark. Batch persistence remains in the application; D2 receives no core
+  filesystem side effects. S1 proceeds under this explicit approval; S0 checks alone were not authorization.
+- **Why:** the fixed-record use case needs a bounded, auditable capability while
+  preserving current behavior and avoiding silent JSON Schema feature loss.
+- **Alternative not recommended:** restoring the pruned upstream C++ converter
+  and JSON dependency before demonstrating the narrower task. This increases
+  vendored/build surface and still needs screening and independent validation.
+
+---
+
+### D-030 implementation notes (2026-09-27)
+
+- The compiler chooses sorted keys and compact separator spacing to prevent
+  whitespace-only token exhaustion. The independent validator accepts legal JSON
+  whitespace and arbitrary key order; the supported value semantics are unchanged.
+- A relm-owned C++ exception boundary is built with the existing CMake dependency;
+  no vendored engine file or additional build crate is changed. The unused native
+  grammar template is compiled once per vector call, with independent clones for
+  each prompt. R results retain their existing character-vector/seed surface.
+- Operational measurements use internal generated-token counts. Schema compliance
+  and application/source-evidence checks are reported separately; S1 cannot stand
+  in for D1's extraction-quality evaluation.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
