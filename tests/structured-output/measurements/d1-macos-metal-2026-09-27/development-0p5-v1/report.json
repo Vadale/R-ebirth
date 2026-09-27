@@ -1,0 +1,2039 @@
+{
+  "config": {
+    "version": 1,
+    "created_utc": "2026-09-27T20:01:44.951468+00:00",
+    "identity": {
+      "model_alias": "qwen2.5-0.5b-instruct-q8_0",
+      "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+      "backend": "metal",
+      "runtime": {
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "package_version": "0.2.0.9000",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20"
+      },
+      "modes": [
+        "unconstrained",
+        "structured"
+      ],
+      "sampling": {
+        "max_tokens": 768,
+        "context_length": 4096,
+        "temperature": 0,
+        "top_p": 0.95,
+        "chat": true,
+        "seed_rule": "101 + zero-based index in frozen cases.json"
+      },
+      "file_sha256": {
+        "cases.json": "9ff8039cfb084ef1fd8cb14c8d7b462ec5a72dc8585fb8ba28ca3cc9127f26b8",
+        "manifest.json": "060f1a31c92dee0b0af969c4ecafe2fd20d550ff2b17b014f70c7d639d5f4ad3",
+        "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+        "verify.py": "b07e195dff82e98eea7477340947009bf1175a636d110afd9cdb1d778c11fb5b",
+        "run-model.py": "c54ab979858f095f263ea48695b3cc3c1de903a9db50f35f019560e9047c2b43",
+        "evaluate-model.py": "7e9449200a2327b94bb0e000fe3e7de6054ac08170cbbd7fc294420a9d45668e",
+        "evaluate-model.R": "032b037f15b7b2a754ab3caea32d7458fa7c7d1c3af89f2c73f4a5062ee0d59c",
+        "sources/ace2022.txt": "8a8e0517d242bb25c86f9f720667b7739af40504913fbfdc82201c478fe90c8e",
+        "sources/ace2012.txt": "cc16477f89d91b33d25ed48b6bb4301683fdf67e0e81295bbf57806ba7547f82",
+        "sources/nlm.txt": "72079d302075cf1e711942ce4196f686f71121306482c5bcfe9a7f307223a18b",
+        "sources/nlm2023budget.txt": "b6dd64a5584e463cde1f0094dd52309570fc1682f433fc289669dc940f5ece12",
+        "sources/brain2017.txt": "43d3fb1462fa4af2607fce08779e886d94c131576940e1f093eed1df9b4b7c29",
+        "sources/nobel.txt": "ed26f9422a0d37d7e37a9474a72c751c7641cd81eac2426107b2205a3e197b6b",
+        "sources/heal.txt": "a1b8dec17259c1f2a63152fc55e9c481387a351a9685fd6b91d12ab044c68a1c"
+      },
+      "registry_sha256": "ff58fd169c705531fbd411a8c5dd9b6dd125dce2d7297a05d7c48491692801e0",
+      "template_sha256": "8fbc71346350a6d2239badc4d60d282f69baf3e8525713f590c5bfc58adbb549",
+      "schema_sha256": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+      "label_free_inputs_sha256": "2c6324bba9714771f0a356aa57cf82deb2eae8c636d6d8d3ac3c0ea2154f12c7"
+    },
+    "split": "development",
+    "system": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "model_path": "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+    "r_library": "/private/tmp/relm-s1/library",
+    "candidate_sha256": null
+  },
+  "runs": {
+    "unconstrained": {
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/evaluate-model.R",
+        "unconstrained",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+        "metal",
+        "/private/tmp/relm-d1-dev-0p5-v1/inputs.tsv",
+        "/private/tmp/relm-d1-dev-0p5-v1/schema.json",
+        "/private/tmp/relm-d1-dev-0p5-v1/unconstrained",
+        "/private/tmp/relm-s1/library",
+        "768",
+        "4096",
+        "0",
+        "0.95"
+      ],
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "returncode": 0,
+      "diagnostics": [
+        {
+          "index": "0",
+          "id": "ace22-total",
+          "seed": 101,
+          "status": "success",
+          "elapsed_seconds": 1.292,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-0.json",
+          "output_sha256": "8147bc6eea6ed99e1d752bbf4c0f0c19eb129f6fe639832f04d87a021560b3f1"
+        },
+        {
+          "index": "1",
+          "id": "ace22-purpose",
+          "seed": 102,
+          "status": "success",
+          "elapsed_seconds": 1.026,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-1.json",
+          "output_sha256": "8f57be5bc2e5932538a33cb9dd6362261c7eebc49e4627d086f87ba8213a058c"
+        },
+        {
+          "index": "2",
+          "id": "ace22-renewal",
+          "seed": 103,
+          "status": "success",
+          "elapsed_seconds": 4.728,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-2.json",
+          "output_sha256": "743052350c1e44e8b0cf82cc38aa8a1c20b1f7c758f807c7788f185072f1a053"
+        },
+        {
+          "index": "3",
+          "id": "ace12-total",
+          "seed": 104,
+          "status": "success",
+          "elapsed_seconds": 4.758,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-3.json",
+          "output_sha256": "743052350c1e44e8b0cf82cc38aa8a1c20b1f7c758f807c7788f185072f1a053"
+        },
+        {
+          "index": "4",
+          "id": "ace12-purpose",
+          "seed": 105,
+          "status": "success",
+          "elapsed_seconds": 3.452,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-4.json",
+          "output_sha256": "743052350c1e44e8b0cf82cc38aa8a1c20b1f7c758f807c7788f185072f1a053"
+        },
+        {
+          "index": "5",
+          "id": "ace12-wrong-target",
+          "seed": 106,
+          "status": "success",
+          "elapsed_seconds": 3.637,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-5.json",
+          "output_sha256": "743052350c1e44e8b0cf82cc38aa8a1c20b1f7c758f807c7788f185072f1a053"
+        },
+        {
+          "index": "16",
+          "id": "nobel-prize",
+          "seed": 117,
+          "status": "success",
+          "elapsed_seconds": 2.0,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-16.json",
+          "output_sha256": "87692ad54cd797da5861790269c0e717170d3292c10bd7d470ff4f69a2b23832"
+        },
+        {
+          "index": "17",
+          "id": "nobel-neurons",
+          "seed": 118,
+          "status": "success",
+          "elapsed_seconds": 1.016,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-17.json",
+          "output_sha256": "8f57be5bc2e5932538a33cb9dd6362261c7eebc49e4627d086f87ba8213a058c"
+        },
+        {
+          "index": "18",
+          "id": "nobel-support",
+          "seed": 119,
+          "status": "success",
+          "elapsed_seconds": 1.383,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-18.json",
+          "output_sha256": "8648df645394c1e3eddba2cd2641aab02d7abaaa9e82eb98400b6e48b31e552d"
+        },
+        {
+          "index": "19",
+          "id": "heal-budget",
+          "seed": 120,
+          "status": "success",
+          "elapsed_seconds": 1.134,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-19.json",
+          "output_sha256": "8f57be5bc2e5932538a33cb9dd6362261c7eebc49e4627d086f87ba8213a058c"
+        },
+        {
+          "index": "20",
+          "id": "heal-budget-only",
+          "seed": 121,
+          "status": "success",
+          "elapsed_seconds": 1.122,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-20.json",
+          "output_sha256": "8f57be5bc2e5932538a33cb9dd6362261c7eebc49e4627d086f87ba8213a058c"
+        },
+        {
+          "index": "21",
+          "id": "heal-duration",
+          "seed": 122,
+          "status": "success",
+          "elapsed_seconds": 4.487,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-21.json",
+          "output_sha256": "743052350c1e44e8b0cf82cc38aa8a1c20b1f7c758f807c7788f185072f1a053"
+        },
+        {
+          "index": "22",
+          "id": "heal-purpose",
+          "seed": 123,
+          "status": "success",
+          "elapsed_seconds": 1.129,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-22.json",
+          "output_sha256": "8f57be5bc2e5932538a33cb9dd6362261c7eebc49e4627d086f87ba8213a058c"
+        }
+      ],
+      "protocol_errors": [],
+      "execution_complete": true,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096"
+      },
+      "metrics": {
+        "records": 13,
+        "valid_records": 6,
+        "failed_or_invalid": 7,
+        "record_accuracy": 0.23076923076923078,
+        "field_accuracy": {
+          "amount_usd": 0.23076923076923078,
+          "amount_qualifier": 0.23076923076923078,
+          "duration_years": 0.23076923076923078,
+          "conditional_on_funds": 0.3076923076923077
+        },
+        "known_amount_accuracy": 0.0,
+        "unsupported_nonmissing_rate": 1.0,
+        "predicted_nonmissing": 4
+      },
+      "schema_valid_records": 7,
+      "denominators": {
+        "records": 13,
+        "per_field": {
+          "amount_usd": 13,
+          "amount_qualifier": 13,
+          "duration_years": 13,
+          "conditional_on_funds": 13
+        },
+        "known_amount_records": 4,
+        "predicted_nonmissing_fields_in_task_valid_records": 4
+      },
+      "numerators": {
+        "exact_grounded_records": 3,
+        "correct_fields": {
+          "amount_usd": 3,
+          "amount_qualifier": 3,
+          "duration_years": 3,
+          "conditional_on_funds": 4
+        },
+        "correct_known_amounts": 0,
+        "unsupported_nonmissing_fields": 4
+      },
+      "case_details": [
+        {
+          "id": "ace22-total",
+          "schema_check": {
+            "valid": false,
+            "error": "Evidence must contain exactly the required schema properties"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": 1000000000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs). This endeavor funds large research projects to understand and develop interventions for autism spectrum disorder (ASD). Created in 2007, the ACE program is renewed every five years.",
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "over the next five years",
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-renewal",
+          "schema_check": {
+            "valid": false,
+            "error": "Root must contain exactly the required schema properties"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-total",
+          "schema_check": {
+            "valid": false,
+            "error": "Root must contain exactly the required schema properties"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "over five years",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-purpose",
+          "schema_check": {
+            "valid": false,
+            "error": "Root must contain exactly the required schema properties"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-wrong-target",
+          "schema_check": {
+            "valid": false,
+            "error": "Root must contain exactly the required schema properties"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-prize",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 12000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. Rothman unraveled protein machinery that allows vesicles to fuse with their targets to permit transfer of cargo.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. Rothman unraveled protein machinery that allows vesicles to fuse with their targets to permit transfer of cargo.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 3,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. Rothman unraveled protein machinery that allows vesicles to fuse with their targets to permit transfer of cargo.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. Rothman unraveled protein machinery that allows vesicles to fuse with their targets to permit transfer of cargo.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-neurons",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-support",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 22,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health (NIH) has supported Dr. S\u00fcdhof\u2019s research over the past 22 years.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 22,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": true,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "Award levels may increase or decrease over time based on programmatic needs, funding availability, and recipient performance.",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget-only",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-duration",
+          "schema_check": {
+            "valid": false,
+            "error": "Root must contain exactly the required schema properties"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "anticipated to be five years",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        }
+      ]
+    },
+    "structured": {
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/evaluate-model.R",
+        "structured",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+        "metal",
+        "/private/tmp/relm-d1-dev-0p5-v1/inputs.tsv",
+        "/private/tmp/relm-d1-dev-0p5-v1/schema.json",
+        "/private/tmp/relm-d1-dev-0p5-v1/structured",
+        "/private/tmp/relm-s1/library",
+        "768",
+        "4096",
+        "0",
+        "0.95"
+      ],
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "returncode": 0,
+      "diagnostics": [
+        {
+          "index": "0",
+          "id": "ace22-total",
+          "seed": 101,
+          "status": "success",
+          "elapsed_seconds": 5.313,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-0.json",
+          "output_sha256": "b115827714b7968ae86363c615dd655d85c9bde0b52c5fa9579509ccfe9af2ad"
+        },
+        {
+          "index": "1",
+          "id": "ace22-purpose",
+          "seed": 102,
+          "status": "success",
+          "elapsed_seconds": 1.177,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-1.json",
+          "output_sha256": "f49fe4e4e8765070c947ae186903d0b5db2669118edf9321118836f14c6bdaee"
+        },
+        {
+          "index": "2",
+          "id": "ace22-renewal",
+          "seed": 103,
+          "status": "success",
+          "elapsed_seconds": 1.143,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-2.json",
+          "output_sha256": "f49fe4e4e8765070c947ae186903d0b5db2669118edf9321118836f14c6bdaee"
+        },
+        {
+          "index": "3",
+          "id": "ace12-total",
+          "seed": 104,
+          "status": "success",
+          "elapsed_seconds": 4.358,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-3.json",
+          "output_sha256": "e242dd4278d8c35a85e06222127daf87c3ae67d9e4ddbfdeab272cec86672df9"
+        },
+        {
+          "index": "4",
+          "id": "ace12-purpose",
+          "seed": 105,
+          "status": "success",
+          "elapsed_seconds": 1.147,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-4.json",
+          "output_sha256": "f49fe4e4e8765070c947ae186903d0b5db2669118edf9321118836f14c6bdaee"
+        },
+        {
+          "index": "5",
+          "id": "ace12-wrong-target",
+          "seed": 106,
+          "status": "success",
+          "elapsed_seconds": 4.418,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-5.json",
+          "output_sha256": "e242dd4278d8c35a85e06222127daf87c3ae67d9e4ddbfdeab272cec86672df9"
+        },
+        {
+          "index": "16",
+          "id": "nobel-prize",
+          "seed": 117,
+          "status": "success",
+          "elapsed_seconds": 3.988,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-16.json",
+          "output_sha256": "84314797966acfd5e511d1167c5f5dba3451037867c7a0f760f1a2a734bce8b4"
+        },
+        {
+          "index": "17",
+          "id": "nobel-neurons",
+          "seed": 118,
+          "status": "success",
+          "elapsed_seconds": 2.606,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-17.json",
+          "output_sha256": "fb872cade0e7b2eb51902a81fc3460eaca49ea467a95dbe921d1d259c13158aa"
+        },
+        {
+          "index": "18",
+          "id": "nobel-support",
+          "seed": 119,
+          "status": "success",
+          "elapsed_seconds": 2.82,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-18.json",
+          "output_sha256": "e2985c86d1a022899f3876604948d44feb9e22db41cb75d4af8f1384482e0e06"
+        },
+        {
+          "index": "19",
+          "id": "heal-budget",
+          "seed": 120,
+          "status": "success",
+          "elapsed_seconds": 1.186,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-19.json",
+          "output_sha256": "e0a17bc174612a6bc141911da519ec61747e0637c386cc037a0d1a9c58358131"
+        },
+        {
+          "index": "20",
+          "id": "heal-budget-only",
+          "seed": 121,
+          "status": "success",
+          "elapsed_seconds": 1.175,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-20.json",
+          "output_sha256": "e0a17bc174612a6bc141911da519ec61747e0637c386cc037a0d1a9c58358131"
+        },
+        {
+          "index": "21",
+          "id": "heal-duration",
+          "seed": 122,
+          "status": "success",
+          "elapsed_seconds": 1.221,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-21.json",
+          "output_sha256": "268f6fa5c7470b857483d2248e6bdd4da9c6853cc5d262719ee7e0733148b395"
+        },
+        {
+          "index": "22",
+          "id": "heal-purpose",
+          "seed": 123,
+          "status": "success",
+          "elapsed_seconds": 1.165,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-22.json",
+          "output_sha256": "e0a17bc174612a6bc141911da519ec61747e0637c386cc037a0d1a9c58358131"
+        }
+      ],
+      "protocol_errors": [],
+      "execution_complete": true,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096"
+      },
+      "metrics": {
+        "records": 13,
+        "valid_records": 6,
+        "failed_or_invalid": 7,
+        "record_accuracy": 0.0,
+        "field_accuracy": {
+          "amount_usd": 0.0,
+          "amount_qualifier": 0.15384615384615385,
+          "duration_years": 0.15384615384615385,
+          "conditional_on_funds": 0.0
+        },
+        "known_amount_accuracy": 0.0,
+        "unsupported_nonmissing_rate": 0.8333333333333334,
+        "predicted_nonmissing": 24
+      },
+      "schema_valid_records": 13,
+      "denominators": {
+        "records": 13,
+        "per_field": {
+          "amount_usd": 13,
+          "amount_qualifier": 13,
+          "duration_years": 13,
+          "conditional_on_funds": 13
+        },
+        "known_amount_records": 4,
+        "predicted_nonmissing_fields_in_task_valid_records": 24
+      },
+      "numerators": {
+        "exact_grounded_records": 0,
+        "correct_fields": {
+          "amount_usd": 0,
+          "amount_qualifier": 2,
+          "duration_years": 2,
+          "conditional_on_funds": 0
+        },
+        "correct_known_amounts": 0,
+        "unsupported_nonmissing_fields": 20
+      },
+      "case_details": [
+        {
+          "id": "ace22-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": 1000000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs). This endeavor funds large research projects to understand and develop interventions for autism spectrum disorder (ASD). Created in 2007, the ACE program is renewed every five years.",
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs). This endeavor funds large research projects to understand and develop interventions for autism spectrum disorder (ASD). Created in 2007, the ACE program is renewed every five years.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "over the next five years",
+              "observed_evidence": "The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs). This endeavor funds large research projects to understand and develop interventions for autism spectrum disorder (ASD). Created in 2007, the ACE program is renewed every five years.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs). This endeavor funds large research projects to understand and develop interventions for autism spectrum disorder (ASD). Created in 2007, the ACE program is renewed every five years.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-renewal",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": 1000000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "over five years",
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-wrong-target",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1000000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-prize",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 12000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. S\u00fcdhof shares the world\u2019s most prestigious science award with James E. Rothman, Ph.D., at Yale University, and Randy W. Schekman, Ph.D., at the University of California, Berkeley.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. S\u00fcdhof shares the world\u2019s most prestigious science award with James E. Rothman, Ph.D., at Yale University, and Randy W. Schekman, Ph.D., at the University of California, Berkeley.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 30,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. S\u00fcdhof shares the world\u2019s most prestigious science award with James E. Rothman, Ph.D., at Yale University, and Randy W. Schekman, Ph.D., at the University of California, Berkeley.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Dr. S\u00fcdhof shares the world\u2019s most prestigious science award with James E. Rothman, Ph.D., at Yale University, and Randy W. Schekman, Ph.D., at the University of California, Berkeley.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-neurons",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1000000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The human brain houses about 100 billion neurons\u2014about half the number of stars in the Milky Way.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The human brain houses about 100 billion neurons\u2014about half the number of stars in the Milky Way.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 2,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The human brain houses about 100 billion neurons\u2014about half the number of stars in the Milky Way.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The human brain houses about 100 billion neurons\u2014about half the number of stars in the Milky Way.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-support",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1000000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health (NIH) has supported Dr. S\u00fcdhof\u2019s research over the past 22 years.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health (NIH) has supported Dr. S\u00fcdhof\u2019s research over the past 22 years.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 30,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health (NIH) has supported Dr. S\u00fcdhof\u2019s research over the past 22 years.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health (NIH) has supported Dr. S\u00fcdhof\u2019s research over the past 22 years.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": true,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": "Award levels may increase or decrease over time based on programmatic needs, funding availability, and recipient performance.",
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget-only",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-duration",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": "anticipated to be five years",
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        }
+      ]
+    }
+  },
+  "execution_complete": true,
+  "held_out_gate": null,
+  "held_out_gate_passed": null,
+  "human_review_seconds": null,
+  "human_corrections": null,
+  "limitations": [
+    "Pilot cases are not a representative quality benchmark.",
+    "Schema validity is separate from task validity and expected-grounded scoring.",
+    "Failures remain in every all-case denominator; no retry or repair was attempted.",
+    "The frozen unsupported_nonmissing_rate denominator includes emitted nonmissing fields from task-valid records only; the gate separately requires zero failed or invalid records.",
+    "Human review time and correction burden have not been measured.",
+    "The explicit candidate file guards configuration drift; it cannot prevent a user from inspecting held-out labels or deliberately editing provenance."
+  ]
+}

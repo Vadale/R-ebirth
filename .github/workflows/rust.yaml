@@ -110,6 +110,8 @@ jobs:
           python tests/structured-output/verify.py --self-test
           python tests/structured-output/check_batch_contract.py
           python tests/structured-output/run-model.py --self-test
+          python tests/structured-output/test-evaluate-model.py
+          python tests/structured-output/check-evaluation-artifacts.py
 
   # D-008 gate G4 + D-015 patch coherence: prove the committed, patched vendored
   # llama.cpp tree still hashes to the recorded post-patch SHA256 (a silent engine
