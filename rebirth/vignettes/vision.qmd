@@ -2,6 +2,10 @@
 title: "Seeing machines: a VLM answering questions about an image, locally"
 format: html
 engine: knitr
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
 vignette: >
   %\VignetteIndexEntry{Seeing machines: a VLM answering questions about an image, locally}
   %\VignetteEngine{quarto::html}
@@ -11,8 +15,6 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-
 # The live steps need the ~2.3 GB vision model pair; a checker (CRAN,
 # r-universe) does not have it, and this vignette must never download
 # gigabytes on its own. We therefore gate the model-touching chunks: they run
