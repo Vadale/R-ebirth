@@ -6,7 +6,7 @@ version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
-rust-version = "1.71"
+rust-version.workspace = true
 
 # The R-loadable static library is named `relm` (the R package name), so the
 # generated entrypoint (R_init_relm), NAMESPACE (useDynLib(relm, ...)),

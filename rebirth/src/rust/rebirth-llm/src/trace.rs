@@ -933,14 +933,12 @@ impl LoadedModel {
                 longest,
                 RowSink::Spill(sink),
             )
-            .map_err(|err| {
+            .inspect_err(|_| {
                 let _ = std::fs::remove_file(&plan.spill_path);
-                err
             })?;
         let n_rows = match filled {
-            RowSink::Spill(sink) => sink.finish().map_err(|err| {
+            RowSink::Spill(sink) => sink.finish().inspect_err(|_| {
                 let _ = std::fs::remove_file(&plan.spill_path);
-                err
             })?,
             RowSink::Memory(_) => unreachable!("spill branch always uses a Spill sink"),
         };

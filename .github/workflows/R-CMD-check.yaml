@@ -1,6 +1,7 @@
 # Runs R CMD check on the `relm` package (which builds its native Rust core
 # via cargo). Modeled on https://github.com/r-lib/actions/tree/v2/examples.
-# Downloads no models: the scaffold has no model-dependent code or tests.
+# Downloads no models: model-dependent tests use committed synthetic fixtures
+# or skip when their opt-in real-model paths are absent.
 on:
   push:
     branches: [main, master]
@@ -13,22 +14,26 @@ permissions: read-all
 jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
-    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    name: ${{ matrix.config.os }} (R ${{ matrix.config.r }}, Rust ${{ matrix.config.rust }})
 
     strategy:
       fail-fast: false
       matrix:
-        # R-oldrel is intentionally omitted for now: the package declares
-        # Depends: R (>= 4.5.0), and while the current release is 4.5.x the
-        # oldrel series (4.4.x) is below that floor. Add oldrel back once the
-        # release line reaches 4.6 (the dev target), when oldrel becomes 4.5.x.
+        # R release is 4.6 and oldrel-1 is the supported 4.5 line. The Linux
+        # oldrel leg also checks the Rust minimum on the full package (default
+        # Arrow spill + extendr), avoiding a separate duplicate native build.
         config:
-          - {os: macos-15,     r: 'release'}
-          - {os: ubuntu-24.04, r: 'release'}
+          - {os: macos-15,     r: 'release',  rust: 'stable'}
+          - {os: ubuntu-24.04, r: 'release',  rust: 'stable'}
+          - {os: macos-15,     r: 'oldrel-1', rust: 'stable'}
+          - {os: ubuntu-24.04, r: 'oldrel-1', rust: '1.85.0'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      # Override the repository's floating stable channel even inside the
+      # R CMD check build subprocess, so the MSRV leg actually uses the floor.
+      RUSTUP_TOOLCHAIN: ${{ matrix.config.rust }}
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
       CMAKE_C_COMPILER_LAUNCHER: "sccache"
@@ -37,8 +42,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ matrix.config.rust }}
           components: rustfmt, clippy
 
       # Compiler cache (see env): routes the vendored llama.cpp cmake build and
@@ -53,6 +59,9 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
+
+      - name: toolchain declarations and configure MSRV regression (model-free)
+        run: Rscript tests/toolchain/test-msrv.R
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -133,7 +142,7 @@ jobs:
       # build needs R on the PATH (provided by the steps above). rust.yaml lints
       # the R-free rebirth-llm.
       - name: clippy (rebirth-ffi, the R boundary crate)
-        run: cargo clippy -p rebirth-ffi --all-targets -- -D warnings
+        run: cargo clippy --locked -p rebirth-ffi --all-targets -- -D warnings
         working-directory: rebirth/src/rust
 
       # Run rebirth-ffi's own tests here too (R on the PATH links the crate): the
@@ -141,7 +150,14 @@ jobs:
       # reject tests live in this crate and otherwise run nowhere in CI (rust.yaml
       # is R-free and cannot build rebirth-ffi).
       - name: cargo test (rebirth-ffi, the R boundary crate)
-        run: cargo test -p rebirth-ffi
+        run: cargo test --locked -p rebirth-ffi
+        working-directory: rebirth/src/rust
+
+      # Linux's CPU-only build cannot detect accidental Metal initialization.
+      # Execute the isolated backend regression on macOS too (the cross-Intel
+      # job only links test binaries and does not execute them).
+      - name: CPU backend isolation (including Metal-enabled builds)
+        run: cargo test --locked -p rebirth-llm --test cpu_backend
         working-directory: rebirth/src/rust
 
       - uses: r-lib/actions/check-r-package@v2

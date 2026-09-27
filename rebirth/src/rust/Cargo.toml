@@ -11,6 +11,7 @@ members = ["rebirth-ffi", "rebirth-llm"]
 [workspace.package]
 version = "0.0.0"
 edition = "2021"
+rust-version = "1.85.0"
 license = "MIT OR Apache-2.0"
 authors = ["Alessandro Vadala"]
 
