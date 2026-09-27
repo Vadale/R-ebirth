@@ -163,7 +163,10 @@ llm <- function(path,
   }
 
   # --- backend: a valid choice, resolved and checked against the build ---
-  backend <- match.arg(backend)
+  backend <- tryCatch(match.arg(backend), error = identity)
+  if (inherits(backend, "error")) {
+    abort_argument("backend", paste0("Invalid `backend`: ", conditionMessage(backend)))
+  }
   available <- rebirth_available_backends()
   if (identical(backend, "auto")) {
     backend <- if ("metal" %in% available) {

@@ -40,13 +40,31 @@ test_that("llm_embed() validates its arguments", {
     class = "relm_error_argument"
   )
 
-  # A bad `pooling` is a programming error caught by match.arg (a base error, the
-  # established idiom for a closed enum in this package), not a data condition.
-  expect_error(llm_embed(m, "hi", pooling = "cls"))
+  expect_error(llm_embed(m, "hi", pooling = "cls"), class = "relm_error_argument")
 
   # The offending argument is named in a structured field.
   cnd <- tryCatch(llm_embed(m, 42), condition = function(c) c)
   expect_identical(cnd$argument, "x")
+})
+
+test_that("llm_embed() keeps classed pooling validation and match.arg semantics", {
+  # Runs per commit without a model: malformed choices fail before tokenization.
+  m <- stub_llm()
+  for (pooling in list("cls", "m", NA_character_, character(0), 1, c("mean", "last"))) {
+    cnd <- tryCatch(llm_embed(m, "hi", pooling = pooling), error = identity)
+    expect_s3_class(cnd, "relm_error_argument")
+    expect_identical(cnd$argument, "pooling")
+  }
+
+  # An invalid x is checked immediately after pooling, so reaching it proves
+  # default, NULL, full choice vectors, and unambiguous partial matches survive.
+  cnd <- tryCatch(llm_embed(m, character(0)), error = identity)
+  expect_identical(cnd$argument, "x")
+  for (pooling in list(NULL, c("mean", "last", "model"), "me", "la", "mo")) {
+    cnd <- tryCatch(llm_embed(m, character(0), pooling = pooling), error = identity)
+    expect_s3_class(cnd, "relm_error_argument")
+    expect_identical(cnd$argument, "x")
+  }
 })
 
 test_that("llm_embed() on a tokenizer-less model raises relm_error_tokenize", {

@@ -181,6 +181,18 @@ test_that("validate_positions() de-duplicates explicit positions (M-1)", {
   expect_identical(validate_positions("all"), "all")
 })
 
+test_that("oversized trace positions are rejected before integer conversion", {
+  # Runs per commit without a model. as.integer() used to turn these into NA,
+  # then sort() silently dropped the offending positions from the capture spec.
+  m <- stub_llm()
+  for (positions in list(2^31, c(1, 2^31), .Machine$double.xmax, 1 + 0i)) {
+    cnd <- tryCatch(llm_trace(m, "hi", positions = positions), condition = identity)
+    expect_s3_class(cnd, "relm_error_argument")
+    expect_identical(cnd$argument, "positions")
+  }
+  expect_identical(validate_positions(.Machine$integer.max), .Machine$integer.max)
+})
+
 test_that("llm_trace() validates `components` (subset of the allowed set)", {
   # Defect: an unknown component name silently producing an empty capture rather
   # than a classed error naming the argument.

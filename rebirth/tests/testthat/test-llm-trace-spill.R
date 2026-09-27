@@ -77,6 +77,16 @@ test_that("a spilled trace's slices equal the in-memory slices exactly", {
   x <- as.matrix(sp, layer = 1, component = "residual")
   expect_identical(dim(x), c(8L, 32L))
   expect_match(rownames(x)[1], "^[0-9]+\\.[0-9]+$")
+
+  # Runs per commit: spilled reads must never truncate a fractional layer into
+  # a different captured slice, or narrow an oversized value to NA.
+  for (layer in list(1.9, Inf, -Inf, NaN, 0, -1, 2^31, 99L, 1 + 0i)) {
+    for (trace in list(ref, sp)) {
+      cnd <- tryCatch(as.matrix(trace, layer = layer), condition = identity)
+      expect_s3_class(cnd, "relm_error_argument")
+      expect_identical(cnd$argument, "layer")
+    }
+  }
 })
 
 test_that("a materialized trace fits K x its f32-activation bytes (D-017 pins the factor)", {
