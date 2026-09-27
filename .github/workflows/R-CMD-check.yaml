@@ -150,7 +150,15 @@ jobs:
       # reject tests live in this crate and otherwise run nowhere in CI (rust.yaml
       # is R-free and cannot build rebirth-ffi).
       - name: cargo test (rebirth-ffi, the R boundary crate)
-        run: cargo test --locked -p rebirth-ffi
+        shell: bash
+        run: |
+          # setup-r's oldrel installation is outside the Linux loader's default
+          # search path. Native test executables link libR but are not launched
+          # through R's wrapper, which would normally set this path for them.
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            export LD_LIBRARY_PATH="$(R RHOME)/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          fi
+          cargo test --locked -p rebirth-ffi
         working-directory: rebirth/src/rust
 
       # Linux's CPU-only build cannot detect accidental Metal initialization.
