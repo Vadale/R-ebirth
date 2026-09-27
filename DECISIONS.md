@@ -628,6 +628,55 @@ executes on exactly one machine in the world.
 
 ---
 
+## D-028 — Structured research workflows and production simplicity
+
+- **Date:** 2026-09-27
+- **Status:** founder-authorized direction and planning update, following an
+  independent GPT-6 Astra review with ultra reasoning. Exact API amendments,
+  dependency selections and service-stack choices remain proposed until their
+  separate approval; this entry approves none of them implicitly.
+- **Decision:** prioritize a narrow, evaluated document-to-data workflow using
+  constrained generation, followed by the statistical probe API. Make practical
+  operation part of delivery: first a reproducible, restartable batch application,
+  then a bounded local/small-team service using existing tools. Add only adapters
+  justified by a concrete caller. The public execution detail is
+  [the structured-output and production plan](docs/structured-production-plan.md).
+- **Sequence:** S0 (task, output contract and acceptance fixtures) → S1 (native
+  constraints) → D1 (evaluated demo) → D2 (batch operation) → WP11a/b (probe
+  contract/implementation) → WP12a/b (service contract/template). I1 integrations
+  enter only when needed. This is an explicit exception to historical phase
+  ordering. One WP remains active at a time, sized at most two working weeks.
+- **Production boundary:** the core supplies inference/research primitives and
+  classed errors; application examples own manifests, persistence, evaluation
+  and reporting. Optional integrations reuse established packages. The service
+  slice does not depend on native async, generic type contracts or `reb_compile()`;
+  it also does not complete the broader Phase-7 typed endpoint/OpenAPI goal.
+  A script with tested restart behavior is the first production milestone.
+- **Ownership constraint:** model handles stay inside their owning process and
+  thread; serialize access to their mutable contexts. Worker initialization uses
+  ordinary configuration and verified model files, never a transferred live
+  pointer. Start with one inference worker and measure before adding replicas.
+- **Evaluation:** freeze document-grouped partitions and labels before tuning;
+  separate schema validity, evidence-span validity and semantic support. Include
+  errors/abstentions in reports. Probe selection and uncertainty need their own
+  reviewed evaluation contract; Demo A remains exploratory in the meantime.
+- **Preserved work:** the package/distribution/fork ladder, Phase-7 types,
+  native async/streaming and later phases remain planned. Windows/CUDA and thesis
+  work stay deferred. Laya and an R-specialist model require task benchmarks
+  before adoption; neither is a dependency of this increment.
+- **Why:** the existing native research engine can support a useful, inspectable
+  application without becoming a general agent or deployment platform. Production
+  friction is reduced through tested setup, configuration, artifacts and recovery,
+  with explicit process/memory limits rather than high-throughput promises.
+- **Alternatives rejected for this increment:** new MCP/chat/vector-storage
+  infrastructure; a generic scheduler or cloud platform; requiring RAG/OCR before
+  an excerpt-based demo; coupling an application service to a compiler or R fork;
+  claiming factual correctness from schema constraints or calibrated confidence
+  from raw model scores. General JSON parsing should be reused through a reviewed
+  dependency choice, not rebuilt merely to avoid approving a dependency.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

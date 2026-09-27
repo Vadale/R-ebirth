@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-27 for the maintenance baseline after relm 0.2.0.
+Updated 2026-09-27 for the completed maintenance baseline and D-028 planning.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
 [current runs](https://github.com/Vadale/R-ebirth/actions) before integration.
@@ -27,10 +27,11 @@ alone is not evidence that its latest execution succeeded. Inspect the
 | Package installation, help, examples, vignettes | `R CMD build`; `R CMD check --no-manual` | R-CMD-check with the declared Quarto vignette builder; local checks need Quarto CLI and R package |
 
 The six scheduled workflows were re-enabled on 2026-09-27 after GitHub disabled
-them for inactivity. The last pre-maintenance vision failure was macOS package
-installation (`knitr` archive extraction), before numerical validation. Re-run
-the workflow to distinguish a transient repository/cache issue from a code defect;
-do not weaken golden thresholds to repair an installation failure.
+them for inactivity. Maintenance [PR #42](https://github.com/Vadale/R-ebirth/pull/42)
+merged at `01c10e9` after all nine PR checks and six fresh nightly workflows
+passed, including vision on macOS/Linux. The earlier vision installation failure
+did not require weaker numerical thresholds. This records that integration's
+evidence, not a claim that every later run is green.
 
 ## Local maintenance evidence
 
@@ -41,8 +42,10 @@ and six Gemma4/Qwen3/Qwen3.5 checks requiring additional models. No golden was
 regenerated. Rust default tests passed 94 cases (one ignored), and no-spill tests
 passed 79 (one ignored); formatting, Clippy, the synthetic oracle and vendor
 integrity checks passed. The original public two-session spill reproduction also
-passed with GPU access restricted. The rendered-vignette package check and fresh
-remote CI must complete before integration; these R counts do not replace them.
+passed with GPU access restricted. The rendered-vignette package check subsequently
+completed with zero errors, warnings and notes, and the remote checks above
+passed before maintenance integration. These results belong to PR #42; the D-028
+documentation update does not constitute a new feature test run.
 
 ## Open work, not delivered guarantees
 
@@ -73,3 +76,21 @@ remote CI must complete before integration; these R counts do not replace them.
 
 For a new acceptance gate, record its command, fixture/model and checksum,
 platform/backend, measured criterion, CI job or manual owner, and latest result.
+
+## D-028 planned gates — not implemented or run
+
+The [near-term plan](structured-production-plan.md) defines scope and sequencing.
+S0 specifies concrete commands, fixtures and promotion thresholds for constrained
+output, extraction and batch artifacts. WP11a and WP12a own the later probe and
+service contracts; I1 specifies its selected adapter checks. No row below is
+current coverage.
+
+| WP | Planned gate | Required execution context | Status |
+|---|---|---|---|
+| S0 | Frozen codebook, labelled pilot, document-group split audit, API/dependency proposals | Versioned public-text fixture; design review | Not started |
+| S1 | Supported-schema validation, unsupported-constraint rejection, incomplete-output/resource cases, unchanged unconstrained goldens | Tiny model-free fixtures in CI plus explicit small-model latency/memory comparison | Not run |
+| D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Not run |
+| D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Not run |
+| WP11a/b | Selection-aware/grouped evaluation, fold-local preprocessing, independent statistical references and controls | Synthetic reference fixtures plus pinned anatomy-lab example | Not run |
+| WP12a/b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Chosen Mac/Linux CPU service recipe; supervisor/worker versions pinned | Not run |
+| I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |

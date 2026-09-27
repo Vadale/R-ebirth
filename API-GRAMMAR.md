@@ -45,6 +45,12 @@ External pointer to native state + metadata. **Immutable from R's point of view:
 
 Methods: `print.llm`, `summary.llm`, `close.llm`. A closed or GC-collected handle raises `relm_error_closed` on any use.
 
+**Process boundary:** a live `llm` is process-local native state, not a durable
+R object. Do not serialize it for later use, transfer it to another R worker or
+inherit it through a fork. Recreate it inside the owning process from verified
+model files and configuration; shared weights between intervention handles do
+not imply sharing across processes or concurrent context access.
+
 ### `relm_trace` — captured activations
 A plain `data.frame` (long format) with class `c("relm_trace", "data.frame")`. **Column schema (exact, in this order):**
 
@@ -117,6 +123,12 @@ Vectorized over `prompt`; forward pass, next-token distribution. Returns a `data
 
 ## 5. Function entries — Phase 4 `[approved: D-003; implementation pending]`
 
+**D-028 implementation gate:** WP11a first specifies grouping, layer/parameter
+selection, fold-local preprocessing and uncertainty. These signatures remain
+approved as written; any needed extension or changed semantics requires a
+separately approved amendment. Copying Demo A's exploratory estimates is not
+sufficient statistical acceptance for WP11b.
+
 ### `llm_probe(formula, data, method = "glmnet", cv = 10, metric = c("auc", "accuracy"), seed = NULL)`
 `formula`: `label ~ activations(layer = 10:20, component = "residual")` — `label` is a column the user has attached to the trace (or a vector in the calling scope, standard R formula semantics); `activations()` is a formula helper resolved only inside `llm_probe`. `data` = a `relm_trace`. Fits one cross-validated probe per layer in the requested range. Returns `llm_probe` (§2). Errors: `relm_error_probe` (label/trace mismatch, single-class labels — message states counts).
 
@@ -155,6 +167,20 @@ Every condition carries structured fields where useful (e.g. `estimate_bytes` on
 ## 7. Reserved names — `[proposed]`, NOT approved, do not implement
 
 Reserved to keep the namespace coherent; each needs its own approved entry when its phase arrives: `llm_generate(..., on_token = )` and streaming forms (Phase 5–6); `llm_serve()` / serve module surface (Phase 7); type-contract helpers and `reb_compile()` (Phase 7); the vision-tower (T3) interpretability surface (post-Phase-11 research, D-026 — the Phase-11 `projector=`/`images=` slot was realized as approved §3 amendments on 2026-07-14); `llm_finetune()` (Phase 12); preference-optimization surface (Phase 13); `sae_features()` and `relm.topics` exports (Phase 14); export/interop surface (Phase 15); streaming-source verbs (Phase 16).
+
+### Structured output design — `[proposed: D-028 / S0]`
+
+The direction is accepted; an exact function entry is not yet proposed or
+approved. S0 must specify the schema representation/subset, conversion and
+validation, vectorized return behavior, condition classes, incomplete-output
+semantics and bounded resource use before S1. Preserve the default character
+vector/seed contract of `llm_generate()` and its absence of filesystem writes.
+Do not infer a new argument or export from examples in external discussions.
+The [near-term plan](docs/structured-production-plan.md) defines acceptance.
+
+An application-level HTTP template may use existing approved functions without
+creating `llm_serve()`. That name remains reserved and unapproved until its own
+function entry is accepted.
 
 ---
 
