@@ -9,6 +9,14 @@ Operational companion: the work-package plans under `docs/` — toolchain, seque
 - **Owner:** Alessandro (founder) + Claude (AI engineering)
 - **Scope:** everything needed to build alone, before any community involvement.
 
+**Execution amendment (2026-09-27, D-028):** the next increment is specified in
+[Structured output, statistical research and practical deployment](docs/structured-production-plan.md).
+Start with the extraction/output contract (S0), then native constraints, an
+evaluated demo and reproducible batch operation, followed by statistical probes
+and a bounded service template. Historical phase numbers below are preserved;
+the amendment explicitly selects the near-term order. It adds no approved
+function signature or dependency and does not mark a capability delivered.
+
 **What changed in v0.2 (decision D-002):** v0.1 planned a source fork of GNU R as the delivery vehicle from day one. v0.2 changes the *delivery vehicle*, not the vision: the solo phase ships as a **package suite running on unmodified R**, with the fork deferred to the community era as the third rung of an explicit ladder (§0). Everything already designed — API grammar, Rust crates, demos, correctness harness, memory-budget rules — carries over unchanged. Consequences ripple through §1, §3, §4, §6, §7, §9. A major side effect: the GPL constraint disappears and the project can be licensed maximally free (§6).
 
 ---
@@ -22,6 +30,29 @@ Operational companion: the work-package plans under `docs/` — toolchain, seque
 - **Rung 3 — the fork (community era).** Only for the things a package can never do: new surface syntax (real type annotations, `async`/`await` keywords), changed base defaults, the speculative JIT in the evaluator, allocator/GC work. Entered only when there is a community to share the permanent upstream-merge tax. The v0.1 fork plan (base pinning, patch-first rule, PATCHES.md, upstream `make check` invariant) is preserved verbatim in `DECISIONS.md` as the rung-3 playbook.
 
 **What a package genuinely cannot do** (the honest boundary, so it is never rediscovered by surprise): modify the parser, change base-R defaults, replace the evaluator/GC, or make R itself faster on arbitrary user loops. **Interim mitigations on rung 1:** function-based forms instead of new syntax (`async({...})`/`await()` in the promises tradition; type declarations as arguments rather than annotations), and — a roadmap-Phase-7 option — a `reb_compile()` transpiler for typed hot functions (nimble/odin precedent). Everything else discussed for research capability — speed on real workloads, the LLM anatomy lab, topic modelling, the base-R grammar — is fully deliverable from the package, because the heavy compute lives in the native engine either way.
+
+---
+
+### 0.1 Practical operation on rung 1 (D-028)
+
+Reduce the work needed to move a relm analysis from an interactive R session to
+a reproducible batch job, then to a modest local/small-team service. The first
+delivery is a reference application with documented setup/run commands, pinned
+configuration, evidence-linked tables and restartable document-level results.
+The application owns persistent artifacts; core functions keep their declared
+side effects and base-R return structures.
+
+Reuse existing environment, HTTP and supervision tools through reviewed optional
+dependencies. A model handle belongs to one process; workers load their own
+model and process requests sequentially. Start with one inference worker on the
+16 GB target. Installation, interruption recovery, memory and the declared load
+envelope are acceptance tests, not implied by a lockfile or endpoint alone.
+
+The narrow application service can precede native async and generic type/compile
+work. It does not replace the broader Phase-7 typed endpoint/OpenAPI deliverable,
+or bring forward the distribution/fork. Production templates may generalize to
+other R analyses only after the concrete workflow is tested. New API and
+dependency choices retain their existing approval gates.
 
 ---
 
@@ -138,14 +169,24 @@ belongs to the R-free `rebirth-llm` engine (D-009).
 - **No JIT / evaluator work** — rung 3 by definition now.
 - **No Arrow-backed default verbs on the critical path** — the LLM module returns plain R structures first; kernel/Arrow work proceeds behind a flag.
 - **No MLX backend, no fine-tuning / LoRA training, no RLHF, no SAE training** *through the end of plan-Phase 1 (`v1.0`)* — **deferred, not cancelled**: MLX = roadmap Phase 10, fine-tuning = Phase 12, alignment/RL = Phase 13, topics + SAE = Phase 14 (all still solo, post-`v1.0`). Applying *pretrained* SAEs to traces belongs to Phase 14; training SAEs from scratch stays out.
-- **No `serve`/streaming before the second half of Phase 1.**
+- **Streaming remains in its planned phase.** D-028 permits a narrow application
+  service after the batch/probe increment, independently of native async and
+  generic type contracts. The broader `serve` API remains subject to its own
+  specification and approval; no new public surface is approved by this exception.
 - **No multi-GPU, no distributed, no cloud integration.**
 - **No CRAN submission before Phase 1 exit** (r-universe carries distribution until then).
 - **No public release engineering** beyond r-universe binaries (no website/installer campaigns) until the community phase.
 
 ---
 
-## 8. Reference demos (unchanged — the pivot does not touch them)
+## 8. Reference demos and the D-028 application
+
+**D-028 addition:** retain Demos A/B and add a bounded public-document extraction
+application under the [near-term plan](docs/structured-production-plan.md).
+It starts from verified text, produces evidence-linked data, measures errors,
+and becomes the first restartable batch example. It is not the parked thesis
+and does not claim causal or clinical conclusions. Demos A/B being delivered
+does not imply this new application's acceptance has passed.
 
 Both demos pinned to license-clean models, runnable on the Mac mini 16 GB from RStudio, offline after one model download, seeded and reproducible. The medical-bias scenario stays deferred to documentation as a carefully-framed exploratory case study — not a launch demo (a launch demo must survive hostile expert scrutiny; "how to *investigate*" does, "we fixed clinical bias" does not).
 

@@ -42,10 +42,29 @@ Bridge: **extendr** (scaffolded by `rextendr`). Fallback if CRAN friction ever d
 
 ## 3. Object lifecycle and threading model
 
-- An `llm` handle is an R external pointer to `Arc<ModelState>` (weights + tokenizer + backend context). **Interventions never mutate:** `llm_steer`/`llm_ablate` return a new handle = cheap `Arc` clone + an intervention list; weights are shared, never copied. This implements the API-GRAMMAR contract "removal = use the original object".
-- **Two deallocation paths:** R GC finalizer (safety net) and `close.llm` (deterministic — on a 16 GB machine the user must be able to free 5 GB *now*). After close, the pointer is tagged; every FFI entry checks the tag → `relm_error_closed`.
-- **Threading rules (non-negotiable):** R's C API is single-threaded. Rust may spawn threads (generation, spill writing), but (a) no Rust thread ever calls into R; (b) all SEXP construction happens on the R thread; (c) results cross threads as plain Rust data over channels; (d) Phase 5+ callbacks into R are marshalled to the main thread via the `later` event-loop queue (§10). Violation of these rules is the highest-severity review finding.
+- An `llm` handle is an R external pointer to the FFI wrapper containing
+  `RefCell<Option<LoadedModel>>`. `LoadedModel` owns a mutable context, which holds
+  shared weights through `Arc<Model>`. **Interventions preserve the original:**
+  `llm_steer`/`llm_ablate` clone the weight reference and allocate a fresh context
+  with its own intervention state (D-016). Contexts still consume memory; shared
+  weights do not make arbitrary numbers of derived handles free.
+- **Two deallocation paths:** R GC finalizer (safety net) and `close.llm`
+  (deterministic). Closing takes the `LoadedModel` out of the wrapper; subsequent
+  use returns `relm_error_closed`. Shared weights remain until their final owner
+  is released.
+- **Threading rules (non-negotiable):** current model/context access stays on its
+  owning R thread. The spill writer receives owned plain data. `Send`/`Sync`
+  declarations rely on that confinement; they do not prove concurrent handle
+  safety. No worker thread calls R or constructs SEXPs. The Phase-5 design in §10
+  requires a separate ownership review before moving inference to another thread.
 - Long operations hold no R allocations: inputs are copied to Rust-owned buffers at entry, results materialize as SEXPs only at exit.
+
+**Process boundaries (D-028):** a live handle is neither a serialized job artifact
+nor an object to transfer/fork into another worker. Pass verified model paths,
+configuration and ordinary R data; initialize and close each model inside its
+owning process. In-process `Arc` sharing is not a cross-process memory contract.
+The initial production template serializes inference within one worker and tests
+request-state isolation after errors as well as successful calls.
 
 ## 4. Index discipline (the canonical defect class)
 
@@ -88,7 +107,13 @@ Greedy decoding: deterministic per backend by construction. Sampling: the sample
 
 ## 10. Async and live-callback design (Phase 5–6, designed now so Phase 0–4 code doesn't preclude it)
 
-Generation moves to a Rust worker thread; tokens flow over a bounded channel; the R side drains it via the `later` event loop (likely dependency — ADR when Phase 5 starts), resolving a `promises` promise on completion. `on_token` callbacks (Phase 6) are queued to the main R thread — never called from the worker. The Phase 0–4 obligation is only: keep `rebirth-llm`'s generation API channel-friendly (iterator/callback-based internally, not one blocking call that returns a final string).
+**Planned, not implemented:** generation may move to a Rust worker thread after
+the ownership/lifecycle contract is redesigned and reviewed; existing handles
+cannot simply be sent there. Tokens would flow over a bounded channel; the R
+side would drain it through an approved event-loop integration such as `later`
+and resolve a promise. Dependencies require an ADR. Phase-6 callbacks must run
+on the R main thread. Current generation is synchronous; the D-028 batch example
+and a process-worker service do not depend on this future native-async design.
 
 ## 11. Golden pipeline and the synthetic model
 
@@ -107,3 +132,28 @@ Generation moves to a Rust worker thread; tokens flow over a bounded channel; th
 ## 14. Open items (each becomes an ADR when its phase starts)
 
 `later`/`promises` dependency (Phase 5); serve stack choice (Phase 7); fine-tuning backend candle vs libtorch (Phase 12); MLX binding scope (Phase 10); richer data-frame access to spilled traces if required by a future approved API. Ablation and the nanoarrow stream format are settled in D-013/D-016.
+
+## 15. Planned application and service boundaries (D-028)
+
+[The near-term plan](docs/structured-production-plan.md) separates engine work
+from the reference application and its operation. None of the new deployment
+templates or constrained-output paths is implemented by this planning change.
+
+- **Constraints:** use the existing continuation path, with explicit validation
+  of a documented schema subset and bounded grammar resources. Preserve the
+  unconstrained sampling path. Conversion, return/error semantics and any new
+  dependencies are S0 decisions, not inferred from upstream sampler availability.
+- **Batch:** one model-owning process and one writer; persistent per-document
+  results, verified configuration identities and restart tests. The application
+  owns logs/manifests. Managed spill directories are not durable storage.
+- **Service:** an existing HTTP/worker/supervision stack around the same
+  application. Start with one persistent model-owning worker; keep admission,
+  readiness and deadlines responsive outside a blocking inference call. Forced
+  worker exit marks unfinished work interrupted; replacement reloads the model.
+  Numeric request/queue/memory limits are set before implementation.
+- **Integrations:** optional adapters exchange ordinary data and recreate native
+  state from configuration in a fresh process. A serialized retrieval callback
+  must not capture a live model pointer. No new generic protocol or storage layer.
+- **Later generalization:** the tested template can inform R-ebirth's wider
+  analysis-deployment pattern. It neither requires nor completes the generic
+  Phase-7 type-contract/compiler or typed endpoint/OpenAPI work.
