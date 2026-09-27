@@ -55,7 +55,7 @@
 //! attributes → `relm_error_trace`).
 
 use std::collections::HashMap;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::sync::mpsc::{sync_channel, Receiver, SyncSender};
 use std::sync::Arc;
 use std::thread::JoinHandle;
@@ -120,14 +120,21 @@ impl SpillSink {
                 ),
             })?;
         }
-        let file = File::create(&meta.path).map_err(|e| RebirthError::Trace {
-            reason: format!(
-                "Could not open the spill file '{}' for writing ({e}). \
-                 Check the spill directory exists and is writable, or pass a \
-                 different spill_dir.",
-                meta.path
-            ),
-        })?;
+        // Never truncate another trace or follow a pre-existing symlink. The R
+        // nonce avoids ordinary collisions; exclusive creation also closes the
+        // check/open race for direct callers and shared custom directories.
+        let file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&meta.path)
+            .map_err(|e| RebirthError::Trace {
+                reason: format!(
+                    "Could not create a new spill file '{}' ({e}). \
+                     Existing files are never overwritten. Check the spill directory \
+                     is writable, or pass a different spill_dir.",
+                    meta.path
+                ),
+            })?;
         let (sender, receiver) = sync_channel::<CaptureRow>(CHANNEL_BOUND);
         let handle = std::thread::Builder::new()
             .name("relm-spill".to_string())
