@@ -77,20 +77,31 @@ documentation update does not constitute a new feature test run.
 For a new acceptance gate, record its command, fixture/model and checksum,
 platform/backend, measured criterion, CI job or manual owner, and latest result.
 
-## D-028 planned gates — not implemented or run
+## D-028 increment — reference evidence and remaining gates
 
 The [near-term plan](structured-production-plan.md) defines scope and sequencing.
 S0 specifies concrete commands, fixtures and promotion thresholds for constrained
 output, extraction and batch artifacts. WP11a and WP12a own the later probe and
-service contracts; I1 specifies its selected adapter checks. No row below is
-current coverage.
+service contracts; I1 specifies its selected adapter checks. S0 has offline
+reference-artifact checks; all feature/runtime gates below remain unexecuted.
 
 | WP | Planned gate | Required execution context | Status |
 |---|---|---|---|
-| S0 | Frozen codebook, labelled pilot, document-group split audit, API/dependency proposals | Versioned public-text fixture; design review | Not started |
+| S0 | Frozen codebook, labelled pilot, document-group split audit, batch artifact example, API/dependency proposals | `python3 tests/structured-output/verify.py --self-test` and `check_batch_contract.py` in the same directory; 32 cases / 7 sources / 5 groups | Offline checks passed; D-030 proposal pending |
 | S1 | Supported-schema validation, unsupported-constraint rejection, incomplete-output/resource cases, unchanged unconstrained goldens | Tiny model-free fixtures in CI plus explicit small-model latency/memory comparison | Not run |
 | D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Not run |
 | D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Not run |
 | WP11a/b | Selection-aware/grouped evaluation, fold-local preprocessing, independent statistical references and controls | Synthetic reference fixtures plus pinned anatomy-lab example | Not run |
 | WP12a/b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Chosen Mac/Linux CPU service recipe; supervisor/worker versions pinned | Not run |
 | I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |
+
+S0 checks source/case/schema digests, exact Unicode spans, grouped partitions,
+output-record constraints, and deliberate corruption/missing-prediction guards.
+The fixture-only batch check passes identity and expected skip/retry assertions;
+it performs no inference, atomic writes, locking or real interruption recovery.
+Its frozen first-amount baseline gets 6/10 joint value/evidence matches and 2/4
+known amounts on the held-out pilot; it emits 9/14 unsupported nonmissing fields.
+Always-missing also gets 6/10 records but 0/4 known amounts, so cannot pass the
+quality gate. These are simple-rule outcomes, not relm/model results. No full
+native rebuild was repeated for documentation and standard-library test tooling
+(D-029); existing product tests/goldens/dependencies are unchanged.

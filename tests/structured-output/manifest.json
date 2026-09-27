@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "status": "frozen contract pilot; not a generalization benchmark",
+  "retrieved_on": "2026-09-27",
+  "source_policy_url": "https://www.nih.gov/about-nih/frequently-asked-questions",
+  "rights": "NIH government-authored text: public domain unless otherwise noted; selected text only, no images or third-party articles. Original annotations and constructed cases use the repository license.",
+  "normalization": "HTML entities decoded; whitespace within source paragraphs collapsed to one space; paragraphs separated by two LF; UTF-8, no Unicode normalization. HEAL paragraphs transcribed from the cited NIH notice through the web tool.",
+  "sources": [
+    {
+      "id": "ace2022",
+      "group_id": "ACE",
+      "split": "development",
+      "title": "NIH Awards $100 Million for Autism Centers of Excellence Program",
+      "url": "https://www.nimh.nih.gov/news/science-updates/2022/nih-awards-100-million-for-autism-centers-of-excellence-program",
+      "path": "sources/ace2022.txt",
+      "sha256": "8a8e0517d242bb25c86f9f720667b7739af40504913fbfdc82201c478fe90c8e",
+      "retrieved_on": "2026-09-27",
+      "retrieval": "direct_html",
+      "raw_html_sha256": "25be04facd6a7f1fc01d46f01f51a79c5e5313ff0dc5f07eb4f4bbb9c8e358b3",
+      "selected_paragraph_indices": [
+        50,
+        51,
+        52
+      ]
+    },
+    {
+      "id": "ace2012",
+      "group_id": "ACE",
+      "split": "development",
+      "title": "NIH Awards $100 Million for Autism Centers of Excellence Program",
+      "url": "https://www.nimh.nih.gov/news/science-updates/2012/nih-awards-100-million-for-autism-centers-of-excellence-program",
+      "path": "sources/ace2012.txt",
+      "sha256": "cc16477f89d91b33d25ed48b6bb4301683fdf67e0e81295bbf57806ba7547f82",
+      "retrieved_on": "2026-09-27",
+      "retrieval": "direct_html",
+      "raw_html_sha256": "372b6215c63f0185117ff62816aca24f933240cfad6f89fef85067bced8422e0",
+      "selected_paragraph_indices": [
+        50
+      ]
+    },
+    {
+      "id": "nlm",
+      "group_id": "NLM",
+      "split": "held_out",
+      "title": "National Library of Medicine Awards Nearly $58 Million to Advance a Data-Driven Research Workforce",
+      "url": "https://www.nlm.nih.gov/news/National_Library_of_Medicine_Awards_Nearly_58_Million_to_Advance_a_Data-Driven_Research_Workforce.html",
+      "path": "sources/nlm.txt",
+      "sha256": "72079d302075cf1e711942ce4196f686f71121306482c5bcfe9a7f307223a18b",
+      "retrieved_on": "2026-09-27",
+      "retrieval": "direct_html",
+      "raw_html_sha256": "d46bf096df7538b65d1d2f65816906a37bf8d381d34d732f4dc17fdcf45b2c86",
+      "selected_paragraph_indices": [
+        4,
+        5,
+        6
+      ]
+    },
+    {
+      "id": "nlm2023budget",
+      "group_id": "NLM",
+      "split": "held_out",
+      "title": "Congressional Justification FY 2023",
+      "url": "https://www.nlm.nih.gov/about/2023CJ.html",
+      "path": "sources/nlm2023budget.txt",
+      "sha256": "b6dd64a5584e463cde1f0094dd52309570fc1682f433fc289669dc940f5ece12",
+      "retrieved_on": "2026-09-27",
+      "retrieval": "direct_html",
+      "raw_html_sha256": "01c71ac691515836323c7f632267b4a14062e4f900bafde261faf5ff57fc3868",
+      "selected_paragraph_indices": [
+        23,
+        44
+      ]
+    },
+    {
+      "id": "brain2017",
+      "group_id": "BRAIN",
+      "split": "held_out",
+      "title": "NIH BRAIN Initiative Builds on Early Advances",
+      "url": "https://www.nimh.nih.gov/news/science-updates/2017/nih-brain-initiative-builds-on-early-advances",
+      "path": "sources/brain2017.txt",
+      "sha256": "43d3fb1462fa4af2607fce08779e886d94c131576940e1f093eed1df9b4b7c29",
+      "retrieved_on": "2026-09-27",
+      "retrieval": "direct_html",
+      "raw_html_sha256": "bd794a8c78dc5c0f9f259de497b2a070536f247a52a4119b401b18b9a908dd7c",
+      "selected_paragraph_indices": [
+        51,
+        53
+      ]
+    },
+    {
+      "id": "nobel",
+      "group_id": "NOBEL",
+      "split": "development",
+      "title": "NIMH Grantee Receives 2013 Nobel Prize",
+      "url": "https://www.nimh.nih.gov/news/science-updates/2013/nimh-grantee-receives-2013-nobel-prize",
+      "path": "sources/nobel.txt",
+      "sha256": "ed26f9422a0d37d7e37a9474a72c751c7641cd81eac2426107b2205a3e197b6b",
+      "retrieved_on": "2026-09-27",
+      "retrieval": "direct_html",
+      "raw_html_sha256": "4995e430433cbd87dfe908b32fb8e1d807de29f0bd808076dd92b5ab633f23c3",
+      "selected_paragraph_indices": [
+        52,
+        54,
+        56
+      ]
+    },
+    {
+      "id": "heal",
+      "group_id": "HEAL",
+      "split": "development",
+      "title": "NOT-OD-22-139: HEAL Research-Dissemination and Engagement Center",
+      "url": "https://grants.nih.gov/grants/guide/notice-files/NOT-OD-22-139.html",
+      "path": "sources/heal.txt",
+      "sha256": "a1b8dec17259c1f2a63152fc55e9c481387a351a9685fd6b91d12ab044c68a1c",
+      "retrieved_on": "2026-09-27",
+      "retrieval": "web_tool_cached_page",
+      "raw_html_sha256": null,
+      "selected_lines": [
+        24,
+        25,
+        30,
+        31
+      ]
+    }
+  ],
+  "artifacts": {
+    "cases.json": "9ff8039cfb084ef1fd8cb14c8d7b462ec5a72dc8585fb8ba28ca3cc9127f26b8",
+    "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+    "batch-contract.json": "d55585f99e46e655cccee5b595763c7531a75ca56fdc7673a96ad408d635a6fc"
+  },
+  "case_count": 32
+}

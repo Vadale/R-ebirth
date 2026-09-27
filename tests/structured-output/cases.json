@@ -1,0 +1,807 @@
+[
+  {
+    "id": "ace22-total",
+    "source_id": "ace2022",
+    "group_id": "ACE",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "ACE 2022 award total",
+    "text": "The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs). This endeavor funds large research projects to understand and develop interventions for autism spectrum disorder (ASD). Created in 2007, the ACE program is renewed every five years.",
+    "expected": {
+      "amount_usd": 100000000,
+      "amount_qualifier": "stated",
+      "duration_years": 5,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "$100 million",
+        "amount_qualifier": "$100 million",
+        "duration_years": "over the next five years",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 0,
+      "end": 329
+    }
+  },
+  {
+    "id": "ace22-purpose",
+    "source_id": "ace2022",
+    "group_id": "ACE",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "ACE 2022 award total",
+    "text": "The ACE program supports research on the diagnosis, causes of, and interventions for ASD. It also seeks to facilitate innovative and cost-effective services for people with ASD throughout the lifespan. The awards support research at individual centers, which feature collaboration between teams of experts, and at research networks, which involve multiple institutions, dedicated to the study of ASD. Each center and network focus on a specific research topic.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 579,
+      "end": 1039
+    }
+  },
+  {
+    "id": "ace22-renewal",
+    "source_id": "ace2022",
+    "group_id": "ACE",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "ACE 2022 award total",
+    "text": "Created in 2007, the ACE program is renewed every five years.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Renewal frequency is not the duration of a specific award.",
+    "source_span": {
+      "start": 268,
+      "end": 329
+    }
+  },
+  {
+    "id": "ace12-total",
+    "source_id": "ace2012",
+    "group_id": "ACE",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "ACE 2012 award total",
+    "text": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+    "expected": {
+      "amount_usd": 100000000,
+      "amount_qualifier": "stated",
+      "duration_years": 5,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "$100 million",
+        "amount_qualifier": "$100 million",
+        "duration_years": "over five years",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 0,
+      "end": 291
+    }
+  },
+  {
+    "id": "ace12-purpose",
+    "source_id": "ace2012",
+    "group_id": "ACE",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "ACE 2012 award total",
+    "text": "which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 154,
+      "end": 291
+    }
+  },
+  {
+    "id": "ace12-wrong-target",
+    "source_id": "ace2012",
+    "group_id": "ACE",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "BRAIN Initiative award total",
+    "text": "The National Institutes of Health has announced grant awards of $100 million over five years for the Autism Centers of Excellence (ACE) research program, which will feature projects investigating sex differences in autism spectrum disorders, or ASD, and investigating ASD and limited speech.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "An amount for ACE does not support a different requested programme.",
+    "source_span": {
+      "start": 0,
+      "end": 291
+    }
+  },
+  {
+    "id": "nlm-total",
+    "source_id": "nlm",
+    "group_id": "NLM",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "NLM T15 five-year training programme total",
+    "text": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions. NLM will distribute this funding on an annual basis, granting a total of $11.5 million each year. Recipients will develop training programs to prepare pre and postdoctoral trainees for interdisciplinary scientific research careers. Through this investment, NLM is continuing to build a well-trained, data-driven research workforce for the future.",
+    "expected": {
+      "amount_usd": 58000000,
+      "amount_qualifier": "less_than",
+      "duration_years": 5,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "nearly $58 million",
+        "amount_qualifier": "nearly $58 million",
+        "duration_years": "Over the next five years",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Do not recompute the reported total from the annual allocation.",
+    "source_span": {
+      "start": 0,
+      "end": 521
+    }
+  },
+  {
+    "id": "nlm-annual",
+    "source_id": "nlm",
+    "group_id": "NLM",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "NLM T15 annual allocation",
+    "text": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions. NLM will distribute this funding on an annual basis, granting a total of $11.5 million each year. Recipients will develop training programs to prepare pre and postdoctoral trainees for interdisciplinary scientific research careers. Through this investment, NLM is continuing to build a well-trained, data-driven research workforce for the future.",
+    "expected": {
+      "amount_usd": 11500000,
+      "amount_qualifier": "stated",
+      "duration_years": 1,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "$11.5 million each year",
+        "amount_qualifier": "$11.5 million each year",
+        "duration_years": "each year",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 0,
+      "end": 521
+    }
+  },
+  {
+    "id": "nlm-trainees",
+    "source_id": "nlm",
+    "group_id": "NLM",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "NLM T15 funding amount and award period",
+    "text": "This funding effort serves to develop, maintain, and renew scientific research capacity, a key goal in NIH’s Strategic Plan. NLM furthers this goal through funding training programs to inspire and empower a data-driven research workforce. Since first establishing a biomedical informatics training program in 1983, NLM has continuously advanced the biomedical and data science workforce; the current T15 program will support 110 biomedical informatics and data science predoctoral trainees, as well as around 60 postdoctoral trainees, per year. Each awarded institution will make special efforts to recruit individuals from underrepresented groups and economically, socially, culturally, or educationally disadvantaged backgrounds into these research careers.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Counts of trainees and programme age are not funding amounts or award duration.",
+    "source_span": {
+      "start": 704,
+      "end": 1463
+    }
+  },
+  {
+    "id": "nlm-missing",
+    "source_id": "nlm",
+    "group_id": "NLM",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "NLM T15 funding amount and award period",
+    "text": "Recipients of NLM’s Institutional Grants for Research Training in Biomedical Informatics and Data Science (T15) will focus training programs in one or more of the following areas:",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 523,
+      "end": 702
+    }
+  },
+  {
+    "id": "nlm-budget",
+    "source_id": "nlm2023budget",
+    "group_id": "NLM",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "NLM T15 training award total",
+    "text": "Major changes in the FY 2023 President’s Budget request for the National Library of Medicine (NLM) are briefly described below, by budget mechanism and activity detail. Note that there may be overlap between budget mechanism and activity detail; thus, these highlights will not sum to the total for NLM’s FY 2023 President’s Budget request, which is $472.0 million, an increase of $8.2 million over the FY 2022 CR level of $463.8 million. Within the FY 2023 request level and informed by the NLM Strategic Plan 2017-2027 and the NIH Strategic Plan for Data Science, NLM will pursue its highest priorities through strategic investments and careful stewardship of appropriated funds.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "An institution-wide budget request is not the requested training award total.",
+    "source_span": {
+      "start": 0,
+      "end": 681
+    }
+  },
+  {
+    "id": "nlm-grant-count",
+    "source_id": "nlm2023budget",
+    "group_id": "NLM",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "NLM T15 training award total",
+    "text": "Overall Budget Policy: The FY 2023 President’s Budget request for NLM is $472.0 million, an increase of $8.2 million over the FY 2022 CR level of $463.8 million. Funds are included to sustain intramural research in computational health and computational biology and enhance NLM’s most critical information services, including those that provide access to published biomedical literature, molecular biology and clinical data, and consumer health information. NLM will continue to build efficiency in processes that can be automated, such as indexing of journals in MEDLINE. NLM will award an estimated 28 new research project grants through its extramural programs. NLM will expand its graduate and post-doctoral training programs and launch new summer research experience programs in biomedical informatics and data science. NLM will continue its outreach programs that promote access and training in the effective use of NLM resources for scientists, clinicians, patients, and the public, while continuing to advance community engagement in the NIH Community Engagement Alliance (CEAL) Against COVID-19 Disparities and All of Us Research Program. NLM will also provide mission critical support for NIH- and government-wide priorities regarding data science goals, AI, and open science.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Budget totals and counts of planned grants must not be assigned to a training programme.",
+    "source_span": {
+      "start": 683,
+      "end": 1969
+    }
+  },
+  {
+    "id": "brain-new",
+    "source_id": "brain2017",
+    "group_id": "BRAIN",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "BRAIN Initiative 2017 new awards total",
+    "text": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million. Maps of whole brains in action, the ability to identify thousands of brain cells at a time, and innovative brain scanners are just a few of the advances funded by the groundbreaking effort. In the past three years, research under the initiative has advanced so rapidly that this year many of the previously funded individual projects will receive expanded support to achieve the ambitious goals of the BRAIN Initiative.",
+    "expected": {
+      "amount_usd": 169000000,
+      "amount_qualifier": "stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "$169 million",
+        "amount_qualifier": "$169 million",
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "The past three years describes research history, not these awards duration.",
+    "source_span": {
+      "start": 0,
+      "end": 682
+    }
+  },
+  {
+    "id": "brain-total",
+    "source_id": "brain2017",
+    "group_id": "BRAIN",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "BRAIN Initiative 2017 total programme funding",
+    "text": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million. Maps of whole brains in action, the ability to identify thousands of brain cells at a time, and innovative brain scanners are just a few of the advances funded by the groundbreaking effort. In the past three years, research under the initiative has advanced so rapidly that this year many of the previously funded individual projects will receive expanded support to achieve the ambitious goals of the BRAIN Initiative.",
+    "expected": {
+      "amount_usd": 260000000,
+      "amount_qualifier": "stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "$260 million",
+        "amount_qualifier": "$260 million",
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "The reporting year does not state individual award duration.",
+    "source_span": {
+      "start": 0,
+      "end": 682
+    }
+  },
+  {
+    "id": "brain-purpose",
+    "source_id": "brain2017",
+    "group_id": "BRAIN",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "BRAIN Initiative 2017 new awards total",
+    "text": "Launched in 2013, the BRAIN Initiative is a large-scale effort to push the boundaries of neuroscience research and equip scientists with insights necessary for treating a wide variety of brain disorders such as Alzheimer’s disease, schizophrenia, autism, epilepsy, and traumatic brain injury. Awarded to more than 178 investigators working at 56 institutions representing fields as diverse as engineering and psychology, this year’s funding will expand NIH’s efforts to develop new tools and technologies to understand neural circuit function and capture a dynamic view of the brain in action. While some have worked directly on the human brain others have tested tools and developed animal and computational models that help a wide range of researchers study the brain.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 684,
+      "end": 1454
+    }
+  },
+  {
+    "id": "brain-history",
+    "source_id": "brain2017",
+    "group_id": "BRAIN",
+    "split": "held_out",
+    "kind": "source_excerpt",
+    "target": "BRAIN Initiative 2017 new awards total",
+    "text": "In the past three years, research under the initiative has advanced so rapidly that this year many of the previously funded individual projects will receive expanded support to achieve the ambitious goals of the BRAIN Initiative.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 453,
+      "end": 682
+    }
+  },
+  {
+    "id": "nobel-prize",
+    "source_id": "nobel",
+    "group_id": "NOBEL",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "NIH research funding supporting the Nobel work",
+    "text": "Dr. Südhof shares the world’s most prestigious science award with James E. Rothman, Ph.D., at Yale University, and Randy W. Schekman, Ph.D., at the University of California, Berkeley. Dr. Rothman unraveled protein machinery that allows vesicles to fuse with their targets to permit transfer of cargo. Dr. Schekman discovered a set of genes that were required for vesicle traffic. The researchers will share a prize that totals roughly $1.2 million USD.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "The private Nobel prize amount is not an NIH research award.",
+    "source_span": {
+      "start": 489,
+      "end": 941
+    }
+  },
+  {
+    "id": "nobel-neurons",
+    "source_id": "nobel",
+    "group_id": "NOBEL",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "NIH research funding supporting the Nobel work",
+    "text": "The human brain houses about 100 billion neurons—about half the number of stars in the Milky Way. Each of these neurons “converses” with, on average, thousands of other neurons, sending molecular messages in a matter of milliseconds, about the same timeframe as a camera flash. How these messages are sent in such a rapid and precise manner has long been a mystery to neuroscientists. When these messages go awry, mental disorders such as schizophrenia, autism, and depression may arise.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Counts of neurons are not USD amounts.",
+    "source_span": {
+      "start": 0,
+      "end": 487
+    }
+  },
+  {
+    "id": "nobel-support",
+    "source_id": "nobel",
+    "group_id": "NOBEL",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "Total NIH funding supporting the Nobel work",
+    "text": "The National Institutes of Health (NIH) has supported Dr. Südhof’s research over the past 22 years. In turn, Dr. Südhof has served on several study sections at the NIH Center for Scientific Review, in addition to the Molecular, Cellular, and Developmental Neuroscience study section at NIMH. Over the years, Dr. Südhof’s work on the neurotransmitter release machinery has been supported with research program grants as well as center grants from NIMH. He is also the recipient of an NIMH MERIT (Method to Extend Research in Time) award , which along with an additional NIMH grant and funding from the Howard Hughes Medical Institute helped support his Nobel work. MERIT awards provide up to 10 years of stable research support for highly productive outstanding investigators working on projects well aligned with the mission of NIMH.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "22 years of support and the generic MERIT maximum do not specify the requested award period.",
+    "source_span": {
+      "start": 943,
+      "end": 1776
+    }
+  },
+  {
+    "id": "heal-budget",
+    "source_id": "heal",
+    "group_id": "HEAL",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "HEAL R-DEC planned activity budget",
+    "text": "Funds Available and Anticipated Number of Awards: The budget for this activity is planned for up to $25 million over a 5-year period, including the operations and support for the R-DEC as well as any proposed activities, sub-projects, infrastructure, or investments, once established. The OT mechanism allows for significant flexibilities to make adjustments as needed to pursue new and transformative activities. HEAL intends to issue up to four (4) awards as a result of this ROA.\n\nAward levels may increase or decrease over time based on programmatic needs, funding availability, and recipient performance. Requested budgets must justified based on proposed milestones and deliverables.",
+    "expected": {
+      "amount_usd": 25000000,
+      "amount_qualifier": "at_most",
+      "duration_years": 5,
+      "conditional_on_funds": true,
+      "evidence": {
+        "amount_usd": "up to $25 million",
+        "amount_qualifier": "up to $25 million",
+        "duration_years": "over a 5-year period",
+        "conditional_on_funds": "Award levels may increase or decrease over time based on programmatic needs, funding availability, and recipient performance."
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 455,
+      "end": 1144
+    }
+  },
+  {
+    "id": "heal-budget-only",
+    "source_id": "heal",
+    "group_id": "HEAL",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "HEAL R-DEC planned activity budget",
+    "text": "Funds Available and Anticipated Number of Awards: The budget for this activity is planned for up to $25 million over a 5-year period, including the operations and support for the R-DEC as well as any proposed activities, sub-projects, infrastructure, or investments, once established. The OT mechanism allows for significant flexibilities to make adjustments as needed to pursue new and transformative activities. HEAL intends to issue up to four (4) awards as a result of this ROA.",
+    "expected": {
+      "amount_usd": 25000000,
+      "amount_qualifier": "at_most",
+      "duration_years": 5,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "up to $25 million",
+        "amount_qualifier": "up to $25 million",
+        "duration_years": "over a 5-year period",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Future/planned wording alone is not an explicit funding-availability condition.",
+    "source_span": {
+      "start": 455,
+      "end": 937
+    }
+  },
+  {
+    "id": "heal-duration",
+    "source_id": "heal",
+    "group_id": "HEAL",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "HEAL R-DEC planned activity budget",
+    "text": "Award Project Duration: Project duration is anticipated to be five years, but may be shortened or extended, as needed.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": 5,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": "anticipated to be five years",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Extract the explicit anticipated term; preserve the qualification in evidence.",
+    "source_span": {
+      "start": 335,
+      "end": 453
+    }
+  },
+  {
+    "id": "heal-purpose",
+    "source_id": "heal",
+    "group_id": "HEAL",
+    "split": "development",
+    "kind": "source_excerpt",
+    "target": "HEAL R-DEC planned activity budget",
+    "text": "The R-DEC will identify diverse communities, groups, and individuals that are impacted by the opioid crisis and underlying challenges with pain and pain management, build strong bidirectional relationships with these groups, and help HEAL incorporate community input directly into its research processes and dissemination strategies.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": {
+      "start": 0,
+      "end": 333
+    }
+  },
+  {
+    "id": "constructed-missing",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "The Cedar programme supports research. No funding amount or duration is specified.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": null
+  },
+  {
+    "id": "constructed-conditional",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "The Cedar programme plans $2 million over three years, pending availability of funds.",
+    "expected": {
+      "amount_usd": 2000000,
+      "amount_qualifier": "stated",
+      "duration_years": 3,
+      "conditional_on_funds": true,
+      "evidence": {
+        "amount_usd": "$2 million",
+        "amount_qualifier": "$2 million",
+        "duration_years": "over three years",
+        "conditional_on_funds": "pending availability of funds"
+      }
+    },
+    "annotation_note": "",
+    "source_span": null
+  },
+  {
+    "id": "constructed-unconditional",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "The Cedar programme has secured $1 million for two years; funding is not conditional on future availability of funds.",
+    "expected": {
+      "amount_usd": 1000000,
+      "amount_qualifier": "stated",
+      "duration_years": 2,
+      "conditional_on_funds": false,
+      "evidence": {
+        "amount_usd": "$1 million",
+        "amount_qualifier": "$1 million",
+        "duration_years": "for two years",
+        "conditional_on_funds": "funding is not conditional on future availability of funds"
+      }
+    },
+    "annotation_note": "",
+    "source_span": null
+  },
+  {
+    "id": "constructed-lower",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "More than $3 million will support the Cedar programme over four years.",
+    "expected": {
+      "amount_usd": 3000000,
+      "amount_qualifier": "more_than",
+      "duration_years": 4,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "More than $3 million",
+        "amount_qualifier": "More than $3 million",
+        "duration_years": "over four years",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": null
+  },
+  {
+    "id": "constructed-minimum",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "At least $4 million will support the Cedar programme.",
+    "expected": {
+      "amount_usd": 4000000,
+      "amount_qualifier": "at_least",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "At least $4 million",
+        "amount_qualifier": "At least $4 million",
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": null
+  },
+  {
+    "id": "constructed-approximate",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "Approximately $5.5 million is planned for the Cedar programme over five years.",
+    "expected": {
+      "amount_usd": 5500000,
+      "amount_qualifier": "approximate",
+      "duration_years": 5,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "Approximately $5.5 million",
+        "amount_qualifier": "Approximately $5.5 million",
+        "duration_years": "over five years",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": null
+  },
+  {
+    "id": "constructed-contradiction",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "The Cedar programme total is $2 million. The same programme total is $3 million.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "Conflicting equally authoritative totals require abstention on amount, not choosing the first.",
+    "source_span": null
+  },
+  {
+    "id": "constructed-negation",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Cedar programme",
+    "text": "No grant of $2 million was awarded to the Cedar programme.",
+    "expected": {
+      "amount_usd": null,
+      "amount_qualifier": "not_stated",
+      "duration_years": null,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": null,
+        "amount_qualifier": null,
+        "duration_years": null,
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "A negated award must not become positive funding evidence.",
+    "source_span": null
+  },
+  {
+    "id": "constructed-unicode",
+    "source_id": null,
+    "group_id": "CONSTRUCTED",
+    "split": "contract",
+    "kind": "constructed",
+    "target": "Élan programme",
+    "text": "The “Élan” programme will receive $750000 over two years.",
+    "expected": {
+      "amount_usd": 750000,
+      "amount_qualifier": "stated",
+      "duration_years": 2,
+      "conditional_on_funds": null,
+      "evidence": {
+        "amount_usd": "$750000",
+        "amount_qualifier": "$750000",
+        "duration_years": "over two years",
+        "conditional_on_funds": null
+      }
+    },
+    "annotation_note": "",
+    "source_span": null
+  }
+]

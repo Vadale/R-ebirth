@@ -701,6 +701,36 @@ executes on exactly one machine in the world.
 
 ---
 
+## D-030 — Bounded structured generation for the funding pilot
+
+- **Date:** 2026-09-27
+- **Status:** proposed; requires founder approval before S1 implementation.
+- **Recommendation:** append `schema = NULL` to `llm_generate()`. A supplied
+  schema is UTF-8 JSON text in an explicitly limited 2020-12 profile; successful
+  outputs remain named character vectors with the existing seed attribute.
+  Preserve the default sampler and unconstrained goldens. Exact profile,
+  conditions, bounds, native completion and acceptance are in
+  [the S0 contract](docs/s0-output-contract.md).
+- **Proposed dependencies:** direct Rust `serde = 1.0.228` and
+  `serde_json = 1.0.145`, with default features disabled and `std` enabled, in
+  `rebirth-llm`. Resolve, lock, MSRV-check and audit transitives during S1. No R
+  dependency or new exported helper. No manifest/lockfile change made for S0.
+- **Mechanism:** an RAII-owned b9726 grammar sampler masks candidates before the
+  existing selection step. A small profile-to-GBNF compiler and separate output
+  validation reuse Serde JSON parsing, including duplicate-key rejection.
+  Unsupported constructs and incomplete outputs fail with classed conditions.
+- **Application:** the 32-case contract pilot, evidence anchors and grouped
+  partitions are committed reference artifacts, not a representative quality
+  benchmark. Batch persistence remains in the application; D2 receives no core
+  filesystem side effects. S1 cannot proceed merely because S0 checks pass.
+- **Why:** the fixed-record use case needs a bounded, auditable capability while
+  preserving current behavior and avoiding silent JSON Schema feature loss.
+- **Alternative not recommended:** restoring the pruned upstream C++ converter
+  and JSON dependency before demonstrating the narrower task. This increases
+  vendored/build surface and still needs screening and independent validation.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

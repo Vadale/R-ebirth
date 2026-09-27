@@ -170,13 +170,15 @@ Reserved to keep the namespace coherent; each needs its own approved entry when 
 
 ### Structured output design — `[proposed: D-028 / S0]`
 
-The direction is accepted; an exact function entry is not yet proposed or
-approved. S0 must specify the schema representation/subset, conversion and
-validation, vectorized return behavior, condition classes, incomplete-output
-semantics and bounded resource use before S1. Preserve the default character
-vector/seed contract of `llm_generate()` and its absence of filesystem writes.
-Do not infer a new argument or export from examples in external discussions.
-The [near-term plan](docs/structured-production-plan.md) defines acceptance.
+**D-030 proposal, not approved:** append `schema = NULL` to the current
+`llm_generate()` signature. A supplied value is one UTF-8 JSON string in the
+restricted schema profile specified by [the S0 contract](docs/s0-output-contract.md).
+Retain the named character-vector/seed return and no filesystem writes. With a
+schema, return only complete validated JSON; reject nonempty stop sequences and
+image-bearing requests initially. New proposed classes are `relm_error_schema`
+and `relm_error_structured_output`, with fields and limits in that contract.
+The approved §3 signature remains unchanged until D-030 is accepted; do not
+export or implement this amendment before approval.
 
 An application-level HTTP template may use existing approved functions without
 creating `llm_serve()`. That name remains reserved and unapproved until its own
