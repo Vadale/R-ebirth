@@ -746,6 +746,43 @@ executes on exactly one machine in the world.
 
 ---
 
+## D-031 — JSON dependency for the document-extraction application
+
+- **Date:** 2026-09-27
+- **Status:** proposed; founder authorized D1/D2 work, but has not yet approved
+  this concrete additional R dependency.
+- **Recommendation:** use **jsonlite 2.0.0**, pinned in the reference
+  application's setup manifest, for parsing configuration/generated JSON and
+  writing portable result/manifest records. Keep it outside relm's DESCRIPTION,
+  Imports, Suggests and exported API. The application remains base-R-oriented,
+  returning ordinary data frames; inference uses the existing public relm API.
+- **Scope:** one application dependency, MIT licensed, with only base `methods`
+  as a mandatory R dependency. Use literal parsing and explicit serialization;
+  no remote-URL reads, general JSON Schema engine, automatic data-frame coercion
+  or model-output repair. Core schema validation remains the S1 implementation.
+- **Hashing/environment:** use R's existing `tools::sha256sum()`; no `digest`
+  dependency. An application-local library plus pinned source artifacts and
+  recorded R/native/platform identities is sufficient for this bounded recipe;
+  neither `renv` nor a deployment framework is required for D1/D2. Setup is an
+  explicit online preparation step; normal runs and resume are offline.
+- **Validation before acceptance:** reject duplicate/unknown keys and malformed
+  domain values, preserve JSON nulls, test canonical identity bytes against the
+  independent S0 Python fixture, verify installed versions/artifact digests,
+  and exercise interrupted commits, stale configuration and competing writers.
+  Atomic result publication is scoped to one filesystem on macOS/Linux; stale
+  lock recovery is explicit and never inferred from age alone.
+- **Why:** standard JSON handling is necessary for a useful R-only application.
+  A custom parser would add avoidable complexity; Python remains evaluation/test
+  tooling and is not required to operate the reference application.
+- **Alternatives:** adding JSON conversion to relm's public API expands core
+  scope prematurely; requiring Python for the production runner complicates
+  installation; using `renv` and `digest` now adds dependencies without filling
+  a demonstrated gap in this narrow workflow.
+- **Source:** [jsonlite 2.0.0 reference manual](https://cran.r-project.org/web/packages/jsonlite/jsonlite.pdf),
+  checked on 2026-09-27. Version 2.0.0 is also already installed locally.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

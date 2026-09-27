@@ -13,3 +13,4 @@ The binding root documents are [SOLO-PHASE-PLAN.md](../SOLO-PHASE-PLAN.md),
 - [Development workflow](development-workflow.md) — coherent milestones, selective agents, batched pushes and verification proportional to risk (D-029).
 - [S0 output contract](s0-output-contract.md) — approved API/dependencies, frozen pilot, evaluator and batch artifact contract (D-030).
 - [S1 implementation and evidence](s1-implementation.md) — bounded native JSON generation, regression checks and operational measurements; extraction quality remains D1.
+- [D1/D2 execution](d1-d2-execution.md) — current evaluated extraction experiment, proposed application-only JSON dependency, then restartable batch operation.

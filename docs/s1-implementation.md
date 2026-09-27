@@ -1,8 +1,9 @@
 # S1 — Bounded native structured generation
 
 Date: 2026-09-27. Decision: approved [D-030](../DECISIONS.md#d-030--bounded-structured-generation-for-the-funding-pilot).
-Status: implemented and locally validated; cross-platform CI and the Linux CPU
-measurement remain integration gates. No release has been tagged.
+Status: accepted and merged in [PR #44](https://github.com/Vadale/R-ebirth/pull/44)
+at `87f6c04`. All nine PR checks and the Linux CPU model run passed. No release
+has been tagged.
 
 ## Delivered behavior
 
@@ -116,8 +117,12 @@ build could not find Quarto; selecting the already-installed Quarto 1.10.18
 resolved that environment error without changing vignette code. `R CMD check --no-manual` then completed with **Status: OK**, zero errors,
 warnings and notes.
 
-The PR check summary and model-tolerance workflow artifact are the execution
-record for macOS/Linux, Rust 1.85.0 and the Linux CPU operational comparison.
-The PR description records their final results and run links. S1 is accepted
-only when those gates pass; D1 is the next work package. This document records
-the local pre-push measurements and does not predict remote outcomes.
+All nine PR checks passed on candidate `5e89415`: [Rust/goldens/vendor/dependencies/Intel link](https://github.com/Vadale/R-ebirth/actions/runs/36343319597)
+and [macOS/Linux R release + oldrel, including Rust 1.85.0](https://github.com/Vadale/R-ebirth/actions/runs/36343319636).
+The [Linux CPU model run](https://github.com/Vadale/R-ebirth/actions/runs/36343334118)
+also passed, including the context/masking regressions and the operational gate.
+Its `structured-output-cpu` artifact records R 4.6.1, **1.4166×** median seconds
+per native generated token and **2,412,544 bytes (2.30 MiB)** additional peak RSS.
+Both modes still failed the report-only application consistency checks, as on
+Mac; this does not establish extraction quality. S1 acceptance is complete and
+PR #44 is merged; D1/D2 proceed under the founder's subsequent instruction.

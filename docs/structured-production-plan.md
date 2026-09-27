@@ -3,9 +3,10 @@
 Date: 2026-09-27. Planning baseline: maintenance PR #42, `01c10e9`.
 Decision: [D-028](../DECISIONS.md#d-028--structured-research-workflows-and-production-simplicity).
 Status: direction authorized; S0 is complete and the founder approved D-030 on
-2026-09-27. [S1](s1-implementation.md) implements the bounded native output
-contract with local validation and a Mac Metal operational measurement.
-Cross-platform CI remains an integration gate. Later public API changes and new
+2026-09-27. [S1](s1-implementation.md) is accepted and merged in PR #44, with
+macOS/Linux CI and Mac Metal/Linux CPU operational gates passing. The founder
+authorized D1 then D2; [their execution plan](d1-d2-execution.md) records the
+experiment and batch contract. Later public API changes and new
 dependencies retain their separate approval gates. The independent
 GPT-6 Astra review, using ultra reasoning, preceded these planning changes.
 
@@ -34,9 +35,8 @@ existing decisions. No new model backend is a prerequisite for this increment.
 
 One WP is active at a time. Each implementation WP targets at most two working
 weeks; split a larger design before implementation. The following order takes
-precedence over historical phase numbering for this increment. **S1 is the
-current implementation milestone**, under approved D-030; D1 follows its
-acceptance. Follow the milestone/verification policy
+precedence over historical phase numbering for this increment. **D1 is the
+current work package**, followed by D2; S0/S1 are complete. Follow the milestone/verification policy
 in [development workflow](development-workflow.md) (D-029).
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
@@ -209,7 +209,7 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** complete S1 integration and its Linux CPU operational gate,
-then execute D1's measured extraction demo against the frozen pilot. S1 supplies
+**Next action:** execute D1's measured extraction demo against the frozen pilot,
+then D2's operational recipe under its acceptance criteria. S1 supplies
 the approved native output mechanism; it does not establish extraction quality
 or restartable operation. Detailed status is in [S1 evidence](s1-implementation.md).
