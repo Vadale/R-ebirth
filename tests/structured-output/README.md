@@ -4,7 +4,8 @@ This is a small, frozen **contract pilot**, not a representative benchmark or a
 claim of extraction quality. It contains 23 source-derived cases from seven
 historical NIH/NIMH/NLM documents and nine original constructed cases. Text and
 labels are English. S1 uses only the `ace22-purpose` development excerpt for an
-operational/schema comparison; held-out model quality has not been evaluated.
+operational/schema comparison. D1 evaluates held-out model quality separately;
+see [D1 report](../../docs/d1-extraction-evaluation.md).
 Labels were prepared from the source text by the coding assistant; they are not
 expert-certified or independently collected human annotations.
 
@@ -75,8 +76,9 @@ claims. The original 100–200-excerpt aspiration remains a possible D1 expansio
 versioned and frozen **before** tuning on it; this smaller S0 set fixes the
 contract now. It must not be marketed as that larger corpus.
 
-No generation prompt/model has been selected using held-out outcomes. Development
-may guide prompts; hold out NLM/BRAIN until the D1 candidate is fixed. S0's simple
+The D1 candidate was selected and committed before held-out inference.
+Development guided two prompt versions; NLM/BRAIN remained held out until the
+1.5B/v1 candidate was frozen in commit `1d2cb7b`. S0's simple
 baselines are frozen reference rules, not prompt/model selection.
 
 ## Commands and evaluation
@@ -92,7 +94,8 @@ All tools use Python's standard library, consistent with existing test tooling;
 Python is not added to the relm runtime. The first command validates hashes,
 source spans, grouping, labels and corruption guards without network/model access.
 The baseline command reports two deliberately simple comparators. It is not LLM
-performance. `RUN.jsonl` is a future D1 result artifact; it does not exist yet.
+performance. Actual D1 prediction files are stored under
+[`measurements/d1-macos-metal-2026-09-27/`](measurements/d1-macos-metal-2026-09-27/).
 
 Each prediction row contains `id`, `status` (`success`, `failure`, `abstained`)
 and, for success, `output` as JSON text or a parsed object. Every selected input
@@ -112,7 +115,7 @@ Also report all error categories and time spent reviewing/correcting the output.
 Before any usefulness claim, inspect semantic support and compare both the rules
 and current unconstrained generation on the same frozen cases/model/seeds. A
 correct source span by itself does not establish support. S0 validates reference
-artifacts; D1 must still execute and report the actual application experiment.
+artifacts; the D1 report records the actual experiment separately.
 
 ## S1 operational comparison
 
@@ -158,3 +161,26 @@ The check is a pure offline contract assertion. It does not implement or test a
 runner, atomic writes, locking or recovery after a real process interruption;
 those remain D2 gates. Its placeholder build/backend records describe an example,
 and its prompt is not a selected D1 generation prompt.
+
+## D1 model evaluation
+
+`evaluate-model.py` checks the local registry-pinned model and installed runtime
+without downloading anything. It runs both modes, records every selected input
+(including worker failures), and separates schema, task and quality checks.
+`--freeze-only --development-report DEV/report.json` creates the candidate;
+`--split held_out --candidate FREEZE/candidate.json` rejects configuration drift.
+Every output directory must be new. Run only development during model/prompt
+selection; a consumed held-out set is regression data for later changes.
+
+```sh
+python3 tests/structured-output/test-evaluate-model.py
+python3 tests/structured-output/check-evaluation-artifacts.py
+python3 tests/structured-output/evaluate-model.py --help
+```
+
+Supply `--model`, `--model-alias`, `--backend`, `--prompt-template` and `--output`,
+plus `--r-library` for a specific installed build. The recorded candidate uses
+`prompts/funding-v1.txt`, 1.5B Q4_K_M and Metal. Both model-free checks run in the
+Rust workflow's golden job. The explicit model evaluation is a manual D1 gate,
+not an automatic model download in PR tests. Artifact verification can pass
+while the faithfully recorded model-quality gate fails.

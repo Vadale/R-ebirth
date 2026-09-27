@@ -1,0 +1,1624 @@
+{
+  "config": {
+    "version": 1,
+    "created_utc": "2026-09-27T20:10:26.456997+00:00",
+    "identity": {
+      "model_alias": "qwen2.5-1.5b-instruct-q4_k_m",
+      "model_sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "backend": "metal",
+      "runtime": {
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "package_version": "0.2.0.9000",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20"
+      },
+      "modes": [
+        "unconstrained",
+        "structured"
+      ],
+      "sampling": {
+        "max_tokens": 768,
+        "context_length": 4096,
+        "temperature": 0,
+        "top_p": 0.95,
+        "chat": true,
+        "seed_rule": "101 + zero-based index in frozen cases.json"
+      },
+      "file_sha256": {
+        "cases.json": "9ff8039cfb084ef1fd8cb14c8d7b462ec5a72dc8585fb8ba28ca3cc9127f26b8",
+        "manifest.json": "060f1a31c92dee0b0af969c4ecafe2fd20d550ff2b17b014f70c7d639d5f4ad3",
+        "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+        "verify.py": "b07e195dff82e98eea7477340947009bf1175a636d110afd9cdb1d778c11fb5b",
+        "run-model.py": "c54ab979858f095f263ea48695b3cc3c1de903a9db50f35f019560e9047c2b43",
+        "evaluate-model.py": "5da694855d7ef534788bccd38b2d8fbda30bab79075428ae367495964e4afa14",
+        "evaluate-model.R": "032b037f15b7b2a754ab3caea32d7458fa7c7d1c3af89f2c73f4a5062ee0d59c",
+        "sources/ace2022.txt": "8a8e0517d242bb25c86f9f720667b7739af40504913fbfdc82201c478fe90c8e",
+        "sources/ace2012.txt": "cc16477f89d91b33d25ed48b6bb4301683fdf67e0e81295bbf57806ba7547f82",
+        "sources/nlm.txt": "72079d302075cf1e711942ce4196f686f71121306482c5bcfe9a7f307223a18b",
+        "sources/nlm2023budget.txt": "b6dd64a5584e463cde1f0094dd52309570fc1682f433fc289669dc940f5ece12",
+        "sources/brain2017.txt": "43d3fb1462fa4af2607fce08779e886d94c131576940e1f093eed1df9b4b7c29",
+        "sources/nobel.txt": "ed26f9422a0d37d7e37a9474a72c751c7641cd81eac2426107b2205a3e197b6b",
+        "sources/heal.txt": "a1b8dec17259c1f2a63152fc55e9c481387a351a9685fd6b91d12ab044c68a1c"
+      },
+      "registry_sha256": "ff58fd169c705531fbd411a8c5dd9b6dd125dce2d7297a05d7c48491692801e0",
+      "template_sha256": "8fbc71346350a6d2239badc4d60d282f69baf3e8525713f590c5bfc58adbb549",
+      "schema_sha256": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+      "label_free_inputs_sha256": "2c6324bba9714771f0a356aa57cf82deb2eae8c636d6d8d3ac3c0ea2154f12c7"
+    },
+    "split": "held_out",
+    "system": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "model_path": "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+    "r_library": "/private/tmp/relm-s1/library",
+    "candidate_sha256": "061b5f11d9b7bbf7250d32d191dfcbb0bdfd3155e9351b3e7eea43ab07911445"
+  },
+  "runs": {
+    "unconstrained": {
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/evaluate-model.R",
+        "unconstrained",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+        "metal",
+        "/private/tmp/relm-d1-held-out/inputs.tsv",
+        "/private/tmp/relm-d1-held-out/schema.json",
+        "/private/tmp/relm-d1-held-out/unconstrained",
+        "/private/tmp/relm-s1/library",
+        "768",
+        "4096",
+        "0",
+        "0.95"
+      ],
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "returncode": 0,
+      "diagnostics": [
+        {
+          "index": "6",
+          "id": "nlm-total",
+          "seed": 107,
+          "status": "success",
+          "elapsed_seconds": 11.343,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-6.json",
+          "output_sha256": "182ec8fe62fd016430bbf27c90e1682e94e84b839fc92291a9e2f964bfdbcf10"
+        },
+        {
+          "index": "7",
+          "id": "nlm-annual",
+          "seed": 108,
+          "status": "success",
+          "elapsed_seconds": 10.987,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-7.json",
+          "output_sha256": "ead573a171016914774fb3f8373c1fe6cce682ad9ae099b4d71f5a9e8d13f7e5"
+        },
+        {
+          "index": "8",
+          "id": "nlm-trainees",
+          "seed": 109,
+          "status": "success",
+          "elapsed_seconds": 4.541,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-8.json",
+          "output_sha256": "70d66fe06efa8e08934046d1d2e3eb95fffda4eebe8affd79f1216f12199c24a"
+        },
+        {
+          "index": "9",
+          "id": "nlm-missing",
+          "seed": 110,
+          "status": "success",
+          "elapsed_seconds": 2.323,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-9.json",
+          "output_sha256": "8f57be5bc2e5932538a33cb9dd6362261c7eebc49e4627d086f87ba8213a058c"
+        },
+        {
+          "index": "10",
+          "id": "nlm-budget",
+          "seed": 111,
+          "status": "success",
+          "elapsed_seconds": 3.857,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-10.json",
+          "output_sha256": "37e595587555eec8578286b99c51737e25ea2b65dedb07bb5ec5363597f38de9"
+        },
+        {
+          "index": "11",
+          "id": "nlm-grant-count",
+          "seed": 112,
+          "status": "success",
+          "elapsed_seconds": 4.089,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-11.json",
+          "output_sha256": "d67b35829a2b593a5a1ced6886b2a7c3c339ab3802fd4929762c304a297d81f4"
+        },
+        {
+          "index": "12",
+          "id": "brain-new",
+          "seed": 113,
+          "status": "success",
+          "elapsed_seconds": 5.754,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-12.json",
+          "output_sha256": "d6a8217d7f5a99d1ed1cb7d745717e02b5589260a707f5a1bb8853a1bfbbaec9"
+        },
+        {
+          "index": "13",
+          "id": "brain-total",
+          "seed": 114,
+          "status": "success",
+          "elapsed_seconds": 4.746,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-13.json",
+          "output_sha256": "cb7391f6288a304c044570dadf3a1398dfdebbad2bd74993a9cfc44342733144"
+        },
+        {
+          "index": "14",
+          "id": "brain-purpose",
+          "seed": 115,
+          "status": "success",
+          "elapsed_seconds": 3.399,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-14.json",
+          "output_sha256": "b302cd8694470425dc602adfe20a7d235ad43aee4eb55bcef1d4c58f474f7e3e"
+        },
+        {
+          "index": "15",
+          "id": "brain-history",
+          "seed": 116,
+          "status": "success",
+          "elapsed_seconds": 4.344,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-15.json",
+          "output_sha256": "6b7a555aa4b030e9081bdf69575fdffb62061440305afb3046f2f516b66c1577"
+        }
+      ],
+      "protocol_errors": [],
+      "execution_complete": true,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096"
+      },
+      "metrics": {
+        "records": 10,
+        "valid_records": 2,
+        "failed_or_invalid": 8,
+        "record_accuracy": 0.1,
+        "field_accuracy": {
+          "amount_usd": 0.2,
+          "amount_qualifier": 0.2,
+          "duration_years": 0.1,
+          "conditional_on_funds": 0.1
+        },
+        "known_amount_accuracy": 0.25,
+        "unsupported_nonmissing_rate": 0.5,
+        "predicted_nonmissing": 4
+      },
+      "schema_valid_records": 5,
+      "denominators": {
+        "records": 10,
+        "per_field": {
+          "amount_usd": 10,
+          "amount_qualifier": 10,
+          "duration_years": 10,
+          "conditional_on_funds": 10
+        },
+        "known_amount_records": 4,
+        "predicted_nonmissing_fields_in_task_valid_records": 4
+      },
+      "numerators": {
+        "exact_grounded_records": 1,
+        "correct_fields": {
+          "amount_usd": 2,
+          "amount_qualifier": 2,
+          "duration_years": 1,
+          "conditional_on_funds": 1
+        },
+        "correct_known_amounts": 1,
+        "unsupported_nonmissing_fields": 2
+      },
+      "case_details": [
+        {
+          "id": "nlm-total",
+          "schema_check": {
+            "valid": false,
+            "error": "Unterminated string starting at: line 25 column 35 (char 3277)"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "Unterminated string starting at: line 25 column 35 (char 3277)"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 58000000,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "nearly $58 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "less_than",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "nearly $58 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "Over the next five years",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-annual",
+          "schema_check": {
+            "valid": false,
+            "error": "Unterminated string starting at: line 25 column 35 (char 3278)"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "Unterminated string starting at: line 25 column 35 (char 3278)"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 11500000,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "$11.5 million each year",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "$11.5 million each year",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 1,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "each year",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-trainees",
+          "schema_check": {
+            "valid": false,
+            "error": "Duplicate JSON key: conditional_on_funds"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "Duplicate JSON key: conditional_on_funds"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-missing",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-budget",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1500000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 training award provides $1.5 million for one year, subject to availability of funds.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 training award provides $1.5 million for one year, subject to availability of funds.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 training award provides $1.5 million for one year, subject to availability of funds.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 training award provides $1.5 million for one year, subject to availability of funds.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-grant-count",
+          "schema_check": {
+            "valid": false,
+            "error": "Duplicate JSON key: duration_years"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "Duplicate JSON key: duration_years"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-new",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 169000000,
+              "observed": 169000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$169 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$169 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-total",
+          "schema_check": {
+            "valid": false,
+            "error": "Duplicate JSON key: duration_years"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "Duplicate JSON key: duration_years"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 260000000,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "$260 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": "$260 million",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": false,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-history",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "In the past three years, research under the initiative has advanced so rapidly that this year many of the previously funded individual projects will receive expanded support to achieve the ambitious goals of the BRAIN Initiative.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "In the past three years, research under the initiative has advanced so rapidly that this year many of the previously funded individual projects will receive expanded support to achieve the ambitious goals of the BRAIN Initiative.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "In the past three years, research under the initiative has advanced so rapidly that this year many of the previously funded individual projects will receive expanded support to achieve the ambitious goals of the BRAIN Initiative.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "In the past three years, research under the initiative has advanced so rapidly that this year many of the previously funded individual projects will receive expanded support to achieve the ambitious goals of the BRAIN Initiative.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        }
+      ]
+    },
+    "structured": {
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/evaluate-model.R",
+        "structured",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+        "metal",
+        "/private/tmp/relm-d1-held-out/inputs.tsv",
+        "/private/tmp/relm-d1-held-out/schema.json",
+        "/private/tmp/relm-d1-held-out/structured",
+        "/private/tmp/relm-s1/library",
+        "768",
+        "4096",
+        "0",
+        "0.95"
+      ],
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "returncode": 0,
+      "diagnostics": [
+        {
+          "index": "6",
+          "id": "nlm-total",
+          "seed": 107,
+          "status": "success",
+          "elapsed_seconds": 5.521,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-6.json",
+          "output_sha256": "ba55c960cb5d9eb27ddbd72fb368fd7aedb18219c0a2471b7cbccec3d140b0be"
+        },
+        {
+          "index": "7",
+          "id": "nlm-annual",
+          "seed": 108,
+          "status": "success",
+          "elapsed_seconds": 5.509,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-7.json",
+          "output_sha256": "ba55c960cb5d9eb27ddbd72fb368fd7aedb18219c0a2471b7cbccec3d140b0be"
+        },
+        {
+          "index": "8",
+          "id": "nlm-trainees",
+          "seed": 109,
+          "status": "success",
+          "elapsed_seconds": 5.686,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-8.json",
+          "output_sha256": "e7d19d79de3321852490aa0668619a52c746da9a2113b6b002bd0c8f9a506839"
+        },
+        {
+          "index": "9",
+          "id": "nlm-missing",
+          "seed": 110,
+          "status": "success",
+          "elapsed_seconds": 3.559,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-9.json",
+          "output_sha256": "9f72af50a0219b25c64b99bd118080efe2627ce196e75d5bcf1566418e168aa9"
+        },
+        {
+          "index": "10",
+          "id": "nlm-budget",
+          "seed": 111,
+          "status": "success",
+          "elapsed_seconds": 5.545,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-10.json",
+          "output_sha256": "648d6d80482565236d5178983358f73e53c622a9b82a87c5ec59ad3f85f721c7"
+        },
+        {
+          "index": "11",
+          "id": "nlm-grant-count",
+          "seed": 112,
+          "status": "success",
+          "elapsed_seconds": 4.109,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-11.json",
+          "output_sha256": "d23e459c1e47d6b3dcc5858f0cc94a741ed51dd60ab3ba3d9d5f40641a1c53dd"
+        },
+        {
+          "index": "12",
+          "id": "brain-new",
+          "seed": 113,
+          "status": "success",
+          "elapsed_seconds": 7.363,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-12.json",
+          "output_sha256": "61cf93e518404eaac2dbb509b25a77207af34824712004059dadf14c59b8266b"
+        },
+        {
+          "index": "13",
+          "id": "brain-total",
+          "seed": 114,
+          "status": "success",
+          "elapsed_seconds": 7.39,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-13.json",
+          "output_sha256": "71b8c89966c499494ea259a5ff63eb980839d6605725cf923129e14fddadd4d2"
+        },
+        {
+          "index": "14",
+          "id": "brain-purpose",
+          "seed": 115,
+          "status": "success",
+          "elapsed_seconds": 3.832,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-14.json",
+          "output_sha256": "f130e2d5dc1ccd1af507f4183fa554fc8eda3ce4179096a5e335ff2b51213e3e"
+        },
+        {
+          "index": "15",
+          "id": "brain-history",
+          "seed": 116,
+          "status": "success",
+          "elapsed_seconds": 2.403,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-15.json",
+          "output_sha256": "4e959127db41c25d12f81bf9659cf93dfb57ce483fb8e9f423fe46b75b55513d"
+        }
+      ],
+      "protocol_errors": [],
+      "execution_complete": true,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096"
+      },
+      "metrics": {
+        "records": 10,
+        "valid_records": 2,
+        "failed_or_invalid": 8,
+        "record_accuracy": 0.0,
+        "field_accuracy": {
+          "amount_usd": 0.1,
+          "amount_qualifier": 0.1,
+          "duration_years": 0.1,
+          "conditional_on_funds": 0.0
+        },
+        "known_amount_accuracy": 0.25,
+        "unsupported_nonmissing_rate": 0.75,
+        "predicted_nonmissing": 8
+      },
+      "schema_valid_records": 10,
+      "denominators": {
+        "records": 10,
+        "per_field": {
+          "amount_usd": 10,
+          "amount_qualifier": 10,
+          "duration_years": 10,
+          "conditional_on_funds": 10
+        },
+        "known_amount_records": 4,
+        "predicted_nonmissing_fields_in_task_valid_records": 8
+      },
+      "numerators": {
+        "exact_grounded_records": 0,
+        "correct_fields": {
+          "amount_usd": 1,
+          "amount_qualifier": 1,
+          "duration_years": 1,
+          "conditional_on_funds": 0
+        },
+        "correct_known_amounts": 1,
+        "unsupported_nonmissing_fields": 6
+      },
+      "case_details": [
+        {
+          "id": "nlm-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 58000000,
+              "observed": 58000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "nearly $58 million",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "less_than",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "nearly $58 million",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "Over the next five years",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-annual",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 11500000,
+              "observed": 58000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$11.5 million each year",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$11.5 million each year",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": true,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 1,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "each year",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-trainees",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 110,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The current T15 program will support 110 biomedical informatics and data science predoctoral trainees, as well as around 60 postdoctoral trainees, per year.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The current T15 program will support 110 biomedical informatics and data science predoctoral trainees, as well as around 60 postdoctoral trainees, per year.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The current T15 program will support 110 biomedical informatics and data science predoctoral trainees, as well as around 60 postdoctoral trainees, per year.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The current T15 program will support 110 biomedical informatics and data science predoctoral trainees, as well as around 60 postdoctoral trainees, per year.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-missing",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1500000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 funding amount is $1.5 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 funding amount is $1.5 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 funding amount is $1.5 million.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The NLM T15 funding amount is $1.5 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-budget",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "duration_years: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 472000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Major changes in the FY 2023 President\u2019s Budget request for the National Library of Medicine (NLM) are briefly described below, by budget mechanism and activity detail.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Major changes in the FY 2023 President\u2019s Budget request for the National Library of Medicine (NLM) are briefly described below, by budget mechanism and activity detail.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Major changes in the FY 2023 President\u2019s Budget request for the National Library of Medicine (NLM) are briefly described below, by budget mechanism and activity detail.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "Major changes in the FY 2023 President\u2019s Budget request for the National Library of Medicine (NLM) are briefly described below, by budget mechanism and activity detail.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-grant-count",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "duration_years: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 28,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "NLM will award an estimated 28 new research project grants through its extramural programs.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "NLM will award an estimated 28 new research project grants through its extramural programs.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "NLM will award an estimated 28 new research project grants through its extramural programs.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "NLM will award an estimated 28 new research project grants through its extramural programs.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-new",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "duration_years: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 169000000,
+              "observed": 169000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$169 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$169 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "duration_years: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 260000000,
+              "observed": 169000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$260 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$260 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": true,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "The BRAIN Initiative 2017 new awards total is $1 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-history",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        }
+      ]
+    }
+  },
+  "execution_complete": true,
+  "held_out_gate": {
+    "no_failed_or_invalid": false,
+    "record_accuracy_at_least_0_8": false,
+    "known_amount_accuracy_at_least_0_9": false,
+    "unsupported_nonmissing_rate_at_most_0_05": false
+  },
+  "held_out_gate_passed": false,
+  "human_review_seconds": null,
+  "human_corrections": null,
+  "limitations": [
+    "Pilot cases are not a representative quality benchmark.",
+    "Schema validity is separate from task validity and expected-grounded scoring.",
+    "Failures remain in every all-case denominator; no retry or repair was attempted.",
+    "The frozen unsupported_nonmissing_rate denominator includes emitted nonmissing fields from task-valid records only; the gate separately requires zero failed or invalid records.",
+    "Human review time and correction burden have not been measured.",
+    "The explicit candidate file guards configuration drift; it cannot prevent a user from inspecting held-out labels or deliberately editing provenance."
+  ]
+}

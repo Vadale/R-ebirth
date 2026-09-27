@@ -4,6 +4,11 @@ Date: 2026-09-27. This report separates JSON conformance from extraction quality
 The experiment uses the frozen [S0 contract pilot](s0-output-contract.md), not a
 representative benchmark or a validated production application.
 
+**Outcome: the structured candidate fails all four held-out promotion gates.**
+It produces schema-valid JSON on 10/10 inputs, but no fully correct, grounded
+record. The evaluation report is delivered; D1's usefulness acceptance remains
+open. No runtime or inference failure was hidden or retried.
+
 ## Protocol and candidate selection
 
 The [D1 protocol](d1-d2-execution.md) permits two prompt versions and the two
@@ -53,6 +58,97 @@ modes. Independent review then found that interrupted metadata could abort the
 report. After that failure-accounting fix and its regression test, one final
 unchanged development run supplies the frozen candidate provenance. All runs
 are retained; the extra runs do not count as additional independent quality data.
+The final run also matches the initial predictions byte-for-byte. The candidate
+was frozen in commit `1d2cb7b`, before any held-out inference or review.
+
+## Held-out outcome
+
+All ten selected cases completed in each mode. The driver returned exit status
+1 because the quality gate failed; execution itself was complete. The cases
+comprise six NLM and four BRAIN excerpts/questions in two source groups.
+
+| Measurement | Unconstrained | Structured | Structured promotion requirement |
+|---|---:|---:|---:|
+| Schema-valid JSON | 5/10 | 10/10 | 10/10 |
+| Task-valid records, including missingness/evidence consistency | 2/10 | 2/10 | 10/10 |
+| Joint value/evidence accuracy | 1/10 (10%) | 0/10 (0%) | At least 8/10 |
+| Known-amount accuracy | 1/4 (25%) | 1/4 (25%) | 4/4 on this pilot |
+| Unsupported emitted fields in task-valid records | 2/4 (50%) | 6/8 (75%) | At most 5% |
+| Median generation time per input | 4.443 s | 5.515 s | Descriptive only |
+| Sum of generation times | 55.383 s | 50.917 s | Excludes setup/model load |
+
+The schema check alone passes. The four actual promotion checks are task validity,
+joint accuracy, known-amount accuracy and unsupported-field rate; **all fail**.
+The constrained candidate has 0/6 joint matches in NLM and 0/4 in BRAIN. The
+unconstrained comparator has 1/6 and 0/4 respectively. Related excerpts are not
+independent observations, so these counts do not support population inference.
+
+| Field accuracy, with invalid records scored incorrect | Unconstrained | Structured |
+|---|---:|---:|
+| `amount_usd` | 2/10 | 1/10 |
+| `amount_qualifier` | 2/10 | 1/10 |
+| `duration_years` | 1/10 | 1/10 |
+| `conditional_on_funds` | 1/10 | 0/10 |
+
+The frozen first-amount baseline has 6/10 joint matches, 2/4 known amounts and
+9/14 unsupported fields. Always-missing has 6/10 joint matches and 0/4 known
+amounts. Both fail the gate, but their higher joint score shows why this LLM
+candidate must not be promoted merely because it generates plausible records.
+
+Coverage is also not usefulness: all 10 structured responses contain at least
+one asserted value or qualifier; 9/10 assert an amount. Only 2/10 pass task
+consistency and 0/10 are fully grounded. Unconstrained output includes five
+strict parse failures, two parsed full abstentions (one with invalid nonnull
+evidence), and three other parsed records. All ten remain in the score.
+
+## Source review and correction burden
+
+The assistant reviewed both modes against every held-out source excerpt,
+requested scope and evidence field. Snapshot hashes and exact source spans
+pass the unchanged S0 audit. The separate
+[semantic review](../tests/structured-output/measurements/d1-macos-metal-2026-09-27/semantic-review.json)
+records reasons and proposed replacement values/evidence for all 20 outputs.
+It is reference-assisted review, not blinded or independent expert annotation.
+Original model responses and frozen labels were not modified or rescored.
+
+The structured results require proposed corrections in **10/10 records**;
+the unconstrained results in **9/10**. Examples:
+
+- NLM's five-year total is confused with its annual allocation; `nearly` is
+  discarded, and trainee/grant counts are read as dollars.
+- The institution-wide NLM budget is assigned to a narrower training award.
+- BRAIN's new-award subtotal is confused with its programme total.
+- Funding conditions are asserted without support. Some evidence is fabricated;
+  other quotations occur verbatim but do not substantiate the requested fact.
+- Correct null values can still carry invalid nonnull evidence. The schema
+  intentionally does not promise these cross-field/domain relationships.
+
+Human correction time is **unmeasured**, not zero. The review artifact records
+the assistant's elapsed inspection window and explicitly includes waiting and
+record preparation; it is not a measure of active human correction effort.
+This missing usability evidence is another reason no production-readiness or
+time-saving claim follows.
+
+## Reproducible evidence and validation
+
+[Recorded artifacts](../tests/structured-output/measurements/d1-macos-metal-2026-09-27/README.md)
+preserve all five development executions, the frozen candidate, both held-out
+runs and semantic review. `check-evaluation-artifacts.py` verifies 150 original
+predictions against their recorded byte digests and recalculates the scores.
+The candidate binds the final development report, input/schema/model/settings,
+native runtime and evaluator source; archived exploratory provenance is labelled.
+
+Eight model-free evaluator regressions pass, including runtime/candidate drift,
+failure denominators and interrupted/unreadable metadata. The unchanged S0
+source/contract checks also pass. These checks run in the Rust CI golden job;
+actual inference is the explicit manual D1 experiment. No native/R package code,
+API or dependency changed, so an unchanged native rebuild was not repeated locally.
+
+The next quality experiment should test a more capable, pinned local model on
+a broader, independently reviewed corpus under a new bounded protocol. The
+consumed held-out pilot is now regression material: it cannot be reused for
+tuning and then presented as fresh held-out evidence. No third prompt, changed
+label, weaker threshold or additional model search was undertaken in this block.
 
 ## Interpreting the checks
 

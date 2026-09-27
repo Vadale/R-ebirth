@@ -1,0 +1,981 @@
+{
+  "reviewer": "coding assistant",
+  "review_started_utc": "2026-09-27T20:10:33.092764+00:00",
+  "review_recorded_utc": "2026-09-27T20:13:56.410616+00:00",
+  "assistant_review_window_elapsed_seconds": 203.317852,
+  "timing_scope": "Elapsed window includes source inspection, model completion, output inspection and preparation of this record; not active human correction time or a usability measurement.",
+  "original_report_sha256": "fc921c035b535b63ce8689039e3acc6ddcf2e2b400711d8228c02e0953fad02c",
+  "summary": {
+    "unconstrained": {
+      "records": 10,
+      "records_requiring_proposed_correction": 9,
+      "strict_parse_failures": 5,
+      "parsed_full_abstentions": 2,
+      "parsed_records_with_nonmissing_values": 3,
+      "unparseable_records": 5,
+      "median_generation_seconds": 4.442500000000001,
+      "total_generation_seconds": 55.383,
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    "structured": {
+      "records": 10,
+      "records_requiring_proposed_correction": 10,
+      "strict_parse_failures": 0,
+      "parsed_full_abstentions": 0,
+      "parsed_records_with_nonmissing_values": 10,
+      "unparseable_records": 0,
+      "median_generation_seconds": 5.515000000000001,
+      "total_generation_seconds": 50.917,
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    }
+  },
+  "records": [
+    {
+      "id": "nlm-total",
+      "mode": "unconstrained",
+      "original_output_sha256": "182ec8fe62fd016430bbf27c90e1682e94e84b839fc92291a9e2f964bfdbcf10",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 0,
+        "end": 521
+      },
+      "target": "NLM T15 five-year training programme total",
+      "parse_error": "Unterminated string starting at: line 25 column 35 (char 3277)",
+      "semantic_review": "Repeated nested evidence objects exhaust the token budget and leave malformed JSON. The visible qualifier and funding condition also disagree with the excerpt.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 58000000,
+        "amount_qualifier": "less_than",
+        "duration_years": 5,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "nearly $58 million",
+          "amount_qualifier": "nearly $58 million",
+          "duration_years": "Over the next five years",
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-annual",
+      "mode": "unconstrained",
+      "original_output_sha256": "ead573a171016914774fb3f8373c1fe6cce682ad9ae099b4d71f5a9e8d13f7e5",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 0,
+        "end": 521
+      },
+      "target": "NLM T15 annual allocation",
+      "parse_error": "Unterminated string starting at: line 25 column 35 (char 3278)",
+      "semantic_review": "The output repeats nested evidence objects and is truncated. The visible amount and duration describe the total programme instead of the requested annual allocation.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 11500000,
+        "amount_qualifier": "stated",
+        "duration_years": 1,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "$11.5 million each year",
+          "amount_qualifier": "$11.5 million each year",
+          "duration_years": "each year",
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-trainees",
+      "mode": "unconstrained",
+      "original_output_sha256": "70d66fe06efa8e08934046d1d2e3eb95fffda4eebe8affd79f1216f12199c24a",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 704,
+        "end": 1463
+      },
+      "target": "NLM T15 funding amount and award period",
+      "parse_error": "Duplicate JSON key: conditional_on_funds",
+      "semantic_review": "60 counts postdoctoral trainees, not dollars; the quote concerns recruitment rather than money or an award period. A duplicate conditional_on_funds key also invalidates the JSON record.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-missing",
+      "mode": "unconstrained",
+      "original_output_sha256": "8f57be5bc2e5932538a33cb9dd6362261c7eebc49e4627d086f87ba8213a058c",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 523,
+        "end": 702
+      },
+      "target": "NLM T15 funding amount and award period",
+      "parse_error": null,
+      "semantic_review": "All missing values and null evidence correctly reflect this excerpt. No correction is proposed.",
+      "requires_correction": false,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "keep"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "keep"
+        },
+        {
+          "field": "duration_years",
+          "action": "keep"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "keep"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-budget",
+      "mode": "unconstrained",
+      "original_output_sha256": "37e595587555eec8578286b99c51737e25ea2b65dedb07bb5ec5363597f38de9",
+      "source_id": "nlm2023budget",
+      "source_span": {
+        "start": 0,
+        "end": 681
+      },
+      "target": "NLM T15 training award total",
+      "parse_error": null,
+      "semantic_review": "The $1.5 million, one-year award and funding-availability sentence do not occur in the source. All requested fields should be missing.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-grant-count",
+      "mode": "unconstrained",
+      "original_output_sha256": "d67b35829a2b593a5a1ced6886b2a7c3c339ab3802fd4929762c304a297d81f4",
+      "source_id": "nlm2023budget",
+      "source_span": {
+        "start": 683,
+        "end": 1969
+      },
+      "target": "NLM T15 training award total",
+      "parse_error": "Duplicate JSON key: duration_years",
+      "semantic_review": "28 is a grant count; neither one-year duration nor an explicit absence of funding conditions follows. Duplicate duration_years evidence also invalidates the record.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-new",
+      "mode": "unconstrained",
+      "original_output_sha256": "d6a8217d7f5a99d1ed1cb7d745717e02b5589260a707f5a1bb8853a1bfbbaec9",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 0,
+        "end": 682
+      },
+      "target": "BRAIN Initiative 2017 new awards total",
+      "parse_error": null,
+      "semantic_review": "$169 million and stated are supported. The reporting year does not establish a one-year award term, and no funding-availability clause supports true.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "keep"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "keep"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 169000000,
+        "amount_qualifier": "stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+          "amount_qualifier": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-total",
+      "mode": "unconstrained",
+      "original_output_sha256": "cb7391f6288a304c044570dadf3a1398dfdebbad2bd74993a9cfc44342733144",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 0,
+        "end": 682
+      },
+      "target": "BRAIN Initiative 2017 total programme funding",
+      "parse_error": "Duplicate JSON key: duration_years",
+      "semantic_review": "The numerical total is correct but its purported quote is rewritten rather than copied. Duplicate duration evidence invalidates the record. One-year award duration and a funding condition are not stated.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 260000000,
+        "amount_qualifier": "stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "$260 million",
+          "amount_qualifier": "$260 million",
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-purpose",
+      "mode": "unconstrained",
+      "original_output_sha256": "b302cd8694470425dc602adfe20a7d235ad43aee4eb55bcef1d4c58f474f7e3e",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 684,
+        "end": 1454
+      },
+      "target": "BRAIN Initiative 2017 new awards total",
+      "parse_error": null,
+      "semantic_review": "The excerpt gives investigators, institutions and scientific aims, not a dollar total, award period or funding condition. The $1 million sentence is fabricated.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-history",
+      "mode": "unconstrained",
+      "original_output_sha256": "6b7a555aa4b030e9081bdf69575fdffb62061440305afb3046f2f516b66c1577",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 453,
+        "end": 682
+      },
+      "target": "BRAIN Initiative 2017 new awards total",
+      "parse_error": null,
+      "semantic_review": "All missing values and not_stated are correct. Their nonnull historical quotations violate the missing-evidence contract and should all be null.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-total",
+      "mode": "structured",
+      "original_output_sha256": "ba55c960cb5d9eb27ddbd72fb368fd7aedb18219c0a2471b7cbccec3d140b0be",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 0,
+        "end": 521
+      },
+      "target": "NLM T15 five-year training programme total",
+      "parse_error": null,
+      "semantic_review": "The total and five-year duration are supported. Nearly requires less_than; no funding-availability clause justifies false.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "keep"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "keep"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 58000000,
+        "amount_qualifier": "less_than",
+        "duration_years": 5,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+          "amount_qualifier": "nearly $58 million",
+          "duration_years": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-annual",
+      "mode": "structured",
+      "original_output_sha256": "ba55c960cb5d9eb27ddbd72fb368fd7aedb18219c0a2471b7cbccec3d140b0be",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 0,
+        "end": 521
+      },
+      "target": "NLM T15 annual allocation",
+      "parse_error": null,
+      "semantic_review": "The requested annual allocation is $11.5 million each year, not the five-year $58 million total. The quoted total sentence does not substantiate the requested annual amount, qualifier or period. No funding condition is stated.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 11500000,
+        "amount_qualifier": "stated",
+        "duration_years": 1,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "$11.5 million each year",
+          "amount_qualifier": "$11.5 million each year",
+          "duration_years": "each year",
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-trainees",
+      "mode": "structured",
+      "original_output_sha256": "e7d19d79de3321852490aa0668619a52c746da9a2113b6b002bd0c8f9a506839",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 704,
+        "end": 1463
+      },
+      "target": "NLM T15 funding amount and award period",
+      "parse_error": null,
+      "semantic_review": "110 counts predoctoral trainees, not dollars. Per year describes trainee support counts, not an explicit funding period. The generated quotation changes the opening text and is not an exact substring. No amount or funding condition is stated.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-missing",
+      "mode": "structured",
+      "original_output_sha256": "9f72af50a0219b25c64b99bd118080efe2627ce196e75d5bcf1566418e168aa9",
+      "source_id": "nlm",
+      "source_span": {
+        "start": 523,
+        "end": 702
+      },
+      "target": "NLM T15 funding amount and award period",
+      "parse_error": null,
+      "semantic_review": "The text names training areas without an amount, period or funding condition. The $1.5 million sentence is fabricated; null duration also requires null evidence.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-budget",
+      "mode": "structured",
+      "original_output_sha256": "648d6d80482565236d5178983358f73e53c622a9b82a87c5ec59ad3f85f721c7",
+      "source_id": "nlm2023budget",
+      "source_span": {
+        "start": 0,
+        "end": 681
+      },
+      "target": "NLM T15 training award total",
+      "parse_error": null,
+      "semantic_review": "$472 million is the institution-wide budget request, not the T15 training award. The quoted introductory sentence states no award amount. No requested award duration or funding condition is stated; null duration needs null evidence.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "nlm-grant-count",
+      "mode": "structured",
+      "original_output_sha256": "d23e459c1e47d6b3dcc5858f0cc94a741ed51dd60ab3ba3d9d5f40641a1c53dd",
+      "source_id": "nlm2023budget",
+      "source_span": {
+        "start": 683,
+        "end": 1969
+      },
+      "target": "NLM T15 training award total",
+      "parse_error": null,
+      "semantic_review": "28 counts new research-project grants, not dollars for T15. The quote is real but supports neither the amount nor a funding-availability assertion. Null duration needs null evidence.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-new",
+      "mode": "structured",
+      "original_output_sha256": "61cf93e518404eaac2dbb509b25a77207af34824712004059dadf14c59b8266b",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 0,
+        "end": 682
+      },
+      "target": "BRAIN Initiative 2017 new awards total",
+      "parse_error": null,
+      "semantic_review": "$169 million and stated are supported for new awards. No award duration is given: null is correct but its evidence must also be null. No explicit funding-availability statement supports false.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "keep"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "keep"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 169000000,
+        "amount_qualifier": "stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+          "amount_qualifier": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-total",
+      "mode": "structured",
+      "original_output_sha256": "71b8c89966c499494ea259a5ff63eb980839d6605725cf923129e14fddadd4d2",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 0,
+        "end": 682
+      },
+      "target": "BRAIN Initiative 2017 total programme funding",
+      "parse_error": null,
+      "semantic_review": "The requested programme total is $260 million; $169 million is the new-awards subtotal. The complete quoted sentence includes the correct total, so its qualifier evidence is usable. Null duration needs null evidence, and no funding condition supports true.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "keep"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": 260000000,
+        "amount_qualifier": "stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": "$260 million",
+          "amount_qualifier": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-purpose",
+      "mode": "structured",
+      "original_output_sha256": "f130e2d5dc1ccd1af507f4183fa554fc8eda3ce4179096a5e335ff2b51213e3e",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 684,
+        "end": 1454
+      },
+      "target": "BRAIN Initiative 2017 new awards total",
+      "parse_error": null,
+      "semantic_review": "The excerpt gives investigators, institutions and scientific aims, not a dollar total, award period or funding condition. The $1 million sentence is fabricated.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    },
+    {
+      "id": "brain-history",
+      "mode": "structured",
+      "original_output_sha256": "4e959127db41c25d12f81bf9659cf93dfb57ce483fb8e9f423fe46b75b55513d",
+      "source_id": "brain2017",
+      "source_span": {
+        "start": 453,
+        "end": 682
+      },
+      "target": "BRAIN Initiative 2017 new awards total",
+      "parse_error": null,
+      "semantic_review": "Three years describes research history, not the requested new awards. Missing values are appropriate, but amount_qualifier must be not_stated and every evidence value must be null; the string stated is unsupported.",
+      "requires_correction": true,
+      "field_actions": [
+        {
+          "field": "amount_usd",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "amount_qualifier",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "duration_years",
+          "action": "replace_from_source_reviewed_reference"
+        },
+        {
+          "field": "conditional_on_funds",
+          "action": "replace_from_source_reviewed_reference"
+        }
+      ],
+      "proposed_output": {
+        "amount_usd": null,
+        "amount_qualifier": "not_stated",
+        "duration_years": null,
+        "conditional_on_funds": null,
+        "evidence": {
+          "amount_usd": null,
+          "amount_qualifier": null,
+          "duration_years": null,
+          "conditional_on_funds": null
+        }
+      },
+      "proposal_basis": "Existing frozen reference, individually checked against the source excerpt; not independent relabelling and never substituted into model scores.",
+      "human_review_seconds": null,
+      "human_correction_seconds": null
+    }
+  ],
+  "limits": [
+    "Reference-assisted source review by the same coding assistant, not blinded independent expert annotation.",
+    "Proposals do not modify original predictions, labels or scores.",
+    "Null human time means unmeasured, not zero."
+  ]
+}

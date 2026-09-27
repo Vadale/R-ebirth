@@ -4,6 +4,14 @@ Date: 2026-09-27. Founder authorized the D block after S1 acceptance.
 S1 is merged as PR #44 at `87f6c04`. Work branch: `codex/document-extraction`.
 The sequence remains D1, then D2; there is no new relm export in this block.
 
+**Recorded outcome:** the [D1 experiment](d1-extraction-evaluation.md) is complete
+with failed quality gates: 10/10 schema-valid structured outputs, 2/10 task-valid,
+0/10 fully grounded, 1/4 known amounts and 6/8 unsupported fields among task-valid
+records. Preserve this bounded negative result; D1 usefulness is not accepted.
+Human correction time remains unmeasured. The held-out set is consumed and must
+not become a tuning set for a new held-out claim. D2 is prepared, not implemented;
+its application dependency decision below remains pending.
+
 ## Dependency decision
 
 [D-031](../DECISIONS.md#d-031--json-dependency-for-the-document-extraction-application)

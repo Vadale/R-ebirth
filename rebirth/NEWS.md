@@ -1,5 +1,10 @@
 # relm 0.2.0.9000
 
+* Repository tooling now records a frozen document-extraction evaluation with
+  byte-checked predictions and failure accounting. The initial held-out pilot
+  fails its extraction-quality gates despite valid structured JSON; no production
+  usefulness claim follows. See `docs/d1-extraction-evaluation.md`.
+
 * `llm_generate()` accepts `schema` as JSON text for bounded structured output:
   closed objects, bounded strings and integers, string enums, booleans and null.
   Successful calls return complete validated JSON strings with prompt names and

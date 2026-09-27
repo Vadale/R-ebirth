@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-27 for the maintenance baseline and D-030/S1 implementation.
+Updated 2026-09-27 for the maintenance baseline, S1 and the D1 evaluation.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
 [current runs](https://github.com/Vadale/R-ebirth/actions) before integration.
@@ -84,14 +84,14 @@ S0 specifies concrete commands, fixtures and promotion thresholds for constraine
 output, extraction and batch artifacts. WP11a and WP12a own the later probe and
 service contracts; I1 specifies its selected adapter checks. S0 has offline
 reference-artifact checks; S1 now has local native/runtime evidence, detailed in
-[S1 implementation](s1-implementation.md). Later product gates remain unexecuted.
+[S1 implementation](s1-implementation.md). D1 now has a measured negative result; D2 and later product gates remain unexecuted.
 
 | WP | Planned gate | Required execution context | Status |
 |---|---|---|---|
 | S0 | Frozen codebook, labelled pilot, document-group split audit, batch artifact example, API/dependency proposals | `python3 tests/structured-output/verify.py --self-test` and `check_batch_contract.py` in the same directory; 32 cases / 7 sources / 5 groups | Offline checks passed; D-030 approved |
 | S1 | Supported-schema validation, unsupported-constraint rejection, incomplete-output/resource cases, unchanged unconstrained goldens | Tiny model-free fixtures in CI plus explicit small-model latency/memory comparison | Accepted/merged PR #44: all nine PR checks and model run pass; Mac Metal 1.531× with no positive peak-RSS increase; Linux CPU/R 4.6.1 1.417× and +2.30 MiB |
-| D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Not run |
-| D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Not run |
+| D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Evaluated, failed promotion: 0/10 joint matches, 1/4 known amounts, 6/8 unsupported fields in task-valid records; human correction time unmeasured |
+| D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Not implemented; D-031 application dependency approval pending |
 | WP11a/b | Selection-aware/grouped evaluation, fold-local preprocessing, independent statistical references and controls | Synthetic reference fixtures plus pinned anatomy-lab example | Not run |
 | WP12a/b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Chosen Mac/Linux CPU service recipe; supervisor/worker versions pinned | Not run |
 | I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |
@@ -112,4 +112,11 @@ The rendered-vignette source build and R CMD check also pass with zero errors,
 warnings and notes.
 The [S1 report](s1-implementation.md) distinguishes measured runtime/schema
 behavior from application correctness; its development output still fails task
-consistency checks. No D1 held-out result is claimed.
+consistency checks. The later [D1 report](d1-extraction-evaluation.md) records
+a separate, frozen held-out evaluation: all four promotion checks fail. Its
+10/10 schema-valid outputs contain only 2/10 task-valid and 0/10 fully grounded
+records. The unconstrained comparator has 1/10 joint matches. All predictions,
+failed records and proposed source-review corrections are preserved. Eight
+evaluator regressions and the 150-prediction artifact rescore pass; model-free
+checks enter the existing Rust/golden CI job. D1 usefulness and human usability
+remain unestablished; no D2 execution result is claimed.
