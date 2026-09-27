@@ -1,0 +1,309 @@
+{
+  "config": {
+    "version": 2,
+    "started_utc": "2026-09-27T18:58:17.680962+00:00",
+    "system": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "backend": "metal",
+    "model": {
+      "path": "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+      "alias": "qwen2.5-0.5b-instruct-q8_0",
+      "sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/9217f5db79a29953eb74d5343926648285ec7e67/qwen2.5-0.5b-instruct-q8_0.gguf"
+    },
+    "case_id": "ace22-purpose",
+    "split": "development",
+    "mode_order": [
+      "unconstrained",
+      "structured"
+    ],
+    "parameters": {
+      "context_length": 4096,
+      "max_tokens": 512,
+      "temperature": 0,
+      "top_p": 0.95,
+      "chat": true,
+      "seeds": [
+        1,
+        11,
+        29,
+        47
+      ]
+    },
+    "warmups_per_mode": 1,
+    "measured_repetitions_per_mode": 3,
+    "output_tokens_semantics": "Native generated_tokens payload, observed by a base-R exit trace on the internal wrapper; public llm_generate path is timed",
+    "retokenized_count_semantics": "Diagnostic only: llm_tokens(output) with add_special=FALSE; excluded from the latency denominator",
+    "input_sha256": {
+      "cases.json": "9ff8039cfb084ef1fd8cb14c8d7b462ec5a72dc8585fb8ba28ca3cc9127f26b8",
+      "manifest.json": "060f1a31c92dee0b0af969c4ecafe2fd20d550ff2b17b014f70c7d639d5f4ad3",
+      "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+      "verify.py": "b07e195dff82e98eea7477340947009bf1175a636d110afd9cdb1d778c11fb5b",
+      "run-model.py": "c54ab979858f095f263ea48695b3cc3c1de903a9db50f35f019560e9047c2b43",
+      "run-model.R": "9e7d43ce70a0cd6ba2aaf7010b23271f0d1907ff712cfc65d3d1cc3ba70aa3a7"
+    },
+    "prompt_sha256": "28d559d12d7057f7cc268ca3c2215f4f741430340186d1267b75840a6616fadd",
+    "registry_sha256": "ff58fd169c705531fbd411a8c5dd9b6dd125dce2d7297a05d7c48491692801e0"
+  },
+  "runs": {
+    "unconstrained": {
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/run-model.R",
+        "unconstrained",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+        "metal",
+        "/private/tmp/relm-s1-metal-idle/prompt.txt",
+        "/private/tmp/relm-s1-metal-idle/schema.json",
+        "/private/tmp/relm-s1-metal-idle/unconstrained",
+        "/private/tmp/relm-s1/library"
+      ],
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "peak_rss_bytes": 909508608,
+      "samples": [
+        {
+          "phase": "warmup",
+          "index": 0,
+          "seed": 1,
+          "status": "success",
+          "elapsed_seconds": 0.828,
+          "output_tokens": 80,
+          "retokenized_count": 80,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4028ead838b2b23c5e54732fec56f531a8af2495c8c308cf1168c963d452dea0",
+          "output_file": "unconstrained/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          }
+        },
+        {
+          "phase": "measured",
+          "index": 1,
+          "seed": 11,
+          "status": "success",
+          "elapsed_seconds": 0.903,
+          "output_tokens": 80,
+          "retokenized_count": 80,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4028ead838b2b23c5e54732fec56f531a8af2495c8c308cf1168c963d452dea0",
+          "output_file": "unconstrained/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          }
+        },
+        {
+          "phase": "measured",
+          "index": 2,
+          "seed": 29,
+          "status": "success",
+          "elapsed_seconds": 0.863,
+          "output_tokens": 80,
+          "retokenized_count": 80,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4028ead838b2b23c5e54732fec56f531a8af2495c8c308cf1168c963d452dea0",
+          "output_file": "unconstrained/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          }
+        },
+        {
+          "phase": "measured",
+          "index": 3,
+          "seed": 47,
+          "status": "success",
+          "elapsed_seconds": 0.907,
+          "output_tokens": 80,
+          "retokenized_count": 80,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4028ead838b2b23c5e54732fec56f531a8af2495c8c308cf1168c963d452dea0",
+          "output_file": "unconstrained/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          }
+        }
+      ],
+      "errors": [],
+      "returncode": 0,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096",
+        "token_count_source": "Internal generated_tokens payload captured by a base-R exit trace; public llm_generate() path measured",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48"
+      },
+      "median_seconds_per_generated_token": 0.0112875
+    },
+    "structured": {
+      "command": [
+        "/usr/bin/time",
+        "-l",
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/run-model.R",
+        "structured",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+        "metal",
+        "/private/tmp/relm-s1-metal-idle/prompt.txt",
+        "/private/tmp/relm-s1-metal-idle/schema.json",
+        "/private/tmp/relm-s1-metal-idle/structured",
+        "/private/tmp/relm-s1/library"
+      ],
+      "timeout_seconds": 180,
+      "timed_out": false,
+      "peak_rss_bytes": 903020544,
+      "samples": [
+        {
+          "phase": "warmup",
+          "index": 0,
+          "seed": 1,
+          "status": "success",
+          "elapsed_seconds": 1.115,
+          "output_tokens": 64,
+          "retokenized_count": 64,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4f4b7cc309ece02f950e9353bdf59f122165b0d0199018af04943f99d0c8262f",
+          "output_file": "structured/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          }
+        },
+        {
+          "phase": "measured",
+          "index": 1,
+          "seed": 11,
+          "status": "success",
+          "elapsed_seconds": 1.107,
+          "output_tokens": 64,
+          "retokenized_count": 64,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4f4b7cc309ece02f950e9353bdf59f122165b0d0199018af04943f99d0c8262f",
+          "output_file": "structured/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          }
+        },
+        {
+          "phase": "measured",
+          "index": 2,
+          "seed": 29,
+          "status": "success",
+          "elapsed_seconds": 1.106,
+          "output_tokens": 64,
+          "retokenized_count": 64,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4f4b7cc309ece02f950e9353bdf59f122165b0d0199018af04943f99d0c8262f",
+          "output_file": "structured/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          }
+        },
+        {
+          "phase": "measured",
+          "index": 3,
+          "seed": 47,
+          "status": "success",
+          "elapsed_seconds": 1.105,
+          "output_tokens": 64,
+          "retokenized_count": 64,
+          "error_class": "",
+          "error_message": "",
+          "output_sha256": "4f4b7cc309ece02f950e9353bdf59f122165b0d0199018af04943f99d0c8262f",
+          "output_file": "structured/output-1.json",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          }
+        }
+      ],
+      "errors": [],
+      "returncode": 0,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096",
+        "token_count_source": "Internal generated_tokens payload captured by a base-R exit trace; public llm_generate() path measured",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48"
+      },
+      "median_seconds_per_generated_token": 0.01728125
+    }
+  },
+  "gates": {
+    "runs_complete": true,
+    "structured_schema_pass": true,
+    "median_seconds_per_generated_token_ratio": 1.5310077519379846,
+    "latency_ratio_limit": 2.0,
+    "latency_pass": true,
+    "additional_peak_rss_bytes": 0,
+    "additional_peak_rss_limit_bytes": 134217728,
+    "memory_pass": true,
+    "passed": true
+  },
+  "limitations": [
+    "One fixed development excerpt repeated; no held-out evaluation or extraction quality estimate.",
+    "The S1 gate independently checks the frozen schema: required keys, types, bounds, enums and Unicode. It is not a D1 quality gate.",
+    "task_record_check is report-only: missingness/evidence consistency and exact quote substrings may fail even when the schema passes; passing does not establish factual correctness.",
+    "Seconds per generated token includes the public R path, prompt processing, schema work and a small exit-trace callback; it excludes model load and output retokenization.",
+    "output_tokens records the native generated_tokens payload. retokenized_count is retained separately as a diagnostic; the public API is unchanged.",
+    "Output lengths may differ between modes; raw lengths and durations are retained. Mode order is fixed.",
+    "RSS is each complete child process peak, including loading and warmup; it does not isolate grammar allocations or all GPU memory."
+  ],
+  "artifact_note": "Copied from the uncontended local run; identical outputs within each mode are stored once. Original process commands, runtime paths, timings and hashes are retained as provenance."
+}

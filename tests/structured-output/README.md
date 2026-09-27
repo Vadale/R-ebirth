@@ -3,7 +3,8 @@
 This is a small, frozen **contract pilot**, not a representative benchmark or a
 claim of extraction quality. It contains 23 source-derived cases from seven
 historical NIH/NIMH/NLM documents and nine original constructed cases. Text and
-labels are English. No model has been tuned or evaluated against these cases.
+labels are English. S1 uses only the `ace22-purpose` development excerpt for an
+operational/schema comparison; held-out model quality has not been evaluated.
 Labels were prepared from the source text by the coding assistant; they are not
 expert-certified or independently collected human annotations.
 
@@ -28,7 +29,7 @@ The complete output shape is [output.schema.json](output.schema.json):
 Related fields must agree: null amount implies `not_stated` and null amount/
 qualifier evidence. Null duration/condition implies null corresponding evidence.
 These cross-field/domain rules are application checks, not features promised by
-the proposed core schema subset. Negated awards, unrelated private prizes and
+the approved core schema subset. Negated awards, unrelated private prizes and
 institution-wide budgets must not be assigned to the requested research award.
 Conflicting equally authoritative figures require amount abstention; do not pick
 the first. Preserve other independently supported fields.
@@ -112,6 +113,28 @@ Before any usefulness claim, inspect semantic support and compare both the rules
 and current unconstrained generation on the same frozen cases/model/seeds. A
 correct source span by itself does not establish support. S0 validates reference
 artifacts; D1 must still execute and report the actual application experiment.
+
+## S1 operational comparison
+
+```sh
+python3 tests/structured-output/run-model.py --self-test
+python3 tests/structured-output/run-model.py --model /path/to/pinned-qwen.gguf \
+  --backend metal --output /path/to/new-output-directory
+```
+
+Use `--backend cpu` on Linux and optional `--r-library /path/to/library` for a
+specific installed build. The driver verifies the registry's model hash; it
+downloads nothing. It runs the public R API in two fresh processes, each with
+one warmup and three measured generations. Timing uses native generated token
+counts, not retokenization. The core gate checks schema validity, a ≤2× median
+seconds/token ratio and ≤128 MiB additional process peak RSS. Outputs, runtime
+metadata, model/schema/input/library digests and failed runs are retained.
+
+Cross-field missingness/evidence checks are reported separately. They are not
+grammar requirements and **fail on the current small-model development output**.
+This experiment is not the D1 held-out quality evaluation. See
+[S1 evidence](../../docs/s1-implementation.md) and the recorded
+[Mac Metal report](measurements/macos-metal-2026-09-27/report.json).
 
 ## Fixture-only batch artifacts
 

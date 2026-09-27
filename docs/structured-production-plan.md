@@ -2,10 +2,11 @@
 
 Date: 2026-09-27. Planning baseline: maintenance PR #42, `01c10e9`.
 Decision: [D-028](../DECISIONS.md#d-028--structured-research-workflows-and-production-simplicity).
-Status: direction authorized; S0 reference artifacts and the concrete D-030
-proposal are prepared in [the output contract](s0-output-contract.md). Product
-implementation has not started. Exact public API
-changes and new dependencies require separate approval. The independent
+Status: direction authorized; S0 is complete and the founder approved D-030 on
+2026-09-27. [S1](s1-implementation.md) implements the bounded native output
+contract with local validation and a Mac Metal operational measurement.
+Cross-platform CI remains an integration gate. Later public API changes and new
+dependencies retain their separate approval gates. The independent
 GPT-6 Astra review, using ultra reasoning, preceded these planning changes.
 
 ## 1. Product direction and boundaries
@@ -33,9 +34,9 @@ existing decisions. No new model backend is a prerequisite for this increment.
 
 One WP is active at a time. Each implementation WP targets at most two working
 weeks; split a larger design before implementation. The following order takes
-precedence over historical phase numbering for this increment. **S0 is the
-current review milestone**; its pilot, checker and API proposal now exist. D-030
-remains proposed; S1 has not started. Follow the milestone/verification policy
+precedence over historical phase numbering for this increment. **S1 is the
+current implementation milestone**, under approved D-030; D1 follows its
+acceptance. Follow the milestone/verification policy
 in [development workflow](development-workflow.md) (D-029).
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
@@ -208,7 +209,7 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** review [S0's concrete output contract](s0-output-contract.md)
-and proposed D-030 dependencies, then begin S1 after approval. S0's offline
-reference checks pass; it adds no export or dependency and does not establish
-runtime structured generation, model quality or restartable operation.
+**Next action:** complete S1 integration and its Linux CPU operational gate,
+then execute D1's measured extraction demo against the frozen pilot. S1 supplies
+the approved native output mechanism; it does not establish extraction quality
+or restartable operation. Detailed status is in [S1 evidence](s1-implementation.md).

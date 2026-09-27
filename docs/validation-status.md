@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-27 for the completed maintenance baseline and D-028 planning.
+Updated 2026-09-27 for the maintenance baseline and D-030/S1 implementation.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
 [current runs](https://github.com/Vadale/R-ebirth/actions) before integration.
@@ -83,12 +83,13 @@ The [near-term plan](structured-production-plan.md) defines scope and sequencing
 S0 specifies concrete commands, fixtures and promotion thresholds for constrained
 output, extraction and batch artifacts. WP11a and WP12a own the later probe and
 service contracts; I1 specifies its selected adapter checks. S0 has offline
-reference-artifact checks; all feature/runtime gates below remain unexecuted.
+reference-artifact checks; S1 now has local native/runtime evidence, detailed in
+[S1 implementation](s1-implementation.md). Later product gates remain unexecuted.
 
 | WP | Planned gate | Required execution context | Status |
 |---|---|---|---|
-| S0 | Frozen codebook, labelled pilot, document-group split audit, batch artifact example, API/dependency proposals | `python3 tests/structured-output/verify.py --self-test` and `check_batch_contract.py` in the same directory; 32 cases / 7 sources / 5 groups | Offline checks passed; D-030 proposal pending |
-| S1 | Supported-schema validation, unsupported-constraint rejection, incomplete-output/resource cases, unchanged unconstrained goldens | Tiny model-free fixtures in CI plus explicit small-model latency/memory comparison | Not run |
+| S0 | Frozen codebook, labelled pilot, document-group split audit, batch artifact example, API/dependency proposals | `python3 tests/structured-output/verify.py --self-test` and `check_batch_contract.py` in the same directory; 32 cases / 7 sources / 5 groups | Offline checks passed; D-030 approved |
+| S1 | Supported-schema validation, unsupported-constraint rejection, incomplete-output/resource cases, unchanged unconstrained goldens | Tiny model-free fixtures in CI plus explicit small-model latency/memory comparison | Local Rust/R checks pass; Mac Metal 1.531× time/token and no positive peak-RSS increase; Linux CPU and PR CI remain integration gates |
 | D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Not run |
 | D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Not run |
 | WP11a/b | Selection-aware/grouped evaluation, fold-local preprocessing, independent statistical references and controls | Synthetic reference fixtures plus pinned anatomy-lab example | Not run |
@@ -102,6 +103,13 @@ it performs no inference, atomic writes, locking or real interruption recovery.
 Its frozen first-amount baseline gets 6/10 joint value/evidence matches and 2/4
 known amounts on the held-out pilot; it emits 9/14 unsupported nonmissing fields.
 Always-missing also gets 6/10 records but 0/4 known amounts, so cannot pass the
-quality gate. These are simple-rule outcomes, not relm/model results. No full
-native rebuild was repeated for documentation and standard-library test tooling
-(D-029); existing product tests/goldens/dependencies are unchanged.
+quality gate. These are simple-rule outcomes, not relm/model results. S0 required
+only offline reference checks. S1 subsequently adds the approved Serde dependencies,
+native generation constraints and regression tests, with unchanged existing
+goldens. The complete local R suite passes 1,068 expectations, zero failures and
+seven declared skips; Rust default/no-spill and FFI tests plus fmt/Clippy pass.
+The rendered-vignette source build and R CMD check also pass with zero errors,
+warnings and notes.
+The [S1 report](s1-implementation.md) distinguishes measured runtime/schema
+behavior from application correctness; its development output still fails task
+consistency checks. No D1 held-out result is claimed.
