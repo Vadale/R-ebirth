@@ -182,6 +182,9 @@ pub struct Model {
     /// context (`clone_with_fresh_context`), carries the projector, and it is
     /// freed exactly once, before the model, when the last handle is gone.
     vision: Option<VisionContext>,
+    /// llama.cpp retains a copy of its model params, including `devices`. Keep
+    /// the CPU's explicit empty device list alive until after `llama_model_free`.
+    _offload_devices: Option<Box<[*mut c_void; 1]>>,
     _backend: Backend,
 }
 
@@ -329,9 +332,15 @@ impl OwnedContext {
     /// returns.
     fn create(
         model: &Model,
-        cparams: ffi::llama_context_params,
+        mut cparams: ffi::llama_context_params,
         on_fail: impl FnOnce() -> RebirthError,
     ) -> Result<OwnedContext, RebirthError> {
+        // This chokepoint covers generation, embeddings, traces, and derived
+        // intervention handles; none may re-enable GPU work on a CPU model.
+        if model.resolved_backend == BackendKind::Cpu {
+            cparams.offload_kqv = false;
+            cparams.op_offload = false;
+        }
         // SAFETY: `model.ptr` is a live model; `cparams` matches the C layout. A
         // null return means no context was created, so there is nothing to free.
         let ctx_ptr = unsafe { ffi::llama_init_from_model(model.ptr.as_ptr(), cparams) };
@@ -795,6 +804,17 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
 
     // SAFETY: default params are a plain by-value C struct we only tweak.
     let mut mparams = unsafe { ffi::llama_model_default_params() };
+    let mut offload_devices = if req.backend == BackendKind::Cpu {
+        Some(Box::new([std::ptr::null_mut::<c_void>()]))
+    } else {
+        None
+    };
+    if let Some(ref mut devices) = offload_devices {
+        // NULL means "auto-select GPUs" to llama.cpp, whereas a non-NULL,
+        // NULL-terminated empty list means no GPU devices. Zero offloaded layers
+        // alone still initializes Metal/CUDA when the context is created.
+        mparams.devices = devices.as_mut_ptr().cast();
+    }
     mparams.n_gpu_layers = match req.backend {
         BackendKind::Cpu => 0,
         // Negative = all layers (validated against llama-model.cpp at this tag).
@@ -804,7 +824,8 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
     // `mparams` is consumed by the by-value call below; keep what we still need.
     let resolved_gpu_layers = mparams.n_gpu_layers;
 
-    // SAFETY: `c_path` outlives the call; `mparams` matches the C layout.
+    // SAFETY: `c_path` outlives the call; `mparams` matches the C layout. The
+    // optional device-list allocation is stable across the move into `Model`.
     let model_ptr = unsafe { ffi::llama_model_load_from_file(c_path.as_ptr(), mparams) };
     let model_ptr = NonNull::new(model_ptr).ok_or_else(|| RebirthError::ModelLoad {
         failing_check: "model_parse".to_string(),
@@ -817,6 +838,7 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
         owner: std::thread::current().id(),
         probe_cache: Mutex::new(ProbeCache::default()),
         vision: None,
+        _offload_devices: offload_devices,
         _backend: backend,
     };
 
