@@ -677,6 +677,30 @@ executes on exactly one machine in the world.
 
 ---
 
+## D-029 — Milestone-based delivery and proportionate verification
+
+- **Date:** 2026-09-27
+- **Status:** approved by the founder's explicit workflow instruction.
+- **Decision:** retain the Claude planning/specification/review workflow while
+  working in substantial coherent WPs, batching pushes at meaningful milestones,
+  selecting agents according to complexity and token cost, and matching tests to
+  changed behavior and risk. Small local commits do not imply separate tasks or
+  remote CI runs. See [development workflow](docs/development-workflow.md).
+- **Review/verification:** use one integrated review for a substantial deliverable;
+  repeat broad checks only for material new changes, failures or unresolved risk.
+  Documentation and fixture-only changes do not require recompiling unchanged
+  native code locally. Line count alone does not mandate an extra agent.
+- **Preserved gates:** no unapproved public API/dependency, no weakened numerical
+  reference, no omitted critical memory/boundary/security regression, and no
+  merge before required CI passes. Tests are reported honestly.
+- **Why:** minimize orchestration, repeated context and CI waiting without
+  sacrificing correctness or producing long review/test loops for minor edits.
+- **Alternatives rejected:** pushing every microtask; automatically dispatching
+  all agent roles; repeatedly testing an unchanged candidate; removing important
+  checks merely to reduce elapsed time.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
