@@ -4,8 +4,8 @@
 # earlier session is swept on load.
 
 # Per-session state, private to the package. `session_dir` is created lazily on
-# the first spill; `counter` names successive spill files; `sentinel` carries the
-# exit finalizer that removes the session directory.
+# the first spill; `sentinel` carries the exit finalizer that removes the session
+# directory.
 .relm_state <- new.env(parent = emptyenv())
 
 # The root under which every session's spill directory lives:
@@ -33,16 +33,13 @@ spill_session_dir <- function() {
   dir
 }
 
-# The next spill file path (trace-<n>.arrow), bumping the per-session counter so
-# successive traces never collide. Written under `spill_dir` when the caller
+# The next spill file path (trace-<nonce>.arrow), unique across calls and sessions
+# even when they share a custom directory. Written under `spill_dir` when the caller
 # supplies one, else this session's managed directory (which cleanup removes at
 # exit; a user-supplied directory is left untouched). The engine creates the
-# directory and the file when it actually spills.
+# directory and exclusively creates the file when it actually spills.
 next_spill_path <- function(spill_dir = NULL) {
-  n <- .relm_state$counter
-  n <- if (is.null(n)) 1L else n + 1L
-  .relm_state$counter <- n
-  fname <- sprintf("trace-%d.arrow", n)
+  fname <- paste0("trace-", next_trace_id(), ".arrow")
   if (is.null(spill_dir)) {
     file.path(spill_session_dir(), fname)
   } else {

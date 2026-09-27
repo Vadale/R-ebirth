@@ -57,11 +57,35 @@ test_that("llm() validates context_length / gpu_layers / mmap with relm_error_ar
   expect_identical(cnd$argument, "context_length")
 })
 
-test_that("llm() rejects an unknown backend name (match.arg)", {
+test_that("llm() rejects invalid backend choices with classed argument errors", {
+  # Runs per commit: invalid enum values must be catchable like other arguments.
   f <- tempfile(fileext = ".gguf")
   file.create(f)
   on.exit(unlink(f), add = TRUE)
-  expect_error(llm(f, backend = "opencl"))
+  for (backend in list("opencl", "c", NA_character_, character(0), 1, c("cpu", "metal"))) {
+    cnd <- tryCatch(llm(f, backend = backend), error = identity)
+    expect_s3_class(cnd, "relm_error_argument")
+    expect_identical(cnd$argument, "backend")
+  }
+})
+
+test_that("llm() keeps match.arg defaults and unambiguous backend abbreviations", {
+  # Runs per commit without loading a model: a valid choice must reach the engine.
+  f <- tempfile(fileext = ".gguf")
+  file.create(f)
+  on.exit(unlink(f), add = TRUE)
+  observed <- character(0)
+  local_mocked_bindings(
+    rebirth_available_backends = function() c("cpu", "metal"),
+    rebirth_model_load = function(path, context_length, gpu_layers, backend, ...) {
+      observed <<- c(observed, backend)
+      relm_abort("relm_error_model_load", "Backend validation reached the engine.")
+    }
+  )
+  expect_error(llm(f), "reached the engine", class = "relm_error_model_load")
+  expect_error(llm(f, backend = NULL), "reached the engine", class = "relm_error_model_load")
+  expect_error(llm(f, backend = "cp"), "reached the engine", class = "relm_error_model_load")
+  expect_identical(observed, c("metal", "metal", "cpu"))
 })
 
 test_that("llm() raises relm_error_backend for a backend the build lacks", {

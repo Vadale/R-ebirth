@@ -44,7 +44,7 @@ it has a committed fixture of its own.
 - **[SPIKE]** — run once by the founder on the Mac mini M4 (16 GB, Metal), the ground
   truth for the load / chat / RSS columns. Recorded live, not from a model card.
 - **[MODEL]** — an automated `testthat` test that runs only when the corresponding
-  `REBIRTH_TEST_MODEL_*` environment variable points at a local GGUF (founder's Mac);
+  `RELM_TEST_MODEL_*` environment variable points at a local GGUF (founder's Mac);
   it **skips in CI/CRAN**, which download no models.
 - **[CI]** — the unit tests that run per-commit with no model: the arch→builtin map, the
   per-arch trace matcher, and the `gemma4` `attn_out` collision rejection are all locked
@@ -57,10 +57,10 @@ gated by the Gemma Terms of Use and are never fetched in CI (D-023).
 
 | Model | Env var | Arch | Layers × hidden | Params | Quant | Load | `chat=TRUE` | `llm_trace` residual | RSS | License |
 |---|---|---|---|---|---|---|---|---|---|---|
-| Gemma 4 E4B (`gemma4:e4b-it-qat`) | `REBIRTH_TEST_MODEL_GEMMA4` | `gemma4` | 42 × 2560 | 7.5B | Q4_0 | ✓ [SPIKE] | ✓ after Task 1 [SPIKE][MODEL] | ✓ (residual only) [MODEL] | ~4.8 GB [SPIKE] | Gemma Terms of Use — **gated** |
-| Qwen 3.5 9B (text-only instruct GGUF) | `REBIRTH_TEST_MODEL_QWEN35` | `qwen35` | _TBD_ | ~9B | _TBD_ | _pending pin_ | _pending pin_ | _pending pin_ | _TBD_ | Apache-2.0 |
-| Qwen 3 (mid-size, text-only) | `REBIRTH_TEST_MODEL_QWEN3` | `qwen3` | _TBD_ | _TBD_ | _TBD_ | _pending pin_ | _pending pin_ | _pending pin_ | _TBD_ | Apache-2.0 |
-| Gemma 4 E2B (text-only) | `REBIRTH_TEST_MODEL_GEMMA4` | `gemma4` | 35 × _TBD_ | ~E2B | _TBD_ | _pending pin_ | _pending pin_ | _pending pin_ | _TBD_ | Gemma Terms of Use — **gated** |
+| Gemma 4 E4B (`gemma4:e4b-it-qat`) | `RELM_TEST_MODEL_GEMMA4` | `gemma4` | 42 × 2560 | 7.5B | Q4_0 | ✓ [SPIKE] | ✓ after Task 1 [SPIKE][MODEL] | ✓ (residual only) [MODEL] | ~4.8 GB [SPIKE] | Gemma Terms of Use — **gated** |
+| Qwen 3.5 9B (text-only instruct GGUF) | `RELM_TEST_MODEL_QWEN35` | `qwen35` | _TBD_ | ~9B | _TBD_ | _pending pin_ | _pending pin_ | _pending pin_ | _TBD_ | Apache-2.0 |
+| Qwen 3 (mid-size, text-only) | `RELM_TEST_MODEL_QWEN3` | `qwen3` | _TBD_ | _TBD_ | _TBD_ | _pending pin_ | _pending pin_ | _pending pin_ | _TBD_ | Apache-2.0 |
+| Gemma 4 E2B (text-only) | `RELM_TEST_MODEL_GEMMA4` | `gemma4` | 35 × _TBD_ | ~E2B | _TBD_ | _pending pin_ | _pending pin_ | _pending pin_ | _TBD_ | Gemma Terms of Use — **gated** |
 | Gemma 3 4B (text-only, control) | — | `gemma3` | _TBD_ | 4B | _TBD_ | ✓ (WP4) | ✓ (embedded template detected) | ✓ (residual, mlp_out) | _TBD_ | Gemma Terms of Use — **gated** |
 
 `llm_trace` component availability per arch (part-1, source-verified at b9726 —
@@ -148,7 +148,7 @@ Gemma-derived artifact under the Gemma Terms of Use.
 
 Pin text-only instruct GGUFs for Qwen 3.5 (up to ~9B), Qwen 3 (mid-size), and Gemma 4
 E2B, record their SHA256 / quant / layers×hidden / RSS / tokens-s here, and run the
-`[MODEL]` generation + per-arch `llm_trace` tests (`REBIRTH_TEST_MODEL_QWEN3`,
-`REBIRTH_TEST_MODEL_QWEN35`, `REBIRTH_TEST_MODEL_GEMMA4`). The `qwen3`/`qwen35`/`gemma4`
+`[MODEL]` generation + per-arch `llm_trace` tests (`RELM_TEST_MODEL_QWEN3`,
+`RELM_TEST_MODEL_QWEN35`, `RELM_TEST_MODEL_GEMMA4`). The `qwen3`/`qwen35`/`gemma4`
 trace matcher arms and the `gemma4` `attn_out` rejection are already covered model-free in
 CI; the `[MODEL]` rows validate them end-to-end on real weights.

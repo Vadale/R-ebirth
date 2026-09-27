@@ -1,6 +1,5 @@
-# Pin the Rust toolchain for reproducible builds (ARCHITECTURE.md §9).
-# WP0 pins the stable channel with the components CI verifies; a later WP may
-# pin an exact version if cross-machine reproducibility requires it.
+# Development tracks the stable channel; this is not an exact compiler pin.
+# R-CMD-check.yaml separately builds on the declared minimum Rust version.
 [toolchain]
 channel = "stable"
 components = ["rustfmt", "clippy"]

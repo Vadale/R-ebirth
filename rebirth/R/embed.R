@@ -101,7 +101,10 @@ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TR
     m, "relm_error_embed",
     "Embedding an intervened handle is not yet supported"
   )
-  pooling <- match.arg(pooling)
+  pooling <- tryCatch(match.arg(pooling), error = identity)
+  if (inherits(pooling, "error")) {
+    abort_argument("pooling", paste0("Invalid `pooling`: ", conditionMessage(pooling)))
+  }
   if (!is.character(x) || length(x) == 0L || anyNA(x)) {
     abort_argument("x", "`x` must be a non-empty character vector without NA.")
   }

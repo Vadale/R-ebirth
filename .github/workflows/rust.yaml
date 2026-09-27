@@ -2,6 +2,8 @@
 # - cargo:         fmt / clippy / test for the R-free engine crate rebirth-llm,
 #                  incl. the --no-default-features (no-spill) config.
 #                  (rebirth-ffi needs R, so its tests run in R-CMD-check.yaml.)
+#                  R-CMD-check's Linux oldrel leg also builds/tests the full
+#                  package with the declared Rust minimum and locked crates.
 # - golden:        Harness B numpy reference self-check (the exact-value oracle).
 # - vendored-tree: the committed patched llama.cpp tree hashes to VENDORING.md's
 #                  post-patch SHA (D-008 gate G4) and patches/*.diff reverse-apply
@@ -59,19 +61,19 @@ jobs:
       # tests, and lints only rebirth-llm — which proves the engine crate stays
       # R-free and independently testable (ARCHITECTURE.md §2). rebirth-ffi is
       # compiled and validated by the R-CMD-check workflow (which sets up R);
-      # full-workspace clippy under R is wired in a later WP1 step.
+      # that workflow also lints the boundary crate with R available.
       - name: cargo fmt --check (whole workspace)
         run: cargo fmt --all --check
 
       - name: cargo clippy (R-free engine crate; deny warnings)
-        run: cargo clippy -p rebirth-llm --all-targets -- -D warnings
+        run: cargo clippy --locked -p rebirth-llm --all-targets -- -D warnings
 
       # Includes the exact-value engine-vs-oracle logit check (WP2 Step 1,
       # tests/synthetic_logits.rs): the built engine's teacher-forced logits on
       # the committed synthetic GGUF must match the numpy oracle golden within
       # the documented F32-vs-F64 tolerance. Download-free, synthetic-only.
       - name: cargo test (R-free engine crate)
-        run: cargo test -p rebirth-llm
+        run: cargo test --locked -p rebirth-llm
 
       # The no-spill configuration (--no-default-features drops the `spill` feature
       # in both crates, D-013) must stay compilable and green: its
@@ -79,7 +81,7 @@ jobs:
       # otherwise rot. Build + test (not just check) -- the spill-only tests are
       # #![cfg(feature = "spill")]-gated, so they compile out here.
       - name: cargo test (R-free engine crate, no-spill config)
-        run: cargo test -p rebirth-llm --no-default-features
+        run: cargo test --locked -p rebirth-llm --no-default-features
 
   # Harness B, part (b): the numpy reference oracle must be deterministic and
   # still agree with the committed logit goldens and the committed synthetic
@@ -174,4 +176,4 @@ jobs:
         uses: mozilla-actions/sccache-action@v0.0.10
 
       - name: cargo test --no-run for x86_64-apple-darwin (link is the gate)
-        run: cargo test -p rebirth-llm --no-run --target x86_64-apple-darwin
+        run: cargo test --locked -p rebirth-llm --no-run --target x86_64-apple-darwin

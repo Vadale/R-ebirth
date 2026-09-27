@@ -2,6 +2,10 @@
 title: "The anatomy lab: locating sentiment in a language model"
 format: html
 engine: knitr
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
 vignette: >
   %\VignetteIndexEntry{The anatomy lab: locating sentiment in a language model}
   %\VignetteEngine{quarto::html}
@@ -11,8 +15,6 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-
 # The heavy steps need a local GGUF model and glmnet; a checker (CRAN,
 # r-universe) has neither. We gate those chunks on availability and fall back to
 # an illustrative curve, so this vignette always renders with a figure. Point
@@ -102,7 +104,14 @@ check) is `tests/demos/demo-A-anatomy-lab.R` in the package repository.
 With a model loaded, one `llm_trace()` call captures the last-token residual at
 every layer; then for each layer we fit a **ridge** logistic probe with
 `glmnet::cv.glmnet()` (ridge because the hidden width far exceeds the number of
-prompts) and read its honest out-of-fold AUC.
+prompts) and read its out-of-fold AUC.
+
+This is an exploratory analysis: the same cross-validation results select the
+regularization parameter, and the best layer is selected afterward. The bootstrap
+intervals condition on the selected predictions; they do not account for tuning
+or layer selection. Confirmatory performance estimates require nested
+cross-validation or an independent test set, with related prompts kept in the
+same fold where appropriate.
 
 ```{r}
 #| label: probe-real

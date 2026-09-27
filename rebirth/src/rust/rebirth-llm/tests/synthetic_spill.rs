@@ -73,6 +73,72 @@ fn tmp_spill_path(tag: &str) -> String {
     p.to_string_lossy().to_string()
 }
 
+/// F1: the full capture failure path must preserve a file that another live
+/// trace owns, including when writer creation is rejected before decoding.
+#[test]
+fn an_existing_spill_file_is_rejected_without_truncation_or_cleanup() {
+    let model = load_synthetic();
+    let path = tmp_spill_path("existing");
+    let sentinel = b"another live trace owns these bytes";
+    std::fs::write(&path, sentinel).expect("write existing file");
+
+    let result = model.trace_token_batch_spill(
+        &[&INPUT_TOKENS],
+        &all_components_spec(),
+        &plan(true, 1024, &path),
+    );
+    let preserved = std::fs::read(&path);
+    let _ = std::fs::remove_file(&path);
+    assert!(matches!(
+        result,
+        Err(rebirth_llm::RebirthError::Trace { .. })
+    ));
+    assert_eq!(preserved.expect("existing file remains"), sentinel);
+}
+
+/// An exclusive create must reject both live and dangling symlinks. Following
+/// either would overwrite or create a file outside the intended spill path.
+#[cfg(unix)]
+#[test]
+fn spill_creation_rejects_symlinks_and_preserves_their_targets() {
+    use std::os::unix::fs::symlink;
+
+    let model = load_synthetic();
+    for existing_target in [true, false] {
+        let path = tmp_spill_path(if existing_target {
+            "symlink"
+        } else {
+            "dangling"
+        });
+        let target = format!("{path}.target");
+        let sentinel = b"symlink target must stay untouched";
+        if existing_target {
+            std::fs::write(&target, sentinel).expect("write symlink target");
+        }
+        symlink(&target, &path).expect("create symlink");
+
+        let result = model.trace_token_batch_spill(
+            &[&INPUT_TOKENS],
+            &all_components_spec(),
+            &plan(true, 1024, &path),
+        );
+        let link = std::fs::symlink_metadata(&path);
+        let content = std::fs::read(&target);
+        let _ = std::fs::remove_file(&path);
+        let _ = std::fs::remove_file(&target);
+        assert!(matches!(
+            result,
+            Err(rebirth_llm::RebirthError::Trace { .. })
+        ));
+        assert!(link.expect("symlink remains").file_type().is_symlink());
+        if existing_target {
+            assert_eq!(content.expect("target remains"), sentinel);
+        } else {
+            assert_eq!(content.unwrap_err().kind(), std::io::ErrorKind::NotFound);
+        }
+    }
+}
+
 #[test]
 fn over_budget_without_spill_is_oom_before_capture() {
     let model = load_synthetic();

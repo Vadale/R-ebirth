@@ -42,6 +42,13 @@ The two reference demos, run as scripted acceptance tests
 
 ## Running them
 
+Demo A's probe AUC and bootstrap intervals are exploratory. Regularization and
+layer selection use the same validation results; resampling fixed predictions
+does not include that selection uncertainty. Confirmatory use needs nested
+cross-validation or an independent test set, plus suitable grouping of related
+prompts. Held-out steering checks answer a separate question and do not remove
+selection bias from the probe-performance estimate.
+
 The demos need a local GGUF model. Point `RELM_DEMO_MODEL` (or
 `RELM_TEST_MODEL_QWEN`) at one; with none set, each script defines its
 functions and skips the end-to-end run. From the repository root, with the

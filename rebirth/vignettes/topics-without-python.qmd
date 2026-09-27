@@ -2,6 +2,10 @@
 title: "Topic modelling without Python"
 format: html
 engine: knitr
+knitr:
+  opts_chunk:
+    collapse: true
+    comment: "#>"
 vignette: >
   %\VignetteIndexEntry{Topic modelling without Python}
   %\VignetteEngine{quarto::html}
@@ -11,8 +15,6 @@ vignette: >
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
-
 # The embedding step needs a local GGUF model; UMAP and HDBSCAN need uwot and
 # dbscan. A checker has none of these, so we gate the real pipeline and fall back
 # to an illustrative layout keyed off the sample's known topics. Point

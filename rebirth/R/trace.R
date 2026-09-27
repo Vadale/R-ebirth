@@ -313,12 +313,13 @@ validate_positions <- function(positions, call = sys.call(-1L)) {
         call = call
       )
     }
-  } else if (is.numeric(positions)) {
+  } else if (is.numeric(positions) && !is.complex(positions)) {
     if (length(positions) == 0L || anyNA(positions) || any(!is.finite(positions)) ||
-      any(positions != round(positions)) || any(positions < 1L)) {
+      any(positions != round(positions)) || any(positions < 1L) ||
+      any(positions > .Machine$integer.max)) {
       abort_argument(
         "positions",
-        "`positions` positions must be positive whole numbers (1-based).",
+        "`positions` must contain positive whole numbers within R's integer range (1-based).",
         call = call
       )
     }
@@ -593,8 +594,12 @@ as.matrix.relm_trace <- function(x, layer, component = "residual", ...) {
       "`layer` is required: as.matrix() extracts one (layer, component) slice of a trace."
     )
   }
-  if (!is.numeric(layer) || length(layer) != 1L || is.na(layer)) {
-    abort_argument("layer", "`layer` must be a single layer index.")
+  if (!is.numeric(layer) || is.complex(layer) || length(layer) != 1L || !is.finite(layer) ||
+    layer != floor(layer) || layer < 1 || layer > .Machine$integer.max) {
+    abort_argument(
+      "layer",
+      "`layer` must be a single positive whole number within R's integer range (1-based)."
+    )
   }
   if (!is.character(component) || length(component) != 1L || is.na(component)) {
     abort_argument("component", "`component` must be a single component name.")
