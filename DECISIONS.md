@@ -591,6 +591,43 @@ executes on exactly one machine in the world.
 
 ---
 
+## D-027 — Maintenance baseline and validation status
+
+- **Date:** 2026-09-27
+- **Status:** approved maintenance scope; no new public functions or dependencies.
+- **Decision:** repair cross-session spill collisions, integer validation,
+  CPU backend isolation, public argument condition classes, and the declared
+  Rust minimum before starting another feature package. Windows/CUDA work is
+  deferred pending hardware validation; it is not claimed as delivered.
+- **Spill contract clarification:** the existing D-013 implementation returns a
+  zero-row data.frame proxy when values are on disk. `as.matrix()` reads a
+  requested slice; ordinary data.frame operations do not implicitly materialize
+  the trace. Update the grammar/architecture descriptions to state that shipped
+  behavior. Custom directories retain caller-managed files with nonce names;
+  exclusive creation refuses existing files and symlinks rather than replacing
+  another trace. Existing integrity nonces remain in force.
+- **Toolchain correction:** Rust 1.85.0 is the minimum required by the locked
+  default dependency graph on shipped macOS/Linux targets (Arrow 59.0.0 and
+  hashbrown 0.17.1). The lockfile's newer WASI-only requirement is outside those
+  targets. Metadata and configure checks agree; the Linux R-oldrel CI leg builds
+  the full package at the minimum. No dependency versions are changed.
+- **Validation:** restore R-oldrel and scheduled checks, execute CPU isolation on
+  Metal-enabled macOS as well as Linux, and maintain `docs/validation-status.md`.
+  Keep deferred text-reference, large-model, sanitizer, and platform acceptances
+  explicit. Existing numerical goldens and tolerances remain unchanged.
+- **Why:** the September review reproduced data loss in shared spill directories
+  and inconsistent validation, and found stale toolchain/coverage claims. Repair
+  the behavior and its regressions together so resumed development has a usable
+  baseline. Demo probe estimates remain exploratory until a selection-aware
+  evaluation contract is implemented.
+- **Alternatives rejected:** relying on overwrite detection after a file is
+  already lost; accepting fractional/overflowing indices by coercion; treating
+  zero GPU layers as sufficient CPU isolation; claiming Rust 1.71 support while
+  the locked default dependencies require 1.85; describing planned tests as
+  executed evidence; claiming Windows support without hardware checks.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

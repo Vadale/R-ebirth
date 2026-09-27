@@ -20,7 +20,7 @@ These apply to every function, present and future.
 6. **Memory-safe defaults** (the 16 GB rule): defaults never capture more than needed — `llm_trace()` defaults to `positions = "last"`, `components = "residual"`; expanding capture is always an explicit user choice. Any function that can exceed memory must support disk spill rather than crash.
 7. **Determinism contract:** same model file + same parameters + same `seed` + same build + same backend ⇒ identical output, across runs and R sessions. Bitwise identity **across backends** (Metal vs CPU vs CUDA) is *not* promised — floating-point op order differs; cross-backend agreement is a documented tolerance (harness B).
 8. **Errors are classed conditions** (hierarchy in §5): every error inherits `c("<specific>", "relm_error", "error", "condition")` with a message stating *what happened → likely cause → what to try*. A raw Rust panic reaching the console is a bug.
-9. **Side effects are declared.** Only two functions write to disk: `llm_download()` (model files) and `llm_trace(spill = TRUE)` (spill files under a session spill directory, cleaned on session exit). Nothing else touches the filesystem.
+9. **Side effects are declared.** Only two functions write to disk: `llm_download()` (model files) and `llm_trace(spill = TRUE)` (managed session spill files are cleaned on exit; a custom `spill_dir` is caller-managed). Nothing else touches the filesystem.
 10. **Printing:** `print` methods are one-screen summaries (no data dumps); `summary` methods return an object (classed list) whose own print is richer; wide/long data is left to the user's tools.
 11. **English everywhere** — identifiers, arguments, messages, docs.
 
@@ -58,7 +58,7 @@ A plain `data.frame` (long format) with class `c("relm_trace", "data.frame")`. *
 | `neuron` | int | 1-based index within the component vector |
 | `value` | dbl | activation (f32 upcast to double) |
 
-Attributes: `model` (chr, path), `spilled` (lgl), `spill_files` (chr, if any), `prompts` (chr, the original texts). Spilled traces present the same data.frame interface, loading lazily.
+Attributes: `model` (chr, path), `spilled` (lgl), `spill_files` (chr, if any), `prompts` (chr, the original texts). A spilled trace is a zero-row data.frame proxy with the same columns; its values remain on disk. Use `as.matrix()` for lazy slice access. Ordinary data.frame indexing and `nrow()` operate on the proxy, not the on-disk values (D-027 clarifies the shipped D-013 behavior).
 Methods: `print.relm_trace` (dimensions + capture spec, never the data), `summary.relm_trace` (per layer/component: n, mean |value|, spill status), `as.matrix.relm_trace` (§4).
 
 ### `llm_probe` — fitted probe set
@@ -66,7 +66,7 @@ Classed list: per-layer fitted probes + CV metrics. Methods: `print`, `summary`,
 
 ---
 
-## 3. Function entries — Phases 0–1 `[approved pending sign-off]`
+## 3. Function entries — Phases 0–1 `[approved: D-003]`
 
 ### `llm(path, context_length = 4096, gpu_layers = NULL, backend = c("auto", "metal", "cuda", "cpu"), mmap = TRUE, projector = NULL)` — Phase 0 · `projector` approved 2026-07-14 (Phase 11, D-026)
 Loads a GGUF model; returns an `llm` handle. `gpu_layers = NULL` = auto (all that fit); `backend = "auto"` picks the best available. `projector` = a path to an **mmproj GGUF** (or a registry alias resolved to a path) enabling image input; `NULL` (default) = text-only, unchanged. When set, `llm()` also initializes the vision encoder bound to the loaded model — the projector is a session property fixed at load (it shares the model pointer), exactly like the model file, so it belongs on `llm()`, not on each call. A projector whose input embedding size does not match the model raises `relm_error_image` naming both sizes (reject-not-clamp). New handle slots: `projector` (chr path or `NULL`), `vision` (lgl); `print.llm` shows the projector when present. Errors: `relm_error_argument` (invalid `context_length`/`gpu_layers`/`mmap`), `relm_error_model_load` (missing/corrupt/unsupported file — message names the failing check), `relm_error_backend` (requested backend unavailable), `relm_error_image` (projector load failure / mmproj–model mismatch).
@@ -91,14 +91,14 @@ Vectorized over `prompt`; returns a character vector of the same length (names p
 
 ---
 
-## 4. Function entries — Phase 2 `[approved pending sign-off]`
+## 4. Function entries — Phase 2 `[approved: D-003]`
 
 ### `llm_trace(m, prompts, layers = NULL, positions = "last", components = "residual", spill = TRUE, spill_dir = NULL)`
 Runs a **forward pass over the prompt tokens** (no sampling — tracing *during generation* is Phase 6, a separate entry) and captures activations per the filters. Returns a `relm_trace` (§2).
 - `layers = NULL` = all blocks; else 1-based integer vector.
 - `positions`: `"last"` (default — last token of each prompt), `"all"`, or a 1-based integer vector (recycled per prompt with a warning if lengths differ).
 - `components`: subset of `c("residual", "attn_out", "mlp_out")`.
-- `spill = TRUE`: if the in-memory estimate exceeds the budget, capture streams to Arrow IPC files in `spill_dir` (default: session spill directory) and the returned object loads lazily. `spill = FALSE` + over-budget → `relm_error_oom` *before* allocation (predictive check, message states the estimate and the filters that would fix it).
+- `spill = TRUE`: if the in-memory estimate exceeds the budget, capture streams to Arrow IPC files in `spill_dir` (default: session spill directory) and the returned zero-row proxy exposes lazy slices through `as.matrix()` (§2). `spill = FALSE` + over-budget → `relm_error_oom` *before* allocation (predictive check, message states the estimate and the filters that would fix it).
 Errors: `relm_error_trace`, `relm_error_context_overflow`.
 
 ### `as.matrix(x, layer, component = "residual", ...)` method `as.matrix.relm_trace`
@@ -115,7 +115,7 @@ Vectorized over `prompt`; forward pass, next-token distribution. Returns a `data
 
 ---
 
-## 5. Function entries — Phase 4 `[approved pending sign-off]`
+## 5. Function entries — Phase 4 `[approved: D-003; implementation pending]`
 
 ### `llm_probe(formula, data, method = "glmnet", cv = 10, metric = c("auc", "accuracy"), seed = NULL)`
 `formula`: `label ~ activations(layer = 10:20, component = "residual")` — `label` is a column the user has attached to the trace (or a vector in the calling scope, standard R formula semantics); `activations()` is a formula helper resolved only inside `llm_probe`. `data` = a `relm_trace`. Fits one cross-validated probe per layer in the requested range. Returns `llm_probe` (§2). Errors: `relm_error_probe` (label/trace mismatch, single-class labels — message states counts).

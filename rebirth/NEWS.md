@@ -1,3 +1,20 @@
+# relm 0.2.0.9000
+
+* Spill files have unique names across R sessions, including caller-supplied
+  directories. Existing files and symlinks are refused without overwriting them.
+* Trace slice layers and token positions reject fractional, non-finite, and
+  out-of-range indices before conversion. Disk and memory slices follow the same
+  validation rules.
+* CPU handles explicitly exclude GPU devices and disable GPU offloading for
+  generation, embeddings, traces, and derived intervention contexts. CPU loading
+  therefore does not depend on Metal being available to the process.
+* Invalid `backend` and `pooling` choices raise `relm_error_argument`;
+  documented defaults and unambiguous abbreviations remain supported.
+* Source installation requires Rust >= 1.85.0, matching the locked default
+  dependencies. CI covers R release and oldrel, including the Rust minimum.
+* Clarified disk-trace access and the exploratory interpretation of Demo A's
+  probe estimates. Numerical goldens and public signatures are unchanged.
+
 # relm 0.2.0
 
 Vision. A handle loaded with a model's **mmproj projector** takes image input

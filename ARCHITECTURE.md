@@ -57,19 +57,19 @@ Bridge: **extendr** (scaffolded by `rextendr`). Fallback if CRAN friction ever d
 
 **Steering (generation-time residual addition):** llama.cpp has **native control-vector support** (per-layer additions to the residual stream via the adapter API). `llm_steer` maps onto it directly — no patch. Composition of stacked steers = summed vectors per layer, computed on our side.
 
-**Ablation:** no native mechanism → the one place Strategy A may not reach. Options, in preference order: (1) implement as a modifying eval-callback if the callback contract permits tensor mutation at that point; (2) a **minimal vendored patch** adding a guarded mutation hook at the named tensors. Decision made by a **1-day spike at WP4 start** (its first step, before any implementation), recorded as an ADR.
+**Ablation (implemented, D-016):** a minimal `build_cvec` patch applies ablation after steering. A runtime sentinel checks intervention capability (D-021); an architecture name alone does not establish support. Observation remains unpatched through the eval callback (D-012).
 
-**Patch budget rule:** whatever the spike finds, the vendored diff stays as small as upstream allows, lives in `vendor/patches/`, and every hunk is annotated with why it exists — this is what keeps the `vendor-bump` skill routine (risk #1 in the roadmap).
+**Patch budget rule:** whatever the spike finds, the vendored diff stays as small as upstream allows, lives in `rebirth/src/llama.cpp/patches/`, and every hunk is annotated with why it exists — this is what keeps the `vendor-bump` skill routine (risk #1 in the roadmap).
 
 **Capture spec → memory estimate (D-017, supersedes the f32 basis):** the budget is measured against the **peak resident cost of the materialized R `data.frame` the caller receives**, not the engine's f32 host buffers. `bytes ≈ n_prompts × n_positions × n_layers × n_components × hidden_size × 4 × K`, where the f32 term (`… × 4`) is the engine activation size and `K` (`TRACE_MATERIALIZED_EXPANSION`, pinned to **11** in both `R/trace.R` and `rebirth-llm/src/trace.rs`, each side unit-tested) is the long-format expansion factor: each captured value becomes one 40-byte row (four i32 columns + one f64 `value` + two character-pointer columns), i.e. 10× the f32 bytes asymptotically; **11** upper-bounds this for every trace a *real* model can materialize (`hidden_size ≥ 896` → ≤ 10.65×) and for all budget-relevant large captures (ratio → 10.0×). (A tiny trace amortizes R's fixed per-vector overhead poorly — a sub-600-row capture on the `hidden=32` synthetic test model reaches ~27.75×, but is < ~22 KB and never approaches any budget.) Computed *before* running; drives the predictive OOM check and the spill decision (§6) symmetrically on both sides. An `object.size(result) ≤ K × f32_bytes` test pins `K` so it cannot silently drift. *Why the change:* the f32 basis under-counted the real object ~10× (transient peak ~30× before the FFI de-dup), so an "in-budget" capture could still OOM the 16 GB session (audit finding H-1). The estimate and the filter suggestion appear verbatim in `relm_error_oom`.
 
 ## 6. Spill design
 
-- **Format:** Arrow IPC (Feather v2) files, schema = the `relm_trace` columns exactly (`API-GRAMMAR.md` §2). Written incrementally by `rebirth-llm`'s sink thread during capture (bounded channel → backpressure, never unbounded buffering).
-- **Location:** `tools::R_user_dir("relm", "cache")/spill/<session-id>/trace-<n>.arrow`. Session directory registered for cleanup at R exit (`reg.finalizer` on a session sentinel + startup sweep of orphaned directories older than 7 days).
-- **R side:** a spilled `relm_trace` holds file paths in attributes; `nanoarrow` reads lazily on first data access; `as.matrix()` reads only the requested (layer, component) slice. Print/summary never force a full load.
+- **Format:** Arrow IPC streams (D-013), supported by nanoarrow. The seven columns correspond to `relm_trace`; on disk indices are 0-based, `value` is float32, and text is plain UTF-8. The R reader converts indices to 1-based and values to double. A bounded channel feeds the writer thread during capture.
+- **Location:** a managed session directory under `tools::R_user_dir("relm", "cache")/spill/`, or the caller's `spill_dir`. Filenames carry a per-trace nonce and the writer creates files exclusively, refusing existing paths. Only managed directories receive exit cleanup and the existing seven-day age-based sweep; custom directories remain caller-managed.
+- **R side:** a spilled `relm_trace` is a zero-row data.frame proxy with file paths in attributes. `as.matrix()` scans stream batches and retains the requested (layer, component) slice. Ordinary data.frame operations act on the empty proxy. Print/summary use capture metadata without materializing the file.
 - **Budget:** default in-memory threshold = `min(2 GB, 20% of system RAM)` of the **materialized `data.frame`** (D-017; ~180 MB of f32 activations resident), overridable via `options(relm.trace_budget = <bytes>)`. Above it, `spill = TRUE` streams to disk; `spill = FALSE` raises the predictive `relm_error_oom`.
-- **Integrity:** each file footer carries the capture spec + model SHA; reopening a file whose spec doesn't match the object's attributes → `relm_error_trace` (tamper/staleness fail-safe).
+- **Integrity:** stream schema metadata records format version, a per-trace nonce, model path, and capture-spec key. The reader checks format, trace identity, spec, and schema before consuming batches and maps corruption to `relm_error_trace`. This is staleness/schema detection, not a cryptographic digest of the model or activation payload.
 
 ## 7. Determinism implementation
 
@@ -81,10 +81,10 @@ Greedy decoding: deterministic per backend by construction. Sampling: the sample
 
 ## 9. Build pipeline
 
-- `rebirth/src/Makevars` drives `cargo build` (release profile, `--offline`), links `librebirth_ffi.a` + llama.cpp objects statically; macOS adds Metal/Accelerate framework flags; feature flags select backends (`metal` default on macOS arm64, `cuda` opt-in from Phase 8).
+- `rebirth/src/Makevars` drives `cargo build` (release profile by default; `--offline` for CRAN-mode builds when crates are vendored), links `librelm.a` + llama.cpp objects statically; macOS adds Metal/Accelerate framework flags; feature flags select backends (`metal` default on macOS arm64, `cuda` opt-in from Phase 8).
 - `configure` detects cargo/rustc and fails with an actionable message if missing (binary users via r-universe never hit this).
 - **CRAN Rust checklist (applies at Phase 9, prepared from day 1):** `SystemRequirements: Cargo (Rust)` with minimum rustc declared; all crates vendored (`cargo vendor` → `src/rust/vendor.tar.xz`), no network at build time; build respects `~/.R/Makevars` and ≤ 2 threads during checks; authors/licenses of vendored crates listed in `inst/AUTHORS`; verified on the CRAN platform matrix before submission.
-- Reproducibility: `rust-toolchain.toml` pins the toolchain; `Cargo.lock` committed; vendored llama.cpp tag + SHA in `vendor/README`.
+- Toolchain: Rust >= 1.85.0 for the locked default dependency graph on supported macOS/Linux targets (D-027). CI builds at the floor as well as on stable. `rust-toolchain.toml` selects the moving stable channel, not an exact compiler version; `Cargo.lock` pins dependencies and `vendor/README.md` records engine provenance.
 
 ## 10. Async and live-callback design (Phase 5–6, designed now so Phase 0–4 code doesn't preclude it)
 
@@ -92,7 +92,7 @@ Generation moves to a Rust worker thread; tokens flow over a bounded channel; th
 
 ## 11. Golden pipeline and the synthetic model
 
-- `tests/llm-golden/generate/` holds pinned Python scripts (venv lockfile committed) that produce: logit goldens (reference llama.cpp, same tag, unpatched) and activation goldens (HF transformers fp32).
+- `tests/llm-golden/synthetic/` contains the numpy oracle; `qwen/` contains the HF fp32 activation reference; `vision/` contains upstream vision goldens and tools. The unpatched text-logit comparator remains deferred in `reference/`. See `docs/validation-status.md` for where each check runs.
 - **Synthetic model:** an in-repo script writes a seeded 2-layer, tiny-vocab GGUF (~1–2 MB, committed as binary + regeneration script). Purpose: exact-value tests with zero downloads, and a model whose every activation can be recomputed independently in numpy — the harness's bedrock. Regeneration governed by the `golden-update` skill.
 
 ## 12. Model registry (`llm_download`)
@@ -106,4 +106,4 @@ Generation moves to a Rust worker thread; tokens flow over a bounded channel; th
 
 ## 14. Open items (each becomes an ADR when its phase starts)
 
-`later`/`promises` dependency (Phase 5); ablation strategy A-vs-B (WP4 spike, day 1); serve stack choice (Phase 7); fine-tuning backend candle vs libtorch (Phase 12); MLX binding scope (Phase 10); `nanoarrow` vs `arrow` if lazy-read needs grow (revisit at Phase 2 exit).
+`later`/`promises` dependency (Phase 5); serve stack choice (Phase 7); fine-tuning backend candle vs libtorch (Phase 12); MLX binding scope (Phase 10); richer data-frame access to spilled traces if required by a future approved API. Ablation and the nanoarrow stream format are settled in D-013/D-016.

@@ -1,7 +1,7 @@
 # R-ebirth — Solo Phase Plan
 
 **Document 1 of 3** — operational decisions for the solo-development period (Phase 0 through end of Phase 1).
-Companion documents (to be written): `ARCHITECTURE.md` (document 2 — package internals, native boundary, ladder mechanics) and `API-GRAMMAR.md` (document 3 — final function signatures and naming rules).
+Companion documents: `ARCHITECTURE.md` (document 2 — package internals, native boundary, ladder mechanics) and `API-GRAMMAR.md` (document 3 — final function signatures and naming rules).
 Operational companion: the work-package plans under `docs/` — toolchain, sequencing, and the thesis case study (WP-T). This plan states *decisions*; the roadmap states *execution*.
 
 - **Status:** draft **v0.2** for founder review
@@ -56,6 +56,11 @@ Package namespace: **`relm`** — verified available on CRAN and unclaimed on Gi
 
 ## 3. Platforms and test matrix (updated — the package makes this cheaper)
 
+**Execution status (2026-09-27, D-027):** macOS and Linux ship today. Windows/CUDA
+remains a target and is deferred pending hardware validation; the historical
+phase labels below are planning targets, not evidence of delivered support.
+See `docs/validation-status.md` for the checks actually running.
+
 | Tier | Platform | Backend | Where it runs | When |
 |------|----------|---------|---------------|------|
 | 1 (primary) | macOS arm64 | Metal | Mac mini M4 16 GB (RStudio + console) | Phase 0 |
@@ -75,25 +80,26 @@ Notes:
 
 ## 4. Repository, build, CI, distribution (updated)
 
-Layout:
+Current layout (D-005/D-009; later-phase crates remain planned):
 
 ```
 r-ebirth/
-├── rebirth/              # the R package (R/, src/, man/, tests/, vignettes/)
-├── rust/                 # cargo workspace
-│   ├── rebirth-llm/      # inference engine wrapper + activation taps (MIT|Apache-2.0)
-│   ├── rebirth-kernel/   # columnar kernels (later; off critical path)
-│   └── rebirth-ffi/      # SEXP boundary — one crate owns all unsafe
-├── vendor/               # pinned llama.cpp (patched for taps) + NOTICE
-├── tests/
-│   ├── llm-golden/       # logits + activation goldens vs reference implementations
-│   └── demos/            # the two reference demos as executable acceptance tests
-├── docs/
-├── DECISIONS.md          # decision log (D-001 grammar, D-002 ladder pivot, ...)
+├── rebirth/                 # R package, installed as relm
+│   ├── R/, man/, tests/, vignettes/
+│   └── src/
+│       ├── rust/            # Cargo workspace: rebirth-llm + rebirth-ffi
+│       └── llama.cpp/       # pinned engine and versioned patches
+├── vendor/                  # provenance pointers
+├── tests/                   # numerical references, demos, vision, Valgrind
+├── docs/                    # design notes and validation status
+└── DECISIONS.md             # append-only decisions
 ```
 
-- **Build:** cargo invoked from the package's `src/Makevars`; vendored crates for CRAN compliance later; the llama.cpp tap patch set versioned in `vendor/`.
-- **Distribution from day 1: r-universe.** It builds **binary packages for macOS, Linux, and Windows automatically** — testers run one `install.packages()` with a repo URL and never need Rust, Xcode, or Rtools. CRAN submission is a Phase 1 exit goal (their Rust vendoring policy is accounted for in the layout), not a Phase 0 concern.
+R-side unsafe belongs to `rebirth-ffi`; minimal SAFETY-commented C-side unsafe
+belongs to the R-free `rebirth-llm` engine (D-009).
+
+- **Build:** cargo invoked from the package's `src/Makevars`; vendored crates for CRAN compliance later; the llama.cpp patch set versioned in `rebirth/src/llama.cpp/patches/`.
+- **Distribution: r-universe.** macOS and Linux binaries are published, so users of those binaries do not need Rust or a native compiler. Windows binaries remain a Phase-8 target. CRAN submission remains the later documentation/API-freeze milestone; Rust vendoring is planned for that submission.
 - **CI harnesses:**
   - **Harness A (new meaning):** `R CMD check --as-cran` clean on {macOS arm64, Linux x86_64/arm64, Windows} × {R-release, R-oldrel}. The v0.1 harness A (upstream `make check`) is obsolete — nothing of R is modified, so there is nothing to break by construction.
   - **Harness B (unchanged, the crown jewel):** logits vs unpatched reference llama.cpp token-by-token on pinned models (documented tolerance per quantization); activations vs precomputed PyTorch/TransformerLens goldens in `tests/llm-golden/`. Per commit on the synthetic model; nightly on the 0.5B.

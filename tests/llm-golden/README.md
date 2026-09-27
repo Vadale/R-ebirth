@@ -117,24 +117,20 @@ top-1/top-2 margin stays ≥ ~2e-2 (~10x the observed F32 gap); the `--check`
 self-check re-asserts both the sequence and that margin floor. The engine side
 is `rebirth/src/rust/rebirth-llm/tests/greedy_generation.rs`.
 
-## Deferred to WP2 / WP6b (do not build yet)
+## Current coverage and deferred work (2026-09-27)
 
-Set up as directory/README hooks only in this first slice:
+- **Synthetic oracle:** active per commit, covering logits, greedy generation,
+  embeddings, activations, and interventions without a model download.
+- **HF fp32 activations:** implemented in `qwen/`, with separately pinned Python
+  tooling. R comparisons run with `RELM_TEST_MODEL_QWEN`, including the model
+  tolerance nightly. D-018 defines the scale-robust cross-implementation checks;
+  an exact HF match or a universal 0.999 per-layer correlation is not claimed.
+- **Vision:** `vision/` supplies committed reference artifacts. The vision nightly
+  builds an unpatched upstream encoder on its own runner for an exact same-machine
+  comparison; this does not validate text-only patched logits against upstream.
+- **Unpatched text-logit comparator:** still deferred in `reference/`. Do not
+  describe this planned gate as active. Observation uses an eval callback; the
+  vendored ablation hook means upstream equivalence is still worth checking.
 
-- **Unpatched reference-llama.cpp logit comparator.** The vendored engine is
-  unpatched at WP1 (behaviourally identical to upstream b9726), so a second,
-  unpatched llama.cpp build would compare the engine against itself — it earns
-  its keep only once llama.cpp is patched for activation taps (WP4). The
-  synthetic numpy oracle is the exact-value reference until then.
-- **HF fp32 / torch+transformers activation goldens** (WP4/WP6b) — needs `torch`
-  and `transformers` in the venv, deliberately absent from `requirements.txt`.
-- **Nightly Qwen2.5-0.5B tolerance + rank-correlation suite** and the
-  **off-by-one mutation test** (WP6b).
-
-See `reference/README.md`.
-
-## Status
-
-- **WP6a (this slice):** synthetic model + logit goldens + self-check + CI
-  wiring. Done.
-- **WP6b:** activation goldens, nightly 0.5B tolerance runs, mutation test.
+See `../../docs/validation-status.md` for CI ownership and outstanding acceptance
+checks. Golden regeneration remains governed by the project's golden-update workflow.
