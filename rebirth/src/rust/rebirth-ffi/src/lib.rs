@@ -25,8 +25,10 @@ use std::path::PathBuf;
 
 use extendr_api::prelude::*;
 use rebirth_llm::{
-    BackendKind, CaptureRow, CaptureSpec, Component, GenerateParams, InterventionSpec, LoadRequest,
-    LoadedModel, ModelMetadata, Pooling, Positions, RebirthError, SpillPlan, TraceOutput,
+    BackendKind, CaptureRow, CaptureSpec, CompiledSchema, Component, GenerateParams,
+    InterventionSpec, LoadRequest, LoadedModel, ModelMetadata, Pooling, Positions, RebirthError,
+    SpillPlan, TraceOutput, STRUCTURED_MAX_PROMPTS, STRUCTURED_MAX_PROMPT_BYTES,
+    STRUCTURED_MAX_SCHEMA_BYTES, STRUCTURED_MAX_TOKENS, STRUCTURED_MAX_TOTAL_PROMPT_BYTES,
 };
 
 /// The native side of an `llm` handle: an owned loaded model, or `None` once the
@@ -227,6 +229,26 @@ fn error_fields(error: &RebirthError) -> Robj {
         RebirthError::Generation { reason } => {
             vec![("reason", Robj::from(reason.as_str()))]
         }
+        RebirthError::Schema {
+            reason,
+            schema_path,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            ("schema_path", Robj::from(schema_path.as_str())),
+        ],
+        RebirthError::StructuredOutput {
+            reason,
+            prompt_id,
+            seed,
+            generated_tokens,
+            partial_bytes,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            ("prompt_id", Robj::from(*prompt_id as i32)),
+            ("seed", Robj::from(*seed as f64)),
+            ("generated_tokens", Robj::from(*generated_tokens as i32)),
+            ("partial_bytes", Raw::from_bytes(partial_bytes).into()),
+        ],
         RebirthError::ContextOverflow {
             prompt_tokens,
             context_length,
@@ -490,7 +512,78 @@ fn rebirth_generate(
         Ok(List::from_pairs(vec![
             ("ok", Robj::from(true)),
             ("text", Robj::from(generation.text)),
+            (
+                "generated_tokens",
+                Robj::from(generation.tokens.len() as i32),
+            ),
             ("seed", Robj::from(generation.seed as f64)),
+        ])
+        .into())
+    })
+}
+
+// Compile once per vector call, with a new sampler state for each prompt.
+// All results stay private until every prompt succeeds. R adds names/seed.
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_generate_structured(
+    ptr: Robj,
+    prompts: Vec<String>,
+    chat: bool,
+    max_tokens: i32,
+    temperature: f64,
+    top_p: f64,
+    seed: f64,
+    schema: &str,
+) -> Robj {
+    with_model(&ptr, |model| {
+        if prompts.is_empty()
+            || prompts.len() > STRUCTURED_MAX_PROMPTS
+            || prompts
+                .iter()
+                .any(|p| p.len() > STRUCTURED_MAX_PROMPT_BYTES)
+            || prompts.iter().map(String::len).sum::<usize>() > STRUCTURED_MAX_TOTAL_PROMPT_BYTES
+            || max_tokens < 1
+            || max_tokens as usize > STRUCTURED_MAX_TOKENS
+            || !temperature.is_finite()
+            || temperature < 0.0
+            || temperature > f32::MAX as f64
+            || !top_p.is_finite()
+            || top_p <= 0.0
+            || top_p > 1.0
+            || !seed.is_finite()
+            || seed < 0.0
+            || seed.fract() != 0.0
+            || seed >= 18446744073709551616.0
+        {
+            return Err(RebirthError::Internal {
+                context: "invalid constrained-generation boundary arguments".into(),
+            });
+        }
+        if schema.len() > STRUCTURED_MAX_SCHEMA_BYTES {
+            return Err(RebirthError::Schema {
+                reason: "schema exceeds 64 KiB".into(),
+                schema_path: String::new(),
+            });
+        }
+        let schema = CompiledSchema::compile(schema)?;
+        let params = GenerateParams {
+            max_tokens: max_tokens as usize,
+            temperature: temperature as f32,
+            top_p: top_p as f32,
+            seed: seed as u64,
+            stop: Vec::new(),
+        };
+        let generations = model.generate_prompts_structured(&prompts, chat, &params, &schema)?;
+        let (output, counts): (Vec<String>, Vec<i32>) = generations
+            .into_iter()
+            .map(|g| (g.text, g.tokens.len() as i32))
+            .unzip();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("text", Robj::from(output)),
+            ("generated_tokens", Robj::from(counts)),
+            ("seed", Robj::from(seed)),
         ])
         .into())
     })
@@ -1029,6 +1122,7 @@ extendr_api::extendr_module! {
     fn rebirth_tokenize;
     fn rebirth_detokenize;
     fn rebirth_generate;
+    fn rebirth_generate_structured;
     fn rebirth_logits;
     fn rebirth_embed;
     fn rebirth_trace;

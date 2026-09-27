@@ -12,6 +12,12 @@ use std::os::raw::c_char;
 use crate::engine::LoadedModel;
 use crate::error::RebirthError;
 use crate::ffi;
+use crate::schema::CompiledSchema;
+use crate::structured::{
+    Constraint, Grammar, STRUCTURED_MAX_OUTPUT_BYTES, STRUCTURED_MAX_PROMPTS,
+    STRUCTURED_MAX_PROMPT_BYTES, STRUCTURED_MAX_TOTAL_OUTPUT_BYTES,
+    STRUCTURED_MAX_TOTAL_PROMPT_BYTES,
+};
 
 /// Teacher-forced logits for a token sequence: the next-token distribution at
 /// every position. Row-major, `seq_len` rows of `n_vocab` each.
@@ -782,9 +788,19 @@ impl LoadedModel {
     /// byte-identical (same code, same order of operations).
     pub(crate) fn continue_generation(
         &self,
+        logits: Vec<f32>,
+        start_pos: i32,
+        params: &GenerateParams,
+    ) -> Result<Generation, RebirthError> {
+        self.continue_generation_with_constraint(logits, start_pos, params, None)
+    }
+
+    fn continue_generation_with_constraint(
+        &self,
         mut logits: Vec<f32>,
         start_pos: i32,
         params: &GenerateParams,
+        mut constraint: Option<&mut Constraint<'_, '_>>,
     ) -> Result<Generation, RebirthError> {
         let ctx_len = self.context_length() as usize;
         let vocab = self.vocab_ptr();
@@ -796,19 +812,61 @@ impl LoadedModel {
         // `n_past` is the position the next continuation token occupies: the
         // prompt filled 0..start_pos, so continuation i lands at start_pos + i.
         for n_past in (start_pos..).take(params.max_tokens) {
+            if let Some(state) = constraint.as_deref_mut() {
+                if n_past as usize >= ctx_len {
+                    return Err(state.error("context budget exhausted", out.len()));
+                }
+                state.mask(&mut logits, out.len(), params.temperature <= 0.0)?;
+            }
             let next = if params.temperature <= 0.0 {
                 argmax(&logits)
             } else {
                 sample(&logits, params.temperature, params.top_p, &mut rng)
             } as i32;
 
+            if let Some(state) = constraint.as_deref_mut() {
+                if !logits[next as usize].is_finite() {
+                    return Err(state.error("sampler selected an inadmissible token", out.len()));
+                }
+            }
+
             // SAFETY: `vocab` is live for the model's lifetime; `next` is an id in
             // `[0, n_vocab)` (argmax/sample index into a vocab-width row).
             if unsafe { ffi::llama_vocab_is_eog(vocab, next) } {
+                if let Some(state) = constraint.as_deref_mut() {
+                    return Err(
+                        state.error("unexpected end-of-generation before completion", out.len())
+                    );
+                }
                 stop_reason = StopReason::EndOfGeneration;
                 break;
             }
             out.push(next);
+
+            if let Some(state) = constraint.as_deref_mut() {
+                state.accept(next, out.len())?;
+                let remaining = STRUCTURED_MAX_OUTPUT_BYTES - state.bytes.len();
+                let piece = self
+                    .token_piece_bounded(next, remaining)
+                    .map_err(|why| state.error(why, out.len()))?;
+                state.bytes.extend_from_slice(&piece);
+                if let Some(text) = state.complete(out.len())? {
+                    return Ok(Generation {
+                        tokens: out,
+                        text,
+                        stop_reason: StopReason::EndOfGeneration,
+                        seed: params.seed,
+                    });
+                }
+                if state.bytes.len() == STRUCTURED_MAX_OUTPUT_BYTES {
+                    return Err(state.error("output byte budget exhausted", out.len()));
+                }
+                // Completion on the last allowed token succeeds above; an
+                // unfinished object fails without an unnecessary decode.
+                if out.len() == params.max_tokens {
+                    return Err(state.error("token budget exhausted", out.len()));
+                }
+            }
 
             if !params.stop.is_empty() && self.has_tokenizer() {
                 let text = self.decode_tokens(&out, false, false)?;
@@ -833,6 +891,13 @@ impl LoadedModel {
             // decode_chunked call). Its logits land at output slot 0.
             self.decode(&[next], n_past, true)?;
             logits = self.logits_ith(0, n_vocab)?;
+        }
+
+        if let Some(state) = constraint {
+            return Err(state.error(
+                format!("{} before JSON completion", stop_reason.as_str()),
+                out.len(),
+            ));
         }
 
         // Detokenize the continuation only when the model carries a tokenizer;
@@ -871,6 +936,103 @@ impl LoadedModel {
         let (text, add_special, parse_special) = self.resolve_prompt_text(prompt, chat)?;
         let prompt_ids = self.tokenize(&text, add_special, parse_special)?;
         self.generate(&prompt_ids, params)
+    }
+
+    /// Generate under a precompiled schema, with fresh grammar state per prompt.
+    /// This shares the ordinary prompt ingest and continuation sampler.
+    pub fn generate_prompts_structured(
+        &self,
+        prompts: &[String],
+        chat: bool,
+        params: &GenerateParams,
+        schema: &CompiledSchema,
+    ) -> Result<Vec<Generation>, RebirthError> {
+        if prompts.is_empty()
+            || prompts.len() > STRUCTURED_MAX_PROMPTS
+            || prompts
+                .iter()
+                .any(|p| p.len() > STRUCTURED_MAX_PROMPT_BYTES)
+            || prompts.iter().map(String::len).sum::<usize>() > STRUCTURED_MAX_TOTAL_PROMPT_BYTES
+        {
+            return Err(RebirthError::Schema {
+                reason: "prompt budget exceeded".into(),
+                schema_path: String::new(),
+            });
+        }
+        self.require_tokenizer()?;
+        let template = Grammar::new(self, schema)?;
+        let mut output = Vec::with_capacity(prompts.len());
+        let mut bytes = 0;
+        for (i, prompt) in prompts.iter().enumerate() {
+            let mut state = Constraint::new(&template, schema, i + 1, params)?;
+            let generation = self.generate_prompt_constrained(prompt, chat, params, &mut state)?;
+            if generation.text.len() > STRUCTURED_MAX_TOTAL_OUTPUT_BYTES - bytes {
+                return Err(
+                    state.error("call output byte budget exceeded", generation.tokens.len())
+                );
+            }
+            bytes += generation.text.len();
+            output.push(generation);
+        }
+        Ok(output)
+    }
+
+    fn generate_prompt_constrained(
+        &self,
+        prompt: &str,
+        chat: bool,
+        params: &GenerateParams,
+        state: &mut Constraint<'_, '_>,
+    ) -> Result<Generation, RebirthError> {
+        let (text, add_special, parse_special) = self.resolve_prompt_text(prompt, chat)?;
+        // A chat template may expand user text; reject before tokenizing a large
+        // expansion. The cap applies to the materialized native prompt too.
+        if text.len() > STRUCTURED_MAX_PROMPT_BYTES {
+            return Err(state.error("templated prompt byte budget exceeded", 0));
+        }
+        let ids = self.tokenize(&text, add_special, parse_special)?;
+        self.check_fits(ids.len())?;
+        if ids.is_empty() {
+            return Err(state.error("empty tokenized prompt", 0));
+        }
+        let n_vocab = self.n_vocab_checked()?;
+        let logits = self.prompt_last_logits(&ids, n_vocab)?;
+        self.continue_generation_with_constraint(logits, ids.len() as i32, params, Some(state))
+    }
+
+    /// Assemble actual token bytes without lossy UTF-8 conversion. A token can
+    /// end inside a code point; validation happens only at grammar completion.
+    fn token_piece_bounded(&self, id: i32, remaining: usize) -> Result<Vec<u8>, &'static str> {
+        let mut bytes = vec![0u8; remaining.min(32)];
+        loop {
+            // SAFETY: id came from this vocabulary's masked candidates; the
+            // engine writes at most the supplied slice length, or returns -size.
+            let n = unsafe {
+                ffi::llama_token_to_piece(
+                    self.vocab_ptr(),
+                    id,
+                    bytes.as_mut_ptr().cast::<c_char>(),
+                    bytes.len() as i32,
+                    0,
+                    false,
+                )
+            };
+            if n >= 0 {
+                if n as usize > bytes.len() {
+                    return Err("invalid native token piece length");
+                }
+                bytes.truncate(n as usize);
+                return Ok(bytes);
+            }
+            let need = n.checked_neg().ok_or("invalid native token piece length")? as usize;
+            if need > remaining {
+                return Err("output byte budget exhausted");
+            }
+            if need <= bytes.len() {
+                return Err("invalid native token piece sizing");
+            }
+            bytes.resize(need, 0);
+        }
     }
 
     /// Resolve a user prompt into the exact text the tokenizer receives plus
@@ -1126,6 +1288,93 @@ fn apply_template(
 
 #[cfg(test)]
 mod tests {
+    // CI: pinned-model nightly after its checksum gate; ordinary cargo jobs have
+    // no model and skip this fixture. Controlled logits isolate context/grammar
+    // boundaries without relying on the model to prefer a particular answer.
+    #[test]
+    fn structured_context_boundary_and_masked_sampling_model() {
+        let Ok(path) = std::env::var("RELM_TEST_MODEL_QWEN") else {
+            return;
+        };
+        let model = crate::load(crate::LoadRequest {
+            path: path.into(),
+            context_length: 64,
+            gpu_layers: None,
+            backend: crate::BackendKind::Cpu,
+            mmap: true,
+            projector: None,
+        })
+        .unwrap();
+        let schema = crate::CompiledSchema::compile(
+            r#"{"type":"object","properties":{},"required":[],"additionalProperties":false}"#,
+        )
+        .unwrap();
+        let template = crate::structured::Grammar::new(&model, &schema).unwrap();
+        let params = super::GenerateParams {
+            max_tokens: 1,
+            temperature: 0.0,
+            top_p: 1.0,
+            seed: 123,
+            stop: Vec::new(),
+        };
+        let ids = model.tokenize("{}", false, false).unwrap();
+        assert_eq!(
+            ids.len(),
+            1,
+            "pinned Qwen fixture must encode {{}} as one token"
+        );
+        let mut logits = vec![f32::NEG_INFINITY; model.n_vocab_checked().unwrap()];
+        logits[ids[0] as usize] = 0.0;
+        // Both paths must identify the same argmax, including logit ties. The
+        // full mask is also the probability-preserving path for sampling.
+        for tied in [false, true] {
+            let mut full_logits: Vec<f32> = (0..model.n_vocab_checked().unwrap())
+                .map(|i| {
+                    if tied {
+                        if i % 2 == 0 {
+                            -0.0
+                        } else {
+                            0.0
+                        }
+                    } else {
+                        ((i * 17) % 997) as f32
+                    }
+                })
+                .collect();
+            let mut greedy_logits = full_logits.clone();
+            let mut full_mask =
+                crate::structured::Constraint::new(&template, &schema, 1, &params).unwrap();
+            let mut greedy_mask =
+                crate::structured::Constraint::new(&template, &schema, 1, &params).unwrap();
+            full_mask.mask(&mut full_logits, 0, false).unwrap();
+            greedy_mask.mask(&mut greedy_logits, 0, true).unwrap();
+            assert_eq!(super::argmax(&full_logits), super::argmax(&greedy_logits));
+        }
+        let context = model.context_length() as i32;
+        let mut full = crate::structured::Constraint::new(&template, &schema, 1, &params).unwrap();
+        let error = model
+            .continue_generation_with_constraint(logits.clone(), context, &params, Some(&mut full))
+            .unwrap_err();
+        assert!(matches!(error, crate::RebirthError::StructuredOutput {
+            generated_tokens: 0, partial_bytes, .. } if partial_bytes.is_empty()));
+        let mut last = crate::structured::Constraint::new(&template, &schema, 1, &params).unwrap();
+        let output = model
+            .continue_generation_with_constraint(logits, context - 1, &params, Some(&mut last))
+            .unwrap();
+        assert_eq!(output.text, "{}");
+        assert_eq!(output.tokens.len(), 1); // Last context position AND token budget.
+        let mut masked =
+            crate::structured::Constraint::new(&template, &schema, 1, &params).unwrap();
+        let logits = vec![f32::NEG_INFINITY; model.n_vocab_checked().unwrap()];
+        let error = model
+            .continue_generation_with_constraint(logits, 0, &params, Some(&mut masked))
+            .unwrap_err();
+        assert!(
+            matches!(error, crate::RebirthError::StructuredOutput { reason, generated_tokens: 0, .. }
+            if reason == "no admissible token")
+        );
+    }
+
     use super::{
         apply_template, arch_builtin_template, resolve_and_apply_template, top_k_logits,
         ChatMessage, RebirthError,

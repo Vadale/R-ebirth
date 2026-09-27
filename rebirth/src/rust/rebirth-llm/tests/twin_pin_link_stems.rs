@@ -18,7 +18,7 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
 
     // build.rs side: the ordered stem vec + the conditional/final pushes.
     for needle in [
-        r#"vec!["mtmd", "llama", "ggml", "ggml-cpu"]"#,
+        r#"vec!["relm-grammar", "mtmd", "llama", "ggml", "ggml-cpu"]"#,
         r#"lib_stems.push("ggml-metal")"#,
         r#"lib_stems.push("ggml-base")"#,
     ] {
@@ -38,7 +38,7 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
 
     // GNU-ld group form: the Windows and Linux branches each carry the full
     // ordered token list (order matters: left-to-right resolution).
-    let group = "-lmtmd -lllama -lggml -lggml-cpu -lggml-base";
+    let group = "-lrelm-grammar -lmtmd -lllama -lggml -lggml-cpu -lggml-base";
     assert_eq!(
         config_r.matches(group).count(),
         2,
@@ -49,7 +49,7 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
     // Darwin branch: the ordered common stems, the arm64-only Metal archive, and
     // the trailing base archive.
     for needle in [
-        r#"c("-lmtmd", "-lllama", "-lggml", "-lggml-cpu")"#,
+        r#"c("-lrelm-grammar", "-lmtmd", "-lllama", "-lggml", "-lggml-cpu")"#,
         r#""-lggml-metal""#,
         r#""-lggml-base""#,
     ] {

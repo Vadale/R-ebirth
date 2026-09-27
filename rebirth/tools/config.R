@@ -90,12 +90,12 @@ if (is_windows) {
   # Windows/CUDA is Phase 8 and not yet exercised. CPU-only, GNU ld group form.
   .llama_libs <- paste(
     "-Wl,--start-group",
-    "-lmtmd -lllama -lggml -lggml-cpu -lggml-base",
+    "-lrelm-grammar -lmtmd -lllama -lggml -lggml-cpu -lggml-base",
     "-Wl,--end-group -lstdc++"
   )
 } else if (identical(sysname, "Darwin")) {
   is_arm <- arch %in% c("aarch64", "arm64")
-  stems <- c("-lmtmd", "-lllama", "-lggml", "-lggml-cpu")
+  stems <- c("-lrelm-grammar", "-lmtmd", "-lllama", "-lggml", "-lggml-cpu")
   if (is_arm) stems <- c(stems, "-lggml-metal")
   stems <- c(stems, "-lggml-base")
   # ggml-cpu uses Accelerate on all Apple targets; the Metal backend adds
@@ -112,7 +112,7 @@ if (is_windows) {
   # between them resolve regardless of order under GNU ld.
   .llama_libs <- paste(
     "-Wl,--start-group",
-    "-lmtmd -lllama -lggml -lggml-cpu -lggml-base",
+    "-lrelm-grammar -lmtmd -lllama -lggml -lggml-cpu -lggml-base",
     "-Wl,--end-group -lstdc++ -lm -ldl"
   )
 }

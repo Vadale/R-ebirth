@@ -13,7 +13,8 @@ llm_generate(
   seed = NULL,
   chat = TRUE,
   stop = NULL,
-  images = NULL
+  images = NULL,
+  schema = NULL
 )
 }
 \arguments{
@@ -48,6 +49,10 @@ paths to attach to each prompt — a list parallel to \code{prompt}, or a bare
 character vector for a single prompt. Accepted formats: JPEG, PNG, BMP.
 Requires a handle loaded with \code{llm(projector = )}; see the \emph{Image input}
 section.}
+
+\item{schema}{\code{NULL} (default) or one non-NA UTF-8 string containing JSON
+Schema text in the supported profile. This is JSON text, not a file path or
+R list; one schema applies to every prompt. See \emph{Structured output}.}
 }
 \value{
 A character vector the same length as \code{prompt} (names preserved), each
@@ -69,11 +74,53 @@ a seed is drawn (from R's RNG, so \code{set.seed()} makes even that reproducible
 and \strong{recorded} — the seed actually used is always returned as
 \code{attr(result, "seed")}, so any generation can be replayed.
 
-Generation stops at \code{max_tokens}, at the model's end-of-generation token, or
+Without a schema, generation stops at \code{max_tokens}, at the model's
+end-of-generation token, or
 as soon as one of the \code{stop} strings appears (the output is truncated just
 before it). A prompt longer than the model's context window raises
 \code{relm_error_context_overflow}, whose message states by how much.
 }
+\section{Structured output}{
+
+Supply \code{schema} as JSON text to constrain text generation to a bounded subset
+of JSON Schema 2020-12. The root must be a non-nullable object with explicit
+\code{properties}, \code{required} listing every property exactly once, and
+\code{additionalProperties: false}. Nested objects follow the same rules. Supported
+values are bounded strings (\code{maxLength}, optional \code{minLength}), non-nullable
+string enums, integers with explicit \code{minimum} and \code{maximum} in the signed
+32-bit range, booleans, null, and nullable versions of these types. Nullable
+enums, arrays, fractional numbers and all other keywords (including
+annotations) are rejected. Optional root \verb{$schema} must be
+\code{"https://json-schema.org/draft/2020-12/schema"}.
+
+The schema is compiled once per call; each prompt uses fresh grammar state
+and the same scalar seed. Every successful element is complete, independently
+validated JSON text. Keys are generated in UTF-8 lexicographic order. String
+lengths count decoded Unicode scalar values; duplicate keys and invalid
+Unicode are rejected. Describe the task and fields in the prompt: a schema
+constrains output structure, not factual correctness.
+
+Nonempty \code{stop} or image collections cannot be combined with a schema. Empty
+collections count as absent, and vision handles may make text-only structured
+requests. Generation returns when the root object is complete, including on
+the last allowed token. It does not retry, repair or return incomplete JSON.
+Malformed, unsupported or oversized schemas raise \code{relm_error_schema} with
+\code{reason} and \code{schema_path} (a JSON pointer). Generation failure raises
+\code{relm_error_structured_output} with \code{reason}, 1-based \code{prompt_id}, \code{seed},
+\code{generated_tokens} and bounded \code{partial_bytes} (a raw vector). The first
+failed prompt aborts the call; no partial result vector is returned. Input
+context overflow retains \code{relm_error_context_overflow}.
+
+Hard limits: schema text 64 KiB, nesting 8, schema nodes 128, 16 properties
+per object and 64 total; 32 enum members of at most 128 Unicode scalar values;
+string \code{maxLength} 2048; compiled grammar 512 KiB and 65536 elements. A call
+accepts at most 128 prompts, 1 MiB per prompt and 16 MiB total UTF-8 input,
+with \code{max_tokens <= 8192}. Temperature must be finite and fit a 32-bit float;
+an explicit seed must be finite and less than \code{2^64} (subject to R's numeric
+precision). Output is limited to 64 KiB per prompt and 8 MiB
+per call. \code{schema = NULL} preserves ordinary text and vision generation.
+}
+
 \section{Image input (vision models)}{
 
 On a handle loaded with \code{\link[=llm]{llm()}}'s \code{projector} argument, \code{images} attaches
@@ -105,6 +152,11 @@ the string freely (it is ordinary text there).
 \dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))) withAutoprint(\{ # examplesIf}
 m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 llm_generate(m, "In one sentence, what is R?", max_tokens = 40, seed = 1)
+schema <- paste0('{"type":"object","properties":{"answer":',
+  '{"type":"string","enum":["yes","no"]}},',
+  '"required":["answer"],"additionalProperties":false}')
+llm_generate(m, 'Is R a programming language? Return an object with "answer".',
+  schema = schema, max_tokens = 64, temperature = 0, seed = 1)
 close(m)
 \dontshow{\}) # examplesIf}
 \dontshow{if (nzchar(Sys.getenv("RELM_TEST_MODEL_VLM")) && nzchar(Sys.getenv("RELM_TEST_MMPROJ_VLM"))) withAutoprint(\{ # examplesIf}

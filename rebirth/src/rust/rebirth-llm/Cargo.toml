@@ -22,6 +22,10 @@ spill = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
 
 [dependencies]
 
+# Bounded structured output (founder-approved D-030).
+serde = { version = "=1.0.228", default-features = false, features = ["std"] }
+serde_json = { version = "=1.0.145", default-features = false, features = ["std"] }
+
 # Arrow-IPC spill writer (DECISIONS.md D-013), optional behind `spill`. Exact
 # versions pinned and vendored (ARCHITECTURE.md section 9); `default-features =
 # false` strips the compression codecs (zstd/lz4), parquet, csv, and json weight

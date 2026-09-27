@@ -19,6 +19,8 @@ rebirth_detokenize <- function(ptr, ids) .Call(wrap__rebirth_detokenize, ptr, id
 
 rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop, images, image_max_bytes) .Call(wrap__rebirth_generate, ptr, prompt, chat, max_tokens, temperature, top_p, seed, stop, images, image_max_bytes)
 
+rebirth_generate_structured <- function(ptr, prompts, chat, max_tokens, temperature, top_p, seed, schema) .Call(wrap__rebirth_generate_structured, ptr, prompts, chat, max_tokens, temperature, top_p, seed, schema)
+
 rebirth_logits <- function(ptr, prompt, top) .Call(wrap__rebirth_logits, ptr, prompt, top)
 
 rebirth_embed <- function(ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes)
