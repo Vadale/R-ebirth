@@ -1,9 +1,9 @@
 # S0 — Funding extraction and constrained-output contract
 
 Date: 2026-09-27. Base: `5dc15c5` (planning PR #43, all checks passed).
-Status: reference artifacts prepared; **D-030 is proposed, not approved**.
-No generation code, public export, dependency manifest or lockfile is changed.
-The next implementation milestone is S1 after the concrete approval below.
+Status: reference artifacts complete; **D-030 approved by the founder on
+2026-09-27**. S0 itself changed no generation code or dependencies. S1 implements
+this contract; its evidence is recorded in [the implementation report](s1-implementation.md).
 
 ## 1. S0 acceptance and deliverables
 
@@ -34,7 +34,7 @@ funding period and any explicit funding-availability condition, for a requested
 programme/scope. It tests numbers with multiple possible meanings without first
 requiring PDF parsing, retrieval, a service or an additional model.
 
-## 2. Recommended public contract — proposed
+## 2. Recommended public contract — approved
 
 Append one argument to the approved generation signature:
 
@@ -63,7 +63,7 @@ llm_generate(m, prompt, max_tokens = 256, temperature = 0.8,
   first failed element raises a condition; there is no partly successful vector.
   The batch application calls one document at a time.
 
-## 3. Supported schema profile — proposed
+## 3. Supported schema profile — approved
 
 Use a small explicit profile of JSON Schema 2020-12, not a claim of full support.
 Reject any unsupported keyword before decode, including annotations. Optional
@@ -82,18 +82,21 @@ Reject arrays, `number`, `$ref`, definitions, combinators, patterns, formats,
 `const`, dependencies and all unspecified extras. The fixed-record pilot needs
 none of these. Preserve schema semantics by requiring explicit closed/required
 objects and integer bounds, rather than silently narrowing a general schema.
-Generated keys follow UTF-8 lexicographic order; validation accepts any order.
+Generated keys follow UTF-8 lexicographic order, with compact spacing (at most
+one ASCII space at each separator). This avoids whitespace-only generation
+loops without restricting the JSON values. Validation accepts any key order and
+ordinary JSON whitespace.
 Reject duplicate object keys, including escaped-equivalent keys, in schemas and
 outputs. Decode Unicode strictly without normalization or replacement characters.
 
-## 4. Implementation choice and dependencies — proposed
+## 4. Implementation choice and dependencies — approved
 
 **Recommendation:** keep the current SplitMix64/argmax/top-p sampler and mask its
 candidate logits through the existing b9726 grammar sampler before selection.
 Add a small compiler for the profile above and an independently structured output
 validator. Reuse an established JSON parser; do not write general JSON parsing.
 
-Proposed direct Rust dependencies in `rebirth-llm`:
+Approved direct Rust dependencies in `rebirth-llm`:
 
 ```toml
 serde = { version = "=1.0.228", default-features = false, features = ["std"] }
@@ -117,7 +120,7 @@ dependency. That offers broader conversion but restores pruned vendored/build
 surface and still needs strict screening and output validation. Choose the narrow
 Rust profile for this fixed-record milestone; do not silently broaden it later.
 
-## 5. Completion, errors and bounds — proposed
+## 5. Completion, errors and bounds — approved
 
 Own/free a native grammar sampler per prompt. Apply its mask before relm selects
 a token; preserve token IDs, tie ordering and RNG behavior. Detect an all-masked
@@ -132,7 +135,7 @@ with direct fixtures. Completion on the last allowed token succeeds. Otherwise
 token/context/output-budget exhaustion is a failure. No silent retry, repair,
 brace insertion, markdown removal or partial-success return.
 
-New proposed conditions, inheriting `relm_error`:
+New approved conditions, inheriting `relm_error`:
 
 - `relm_error_schema`: malformed/unsupported schema or compilation bounds;
   fields `reason` and JSON-pointer `schema_path`.
@@ -144,7 +147,7 @@ Existing argument/model/backend classes remain. Input context overflow retains
 `relm_error_context_overflow`; exhaustion while generating constrained output uses
 the structured-output condition. Core generation performs no filesystem writes.
 
-| Resource | Proposed hard bound |
+| Resource | Approved hard bound |
 |---|---|
 | Schema UTF-8 text / nesting / nodes | 64 KiB / 8 / 128 |
 | Properties per object / total | 16 / 64 |
@@ -196,8 +199,8 @@ after packages and models have been explicitly prepared.
 | S0 integrity | `python3 tests/structured-output/verify.py --self-test` | All hashes, spans, records, grouped splits and corruption guards pass; WP owner | Implemented; record run evidence below |
 | S0 batch artifacts | `python3 tests/structured-output/check_batch_contract.py`; `batch-contract.json` | Matching committed result skips; interrupted/missing retry; stale model/prompt/schema/source, seed, duplicate ID and corrupt output fail; WP owner | Offline example implemented; no runtime recovery claim |
 | Reference comparators | `python3 tests/structured-output/baseline.py` | Report both baselines on all partitions, with failures counted; WP owner | Implemented; not an LLM benchmark |
-| S1 parser/compiler/native path | Rust engine tests plus R testthat fixtures added in S1; then existing Rust/R PR workflows | Zero invalid successful fixture results, unsupported schemas fail before decode, unchanged unconstrained goldens; coder + integrated reviewer | Not implemented/run |
-| S1 operational comparison | Future `Rscript tests/structured-output/run-model.R --config CONFIG --output RUN.jsonl` with pinned Qwen2.5-0.5B, seeds, schema and prompts | Mac Metal/Linux CPU report; proposed median time/generated token ≤2× unconstrained and additional peak RSS ≤128 MiB for this schema; owner | Driver/config and measurement not implemented/run |
+| S1 parser/compiler/native path | Rust engine tests and `test-structured-output.R`; existing Rust/R PR workflows | Zero invalid successful fixture results, unsupported schemas fail before decode, unchanged unconstrained goldens; owner + integrated reviewer | Implemented; local checks pass; see [S1 evidence](s1-implementation.md) for integration status |
+| S1 operational comparison | `python3 tests/structured-output/run-model.py --model MODEL --backend metal --output NEW_DIR` (Linux: `--backend cpu`) | Pinned Qwen2.5-0.5B; median time per native generated token ≤2× unconstrained and additional process peak RSS ≤128 MiB; owner | Mac Metal passes (1.53×, no positive peak-RSS increase); Linux CPU in the model-tolerance workflow |
 | D1 extraction | `python3 tests/structured-output/verify.py --predictions RUN.jsonl --split held_out --gate` | README's numeric pilot gate, semantic review and baseline comparison; owner/reviewer | Scorer exists; model outputs and review not run |
 | D2 restart | Future `Rscript tests/structured-output/test-batch.R` using pinned tiny-fixture config and a controlled stop after document 2 | Completed results byte-identical after resume, no duplicate IDs, unfinished item retried, changed identities refused, second writer rejected; owner | Runner/test not implemented/run |
 | D2 clean operation | Future example `setup.R` then `run.R --config CONFIG` in clean Mac/Linux CPU environments | Run with network disabled after setup, record setup/first-result time and peak memory; owner | Not implemented/run |
@@ -219,7 +222,8 @@ ran once against the frozen artifact version. Held-out results: always-missing
 6/10 exact records, 0/4 known amounts; first-amount 6/10 exact records, 2/4 known
 amounts and 9/14 unsupported emitted nonmissing fields. Neither meets the gate.
 These outcomes illustrate scope/abstention pitfalls and do not evaluate an LLM.
-The required runtime/model and batch gates above remain unrun.
+These are S0's offline results. Subsequent native/runtime evidence is recorded
+in [S1 implementation](s1-implementation.md); batch operation remains D2.
 
 ## 8. Review and next action
 
@@ -228,9 +232,9 @@ material findings were corrected: nullable enums are rejected without changing
 JSON Schema semantics, and batch artifacts now have an executable offline
 reference check. No further broad review or unchanged native rebuild is needed.
 
-Approve or amend D-030 as one coherent decision: appended `schema` argument,
+The founder approved D-030 as one coherent decision: appended `schema` argument,
 restricted profile, return/error behavior, resource limits and the two proposed
-Rust dependencies. Then implement S1 locally and push at a reviewable milestone.
+Rust dependencies. Implement S1 locally and push at a reviewable milestone.
 Routine implementation choices within that approved contract remain the owner's.
 
 Design sources: [JSON Schema objects](https://json-schema.org/understanding-json-schema/reference/object),

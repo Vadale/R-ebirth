@@ -704,7 +704,7 @@ executes on exactly one machine in the world.
 ## D-030 — Bounded structured generation for the funding pilot
 
 - **Date:** 2026-09-27
-- **Status:** proposed; requires founder approval before S1 implementation.
+- **Status:** approved by the founder on 2026-09-27 (explicit “approvo” in the project conversation).
 - **Recommendation:** append `schema = NULL` to `llm_generate()`. A supplied
   schema is UTF-8 JSON text in an explicitly limited 2020-12 profile; successful
   outputs remain named character vectors with the existing seed attribute.
@@ -722,12 +722,27 @@ executes on exactly one machine in the world.
 - **Application:** the 32-case contract pilot, evidence anchors and grouped
   partitions are committed reference artifacts, not a representative quality
   benchmark. Batch persistence remains in the application; D2 receives no core
-  filesystem side effects. S1 cannot proceed merely because S0 checks pass.
+  filesystem side effects. S1 proceeds under this explicit approval; S0 checks alone were not authorization.
 - **Why:** the fixed-record use case needs a bounded, auditable capability while
   preserving current behavior and avoiding silent JSON Schema feature loss.
 - **Alternative not recommended:** restoring the pruned upstream C++ converter
   and JSON dependency before demonstrating the narrower task. This increases
   vendored/build surface and still needs screening and independent validation.
+
+---
+
+### D-030 implementation notes (2026-09-27)
+
+- The compiler chooses sorted keys and compact separator spacing to prevent
+  whitespace-only token exhaustion. The independent validator accepts legal JSON
+  whitespace and arbitrary key order; the supported value semantics are unchanged.
+- A relm-owned C++ exception boundary is built with the existing CMake dependency;
+  no vendored engine file or additional build crate is changed. The unused native
+  grammar template is compiled once per vector call, with independent clones for
+  each prompt. R results retain their existing character-vector/seed surface.
+- Operational measurements use internal generated-token counts. Schema compliance
+  and application/source-evidence checks are reported separately; S1 cannot stand
+  in for D1's extraction-quality evaluation.
 
 ---
 
