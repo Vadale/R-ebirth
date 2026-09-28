@@ -62,6 +62,10 @@ discover <- function(parent, read_children = child_tree) {
 sample_line <- function(index, elapsed, rss, identities) {
   sprintf('%d,%.15g,%.0f,"%s"', index, elapsed, rss, gsub('"', '""', identities, fixed = TRUE))
 }
+record_sample_error <- function(path, message) {
+  # Keep the original failure when later teardown also loses a process.
+  if (!file.exists(path)) writeLines(message, path)
+}
 if (args[2] == 'self-test') {
   pid <- Sys.getpid()
   birth <- as.numeric(ps::ps_create_time(ps::ps_handle(pid)))
@@ -130,7 +134,13 @@ if (args[2] == 'self-test') {
                                      expected$rss_bytes, expected$identities))
   stopifnot(identical(read.csv(text = paste(legacy, collapse = '\n')),
                       read.csv(text = paste(compact, collapse = '\n'))))
-  cat('PASS: live inspection/tree/child denials fail, reused PIDs are excluded, actual parent/child death is missing, CSV encoding matches; no service gate executed\n')
+  error_path <- tempfile('relm-first-sampler-error-')
+  tryCatch({
+    record_sample_error(error_path, 'original sampling gap')
+    record_sample_error(error_path, 'later teardown disappearance')
+    stopifnot(identical(readLines(error_path), 'original sampling gap'))
+  }, finally = unlink(error_path))
+  cat('PASS: live inspection/tree/child denials fail, reused PIDs are excluded, actual parent/child death is missing, CSV encoding matches, first error is retained; no service gate executed\n')
   quit(save = 'no')
 }
 if (args[2] == 'inspect') {
@@ -143,31 +153,80 @@ known <- list(parent)
 connection <- file(args[4], open = 'wt')
 on.exit(close(connection))
 writeLines('sample,elapsed_seconds,rss_bytes,identities', connection)
+diagnostic_path <- Sys.getenv('RELM_SAMPLER_DIAGNOSTICS', '')
+diagnostics <- nzchar(diagnostic_path)
+if (diagnostics) {
+  if (!startsWith(diagnostic_path, '/')) stop('RELM_SAMPLER_DIAGNOSTICS must be an absolute CSV path')
+  if (normalizePath(diagnostic_path, mustWork = FALSE) %in% normalizePath(args[4:6], mustWork = FALSE)) {
+    stop('Diagnostic CSV must be separate from sampler evidence and control files')
+  }
+  diagnostic_connection <- file(diagnostic_path, open = 'wt')
+  diagnostic_columns <- c('sample', 'tick_start_seconds', 'discovery_end_seconds',
+                          'rss_end_seconds', 'write_end_seconds', 'discovery_cpu_seconds',
+                          'rss_cpu_seconds', 'write_cpu_seconds', 'iteration_cpu_seconds',
+                          'interval_cpu_seconds', 'gc_user_seconds', 'gc_system_seconds',
+                          'gc_elapsed_seconds', 'wake_lateness_seconds', 'sample_gap_seconds',
+                          'discovered_children', 'known_processes', 'sampled_processes')
+  writeLines(paste(diagnostic_columns, collapse = ','), diagnostic_connection)
+  flush(diagnostic_connection)
+  gc_previous <- gc.time(TRUE)
+  diagnostic_previous_cpu <- sum(proc.time()[1:2])
+}
 start <- proc.time()[['elapsed']]
 index <- 0L
 previous <- NULL
 while (!file.exists(args[5])) {
+  if (diagnostics) {
+    tick_point <- proc.time()
+    wake_lateness <- max(0, tick_point[['elapsed']] - start - index * .1)
+    discovered_children <- 0L
+  }
   discovery_missing <- FALSE
   if (ps::ps_is_running(parent)) {
     tree <- discover(parent)
     discovery_missing <- !isTRUE(tree$alive) || isTRUE(tree$missing)
+    if (diagnostics) discovered_children <- length(tree$children)
     known <- c(known, tree$children)
     keys <- vapply(known, function(h) paste(ps::ps_pid(h), as.numeric(ps::ps_create_time(h))), '')
     known <- known[!duplicated(keys)]
   }
   known <- Filter(function(h) isTRUE(ps::ps_is_running(h)), known)
+  if (diagnostics) discovery_point <- proc.time()
   values <- lapply(known, function(h) inspect(ps::ps_pid(h), as.numeric(ps::ps_create_time(h))))
   if (discovery_missing || any(!vapply(values, function(x) isTRUE(x$alive), logical(1)))) {
     # A death between ps calls is visible as a missing sample, never imputed.
-    writeLines('process disappeared while sampling', args[6])
+    record_sample_error(args[6], 'process disappeared while sampling')
   }
   rss <- sum(vapply(values, function(x) if (is.null(x$rss)) 0 else x$rss, numeric(1)))
   encoded <- as.character(jsonlite::toJSON(values, auto_unbox = TRUE, digits = 16))
+  if (diagnostics) rss_point <- proc.time()
   elapsed <- proc.time()[['elapsed']] - start
-  if (!is.null(previous) && elapsed - previous > .2) writeLines('missed an entire100ms sampling period', args[6])
+  if (!is.null(previous) && elapsed - previous > .2) record_sample_error(args[6], 'missed an entire100ms sampling period')
   index <- index + 1L
   writeLines(sample_line(index, elapsed, rss, encoded), connection)
   flush(connection)
+  if (diagnostics) {
+    write_point <- proc.time()
+    gc_now <- gc.time()
+    # Phase endpoints are relative to sampler start. Interval CPU/GC also
+    # include the preceding diagnostic write and sleep, exposing their cost.
+    metrics <- c(tick_point[['elapsed']] - start, discovery_point[['elapsed']] - start,
+                 rss_point[['elapsed']] - start, write_point[['elapsed']] - start,
+                 sum(discovery_point[1:2] - tick_point[1:2]),
+                 sum(rss_point[1:2] - discovery_point[1:2]),
+                 sum(write_point[1:2] - rss_point[1:2]),
+                 sum(write_point[1:2] - tick_point[1:2]),
+                 sum(write_point[1:2]) - diagnostic_previous_cpu,
+                 (gc_now - gc_previous)[1:3], wake_lateness,
+                 if (is.null(previous)) 0 else elapsed - previous)
+    counts <- c(discovered_children, length(known),
+                sum(vapply(values, function(x) isTRUE(x$alive), logical(1))))
+    writeLines(paste(c(index, sprintf('%.9f', metrics), counts), collapse = ','), diagnostic_connection)
+    flush(diagnostic_connection)
+    gc_previous <- gc_now
+    diagnostic_previous_cpu <- sum(write_point[1:2])
+  }
   previous <- elapsed
   Sys.sleep(max(0, start + index * .1 - proc.time()[['elapsed']]))
 }
+if (diagnostics) close(diagnostic_connection)

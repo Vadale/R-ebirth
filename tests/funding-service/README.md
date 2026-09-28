@@ -120,3 +120,19 @@ compare unadapted and adapted discovery, explicitly reproducing the upstream
 Linux error before verifying the fix. PID reuse between upstream's PID-only map
 and new handle construction remains outside this evidence; already sampled
 handles retain their creation-time identity.
+
+## Bounded sampler timing diagnosis
+
+Dispatch `nightly-model-tolerance.yaml` with `sampler_diagnostic=true` to run
+only a model-free timing diagnosis, for at most 30 minutes on Linux. It installs
+the approved ps/jsonlite subset, without relm compilation or a model download.
+`diagnose_sampler.py` runs four controlled CPU-busy threads and opts into
+`RELM_SAMPLER_DIAGNOSTICS` for phase wall/CPU times, GC deltas and wake lateness;
+it also records available cgroup CPU counters. Instrumentation is separate from
+normal acceptance and does not alter the 100 ms cadence or 200 ms failure guard.
+The first sampling error is retained, and the diagnostic stops after detecting it.
+A successful diagnostic job means evidence was collected: its report can say
+`sampling_failed` or `completed_without_reproducing_gap`. Neither passes G7.
+The artifact is `sampler-timing-diagnostic`; no native test runs in this mode.
+For a short local plumbing check, use `--seconds 4 --threads 2` and an empty
+`--work-dir`, with `--library` pointing to the pinned ps/jsonlite library.

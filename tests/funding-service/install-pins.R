@@ -1,11 +1,13 @@
 #!/usr/bin/env Rscript
 # Explicit preparation only. Never sourced by the running service.
 args <- commandArgs(TRUE)
-if (length(args) != 1L) stop('Usage: Rscript install-pins.R /absolute/library')
+if (!length(args) || length(args) > 2L || (length(args) == 2L && args[2] != '--sampler-only'))
+  stop('Usage: Rscript install-pins.R /absolute/library [--sampler-only]')
 target <- args[[1L]]
 dir.create(target, recursive=TRUE, showWarnings=FALSE, mode='0700')
 target <- normalizePath(target)
 pins <- read.csv('tests/service-contract/dependencies.csv', stringsAsFactors=FALSE)
+if (length(args) == 2L) pins <- pins[pins$package %in% c('ps', 'jsonlite'), , drop=FALSE]
 installed <- installed.packages()
 for (i in seq_len(nrow(pins))) {
   pkg <- pins$package[[i]]
@@ -45,4 +47,5 @@ for (i in seq_len(nrow(pins))) {
   file <- file.path(target,pins$package[[i]],'DESCRIPTION')
   if (!file.exists(file) || read.dcf(file,'Version')[[1L]] != pins$version[[i]]) stop('Unprepared pin: ',pins$package[[i]])
 }
-cat('Prepared all 23 approved application package pins.\n')
+cat(sprintf('Prepared %d approved package pins%s.\n', nrow(pins),
+            if (length(args) == 2L) ' for the sampler diagnostic only' else ' for the application'))

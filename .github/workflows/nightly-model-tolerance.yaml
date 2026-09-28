@@ -41,6 +41,10 @@ on:
         description: Run only the final-candidate WP12b service acceptance
         type: boolean
         default: false
+      sampler_diagnostic:
+        description: Run only bounded model-free service sampler timing diagnosis
+        type: boolean
+        default: false
 
 name: nightly-model-tolerance.yaml
 
@@ -52,13 +56,15 @@ concurrency:
 
 jobs:
   service:
-    if: github.event_name == 'workflow_dispatch' && inputs.service
+    if: github.event_name == 'workflow_dispatch' && (inputs.service || inputs.sampler_diagnostic)
     uses: ./.github/workflows/service-acceptance.yaml
+    with:
+      sampler_diagnostic: ${{ inputs.sampler_diagnostic || false }}
   spark:
-    if: github.event_name == 'workflow_dispatch' && inputs.spark && !inputs.service
+    if: github.event_name == 'workflow_dispatch' && inputs.spark && !inputs.service && !inputs.sampler_diagnostic
     uses: ./.github/workflows/manual-spark.yaml
   model-tolerance:
-    if: github.event_name != 'workflow_dispatch' || !inputs.service
+    if: github.event_name != 'workflow_dispatch' || (!inputs.service && !inputs.sampler_diagnostic)
     runs-on: ubuntu-24.04
     name: nightly Qwen2.5-0.5B Q8_0 tolerance ([MODEL] suite)
     timeout-minutes: 90

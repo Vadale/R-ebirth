@@ -1,6 +1,6 @@
 # WP12b — Local service implementation and acceptance
 
-Date: 2026-09-29. **Final acceptance in progress; Linux sampling-harness failure under correction.**
+Date: 2026-09-29. **Final acceptance pending; Linux sampler cadence under bounded diagnosis.**
 D-034 approved; WP12a PR #50 merged at `95066c7`. The
 [frozen contract](service-contract.md) remains binding. Draft
 [PR #51](https://github.com/Vadale/R-ebirth/pull/51) contains the application and
@@ -45,10 +45,10 @@ The narrowly carried-forward G7 scope is explained below.
 | Offline contract consistency | 23 pins, three D2 development inputs, overflow bounds and 11 negative mutations pass. |
 | D2 helper regression | 466 existing process/canonical/identity assertions pass after correcting source-file provenance for nested imports. |
 | G1–G4 HTTP, admission, recovery and persistence | Final candidate passes 305 checks on each of four Mac/Linux R-release/oldrel CI environments, plus nine focused process-inspection regressions per environment. This includes the unchanged 120-second request deadline, concurrent overload, worker/frontend death, rename crash boundaries, ownership/corruption refusal and bounded storage. Local final-source G3 also passes 97 checks. Final CI executes all G1–G4 gates. |
-| G5 native request isolation | Mac Qwen Metal passes 53 checks on the current runtime, including A/B/A, validation/context failure recovery, hard restart and an independent worker baseline. Linux CPU parent candidate passes 53 checks; its receipt is retained. |
-| G6 native operating envelope | Final Mac runtime passes 286 checks each for Qwen and Spark: 30 ordinary requests, actual offline OS isolation, worker crash/reload and stop, including the previously failed replacement. Linux CPU parent-candidate run has passed G6. |
-| G7 same-worker memory stress | Mac Metal parent-candidate run passes all 1,000 unique native Qwen requests: same worker, zero infrastructure errors, 1.062 GiB peak RSS, -39.625 MiB tail-minus-initial growth and -83.461 KiB/request post-warmup slope. Linux CPU completed 1,000 requests but failed the continuous-sampling guard; a corrected harness must pass the same frozen bounds. A separate 1,000-request deterministic HTTP/callr regression passed; it does not substitute for either native gate. |
-| G8 actual service-manager lifecycle | Final Mac runtime passes 27 launchd checks, including actual HTTP readiness, crash/restart, stop, ownership/PID-reuse refusal, occupied-port and changed-config failures with observed restart intervals. Linux parent-candidate systemd run has passed G8. |
+| G5 native request isolation | Mac Qwen Metal passes 53 checks on the current runtime, including A/B/A, validation/context failure recovery, hard restart and an independent worker baseline. Linux CPU also passes 53 checks on the final product runtime (run 36490558522). |
+| G6 native operating envelope | Final Mac runtime passes 286 checks each for Qwen and Spark: 30 ordinary requests, actual offline OS isolation, worker crash/reload and stop, including the previously failed replacement. Linux CPU final-runtime run 36490558522 also passes all 286 checks. |
+| G7 same-worker memory stress | Mac Metal parent-candidate run passes all 1,000 unique native Qwen requests: same worker, zero infrastructure errors, 1.062 GiB peak RSS, -39.625 MiB tail-minus-initial growth and -83.461 KiB/request post-warmup slope. Linux CPU completed 1,000 requests but failed the continuous-sampling guard; the latest corrected run stopped at 86 completed requests on a 204 ms sampling gap; a bounded timing diagnosis precedes any further native attempt. A separate 1,000-request deterministic HTTP/callr regression passed; it does not substitute for either native gate. |
+| G8 actual service-manager lifecycle | Final Mac runtime passes 27 launchd checks, including actual HTTP readiness, crash/restart, stop, ownership/PID-reuse refusal, occupied-port and changed-config failures with observed restart intervals. Linux final-runtime systemd run 36490558522 passes 24 checks. |
 | Independent review | Integrated correctness/security review complete with no unresolved material finding. Narrow confirmations cover the zombie-stop lifecycle fix and the live IPC scanner race. |
 
 The model-free reports are retained in
@@ -75,6 +75,29 @@ do not establish a safe tier for larger models. G7 memory growth is reported
 separately and still requires a successful Linux G7 run.
 
 ## Failures and retained evidence
+
+
+Run `36490558522` confirms the child-discovery correction: the Linux regression
+reproduces the original error, then passes the adapter; G5=53, G6=286 and actual
+systemd G8=24 pass on the final product runtime. All nine ordinary checks at
+`8c57b85` also pass. G7 remains **failed**: a 204 ms sample interval at elapsed
+1,474.733 seconds triggered the unchanged 200 ms guard. The harness stopped after
+86 completed requests (request 87 had been admitted), preserving the partial
+CSV; there was no sampler crash or cleanup error. The first sampling error is
+now retained so expected shutdown disappearance cannot overwrite its diagnosis.
+
+Repeated slower samples are consistent with garbage collection or scheduler
+contention, but the existing RSS CSV cannot distinguish those causes. Instead
+of another multi-hour native retry, an explicit, model-free Linux diagnostic
+runs for at most 30 minutes under four controlled CPU-busy threads. It retains
+per-phase wall/CPU time, GC deltas, wake lateness and available cgroup CPU
+throttling/pressure counters. Full process discovery and the 100 ms target /
+200 ms failure guard remain unchanged. Instrumentation is opt-in and its own
+write cost remains visible in the following interval. This diagnostic installs
+only the already-approved `ps` and `jsonlite` pins, downloads no model, and does
+not build relm or certify any G1–G8 gate. Its completion can mean that a sampling
+failure was reproduced; only the diagnostic report describes the outcome.
+
 
 
 The corrected-sampler run `36487549704` passed G5 and all 30 ordinary G6

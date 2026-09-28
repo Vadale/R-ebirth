@@ -1,0 +1,191 @@
+{
+  "checks_summary": {
+    "failed": [],
+    "passed": 53,
+    "total": 53
+  },
+  "contract_sha256": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+  "development_corpus_sha256": "137d3fd977064948d9264a806a8a86ece974f9636d635642d531396da06df1dd",
+  "environment": "/home/runner/work/_temp/service-environment",
+  "finished_at": "2026-09-28T22:15:59Z",
+  "full_report": {
+    "path": "/private/tmp/relm-service/linux-child-corrected/isolation/acceptance.json",
+    "sha256": "8ae52a4a12ce92e26697c162ef68e27d373a80edaae236af95ec475615c9f108",
+    "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36490558522"
+  },
+  "gates": {
+    "G5": {
+      "elapsed_seconds": 192.45853415199997,
+      "status": "passed"
+    }
+  },
+  "harness_sha256": {
+    "accept.py": "9d808ddcfe5de6a2e1fd89cd0693a49f18e59cd83193ca496f0a6b7342bd36f2",
+    "offline.py": "fd790498a1f9a7d82fe2985e2bd16fbf87e1d960879fafb7b1b46c8c11065675",
+    "processes.R": "6e8f7cbe246328b37fb8d99f06437e4ee09683ec80563f01a16a99e211211f8e"
+  },
+  "native_fault_injection": "One explicitly labelled validator fault replaces output AFTER real generation; engine remains native.",
+  "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "prepared_environment": {
+    "R": "4.6.1",
+    "backend": "cpu",
+    "files": {
+      "config.json": "cf4d09cab8a64f8de235c5d093b0753031a6441b19f100c14f334e2186462be4",
+      "documents.json": "137d3fd977064948d9264a806a8a86ece974f9636d635642d531396da06df1dd",
+      "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+      "prompt.txt": "8fbc71346350a6d2239badc4d60d282f69baf3e8525713f590c5bfc58adbb549"
+    },
+    "model": {
+      "alias": "qwen2.5-0.5b-instruct-q8_0",
+      "path": "/home/runner/work/_temp/service-models/qwen2.5-0.5b-instruct-q8_0.gguf",
+      "sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+      "size_bytes": "675710816"
+    },
+    "packages": {
+      "R6": {
+        "sha256": "abfe9d5eb9f80c10bef4df590467b14997d4a522f96eb3c413107ba6d3db1c60",
+        "version": "2.6.1"
+      },
+      "Rcpp": {
+        "sha256": "aeb2768a5a9eb9399fb5b127ec44e1e07de0faf01a49ddb73b613f7596cc8a64",
+        "version": "1.1.2"
+      },
+      "callr": {
+        "sha256": "a470f414386570d19be4f57e4d2af97c781596929d148e24c4c36d385ca036b4",
+        "version": "3.8.0"
+      },
+      "cli": {
+        "sha256": "c48950f3e7d967fc9e668e7f223aa29e9e697163245fca78333231faded024b7",
+        "version": "3.6.6"
+      },
+      "crayon": {
+        "sha256": "cbacfd663a54718e5352f50239d585d947aaedb1e8921c2c4c5d4b6a11941572",
+        "version": "1.5.3"
+      },
+      "curl": {
+        "sha256": "6da1f699233a1f9830069c2d30b0f7826e15d8e45821ac6d4f67ec58a1d597d0",
+        "version": "8.0.0"
+      },
+      "fastmap": {
+        "sha256": "94fb5823166c63efa11b4c6a9965a3e439662d320f9a49c8b0f2b7b8c72a2170",
+        "version": "1.2.0"
+      },
+      "httpuv": {
+        "sha256": "741fe7b1c7f9540551a166c1ac89893d316ba015d2532d964ccc3cc5835bb0d8",
+        "version": "1.6.17"
+      },
+      "jsonlite": {
+        "sha256": "b5958c911fe6a91cb2fa79f364aa6089761ac81bba696f78b37c21f538aff0b8",
+        "version": "2.0.0"
+      },
+      "later": {
+        "sha256": "344956dc91d1ddfcf0b73b85eb053ddde600d9c01535795cb1a6acf71bce4887",
+        "version": "1.4.8"
+      },
+      "lifecycle": {
+        "sha256": "64f24525a310b22dded6a483823d1cd1372c8d2341d66475fb26de36e5ac2705",
+        "version": "1.0.5"
+      },
+      "magrittr": {
+        "sha256": "5f418aa779c01ac92793ca88dd19fcb1ebea87206b2f4984e919bb72f08d0524",
+        "version": "2.0.5"
+      },
+      "mime": {
+        "sha256": "275f98cce59a9df8c10a8c7d7a40e38fd9c712c92c4ede572675127dcc73e39b",
+        "version": "0.13"
+      },
+      "nanoarrow": {
+        "sha256": "9b4c2efa489d0ff5a72007f853fc90950f33105b00a6e3f73a3db5449dfce109",
+        "version": "0.9.0"
+      },
+      "otel": {
+        "sha256": "21e72f28d4c677909d7a3f3fd9484af72ecc8e23b2123e4fa9e7a94ca7299376",
+        "version": "0.2.0"
+      },
+      "plumber": {
+        "sha256": "18d3839ddfb1a99d33b461ab5e7c2605539ee6fc522c3c0851327f26f0e0aec9",
+        "version": "1.3.3"
+      },
+      "processx": {
+        "sha256": "f60ab3a21e9db3580573943edd0891a47b7388986dbc522f878aa4ebd34271f8",
+        "version": "3.9.0"
+      },
+      "promises": {
+        "sha256": "970f964e3857ce792c64685fb24b8bd9d47f9c5c93a957d34f3b856c72272b2f",
+        "version": "1.5.0"
+      },
+      "ps": {
+        "sha256": "7f0fec9104cdd520bb9d43f33066e29fbf5d16f0d7a0b5e7e2774e37d4b7eabe",
+        "version": "1.9.3"
+      },
+      "relm": {
+        "sha256": "083907c38bdce5c9f13ba963593b36eb0a8f17a2cbb1cba58b02b011204ce24f",
+        "version": "0.2.0.9000"
+      },
+      "rlang": {
+        "sha256": "1e2446c737b30c20a4bbed8efba4e2d6e1cad028c8831ae658ed7006bd2b0497",
+        "version": "1.3.0"
+      },
+      "sodium": {
+        "sha256": "d97d19fd0cd8ed4f2f4296d6f339cb322a9ebd025645688a7851b31f4496a83b",
+        "version": "1.4.0"
+      },
+      "stringi": {
+        "sha256": "98b5453a4cbffba8a1d2f59b3786c94e912cc8744deefc1177e15a7211cc3e6a",
+        "version": "1.8.9"
+      },
+      "swagger": {
+        "sha256": "08f8aa8e45e2fcd313ab17cd22115f154e44a2eb4d9456637eb5d9453f3e119e",
+        "version": "5.32.1"
+      },
+      "webutils": {
+        "sha256": "c50259dc55e90197a4cbb69bff4dc15117e29b9cdedf4d3b0566f7bbf90451e5",
+        "version": "1.2.3"
+      }
+    },
+    "platform": "x86_64-pc-linux-gnu",
+    "service_environment_version": 1,
+    "service_sources": {
+      "examples/funding-extraction/app.R": "fe3410086923718e4f91cd7c3172f0b0e38a3e0424b5115bf3787bd513fd54a4",
+      "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+      "examples/funding-service/runtime.R": "8e458534ccf171e4fa3ed85dab51743a5c821c47526aa634e116ca20ae973ed3",
+      "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+      "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+      "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+      "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+      "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+      "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c",
+      "tests/service-contract/contract.json": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+      "tests/service-contract/dependencies.csv": "621feae757c4ba9e11622f6efde0bdc4703fcb51fbe8878ef42db7c4244b410a"
+    }
+  },
+  "profile": "linux_qwen",
+  "python": "3.12.3",
+  "resources": {
+    "native-independent-baseline": {
+      "peak_rss_bytes": 1037369344.0,
+      "samples": 345,
+      "sampling_seconds": 0.1,
+      "scope": "frontend and descendants tracked by ps creation-time handles; not Metal device allocation"
+    },
+    "native-isolation": {
+      "peak_rss_bytes": 1042374656.0,
+      "samples": 1575,
+      "sampling_seconds": 0.1,
+      "scope": "frontend and descendants tracked by ps creation-time handles; not Metal device allocation"
+    }
+  },
+  "source_sha256": {
+    "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+    "examples/funding-service/runtime.R": "8e458534ccf171e4fa3ed85dab51743a5c821c47526aa634e116ca20ae973ed3",
+    "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+    "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+    "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+    "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+    "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+    "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c"
+  },
+  "started_at": "2026-09-28T22:12:46Z",
+  "status": "passed",
+  "suite": "isolation"
+}

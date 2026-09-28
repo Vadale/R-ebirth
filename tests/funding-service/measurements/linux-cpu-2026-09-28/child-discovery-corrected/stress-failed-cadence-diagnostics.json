@@ -1,0 +1,13 @@
+{
+  "status": "failed",
+  "scope": "Sampling-gap diagnostics; no G7 acceptance.",
+  "samples": 14844,
+  "gaps": [
+    {
+      "previous_sample": 14748,
+      "previous_elapsed_seconds": 1474.733,
+      "gap_seconds": 0.2039999999999509
+    }
+  ],
+  "original_error": "AssertionError: stress RSS sampling failed: missed an entire100ms sampling period\n"
+}
