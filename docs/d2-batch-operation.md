@@ -1,9 +1,10 @@
 # D2 — Offline, restartable batch operation
 
 Date: 2026-09-28. Baseline: merged Spark PR #46 (`2c827a7`, llama.cpp b10828).
-Status: implemented and independently reviewed; local process and Mac Metal
-acceptance pass. Linux CPU native acceptance and PR checks are pending at this
-local milestone. No core API, Rust or R package dependency changes.
+Status: operational acceptance passed on Mac Metal and Linux CPU; implementation
+and independent review complete. [PR #47](https://github.com/Vadale/R-ebirth/pull/47)
+contains the work; integration remains separate. All nine implementation PR checks
+and the native Linux workflow passed. No core API, Rust or R package dependency changes.
 
 The [application](../examples/funding-extraction/README.md) provides explicit
 setup, offline run/resume, one writer, per-document immutable results and a plain
@@ -41,6 +42,20 @@ The reviewer rechecked the fixes and reported no remaining material findings.
 The process harness is wired into all four Mac/Linux R-release/oldrel PR legs,
 reusing the package installed by R CMD check rather than rebuilding native code.
 
+The implementation commit `0c9d627` passed all **nine PR checks**. The
+[Mac/Linux package workflow](https://github.com/Vadale/R-ebirth/actions/runs/36412834146)
+executed all 466 D2 assertions in each configuration:
+
+| CI environment | D2 process assertions | Time |
+|---|---:|---:|
+| Linux, R release | 466 passed | 35.96 s |
+| Linux, R oldrel-1 / Rust 1.85.0 | 466 passed | 36.45 s |
+| Mac, R release | 466 passed | 35.95 s |
+| Mac, R oldrel-1 | 466 passed | 37.59 s |
+
+The [five native/repository checks](https://github.com/Vadale/R-ebirth/actions/runs/36412834206)
+also passed. No assertions were waived and no native goldens changed.
+
 ## Native Mac Metal acceptance
 
 The [retained measurements and outputs](../tests/funding-extraction/measurements/macos-metal-2026-09-28/acceptance.json)
@@ -70,15 +85,40 @@ reuse preserves every committed byte. The completed-run overhead is mostly
 rehashing the model: integrity verification is retained instead of trusting its
 filename or modification time. These are observed single-run costs, not an SLA.
 
-## Linux CPU gate and scope
+## Native Linux CPU acceptance
 
-The existing Qwen tolerance workflow now runs the same native harness using the
-already downloaded registry-pinned 0.5B Q8_0 model and installed release build.
-Run/recovery processes execute inside a separate network namespace with the
-caller UID. No 4B download enters ordinary PR CI. The workflow preserves logs,
-environment receipts, resource measurements and committed records as
-`funding-extraction-cpu`. A workflow definition alone is not a passing result;
-record the actual execution before closing D2.
+The [Linux workflow](https://github.com/Vadale/R-ebirth/actions/runs/36412833788)
+passed on implementation commit `0c9d627`, including the existing Qwen/S1 checks
+and D2's offline run, actual SIGKILL, explicit recovery and resume. The
+[retained Linux measurements](../tests/funding-extraction/measurements/linux-cpu-2026-09-28/acceptance.json)
+use R 4.6.1, x86_64 Linux, nanoarrow 0.9.0, jsonlite 2.0.0 and the registry-pinned
+Qwen2.5-0.5B Q8_0 GGUF (675,710,816 bytes). The application SHA256 is identical
+to the Mac candidate. Model size/backend/hardware differ, so the timings below
+are operational observations, not a speed comparison between platforms.
+
+The workflow reuses its already downloaded 0.5B model and installed release
+build. Run/recovery processes execute inside a separate network namespace and
+drop to the caller UID. No 4B download enters ordinary PR CI. GNU `time` reports
+peak RSS; setup excludes initial R/package installation and model download.
+
+| Operation | Elapsed wall time | Peak RSS | Result |
+|---|---:|---:|---|
+| Prepare snapshot and verify model | 3.27 s | 79.50 MiB | Prepared |
+| First complete run | 45.22 s | 863.67 MiB | 3 committed records; first result at 24.29 s |
+| Hard-killed second run | 35.03 s until termination | 863.62 MiB | First record committed; second not renamed |
+| Explicit lock recovery | 0.31 s | 73.62 MiB | Owner verified and lock quarantined |
+| Resume in new offline session | 24.46 s | 863.86 MiB | 1 reused, 2 processed; no duplicate commits |
+| Repeat completed run | 3.42 s | 75.40 MiB | 3 reused, 0 processed; no model loaded |
+
+The small model produces **one application-valid and two invalid records**, with
+zero generation errors. All raw outputs and validation failures remain archived.
+The operational harness passes because publication, failure accounting and
+resume work correctly; the production CLI would return exit 2 for this completed
+batch with invalid records. No quality threshold was lowered or output repaired.
+The first committed record remains byte-identical; resumed outputs match the
+uninterrupted run apart from per-call timing and its enclosing digest.
+
+## Acceptance scope
 
 This milestone validates operational behavior under process interruption on
 tested local filesystems. It does not claim power-loss durability, network

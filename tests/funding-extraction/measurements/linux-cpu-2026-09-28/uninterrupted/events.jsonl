@@ -1,0 +1,12 @@
+
+{"error_class":null,"event":"started","id":"ace22-total","status":null,"time":"2026-09-28 11:19:51 UTC"}
+
+{"error_class":null,"event":"committed","id":"ace22-total","status":"success","time":"2026-09-28 11:20:12 UTC"}
+
+{"error_class":null,"event":"started","id":"ace22-purpose","status":null,"time":"2026-09-28 11:20:12 UTC"}
+
+{"error_class":"funding_error_input","event":"committed","id":"ace22-purpose","status":"invalid","time":"2026-09-28 11:20:22 UTC"}
+
+{"error_class":null,"event":"started","id":"ace22-renewal","status":null,"time":"2026-09-28 11:20:22 UTC"}
+
+{"error_class":"funding_error_input","event":"committed","id":"ace22-renewal","status":"invalid","time":"2026-09-28 11:20:32 UTC"}

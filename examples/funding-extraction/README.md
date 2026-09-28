@@ -16,7 +16,7 @@ remains unchanged; review extracted values before using them.
 Run commands from the repository root on macOS or Linux. Start with R >= 4.5
 and an installed **relm 0.2.0.9000** build from this checkout, including nanoarrow.
 The released relm 0.2.0 predates constrained generation and is insufficient.
-The normal [source installation](../../README.md) applies; this recipe does not
+The normal [source installation](../../docs/getting-started.md) applies; this recipe does not
 install a compiler, R, or the initial relm build for you.
 
 If jsonlite 2.0.0 is absent, install this exact application dependency during

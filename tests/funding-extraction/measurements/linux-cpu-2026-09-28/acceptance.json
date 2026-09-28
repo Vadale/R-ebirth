@@ -1,0 +1,74 @@
+{
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "backend": "cpu",
+  "offline_isolation": "unshare --net with caller UID",
+  "application_sha256": "f49c6615f86241145244632950953c8d6bfd5352d5bf6bc5d032ca3bda6e1958",
+  "model_alias": "qwen2.5-0.5b-instruct-q8_0",
+  "measurements": {
+    "setup": {
+      "wall_seconds": 3.273002,
+      "peak_rss_bytes": 83357696,
+      "exit_code": 0
+    },
+    "uninterrupted": {
+      "wall_seconds": 45.224649,
+      "peak_rss_bytes": 905625600,
+      "exit_code": 0
+    },
+    "interrupted": {
+      "wall_seconds": 35.034542,
+      "peak_rss_bytes": 905576448,
+      "exit_code": 137
+    },
+    "recovery": {
+      "wall_seconds": 0.314418,
+      "peak_rss_bytes": 77193216,
+      "exit_code": 0
+    },
+    "resume": {
+      "wall_seconds": 24.45742,
+      "peak_rss_bytes": 905818112,
+      "exit_code": 0
+    },
+    "reuse": {
+      "wall_seconds": 3.424195,
+      "peak_rss_bytes": 79065088,
+      "exit_code": 0
+    }
+  },
+  "first_run": {
+    "documents": 3,
+    "elapsed_seconds": "44.859000",
+    "errors": 0,
+    "first_result_seconds": "24.288000",
+    "invalid": 2,
+    "processed": 3,
+    "reused": 0,
+    "run_identity": "3dce9ff69b5af6ad2f0ac5c25c76988eaeebf4d8915b0dfee1bb397e29699eef",
+    "success": 1
+  },
+  "resumed_run": {
+    "documents": 3,
+    "elapsed_seconds": "24.086000",
+    "errors": 0,
+    "first_result_seconds": "14.009000",
+    "invalid": 2,
+    "processed": 2,
+    "reused": 1,
+    "run_identity": "3dce9ff69b5af6ad2f0ac5c25c76988eaeebf4d8915b0dfee1bb397e29699eef",
+    "success": 1
+  },
+  "final_reuse": {
+    "documents": 3,
+    "elapsed_seconds": "3.112000",
+    "errors": 0,
+    "first_result_seconds": null,
+    "invalid": 2,
+    "processed": 0,
+    "reused": 3,
+    "run_identity": "3dce9ff69b5af6ad2f0ac5c25c76988eaeebf4d8915b0dfee1bb397e29699eef",
+    "success": 1
+  },
+  "acceptance": "Offline run, real SIGKILL, explicit recovery, immutable commits and duplicate-free resume passed",
+  "quality_scope": "Operational acceptance only; invalid extraction records remain visible and terminal"
+}

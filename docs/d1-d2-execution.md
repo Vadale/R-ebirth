@@ -13,7 +13,7 @@ records. Preserve this bounded negative result; D1 usefulness is not accepted.
 Human correction time remains unmeasured. The held-out set is consumed and must
 not become a tuning set for a new held-out claim. D2 is implemented in the
 [reference application](../examples/funding-extraction/README.md); its acceptance
-measurements and remote gates are tracked in [the D2 report](d2-batch-operation.md).
+measurements and passing Mac/Linux gates are recorded in [the D2 report](d2-batch-operation.md).
 The founder deferred stronger-model/API/Luna comparisons; they are not D2 gates.
 
 ## Dependency decision
