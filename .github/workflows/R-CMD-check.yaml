@@ -77,7 +77,7 @@ jobs:
       - name: demo-utils self-test (model-free)
         run: Rscript -e 'source("tests/demos/demo-utils.R")'
 
-      # WP11a reference checks only; the public probe API is not implemented.
+      # Independent WP11a references; the installed-product gate runs below.
       # glmnet is already a Suggests dependency installed by setup-r-dependencies.
       - name: Probe statistical references and split audit (no model)
         run: Rscript tests/llm-golden/probe-contract/verify.R --numerical
@@ -179,6 +179,9 @@ jobs:
           args: 'c("--no-manual")'
           error-on: '"warning"'
           upload-snapshots: true
+
+      - name: Probe product agreement with independent references (no model)
+        run: Rscript tests/probe-product/run.R --relm-library rebirth/check/relm.Rcheck
 
       # D2 is an application outside the package; reuse R CMD check's installed
       # build. Its parser pin never enters relm Imports/Suggests (D-031).

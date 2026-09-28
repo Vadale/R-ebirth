@@ -9,7 +9,8 @@ Description: Load and run local large language models (through a vendored,
     'llm_tokens'), text generation ('llm_generate'), next-token distributions
     ('llm_logits'), embeddings ('llm_embed'), and mechanistic
     interpretability tools -- activation tracing ('llm_trace'), activation
-    steering ('llm_steer'), and neuron ablation ('llm_ablate'). Vision-language
+    steering ('llm_steer'), neuron ablation ('llm_ablate'), and grouped statistical
+    probes ('llm_probe'). Vision-language
     models loaded with their projector take image input in generation and
     embeddings. A checksum-verified downloader ('llm_download') fetches pinned
     models.

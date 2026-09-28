@@ -14,11 +14,13 @@ test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", 
   # llm_generate(). WP3: llm_embed(). WP4 (API-GRAMMAR section 4): llm_trace().
   # WP5 (API-GRAMMAR section 4): llm_steer(), llm_ablate(). WP (API-GRAMMAR
   # section 4): llm_logits(). WP8a (API-GRAMMAR section 3): llm_download().
+  # WP11b (API-GRAMMAR section 5, approved D-033): llm_probe(), activations().
   expect_setequal(
     getNamespaceExports("relm"),
     c(
       "llm", "llm_tokens", "llm_generate", "llm_embed", "llm_trace",
-      "llm_steer", "llm_ablate", "llm_logits", "llm_download"
+      "llm_steer", "llm_ablate", "llm_logits", "llm_download",
+      "llm_probe", "activations"
     )
   )
 })
