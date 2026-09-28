@@ -52,7 +52,9 @@ model/control workflow passed. See the [probe report](probe-implementation.md)
 and PR #49 for measured evidence. WP12a merged in PR #50 at `95066c7`, with all nine checks passing. The founder
 approved the [local service contract](service-contract.md) and exact D-034
 dependency closure. WP12b implementation is active; see its
-[implementation report](service-implementation.md) for actual acceptance.
+[implementation report](service-implementation.md) for actual acceptance. Mac acceptance
+is complete; Linux G7 remains unaccepted. A bounded observer-priority diagnosis
+follows a reproduced GC-associated sampling gap, before any new native retry.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|

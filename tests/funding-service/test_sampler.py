@@ -1,8 +1,12 @@
 """Model-free sampler regressions; run in R-CMD-check and native acceptance."""
 import csv
 import io
+import json
+import os
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import threading
 import unittest
 from unittest.mock import Mock, patch
@@ -77,6 +81,29 @@ class SamplerTests(unittest.TestCase):
             with self.assertRaisesRegex(AssertionError, 'sampler exited'):
                 self.service.http('GET', '/health/ready')
             connection.assert_not_called()
+
+    def test_launcher_preserves_identity_uid_and_default_priority(self):
+        metadata = Path(self.directory.name) / 'launcher.json'
+        environment = os.environ.copy(); environment.pop('RELM_SAMPLER_NICE', None)
+        before = os.getpriority(os.PRIO_PROCESS, 0)
+        child = subprocess.run([sys.executable, str(Path(__file__).with_name('sampler_launcher.py')),
+                                str(metadata), sys.executable, '-c',
+                                'import json,os; print(json.dumps([os.getpid(),os.geteuid(),os.getpriority(os.PRIO_PROCESS,0)]))'],
+                               env=environment, capture_output=True, text=True, check=True)
+        recorded = json.loads(metadata.read_text())
+        self.assertEqual(json.loads(child.stdout), [recorded['pid'], os.geteuid(), before])
+        self.assertEqual(recorded['actual_nice'], before)
+        self.assertEqual(os.getpriority(os.PRIO_PROCESS, 0), before)
+
+    def test_launcher_rejects_invalid_priority_before_exec(self):
+        metadata = Path(self.directory.name) / 'invalid-launcher.json'
+        environment = dict(os.environ, RELM_SAMPLER_NICE='-20')
+        child = subprocess.run([sys.executable, str(Path(__file__).with_name('sampler_launcher.py')),
+                                str(metadata), sys.executable, '-c', 'print("MUST_NOT_EXECUTE")'],
+                               env=environment, capture_output=True, text=True)
+        self.assertNotEqual(child.returncode, 0)
+        self.assertNotIn('MUST_NOT_EXECUTE', child.stdout)
+        self.assertFalse(metadata.exists())
 
 
 if __name__ == '__main__':

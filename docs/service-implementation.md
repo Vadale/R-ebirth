@@ -1,6 +1,6 @@
 # WP12b — Local service implementation and acceptance
 
-Date: 2026-09-29. **Final acceptance pending; Linux sampler cadence under bounded diagnosis.**
+Date: 2026-09-29. **Final acceptance pending; Linux observer-priority diagnosis next.**
 D-034 approved; WP12a PR #50 merged at `95066c7`. The
 [frozen contract](service-contract.md) remains binding. Draft
 [PR #51](https://github.com/Vadale/R-ebirth/pull/51) contains the application and
@@ -99,6 +99,41 @@ not build relm or certify any G1–G8 gate. Its completion can mean that a sampl
 failure was reproduced; only the diagnostic report describes the outcome.
 
 
+[Diagnostic run 36496677960](https://github.com/Vadale/R-ebirth/actions/runs/36496677960)
+completed successfully as an evidence-collection job, with **`sampling_failed`**
+in its report after 142.34 seconds. Its 1,420 RSS/timing rows reproduce one exact
+204 ms gap at sample 1419. That iteration began without wake lateness, spent
+127 ms wall / 63 ms CPU in discovery, and recorded 98 ms elapsed / 49 ms CPU in
+R garbage collection. Iteration totals were 128 ms wall / 64 ms CPU. All observed
+cgroup levels remained unthrottled; configured CPU quotas were unlimited, with
+CPU pressure under four busy threads on four cores. This supports testing whether
+observer scheduling contention amplifies GC pauses in this reproduction. It does
+not prove the cause of earlier uninstrumented native failures. Original reports,
+compressed raw CSVs and an independently computed gap analysis are retained in
+[`timing-diagnostic/`](../tests/funding-service/measurements/linux-cpu-2026-09-28/timing-diagnostic/).
+All nine ordinary checks at `5a12533` also pass; their four 305-check R receipts
+are retained under `ci-2026-09-28/timing-diagnostic/`.
+
+The next controlled experiment changes only the diagnostic observer's Linux
+nice value to -10; its controller and four-thread workload must remain at 0.
+A separate unprivileged child launcher records PID, UID, requested/actual priority
+and inherited limit before exec; inability to apply the requested value fails
+closed. The disposable runner step grants its shell an inherited `RLIMIT_NICE`
+ceiling of 30 via `prlimit`; only the observer launcher changes actual priority.
+[Linux documents the ceiling as 20 minus the soft limit](https://man7.org/linux/man-pages/man2/getrlimit.2.html),
+so 30 permits -10. Neither R nor the workload runs as root. Full discovery,
+100 ms sampling, the 200 ms guard and all resource bounds remain unchanged.
+Higher observer priority may affect workload throughput; that measurement
+condition must be explicit in any future native receipts. Priority is currently
+wired **only into the diagnostic job**, pending evidence; no native retry is
+justified yet. Eight focused Python regressions and a four-second actual R
+launcher smoke pass (40 RSS/timing rows, default priority unchanged). The smoke
+receipt retains the source hashes tested before the metadata-error guard.
+A focused review identified two boundaries to cover before any future native
+integration: preserve the explicit request through `offline.py`'s sudo environment,
+and inspect manager-owned frontend identity via status rather than a Popen handle.
+
+
 
 The corrected-sampler run `36487549704` passed G5 and all 30 ordinary G6
 requests plus controlled worker recovery, but failed G6 with a sampler discovery
@@ -123,8 +158,8 @@ A deterministic regression captures the actual PPID map, kills and reaps a mappe
 child, and supplies that stale map to both original and adapted discovery. Linux
 CI must reproduce the original `os_error` and accept only the marked missing
 child through the adapter; an injected denial on a live child must still fail.
-The Mac regression passes. Linux validation and native acceptance remain pending;
-no service source, resource bound or sampling criterion was changed.
+The regression passes on Mac and in Linux run `36490558522`; Linux G7 remains
+unaccepted. No service source, resource bound or sampling criterion was changed.
 
 
 

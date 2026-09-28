@@ -136,3 +136,16 @@ A successful diagnostic job means evidence was collected: its report can say
 The artifact is `sampler-timing-diagnostic`; no native test runs in this mode.
 For a short local plumbing check, use `--seconds 4 --threads 2` and an empty
 `--work-dir`, with `--library` pointing to the pinned ps/jsonlite library.
+
+
+The Linux diagnostic workflow currently tests `RELM_SAMPLER_NICE=-10` for the
+external observer only. Its step shell receives an inherited `RLIMIT_NICE=30:30`
+ceiling; `sampler_launcher.py` applies the actual priority in an unprivileged child
+and execs R without changing its PID or UID. Application/native acceptance jobs
+are not opted into this experiment. Controller and controlled workload remain at
+nice 0 and are checked. `sampler-process.json` records the observer's requested
+and actual priority, identity and limit, also embedded in `diagnostic.json`.
+Permission or unsupported-platform errors fail closed. With the variable unset,
+local smoke checks preserve inherited priority. Any later native use must preserve
+the request through the offline sudo environment and support supervisor-owned
+frontend identity; the diagnostic alone does not validate those paths.

@@ -70,7 +70,8 @@ def main():
                   affinity=sorted(os.sched_getaffinity(0)) if hasattr(os, 'sched_getaffinity') else None,
                   host_before=host_counters(),
                   sources={p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                           for p in (Path(__file__), HERE / 'processes.R')})
+                           for p in (Path(__file__), HERE / 'processes.R', HERE / 'sampler_launcher.py')},
+                  controller_nice=os.getpriority(os.PRIO_PROCESS, 0))
     worker = None; sampler = None
     error_path = directory / 'rss.error'; stop_path = directory / 'sampler.stop'
     started = time.monotonic()
@@ -78,9 +79,15 @@ def main():
         with (directory / 'sampler.log').open('wb') as log, (directory / 'host.csv').open('w', newline='') as host:
             worker = subprocess.Popen([sys.executable, str(Path(__file__).resolve()), '--load-worker',
                                        '--threads', str(args.threads)])
+            report['worker_nice'] = os.getpriority(os.PRIO_PROCESS, worker.pid)
+            if report['worker_nice'] != report['controller_nice']:
+                raise RuntimeError('Controlled workload priority changed')
+            if os.environ.get('RELM_SAMPLER_NICE') is not None and report['worker_nice'] != 0:
+                raise RuntimeError('Priority comparison requires a normal-priority workload')
             environment = os.environ.copy()
             environment['RELM_SAMPLER_DIAGNOSTICS'] = str(directory / 'timings.csv')
-            sampler = subprocess.Popen(['Rscript', '--vanilla', str(HERE / 'processes.R'),
+            sampler = subprocess.Popen([sys.executable, str(HERE / 'sampler_launcher.py'),
+                                        str(directory / 'sampler-process.json'), 'Rscript', '--vanilla', str(HERE / 'processes.R'),
                                         str(Path(args.library).resolve()), 'sample', str(worker.pid),
                                         str(directory / 'rss.csv'), str(stop_path), str(error_path)],
                                        env=environment, stdout=log, stderr=subprocess.STDOUT)
@@ -123,6 +130,13 @@ def main():
                 except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=5)
         report['elapsed_seconds'] = time.monotonic() - started
         report['host_after'] = host_counters()
+        metadata = directory / 'sampler-process.json'
+        if metadata.exists():
+            try:
+                report['sampler'] = json.loads(metadata.read_text())
+            except (OSError, ValueError) as error:
+                report['status'] = 'diagnostic_error'
+                report['metadata_error'] = str(error)
         (directory / 'diagnostic.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
     return 1 if report['status'] == 'diagnostic_error' else 0

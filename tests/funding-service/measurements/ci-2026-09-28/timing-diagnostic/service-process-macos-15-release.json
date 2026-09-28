@@ -1,0 +1,54 @@
+{
+  "checks_summary": {
+    "failed": [],
+    "passed": 305,
+    "total": 305
+  },
+  "contract_sha256": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+  "environment": null,
+  "finished_at": "2026-09-28T23:31:33Z",
+  "full_report": {
+    "path": "/private/tmp/relm-service/ci-timing-diagnostic/service-process-macos-15-release/acceptance.json",
+    "sha256": "4769c2353929ef9999a73d62c90347c75b91c2ce319e4efe490f585f3fdc7d3a",
+    "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36496661827"
+  },
+  "gates": {
+    "G1": {
+      "elapsed_seconds": 7.119952624999996,
+      "status": "passed"
+    },
+    "G2": {
+      "elapsed_seconds": 13.614892292000036,
+      "status": "passed"
+    },
+    "G3": {
+      "elapsed_seconds": 247.5589198340001,
+      "status": "passed"
+    },
+    "G4": {
+      "elapsed_seconds": 69.82755566700007,
+      "status": "passed"
+    }
+  },
+  "harness_sha256": {
+    "accept.py": "9d808ddcfe5de6a2e1fd89cd0693a49f18e59cd83193ca496f0a6b7342bd36f2",
+    "offline.py": "fd790498a1f9a7d82fe2985e2bd16fbf87e1d960879fafb7b1b46c8c11065675",
+    "processes.R": "5f34b547333cf0dc39d2414aad6c1287d73d611b626dff9603fa097040b86c21"
+  },
+  "os": "macOS-15.7.9-arm64-arm-64bit-Mach-O",
+  "profile": null,
+  "python": "3.14.7",
+  "source_sha256": {
+    "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+    "examples/funding-service/runtime.R": "8e458534ccf171e4fa3ed85dab51743a5c821c47526aa634e116ca20ae973ed3",
+    "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+    "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+    "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+    "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+    "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+    "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c"
+  },
+  "started_at": "2026-09-28T23:25:42Z",
+  "status": "passed",
+  "suite": "deterministic"
+}

@@ -1,0 +1,112 @@
+{
+  "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36496677960",
+  "source_commit": "5a125338724afe5114ccc96a7ac92ee63c989d20",
+  "status": "sampling_failed",
+  "scope": "Model-free timing diagnosis; no G1-G8 acceptance.",
+  "files": {
+    "diagnostic.json": {
+      "original_sha256": "925e93f69c75d354b8cc1e376ba2364bad5826f6bfdbb4033f7577fe5ec341f4",
+      "original_bytes": 3672,
+      "stored_file": "diagnostic.json",
+      "stored_sha256": "925e93f69c75d354b8cc1e376ba2364bad5826f6bfdbb4033f7577fe5ec341f4"
+    },
+    "rss.csv": {
+      "original_sha256": "ebf520354a92a2dec0e4a96d7809b0b45812e41e04ca1a07972ec4582447fb5c",
+      "original_bytes": 162476,
+      "stored_file": "rss.csv.gz",
+      "stored_sha256": "c735ed51aca5c7b4e76fc00fbd1496a205b81cc49b71547b47f6fc0aced0be2b"
+    },
+    "timings.csv": {
+      "original_sha256": "0a381d1debccdd1074f093238dcf2d0ab9a92c586c90882065f6c03b586eb0fc",
+      "original_bytes": 260362,
+      "stored_file": "timings.csv.gz",
+      "stored_sha256": "0cfc800632323a18d77940be9b8b8cdea6f522b7b41d8ad0d7f210d95a91f23f"
+    },
+    "host.csv": {
+      "original_sha256": "ff2cd3c67d875e698bbc617ca584076da402da02e69689c97174b0968d9315ba",
+      "original_bytes": 199406,
+      "stored_file": "host.csv.gz",
+      "stored_sha256": "b03c5da5f058af40183cff3a2283127f795434a11b2bad1d205e33db25b94840"
+    },
+    "sampler.log": {
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "stored_file": "sampler.log",
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rss.error": {
+      "original_sha256": "f61bfa8a9b14a95733ed557ff25066c932758cae7fbdafd34643d34d27882b7f",
+      "original_bytes": 38,
+      "stored_file": "rss.error",
+      "stored_sha256": "f61bfa8a9b14a95733ed557ff25066c932758cae7fbdafd34643d34d27882b7f"
+    }
+  },
+  "independent_analysis": {
+    "row_count": 1420,
+    "gaps_above_200ms": 1,
+    "maximum_gap_seconds": "0.204",
+    "gap_sample": {
+      "sample": "1419",
+      "tick_start_seconds": "141.800000000",
+      "discovery_end_seconds": "141.927000000",
+      "rss_end_seconds": "141.928000000",
+      "write_end_seconds": "141.928000000",
+      "discovery_cpu_seconds": "0.063000000",
+      "rss_cpu_seconds": "0.001000000",
+      "write_cpu_seconds": "0.000000000",
+      "iteration_cpu_seconds": "0.064000000",
+      "interval_cpu_seconds": "0.064000000",
+      "gc_user_seconds": "0.049000000",
+      "gc_system_seconds": "0.000000000",
+      "gc_elapsed_seconds": "0.098000000",
+      "wake_lateness_seconds": "0.000000000",
+      "sample_gap_seconds": "0.204000000",
+      "discovered_children": "0",
+      "known_processes": "1",
+      "sampled_processes": "1"
+    },
+    "preceding_sample": {
+      "sample": "1418",
+      "tick_start_seconds": "141.700000000",
+      "discovery_end_seconds": "141.723000000",
+      "rss_end_seconds": "141.724000000",
+      "write_end_seconds": "141.724000000",
+      "discovery_cpu_seconds": "0.012000000",
+      "rss_cpu_seconds": "0.001000000",
+      "write_cpu_seconds": "0.000000000",
+      "iteration_cpu_seconds": "0.013000000",
+      "interval_cpu_seconds": "0.013000000",
+      "gc_user_seconds": "0.000000000",
+      "gc_system_seconds": "0.000000000",
+      "gc_elapsed_seconds": "0.000000000",
+      "wake_lateness_seconds": "0.000000000",
+      "sample_gap_seconds": "0.090000000",
+      "discovered_children": "0",
+      "known_processes": "1",
+      "sampled_processes": "1"
+    },
+    "following_sample": {
+      "sample": "1420",
+      "tick_start_seconds": "141.928000000",
+      "discovery_end_seconds": "141.944000000",
+      "rss_end_seconds": "141.945000000",
+      "write_end_seconds": "141.945000000",
+      "discovery_cpu_seconds": "0.012000000",
+      "rss_cpu_seconds": "0.001000000",
+      "write_cpu_seconds": "0.000000000",
+      "iteration_cpu_seconds": "0.013000000",
+      "interval_cpu_seconds": "0.013000000",
+      "gc_user_seconds": "0.000000000",
+      "gc_system_seconds": "0.000000000",
+      "gc_elapsed_seconds": "0.000000000",
+      "wake_lateness_seconds": "0.028000000",
+      "sample_gap_seconds": "0.017000000",
+      "discovered_children": "0",
+      "known_processes": "1",
+      "sampled_processes": "1"
+    },
+    "discovery_wall_seconds": "0.127000000",
+    "all_observed_cgroups_unlimited_and_unthrottled": true
+  },
+  "interpretation": "This reproduction coincides with GC and wall time substantially exceeding CPU time under four busy threads; no observed cgroup CPU throttling. Prior uninstrumented native failures do not establish the same cause. Test observer scheduling priority before considering another native attempt."
+}

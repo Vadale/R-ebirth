@@ -1,0 +1,61 @@
+{
+  "scope": "Timing diagnosis only; no model, HTTP service or G1\u2013G8 acceptance.",
+  "status": "completed_without_reproducing_gap",
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "duration_limit_seconds": 4.0,
+  "busy_threads": 2,
+  "cpu_count": 10,
+  "affinity": null,
+  "host_before": {
+    "cgroup_membership": null,
+    "cgroups": {
+      "/sys/fs/cgroup": {
+        "cpu.stat": null,
+        "cpu.max": null,
+        "cpu.pressure": null
+      }
+    },
+    "loadavg": [
+      2.2333984375,
+      1.9677734375,
+      1.85302734375
+    ]
+  },
+  "sources": {
+    "diagnose_sampler.py": "5ee9ebbfcb9b772309e860f707b9e81e86258dc7eb689941783fa863b93bd222",
+    "processes.R": "5f34b547333cf0dc39d2414aad6c1287d73d611b626dff9603fa097040b86c21",
+    "sampler_launcher.py": "853fb9d5bbbcfb1d143fd6aef3f0707ecc33cbb349305779b53a95b4f851ad68"
+  },
+  "controller_nice": 0,
+  "worker_nice": 0,
+  "measurement_rows": {
+    "rss.csv": 40,
+    "timings.csv": 40
+  },
+  "elapsed_seconds": 4.146956957993098,
+  "host_after": {
+    "cgroup_membership": null,
+    "cgroups": {
+      "/sys/fs/cgroup": {
+        "cpu.stat": null,
+        "cpu.max": null,
+        "cpu.pressure": null
+      }
+    },
+    "loadavg": [
+      2.29443359375,
+      1.98486328125,
+      1.859375
+    ]
+  },
+  "sampler": {
+    "scope": "External RSS observer only",
+    "pid": 72791,
+    "uid": 501,
+    "euid": 501,
+    "inherited_nice": 0,
+    "requested_nice": null,
+    "actual_nice": 0,
+    "nice_limit": null
+  }
+}
