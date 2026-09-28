@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-28 for merged Spark support and D2 batch operation; the historical
+Updated 2026-09-28 for integrated D2 and the WP11a contract proposal; the historical
 maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
@@ -11,7 +11,9 @@ The b9726 → b10828 engine update and optional Spark checks are recorded in
 vision and Spark Metal acceptance passed. The reused extraction pilot improved
 to 8/10 exact records, without a new quality acceptance. Spark PR #46 merged
 at `2c827a7` after all nine PR checks and the dispatched Linux/Mac model, vision,
-demo and Valgrind workflows passed. D2 has separate operational acceptance below.
+demo and Valgrind workflows passed. D2 PR #47 merged at `ddf8467` after all
+nine final checks passed. WP11a proposes [the probe contract](probe-evaluation-contract.md)
+and D-033; founder API approval and WP11b implementation remain separate gates.
 
 ## Implemented checks
 
@@ -101,7 +103,8 @@ in [the D2 report](d2-batch-operation.md). Later product gates remain unexecuted
 | S1 | Supported-schema validation, unsupported-constraint rejection, incomplete-output/resource cases, unchanged unconstrained goldens | Tiny model-free fixtures in CI plus explicit small-model latency/memory comparison | Accepted/merged PR #44: all nine PR checks and model run pass; Mac Metal 1.531× with no positive peak-RSS increase; Linux CPU/R 4.6.1 1.417× and +2.30 MiB |
 | D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Evaluated, failed promotion: 0/10 joint matches, 1/4 known amounts, 6/8 unsupported fields in task-valid records; human correction time unmeasured |
 | D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Operational acceptance passed: 466 assertions on each Mac/Linux R-release/oldrel leg, offline Spark Metal and Qwen CPU kill/resume runs; PR #47, D2 report |
-| WP11a/b | Selection-aware/grouped evaluation, fold-local preprocessing, independent statistical references and controls | Synthetic reference fixtures plus pinned anatomy-lab example | Not run |
+| WP11a | Grouped evaluation contract, executable split audit and independent statistical reference fixtures | Model-free Python/R references in `tests/llm-golden/probe-contract/` | Local Python artifact/audit checks and independent R/glmnet checks pass (82 ridge solutions, 17 CSVs); D-033 approval pending; WP11b product tests not run |
+| WP11b | Product agreement with references, selection/preprocessing invariance, S3 behavior and controls | Synthetic tests plus pinned anatomy-lab example | Not implemented; await D-033 approval |
 | WP12a/b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Chosen Mac/Linux CPU service recipe; supervisor/worker versions pinned | Not run |
 | I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |
 

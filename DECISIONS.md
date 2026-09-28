@@ -878,6 +878,59 @@ intervention effect/reversibility separately. It does not close the 4B spill gat
 
 ---
 
+## D-033 — Grouped probe selection and explicit held-out evaluation
+
+- **Date:** 2026-09-28.
+- **Status:** **PROPOSED — founder approval pending.** Authorization to continue
+  with WP11a permits this concrete proposal and its independent fixtures; it
+  does not approve the previously unspecified API amendment. D-003's existing
+  signatures remain binding until an approval addendum is recorded.
+- **Problem:** the approved Phase 4 API does not express source groups or a
+  separate evaluation partition. Demo A selects lambda and layer from CV and
+  bootstraps selected OOF scores. That historical exploratory analysis must not
+  be promoted to selection-aware statistical evidence by a short wrapper.
+- **Proposed amendment:** append `groups = NULL, test_groups = NULL` to
+  `llm_probe(formula, data, method = "glmnet", cv = 10,
+  metric = c("auc", "accuracy"), seed = NULL)`. Groups map one ID to each
+  captured prompt; `test_groups` names whole groups reserved before analysis.
+  `NULL` groups explicitly assume independent prompts. `NULL` test groups
+  return exploratory CV only, without a generalization CI. Amend the `llm_probe`
+  class/plot/predict evaluation semantics in API-GRAMMAR §§2/5 accordingly.
+- **Evaluation:** binary ridge logistic, one captured position per prompt,
+  group-disjoint development CV, fitting-fold-only RMS scaling, fixed lambda
+  grid, and deterministic selection ties. Select lambda per layer and the
+  default layer using development data only. Refit on development data, freeze
+  fits, then evaluate the reserved groups. Predict returns positive-class
+  probabilities using the saved development fit; no automatic holdout refit.
+- **Uncertainty:** whole-group bootstrap of held-out frozen predictions,
+  2,000 draws, approximate 95% pointwise percentile intervals conditional on
+  the fitted models/development data/selection/split. No claim to training
+  uncertainty, simultaneous coverage, distribution-shift coverage or causal
+  identification. Withhold unsupported/undefined/degenerate intervals with a
+  reason rather than manufacture precision. Plot marks the development-selected
+  layer and never chooses a winner from held-out scores.
+- **Dependencies and resources:** keep already-approved `glmnet` in Suggests
+  (D-020), with an actionable classed condition when absent. No new R/Rust
+  dependency, export, native backend or disk-writing side effect. Process one
+  layer/fold at a time; WP11b must test a materialized-memory preflight including
+  solver copies/workspace and spilled-trace alignment on the 16 GB target.
+- **Controls/acceptance:** the complete normative proposal, class/argument
+  semantics, uncertainty guards and WP11b mutation tests are in
+  [`docs/probe-evaluation-contract.md`](docs/probe-evaluation-contract.md).
+  Independent reference fixtures pin ridge coefficients, preprocessing, metrics,
+  whole-group resampling and a split audit that rejects deliberately leaked
+  groups. Shuffled-label and simple-feature controls accompany the later
+  anatomy workflow. Fixture checks do not certify an unimplemented `llm_probe`.
+- **Alternatives:** nested grouped CV with full-procedure resampling is deferred
+  because it targets broader uncertainty at substantially higher cost. Hidden
+  trace attributes and overloading `cv` obscure group/evaluation semantics;
+  naive fold-error bars or selected-OOF bootstraps do not solve selection bias.
+- **Approval boundary:** approve the two appended arguments **and** the explicit
+  exploratory/held-out return, plot, prediction and CI semantics in the linked
+  contract before WP11b. No implementation of the changed product API in WP11a.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

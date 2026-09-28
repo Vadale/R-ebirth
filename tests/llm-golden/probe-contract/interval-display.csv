@@ -1,0 +1,8 @@
+groups,positive_groups,negative_groups,undefined_draws,lower,upper,reason
+0,0,0,0,,,not_evaluated
+19,9,10,0,0.2,0.8,insufficient_groups
+20,4,16,0,0.2,0.8,insufficient_class_groups
+20,16,4,0,0.2,0.8,insufficient_class_groups
+20,5,15,0,0.2,0.8,available
+20,5,15,1,,,undefined_draw
+20,20,20,0,1,1,degenerate_bootstrap

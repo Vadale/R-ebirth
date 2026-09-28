@@ -1,0 +1,7 @@
+case,n,positive,negative,wins,ties,losses,auc,accuracy
+ties_original,4,2,2,1,2,1,0.5,0.5
+ties_three_eighths,4,2,2,1,1,2,0.375,0.5
+constant,4,2,2,0,4,0,0.5,0.5
+threshold_inclusive,2,1,1,1,0,0,1,1
+lexical_confound_perfect,4,2,2,4,0,0,1,1
+permuted_label_control,4,2,2,1,2,1,0.5,0.5

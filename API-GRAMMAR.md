@@ -134,6 +134,12 @@ approved as written; any needed extension or changed semantics requires a
 separately approved amendment. Copying Demo A's exploratory estimates is not
 sufficient statistical acceptance for WP11b.
 
+**WP11a proposal:** [D-033](DECISIONS.md#d-033--grouped-probe-selection-and-explicit-held-out-evaluation)
+and the [evaluation contract](docs/probe-evaluation-contract.md) propose appending
+`groups = NULL, test_groups = NULL`, with explicit exploratory/held-out result,
+plot and prediction semantics. **Not approved:** the entries below remain unchanged
+until the founder approves the amendment; WP11b must not implement it yet.
+
 ### `llm_probe(formula, data, method = "glmnet", cv = 10, metric = c("auc", "accuracy"), seed = NULL)`
 `formula`: `label ~ activations(layer = 10:20, component = "residual")` — `label` is a column the user has attached to the trace (or a vector in the calling scope, standard R formula semantics); `activations()` is a formula helper resolved only inside `llm_probe`. `data` = a `relm_trace`. Fits one cross-validated probe per layer in the requested range. Returns `llm_probe` (§2). Errors: `relm_error_probe` (label/trace mismatch, single-class labels — message states counts).
 

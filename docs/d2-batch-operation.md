@@ -3,8 +3,8 @@
 Date: 2026-09-28. Baseline: merged Spark PR #46 (`2c827a7`, llama.cpp b10828).
 Status: operational acceptance passed on Mac Metal and Linux CPU; implementation
 and independent review complete. [PR #47](https://github.com/Vadale/R-ebirth/pull/47)
-contains the work; integration remains separate. All nine implementation PR checks
-and the native Linux workflow passed. No core API, Rust or R package dependency changes.
+is merged at `ddf8467`. All nine final PR checks passed (R run `36415443777`,
+Rust run `36415443795`), in addition to the native Linux workflow. No core API, Rust or R package dependency changes.
 
 The [application](../examples/funding-extraction/README.md) provides explicit
 setup, offline run/resume, one writer, per-document immutable results and a plain

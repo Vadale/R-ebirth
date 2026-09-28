@@ -1,0 +1,7 @@
+row_id,group,partition,fold
+a1,a,train,1
+a2,a,train,1
+b1,b,train,2
+d1,d,train,3
+c1,c,test,
+c2,c,test,

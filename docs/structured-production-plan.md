@@ -10,7 +10,7 @@ experiment and batch contract. D1 has a [negative held-out result](d1-extraction
 0/10 fully grounded structured records despite 10/10 schema validity. D1
 usefulness is not accepted. D2 now implements the restartable reference
 application under approved application-only D-031; its Mac/Linux operational
-acceptance passes in PR #47. See its
+acceptance passed; PR #47 is merged at `ddf8467` with all nine final checks green. See its
 [acceptance report](d2-batch-operation.md). Later public API changes and new
 dependencies retain their separate approval gates. The independent
 GPT-6 Astra review, using ultra reasoning, preceded these planning changes.
@@ -42,10 +42,12 @@ One WP is active at a time. Each implementation WP targets at most two working
 weeks; split a larger design before implementation. The following order takes
 precedence over historical phase numbering for this increment. **D1 has reached a recorded negative stop** after its bounded evaluation;
 D1 usefulness remains unaccepted. D2 implementation/operational acceptance is
-complete in PR #47, with integration pending;
+complete and merged in PR #47 (`ddf8467`);
 S0/S1 and native Spark support are complete. Stronger-model comparisons are
 deferred and do not block operational acceptance. Follow the milestone/verification policy
-in [development workflow](development-workflow.md) (D-029).
+in [development workflow](development-workflow.md) (D-029). WP11a is active; its
+[concrete contract](probe-evaluation-contract.md) and D-033 await founder approval
+before the product implementation in WP11b.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|
@@ -217,8 +219,10 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** resolve proposed D-031 before implementing D2's operational
-recipe. Preserve the negative D1 result and design any later quality experiment
-with a new bounded protocol and untouched evaluation data. S1 supplies
-the approved native output mechanism; it does not establish extraction quality
-or restartable operation. Detailed status is in [S1 evidence](s1-implementation.md).
+**Next action:** review the [WP11a probe contract](probe-evaluation-contract.md)
+and proposed [D-033](../DECISIONS.md#d-033--grouped-probe-selection-and-explicit-held-out-evaluation).
+The two explicit grouping/holdout arguments and changed evaluation semantics
+require founder approval before WP11b. Independent statistical references and
+an executable leakage audit precede implementation. D2 is integrated; D1's
+negative quality result remains unchanged, and stronger-model comparisons remain
+deferred. No new dependency or native model benchmark is needed for WP11a.

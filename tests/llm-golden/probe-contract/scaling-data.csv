@@ -1,0 +1,5 @@
+partition,row_id,x1,x2
+train,t1,1,5
+train,t2,2,5
+train,t3,3,5
+validation,v1,1000,-999
