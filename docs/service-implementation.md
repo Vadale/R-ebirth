@@ -1,6 +1,6 @@
 # WP12b — Local service implementation and acceptance
 
-Date: 2026-09-28. **Final acceptance in progress; Linux sampling-harness failure under correction.**
+Date: 2026-09-29. **Final acceptance in progress; Linux sampling-harness failure under correction.**
 D-034 approved; WP12a PR #50 merged at `95066c7`. The
 [frozen contract](service-contract.md) remains binding. Draft
 [PR #51](https://github.com/Vadale/R-ebirth/pull/51) contains the application and
@@ -75,6 +75,34 @@ do not establish a safe tier for larger models. G7 memory growth is reported
 separately and still requires a successful Linux G7 run.
 
 ## Failures and retained evidence
+
+
+The corrected-sampler run `36487549704` passed G5 and all 30 ordinary G6
+requests plus controlled worker recovery, but failed G6 with a sampler discovery
+error (281 assertions passed; cleanup failed). G7 was **not executed**. All nine
+ordinary CI checks at `313b2dc` passed, including the sampler regressions; their
+receipts and this failed native run are retained under `sampler-corrected/` in
+the respective measurement directories.
+
+Inspection of the exact approved [ps 1.9.3 source](https://cran.r-project.org/src/contrib/ps_1.9.3.tar.gz)
+identified a different termination race: Linux `ps_handle()` can raise generic
+`os_error`/ENOENT if a selected child exits after the PPID snapshot. Upstream
+`ps_children()` catches only `no_such_process`/`zombie_process` at that point.
+The earlier parent-death guard cannot classify a child error while its parent
+remains alive. The harness now adapts only the child-handle lookup in a local
+copy of the pinned public function; it does not modify the package namespace.
+Only independently confirmed absence/death is converted to a typed disappearance,
+which still marks that sample missing. Live or unknown denials propagate. Normal
+handle creation remains unchanged. This does not establish atomic ownership
+across upstream's PID-only snapshot; known sampled handles retain birth checks.
+
+A deterministic regression captures the actual PPID map, kills and reaps a mapped
+child, and supplies that stale map to both original and adapted discovery. Linux
+CI must reproduce the original `os_error` and accept only the marked missing
+child through the adapter; an injected denial on a live child must still fail.
+The Mac regression passes. Linux validation and native acceptance remain pending;
+no service source, resource bound or sampling criterion was changed.
+
 
 
 Linux run `36453135678` completed all 1,000 native requests with the same worker:

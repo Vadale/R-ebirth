@@ -32,11 +32,31 @@ inspect <- function(pid, expected_birth = NULL, read_details = NULL) {
     list(pid = as.integer(pid), alive = FALSE)
   })
 }
-discover <- function(parent, read_children = function(h) ps::ps_children(h, recursive = TRUE)) {
+child_tree <- function(parent, read_handle = ps::ps_handle, read_map = NULL) {
+  # ps 1.9.3's Linux ps_handle can raise untyped ENOENT after its PID map
+  # snapshot. Adapt only the selected child's handle read, never the namespace.
+  children <- ps::ps_children
+  scope <- new.env(parent = environment(children))
+  missing <- FALSE
+  scope$ps_handle <- function(pid) tryCatch(read_handle(pid), error = function(e) {
+    # A successful retry is not enough: preserve the original error unless this
+    # specific child is independently confirmed absent or a zombie/dead process.
+    inspect(pid, read_details = function(h) stop(e))
+    missing <<- TRUE
+    stop(structure(list(message = 'Confirmed child termination during discovery', call = NULL),
+                   class = c('no_such_process', 'error', 'condition')))
+  })
+  if (!is.null(read_map)) scope$ps_ppid_map <- read_map
+  environment(children) <- scope
+  handles <- children(parent, recursive = TRUE)
+  list(children = handles, missing = missing)
+}
+discover <- function(parent, read_children = child_tree) {
   # ps_children ends by re-reading the parent, which can exit during discovery.
   # Verify that original identity ended; a live or unknown denial still fails.
   inspect(ps::ps_pid(parent), as.numeric(ps::ps_create_time(parent)), function(h) {
-    list(alive = TRUE, children = read_children(h))
+    tree <- read_children(h)
+    list(alive = TRUE, children = tree$children, missing = tree$missing)
   })
 }
 sample_line <- function(index, elapsed, rss, identities) {
@@ -55,6 +75,31 @@ if (args[2] == 'self-test') {
   reused_tree <- discover(ps::ps_handle(pid, time = as.POSIXct(birth - 1, origin = '1970-01-01')),
                           function(h) stop('A reused tree must never be inspected'))
   stopifnot(identical(reused_tree$alive, FALSE))
+  child <- processx::process$new('/bin/sleep', '60')
+  tryCatch({
+    child_pid <- child$get_pid()
+    denied_child <- tryCatch(child_tree(parent, read_handle = function(pid) {
+      if (pid == child_pid) stop('injected live child denial')
+      ps::ps_handle(pid)
+    }), error = identity)
+    stopifnot(inherits(denied_child, 'error'), grepl('Cannot inspect a live process', conditionMessage(denied_child)))
+    original_map <- get('ps_ppid_map', envir = environment(ps::ps_children))
+    map <- original_map()
+    stopifnot(any(map$pid == child_pid & map$ppid == Sys.getpid()))
+    child$kill(); child$wait(timeout = 2000)
+    unadapted <- ps::ps_children
+    environment(unadapted) <- list2env(list(ps_ppid_map = function() map),
+                                      parent = environment(unadapted))
+    before <- tryCatch(unadapted(parent, recursive = TRUE), error = identity)
+    if (Sys.info()[['sysname']] == 'Linux') {
+      stopifnot(inherits(before, 'os_error'), identical(before$errno, 2L))
+      cat('PASS: unadapted Linux ps 1.9.3 reproduces the child-discovery os_error\n')
+    }
+    missing_child <- child_tree(parent, read_map = function() map)
+    stopifnot(isTRUE(missing_child$missing), !child$is_alive(),
+              !child_pid %in% vapply(missing_child$children, ps::ps_pid, integer(1)),
+              ps::ps_is_running(parent))
+  }, finally = if (child$is_alive()) child$kill())
   child <- processx::process$new(Sys.which('Rscript'), c('--vanilla', '-e', 'Sys.sleep(60)'))
   tryCatch({
     child_pid <- child$get_pid()
@@ -85,7 +130,7 @@ if (args[2] == 'self-test') {
                                      expected$rss_bytes, expected$identities))
   stopifnot(identical(read.csv(text = paste(legacy, collapse = '\n')),
                       read.csv(text = paste(compact, collapse = '\n'))))
-  cat('PASS: live inspection/tree denials fail, reused PIDs are excluded, actual death is missing, CSV encoding matches; no service gate executed\n')
+  cat('PASS: live inspection/tree/child denials fail, reused PIDs are excluded, actual parent/child death is missing, CSV encoding matches; no service gate executed\n')
   quit(save = 'no')
 }
 if (args[2] == 'inspect') {
@@ -105,7 +150,7 @@ while (!file.exists(args[5])) {
   discovery_missing <- FALSE
   if (ps::ps_is_running(parent)) {
     tree <- discover(parent)
-    discovery_missing <- !isTRUE(tree$alive)
+    discovery_missing <- !isTRUE(tree$alive) || isTRUE(tree$missing)
     known <- c(known, tree$children)
     keys <- vapply(known, function(h) paste(ps::ps_pid(h), as.numeric(ps::ps_create_time(h))), '')
     known <- known[!duplicated(keys)]

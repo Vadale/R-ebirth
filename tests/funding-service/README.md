@@ -110,3 +110,13 @@ rows, empty/malformed records, bounded history reads, actual fresh append and
 failure before another HTTP request. Native receipts fingerprint `accept.py`,
 `processes.R` and `offline.py`. The R sampler self-test additionally exercises
 live tree-discovery denial, original-parent death/reuse and CSV equivalence.
+
+The sampler locally adapts the pinned `ps::ps_children()` child-handle lookup to
+classify Linux's generic ENOENT only after confirming that specific child ended.
+The dependency namespace is unchanged. A disappeared child still sets the
+missing-sample marker, so G7 cannot silently accept it; live/unknown denials fail.
+The R self-test uses one real stale PPID snapshot and a killed/reaped child to
+compare unadapted and adapted discovery, explicitly reproducing the upstream
+Linux error before verifying the fix. PID reuse between upstream's PID-only map
+and new handle construction remains outside this evidence; already sampled
+handles retain their creation-time identity.

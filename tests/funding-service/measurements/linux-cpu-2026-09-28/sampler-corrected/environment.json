@@ -1,0 +1,11 @@
+{
+  "cases": 11,
+  "full_report": {
+    "path": "/private/tmp/relm-service/linux-sampler-corrected/environment/acceptance.json",
+    "sha256": "5089ee6b22bec9b405c21f9fece72c72822866bd5cc886f5bbe08d099d0e86fc",
+    "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36487549704"
+  },
+  "model_loaded": false,
+  "scope": "fresh-process environment refusal and generated supervisor escaping; actual manager acceptance separate",
+  "status": "passed"
+}
