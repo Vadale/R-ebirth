@@ -1,0 +1,92 @@
+{
+  "status": "failed",
+  "scope": "Diagnostic observations only; sampling gaps invalidate G7 acceptance.",
+  "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36453135678",
+  "rss_source_sha256": "dbd4ae26b5fdeb192b90c8efff94d2656e85b0bf00393c9e1d3d6c0393ac5e0e",
+  "rss_samples": 155593,
+  "recorded_peak_rss_bytes": 1077256192,
+  "sampling_gaps": [
+    {
+      "previous_sample": 10118,
+      "previous_elapsed_seconds": 1011.719,
+      "gap_seconds": 0.20099999999990814
+    },
+    {
+      "previous_sample": 14703,
+      "previous_elapsed_seconds": 1470.222,
+      "gap_seconds": 0.21600000000012187
+    },
+    {
+      "previous_sample": 44438,
+      "previous_elapsed_seconds": 4443.727,
+      "gap_seconds": 0.20200000000022555
+    },
+    {
+      "previous_sample": 56642,
+      "previous_elapsed_seconds": 5664.12,
+      "gap_seconds": 0.20200000000022555
+    },
+    {
+      "previous_sample": 61226,
+      "previous_elapsed_seconds": 6122.52,
+      "gap_seconds": 0.2039999999997235
+    },
+    {
+      "previous_sample": 69600,
+      "previous_elapsed_seconds": 6959.919,
+      "gap_seconds": 0.2070000000003347
+    },
+    {
+      "previous_sample": 72679,
+      "previous_elapsed_seconds": 7267.82,
+      "gap_seconds": 0.2000000000007276
+    },
+    {
+      "previous_sample": 78007,
+      "previous_elapsed_seconds": 7800.624,
+      "gap_seconds": 0.20100000000002183
+    },
+    {
+      "previous_sample": 86394,
+      "previous_elapsed_seconds": 8639.322,
+      "gap_seconds": 0.20099999999911233
+    },
+    {
+      "previous_sample": 95528,
+      "previous_elapsed_seconds": 9552.724,
+      "gap_seconds": 0.20099999999911233
+    },
+    {
+      "previous_sample": 101611,
+      "previous_elapsed_seconds": 10161.02,
+      "gap_seconds": 0.2039999999997235
+    },
+    {
+      "previous_sample": 104658,
+      "previous_elapsed_seconds": 10465.721,
+      "gap_seconds": 0.2039999999997235
+    },
+    {
+      "previous_sample": 117610,
+      "previous_elapsed_seconds": 11760.923,
+      "gap_seconds": 0.2039999999997235
+    },
+    {
+      "previous_sample": 123702,
+      "previous_elapsed_seconds": 12370.121,
+      "gap_seconds": 0.20100000000093132
+    },
+    {
+      "previous_sample": 136651,
+      "previous_elapsed_seconds": 13665.021,
+      "gap_seconds": 0.20199999999931606
+    },
+    {
+      "previous_sample": 149627,
+      "previous_elapsed_seconds": 14962.621,
+      "gap_seconds": 0.20600000000013097
+    }
+  ],
+  "sampler_error": "missed an entire100ms sampling period\n",
+  "sampler_log": "Error in value[[3L]](cond) : \n  Cannot inspect owned process tree: No such file or directory\nCalls: tryCatch -> tryCatchList -> tryCatchOne -> <Anonymous>\nExecution halted\n"
+}

@@ -56,6 +56,9 @@ jobs:
         run: |
           Rscript --vanilla tests/funding-service/test-ipc-scan.R
           Rscript --vanilla tests/funding-service/test-process-rss.R "$RUNNER_TEMP/service-library"
+          python3 tests/funding-service/accept.py --self-test
+          python3 tests/funding-service/test_sampler.py
+          Rscript --vanilla tests/funding-service/processes.R "$RUNNER_TEMP/service-library" self-test
           for suite in isolation native; do
             python3 tests/funding-service/accept.py --suite "$suite" \
               --environment "$RUNNER_TEMP/service-environment" --profile linux_qwen \

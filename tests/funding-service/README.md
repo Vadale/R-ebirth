@@ -61,7 +61,11 @@ G7 runs all 1,000 native requests without recycling the worker and checks the
 frozen warmup/tail/slope and RSS limits. `processes.R` samples actual process
 creation identities at 100 ms, includes owned descendants, and fails on live
 inspection errors. Each request requires a new post-completion sample. A dead
-or stalled sampler cannot reuse earlier observations. These are host RSS
+or stalled sampler cannot reuse earlier observations. Fresh-row reads use the
+last complete CSV line instead of repeatedly parsing the growing history. Stress
+exits before further HTTP requests on a sampling error; per-request CSV rows are
+flushed as they complete, preserving partial-run evidence. The 100 ms target and
+200 ms missing-period guard are unchanged. These are host RSS
 measurements, not Metal device allocation measurements.
 
 G8 creates and later removes a uniquely named disposable definition in the real
@@ -99,3 +103,10 @@ errors, persistent live/unknown denial, creation-time identity reuse and actual
 child termination. Only confirmed termination can discard a failed read; the
 original process handle is retained and retries add at most 100 ms of waiting.
 Successful reads and resource thresholds are unchanged.
+
+`python3 tests/funding-service/test_sampler.py` runs six model-free regressions
+in every R CI leg and the explicit native workflow: complete/partial quoted CSV
+rows, empty/malformed records, bounded history reads, actual fresh append and
+failure before another HTTP request. Native receipts fingerprint `accept.py`,
+`processes.R` and `offline.py`. The R sampler self-test additionally exercises
+live tree-discovery denial, original-parent death/reuse and CSV equivalence.

@@ -104,6 +104,8 @@ class Harness:
             environment=str(Path(args.environment).resolve()) if args.environment else None,
             source_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
                            for p in (ROOT / 'examples/funding-service').glob('*.R')})
+        self.report['harness_sha256'] = {name: hashlib.sha256((HERE / name).read_bytes()).hexdigest()
+                                        for name in ('accept.py', 'processes.R', 'offline.py')}
         if args.environment:
             self.report['prepared_environment'] = read_json(Path(args.environment) / 'environment.json')
 
@@ -167,6 +169,7 @@ class Service:
         with socket.socket() as sock:
             sock.bind(('127.0.0.1', 0)); self.port = port or sock.getsockname()[1]
         self.process = None; self.sampler = None; self.sample_log = None; self.workers = []
+        self.require_complete_samples = False
         self.sampler_stop = self.directory / 'sampler.stop'
         self.samples = self.directory / 'rss.csv'
         self.sample_error = self.directory / 'rss.error'
@@ -221,6 +224,7 @@ class Service:
         return self
 
     def http(self, method, path, value=None, headers=None, timeout=2):
+        self.check_sampler()
         body = encoded(value) if isinstance(value, (dict, list)) else value
         headers = dict(headers or {})
         if body is not None and method == 'POST': headers.setdefault('Content-Type', 'application/json')
@@ -239,6 +243,12 @@ class Service:
             raise
         finally:
             connection.close()
+
+    def check_sampler(self):
+        if self.require_complete_samples:
+            assert self.sampler and self.sampler.poll() is None, 'stress RSS sampler exited before completion'
+            if self.sample_error.exists():
+                raise AssertionError('stress RSS sampling failed: ' + self.sample_error.read_text())
 
     def post(self, value):
         return self.http('POST', ROUTE, value)
@@ -690,6 +700,27 @@ def sample_rows(service):
         return list(csv.DictReader(stream))
 
 
+def latest_sample(service):
+    """Read the last complete CSV row without rescanning the growing history.
+
+    Sampler identities are numeric JSON and contain no literal newlines. A row
+    being written is ignored until its terminating newline is visible.
+    """
+    if not service.samples.exists(): return None
+    with service.samples.open('rb') as stream:
+        header = stream.readline().decode('utf-8').rstrip('\r\n')
+        stream.seek(0, os.SEEK_END); position = stream.tell()
+        tail = b''
+        while position and tail.count(b'\n') < 2:
+            size = min(position, 8192); position -= size
+            stream.seek(position); tail = stream.read(size) + tail
+    lines = tail.rsplit(b'\n', 1)[0].splitlines() if b'\n' in tail else []
+    if not lines or lines[-1].decode('utf-8') == header: return None
+    row = next(csv.DictReader([header, lines[-1].decode('utf-8')], strict=True))
+    assert None not in row and all(value is not None for value in row.values()), 'incomplete RSS sample row'
+    return row
+
+
 def idle_rss(h, service):
     row = fresh_sample(service, timeout=10*h.limits['control_poll_ms']/1000)
     identities = json.loads(row['identities'])
@@ -702,14 +733,14 @@ def idle_rss(h, service):
 
 def fresh_sample(service, timeout=1):
     """Require a new sample after entry, not a stale pre-request observation."""
-    baseline = sample_rows(service)
-    before = int(baseline[-1]['sample']) if baseline else 0
+    baseline = latest_sample(service)
+    before = int(baseline['sample']) if baseline else 0
     def check():
+        service.check_sampler()
         assert service.sampler and service.sampler.poll() is None, 'RSS sampler exited before a fresh post-request sample'
-        rows = sample_rows(service)
-        if rows and int(rows[-1]['sample']) > before:
-            row = rows[-1]
-            assert not baseline or float(row['elapsed_seconds']) > float(baseline[-1]['elapsed_seconds']), 'RSS timestamp did not advance'
+        row = latest_sample(service)
+        if row and int(row['sample']) > before:
+            assert not baseline or float(row['elapsed_seconds']) > float(baseline['elapsed_seconds']), 'RSS timestamp did not advance'
             return row
         return None
     return until(check, timeout, 'fresh post-request RSS sample', .02)
@@ -732,7 +763,8 @@ def resource_check(h, service, profile):
 def sampler_self_test():
     # Harness guard regression only; it neither runs nor passes any G1-G8 gate.
     class Fixture:
-        pass
+        require_complete_samples = False
+        check_sampler = Service.check_sampler
     with tempfile.TemporaryDirectory(prefix='relm-sampler-guard-') as directory:
         service = Fixture(); service.samples = Path(directory) / 'rss.csv'
         service.samples.write_text('sample,elapsed_seconds,rss_bytes,identities\n1,0.1,123,[]\n')
@@ -781,26 +813,30 @@ def isolation_suite(h):
 def native_suite(h, stress=False):
     profile = profile_check(h); corpus = development(h)
     if stress: h.check(h.args.profile in ('mac_qwen', 'linux_qwen'), '1000-call native stress requires a Qwen profile')
-    service = h.service('native-stress' if stress else 'native-30', native=True).ready()
+    service = h.service('native-stress' if stress else 'native-30', native=True)
+    service.require_complete_samples = stress
+    service.ready()
     h.check(time.monotonic()-service.started <= h.limits['worker_start_seconds'], 'native startup within120s')
     original_worker = service.status()['worker']
     count = h.limits['native_stress_requests' if stress else 'normal_sequential_requests']
     outcomes = []; first = {}; last = {}; rss = []
-    for i in range(count):
-        case = i % len(corpus); row = dict(corpus[case], id=f'native-{i+1:04d}')
-        start = time.monotonic(); terminal = service.run_job(row); elapsed = time.monotonic()-start
-        h.check(terminal['state'] in ('success', 'invalid'), 'ordinary native call has no infrastructure failure')
-        h.check(elapsed <= h.limits['request_deadline_seconds'], 'ordinary native request deadline')
-        worker = service.status()['worker']
-        h.check((worker['pid'], worker['birth'], worker['epoch']) ==
-                (original_worker['pid'], original_worker['birth'], original_worker['epoch']), 'persistent native worker never recycled')
-        memory = idle_rss(h, service); rss.append(memory)
-        first.setdefault(case, terminal['raw_output']); last[case] = terminal['raw_output']
-        outcomes.append(dict(index=i+1, id=row['id'], case=case, state=terminal['state'], elapsed_seconds=elapsed,
-                             idle_rss_bytes=memory, worker_pid=worker['pid'], epoch=worker['epoch']))
-        if (i+1) % 25 == 0: print(f'{i+1}/{count} actual native requests committed', flush=True)
     with (service.directory / 'native.csv').open('w', newline='') as stream:
-        writer = csv.DictWriter(stream, list(outcomes[0])); writer.writeheader(); writer.writerows(outcomes)
+        writer = csv.DictWriter(stream, ['index', 'id', 'case', 'state', 'elapsed_seconds', 'idle_rss_bytes', 'worker_pid', 'epoch'])
+        writer.writeheader(); stream.flush()
+        for i in range(count):
+            case = i % len(corpus); row = dict(corpus[case], id=f'native-{i+1:04d}')
+            start = time.monotonic(); terminal = service.run_job(row); elapsed = time.monotonic()-start
+            h.check(terminal['state'] in ('success', 'invalid'), 'ordinary native call has no infrastructure failure')
+            h.check(elapsed <= h.limits['request_deadline_seconds'], 'ordinary native request deadline')
+            worker = service.status()['worker']
+            h.check((worker['pid'], worker['birth'], worker['epoch']) ==
+                    (original_worker['pid'], original_worker['birth'], original_worker['epoch']), 'persistent native worker never recycled')
+            memory = idle_rss(h, service); rss.append(memory)
+            first.setdefault(case, terminal['raw_output']); last[case] = terminal['raw_output']
+            outcomes.append(dict(index=i+1, id=row['id'], case=case, state=terminal['state'], elapsed_seconds=elapsed,
+                                 idle_rss_bytes=memory, worker_pid=worker['pid'], epoch=worker['epoch']))
+            writer.writerow(outcomes[-1]); stream.flush()
+            if (i+1) % 25 == 0: print(f'{i+1}/{count} actual native requests committed', flush=True)
     h.check(len(list((service.store / 'results').glob('*.json'))) == count, 'every native admission has exactly one terminal file')
     h.check(first == last, 'native first/last output isolation for each frozen development case')
     if stress:
