@@ -1,0 +1,7 @@
+case,metric,lower,upper,reason,undefined_draws
+mixed,auc,0.3625,0.95625,available,0
+mixed,accuracy,0.3625,0.978125,available,0
+undefined,auc,,,undefined_draw,2
+undefined,accuracy,,,degenerate_bootstrap,0
+degenerate,auc,,,degenerate_bootstrap,0
+degenerate,accuracy,,,degenerate_bootstrap,0

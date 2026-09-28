@@ -1,0 +1,106 @@
+{
+  "accuracy": "score>=0.5 predicts positive",
+  "auc": "P(positive>negative)+0.5*P(tie)",
+  "bootstrap": {
+    "degenerate_policy": "withhold",
+    "minimum_groups": 20,
+    "minimum_groups_containing_each_class": 5,
+    "percentile_fixture": "raw arithmetic; product display guards tested separately",
+    "production_draws": 2000,
+    "quantile_type": 7,
+    "representative_fixture_draws": 8,
+    "undefined_policy": "withhold if any undefined draw; never redraw",
+    "unit": "whole group, with replacement"
+  },
+  "dependencies": "Python standard library only",
+  "files": {
+    "README.md": {
+      "bytes": 4878,
+      "sha256": "ee12a24510139b31a24294e55025b7fcdfa6a4dbee01b3117bfd2f98d2e72b8d"
+    },
+    "bootstrap-ci.csv": {
+      "bytes": 289,
+      "sha256": "075bf8bbb673973479da8f226defb501e241453eee1019bae362b767e473adae"
+    },
+    "bootstrap-data.csv": {
+      "bytes": 143,
+      "sha256": "6a2e6ff77b44d1ad9298b40f3bb6057ecd903243a40ee481c3dfdeb0da34323d"
+    },
+    "bootstrap-expected.csv": {
+      "bytes": 551,
+      "sha256": "44c781aef0eee1bac80159b6ff71ca032faa6402992ac390e368132f8e08066c"
+    },
+    "bootstrap-indices.csv": {
+      "bytes": 562,
+      "sha256": "1359366657ca66bf2135510f5fdf2dad9dad1ad15fff50bc44186b6de2db1c4a"
+    },
+    "fold-diagnostics.csv": {
+      "bytes": 84,
+      "sha256": "85621bf06ead1a2795de6a5c10230302ae40751665a256a3261040801d940583"
+    },
+    "fold-expected.csv": {
+      "bytes": 57,
+      "sha256": "5177ff8000c44f16308fa7972a7834e5b83aadbc01cadce272524a77490d23c4"
+    },
+    "interval-display.csv": {
+      "bytes": 315,
+      "sha256": "2394099e2ad9c96cc5a37383cf2f3d9b6255394202500254bfe4edf4d2878a62"
+    },
+    "metric-data.csv": {
+      "bytes": 595,
+      "sha256": "bcf7b842e11dafc17161730c899ed5c952c42482072395c425007cf724adc75a"
+    },
+    "metric-expected.csv": {
+      "bytes": 279,
+      "sha256": "83208fa5a4b32b4ebb50e1e4c1219f266a6245d8e68e2dd47feb69ce2dbaf586"
+    },
+    "reference.py": {
+      "bytes": 11774,
+      "sha256": "18c56992cbe70c19c9d6791a3e54a0e467fd6ad9b179a9fc7983e6f43d8dcb13"
+    },
+    "ridge-data.csv": {
+      "bytes": 455,
+      "sha256": "5d2b01263d8821b3e778e298ebe0757dfaa883babd17696bcee938d7164ba119"
+    },
+    "ridge-expected.csv": {
+      "bytes": 7923,
+      "sha256": "758dc5e7be084752812a912d687982ec5c98e31c4aa5f2abe61c2022a552ddeb"
+    },
+    "scaling-data.csv": {
+      "bytes": 86,
+      "sha256": "2b5d8c4155989a745086d6db9d61d1c454b89264d86b486728d3507f8c2da756"
+    },
+    "scaling-expected.csv": {
+      "bytes": 56,
+      "sha256": "18044946d7b5528edbc6be7394e4c0d0c811063455b92eb87d4d0337a46af22d"
+    },
+    "scaling-transformed.csv": {
+      "bytes": 67,
+      "sha256": "ae4c4e9dddcfea0871e591e6228f9297c2e300592b70383e0498f6cf4fcaaf27"
+    },
+    "split-cv-leak.csv": {
+      "bytes": 115,
+      "sha256": "bd7e7304594118d7df04e6ec1ab2de27ec759da748f2adbe1faee26a1cfc104b"
+    },
+    "split-holdout-leak.csv": {
+      "bytes": 113,
+      "sha256": "18f51b87baf728f9f677a80e481d96342b90659c0fb20d4e2fb1e2f10ef7345b"
+    },
+    "split-valid.csv": {
+      "bytes": 102,
+      "sha256": "a758008a951adba8dcf4ffc626d245678167d343b9574c4b4c777b9058bb1e16"
+    },
+    "verify.R": {
+      "bytes": 7030,
+      "sha256": "50eeb257919b2e7288ee213db271c17c37415307063dbbf627e12edeba0f8486"
+    }
+  },
+  "format_version": 1,
+  "generator": "reference.py",
+  "lambda_grid": "10^seq(4,-4,length.out=41)",
+  "numeric_serialization": "12 significant decimal digits; LF; UTF-8; no native float bit-exact claim",
+  "objective": "mean(log(1+exp(eta))-y*eta)+lambda/2*sum(beta^2); intercept unpenalized",
+  "python": "3.13.5",
+  "reason": "WP11a freezes independent statistical oracles before llm_probe implementation",
+  "scaling": "train-only mean and RMS; drop constant columns"
+}
