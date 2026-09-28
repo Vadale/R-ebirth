@@ -47,6 +47,12 @@ pinned against regression.
 Vision-tower interpretability (tracing or steering inside the image encoder)
 is **not** part of this release. The full plan lives in the work-package documents under `docs/`.
 
+The development checkout (`0.2.0.9000`) also includes constrained generation,
+native Spark support, and a [restartable funding-extraction application](examples/funding-extraction/README.md).
+The application prepares a local environment, runs offline and resumes saved
+batches. These additions are separate from the released v0.2.0 binary; batch
+reliability does not establish extraction accuracy.
+
 ## Repository layout
 
 ```
@@ -55,6 +61,7 @@ rust/               Cargo workspace: rebirth-ffi (R <-> Rust boundary), rebirth-
 rebirth/src/llama.cpp/   pinned, patched llama.cpp (vendored; see its VENDORING.md)
 tests/llm-golden/   Harness B numerical goldens
 tests/demos/        the two reference demos (anatomy lab; topics without Python)
+examples/funding-extraction/   offline batch setup, execution and recovery
 ```
 
 ## Planning documents (the single source of truth)

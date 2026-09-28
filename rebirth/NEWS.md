@@ -1,5 +1,11 @@
 # relm 0.2.0.9000
 
+* The repository's funding-extraction example now provides explicit environment
+  setup, offline batch execution and verified restart/resume. Immutable results
+  retain raw outputs, evidence and failure details; changed inputs/configuration
+  refuse stale reuse. Application-only jsonlite 2.0.0 stays outside the package.
+  Operational reliability does not establish extraction accuracy.
+
 * The embedded llama.cpp engine moves from b9726 to b10828 for native
   Spark-X2.5-4B support. The optional `spark-x2.5-4b-q8_0` download alias pins
   the official 4.38 GB GGUF. Ollama is not required. The author's single-turn

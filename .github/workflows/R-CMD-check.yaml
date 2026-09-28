@@ -174,3 +174,20 @@ jobs:
           args: 'c("--no-manual")'
           error-on: '"warning"'
           upload-snapshots: true
+
+      # D2 is an application outside the package; reuse R CMD check's installed
+      # build. Its parser pin never enters relm Imports/Suggests (D-031).
+      - name: Prepare the pinned D2 application parser
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("jsonlite", quietly = TRUE) ||
+              as.character(packageVersion("jsonlite")) != "2.0.0") {
+            install.packages("https://cran.r-project.org/src/contrib/Archive/jsonlite/jsonlite_2.0.0.tar.gz",
+                             repos = NULL, type = "source")
+          }
+
+      - name: D2 process interruption and identity acceptance (model-free)
+        run: >-
+          python3 tests/funding-extraction/test_restart.py
+          --relm-library rebirth/check/relm.Rcheck
+          --work-dir "${{ runner.temp }}/d2-process"

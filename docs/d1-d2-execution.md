@@ -1,7 +1,9 @@
 # D1/D2 — Evaluated extraction and restartable batch execution
 
 Date: 2026-09-27. Founder authorized the D block after S1 acceptance.
-S1 is merged as PR #44 at `87f6c04`. Work branch: `codex/document-extraction`.
+S1 is merged as PR #44 at `87f6c04`; D1 as PR #45 at `008b130`.
+D2 work branch: `codex/restartable-extraction`, based on merged Spark PR #46
+(`2c827a7`, llama.cpp b10828).
 The sequence remains D1, then D2; there is no new relm export in this block.
 
 **Recorded outcome:** the [D1 experiment](d1-extraction-evaluation.md) is complete
@@ -9,16 +11,20 @@ with failed quality gates: 10/10 schema-valid structured outputs, 2/10 task-vali
 0/10 fully grounded, 1/4 known amounts and 6/8 unsupported fields among task-valid
 records. Preserve this bounded negative result; D1 usefulness is not accepted.
 Human correction time remains unmeasured. The held-out set is consumed and must
-not become a tuning set for a new held-out claim. D2 is prepared, not implemented;
-its application dependency decision below remains pending.
+not become a tuning set for a new held-out claim. D2 is implemented in the
+[reference application](../examples/funding-extraction/README.md); its acceptance
+measurements and passing Mac/Linux gates are recorded in [the D2 report](d2-batch-operation.md).
+The founder deferred stronger-model/API/Luna comparisons; they are not D2 gates.
 
 ## Dependency decision
 
 [D-031](../DECISIONS.md#d-031--json-dependency-for-the-document-extraction-application)
-proposes application-only `jsonlite == 2.0.0`. It is not yet approved. R's
+approves application-only `jsonlite == 2.0.0` in its 2026-09-28 addendum. R's
 `tools::sha256sum()` supplies hashing; no digest/renv dependency is needed for
 the bounded recipe. Existing base-R and Python-standard-library evaluation
-tools can proceed independently of this application dependency decision.
+tools remain independent of this application dependency. Setup snapshots the
+trusted installed relm/nanoarrow/jsonlite builds; it does not install the initial
+R/toolchain/relm prerequisites. Run/resume verifies the snapshot and model bytes.
 
 ## D1 acceptance and experiment protocol
 

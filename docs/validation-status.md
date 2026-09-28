@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-28 for the native Spark integration in progress; the historical
+Updated 2026-09-28 for merged Spark support and D2 batch operation; the historical
 maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
@@ -9,8 +9,9 @@ alone is not evidence that its latest execution succeeded. Inspect the
 The b9726 → b10828 engine update and optional Spark checks are recorded in
 [D-032 validation](spark-native-validation.md). Local native, package, numerical,
 vision and Spark Metal acceptance passed. The reused extraction pilot improved
-to 8/10 exact records, without a new quality acceptance. Linux CPU and GitHub
-checks remain pending at this local milestone.
+to 8/10 exact records, without a new quality acceptance. Spark PR #46 merged
+at `2c827a7` after all nine PR checks and the dispatched Linux/Mac model, vision,
+demo and Valgrind workflows passed. D2 has separate operational acceptance below.
 
 ## Implemented checks
 
@@ -91,14 +92,15 @@ S0 specifies concrete commands, fixtures and promotion thresholds for constraine
 output, extraction and batch artifacts. WP11a and WP12a own the later probe and
 service contracts; I1 specifies its selected adapter checks. S0 has offline
 reference-artifact checks; S1 now has local native/runtime evidence, detailed in
-[S1 implementation](s1-implementation.md). D1 now has a measured negative result; D2 and later product gates remain unexecuted.
+[S1 implementation](s1-implementation.md). D1 has a measured negative result; D2 has application/process acceptance evidence
+in [the D2 report](d2-batch-operation.md). Later product gates remain unexecuted.
 
 | WP | Planned gate | Required execution context | Status |
 |---|---|---|---|
 | S0 | Frozen codebook, labelled pilot, document-group split audit, batch artifact example, API/dependency proposals | `python3 tests/structured-output/verify.py --self-test` and `check_batch_contract.py` in the same directory; 32 cases / 7 sources / 5 groups | Offline checks passed; D-030 approved |
 | S1 | Supported-schema validation, unsupported-constraint rejection, incomplete-output/resource cases, unchanged unconstrained goldens | Tiny model-free fixtures in CI plus explicit small-model latency/memory comparison | Accepted/merged PR #44: all nine PR checks and model run pass; Mac Metal 1.531× with no positive peak-RSS increase; Linux CPU/R 4.6.1 1.417× and +2.30 MiB |
 | D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Evaluated, failed promotion: 0/10 joint matches, 1/4 known amounts, 6/8 unsupported fields in task-valid records; human correction time unmeasured |
-| D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Not implemented; D-031 application dependency approval pending |
+| D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Operational acceptance passed: 466 assertions on each Mac/Linux R-release/oldrel leg, offline Spark Metal and Qwen CPU kill/resume runs; PR #47, D2 report |
 | WP11a/b | Selection-aware/grouped evaluation, fold-local preprocessing, independent statistical references and controls | Synthetic reference fixtures plus pinned anatomy-lab example | Not run |
 | WP12a/b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Chosen Mac/Linux CPU service recipe; supervisor/worker versions pinned | Not run |
 | I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |
@@ -126,4 +128,4 @@ records. The unconstrained comparator has 1/10 joint matches. All predictions,
 failed records and proposed source-review corrections are preserved. Eight
 evaluator regressions and the 150-prediction artifact rescore pass; model-free
 checks enter the existing Rust/golden CI job. D1 usefulness and human usability
-remain unestablished; no D2 execution result is claimed.
+remain unestablished. D2 operational results are separate from extraction quality.

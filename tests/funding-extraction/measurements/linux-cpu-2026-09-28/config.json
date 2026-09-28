@@ -1,0 +1,12 @@
+{
+  "format_version": 1,
+  "prompt": "prompt.txt",
+  "schema": "output.schema.json",
+  "documents": "documents.json",
+  "backend": "cpu",
+  "context": 4096,
+  "max_tokens": 768,
+  "temperature": "0",
+  "top_p": "0.95",
+  "chat": true
+}

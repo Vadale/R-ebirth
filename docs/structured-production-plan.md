@@ -8,8 +8,10 @@ macOS/Linux CI and Mac Metal/Linux CPU operational gates passing. The founder
 authorized D1 then D2; [their execution plan](d1-d2-execution.md) records the
 experiment and batch contract. D1 has a [negative held-out result](d1-extraction-evaluation.md):
 0/10 fully grounded structured records despite 10/10 schema validity. D1
-usefulness is not accepted; D2 remains unimplemented with D-031 dependency
-approval pending. Later public API changes and new
+usefulness is not accepted. D2 now implements the restartable reference
+application under approved application-only D-031; its Mac/Linux operational
+acceptance passes in PR #47. See its
+[acceptance report](d2-batch-operation.md). Later public API changes and new
 dependencies retain their separate approval gates. The independent
 GPT-6 Astra review, using ultra reasoning, preceded these planning changes.
 
@@ -39,8 +41,10 @@ existing decisions. No new model backend is a prerequisite for this increment.
 One WP is active at a time. Each implementation WP targets at most two working
 weeks; split a larger design before implementation. The following order takes
 precedence over historical phase numbering for this increment. **D1 has reached a recorded negative stop** after its bounded evaluation;
-D1 usefulness remains unaccepted. D2 is the next prepared WP, pending its
-application dependency approval; S0/S1 are complete. Follow the milestone/verification policy
+D1 usefulness remains unaccepted. D2 implementation/operational acceptance is
+complete in PR #47, with integration pending;
+S0/S1 and native Spark support are complete. Stronger-model comparisons are
+deferred and do not block operational acceptance. Follow the milestone/verification policy
 in [development workflow](development-workflow.md) (D-029).
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |

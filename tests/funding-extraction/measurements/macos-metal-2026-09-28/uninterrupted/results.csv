@@ -1,0 +1,4 @@
+"id","status","amount_usd","amount_qualifier","duration_years","conditional_on_funds","evidence_amount_usd","evidence_amount_qualifier","evidence_duration_years","evidence_conditional_on_funds","error_class","error_message"
+"ace22-total","success",100000000,"stated",5,,"The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs).","The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs).","The National Institutes of Health has awarded a total of $100 million over the next five years to support nine Autism Centers of Excellence (ACEs).",,,
+"ace22-purpose","success",,"not_stated",,,,,,,,
+"ace22-renewal","success",,"not_stated",,,,,,,,

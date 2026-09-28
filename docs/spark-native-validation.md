@@ -5,6 +5,13 @@ This work updates the embedded engine from llama.cpp b9726 to **b10828**
 relm, with no Ollama process or server. The target is the minimum release named
 by the [official model card](https://huggingface.co/XHToken/Spark-X2.5-4B).
 
+**Integration update (2026-09-28):** [PR #46](https://github.com/Vadale/R-ebirth/pull/46)
+merged at `2c827a7` after all nine PR checks and every dispatched validation
+workflow passed: Spark Linux CPU (25 expectations), Qwen/S1, Linux/Mac vision,
+both demos and Valgrind. The local milestone below retains its original scope;
+remote run links are preserved in the merged PR. D2 is tracked separately in
+[its batch-operation report](d2-batch-operation.md).
+
 ## Scope and reproducibility
 
 The optional registry alias is `spark-x2.5-4b-q8_0`, from
