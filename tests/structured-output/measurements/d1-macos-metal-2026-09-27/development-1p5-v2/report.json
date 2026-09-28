@@ -1,0 +1,2039 @@
+{
+  "config": {
+    "version": 1,
+    "created_utc": "2026-09-27T19:58:01.111002+00:00",
+    "identity": {
+      "model_alias": "qwen2.5-1.5b-instruct-q4_k_m",
+      "model_sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+      "backend": "metal",
+      "runtime": {
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "package_version": "0.2.0.9000",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20"
+      },
+      "modes": [
+        "unconstrained",
+        "structured"
+      ],
+      "sampling": {
+        "max_tokens": 768,
+        "context_length": 4096,
+        "temperature": 0,
+        "top_p": 0.95,
+        "chat": true,
+        "seed_rule": "101 + zero-based index in frozen cases.json"
+      },
+      "file_sha256": {
+        "cases.json": "9ff8039cfb084ef1fd8cb14c8d7b462ec5a72dc8585fb8ba28ca3cc9127f26b8",
+        "manifest.json": "060f1a31c92dee0b0af969c4ecafe2fd20d550ff2b17b014f70c7d639d5f4ad3",
+        "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+        "verify.py": "b07e195dff82e98eea7477340947009bf1175a636d110afd9cdb1d778c11fb5b",
+        "run-model.py": "c54ab979858f095f263ea48695b3cc3c1de903a9db50f35f019560e9047c2b43",
+        "evaluate-model.py": "7e9449200a2327b94bb0e000fe3e7de6054ac08170cbbd7fc294420a9d45668e",
+        "evaluate-model.R": "032b037f15b7b2a754ab3caea32d7458fa7c7d1c3af89f2c73f4a5062ee0d59c",
+        "sources/ace2022.txt": "8a8e0517d242bb25c86f9f720667b7739af40504913fbfdc82201c478fe90c8e",
+        "sources/ace2012.txt": "cc16477f89d91b33d25ed48b6bb4301683fdf67e0e81295bbf57806ba7547f82",
+        "sources/nlm.txt": "72079d302075cf1e711942ce4196f686f71121306482c5bcfe9a7f307223a18b",
+        "sources/nlm2023budget.txt": "b6dd64a5584e463cde1f0094dd52309570fc1682f433fc289669dc940f5ece12",
+        "sources/brain2017.txt": "43d3fb1462fa4af2607fce08779e886d94c131576940e1f093eed1df9b4b7c29",
+        "sources/nobel.txt": "ed26f9422a0d37d7e37a9474a72c751c7641cd81eac2426107b2205a3e197b6b",
+        "sources/heal.txt": "a1b8dec17259c1f2a63152fc55e9c481387a351a9685fd6b91d12ab044c68a1c"
+      },
+      "registry_sha256": "ff58fd169c705531fbd411a8c5dd9b6dd125dce2d7297a05d7c48491692801e0",
+      "template_sha256": "668105321f58eb9a2b7ffc1920ab1f20cdb2b4af013711afc95c04e92fb9a28b",
+      "schema_sha256": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+      "label_free_inputs_sha256": "11c15cab38b680f39e3118e8cc188dfdd166df2982e75b603de7de15117e9dc2"
+    },
+    "split": "development",
+    "system": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "model_path": "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+    "r_library": "/private/tmp/relm-s1/library",
+    "candidate_sha256": null
+  },
+  "runs": {
+    "unconstrained": {
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/evaluate-model.R",
+        "unconstrained",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+        "metal",
+        "/private/tmp/relm-d1-dev-1p5-v2/inputs.tsv",
+        "/private/tmp/relm-d1-dev-1p5-v2/schema.json",
+        "/private/tmp/relm-d1-dev-1p5-v2/unconstrained",
+        "/private/tmp/relm-s1/library",
+        "768",
+        "4096",
+        "0",
+        "0.95"
+      ],
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "returncode": 0,
+      "diagnostics": [
+        {
+          "index": "0",
+          "id": "ace22-total",
+          "seed": 101,
+          "status": "success",
+          "elapsed_seconds": 2.031,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-0.json",
+          "output_sha256": "184140226183b134576cf299c0c5b7941b5b628522b256f3cb9e821856634153"
+        },
+        {
+          "index": "1",
+          "id": "ace22-purpose",
+          "seed": 102,
+          "status": "success",
+          "elapsed_seconds": 2.221,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-1.json",
+          "output_sha256": "3803493b1654cd9884156fd3952b2bbc312b1e566716524c51c1a5ffe074c9d0"
+        },
+        {
+          "index": "2",
+          "id": "ace22-renewal",
+          "seed": 103,
+          "status": "success",
+          "elapsed_seconds": 2.284,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-2.json",
+          "output_sha256": "be86da5185797d6ad6a2af547bb8a0eb1ae265e436e066b77132a4dfc04f01f9"
+        },
+        {
+          "index": "3",
+          "id": "ace12-total",
+          "seed": 104,
+          "status": "success",
+          "elapsed_seconds": 2.156,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-3.json",
+          "output_sha256": "184140226183b134576cf299c0c5b7941b5b628522b256f3cb9e821856634153"
+        },
+        {
+          "index": "4",
+          "id": "ace12-purpose",
+          "seed": 105,
+          "status": "success",
+          "elapsed_seconds": 2.238,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-4.json",
+          "output_sha256": "4f95ba89316e8455f6459181ddcb82916226e7b935d2528ed29ddf9591e59933"
+        },
+        {
+          "index": "5",
+          "id": "ace12-wrong-target",
+          "seed": 106,
+          "status": "success",
+          "elapsed_seconds": 2.208,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-5.json",
+          "output_sha256": "d8a696d65c4d6b6514bcfe6e2be92c28af21c60c206a2e8c8e938b84a3dfaedf"
+        },
+        {
+          "index": "16",
+          "id": "nobel-prize",
+          "seed": 117,
+          "status": "success",
+          "elapsed_seconds": 2.292,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-16.json",
+          "output_sha256": "f3cffa889e374cbb567c2b02d01fa1d68c553331a663724bff6d0b69a6cd24a0"
+        },
+        {
+          "index": "17",
+          "id": "nobel-neurons",
+          "seed": 118,
+          "status": "success",
+          "elapsed_seconds": 2.159,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-17.json",
+          "output_sha256": "8a4b1ecc6b49bd7e311f1f646dfa39eed3ac78ef3f8004c9130cdc018e56c756"
+        },
+        {
+          "index": "18",
+          "id": "nobel-support",
+          "seed": 119,
+          "status": "success",
+          "elapsed_seconds": 2.289,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-18.json",
+          "output_sha256": "c5a0e211a1b9419690dc992f8ba97012e490888fb23c1790e6b1a7eade4f4cc4"
+        },
+        {
+          "index": "19",
+          "id": "heal-budget",
+          "seed": 120,
+          "status": "success",
+          "elapsed_seconds": 2.056,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-19.json",
+          "output_sha256": "3796388faf4b04a2a2ca5c0d8a4e51d59d6bc5557c5764d028724386c5fce724"
+        },
+        {
+          "index": "20",
+          "id": "heal-budget-only",
+          "seed": 121,
+          "status": "success",
+          "elapsed_seconds": 2.021,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-20.json",
+          "output_sha256": "3796388faf4b04a2a2ca5c0d8a4e51d59d6bc5557c5764d028724386c5fce724"
+        },
+        {
+          "index": "21",
+          "id": "heal-duration",
+          "seed": 122,
+          "status": "success",
+          "elapsed_seconds": 2.096,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-21.json",
+          "output_sha256": "be86da5185797d6ad6a2af547bb8a0eb1ae265e436e066b77132a4dfc04f01f9"
+        },
+        {
+          "index": "22",
+          "id": "heal-purpose",
+          "seed": 123,
+          "status": "success",
+          "elapsed_seconds": 2.119,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-22.json",
+          "output_sha256": "be86da5185797d6ad6a2af547bb8a0eb1ae265e436e066b77132a4dfc04f01f9"
+        }
+      ],
+      "protocol_errors": [],
+      "execution_complete": true,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096"
+      },
+      "metrics": {
+        "records": 13,
+        "valid_records": 0,
+        "failed_or_invalid": 13,
+        "record_accuracy": 0.0,
+        "field_accuracy": {
+          "amount_usd": 0.0,
+          "amount_qualifier": 0.0,
+          "duration_years": 0.0,
+          "conditional_on_funds": 0.0
+        },
+        "known_amount_accuracy": 0.0,
+        "unsupported_nonmissing_rate": null,
+        "predicted_nonmissing": 0
+      },
+      "schema_valid_records": 3,
+      "denominators": {
+        "records": 13,
+        "per_field": {
+          "amount_usd": 13,
+          "amount_qualifier": 13,
+          "duration_years": 13,
+          "conditional_on_funds": 13
+        },
+        "known_amount_records": 4,
+        "predicted_nonmissing_fields_in_task_valid_records": 0
+      },
+      "numerators": {
+        "exact_grounded_records": 0,
+        "correct_fields": {
+          "amount_usd": 0,
+          "amount_qualifier": 0,
+          "duration_years": 0,
+          "conditional_on_funds": 0
+        },
+        "correct_known_amounts": 0,
+        "unsupported_nonmissing_fields": 0
+      },
+      "case_details": [
+        {
+          "id": "ace22-total",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": "100",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "100",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": "5",
+              "observed_present": true,
+              "expected_evidence_anchor": "over the next five years",
+              "observed_evidence": "5",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "1000000",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 3,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "3",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-renewal",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-total",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": "100",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "100",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": "5",
+              "observed_present": true,
+              "expected_evidence_anchor": "over five years",
+              "observed_evidence": "5",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "1000000",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "1",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-wrong-target",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": "100 million",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "100 million",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": "5 years",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "5 years",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-prize",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": "1200000",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "1.2 million USD",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "approximate",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "approximate",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 0,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-neurons",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "approximate",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "approximate",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-support",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 100000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "100000000",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 10,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "10",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": "25",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "25",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": "5",
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": "5",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": true,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": "Award levels may increase or decrease over time based on programmatic needs, funding availability, and recipient performance.",
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget-only",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": "25",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "25",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": "5",
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": "5",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "false",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-duration",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "anticipated to be five years",
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-purpose",
+          "schema_check": {
+            "valid": false,
+            "error": "amount_usd: expected null or a bounded integer"
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        }
+      ]
+    },
+    "structured": {
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/evaluate-model.R",
+        "structured",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+        "metal",
+        "/private/tmp/relm-d1-dev-1p5-v2/inputs.tsv",
+        "/private/tmp/relm-d1-dev-1p5-v2/schema.json",
+        "/private/tmp/relm-d1-dev-1p5-v2/structured",
+        "/private/tmp/relm-s1/library",
+        "768",
+        "4096",
+        "0",
+        "0.95"
+      ],
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "returncode": 0,
+      "diagnostics": [
+        {
+          "index": "0",
+          "id": "ace22-total",
+          "seed": 101,
+          "status": "success",
+          "elapsed_seconds": 2.361,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-0.json",
+          "output_sha256": "561a15821a8ab1092577058370621aec18cdc9817c6ea83ed3ba81c9c30bba14"
+        },
+        {
+          "index": "1",
+          "id": "ace22-purpose",
+          "seed": 102,
+          "status": "success",
+          "elapsed_seconds": 2.28,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-1.json",
+          "output_sha256": "961393f3cc5a10656b0a6bff13a4752be9707b5db0e33cc407077c5abd13062a"
+        },
+        {
+          "index": "2",
+          "id": "ace22-renewal",
+          "seed": 103,
+          "status": "success",
+          "elapsed_seconds": 2.01,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-2.json",
+          "output_sha256": "66a91b50e44dc5b51eb75211bee933195c8905bcb4fb02910247218fccf4d909"
+        },
+        {
+          "index": "3",
+          "id": "ace12-total",
+          "seed": 104,
+          "status": "success",
+          "elapsed_seconds": 2.33,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-3.json",
+          "output_sha256": "561a15821a8ab1092577058370621aec18cdc9817c6ea83ed3ba81c9c30bba14"
+        },
+        {
+          "index": "4",
+          "id": "ace12-purpose",
+          "seed": 105,
+          "status": "success",
+          "elapsed_seconds": 2.016,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-4.json",
+          "output_sha256": "66a91b50e44dc5b51eb75211bee933195c8905bcb4fb02910247218fccf4d909"
+        },
+        {
+          "index": "5",
+          "id": "ace12-wrong-target",
+          "seed": 106,
+          "status": "success",
+          "elapsed_seconds": 2.336,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-5.json",
+          "output_sha256": "561a15821a8ab1092577058370621aec18cdc9817c6ea83ed3ba81c9c30bba14"
+        },
+        {
+          "index": "16",
+          "id": "nobel-prize",
+          "seed": 117,
+          "status": "success",
+          "elapsed_seconds": 2.276,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-16.json",
+          "output_sha256": "5456a3b8796b08690850fb7a8aec81566189832efd523fa4b34007703b6b3d52"
+        },
+        {
+          "index": "17",
+          "id": "nobel-neurons",
+          "seed": 118,
+          "status": "success",
+          "elapsed_seconds": 2.438,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-17.json",
+          "output_sha256": "7ad8787640702abf8748bcdda956a1eec25fb2e7c491470c5e073b13bf2cf4d4"
+        },
+        {
+          "index": "18",
+          "id": "nobel-support",
+          "seed": 119,
+          "status": "success",
+          "elapsed_seconds": 2.549,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-18.json",
+          "output_sha256": "4422ba7a40eb66b812b29e3a238b0a654b7a709f3534dbf9d28badea7954613e"
+        },
+        {
+          "index": "19",
+          "id": "heal-budget",
+          "seed": 120,
+          "status": "success",
+          "elapsed_seconds": 2.394,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-19.json",
+          "output_sha256": "8f9c01edf8bae9d057d5ccd68076b66f77e39f98311ec83a3eddc4cdb5063904"
+        },
+        {
+          "index": "20",
+          "id": "heal-budget-only",
+          "seed": 121,
+          "status": "success",
+          "elapsed_seconds": 2.364,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-20.json",
+          "output_sha256": "8f9c01edf8bae9d057d5ccd68076b66f77e39f98311ec83a3eddc4cdb5063904"
+        },
+        {
+          "index": "21",
+          "id": "heal-duration",
+          "seed": 122,
+          "status": "success",
+          "elapsed_seconds": 2.392,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-21.json",
+          "output_sha256": "d85bef2eeb400943d1694573088cc6abe7e03cf27a47d660524dd3bafcdb480b"
+        },
+        {
+          "index": "22",
+          "id": "heal-purpose",
+          "seed": 123,
+          "status": "success",
+          "elapsed_seconds": 2.175,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-22.json",
+          "output_sha256": "7ee85fddc73e7d8b942959d6209e34916791e019f5b9da447210a9b86ea22363"
+        }
+      ],
+      "protocol_errors": [],
+      "execution_complete": true,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-s1/library/relm",
+        "native_library": "/private/tmp/relm-s1/library/relm/libs/relm.so",
+        "native_library_sha256": "db307bcb91472a92b5441073674ba684f0f40a14b43766f3dc2ac899b8040d48",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096"
+      },
+      "metrics": {
+        "records": 13,
+        "valid_records": 0,
+        "failed_or_invalid": 13,
+        "record_accuracy": 0.0,
+        "field_accuracy": {
+          "amount_usd": 0.0,
+          "amount_qualifier": 0.0,
+          "duration_years": 0.0,
+          "conditional_on_funds": 0.0
+        },
+        "known_amount_accuracy": 0.0,
+        "unsupported_nonmissing_rate": null,
+        "predicted_nonmissing": 0
+      },
+      "schema_valid_records": 13,
+      "denominators": {
+        "records": 13,
+        "per_field": {
+          "amount_usd": 13,
+          "amount_qualifier": 13,
+          "duration_years": 13,
+          "conditional_on_funds": 13
+        },
+        "known_amount_records": 4,
+        "predicted_nonmissing_fields_in_task_valid_records": 0
+      },
+      "numerators": {
+        "exact_grounded_records": 0,
+        "correct_fields": {
+          "amount_usd": 0,
+          "amount_qualifier": 0,
+          "duration_years": 0,
+          "conditional_on_funds": 0
+        },
+        "correct_known_amounts": 0,
+        "unsupported_nonmissing_fields": 0
+      },
+      "case_details": [
+        {
+          "id": "ace22-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": 100000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "100000000",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "over the next five years",
+              "observed_evidence": "5",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 2000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "2000000",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace22-renewal",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 100000000,
+              "observed": 100000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "100000000",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$100 million",
+              "observed_evidence": "stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "over five years",
+              "observed_evidence": "5",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "ace12-wrong-target",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 100000000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "100000000",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "5",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-prize",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 1200000,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "1.2 million USD",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "approximate",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "approximate",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-neurons",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "AssertionError"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "about 100 billion",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "approximate",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "approximate",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "about 100 billion neurons",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "about 100 billion neurons",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nobel-support",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": 2147483647,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "2147483647",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 22,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "22",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": 25000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "25000000",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": "5",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": true,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": "Award levels may increase or decrease over time based on programmatic needs, funding availability, and recipient performance.",
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-budget-only",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 25000000,
+              "observed": 25000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "25000000",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "at_most",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "up to $25 million",
+              "observed_evidence": "stated",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "over a 5-year period",
+              "observed_evidence": "5",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": false,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-duration",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_qualifier: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "anticipated to be five years",
+              "observed_evidence": "Project duration is anticipated to be five years, but may be shortened or extended, as needed.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "heal-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": false,
+            "error": "amount_usd: missingness/evidence mismatch"
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "not_stated",
+              "value_match": true,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        }
+      ]
+    }
+  },
+  "execution_complete": true,
+  "held_out_gate": null,
+  "held_out_gate_passed": null,
+  "human_review_seconds": null,
+  "human_corrections": null,
+  "limitations": [
+    "Pilot cases are not a representative quality benchmark.",
+    "Schema validity is separate from task validity and expected-grounded scoring.",
+    "Failures remain in every all-case denominator; no retry or repair was attempted.",
+    "The frozen unsupported_nonmissing_rate denominator includes emitted nonmissing fields from task-valid records only; the gate separately requires zero failed or invalid records.",
+    "Human review time and correction burden have not been measured.",
+    "The explicit candidate file guards configuration drift; it cannot prevent a user from inspecting held-out labels or deliberately editing provenance."
+  ]
+}

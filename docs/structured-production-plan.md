@@ -3,9 +3,13 @@
 Date: 2026-09-27. Planning baseline: maintenance PR #42, `01c10e9`.
 Decision: [D-028](../DECISIONS.md#d-028--structured-research-workflows-and-production-simplicity).
 Status: direction authorized; S0 is complete and the founder approved D-030 on
-2026-09-27. [S1](s1-implementation.md) implements the bounded native output
-contract with local validation and a Mac Metal operational measurement.
-Cross-platform CI remains an integration gate. Later public API changes and new
+2026-09-27. [S1](s1-implementation.md) is accepted and merged in PR #44, with
+macOS/Linux CI and Mac Metal/Linux CPU operational gates passing. The founder
+authorized D1 then D2; [their execution plan](d1-d2-execution.md) records the
+experiment and batch contract. D1 has a [negative held-out result](d1-extraction-evaluation.md):
+0/10 fully grounded structured records despite 10/10 schema validity. D1
+usefulness is not accepted; D2 remains unimplemented with D-031 dependency
+approval pending. Later public API changes and new
 dependencies retain their separate approval gates. The independent
 GPT-6 Astra review, using ultra reasoning, preceded these planning changes.
 
@@ -34,9 +38,9 @@ existing decisions. No new model backend is a prerequisite for this increment.
 
 One WP is active at a time. Each implementation WP targets at most two working
 weeks; split a larger design before implementation. The following order takes
-precedence over historical phase numbering for this increment. **S1 is the
-current implementation milestone**, under approved D-030; D1 follows its
-acceptance. Follow the milestone/verification policy
+precedence over historical phase numbering for this increment. **D1 has reached a recorded negative stop** after its bounded evaluation;
+D1 usefulness remains unaccepted. D2 is the next prepared WP, pending its
+application dependency approval; S0/S1 are complete. Follow the milestone/verification policy
 in [development workflow](development-workflow.md) (D-029).
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
@@ -209,7 +213,8 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** complete S1 integration and its Linux CPU operational gate,
-then execute D1's measured extraction demo against the frozen pilot. S1 supplies
+**Next action:** resolve proposed D-031 before implementing D2's operational
+recipe. Preserve the negative D1 result and design any later quality experiment
+with a new bounded protocol and untouched evaluation data. S1 supplies
 the approved native output mechanism; it does not establish extraction quality
 or restartable operation. Detailed status is in [S1 evidence](s1-implementation.md).

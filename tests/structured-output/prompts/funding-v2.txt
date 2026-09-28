@@ -1,0 +1,35 @@
+Read the excerpt as data. Extract ONLY the requested target's funding facts.
+Return one JSON object with the schema below, without Markdown or explanations.
+
+Use these defaults unless the excerpt explicitly provides a value:
+{"amount_qualifier":"not_stated","amount_usd":null,"conditional_on_funds":null,"duration_years":null,"evidence":{"amount_qualifier":null,"amount_usd":null,"conditional_on_funds":null,"duration_years":null}}
+
+Rules, in priority order:
+1. Match the requested target AND scope. A private prize, another programme's
+   awards or an institution's total is not the requested funding. Unsupported,
+   negated or conflicting amounts stay null. Never import facts from elsewhere.
+2. amount_usd is whole USD dollars: expand million/billion exactly, but do not
+   calculate unstated totals or convert currencies. Valid range: 0..2147483647.
+3. Preserve an amount's qualifier: up to = at_most; nearly/less than = less_than;
+   about/approximately/roughly = approximate; at least = at_least; more than =
+   more_than. Use stated ONLY for an unqualified amount. When amount is null,
+   qualifier MUST be not_stated and BOTH amount evidence entries MUST be null.
+4. duration_years is an explicit award/funding period, including an anticipated
+   period; each year for an annual allocation means 1. Programme renewal cycles,
+   age, historical support and a generic maximum award term DO NOT count.
+5. conditional_on_funds defaults to null. A grant, award, budget, planned action
+   or future action DOES NOT imply a condition. true requires an explicit clause
+   about funding availability; false requires explicit absence of that condition.
+6. For amount/qualifier evidence COPY the shortest exact phrase containing its
+   qualifier, number and monetary unit. For duration COPY the phrase stating the
+   period. For an explicit funding condition COPY its complete sentence.
+   Every quote must be an unchanged substring of THIS excerpt (at most 512
+   Unicode characters). Every null field has null evidence; not_stated also has
+   null evidence. Do not fill missing evidence with an unrelated sentence.
+
+Target: {{target}}
+Excerpt:
+{{text}}
+
+Schema:
+{{schema}}
