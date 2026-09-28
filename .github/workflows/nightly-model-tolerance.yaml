@@ -31,7 +31,12 @@
 on:
   schedule:
     - cron: '0 4 * * *' # 04:00 UTC, nightly
-  workflow_dispatch: {} # manual trigger (founder, on demand)
+  workflow_dispatch:
+    inputs:
+      spark:
+        description: Also run the optional 4.38 GB Spark native acceptance
+        type: boolean
+        default: false
 
 name: nightly-model-tolerance.yaml
 
@@ -42,6 +47,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  spark:
+    if: github.event_name == 'workflow_dispatch' && inputs.spark
+    uses: ./.github/workflows/manual-spark.yaml
   model-tolerance:
     runs-on: ubuntu-24.04
     name: nightly Qwen2.5-0.5B Q8_0 tolerance ([MODEL] suite)

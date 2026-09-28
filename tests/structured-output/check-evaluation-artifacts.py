@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify recorded D1 bytes and scores; Rust CI golden job, no model or R."""
+"""Verify recorded D1/regression bytes and scores; Rust CI, no model or R."""
 import importlib.util
 import hashlib
 import json
@@ -24,8 +24,19 @@ assert (base/'held-out/report.json').is_file(), 'Missing held-out result'
 checked=0
 reports=sorted(base.glob("*/report.json"))
 assert reports, "Missing D1 reports"
+regression=root/'measurements/d032-spark-macos-metal-2026-09-28/regression/report.json'
+assert regression.is_file(), 'Missing Spark regression result'
+reports.append(regression)
 for path in reports:
- report=verify.loads(path.read_text()); selected=[c for c in cases if c['split']==report['config']['split']]
+ report=verify.loads(path.read_text())
+ split=report['config']['split']
+ if split=='regression':
+  assert report['held_out_gate'] is None and report['held_out_gate_passed'] is None
+  assert report['config']['candidate_sha256'] is None
+  assert report['config']['identity']['model_alias']=='spark-x2.5-4b-q8_0'
+  assert report['config']['identity']['template_sha256']==candidate['identity']['template_sha256']
+  assert report['config']['identity']['sampling']==candidate['identity']['sampling']
+ selected=[c for c in cases if c['split']==('held_out' if split=='regression' else split)]
  if report['config']['split']=='held_out':
   assert report['config']['identity']==candidate['identity']
   assert report['config']['candidate_sha256']==hashlib.sha256(candidate_path.read_bytes()).hexdigest()
@@ -39,7 +50,8 @@ for path in reports:
   assert report['held_out_gate_passed']==(all(gate.values()) and report['execution_complete'])
  assert hashlib.sha256((path.parent/'prompt-template.txt').read_bytes()).hexdigest()==report['config']['identity']['template_sha256']
  for mode,recorded in report['runs'].items():
-  rows=[verify.loads(line) for line in (path.parent/(mode+'.jsonl')).read_text().splitlines()]
+  prediction_file=(path.parent/mode/'predictions.jsonl') if split=='regression' else (path.parent/(mode+'.jsonl'))
+  rows=[verify.loads(line) for line in prediction_file.read_text().splitlines()]
   assert verify.evaluate(selected,rows)==recorded['metrics'], (path,mode,'metrics')
   valid=sum(profile.check_schema_output(row['output'])['valid'] for row in rows if row['status']=='success')
   assert valid==recorded['schema_valid_records'], (path,mode,'schema')
@@ -47,6 +59,9 @@ for path in reports:
   for row in rows:
    if row['status']=='success':
     assert hashlib.sha256(row['output'].encode('utf-8')).hexdigest()==diagnostics[row['id']]['output_sha256'], (path,mode,row['id'])
+    if split=='regression':
+     raw=path.parent/mode/diagnostics[row['id']]['output_file']
+     assert raw.read_bytes()==row['output'].encode('utf-8'), (path,mode,row['id'],'raw bytes')
   for diagnostic in diagnostics.values():
    if 'partial_file' in diagnostic:
     partial=path.parent/mode/diagnostic['partial_file']

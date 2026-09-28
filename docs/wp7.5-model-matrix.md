@@ -1,5 +1,10 @@
 # WP7.5a — modern-model support matrix
 
+**Version note (D-032, 2026-09-28):** the historical measurements below belong
+to b9726. The current engine update targets b10828 for native Spark-X2.5;
+[its acceptance record](spark-native-validation.md) tracks fresh checks and
+limitations. Historical model results are not silently promoted to the new pin.
+
 **Scope:** ROADMAP §3 Phase 3 / WP7.5a, per **D-021**. This is the running record of
 which modern instruct models load and work **as text** through `rebirth` at the pinned
 engine (llama.cpp **b9726**, Metal on macOS arm64), with the per-model checks and where

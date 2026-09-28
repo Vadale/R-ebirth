@@ -16,9 +16,9 @@ Vendored dependencies and their licenses are recorded here as they are added.
   tag for WP-V1 per DECISIONS.md D-026), which is part of llama.cpp and under
   the same MIT license. Provenance:
     - upstream:              https://github.com/ggml-org/llama.cpp
-    - tag:                   b9726 (released 2026-06-19)
-    - release tarball SHA256:117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0
-    - pruned tree SHA256:    1c8148f33e03bf07b9b8e1e56a0599a5197f4b1069f4dcd28c310e29d47d1289
+    - tag:                   b10828 (released 2026-09-06)
+    - release tarball SHA256:da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247
+    - pruned tree SHA256:    fd1b8327ef675dc91de4b9fde547d8afb7d4c6b2aa63a8f989e421cf59edd7ac
       (pre-patch; the committed tree carries the rebirth patch set, D-015 —
       both patched-tree digests are recorded in VENDORING.md)
   Full provenance, prune manifest, and the patch table:
@@ -53,15 +53,33 @@ Vendored dependencies and their licenses are recorded here as they are added.
 * stb_image.h (v2.30) — dual-licensed: MIT License OR Public Domain
   (www.unlicense.org), at the user's choice.
   Single-header image decoder by Sean Barrett and contributors, vendored
-  unchanged from the llama.cpp b9726 release tarball at
+  unchanged from the llama.cpp b10828 release tarball at
   rebirth/src/llama.cpp/vendor/stb/stb_image.h (WP-V1, DECISIONS.md D-026).
   The full dual-license text is at the end of that file.
 
 * miniaudio (v0.11.25) — dual-licensed: Public Domain (www.unlicense.org) OR
   MIT No Attribution (MIT-0), at the user's choice.
   Single-header audio library by David Reid, vendored unchanged from the
-  llama.cpp b9726 release tarball at
+  llama.cpp b10828 release tarball at
   rebirth/src/llama.cpp/vendor/miniaudio/miniaudio.h (WP-V1, DECISIONS.md
   D-026 audio Option A: it is compiled into libmtmd's helper unit unchanged;
   the package's R API never exposes audio input). The full dual-license text
   is at the end of that file.
+
+* Upstream vendor-hash, used by libmtmd in b10828:
+  - xxHash by Yann Collet, BSD-2-Clause. Full license:
+    rebirth/src/llama.cpp/vendor/hash/xxhash/LICENSE.
+  - SHA-1 by Steve Reid, public domain; notice in
+    rebirth/src/llama.cpp/vendor/hash/sha1/sha1.c.
+  - SHA-256 by Igor Pavlov, public domain. Full notice:
+    rebirth/src/llama.cpp/vendor/hash/sha256/LICENSE.
+  - rotate-bits by William Casarin, MIT. Full license:
+    rebirth/src/llama.cpp/vendor/hash/rotate-bits/LICENSE.md.
+  All sources and license notices are retained unchanged from the pinned
+  llama.cpp release. This is bundled native code, not an R/Rust package dependency.
+
+* Spark-X2.5 chat templates — Apache-2.0, XHToken/Spark-X2.5-4B,
+  revision 0bcb35678590218655dff3765b9e61c83b35e9c4 on Hugging Face.
+  Both source spellings are preserved in rebirth-llm/tests/fixtures/spark/.
+  The package installs their license and the native notices above in
+  rebirth/inst/THIRD-PARTY-NOTICES, retained in binary redistributions.

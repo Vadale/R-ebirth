@@ -20,6 +20,15 @@
 #' before it). A prompt longer than the model's context window raises
 #' `relm_error_context_overflow`, whose message states by how much.
 #'
+#' With the supported Spark-X2.5 chat template, ordinary chat opens the response
+#' with the author's `<think>` marker. Generated reasoning text and closing
+#' markers are returned as generated and count toward `max_tokens`. With a
+#' `schema`, chat instead uses the author's `</think>` non-thinking opener, so
+#' the JSON constraint starts at the first generated token. This does not strip
+#' or repair model output. Spark chat supports the pinned official template and
+#' the existing single user turn; custom templates require `chat = FALSE` and
+#' caller-supplied formatting. Other models keep their existing chat behavior.
+#'
 #' @section Structured output:
 #' Supply `schema` as JSON text to constrain text generation to a bounded subset
 #' of JSON Schema 2020-12. The root must be a non-nullable object with explicit

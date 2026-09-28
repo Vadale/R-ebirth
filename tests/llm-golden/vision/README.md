@@ -1,5 +1,11 @@
 # tests/llm-golden/vision/ — the harness-B vision golden category (WP-V2, D-026)
 
+**D-032 vendor update:** the committed references below were recorded at b9726
+and remain regression evidence. The current nightly builds pristine **b10828**
+on the same runner for the encoder comparison; it retains the byte-exact text
+and token-id pins. `tools/dump-encode.c` follows b10828's helper-options and
+text-length ABI. See `docs/spark-native-validation.md` for fresh bump results.
+
 The **same-implementation leg** for T1 (`llm(projector=)` + `llm_generate(images=)`,
 D-026 point 6): the reference is the **unpatched upstream `llama-mtmd-cli` at the
 pinned tag b9726**, built CPU-only, run greedy on the committed test image. The

@@ -1,0 +1,9 @@
+key	value
+package_version	0.2.0.9000
+package_path	/private/tmp/relm-spark/library/relm
+native_library	/private/tmp/relm-spark/library/relm/libs/relm.so
+r_version	R version 4.5.1 (2025-06-13)
+r_platform	aarch64-apple-darwin20
+backend	metal
+context_length	4096
+token_count_source	Internal generated_tokens payload captured by a base-R exit trace; public llm_generate() path measured

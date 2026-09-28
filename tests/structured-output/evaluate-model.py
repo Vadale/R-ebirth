@@ -6,6 +6,9 @@ Run development with --model MODEL --model-alias ALIAS --backend metal
 Freeze the same settings with --freeze-only --development-report DEV/report.json
 --output NEW_FREEZE_DIRECTORY. Then use --split held_out --candidate
 NEW_FREEZE_DIRECTORY/candidate.json and another new output directory.
+
+The consumed D1 held-out pilot can be rerun with --split regression. This is
+exploratory evidence only and never produces a held-out promotion gate.
 """
 import argparse
 import csv
@@ -31,7 +34,7 @@ REPO = ROOT.parent.parent
 spec = importlib.util.spec_from_file_location("s1_profile_checks", ROOT / "run-model.py")
 profile = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(profile)
-ALIASES = ("qwen2.5-0.5b-instruct-q8_0", "qwen2.5-1.5b-instruct-q4_k_m")
+ALIASES = ("qwen2.5-0.5b-instruct-q8_0", "qwen2.5-1.5b-instruct-q4_k_m", "spark-x2.5-4b-q8_0")
 MODES = ("unconstrained", "structured")
 PLACEHOLDER = re.compile(r"\{\{([^{}]*)\}\}")
 TIMEOUT_SECONDS = 600
@@ -158,6 +161,11 @@ def quality_gate(summary):
             "unsupported_nonmissing_rate_at_most_0_05": metrics["unsupported_nonmissing_rate"] is not None and metrics["unsupported_nonmissing_rate"] <= 0.05}
 
 
+def selected_split(split):
+    """Reuse consumed cases without relabelling them as fresh held-out evidence."""
+    return "held_out" if split == "regression" else split
+
+
 def collect_results(directory, selected, process_result, expected_runtime=None):
     records, protocol_errors = {}, []
     path = directory / "records.tsv"
@@ -277,7 +285,8 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--r-library", type=Path)
     parser.add_argument("--rscript", default="Rscript")
-    parser.add_argument("--split", choices=("development", "contract", "held_out"), default="development")
+    parser.add_argument("--split", choices=("development", "contract", "held_out", "regression"), default="development")
+    parser.add_argument("--mode", choices=("both", "structured"), default="both")
     parser.add_argument("--max-tokens", type=int, default=768)
     parser.add_argument("--context-length", type=int, default=4096)
     parser.add_argument("--temperature", type=float, default=0)
@@ -297,6 +306,11 @@ def main():
         parser.error("held_out requires an explicitly frozen --candidate")
     if args.candidate and args.split != "held_out":
         parser.error("--candidate is reserved for the held_out run")
+    if args.model_alias == "spark-x2.5-4b-q8_0" and (args.split == "held_out" or args.freeze_only):
+        parser.error("Spark may use the consumed D1 pilot only as --split regression, not a new held-out evaluation")
+    if args.mode != "both" and args.split != "regression":
+        parser.error("A single mode is reserved for exploratory regression runs")
+    modes = MODES if args.mode == "both" else ("structured",)
     args.rscript = shutil.which(args.rscript)
     if not args.rscript:
         parser.error("Rscript is required")
@@ -323,7 +337,7 @@ def main():
     args.runtime = preflight_runtime(args.rscript, args.r_library)
     identity = {"model_alias": args.model_alias, "model_sha256": model_hash, "backend": args.backend,
                 "runtime": args.runtime,
-                "modes": list(MODES), "sampling": {"max_tokens": args.max_tokens, "context_length": args.context_length,
+                "modes": list(modes), "sampling": {"max_tokens": args.max_tokens, "context_length": args.context_length,
                 "temperature": args.temperature, "top_p": args.top_p, "chat": True, "seed_rule": "101 + zero-based index in frozen cases.json"},
                 "file_sha256": hashes, "registry_sha256": profile.sha256(registry),
                 "template_sha256": profile.sha256(args.prompt_template), "schema_sha256": profile.sha256(args.schema),
@@ -352,8 +366,8 @@ def main():
         write_json(output / "candidate.json", candidate)
         print(f"Frozen candidate: {output / 'candidate.json'}")
         return 0
-    selected = [case for case in public_inputs if case["split"] == args.split]
-    selected_cases = [case for case in cases if case["split"] == args.split]
+    selected = [case for case in public_inputs if case["split"] == selected_split(args.split)]
+    selected_cases = [case for case in cases if case["split"] == selected_split(args.split)]
     (output / "prompts").mkdir()
     with (output / "inputs.tsv").open("w", encoding="utf-8", newline="") as stream:
         writer = csv.writer(stream, delimiter="\t", lineterminator="\n")
@@ -363,7 +377,7 @@ def main():
             path.write_text(case["prompt"], encoding="utf-8")
             writer.writerow((case["index"], case["id"], case["seed"], str(path)))
     runs = {}
-    for mode in MODES:
+    for mode in modes:
         print(f"Running {mode}: {len(selected)} {args.split} cases", flush=True)
         result, predictions = run_mode(mode, args, output, selected)
         runs[mode] = {**result, **score(selected_cases, predictions)}
@@ -372,7 +386,9 @@ def main():
     report = {"config": config, "runs": runs, "execution_complete": complete, "held_out_gate": gate,
               "held_out_gate_passed": all(gate.values()) and complete if gate is not None else None,
               "human_review_seconds": None, "human_corrections": None,
-              "limitations": ["Pilot cases are not a representative quality benchmark.",
+              "limitations": (["The D1 held-out pilot has already been consumed; this rerun is regression/exploratory evidence, not a new quality acceptance."] if args.split == "regression" else []) +
+                              ["Pilot cases are not a representative quality benchmark.",
+                              "Spark ordinary chat uses its thinking opener; constrained chat uses its official non-thinking opener. Their output budgets and behavior are not equivalent reasoning comparisons.",
                               "Schema validity is separate from task validity and expected-grounded scoring.",
                               "Failures remain in every all-case denominator; no retry or repair was attempted.",
                               "The frozen unsupported_nonmissing_rate denominator includes emitted nonmissing fields from task-valid records only; the gate separately requires zero failed or invalid records.",

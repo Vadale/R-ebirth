@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "amount_usd": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "amount_qualifier": {
+      "type": "string",
+      "enum": [
+        "stated",
+        "approximate",
+        "at_most",
+        "less_than",
+        "at_least",
+        "more_than",
+        "not_stated"
+      ]
+    },
+    "duration_years": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 30
+    },
+    "conditional_on_funds": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "amount_usd": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "amount_qualifier": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "duration_years": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        },
+        "conditional_on_funds": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "amount_usd",
+        "amount_qualifier",
+        "duration_years",
+        "conditional_on_funds"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "amount_usd",
+    "amount_qualifier",
+    "duration_years",
+    "conditional_on_funds",
+    "evidence"
+  ],
+  "additionalProperties": false
+}

@@ -1,44 +1,10 @@
-rebirth WP5 — ablation intervention at build_cvec (DECISIONS.md D-012 / D-016)
-
-Adds a sibling adapter `llama_adapter_intervene` next to the native control
-vector, applied inside `llm_graph_context::build_cvec` AFTER the control vector,
-so it forces chosen residual neurons to a fixed value: per genuinely-ablated
-layer it emits `cur * mask + add` (mask[k]=0, add[k]=value pins neuron k). This
-is the `llm_ablate()` mechanism (D-012 pre-authorized; semantics D-016).
-
-Provenance record (DECISIONS.md D-015): this diff is the human-readable delta of
-the committed, patched `src/llama.cpp/` tree against upstream b9726. `build.rs`
-compiles the committed tree as-is (no build-time patching). `vendor-bump`
-re-applies this diff to a fresh upstream checkout; the CI patch-coherence check
-reverse-applies it and asserts the pre-patch pruned-tree SHA256.
-
-Paths are relative to rebirth/src/llama.cpp/ (git diff --relative), so:
-  git apply       patches/0001-rebirth-wp5-ablation-intervene.diff   # apply
-  git apply -R    patches/0001-rebirth-wp5-ablation-intervene.diff   # revert
-both run from rebirth/src/llama.cpp/.
-
-Hunks (each also carries an inline `rebirth WP5` code comment):
-  include/llama.h          public C API `rebirth_set_intervene` (project-prefixed)
-  src/llama-adapter.h      struct llama_adapter_intervene + _ptr alias
-  src/llama-adapter.cpp    mask_for / apply_to (cur*mask+add) / apply (full
-                           coverage from layer 0; tensors only for non-identity,
-                           i.e. genuinely-ablated, layers)
-  src/llama-context.h      set_intervene decl + llama_adapter_intervene_ptr member
-  src/llama-context.cpp    ctor init; set_intervene impl; graph_params wiring;
-                           public rebirth_set_intervene C entry
-  src/llama-graph.h        intervene ptr in llm_graph_params and llm_graph_context;
-                           intervene == other.intervene in allow_reuse (graph reuse)
-  src/llama-graph.cpp      intervene(params.intervene) init; build_cvec applies
-                           intervene->apply_to after cvec->apply_to (no-op, no
-                           graph node, when no ablation is registered)
-
---- 8< --- unified diff below --- 8< ---
+rebirth WP5 ablation hook, ported without semantic changes to llama.cpp b10828 (D-032).
 
 diff --git a/include/llama.h b/include/llama.h
-index 27e4806..697542f 100644
+index ef7a012..4bcd742 100644
 --- a/include/llama.h
 +++ b/include/llama.h
-@@ -699,6 +699,24 @@ extern "C" {
+@@ -730,6 +730,24 @@ extern "C" {
                           int32_t   il_start,
                           int32_t   il_end);
  
@@ -64,7 +30,7 @@ index 27e4806..697542f 100644
      // Memory
      //
 diff --git a/src/llama-adapter.cpp b/src/llama-adapter.cpp
-index 3e0fe66..56d889e 100644
+index e6678a6..e786aed 100644
 --- a/src/llama-adapter.cpp
 +++ b/src/llama-adapter.cpp
 @@ -133,6 +133,152 @@ bool llama_adapter_cvec::apply(
@@ -271,10 +237,10 @@ index f0b1e50..d35b172 100644
  // llama_adapter_lora
  //
 diff --git a/src/llama-context.cpp b/src/llama-context.cpp
-index 529bc4a..8ca1795 100644
+index c1ef12f..5d7064b 100644
 --- a/src/llama-context.cpp
 +++ b/src/llama-context.cpp
-@@ -35,6 +35,7 @@ llama_context::llama_context(
+@@ -85,6 +85,7 @@ llama_context::llama_context(
                llama_context_params params) :
      model(model),
      cvec(std::make_unique<llama_adapter_cvec>()),
@@ -282,7 +248,7 @@ index 529bc4a..8ca1795 100644
      loras(std::make_unique<llama_adapter_loras>()),
      balloc(std::make_unique<llama_batch_allocr>(model.hparams.n_pos_per_embd())) {
      // TODO warning when creating llama_context with awkward ctx size that is not a power of 2,
-@@ -1297,6 +1298,24 @@ bool llama_context::set_adapter_cvec(
+@@ -1331,6 +1332,24 @@ bool llama_context::set_adapter_cvec(
      return res;
  }
  
@@ -307,7 +273,7 @@ index 529bc4a..8ca1795 100644
  llm_graph_result * llama_context::process_ubatch(const llama_ubatch & ubatch, llm_graph_type gtype, llama_memory_context_i * mctx, ggml_status & ret) {
      if (mctx && !mctx->apply()) {
          LLAMA_LOG_ERROR("%s: failed to apply memory context\n", __func__);
-@@ -2404,6 +2423,7 @@ llm_graph_params llama_context::graph_params(
+@@ -2479,6 +2498,7 @@ llm_graph_params llama_context::graph_params(
          /*.sched       =*/ sched.get(),
          /*.backend_cpu =*/ backend_cpu,
          /*.cvec        =*/ cvec.get(),
@@ -315,7 +281,7 @@ index 529bc4a..8ca1795 100644
          /*.loras       =*/ loras.get(),
          /*.mctx        =*/ mctx,
          /*.cross       =*/ &cross,
-@@ -3812,6 +3832,22 @@ int32_t llama_set_adapter_cvec(
+@@ -4010,6 +4030,22 @@ int32_t llama_set_adapter_cvec(
      return res ? 0 : -1;
  }
  
@@ -339,10 +305,10 @@ index 529bc4a..8ca1795 100644
  // memory
  //
 diff --git a/src/llama-context.h b/src/llama-context.h
-index 853052b..311be0a 100644
+index bf91daa..fcbd7f9 100644
 --- a/src/llama-context.h
 +++ b/src/llama-context.h
-@@ -129,6 +129,15 @@ struct llama_context {
+@@ -130,6 +130,15 @@ struct llama_context {
                  int32_t   il_start,
                  int32_t   il_end);
  
@@ -358,7 +324,7 @@ index 853052b..311be0a 100644
      // process a single ubatch with a specific graph type
      // if memory_context is provided, it will be applied first to the context's memory
      // ret contains the status of the graph computation
-@@ -277,6 +286,7 @@ private:
+@@ -282,6 +291,7 @@ private:
      llama_cparams cparams;
  
      llama_adapter_cvec_ptr  cvec;
@@ -367,10 +333,10 @@ index 853052b..311be0a 100644
  
      llama_cross cross; // TODO: tmp for handling cross-attention - need something better probably
 diff --git a/src/llama-graph.cpp b/src/llama-graph.cpp
-index 68c9e60..3354385 100644
+index 8ea441f..9de9f60 100644
 --- a/src/llama-graph.cpp
 +++ b/src/llama-graph.cpp
-@@ -1059,6 +1059,7 @@ llm_graph_context::llm_graph_context(const llm_graph_params & params) :
+@@ -1486,6 +1486,7 @@ llm_graph_context::llm_graph_context(const llm_graph_params & params) :
      sched            (params.sched),
      backend_cpu      (params.backend_cpu),
      cvec             (params.cvec),
@@ -378,7 +344,7 @@ index 68c9e60..3354385 100644
      loras            (params.loras),
      mctx             (params.mctx),
      cross            (params.cross),
-@@ -1079,7 +1080,13 @@ void llm_graph_context::cb(ggml_tensor * cur, const char * name, int il) const {
+@@ -1508,7 +1509,13 @@ void llm_graph_context::cb(ggml_tensor * cur, const char * name, int il) const {
  ggml_tensor * llm_graph_context::build_cvec(
           ggml_tensor * cur,
                   int   il) const {
@@ -394,10 +360,10 @@ index 68c9e60..3354385 100644
  
  ggml_tensor * llm_graph_context::build_lora_mm(
 diff --git a/src/llama-graph.h b/src/llama-graph.h
-index 5e8a658..1e87d26 100644
+index dddfdac..7cdf73d 100644
 --- a/src/llama-graph.h
 +++ b/src/llama-graph.h
-@@ -599,6 +599,7 @@ struct llm_graph_params {
+@@ -782,6 +782,7 @@ struct llm_graph_params {
      ggml_backend_t backend_cpu;
  
      const llama_adapter_cvec     * cvec;
@@ -405,7 +371,7 @@ index 5e8a658..1e87d26 100644
      const llama_adapter_loras    * loras;
      const llama_memory_context_i * mctx;
      const llama_cross            * cross;
-@@ -688,6 +689,7 @@ struct llm_graph_params {
+@@ -878,6 +879,7 @@ struct llm_graph_params {
              arch  == other.arch  &&
              gtype == other.gtype &&
              cvec  == other.cvec  &&
@@ -413,7 +379,7 @@ index 5e8a658..1e87d26 100644
              loras == other.loras &&
              cross == other.cross;
      }
-@@ -821,6 +823,7 @@ struct llm_graph_context {
+@@ -1022,6 +1024,7 @@ struct llm_graph_context {
      ggml_backend_t backend_cpu; // TODO: needed by build_attn_mha, figure out a way to remove?
  
      const llama_adapter_cvec     * cvec;

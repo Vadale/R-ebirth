@@ -1,4 +1,4 @@
-//! Hand-written FFI to the vendored llama.cpp C API at the pinned tag (`b9726`).
+//! Hand-written FFI to the vendored llama.cpp C API at the pinned tag (`b10828`).
 //!
 //! No bindgen (DECISIONS.md D-006): the surface is small and reviewed by hand
 //! against `src/llama.cpp/include/llama.h` at this exact tag. Every safe wrapper
@@ -48,7 +48,7 @@ pub struct ggml_tensor {
     _opaque: [u8; 0],
 }
 
-/// The scheduler eval callback (`ggml-backend.h` L314, tag b9726):
+/// The scheduler eval callback (`ggml-backend.h` L314, tag b10828):
 /// `bool (*)(struct ggml_tensor * t, bool ask, void * user_data)`. `ask = true`
 /// asks "observe this node?"; `ask = false` fires after the node is computed and
 /// synchronized ("data ready"), and returning `false` cancels the rest of the
@@ -70,7 +70,7 @@ pub type llama_seq_id = i32;
 /// `llama_memory_t` = `struct llama_memory_i *` (opaque; never dereferenced).
 pub type llama_memory_t = *mut c_void;
 
-/// Mirror of `struct llama_batch` (llama.h, tag b9726). Passed **by value** to
+/// Mirror of `struct llama_batch` (llama.h, tag b10828). Passed **by value** to
 /// `llama_decode`; allocated/freed by `llama_batch_init`/`llama_batch_free`, so
 /// the only fields we write are `n_tokens`, `token`, `pos`, `n_seq_id`,
 /// `seq_id`, and `logits` (all heap arrays sized by the engine).
@@ -85,29 +85,29 @@ pub struct llama_batch {
     pub logits: *mut i8,
 }
 
-/// Mirror of `struct llama_model_params` (llama.h, tag b9726).
+/// Mirror of `struct llama_model_params` (llama.h, tag b10828).
 #[repr(C)]
 pub struct llama_model_params {
     pub devices: *mut c_void,
     pub tensor_buft_overrides: *const c_void,
     pub n_gpu_layers: i32,
     pub split_mode: c_int,
+    pub load_mode: c_int,
+    pub lazy_mode: c_int,
     pub main_gpu: i32,
     pub tensor_split: *const f32,
     pub progress_callback: *mut c_void,
     pub progress_callback_user_data: *mut c_void,
     pub kv_overrides: *const c_void,
     pub vocab_only: bool,
-    pub use_mmap: bool,
-    pub use_direct_io: bool,
-    pub use_mlock: bool,
     pub check_tensors: bool,
     pub use_extra_bufts: bool,
     pub no_host: bool,
     pub no_alloc: bool,
+    pub load_mtp: bool,
 }
 
-/// Mirror of `struct llama_context_params` (llama.h, tag b9726).
+/// Mirror of `struct llama_context_params` (llama.h, tag b10828).
 #[repr(C)]
 pub struct llama_context_params {
     pub n_ctx: u32,
@@ -116,6 +116,7 @@ pub struct llama_context_params {
     pub n_seq_max: u32,
     pub n_rs_seq: u32,
     pub n_outputs_max: u32,
+    pub n_outputs_max_per_seq: u32,
     pub n_threads: i32,
     pub n_threads_batch: i32,
     pub ctx_type: c_int,
@@ -267,7 +268,7 @@ extern "C" {
     /// Per-token embedding for output slot `i` (the post-final-norm hidden state,
     /// "result_norm") when the context was created with `pooling_type = NONE`.
     /// Points at `n_embd` f32 owned by the context, valid until the next decode.
-    /// NULL for an invalid slot (llama.h b9726 l.1025).
+    /// NULL for an invalid slot (llama.h b10828 l.1025).
     ///
     /// Deliberately NOT declared (keeps the D-006 minimal FFI surface): the WP3
     /// strategy (D-011) sets `embeddings = true` at context creation and pools in
@@ -303,7 +304,7 @@ extern "C" {
 
     // --- interventions (WP5, D-012/D-016) ---
     // Both setters take pointers + lengths (no struct-mirror change), so the
-    // size-160 ABI test above still covers everything WP5 relies on. The buffers
+    // compiled-header ABI test above still covers everything WP5 relies on. The buffers
     // are Rust-owned, copied synchronously by the engine, and never retained past
     // the call. `ggml_backend_tensor_set` stays undeclared: ablation is a native
     // graph op (`x*mask + add`), not a host tensor write (D-012).
@@ -342,15 +343,16 @@ extern "C" {
     pub fn llama_memory_clear(mem: llama_memory_t, data: bool);
 }
 
-/// Mirror of `struct mtmd_context_params` (tools/mtmd/mtmd.h L86-107, tag
-/// b9726 — the multimodal library vendored by WP-V1, D-026). Returned **by
+/// Mirror of `struct mtmd_context_params` (tools/mtmd/mtmd.h, tag
+/// b10828 — the multimodal library vendored by WP-V1, D-026). Returned **by
 /// value** from `mtmd_context_params_default()`, so the layout rules at the
 /// top of this file apply: same field order, C `enum` = `c_int`, callback
 /// fields opaque pointers. Field-by-field against the initializer in
-/// tools/mtmd/mtmd.cpp L240-256. Re-validate on every `vendor-bump`.
+/// tools/mtmd/mtmd.cpp. Re-validate on every `vendor-bump`.
 #[repr(C)]
 pub struct mtmd_context_params {
     pub use_gpu: bool,
+    pub device: *mut c_void,
     pub print_timings: bool,
     pub n_threads: c_int,
     /// Deprecated upstream in favor of `media_marker`; defaults to NULL.
@@ -366,6 +368,8 @@ pub struct mtmd_context_params {
     pub cb_eval: *mut c_void,
     pub cb_eval_user_data: *mut c_void,
     pub batch_max_tokens: i32,
+    pub progress_callback: *mut c_void,
+    pub progress_callback_user_data: *mut c_void,
 }
 
 /// Opaque handle: `struct mtmd_context` (mtmd.h L61; never dereferenced).
@@ -397,19 +401,20 @@ pub struct mtmd_input_chunks {
     _opaque: [u8; 0],
 }
 
-/// Mirror of `struct mtmd_input_text` (mtmd.h L68-72, tag b9726): the prompt
+/// Mirror of `struct mtmd_input_text` (mtmd.h, tag b10828): the prompt
 /// text (with the media markers already inserted) plus how it is tokenized.
 /// Passed by pointer to `mtmd_tokenize`; the borrowed C string must outlive
 /// the call.
 #[repr(C)]
 pub struct mtmd_input_text {
     pub text: *const c_char,
+    pub text_len: usize,
     pub add_special: bool,
     pub parse_special: bool,
 }
 
 /// Mirror of `struct mtmd_helper_bitmap_wrapper` (mtmd-helper.h L34-37, tag
-/// b9726): returned **by value** from `mtmd_helper_bitmap_init_from_buf`. Two
+/// b10828): returned **by value** from `mtmd_helper_bitmap_init_from_buf`. Two
 /// pointers, same layout rules as the param structs above. `video_ctx` is
 /// populated only by the video branch, which is compiled out (`MTMD_VIDEO=OFF`,
 /// build.rs), so it is always null for the image inputs this crate passes.
@@ -419,7 +424,26 @@ pub struct mtmd_helper_bitmap_wrapper {
     pub video_ctx: *mut c_void,
 }
 
+/// Upstream helper options are passed by value even with video disabled.
+/// Keep the exact b10828 layout; the image path leaves these at engine defaults.
+#[repr(C)]
+pub struct mtmd_helper_video_init_params {
+    pub fps_target: f32,
+    pub ffmpeg_bin_dir: *const c_char,
+    pub timestamp_interval_ms: i64,
+}
+
+#[repr(C)]
+pub struct mtmd_helper_init_opt {
+    pub video_params: mtmd_helper_video_init_params,
+}
+
+pub const LLAMA_LOAD_MODE_NONE: c_int = 0;
+pub const LLAMA_LOAD_MODE_MMAP: c_int = 1;
+pub const LLAMA_LAZY_MODE_OFF: c_int = 0;
+
 extern "C" {
+    pub fn mtmd_helper_init_opt_default() -> mtmd_helper_init_opt;
     // --- multimodal / libmtmd (WP-V1 + WP-V2, D-026) ---
     // The T1 (llm(projector=) + llm_generate(images=)) surface, kept to the
     // D-006 minimum: exactly the symbols the vision module calls. Deliberately
@@ -472,10 +496,11 @@ extern "C" {
     /// size/dimension caps), so the audio sniff inside can never fire. Returns
     /// a by-value wrapper whose `bitmap` is NULL on failure.
     pub fn mtmd_helper_bitmap_init_from_buf(
-        ctx: *mut mtmd_context,
+        ctx: *const mtmd_context,
         buf: *const u8,
         len: usize,
         placeholder: bool,
+        opt: mtmd_helper_init_opt,
     ) -> mtmd_helper_bitmap_wrapper;
 
     /// mtmd.h L163.
@@ -532,7 +557,7 @@ extern "C" {
     /// Returns 0 on success, 1 on a marker/bitmap count mismatch, 2 on an image
     /// preprocessing error; exceptions are caught internally (mtmd.cpp L1424-1435).
     pub fn mtmd_tokenize(
-        ctx: *mut mtmd_context,
+        ctx: *const mtmd_context,
         output: *mut mtmd_input_chunks,
         text: *const mtmd_input_text,
         bitmaps: *const *const mtmd_bitmap,
@@ -607,7 +632,7 @@ mod tests {
 
     /// WP3 is the first code that *writes* `pooling_type`, `attention_type`, and
     /// `embeddings` on the by-value `llama_context_params`. D-008 audited these
-    /// offsets against `llama.h` b9726; because the struct is obtained and passed
+    /// offsets against `llama.h` b10828; because the struct is obtained and passed
     /// by value from `llama_context_default_params()`, a reordered or misaligned
     /// `#[repr(C)]` mirror surfaces as *wrong default values* here — not a link
     /// error — so this guards the three fields with a value check, not just a
@@ -616,12 +641,13 @@ mod tests {
     fn context_params_embedding_fields_have_the_expected_abi() {
         // SAFETY: default params are a plain by-value C struct we only read.
         let p = unsafe { llama_context_default_params() };
+        assert_eq!(p.n_outputs_max_per_seq, 1);
         assert_eq!(p.pooling_type, -1, "LLAMA_POOLING_TYPE_UNSPECIFIED");
         assert_eq!(p.attention_type, -1, "LLAMA_ATTENTION_TYPE_UNSPECIFIED");
         assert!(!p.embeddings, "embeddings default is false");
 
         // WP4 is the first code that *writes* the eval-callback fields; pin their
-        // b9726 null defaults by value (llama-context.cpp L3466-3467) so a reordered
+        // b10828 null defaults by value (llama-context.cpp L3466-3467) so a reordered
         // mirror that shifts them surfaces here, and the generation/embedding
         // contexts (which never set them) provably install no callback.
         assert!(p.cb_eval.is_null(), "cb_eval default is null");
@@ -638,7 +664,7 @@ mod tests {
         assert_eq!(
             core::mem::size_of::<llama_context_params>(),
             160,
-            "llama_context_params size drifted from b9726; re-verify the #[repr(C)] mirror"
+            "llama_context_params size drifted from b10828; re-verify the #[repr(C)] mirror"
         );
     }
 
@@ -646,7 +672,7 @@ mod tests {
     /// `context_params` test's mirror for libmtmd): the struct is obtained and
     /// passed by value, so a reordered or misaligned `#[repr(C)]` mirror
     /// surfaces as *wrong default values*, not a link error. Every field's
-    /// b9726 default (tools/mtmd/mtmd.cpp L240-256) is pinned by value, plus
+    /// b10828 default (tools/mtmd/mtmd.cpp) is pinned by value, plus
     /// the total size. Model-free; runs per-commit in CI (`cargo test`) and
     /// doubles as the link-time proof that libmtmd.a is produced and linked.
     #[test]
@@ -654,6 +680,7 @@ mod tests {
         // SAFETY: default params are a plain by-value C struct we only read.
         let p = unsafe { mtmd_context_params_default() };
         assert!(p.use_gpu, "use_gpu default is true");
+        assert!(p.device.is_null(), "device default is null");
         assert!(p.print_timings, "print_timings default is true");
         assert_eq!(p.n_threads, 4, "n_threads default is 4");
         assert!(
@@ -682,13 +709,143 @@ mod tests {
             "cb_eval_user_data default is null"
         );
         assert_eq!(p.batch_max_tokens, 1024, "batch_max_tokens default is 1024");
+        assert!(p.progress_callback.is_null());
+        assert!(p.progress_callback_user_data.is_null());
 
         // Size pin: catches a vendor-bump reordering/appending fields even where
         // the value checks would still pass by coincidence.
         assert_eq!(
             core::mem::size_of::<mtmd_context_params>(),
-            64,
-            "mtmd_context_params size drifted from b9726; re-verify the #[repr(C)] mirror"
+            96,
+            "mtmd_context_params size drifted from b10828; re-verify the #[repr(C)] mirror"
         );
+    }
+    /// Every mirrored field is checked against the C++ compiler's header layout.
+    /// Runs without a model in the per-PR Rust CI job; catches equal-sized drift
+    /// which a sizeof/default-value-only assertion can miss.
+    #[test]
+    fn mirrored_layouts_match_the_vendored_headers() {
+        use core::mem::{align_of, offset_of, size_of};
+        extern "C" {
+            fn relm_ffi_layout(out: *mut usize, capacity: usize) -> usize;
+        }
+        let expected = [
+            size_of::<llama_batch>(),
+            align_of::<llama_batch>(),
+            offset_of!(llama_batch, n_tokens),
+            offset_of!(llama_batch, token),
+            offset_of!(llama_batch, embd),
+            offset_of!(llama_batch, pos),
+            offset_of!(llama_batch, n_seq_id),
+            offset_of!(llama_batch, seq_id),
+            offset_of!(llama_batch, logits),
+            size_of::<llama_model_params>(),
+            align_of::<llama_model_params>(),
+            offset_of!(llama_model_params, devices),
+            offset_of!(llama_model_params, tensor_buft_overrides),
+            offset_of!(llama_model_params, n_gpu_layers),
+            offset_of!(llama_model_params, split_mode),
+            offset_of!(llama_model_params, load_mode),
+            offset_of!(llama_model_params, lazy_mode),
+            offset_of!(llama_model_params, main_gpu),
+            offset_of!(llama_model_params, tensor_split),
+            offset_of!(llama_model_params, progress_callback),
+            offset_of!(llama_model_params, progress_callback_user_data),
+            offset_of!(llama_model_params, kv_overrides),
+            offset_of!(llama_model_params, vocab_only),
+            offset_of!(llama_model_params, check_tensors),
+            offset_of!(llama_model_params, use_extra_bufts),
+            offset_of!(llama_model_params, no_host),
+            offset_of!(llama_model_params, no_alloc),
+            offset_of!(llama_model_params, load_mtp),
+            size_of::<llama_context_params>(),
+            align_of::<llama_context_params>(),
+            offset_of!(llama_context_params, n_ctx),
+            offset_of!(llama_context_params, n_batch),
+            offset_of!(llama_context_params, n_ubatch),
+            offset_of!(llama_context_params, n_seq_max),
+            offset_of!(llama_context_params, n_rs_seq),
+            offset_of!(llama_context_params, n_outputs_max),
+            offset_of!(llama_context_params, n_outputs_max_per_seq),
+            offset_of!(llama_context_params, n_threads),
+            offset_of!(llama_context_params, n_threads_batch),
+            offset_of!(llama_context_params, ctx_type),
+            offset_of!(llama_context_params, rope_scaling_type),
+            offset_of!(llama_context_params, pooling_type),
+            offset_of!(llama_context_params, attention_type),
+            offset_of!(llama_context_params, flash_attn_type),
+            offset_of!(llama_context_params, rope_freq_base),
+            offset_of!(llama_context_params, rope_freq_scale),
+            offset_of!(llama_context_params, yarn_ext_factor),
+            offset_of!(llama_context_params, yarn_attn_factor),
+            offset_of!(llama_context_params, yarn_beta_fast),
+            offset_of!(llama_context_params, yarn_beta_slow),
+            offset_of!(llama_context_params, yarn_orig_ctx),
+            offset_of!(llama_context_params, defrag_thold),
+            offset_of!(llama_context_params, cb_eval),
+            offset_of!(llama_context_params, cb_eval_user_data),
+            offset_of!(llama_context_params, type_k),
+            offset_of!(llama_context_params, type_v),
+            offset_of!(llama_context_params, abort_callback),
+            offset_of!(llama_context_params, abort_callback_data),
+            offset_of!(llama_context_params, embeddings),
+            offset_of!(llama_context_params, offload_kqv),
+            offset_of!(llama_context_params, no_perf),
+            offset_of!(llama_context_params, op_offload),
+            offset_of!(llama_context_params, swa_full),
+            offset_of!(llama_context_params, kv_unified),
+            offset_of!(llama_context_params, samplers),
+            offset_of!(llama_context_params, n_samplers),
+            offset_of!(llama_context_params, ctx_other),
+            size_of::<llama_chat_message>(),
+            align_of::<llama_chat_message>(),
+            offset_of!(llama_chat_message, role),
+            offset_of!(llama_chat_message, content),
+            size_of::<mtmd_context_params>(),
+            align_of::<mtmd_context_params>(),
+            offset_of!(mtmd_context_params, use_gpu),
+            offset_of!(mtmd_context_params, device),
+            offset_of!(mtmd_context_params, print_timings),
+            offset_of!(mtmd_context_params, n_threads),
+            offset_of!(mtmd_context_params, image_marker),
+            offset_of!(mtmd_context_params, media_marker),
+            offset_of!(mtmd_context_params, flash_attn_type),
+            offset_of!(mtmd_context_params, warmup),
+            offset_of!(mtmd_context_params, image_min_tokens),
+            offset_of!(mtmd_context_params, image_max_tokens),
+            offset_of!(mtmd_context_params, cb_eval),
+            offset_of!(mtmd_context_params, cb_eval_user_data),
+            offset_of!(mtmd_context_params, batch_max_tokens),
+            offset_of!(mtmd_context_params, progress_callback),
+            offset_of!(mtmd_context_params, progress_callback_user_data),
+            size_of::<mtmd_input_text>(),
+            align_of::<mtmd_input_text>(),
+            offset_of!(mtmd_input_text, text),
+            offset_of!(mtmd_input_text, text_len),
+            offset_of!(mtmd_input_text, add_special),
+            offset_of!(mtmd_input_text, parse_special),
+            size_of::<mtmd_helper_bitmap_wrapper>(),
+            align_of::<mtmd_helper_bitmap_wrapper>(),
+            offset_of!(mtmd_helper_bitmap_wrapper, bitmap),
+            offset_of!(mtmd_helper_bitmap_wrapper, video_ctx),
+            size_of::<mtmd_helper_video_init_params>(),
+            align_of::<mtmd_helper_video_init_params>(),
+            offset_of!(mtmd_helper_video_init_params, fps_target),
+            offset_of!(mtmd_helper_video_init_params, ffmpeg_bin_dir),
+            offset_of!(mtmd_helper_video_init_params, timestamp_interval_ms),
+            size_of::<mtmd_helper_init_opt>(),
+            align_of::<mtmd_helper_init_opt>(),
+            offset_of!(mtmd_helper_init_opt, video_params),
+            LLAMA_LOAD_MODE_NONE as usize,
+            LLAMA_LOAD_MODE_MMAP as usize,
+            LLAMA_LAZY_MODE_OFF as usize,
+            MTMD_INPUT_CHUNK_TYPE_TEXT as usize,
+        ];
+        let mut actual = vec![usize::MAX; expected.len()];
+        // SAFETY: the oracle writes at most capacity initialized usize values,
+        // only when the full layout fits; it never retains this pointer.
+        let count = unsafe { relm_ffi_layout(actual.as_mut_ptr(), actual.len()) };
+        assert_eq!(count, expected.len(), "native ABI oracle field count");
+        assert_eq!(actual, expected, "Rust/C layout or enum drift");
     }
 }

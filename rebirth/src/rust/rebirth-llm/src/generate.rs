@@ -984,7 +984,8 @@ impl LoadedModel {
         params: &GenerateParams,
         state: &mut Constraint<'_, '_>,
     ) -> Result<Generation, RebirthError> {
-        let (text, add_special, parse_special) = self.resolve_prompt_text(prompt, chat)?;
+        let (text, add_special, parse_special) =
+            self.resolve_prompt_text_for_output(prompt, chat, true)?;
         // A chat template may expand user text; reject before tokenizing a large
         // expansion. The cap applies to the materialized native prompt too.
         if text.len() > STRUCTURED_MAX_PROMPT_BYTES {
@@ -1047,8 +1048,23 @@ impl LoadedModel {
         prompt: &str,
         chat: bool,
     ) -> Result<(String, bool, bool), RebirthError> {
+        self.resolve_prompt_text_for_output(prompt, chat, false)
+    }
+
+    /// Schema chat uses Spark's official non-thinking opener so JSON begins at
+    /// the first generated token. Tokenization and prompt ingest stay shared.
+    fn resolve_prompt_text_for_output(
+        &self,
+        prompt: &str,
+        chat: bool,
+        structured: bool,
+    ) -> Result<(String, bool, bool), RebirthError> {
         if chat {
-            let templated = self.apply_chat_template(&[ChatMessage::user(prompt)], true)?;
+            let templated = self.apply_chat_template_for_output(
+                &[ChatMessage::user(prompt)],
+                true,
+                structured,
+            )?;
             Ok((templated.text, templated.add_special, true))
         } else {
             Ok((prompt.to_string(), true, false))
@@ -1110,12 +1126,22 @@ impl LoadedModel {
         messages: &[ChatMessage],
         add_assistant: bool,
     ) -> Result<TemplatedPrompt, RebirthError> {
+        self.apply_chat_template_for_output(messages, add_assistant, false)
+    }
+
+    fn apply_chat_template_for_output(
+        &self,
+        messages: &[ChatMessage],
+        add_assistant: bool,
+        structured: bool,
+    ) -> Result<TemplatedPrompt, RebirthError> {
         let embedded = self.chat_template();
         resolve_and_apply_template(
             embedded.as_deref(),
             &self.architecture(),
             messages,
             add_assistant,
+            structured,
         )
     }
 }
@@ -1185,17 +1211,23 @@ fn arch_builtin_template(arch: &str) -> Option<&'static str> {
 /// - `embedded` absent (`None`) → the model declares no chat contract; error with
 ///   the same "use chat = FALSE" message as before (a builtin fallback here would
 ///   format a base model that intentionally carries no template).
+/// - Spark's two pinned official template spellings use the narrow D-032
+///   single-user-turn formatter. Unknown Spark templates fail explicitly.
 fn resolve_and_apply_template(
     embedded: Option<&str>,
     arch: &str,
     messages: &[ChatMessage],
     add_assistant: bool,
+    structured: bool,
 ) -> Result<TemplatedPrompt, RebirthError> {
     let Some(tmpl) = embedded else {
         return Err(RebirthError::Generation {
             reason: "the model carries no chat template; use chat = FALSE".to_string(),
         });
     };
+    if arch == "spark2_5" {
+        return apply_spark_template(tmpl, messages, add_assistant, structured);
+    }
     match apply_template(tmpl, messages, add_assistant) {
         Ok(text) => Ok(TemplatedPrompt {
             text,
@@ -1211,6 +1243,64 @@ fn resolve_and_apply_template(
             None => Err(embedded_err),
         },
     }
+}
+
+// The author ships both a standalone Jinja file and a compact tokenizer-config
+// spelling at revision 0bcb35678590218655dff3765b9e61c83b35e9c4. The model's
+// embedded template must match one in full; marker detection would silently
+// overwrite custom formatting. These source fixtures ship in the R tarball.
+const SPARK_CHAT_TEMPLATE: &str = include_str!("../tests/fixtures/spark/chat_template.jinja");
+const SPARK_TOKENIZER_TEMPLATE: &str =
+    include_str!("../tests/fixtures/spark/tokenizer-chat-template.jinja");
+
+fn apply_spark_template(
+    template: &str,
+    messages: &[ChatMessage],
+    add_assistant: bool,
+    structured: bool,
+) -> Result<TemplatedPrompt, RebirthError> {
+    if template.as_bytes().contains(&0)
+        || messages
+            .iter()
+            .any(|m| m.role.as_bytes().contains(&0) || m.content.as_bytes().contains(&0))
+    {
+        return Err(RebirthError::Generation {
+            reason: "a chat message or template contains an interior NUL byte".to_string(),
+        });
+    }
+    if template != SPARK_CHAT_TEMPLATE && template != SPARK_TOKENIZER_TEMPLATE {
+        return Err(RebirthError::Generation {
+            reason: "the Spark chat template does not match a supported official template; use chat = FALSE for custom formatting".to_string(),
+        });
+    }
+    let [message] = messages else {
+        return Err(RebirthError::Generation {
+            reason: "Spark chat formatting supports exactly one user message".to_string(),
+        });
+    };
+    if message.role != "user" {
+        return Err(RebirthError::Generation {
+            reason: "Spark chat formatting supports exactly one user message".to_string(),
+        });
+    }
+    // Independent Jinja-rendered fixtures pin capitalization, line endings,
+    // turn markers, whitespace preservation and both official thinking modes.
+    let mut text = String::from(concat!(
+        "<｜start▁of▁sentence｜><|System|>\nyou are a helpful assistant.",
+        "<｜end▁of▁sentence｜><｜start▁of▁sentence｜><|User|>"
+    ));
+    text.push_str(&message.content);
+    text.push_str("<｜end▁of▁sentence｜>");
+    if add_assistant {
+        text.push_str("<｜start▁of▁sentence｜><|Bot|>");
+        text.push_str(if structured { "</think>" } else { "<think>" });
+    }
+    Ok(TemplatedPrompt {
+        text,
+        // The official format carries the BOS turn markers itself. The caller
+        // still parses special tokens; it must not prepend another BOS.
+        add_special: false,
+    })
 }
 
 /// Format `messages` with an explicit llama.cpp template string. Free of any
@@ -1377,8 +1467,248 @@ mod tests {
 
     use super::{
         apply_template, arch_builtin_template, resolve_and_apply_template, top_k_logits,
-        ChatMessage, RebirthError,
+        ChatMessage, RebirthError, SPARK_CHAT_TEMPLATE, SPARK_TOKENIZER_TEMPLATE,
     };
+
+    // Model-free, runs in the ordinary macOS/Linux cargo PR jobs. Expected
+    // bytes were rendered independently by Jinja2 from both immutable official
+    // template sources, never by this Rust formatter.
+    #[test]
+    fn spark_templates_match_official_single_user_turn_fixtures() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../tests/fixtures/spark/single-user-turn.json"
+        ))
+        .unwrap();
+        let cases = fixture["cases"].as_array().unwrap();
+        assert_eq!(cases.len(), 10);
+        for template in [SPARK_CHAT_TEMPLATE, SPARK_TOKENIZER_TEMPLATE] {
+            for case in cases {
+                let prompt = case["prompt"].as_str().unwrap();
+                let add_assistant = case["add_assistant"].as_bool().unwrap();
+                let structured = case["structured"].as_bool().unwrap();
+                let formatted = resolve_and_apply_template(
+                    Some(template),
+                    "spark2_5",
+                    &[ChatMessage::user(prompt)],
+                    add_assistant,
+                    structured,
+                )
+                .unwrap();
+                assert_eq!(
+                    formatted.text.as_bytes(),
+                    case["rendered"].as_str().unwrap().as_bytes(),
+                    "fixture {}",
+                    case["name"]
+                );
+                assert!(!formatted.add_special, "the tokenizer must not add a BOS");
+                assert!(formatted.text.starts_with(
+                    "<｜start▁of▁sentence｜><|System|>\nyou are a helpful assistant."
+                ));
+                assert_eq!(
+                    formatted.text.matches("<｜start▁of▁sentence｜>").count(),
+                    if add_assistant { 3 } else { 2 },
+                    "exactly one start marker per official turn"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn spark_rejects_missing_modified_and_unknown_templates() {
+        let changed_system = SPARK_CHAT_TEMPLATE.replace(
+            "you are a helpful assistant.",
+            "You are a helpful assistant.",
+        );
+        let changed_control = SPARK_CHAT_TEMPLATE.replace("default(true)", "default(false)");
+        let trailing_byte = format!("{SPARK_CHAT_TEMPLATE} ");
+        for template in [
+            None,
+            Some(""),
+            Some("chatml"),
+            Some("<｜start▁of▁sentence｜><|Bot|><think>"),
+            Some(changed_system.as_str()),
+            Some(changed_control.as_str()),
+            Some(trailing_byte.as_str()),
+        ] {
+            for structured in [false, true] {
+                let error = resolve_and_apply_template(
+                    template,
+                    "spark2_5",
+                    &[ChatMessage::user("Hello.")],
+                    true,
+                    structured,
+                )
+                .unwrap_err();
+                assert!(matches!(error, RebirthError::Generation { reason }
+                    if reason.contains("template") && reason.contains("chat = FALSE")));
+            }
+        }
+    }
+
+    #[test]
+    fn spark_rejects_unsupported_message_shapes_and_nul_bytes() {
+        for messages in [
+            Vec::new(),
+            vec![ChatMessage::user("One"), ChatMessage::user("Two")],
+            vec![ChatMessage {
+                role: "system".into(),
+                content: "Policy".into(),
+            }],
+            vec![ChatMessage {
+                role: "assistant".into(),
+                content: "Answer".into(),
+            }],
+            vec![ChatMessage {
+                role: "tool".into(),
+                content: "Result".into(),
+            }],
+            vec![ChatMessage {
+                role: "unknown".into(),
+                content: "Text".into(),
+            }],
+        ] {
+            let error = resolve_and_apply_template(
+                Some(SPARK_CHAT_TEMPLATE),
+                "spark2_5",
+                &messages,
+                true,
+                false,
+            )
+            .unwrap_err();
+            assert!(matches!(error, RebirthError::Generation { reason }
+                if reason.contains("exactly one user message")));
+        }
+        for (template, message) in [
+            (
+                format!("{SPARK_CHAT_TEMPLATE}\0"),
+                ChatMessage::user("Hello."),
+            ),
+            (
+                SPARK_CHAT_TEMPLATE.to_string(),
+                ChatMessage::user("Hello\0world"),
+            ),
+            (
+                SPARK_CHAT_TEMPLATE.to_string(),
+                ChatMessage {
+                    role: "user\0".into(),
+                    content: "Hello.".into(),
+                },
+            ),
+        ] {
+            let error =
+                resolve_and_apply_template(Some(&template), "spark2_5", &[message], true, true)
+                    .unwrap_err();
+            assert!(matches!(error, RebirthError::Generation { reason } if reason.contains("NUL")));
+        }
+    }
+
+    #[test]
+    fn structured_formatting_preserves_non_spark_embedded_and_fallback_behavior() {
+        for (template, architecture) in [("chatml", "qwen2"), ("unsupported", "gemma4")] {
+            let messages = [ChatMessage::user("Unicode: café 😀\n")];
+            let ordinary =
+                resolve_and_apply_template(Some(template), architecture, &messages, true, false)
+                    .unwrap();
+            let structured =
+                resolve_and_apply_template(Some(template), architecture, &messages, true, true)
+                    .unwrap();
+            assert_eq!(ordinary, structured);
+        }
+    }
+
+    // [MODEL] RELM_TEST_MODEL_SPARK points to the checksummed D-032 GGUF.
+    // Runs locally and in the opt-in Spark CPU job, never downloads in PR CI.
+    // No inference: validates the real vocabulary and shared prompt flags.
+    #[test]
+    fn spark_loaded_model_matches_official_prompt_bytes_and_special_token_ids() {
+        let Ok(path) = std::env::var("RELM_TEST_MODEL_SPARK") else {
+            eprintln!("[MODEL] skipped: RELM_TEST_MODEL_SPARK is not set");
+            return;
+        };
+        let model = crate::load(crate::LoadRequest {
+            path: path.into(),
+            context_length: 512,
+            gpu_layers: None,
+            backend: crate::BackendKind::Cpu,
+            mmap: true,
+            projector: None,
+        })
+        .unwrap();
+        assert_eq!(model.architecture(), "spark2_5");
+        assert_eq!(model.chat_template().as_deref(), Some(SPARK_CHAT_TEMPLATE));
+        assert_eq!(
+            model
+                .encode("<｜start▁of▁sentence｜>", false, true)
+                .unwrap()
+                .ids,
+            [0]
+        );
+        assert_eq!(
+            model
+                .encode("<｜end▁of▁sentence｜>", false, true)
+                .unwrap()
+                .ids,
+            [1]
+        );
+        assert_eq!(
+            model.encode("<think></think>", false, true).unwrap().ids,
+            [3, 4]
+        );
+        assert_eq!(
+            model.decode_tokens(&[3, 4], false, false).unwrap(),
+            "<think></think>"
+        );
+
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../tests/fixtures/spark/single-user-turn.json"
+        ))
+        .unwrap();
+        for case in fixture["cases"].as_array().unwrap() {
+            if !case["add_assistant"].as_bool().unwrap() {
+                continue;
+            }
+            let structured = case["structured"].as_bool().unwrap();
+            let prompt = case["prompt"].as_str().unwrap();
+            let (text, add_special, parse_special) = model
+                .resolve_prompt_text_for_output(prompt, true, structured)
+                .unwrap();
+            assert_eq!(text, case["rendered"].as_str().unwrap());
+            assert!(!add_special);
+            assert!(parse_special);
+            let ids = model.tokenize(&text, add_special, parse_special).unwrap();
+            let reference_ids = model
+                .encode(case["rendered"].as_str().unwrap(), false, true)
+                .unwrap()
+                .ids;
+            assert_eq!(ids, reference_ids);
+            assert_eq!(ids.first(), Some(&0));
+            assert_eq!(ids.iter().filter(|&&id| id == 0).count(), 3);
+            assert_eq!(ids.iter().filter(|&&id| id == 1).count(), 2);
+            assert_eq!(ids.last(), Some(if structured { &4 } else { &3 }));
+            if !structured {
+                assert_eq!(
+                    model.resolve_prompt_text(prompt, true).unwrap(),
+                    (text, false, true)
+                );
+            }
+        }
+        let raw = "<｜start▁of▁sentence｜>Raw completion.";
+        for structured in [false, true] {
+            let (text, add_special, parse_special) = model
+                .resolve_prompt_text_for_output(raw, false, structured)
+                .unwrap();
+            assert_eq!(
+                (text.as_str(), add_special, parse_special),
+                (raw, true, false)
+            );
+            let ids = model.tokenize(&text, add_special, parse_special).unwrap();
+            assert_eq!(ids, model.encode(raw, true, false).unwrap().ids);
+            assert!(
+                !ids.contains(&0),
+                "raw completion must not parse a literal BOS marker"
+            );
+        }
+    }
 
     #[test]
     fn top_k_logits_orders_by_descending_logit_with_full_vocab_softmax() {
@@ -1492,7 +1822,7 @@ mod tests {
         // detectable embedded template; the arch is deliberately gemma4 (whose
         // fallback would be "gemma") to prove the embedded template wins.
         let messages = vec![ChatMessage::user("Ciao")];
-        let out = resolve_and_apply_template(Some("chatml"), "gemma4", &messages, true)
+        let out = resolve_and_apply_template(Some("chatml"), "gemma4", &messages, true, false)
             .expect("embedded chatml applies");
         assert!(
             out.text.contains("<|im_start|>user"),
@@ -1512,9 +1842,14 @@ mod tests {
         // An undetectable embedded string stands in for it; the arch fallback must
         // select the "gemma" builtin and format the turn correctly.
         let messages = vec![ChatMessage::user("What colours are there?")];
-        let out =
-            resolve_and_apply_template(Some("not-a-real-template-xyz"), "gemma4", &messages, true)
-                .expect("the gemma4 arch fallback applies the gemma builtin");
+        let out = resolve_and_apply_template(
+            Some("not-a-real-template-xyz"),
+            "gemma4",
+            &messages,
+            true,
+            false,
+        )
+        .expect("the gemma4 arch fallback applies the gemma builtin");
         assert!(
             out.text.contains("<start_of_turn>user"),
             "gemma user turn: {out:?}"
@@ -1538,7 +1873,7 @@ mod tests {
         // the defensive path; the map covers qwen2/qwen3/qwen35.)
         let messages = vec![ChatMessage::user("hi")];
         for arch in ["qwen2", "qwen3", "qwen35"] {
-            let out = resolve_and_apply_template(Some("<<garbage>>"), arch, &messages, true)
+            let out = resolve_and_apply_template(Some("<<garbage>>"), arch, &messages, true, false)
                 .unwrap_or_else(|_| panic!("chatml fallback applies for {arch}"));
             assert!(
                 out.text.contains("<|im_start|>user"),
@@ -1556,9 +1891,14 @@ mod tests {
         // An undetectable embedded template on an architecture with no builtin
         // mapping raises the original classed error — never a silent mis-format.
         let messages = vec![ChatMessage::user("hi")];
-        let err =
-            resolve_and_apply_template(Some("not-a-real-template-xyz"), "bert", &messages, true)
-                .expect_err("no fallback -> the embedded error is surfaced");
+        let err = resolve_and_apply_template(
+            Some("not-a-real-template-xyz"),
+            "bert",
+            &messages,
+            true,
+            false,
+        )
+        .expect_err("no fallback -> the embedded error is surfaced");
         assert!(matches!(err, RebirthError::Generation { .. }));
     }
 
@@ -1567,7 +1907,7 @@ mod tests {
         // No embedded template at all: the model declares no chat contract, so the
         // "use chat = FALSE" error is preserved (no builtin fallback here).
         let messages = vec![ChatMessage::user("hi")];
-        let err = resolve_and_apply_template(None, "gemma4", &messages, true)
+        let err = resolve_and_apply_template(None, "gemma4", &messages, true, false)
             .expect_err("a model with no chat template errors");
         match err {
             RebirthError::Generation { reason } => {

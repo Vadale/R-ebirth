@@ -675,7 +675,13 @@ impl LoadedModel {
             // buffer, borrowed only for the call (the helper copies what it
             // keeps). `placeholder = false` decodes for real.
             let wrapper = unsafe {
-                ffi::mtmd_helper_bitmap_init_from_buf(mctx, bytes.as_ptr(), bytes.len(), false)
+                ffi::mtmd_helper_bitmap_init_from_buf(
+                    mctx,
+                    bytes.as_ptr(),
+                    bytes.len(),
+                    false,
+                    ffi::mtmd_helper_init_opt_default(),
+                )
             };
             // MTMD_VIDEO=OFF: the only branch that sets video_ctx is compiled out.
             debug_assert!(wrapper.video_ctx.is_null());
@@ -714,6 +720,7 @@ impl LoadedModel {
         })?;
         let input = ffi::mtmd_input_text {
             text: c_text.as_ptr(),
+            text_len: text.len(),
             add_special,
             parse_special,
         };
@@ -1406,7 +1413,7 @@ mod tests {
 
     #[test]
     fn embd_mismatch_parse_pins_the_upstream_format_string() {
-        // The literal produced by mtmd.cpp L372-376 at b9726 (vendor-bump
+        // The literal produced by mtmd.cpp at b10828 (vendor-bump
         // checklist: re-verify this format string on every bump).
         let log = "mtmd_init_from_file: error: mismatch between text model \
                    (n_embd = 896) and mmproj (n_embd = 1536)\n\

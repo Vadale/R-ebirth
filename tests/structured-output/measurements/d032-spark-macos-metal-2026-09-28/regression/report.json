@@ -1,0 +1,845 @@
+{
+  "config": {
+    "version": 1,
+    "created_utc": "2026-09-28T08:46:24.419169+00:00",
+    "identity": {
+      "model_alias": "spark-x2.5-4b-q8_0",
+      "model_sha256": "5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2",
+      "backend": "metal",
+      "runtime": {
+        "native_library_sha256": "17ef12b92215a1bcaa211068ab10c62882b8e4be2bc8829f11909c23b95e1019",
+        "package_version": "0.2.0.9000",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20"
+      },
+      "modes": [
+        "structured"
+      ],
+      "sampling": {
+        "max_tokens": 768,
+        "context_length": 4096,
+        "temperature": 0,
+        "top_p": 0.95,
+        "chat": true,
+        "seed_rule": "101 + zero-based index in frozen cases.json"
+      },
+      "file_sha256": {
+        "cases.json": "9ff8039cfb084ef1fd8cb14c8d7b462ec5a72dc8585fb8ba28ca3cc9127f26b8",
+        "manifest.json": "060f1a31c92dee0b0af969c4ecafe2fd20d550ff2b17b014f70c7d639d5f4ad3",
+        "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+        "verify.py": "b07e195dff82e98eea7477340947009bf1175a636d110afd9cdb1d778c11fb5b",
+        "run-model.py": "c54ab979858f095f263ea48695b3cc3c1de903a9db50f35f019560e9047c2b43",
+        "evaluate-model.py": "6764d94a4d662ca9d42b6590bea27aa622062fbcdc9fe3ecac3d99e78856cf8c",
+        "evaluate-model.R": "032b037f15b7b2a754ab3caea32d7458fa7c7d1c3af89f2c73f4a5062ee0d59c",
+        "sources/ace2022.txt": "8a8e0517d242bb25c86f9f720667b7739af40504913fbfdc82201c478fe90c8e",
+        "sources/ace2012.txt": "cc16477f89d91b33d25ed48b6bb4301683fdf67e0e81295bbf57806ba7547f82",
+        "sources/nlm.txt": "72079d302075cf1e711942ce4196f686f71121306482c5bcfe9a7f307223a18b",
+        "sources/nlm2023budget.txt": "b6dd64a5584e463cde1f0094dd52309570fc1682f433fc289669dc940f5ece12",
+        "sources/brain2017.txt": "43d3fb1462fa4af2607fce08779e886d94c131576940e1f093eed1df9b4b7c29",
+        "sources/nobel.txt": "ed26f9422a0d37d7e37a9474a72c751c7641cd81eac2426107b2205a3e197b6b",
+        "sources/heal.txt": "a1b8dec17259c1f2a63152fc55e9c481387a351a9685fd6b91d12ab044c68a1c"
+      },
+      "registry_sha256": "2954109563760e21806b7eb148af926fdefe11b99e5d8e773125bc58a493e178",
+      "template_sha256": "8fbc71346350a6d2239badc4d60d282f69baf3e8525713f590c5bfc58adbb549",
+      "schema_sha256": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+      "label_free_inputs_sha256": "2c6324bba9714771f0a356aa57cf82deb2eae8c636d6d8d3ac3c0ea2154f12c7"
+    },
+    "split": "regression",
+    "system": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+    "model_path": "/Users/alessandrovadala/DOCUDESK/R-ebirth/models/Spark-X2.5-4B-Q8_0.gguf",
+    "r_library": "/private/tmp/relm-spark/library",
+    "candidate_sha256": null
+  },
+  "runs": {
+    "structured": {
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/evaluate-model.R",
+        "structured",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/models/Spark-X2.5-4B-Q8_0.gguf",
+        "metal",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/measurements/d032-spark-macos-metal-2026-09-28/regression/inputs.tsv",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/measurements/d032-spark-macos-metal-2026-09-28/regression/schema.json",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/structured-output/measurements/d032-spark-macos-metal-2026-09-28/regression/structured",
+        "/private/tmp/relm-spark/library",
+        "768",
+        "4096",
+        "0",
+        "0.95"
+      ],
+      "timeout_seconds": 600,
+      "timed_out": false,
+      "returncode": 0,
+      "diagnostics": [
+        {
+          "index": "6",
+          "id": "nlm-total",
+          "seed": 107,
+          "status": "success",
+          "elapsed_seconds": 13.223,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-6.json",
+          "output_sha256": "e71da2a311b34ff7d9f1783a9621193ad69f7c960f9ceaafa938eb6b72af3ab6"
+        },
+        {
+          "index": "7",
+          "id": "nlm-annual",
+          "seed": 108,
+          "status": "success",
+          "elapsed_seconds": 11.016,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-7.json",
+          "output_sha256": "cbf647497cabb8d65b734c8b940aace307b8b57e91dd263608a17399796cc458"
+        },
+        {
+          "index": "8",
+          "id": "nlm-trainees",
+          "seed": 109,
+          "status": "success",
+          "elapsed_seconds": 7.261,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-8.json",
+          "output_sha256": "38672768b1f679a4d8084fef589497634af72e018195206ad7451b28a4d38fb6"
+        },
+        {
+          "index": "9",
+          "id": "nlm-missing",
+          "seed": 110,
+          "status": "success",
+          "elapsed_seconds": 7.61,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-9.json",
+          "output_sha256": "a3e957a6353d4b79c8b1c6452ce82b2d17cc10bf10e33b6b6dedc0b02c10a569"
+        },
+        {
+          "index": "10",
+          "id": "nlm-budget",
+          "seed": 111,
+          "status": "success",
+          "elapsed_seconds": 7.309,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-10.json",
+          "output_sha256": "38672768b1f679a4d8084fef589497634af72e018195206ad7451b28a4d38fb6"
+        },
+        {
+          "index": "11",
+          "id": "nlm-grant-count",
+          "seed": 112,
+          "status": "success",
+          "elapsed_seconds": 7.536,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-11.json",
+          "output_sha256": "38672768b1f679a4d8084fef589497634af72e018195206ad7451b28a4d38fb6"
+        },
+        {
+          "index": "12",
+          "id": "brain-new",
+          "seed": 113,
+          "status": "success",
+          "elapsed_seconds": 14.227,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-12.json",
+          "output_sha256": "9bc76e98fb96cac5cf27bbf8f84093e7ace31a09a67834b9d5e30efaf97dcf38"
+        },
+        {
+          "index": "13",
+          "id": "brain-total",
+          "seed": 114,
+          "status": "success",
+          "elapsed_seconds": 10.905,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-13.json",
+          "output_sha256": "eac42812bc41f53dabf27a57449c4be04cddc874a35fcb163d4b61c7a7745e3c"
+        },
+        {
+          "index": "14",
+          "id": "brain-purpose",
+          "seed": 115,
+          "status": "success",
+          "elapsed_seconds": 7.309,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-14.json",
+          "output_sha256": "38672768b1f679a4d8084fef589497634af72e018195206ad7451b28a4d38fb6"
+        },
+        {
+          "index": "15",
+          "id": "brain-history",
+          "seed": 116,
+          "status": "success",
+          "elapsed_seconds": 7.584,
+          "error_class": "",
+          "error_message": "",
+          "output_file": "output-15.json",
+          "output_sha256": "a3e957a6353d4b79c8b1c6452ce82b2d17cc10bf10e33b6b6dedc0b02c10a569"
+        }
+      ],
+      "protocol_errors": [],
+      "execution_complete": true,
+      "runtime": {
+        "package_version": "0.2.0.9000",
+        "package_path": "/private/tmp/relm-spark/library/relm",
+        "native_library": "/private/tmp/relm-spark/library/relm/libs/relm.so",
+        "native_library_sha256": "17ef12b92215a1bcaa211068ab10c62882b8e4be2bc8829f11909c23b95e1019",
+        "r_version": "R version 4.5.1 (2025-06-13)",
+        "r_platform": "aarch64-apple-darwin20",
+        "backend": "metal",
+        "context_length": "4096"
+      },
+      "metrics": {
+        "records": 10,
+        "valid_records": 10,
+        "failed_or_invalid": 0,
+        "record_accuracy": 0.8,
+        "field_accuracy": {
+          "amount_usd": 1.0,
+          "amount_qualifier": 0.9,
+          "duration_years": 0.9,
+          "conditional_on_funds": 1.0
+        },
+        "known_amount_accuracy": 1.0,
+        "unsupported_nonmissing_rate": 0.18181818181818182,
+        "predicted_nonmissing": 11
+      },
+      "schema_valid_records": 10,
+      "denominators": {
+        "records": 10,
+        "per_field": {
+          "amount_usd": 10,
+          "amount_qualifier": 10,
+          "duration_years": 10,
+          "conditional_on_funds": 10
+        },
+        "known_amount_records": 4,
+        "predicted_nonmissing_fields_in_task_valid_records": 11
+      },
+      "numerators": {
+        "exact_grounded_records": 8,
+        "correct_fields": {
+          "amount_usd": 10,
+          "amount_qualifier": 9,
+          "duration_years": 9,
+          "conditional_on_funds": 10
+        },
+        "correct_known_amounts": 4,
+        "unsupported_nonmissing_fields": 2
+      },
+      "case_details": [
+        {
+          "id": "nlm-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 58000000,
+              "observed": 58000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "nearly $58 million",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "less_than",
+              "observed": "approximate",
+              "observed_present": true,
+              "expected_evidence_anchor": "nearly $58 million",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": false,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "duration_years": {
+              "expected": 5,
+              "observed": 5,
+              "observed_present": true,
+              "expected_evidence_anchor": "Over the next five years",
+              "observed_evidence": "Over the next five years, the National Library of Medicine (NLM) will award nearly $58 million to support biomedical informatics and data science programs at 18 institutions.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-annual",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 11500000,
+              "observed": 11500000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$11.5 million each year",
+              "observed_evidence": "NLM will distribute this funding on an annual basis, granting a total of $11.5 million each year.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$11.5 million each year",
+              "observed_evidence": "NLM will distribute this funding on an annual basis, granting a total of $11.5 million each year.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": 1,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": "each year",
+              "observed_evidence": "NLM will distribute this funding on an annual basis, granting a total of $11.5 million each year.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-trainees",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-missing",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-budget",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "nlm-grant-count",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-new",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 169000000,
+              "observed": 169000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$169 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$169 million",
+              "observed_evidence": "The National Institutes of Health has announced funding for 110 new awards totaling $169 million for the Brain Research through Advancing Innovative Neurotechnologies (BRAIN) Initiative, bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-total",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": 260000000,
+              "observed": 260000000,
+              "observed_present": true,
+              "expected_evidence_anchor": "$260 million",
+              "observed_evidence": "bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "stated",
+              "observed": "stated",
+              "observed_present": true,
+              "expected_evidence_anchor": "$260 million",
+              "observed_evidence": "bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": 1,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": "bringing the total 2017 funding investment for the program to $260 million.",
+              "value_match": false,
+              "evidence_anchor_supported": false,
+              "scored_value_correct": false,
+              "scored_grounded_correct": false
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-purpose",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        },
+        {
+          "id": "brain-history",
+          "schema_check": {
+            "valid": true,
+            "error": null
+          },
+          "task_record_check": {
+            "valid": true,
+            "error": null
+          },
+          "fields": {
+            "amount_usd": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "amount_qualifier": {
+              "expected": "not_stated",
+              "observed": "not_stated",
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "duration_years": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            },
+            "conditional_on_funds": {
+              "expected": null,
+              "observed": null,
+              "observed_present": true,
+              "expected_evidence_anchor": null,
+              "observed_evidence": null,
+              "value_match": true,
+              "evidence_anchor_supported": true,
+              "scored_value_correct": true,
+              "scored_grounded_correct": true
+            }
+          },
+          "human_review_seconds": null,
+          "human_corrections": null
+        }
+      ]
+    }
+  },
+  "execution_complete": true,
+  "held_out_gate": null,
+  "held_out_gate_passed": null,
+  "human_review_seconds": null,
+  "human_corrections": null,
+  "limitations": [
+    "The D1 held-out pilot has already been consumed; this rerun is regression/exploratory evidence, not a new quality acceptance.",
+    "Pilot cases are not a representative quality benchmark.",
+    "Spark ordinary chat uses its thinking opener; constrained chat uses its official non-thinking opener. Their output budgets and behavior are not equivalent reasoning comparisons.",
+    "Schema validity is separate from task validity and expected-grounded scoring.",
+    "Failures remain in every all-case denominator; no retry or repair was attempted.",
+    "The frozen unsupported_nonmissing_rate denominator includes emitted nonmissing fields from task-valid records only; the gate separately requires zero failed or invalid records.",
+    "Human review time and correction burden have not been measured.",
+    "The explicit candidate file guards configuration drift; it cannot prevent a user from inspecting held-out labels or deliberately editing provenance."
+  ]
+}

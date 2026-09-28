@@ -1,0 +1,5 @@
+phase	index	seed	status	elapsed_seconds	output_tokens	retokenized_count	error_class	error_message
+warmup	0	1	success	0.705000000	80	80		
+measured	1	11	success	0.746000000	80	80		
+measured	2	29	success	0.922000000	80	80		
+measured	3	47	success	0.742000000	80	80		

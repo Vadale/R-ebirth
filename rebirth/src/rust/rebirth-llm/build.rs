@@ -34,6 +34,7 @@ fn main() {
     // Rerun only when the pin or this script changes (the vendored tree is pinned).
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=native/grammar.cpp");
+    println!("cargo:rerun-if-changed=native/abi.cpp");
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
     println!(
         "cargo:rerun-if-changed={}",
@@ -68,10 +69,9 @@ fn main() {
         .define("LLAMA_BUILD_SERVER", "OFF")
         .define("LLAMA_BUILD_COMMON", "OFF")
         .define("LLAMA_BUILD_APP", "OFF")
-        // The multimodal library (WP-V1, D-026): the patch-0002 option builds
-        // libmtmd.a alone — no common/, no CLI tools. MTMD_VIDEO is a cache
-        // option defaulting ON upstream; OFF drops the only external-tool
-        // dependency (ffmpeg via sheredom/subprocess.h, which stays pruned).
+        // Upstream b10828 supports the library-only mtmd build (D-032),
+        // so patch 0002 is retired. Video stays disabled: no ffmpeg subprocess
+        // or sheredom header is reachable from the R image path.
         .define("LLAMA_BUILD_MTMD", "ON")
         .define("MTMD_VIDEO", "OFF")
         // Keep the produced archive set canonical and deterministic: the ggml
@@ -153,7 +153,14 @@ fn main() {
     // (registry) + the backends; everything references ggml-base, which is the
     // leaf and comes last. Twin-pinned with the R-side link in
     // rebirth/tools/config.R (@LLAMA_LIBS@) — keep the two lists consistent.
-    let mut lib_stems: Vec<&str> = vec!["relm-grammar", "mtmd", "llama", "ggml", "ggml-cpu"];
+    let mut lib_stems: Vec<&str> = vec![
+        "relm-grammar",
+        "mtmd",
+        "vendor-hash",
+        "llama",
+        "ggml",
+        "ggml-cpu",
+    ];
     if metal {
         lib_stems.push("ggml-metal");
     }

@@ -335,6 +335,9 @@ impl OwnedContext {
         mut cparams: ffi::llama_context_params,
         on_fail: impl FnOnce() -> RebirthError,
     ) -> Result<OwnedContext, RebirthError> {
+        // b10828 defaults to one output per sequence. relm also returns
+        // per-token logits/embeddings, so retain the pre-bump batch-wide limit.
+        cparams.n_outputs_max_per_seq = 0;
         // This chokepoint covers generation, embeddings, traces, and derived
         // intervention handles; none may re-enable GPU work on a CPU model.
         if model.resolved_backend == BackendKind::Cpu {
@@ -820,7 +823,14 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
         // Negative = all layers (validated against llama-model.cpp at this tag).
         BackendKind::Metal | BackendKind::Cuda => req.gpu_layers.unwrap_or(-1),
     };
-    mparams.use_mmap = req.mmap;
+    // b10828 replaced the old mmap flag with loading modes. Preserve the
+    // approved R argument exactly and keep the previous eager tensor loading.
+    mparams.load_mode = if req.mmap {
+        ffi::LLAMA_LOAD_MODE_MMAP
+    } else {
+        ffi::LLAMA_LOAD_MODE_NONE
+    };
+    mparams.lazy_mode = ffi::LLAMA_LAZY_MODE_OFF;
     // `mparams` is consumed by the by-value call below; keep what we still need.
     let resolved_gpu_layers = mparams.n_gpu_layers;
 

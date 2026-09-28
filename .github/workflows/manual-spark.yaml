@@ -1,0 +1,80 @@
+# Optional 4.38 GB integration acceptance, never scheduled or a per-PR download.
+name: manual-spark.yaml
+on:
+  workflow_dispatch: {}
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-spark-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  spark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      RELM_TEST_SPARK_BACKEND: cpu
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::devtools
+          working-directory: rebirth
+      - name: Download and verify the optional model from the canonical registry
+        run: |
+          python3 - <<'PY'
+          import csv, hashlib, os
+          from pathlib import Path
+          from urllib.request import urlopen
+          with open('rebirth/inst/models.csv', newline='') as stream:
+              pin = next(row for row in csv.DictReader(stream) if row['alias'] == 'spark-x2.5-4b-q8_0')
+          assert pin['url'].startswith('https://')
+          dest = Path(os.environ['RUNNER_TEMP']) / 'Spark-X2.5-4B-Q8_0.gguf'
+          digest = hashlib.sha256()
+          try:
+              with urlopen(pin['url'], timeout=120) as source, dest.open('wb') as target:
+                  while block := source.read(1024 * 1024):
+                      target.write(block)
+                      digest.update(block)
+              assert dest.stat().st_size == int(pin['size_bytes']), 'Model size mismatch'
+              assert digest.hexdigest() == pin['sha256'], 'Model SHA256 mismatch'
+          except BaseException:
+              dest.unlink(missing_ok=True)
+              raise
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write(f'RELM_TEST_MODEL_SPARK={dest}\n')
+          PY
+      - name: Check exact loaded-model prompt bytes and native token flags
+        working-directory: rebirth/src/rust
+        run: |
+          set -euo pipefail
+          test -s "$RELM_TEST_MODEL_SPARK"
+          cargo test --locked -p rebirth-llm --lib \
+            spark_loaded_model_matches_official_prompt_bytes_and_special_token_ids \
+            -- --nocapture | tee "$RUNNER_TEMP/spark-tokenizer.log"
+          grep -qF 'test generate::tests::spark_loaded_model_matches_official_prompt_bytes_and_special_token_ids ... ok' "$RUNNER_TEMP/spark-tokenizer.log"
+      - name: Build the package and run native Spark acceptance
+        run: |
+          mkdir -p "$RUNNER_TEMP/spark-library"
+          R CMD INSTALL --library="$RUNNER_TEMP/spark-library" rebirth
+          Rscript - <<'RS'
+          .libPaths(c(file.path(Sys.getenv('RUNNER_TEMP'), 'spark-library'), .libPaths()))
+          library(relm)
+          library(testthat)
+          stopifnot(file.exists(Sys.getenv('RELM_TEST_MODEL_SPARK')))
+          result <- test_file('rebirth/tests/testthat/test-llm-spark.R',
+            reporter = 'summary', stop_on_failure = TRUE)
+          df <- as.data.frame(result)
+          stopifnot(nrow(df) == 1L, !df$skipped, df$failed == 0L, df$passed >= 20L)
+          cat(sprintf('Spark native acceptance: %d expectations passed\n', df$passed))
+          RS

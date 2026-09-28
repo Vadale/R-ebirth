@@ -11,20 +11,30 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | Field | Value |
 |---|---|
 | Upstream | https://github.com/ggml-org/llama.cpp |
-| Tag | `b9726` |
-| Tag release date | 2026-06-19 |
-| ggml version | 0.15.2 (per `ggml/CMakeLists.txt`) |
-| Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9726.tar.gz` |
-| Release tarball SHA256 | `117e95a59967e91b097d1bfdf62c3d10e8d08aec01be8548a093dcceecf9f2e0` |
-| Pruned tree SHA256 (pre-patch) | `1c8148f33e03bf07b9b8e1e56a0599a5197f4b1069f4dcd28c310e29d47d1289` |
-| Pruned tree SHA256 (post-patch) | `6aa56d8432ec0c2d67673ef549adbbf2df658e876b77a678d6ffb779bc7f8781` |
+| Tag | `b10828` |
+| Tag release date | 2026-09-06 |
+| ggml version | 0.23.0 (per `ggml/CMakeLists.txt`) |
+| Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz` |
+| Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
+| Pruned tree SHA256 (pre-patch) | `fd1b8327ef675dc91de4b9fde547d8afb7d4c6b2aa63a8f989e421cf59edd7ac` |
+| Pruned tree SHA256 (post-patch) | `978b070a9520cd6dfdf6fe15719854dc0ff4b3a68c679102b18d696a335d74ad` |
 
-Both tree SHAs were recomputed for WP-V1 (D-026): the prune manifest was
-widened with the mtmd library sources (see "Kept" below) and patch 0002 landed.
-The tarball SHA is unchanged — same upstream tag, no vendor bump.
+D-032 advances b9726 to b10828 (commit
+`3ad1ba7336986d98592d3e28cafd1a406715351f`) for native Spark 2.5 support.
+All three digests are new. Patch 0001 applies with offset-only changes; upstream
+now provides the library-only mtmd build, so patch 0002 is retired.
+
+The native port revalidates every mirrored C layout against a compiled header
+oracle. New loading enums explicitly preserve relm's mmap/eager behavior;
+context output limits and mtmd text lengths/options are mapped without new R API.
+The Qwen2, Qwen2-VL, Llama and Gemma3 architecture files are unchanged from the
+old tag; shared graph/loader/backend code changes, so their numerical gates still
+apply. Gemma4 adds lazy-tensor metadata and non-causal SWA handling; relm keeps
+lazy loading off. Spark uses the existing graph operations and `build_cvec` hook;
+this bump does not broaden relm's validated trace-component allow-lists.
 
 The **release tarball SHA256** is the digest of the unmodified upstream
-`b9726.tar.gz` as downloaded from GitHub — verifiable by anyone against upstream.
+`b10828.tar.gz` as downloaded from GitHub — verifiable by anyone against upstream.
 
 The tree is committed with the **rebirth patch set applied** (DECISIONS.md
 D-015). Three SHAs pin it (D-015 strengthening #1):
@@ -57,18 +67,19 @@ as-is, which is CRAN/`R CMD INSTALL`-robust and needs no diff-applier dependency
 | Patch | Files / hunks | Why | ADR |
 |---|---|---|---|
 | `0001-rebirth-wp5-ablation-intervene.diff` | 7 files, 14 hunks | `llm_ablate()`: a sibling `llama_adapter_intervene` applied inside `build_cvec` **after** the control vector (`cur * mask + add`, forcing masked neurons to `value`). No-op (no graph node) when no ablation is registered, so the un-intervened forward pass is byte-identical to the unpatched build. | D-012 / D-016 |
-| `0002-rebirth-wp-v1-mtmd-library-build.diff` | 2 files, 3 hunks | Library-only libmtmd build path: a root option `LLAMA_BUILD_MTMD` (default OFF) adds `tools/mtmd` even with `LLAMA_BUILD_COMMON`/`LLAMA_BUILD_TOOLS` OFF, and `tools/mtmd/CMakeLists.txt` guards the CLI/debug executables + the `llama-common` FATAL_ERROR check behind `LLAMA_BUILD_TOOLS`, so only the `mtmd` static archive builds. Build files only — zero engine-source change. | D-026 |
 
-The two patches touch disjoint file sets (0001: engine sources; 0002: two
-CMake build files), so the coherence reverse-apply is order-independent.
+The remaining patch touches engine sources only; all CMake inputs are pristine upstream.
 
 WP4 (activation observation) added **zero** patches (the eval-callback tap is
 zero-patch, D-012); WP5's ablation hook above is the project's first vendored
-patch. **The un-intervened path is unchanged:** the WP2/WP3/WP4 synthetic goldens
-pass byte-identically after the patch (engine-vs-oracle max |Δ|: logits 1.99e-3,
-embeddings 2.92e-3, activations 3.73e-3 — the pre-patch values).
+patch. The ablation hook adds no graph nodes on an un-intervened path. At its
+original b9726 introduction, the measured engine-vs-oracle maxima stayed at
+logits 1.99e-3, embeddings 2.92e-3 and activations 3.73e-3. Those are historical
+measurements, not evidence of cross-version bitwise equality. The b10828 port
+passes the existing synthetic reference assertions without updating any golden;
+same-version pristine/model comparison gates are recorded separately.
 
-`vendor-bump`: fetch upstream b9726 → re-apply `patches/*.diff` → re-run harness B
+`vendor-bump`: fetch upstream b10828 → re-apply `patches/*.diff` → re-run harness B
 → re-record the pre- and post-patch SHAs above. Two integrity checks guard drift
 (run by `patches/verify_vendored_tree.sh`, wired in CI):
 
@@ -92,9 +103,8 @@ Phase 8).
 - `include/` (`llama.h`, `llama-cpp.h`).
 - `src/` — the `libllama` sources, including `src/models/`.
 - `ggml/CMakeLists.txt`, `ggml/cmake/`, `ggml/include/` (all public headers).
-- `ggml/src/` core (`ggml.c`, `ggml.cpp`, `ggml-alloc.c`, `ggml-backend*.{cpp,h}`,
-  `ggml-common.h`, `ggml-impl.h`, `ggml-opt.cpp`, `ggml-quants.{c,h}`,
-  `ggml-threading.{cpp,h}`, `gguf.cpp`).
+- All non-directory core build inputs directly under `ggml/src/`, including
+  `CMakeLists.txt`, `ggml-version.h.in`, the ggml/gguf core files and headers.
 - `ggml/src/ggml-cpu/` (full, all `arch/` subdirs), `ggml/src/ggml-metal/`
   (including `ggml-metal.metal`), `ggml/src/ggml-blas/`.
 - `tools/mtmd/` **library** inputs only (WP-V1, D-026): `clip.{cpp,h}`,
@@ -102,10 +112,13 @@ Phase 8).
   `mtmd-image.{cpp,h}`, `mtmd-audio.{cpp,h}`, `mtmd-helper.{cpp,h}`,
   `models/*.cpp` + `models/models.h`, `debug/mtmd-debug.h` (the debug
   *functions* live in `mtmd.cpp`; only the header is a library input), and
-  `CMakeLists.txt` (carries the patch-0002 library-only guards). libmtmd links
+  `CMakeLists.txt` (upstream library-only guards). New b10828 library inputs
+  include `mtmd-internal.h`, `mtmd-helper-gen.cpp` and `mtmd-helper-common.h`. libmtmd links
   only `ggml` + `llama` — it is explicitly forbidden from linking
   `llama-common`, which is why `common/` stays pruned.
-- `vendor/stb/stb_image.h` (image decode) and `vendor/miniaudio/miniaudio.h`
+- `vendor/CMakeLists.txt`, `vendor/hash/` (the upstream SHA/xxHash library),
+  `vendor/{hash,stb,miniaudio,nlohmann,sheredom}/CMakeLists.txt`,
+  `vendor/stb/stb_image.h` (image decode) and `vendor/miniaudio/miniaudio.h`
   (compiled into `mtmd-helper.cpp` unchanged — audio Option A, D-026; the R API
   never reaches the audio decoder: the Rust image FFI gates input on an image
   magic-byte allow-list, WP-V2).
@@ -123,14 +136,15 @@ Phase 8).
   debug/mtmd-debug.md, tests.sh, requirements.txt, README.md, README-dev.md,
   test-1.jpeg, test-2.mp3, test-3.mp4}` (executables/tests/fixtures, not
   library inputs) and every other `tools/` subdirectory (including
-  `tools/CMakeLists.txt` — the patch-0002 root option adds `tools/mtmd`
+  `tools/CMakeLists.txt` — the upstream root option adds `tools/mtmd`
   directly).
-- llama.cpp's in-repo `vendor/` except `stb` and `miniaudio` (above):
-  `cpp-httplib`, `nlohmann`, `sheredom` (used only by `common/`/tools/server
-  and the `MTMD_VIDEO`-guarded video path, none of which we build; `build.rs`
-  sets `MTMD_VIDEO=OFF`).
+- llama.cpp's in-repo `vendor/` except the inputs listed above. The `nlohmann`
+  and `sheredom` interface-target CMake declarations are kept because upstream
+  configures them unconditionally; their headers remain pruned. `cpp-httplib`,
+  tool/server JSON parsing and subprocess video decoding are not built;
+  `build.rs` sets `MTMD_VIDEO=OFF` and disables common/tools.
 - Non-CPU/non-Metal ggml backend source dirs under `ggml/src/`:
-  `ggml-cann`, `ggml-cuda`, `ggml-hexagon`, `ggml-hip`, `ggml-musa`,
+  `ggml-cann`, `ggml-cuda`, `ggml-et`, `ggml-hexagon`, `ggml-hip`, `ggml-musa`,
   `ggml-opencl`, `ggml-openvino`, `ggml-rpc`, `ggml-sycl`, `ggml-virtgpu`,
   `ggml-vulkan`, `ggml-webgpu`, `ggml-zdnn`, `ggml-zendnn`.
   (The matching `ggml/include/ggml-*.h` headers are kept — they are tiny and are
@@ -146,10 +160,10 @@ Phase 8).
 ## How to reproduce this snapshot
 
 ```sh
-curl -L -o b9726.tar.gz \
-  https://github.com/ggml-org/llama.cpp/archive/refs/tags/b9726.tar.gz
-# verify: shasum -a 256 b9726.tar.gz == 117e95a5...f2e0
-tar xzf b9726.tar.gz
-# apply the "Removed" list above to llama.cpp-b9726/
+curl -L -o b10828.tar.gz \
+  https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz
+# verify: shasum -a 256 b10828.tar.gz == da0a960b...b0247
+tar xzf b10828.tar.gz
+# apply the "Removed" list above to llama.cpp-b10828/
 # the result matches the pruned tree SHA256 above.
 ```
