@@ -8,10 +8,25 @@ svc_process <- function(pid = Sys.getpid()) {
   handle <- ps::ps_handle(pid)
   list(pid = as.integer(pid), birth = svc_birth(handle))
 }
+svc_confirm_ended <- function(handle) {
+  # Darwin task inspection may fail just before exit becomes observable. Retry
+  # only this error path, keeping the original creation-time-aware handle. A
+  # permission error or unknown state is never evidence that a process ended.
+  ended <- function() tryCatch({
+    if (!ps::ps_is_running(handle)) return(TRUE)
+    ps::ps_status(handle) %in% c("zombie", "dead")
+  }, error = function(err) FALSE)
+  if (ended()) return(TRUE)
+  for (attempt in seq_len(2L)) {
+    Sys.sleep(.05)
+    if (ended()) return(TRUE)
+  }
+  FALSE
+}
 svc_running <- function(handle) {
   if (!ps::ps_is_running(handle)) return(FALSE)
   status <- tryCatch(ps::ps_status(handle), error = function(err) {
-    if (!ps::ps_is_running(handle)) return("dead")
+    if (svc_confirm_ended(handle)) return("dead")
     svc_abort("Cannot establish process liveness.", "ownership")
   })
   !status %in% c("zombie", "dead")
@@ -464,7 +479,7 @@ svc_rss <- function(e) {
   values <- vapply(handles, function(handle) tryCatch(as.double(ps::ps_memory_info(handle)[["rss"]]), error = function(err) {
     # A child that exited between enumeration and sampling contributes no live
     # RSS. Permission/inspection errors for a live process must fail closed.
-    if (!svc_running(handle)) return(0)
+    if (svc_confirm_ended(handle)) return(0)
     svc_abort("Cannot sample a live owned process.", "ownership")
   }), numeric(1))
   e$supervisor <- NULL

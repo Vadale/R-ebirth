@@ -91,3 +91,11 @@ real disposable files and binds `file.info` locally on a copy of the product
 function to remove a listed file immediately before stat. Confirmed live IPC
 disappearance is allowed; durable disappearance, existing unstatable files,
 unverifiable ancestors, and file/directory symlinks remain errors.
+
+`Rscript --vanilla tests/funding-service/test-process-rss.R /path/to/service-library`
+runs nine model-free process-lifecycle regressions in every ordinary R CI leg and
+the native Linux workflow. It verifies delayed death after RSS/status inspection
+errors, persistent live/unknown denial, creation-time identity reuse and actual
+child termination. Only confirmed termination can discard a failed read; the
+original process handle is retained and retries add at most 100 ms of waiting.
+Successful reads and resource thresholds are unchanged.
