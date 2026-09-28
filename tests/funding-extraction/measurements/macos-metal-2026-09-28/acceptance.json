@@ -1,0 +1,74 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "backend": "metal",
+  "offline_isolation": "sandbox-exec deny network*",
+  "application_sha256": "f49c6615f86241145244632950953c8d6bfd5352d5bf6bc5d032ca3bda6e1958",
+  "model_alias": "spark-x2.5-4b-q8_0",
+  "measurements": {
+    "setup": {
+      "wall_seconds": 10.279739,
+      "peak_rss_bytes": 93470720,
+      "exit_code": 0
+    },
+    "uninterrupted": {
+      "wall_seconds": 39.746511,
+      "peak_rss_bytes": 5191761920,
+      "exit_code": 0
+    },
+    "interrupted": {
+      "wall_seconds": 31.941391,
+      "peak_rss_bytes": 5186863104,
+      "exit_code": 1
+    },
+    "recovery": {
+      "wall_seconds": 0.186442,
+      "peak_rss_bytes": 86261760,
+      "exit_code": 0
+    },
+    "resume": {
+      "wall_seconds": 26.46523,
+      "peak_rss_bytes": 5187813376,
+      "exit_code": 0
+    },
+    "reuse": {
+      "wall_seconds": 10.994868,
+      "peak_rss_bytes": 93110272,
+      "exit_code": 0
+    }
+  },
+  "first_run": {
+    "documents": 3,
+    "elapsed_seconds": "39.554000",
+    "errors": 0,
+    "first_result_seconds": "24.296000",
+    "invalid": 0,
+    "processed": 3,
+    "reused": 0,
+    "run_identity": "0ddfd41b7a72c092ec5c40d0d669722c7492962933cc2a980e9490e578370824",
+    "success": 3
+  },
+  "resumed_run": {
+    "documents": 3,
+    "elapsed_seconds": "26.266000",
+    "errors": 0,
+    "first_result_seconds": "18.735000",
+    "invalid": 0,
+    "processed": 2,
+    "reused": 1,
+    "run_identity": "0ddfd41b7a72c092ec5c40d0d669722c7492962933cc2a980e9490e578370824",
+    "success": 3
+  },
+  "final_reuse": {
+    "documents": 3,
+    "elapsed_seconds": "10.831000",
+    "errors": 0,
+    "first_result_seconds": null,
+    "invalid": 0,
+    "processed": 0,
+    "reused": 3,
+    "run_identity": "0ddfd41b7a72c092ec5c40d0d669722c7492962933cc2a980e9490e578370824",
+    "success": 3
+  },
+  "acceptance": "Offline run, real SIGKILL, explicit recovery, immutable commits and duplicate-free resume passed",
+  "quality_scope": "Operational acceptance only; invalid extraction records remain visible and terminal"
+}

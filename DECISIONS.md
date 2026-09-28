@@ -783,6 +783,32 @@ executes on exactly one machine in the world.
 
 ---
 
+### D-031 approval and D2 execution addendum (2026-09-28)
+
+The founder authorized proceeding with D2 after the application-only jsonlite
+requirement was presented explicitly in the status summary. This approves
+jsonlite 2.0.0 for `examples/funding-extraction/`, within D-031's stated scope;
+it does not add a relm dependency or change its public API. The original proposed
+entry above records its status when first written.
+
+The first setup recipe snapshots an explicitly selected, already installed relm
+build and its existing nanoarrow dependency, plus jsonlite 2.0.0, into an
+application-local library. It pins all installed package bytes, versions,
+R/platform and native-library identities. It reuses a supplied model only after
+checking the registry or an explicit expected SHA256; a model download, when
+requested, is confined to setup. This avoids another multi-gigabyte model copy
+and unnecessary native compilation on the founder's machine. Preparing the
+initial relm installation remains a documented prerequisite; the snapshot is
+specific to the preparing R/platform, not a portable environment image.
+
+D2 verifies operational correctness independently of small-model extraction
+accuracy. Do not tune the consumed pilot or delay D2 for a larger-model/API/Luna
+comparison; the founder explicitly deferred that comparison. Spark PR #46 was
+merged at `2c827a7` after all nine PR checks and all dispatched model, vision,
+demo and memory-safety workflows passed. No numerical golden changed.
+
+---
+
 ## D-032 — Native Spark-X2.5 support through the existing llama.cpp dependency
 
 - **Date:** 2026-09-28

@@ -149,3 +149,27 @@ jobs:
           name: structured-output-cpu
           path: ${{ runner.temp }}/relm-s1-cpu
           if-no-files-found: warn
+
+      - name: Prepare the pinned D2 application parser
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("jsonlite", quietly = TRUE) ||
+              as.character(packageVersion("jsonlite")) != "2.0.0") {
+            install.packages("https://cran.r-project.org/src/contrib/Archive/jsonlite/jsonlite_2.0.0.tar.gz",
+                             repos = NULL, type = "source")
+          }
+
+      - name: D2 offline run, SIGKILL and resume (Linux CPU)
+        run: >-
+          python3 tests/funding-extraction/run-model.py
+          --model "$RELM_TEST_MODEL_QWEN" --model-alias qwen2.5-0.5b-instruct-q8_0
+          --backend cpu --r-library "$RUNNER_TEMP/relm-s1-library"
+          --output "$RUNNER_TEMP/relm-d2-cpu"
+
+      - name: Preserve D2 measurements and committed records
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: funding-extraction-cpu
+          path: ${{ runner.temp }}/relm-d2-cpu
+          if-no-files-found: warn

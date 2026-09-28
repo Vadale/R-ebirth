@@ -51,3 +51,6 @@ docs/full-review-*.md
 docs/simplifier-upgrade-*.md
 *-La-Rivoluzione-Definitiva.md
 ROADMAP.md
+
+# Local prepared batch environments and persistent runs
+/.funding-extraction/
