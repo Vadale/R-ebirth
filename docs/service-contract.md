@@ -1,6 +1,6 @@
 # WP12a — Minimal funding-extraction service contract
 
-Date: 2026-09-28. **PROPOSED — D-034 requires founder approval before WP12b.**
+Date: 2026-09-28. **APPROVED — D-034 founder approval recorded on 2026-09-28.**
 This is a reviewed implementation specification, not a running service. No
 service package has been installed and no runtime/load gate has passed.
 

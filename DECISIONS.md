@@ -998,6 +998,17 @@ WP11a PR #48 merged at `2a65a3f` after all nine checks passed (R run
   bounded local operating envelope before WP12b implementation. Approval does
   not certify extraction accuracy, a deployed service or a public/network pilot.
 
+
+### D-034 approval addendum — 2026-09-28
+
+The founder approved the concrete WP12a dependency/operating-envelope proposal
+and then explicitly instructed continuation with WP12b after reviewing the
+remaining steps. D-034 is **APPROVED** for the application-only service and the
+23-package closure in `tests/service-contract/dependencies.csv`. WP12a PR #50
+merged at `95066c7` after all nine checks passed. Implement the frozen contract;
+no core export, new backend, expanded network scope or relaxed acceptance is
+authorized. Runtime G1–G8 acceptance is separate from this approval.
+
 ---
 
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)

@@ -1,6 +1,6 @@
 # WP12a contract artifacts and WP12b acceptance plan
 
-**Status: proposed D-034.** These files specify a service; they do not implement
+**Status: D-034 approved on 2026-09-28; WP12b implementation active.** These files specify a service; they do not implement
 or run it. `verify.py` is the only executable supplied in WP12a. It validates
 pins, limits, state consistency, source links and preserved D2 fixtures, and
 rejects deliberate contract mutations. It also checks worst-case JSON expansion for the bounded overflow record.
@@ -33,9 +33,9 @@ Rscript --vanilla examples/funding-service/setup.R \
 Rscript --vanilla examples/funding-service/start.R \
   --environment /absolute/service/environment --store /absolute/service/store
 Rscript --vanilla examples/funding-service/status.R \
-  --store /absolute/service/store
+  --environment /absolute/service/environment --store /absolute/service/store
 Rscript --vanilla examples/funding-service/stop.R \
-  --store /absolute/service/store
+  --environment /absolute/service/environment --store /absolute/service/store
 ```
 
 The foreground `start.R` process is the frontend. Supervisor templates use the

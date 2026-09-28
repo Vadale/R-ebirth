@@ -18,7 +18,7 @@ def require(value, message):
 
 
 def validate(contract, pins):
-    require(contract['status'] == 'proposed', 'runtime approval must not be inferred')
+    require(contract['status'] == 'approved', 'D-034 approval state changed')
     require(contract['decision'] == 'D-034', 'wrong decision')
     require(contract['bind']['host'] == '127.0.0.1' and
             not contract['bind']['browser_origins'], 'local access scope changed')
