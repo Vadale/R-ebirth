@@ -214,7 +214,9 @@ The linked profile, errors and bounds are binding.
 
 An application-level HTTP template may use existing approved functions without
 creating `llm_serve()`. That name remains reserved and unapproved until its own
-function entry is accepted.
+function entry is accepted. WP12a's application-only ticket protocol and
+additional runtime packages are proposed separately in D-034 and
+[`docs/service-contract.md`](docs/service-contract.md); they add no relm export.
 
 ---
 

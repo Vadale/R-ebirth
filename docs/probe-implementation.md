@@ -76,9 +76,14 @@ errors were respectively 2.04e-8, 4.37e-9, 4.91e-13 and 4.38e-9.
   both controls, saved-fit prediction and PDF rendering. The local R installation
   reused the unchanged native library below; CI builds the native source afresh.
 
-Local verification is complete. Remote PR checks and the updated Linux CPU
-Demo A workflow must pass before integration; this report does not predeclare
-their results.
+PR #49 merged at `ecf3d3f` after all nine checks passed on candidate `67ad682`:
+[R package matrix](https://github.com/Vadale/R-ebirth/actions/runs/36434776460),
+[Rust/repository checks](https://github.com/Vadale/R-ebirth/actions/runs/36434776322)
+and the additional [Linux CPU Demo A/probe workflow](https://github.com/Vadale/R-ebirth/actions/runs/36434815787).
+The Linux run used R 4.6.1/glmnet 5.1. Its paired-label AUCs were 0.58, 0.4525
+and 0.54 at layers 6/12/18; true labels and the lexical baseline scored 1, with
+degenerate intervals withheld. The workflow retains full metrics/audit artifacts.
+These remote outcomes supplement the local measurements below.
 
 Local numerical environment: macOS arm64, R 4.5.1, glmnet 5.0. The final model
 acceptance uses the existing validated native library, SHA256

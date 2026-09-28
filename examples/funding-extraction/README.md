@@ -160,3 +160,11 @@ python3 tests/funding-extraction/run-model.py \
 On Mac, network isolation uses `sandbox-exec`; on Linux, it uses `sudo unshare
 --net` and drops to the caller UID. Linux CPU runs alongside the nightly pinned
 0.5B integration model; no large-model download enters ordinary PR CI.
+
+## Planned local service
+
+D2 remains a runnable batch application. The separate
+[WP12a service contract](../../docs/service-contract.md) proposes a persistent
+single-worker local HTTP template and recovery/load limits. Its D-034 dependency
+proposal still needs approval; no service command or runtime acceptance is
+included in this batch example.

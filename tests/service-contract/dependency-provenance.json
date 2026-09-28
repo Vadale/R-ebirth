@@ -1,0 +1,8 @@
+{
+  "source": "https://cran.r-project.org/src/contrib/PACKAGES.rds",
+  "retrieved_date": "2026-09-28",
+  "metadata_sha256": "63082eb3fae3ad0ab330d6c83487246ff8042ff516ebe2fd15407e2d81fb5021",
+  "scope": "Depends, Imports and LinkingTo closure for plumber, callr, later, httpuv, ps and jsonlite; non-base CRAN packages only",
+  "status": "proposed; metadata inspection only, no installation or runtime acceptance",
+  "dependency_csv_sha256": "621feae757c4ba9e11622f6efde0bdc4703fcb51fbe8878ef42db7c4244b410a"
+}

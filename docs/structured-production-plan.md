@@ -46,10 +46,12 @@ complete and merged in PR #47 (`ddf8467`);
 S0/S1 and native Spark support are complete. Stronger-model comparisons are
 deferred and do not block operational acceptance. Follow the milestone/verification policy
 in [development workflow](development-workflow.md) (D-029). WP11a merged in PR #48 at `2a65a3f`, with all nine checks passing. The founder
-approved D-033 and its [concrete contract](probe-evaluation-contract.md). WP11b
-is implemented with local numerical, package and Qwen Metal acceptance; see
-the [probe report](probe-implementation.md). Its remote integration is the
-current milestone, followed by WP12a's service contract.
+approved D-033 and its [concrete contract](probe-evaluation-contract.md).
+WP11b merged in PR #49 at `ecf3d3f`: all nine PR checks and the Linux CPU
+model/control workflow passed. See the [probe report](probe-implementation.md)
+and PR #49 for measured evidence. WP12a now proposes the
+[local service contract](service-contract.md) and exact D-034 dependency closure;
+WP12b implementation requires that concrete approval.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|
@@ -144,7 +146,9 @@ outside its contract.
 For a responsive small-team pilot, evaluate an existing HTTP stack with one
 persistent inference worker, or an existing outer admission layer supervising
 one synchronous worker. Plumber plus an established worker integration is a
-candidate for WP12a, not a dependency selected by this plan. Do not build a queue.
+candidate in the original plan. WP12a now proposes Plumber + callr + later
+in [D-034's concrete contract](service-contract.md), pending approval. Do not build
+a queue.
 
 Each worker constructs and closes its own model. Exchange configuration and
 ordinary data, not serialized or fork-inherited native pointers. Calls using a
@@ -221,8 +225,8 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** integrate WP11b after its required remote checks and pinned
-Linux workflow pass, then prepare WP12a's bounded service contract. The
-[probe report](probe-implementation.md) records local acceptance and limitations.
-D2 is integrated; D1's negative quality result remains unchanged.
-Stronger-model comparisons remain deferred.
+**Next action:** review D-034 and the [WP12a service contract](service-contract.md).
+After approval, implement WP12b's application-only ticket service and execute its
+frozen Mac/Linux acceptance gates. The contract checker verifies only planning
+consistency; no service/load/stress result is claimed. D2 and WP11b are integrated;
+D1's negative quality result and deferred stronger-model comparison are unchanged.

@@ -108,6 +108,9 @@ jobs:
       - name: Probe statistical reference artifact check (no model)
         run: python tests/llm-golden/probe-contract/reference.py --check
 
+      - name: Service contract consistency (planning only)
+        run: python tests/service-contract/verify.py --self-test
+
       - name: Structured-output offline contract checks (no model)
         run: |
           python tests/structured-output/verify.py --self-test

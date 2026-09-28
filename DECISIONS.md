@@ -942,6 +942,64 @@ WP11a PR #48 merged at `2a65a3f` after all nine checks passed (R run
 
 ---
 
+## D-034 — Bounded local funding-extraction service
+
+- **Date:** 2026-09-28
+- **Status:** PROPOSED. The founder authorized WP12a planning, not the concrete
+  new dependencies or WP12b service implementation. D-028's direction and D-031's
+  application JSON approval remain in force.
+- **Recommendation:** implement an application-only template using Plumber
+  **1.3.3**, callr **3.8.0** and later **1.4.8**, with direct httpuv **1.6.17**
+  and ps **1.9.3** use plus existing jsonlite **2.0.0**. Approve the complete
+  **23-package mandatory CRAN closure** in
+  [`tests/service-contract/dependencies.csv`](tests/service-contract/dependencies.csv),
+  captured from official CRAN metadata with recorded provenance. This includes
+  transitive processx/promises/otel, magrittr/rlang and native system prerequisites;
+  it is a material application footprint, not merely three dependency names.
+  Snapshot exact installed bytes separately on each target. No new relm
+  Imports/Suggests, Rust dependency, exported function or automatic installation
+  in the service run path. `llm_serve()` remains reserved and unapproved.
+- **Protocol/ownership:** one trusted-user loopback frontend, one persistent
+  model-owning R worker, one active extraction and zero pending-job queue.
+  POST returns a persisted ticket; GET reads state or an immutable result.
+  Same-ID/same-input retries reuse their record; changed input conflicts. The
+  frontend alone writes admission and terminal artifacts, while the worker only
+  receives ordinary configuration/data. No serialized model pointers or forked
+  native sessions. The service uses its own store/identity and reuses D2's
+  validated domain/persistence primitives without changing batch semantics.
+- **Limits/recovery:** freeze the proposed numeric envelope and eight future
+  runtime gates in [`docs/service-contract.md`](docs/service-contract.md) and
+  [`tests/service-contract/contract.json`](tests/service-contract/contract.json).
+  A 120-second request deadline retires and kills its worker; confirmed death
+  precedes replacement. Supervised parent-exit cleanup and launchd/systemd user
+  recipes must be tested. Unresolved admissions become interrupted after safe
+  recovery; no automatic replay or result overwrite. Repeated restart failure
+  latches unavailable. Local request/body/store/RSS limits are explicit;
+  monitored RSS is not a hard OS/Metal allocation ceiling. JSON expansion has
+  an explicit bounded overflow-error record. Per-epoch IPC files are private,
+  size-monitored and reclaimed only after confirmed process death; worker
+  diagnostic output has a bounded drain/discard policy.
+- **Acceptance:** actual HTTP/child-process overload, idempotency, crash and
+  rename-boundary tests; native request isolation; Mac Spark/Metal resource
+  smoke; 1,000 full native Qwen requests on each Mac Metal and Linux CPU;
+  executable user-supervisor lifecycle checks. Missing managers or fixtures
+  leave a gate unexecuted, never a passing skip. Source/API inspection and the
+  offline contract checker do not certify these runtime gates.
+- **Why:** reuse mature HTTP and process management while preserving readiness
+  and admission during blocking native inference. Tickets avoid a bespoke
+  promise bridge and retain D2's inspectable, recoverable artifacts. The tested
+  application can precede native async or a generic serving API.
+- **Alternatives:** synchronous Plumber cannot meet responsive controls during
+  inference. Mirai is useful elsewhere, but interrupt-only cancellation cannot
+  guarantee a hard native deadline; daemon teardown adds lifecycle complexity
+  without benefiting this one-worker ticket protocol. A custom queue, cloud
+  platform, broad network binding or handwritten authentication is out of scope.
+- **Founder decision:** approve this stack/complete dependency closure and the
+  bounded local operating envelope before WP12b implementation. Approval does
+  not certify extraction accuracy, a deployed service or a public/network pilot.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
