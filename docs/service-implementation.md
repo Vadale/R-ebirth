@@ -25,10 +25,10 @@ existing checksummed model. The personal R library is unchanged.
 | D2 helper regression | 466 existing process/canonical/identity assertions pass after correcting source-file provenance for nested imports |
 | G1–G4 actual HTTP/process/persistence | G1 HTTP and G2 concurrent admission pass locally; the retained combined run is explicitly partial because a later harness assertion failed. Standalone G3 passes in 199.94 s including the unchanged 120 s deadline. G4 passes all 64 checks, including all four rename crash boundaries, corruption/ownership refusal, overflow and bounded storage. Zombie-stop regression fixed without changing process-identity checks |
 | Offline isolation mechanism | Mac loopback-only sandbox allows local roundtrip and rejects direct non-loopback TCP with EPERM; native G6 execution separate |
-| G5 native isolation | Mac Qwen Metal: 53 checks pass in 62.90 s, including A/B/A, validator/context failures, hard worker restart and independent worker comparison; peak measured process-tree RSS 1.06 GiB |
+| G5 native isolation | Mac Qwen Metal: 53 checks pass in 62.90 s, including A/B/A, validator/context failures, hard worker restart and independent worker comparison; peak measured process-tree RSS 1.06 GiB. Linux Qwen CPU also passes all53checks in197.78s |
 | G6 native operating envelope | Mac Qwen Metal passes: 30 ordinary requests, explicit worker crash/reload, normal stop and actual offline OS boundary; 286 checks in 122.02 s, peak process-tree RSS 1.05 GiB. Spark Metal also passes all 286 checks in 350.86 s (30 ordinary requests plus crash/recovery), peak RSS 4.97 GiB against the 8 GiB bound; Linux pending |
-| G7 1,000 native Qwen requests on each Mac/Linux | Not run |
-| G8 actual launchd/systemd user lifecycle | Not run |
+| G7 1,000 native Qwen requests on each Mac/Linux | First Mac run failed after106 committed results: request107 remained unresolved and the service faulted below its RSS/storage limits. Report retained; concurrent IPC stat/disappearance race reproduced and fixed; nine focused regressions plus independent review pass, native rerun active after a passing1,000-request deterministic HTTP/callr regression. Linux stress not yet run |
+| G8 actual launchd/systemd user lifecycle | Mac launchd passes all 27 checks: real crash/restart, stop, unrelated/PID-reuse refusal, occupied-port and changed-config failures with actual HTTP readiness probes and measured restart intervals. Linux systemd pending |
 | Independent integrated review | Complete with no unresolved P1/P2 findings; focused confirmation also passed for the zombie-stop fix. Runtime acceptance remains separate |
 
 Retained local receipts and native request timings are in
@@ -62,3 +62,31 @@ actual-process guard proves persistent live-process inspection denial still fail
 G4 also corrected a test assertion to measure durable storage separately from
 the explicitly separate 64 MiB IPC budget. These are operational checks,
 not evidence of improved extraction accuracy.
+
+Linux run `36449874945` passed environment boundaries and native G5, then
+failed before G6 startup because the offline guard enumerated the host-mounted
+sysfs interface view. The guard now uses `socket.if_nameindex()` to inspect the
+calling network namespace; namespace identity, actual external-socket denial and
+loopback roundtrip remain mandatory. This is a harness correction; Linux G6–G8
+remain pending until a successful actual run.
+
+A separate explicit restart using an isolated copy of the original `69e986e`
+service source recovered admission107 as `interrupted`, with zero new dispatches
+and byte-identical hashes for all106 earlier results. The first G7 remains failed;
+its store now contains that separately recorded recovery, not a repaired stress
+pass. The recovery service was stopped after the check.
+
+The scanner fix is limited to confirmed disappearance in a live owned IPC tree.
+Durable record scans still fail on missing/stat errors, and file/directory symlinks
+are refused. Nine independently written base-R regressions pass; a focused review
+found no unresolved material issue. Fault status now exposes bounded reason/class
+values without raw condition text.
+
+After the IPC fix, G3 passes97checks including the unchanged120-second deadline,
+and G4 passes64checks. A separate1,000-request deterministic HTTP/callr sequence
+also passes without replacing the worker; its private10ms fixture polling makes
+it a transport regression, not nativeG7 or a throughput claim. The two Mac CI
+legs previously reached an arbitrary30-second harness wait before completing the
+three startup-failure attempts; the harness now uses the frozen300-second restart
+window and still requires actual faulted/non-ready state and all three failures.
+Both Linux model-free CI legs passed on the first candidate.
