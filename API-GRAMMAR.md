@@ -151,7 +151,7 @@ and the default layer on development data. Preprocessing and returned fits
 never use held-out observations. The accepted contract defines the fixed grid,
 selection ties, class/coordinate validation, RNG, memory and CI rules.
 Returns an `llm_probe` (§2). Errors: `relm_error_probe` with actionable reason and
-relevant counts/fold/layer; memory refusal is `relm_error_oom` before allocation.
+relevant counts/fold/layer; memory refusal is `relm_error_oom` before densification.
 
 ### `activations(layer, component = "residual")`
 Formula-helper marker; calling it outside a probe formula raises `relm_error_probe`

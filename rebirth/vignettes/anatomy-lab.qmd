@@ -31,6 +31,57 @@ as a plain data frame. That turns a classic mechanistic-interpretability questio
 --- *where in the network does a concept become linearly readable?* --- into an
 ordinary R modelling exercise. Here the concept is **sentiment**.
 
+## Grouped probes in five lines
+
+Prepare `labels`, a source ID for each prompt, and reserved source IDs before
+examining evaluation results. Related documents, paraphrases and matched
+contrasts share a source ID. With a loaded model `m`:
+
+```{r}
+#| eval: false
+tr <- llm_trace(m, prompts, layers = 6:18, positions = "last")
+fit <- llm_probe(labels ~ activations(layer = 6:18), tr,
+                 groups = source_ids, test_groups = reserved_ids, seed = 42)
+summary(fit)
+plot(fit)
+```
+
+`predict(fit, new_trace)` returns positive-class probabilities using the layer
+chosen on development CV and its saved preprocessing. `fit$audit` records each
+prompt's group, partition and fold. Without `test_groups`, scores are explicitly
+exploratory and have no inferential intervals. A spilled trace uses an external
+label vector, because the in-memory proxy has zero rows.
+
+Held-out intervals resample whole groups and are conditional on the fitted
+models, development data, selection and split. They do not measure training
+uncertainty or provide simultaneous coverage across layers. Small, undefined
+or degenerate intervals are withheld with a reason in `fit$metrics`. The selected
+layer is fixed before evaluation; repeatedly revising the analysis after seeing
+the holdout consumes its independent status. Capture and fitting budgets still
+apply: spilling does not make the statistical solver out of core.
+
+An optional ggplot2 rendering uses the ordinary result table, without adding a
+package dependency to relm:
+
+```{r}
+#| eval: false
+ggplot2::ggplot(fit$metrics, ggplot2::aes(layer, test_score)) +
+  ggplot2::geom_line() + ggplot2::geom_point() +
+  ggplot2::geom_errorbar(ggplot2::aes(ymin = lower, ymax = upper), na.rm = TRUE) +
+  ggplot2::labs(y = "Held-out AUC", subtitle = "Conditional pointwise intervals; development-selected layer fixed")
+```
+
+The repository's `tests/demos/demo-probe-evaluation.R` runs a fixed paired-source
+example with a simple lexical baseline and a paired-label control. Its synthetic
+labels deliberately reveal why good probe scores alone do not establish unique
+representational information or causal use.
+
+## Historical exploratory anatomy analysis
+
+The longer analysis below predates the grouped probe API. Its selected-OOF
+bootstrap does not account for selecting lambda or searching layers. Treat its
+figures as exploratory, not independent final evaluation of the selected probe.
+
 The recipe is deliberately classical: trace a fixed contrast set, take a concept
 direction with `prcomp()`, fit one cross-validated linear probe per layer, and
 plot decodability against depth. Then we *steer* along that direction and check

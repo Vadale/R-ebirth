@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-28 for integrated D2 and the WP11a contract proposal; the historical
+Updated 2026-09-28 for integrated D2 and the WP11b probe implementation; the historical
 maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
@@ -12,8 +12,10 @@ vision and Spark Metal acceptance passed. The reused extraction pilot improved
 to 8/10 exact records, without a new quality acceptance. Spark PR #46 merged
 at `2c827a7` after all nine PR checks and the dispatched Linux/Mac model, vision,
 demo and Valgrind workflows passed. D2 PR #47 merged at `ddf8467` after all
-nine final checks passed. WP11a proposes [the probe contract](probe-evaluation-contract.md)
-and approved D-033; WP11b implementation and acceptance are now active.
+nine final checks passed. WP11a merged at `2a65a3f` with all nine checks green;
+the founder approved [the probe contract](probe-evaluation-contract.md) in
+D-033. WP11b implementation and local evidence are in the
+[probe report](probe-implementation.md); its new remote integration is separate.
 
 ## Implemented checks
 
@@ -30,6 +32,8 @@ and approved D-033; WP11b implementation and acceptance are now active.
 | Golden gate rejects layer/index mutations | Model-free mutation cases in `test-llm-trace-golden.R` | Per-commit R CI; shares the gate used by the real-model comparison |
 | Vision text, embeddings, encoder reference | `test-llm-vision.R`; `tests/llm-golden/vision/` | Vision nightly downloads the pinned pair and builds an unpatched encoder on the same runner; some local pins are machine-specific |
 | Demo repeatability and analysis | `tests/demos/demo-utils.R`, Demo B plot self-test; demo scripts | Model-free checks per commit; Demo A/B end-to-end nightlies use the small pinned model |
+| Statistical probes and independent numerical agreement | `test-llm-probe*.R`; `tests/probe-product/run.R` | R CI tests grouping, leakage, controls, RNG, S3, spill and memory; mandatory installed-product gate checks 82 frozen solutions and bootstrap references |
+| Grouped anatomy workflow with controls | `tests/demos/demo-probe-evaluation.R` | Local pinned Qwen0.5 Metal passed; Demo A nightly runs Linux CPU and uploads metrics/audits; no scientific-performance threshold |
 | Native memory safety | `tests/valgrind/` | Scheduled Linux Valgrind/leak job; synthetic model |
 | Repeated model lifetime | `test-llm-model.R` | Local/model nightly with Qwen and `NOT_CRAN=true`; 30 load/unload cycles, not the planned 1,000 trace/generate workload |
 | Vendor integrity | `verify_vendored_tree.sh` | Per-commit hashes and reverse-patch coherence |
@@ -77,9 +81,10 @@ documentation update does not constitute a new feature test run.
 - **Vision debt:** the upstream failed-projector-construction leak remains
   documented in NEWS; stronger content provenance for the nightly reference is
   still pending.
-- **Statistical probes:** Demo A is exploratory. Parameter/layer selection and
-  its uncertainty need an explicit nested-CV or held-out evaluation contract
-  before a confirmatory `llm_probe()` product is built.
+- **Statistical probes:** WP11b implements the approved held-out contract and
+  conditional group intervals. Historical Demo A remains exploratory. Training/
+  selection uncertainty, nested CV, multiclass outcomes and multiple captured
+  positions per prompt remain outside this implementation.
 - **Windows/CUDA:** deferred pending suitable hardware testing. WSL2 CUDA,
   native Rtools builds, and Windows distribution are not certified by current
   macOS/Linux checks. This maintenance package adds no Windows support claim.
@@ -104,7 +109,7 @@ in [the D2 report](d2-batch-operation.md). Later product gates remain unexecuted
 | D1 | Field accuracy, evidence support, unsupported values, missingness, coverage and correction time against baselines | Frozen held-out public-document pilot; model/build/backend recorded | Evaluated, failed promotion: 0/10 joint matches, 1/4 known amounts, 6/8 unsupported fields in task-valid records; human correction time unmeasured |
 | D2 | Clean setup/offline run, interruption/resume, no duplicate commits, stale-identity refusal, resource report | Fresh Mac session and declared Linux CPU environment | Operational acceptance passed: 466 assertions on each Mac/Linux R-release/oldrel leg, offline Spark Metal and Qwen CPU kill/resume runs; PR #47, D2 report |
 | WP11a | Grouped evaluation contract, executable split audit and independent statistical reference fixtures | Model-free Python/R references in `tests/llm-golden/probe-contract/` | Local Python artifact/audit checks and independent R/glmnet checks pass (82 ridge solutions, 17 CSVs); D-033 approved; PR #48 merged at 2a65a3f with all nine checks green; WP11b product acceptance separate |
-| WP11b | Product agreement with references, selection/preprocessing invariance, S3 behavior and controls | Synthetic tests plus pinned anatomy-lab example | Implementation active under approved D-033 |
+| WP11b | Product agreement with references, selection/preprocessing invariance, S3 behavior and controls | Synthetic tests plus pinned anatomy-lab example | Implemented under D-033: 330 focused/export expectations, 82 independent solutions, Qwen Metal controls and independent review pass; see probe report for integration status |
 | WP12a/b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Chosen Mac/Linux CPU service recipe; supervisor/worker versions pinned | Not run |
 | I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |
 

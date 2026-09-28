@@ -46,8 +46,10 @@ complete and merged in PR #47 (`ddf8467`);
 S0/S1 and native Spark support are complete. Stronger-model comparisons are
 deferred and do not block operational acceptance. Follow the milestone/verification policy
 in [development workflow](development-workflow.md) (D-029). WP11a merged in PR #48 at `2a65a3f`, with all nine checks passing. The founder
-approved D-033 and its [concrete contract](probe-evaluation-contract.md); WP11b
-is the active product implementation.
+approved D-033 and its [concrete contract](probe-evaluation-contract.md). WP11b
+is implemented with local numerical, package and Qwen Metal acceptance; see
+the [probe report](probe-implementation.md). Its remote integration is the
+current milestone, followed by WP12a's service contract.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|
@@ -219,9 +221,8 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** implement WP11b under the approved
-[probe contract](probe-evaluation-contract.md) and D-033 approval addendum.
-Grouped development selection, held-out evaluation, independent numerical
-agreement, controls, trace/memory guards and the formula/S3 workflow are the
-acceptance scope. D2 is integrated; D1's negative quality result remains
-unchanged. Stronger-model comparisons remain deferred.
+**Next action:** integrate WP11b after its required remote checks and pinned
+Linux workflow pass, then prepare WP12a's bounded service contract. The
+[probe report](probe-implementation.md) records local acceptance and limitations.
+D2 is integrated; D1's negative quality result remains unchanged.
+Stronger-model comparisons remain deferred.

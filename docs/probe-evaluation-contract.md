@@ -6,6 +6,9 @@ certify Demo A's
 historical estimates. No new dependency: `glmnet` remains an optional Suggests
 dependency under D-020; absent installations get an actionable classed error.
 
+WP11b implementation and measured acceptance are recorded separately in the
+[implementation report](probe-implementation.md).
+
 **Acceptance (verbatim, structured production plan):** A split audit detects
 leakage; independent statistical reference fixtures and their expected outcomes
 are recorded. Any required API/dependency amendment is approved before WP11b.
