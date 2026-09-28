@@ -105,6 +105,9 @@ jobs:
       - name: reference forward self-check (determinism + goldens + GGUF)
         run: python tests/llm-golden/synthetic/reference_forward.py --check
 
+      - name: Probe statistical reference artifact check (no model)
+        run: python tests/llm-golden/probe-contract/reference.py --check
+
       - name: Structured-output offline contract checks (no model)
         run: |
           python tests/structured-output/verify.py --self-test

@@ -2,7 +2,8 @@
 
 Date: 2026-09-27. Founder authorized the D block after S1 acceptance.
 S1 is merged as PR #44 at `87f6c04`; D1 as PR #45 at `008b130`.
-D2 work branch: `codex/restartable-extraction`, based on merged Spark PR #46
+D2 merged: PR #47 at `ddf8467`, all nine final checks green. Work branch:
+`codex/restartable-extraction`, based on merged Spark PR #46
 (`2c827a7`, llama.cpp b10828).
 The sequence remains D1, then D2; there is no new relm export in this block.
 
