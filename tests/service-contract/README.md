@@ -1,7 +1,8 @@
 # WP12a contract artifacts and WP12b acceptance plan
 
-**Status: D-034 approved on 2026-09-28; WP12b implementation active.** These files specify a service; they do not implement
-or run it. `verify.py` is the only executable supplied in WP12a. It validates
+**Status: D-034 approved on 2026-09-28; WP12b implementation active.** These files specify the frozen contract; runtime implementation lives in
+`examples/funding-service/` and acceptance in `tests/funding-service/`.
+`verify.py` remains an offline specification check. It validates
 pins, limits, state consistency, source links and preserved D2 fixtures, and
 rejects deliberate contract mutations. It also checks worst-case JSON expansion for the bounded overflow record.
 It proves no runtime behavior. The existing Rust workflow runs this inexpensive
@@ -18,9 +19,10 @@ queried official CRAN metadata. This is not a complete installed-library receipt
 WP12b setup must also fingerprint actual packages, relm/nanoarrow, R/native build,
 model and platform. No version is silently floated during setup.
 
-## Planned operator commands (not implemented yet)
+## Operator command contract
 
-All filenames below are WP12b deliverables, not runnable WP12a code. Prepare a
+The filenames below are WP12b deliverables. Their execution evidence is separate
+from this specification; see [the implementation report](../../docs/service-implementation.md). Prepare a
 trusted installed library with the approved pins first; only explicit preparation
 may install/download. The setup command snapshots it, verifies the existing model
 and writes a private service configuration/environment receipt.
@@ -57,7 +59,7 @@ inspection of `state`. Client disconnection never cancels admitted work.
 
 ## Future executable gates
 
-**Every command below is planned, not run.** WP12b supplies
+**Gate definitions are frozen here; actual run outcomes are recorded separately.** WP12b supplies
 `tests/funding-service/accept.py` (Python standard library for HTTP/process
 orchestration) and controlled R worker fixtures. Python is test tooling, not a
 runtime requirement. All suites must fail if the real service/required fixture

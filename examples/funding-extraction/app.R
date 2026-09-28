@@ -1,6 +1,7 @@
 # D2 application helpers, not relm exports. Requires jsonlite 2.0.0 (D-031).
 # Persistent data is literal JSON. Only setup may download or prepare packages.
-app_module <- normalizePath(sys.frame(1)$ofile, mustWork = TRUE)
+app_module <- normalizePath(tail(Filter(Negate(is.null),
+  lapply(sys.frames(), function(frame) frame$ofile)), 1L)[[1L]], mustWork = TRUE)
 
 app_abort <- function(message, kind = "input") {
   stop(structure(list(message = message, call = NULL),

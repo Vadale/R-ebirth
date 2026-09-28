@@ -37,6 +37,10 @@ on:
         description: Also run the optional 4.38 GB Spark native acceptance
         type: boolean
         default: false
+      service:
+        description: Run only the final-candidate WP12b service acceptance
+        type: boolean
+        default: false
 
 name: nightly-model-tolerance.yaml
 
@@ -47,10 +51,14 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  service:
+    if: github.event_name == 'workflow_dispatch' && inputs.service
+    uses: ./.github/workflows/service-acceptance.yaml
   spark:
-    if: github.event_name == 'workflow_dispatch' && inputs.spark
+    if: github.event_name == 'workflow_dispatch' && inputs.spark && !inputs.service
     uses: ./.github/workflows/manual-spark.yaml
   model-tolerance:
+    if: github.event_name != 'workflow_dispatch' || !inputs.service
     runs-on: ubuntu-24.04
     name: nightly Qwen2.5-0.5B Q8_0 tolerance ([MODEL] suite)
     timeout-minutes: 90

@@ -1,0 +1,405 @@
+{
+  "checks": [
+    {
+      "check": "new job durably accepted: deadline",
+      "passed": true
+    },
+    {
+      "check": "admission exists before 202",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: deadline",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: deadline",
+      "passed": true
+    },
+    {
+      "check": "deadline cannot publish success",
+      "passed": true
+    },
+    {
+      "check": "deadline creates a fresh epoch only after death",
+      "passed": true
+    },
+    {
+      "check": "deadline bounded recovery",
+      "passed": true
+    },
+    {
+      "check": "new job durably accepted: diagnostic",
+      "passed": true
+    },
+    {
+      "check": "admission exists before 202",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: diagnostic",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: diagnostic",
+      "passed": true
+    },
+    {
+      "check": "diagnostic cannot publish success",
+      "passed": true
+    },
+    {
+      "check": "diagnostic creates a fresh epoch only after death",
+      "passed": true
+    },
+    {
+      "check": "diagnostic bounded recovery",
+      "passed": true
+    },
+    {
+      "check": "new job durably accepted: ipc-flood",
+      "passed": true
+    },
+    {
+      "check": "admission exists before 202",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: ipc-flood",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: ipc-flood",
+      "passed": true
+    },
+    {
+      "check": "ipc-flood cannot publish success",
+      "passed": true
+    },
+    {
+      "check": "ipc-flood creates a fresh epoch only after death",
+      "passed": true
+    },
+    {
+      "check": "ipc-flood bounded recovery",
+      "passed": true
+    },
+    {
+      "check": "new job durably accepted: wrong-epoch",
+      "passed": true
+    },
+    {
+      "check": "admission exists before 202",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: wrong-epoch",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: wrong-epoch",
+      "passed": true
+    },
+    {
+      "check": "wrong-epoch cannot publish success",
+      "passed": true
+    },
+    {
+      "check": "wrong-epoch creates a fresh epoch only after death",
+      "passed": true
+    },
+    {
+      "check": "wrong-epoch bounded recovery",
+      "passed": true
+    },
+    {
+      "check": "kill fixture admitted",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: killed",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: killed",
+      "passed": true
+    },
+    {
+      "check": "SIGKILL accepted job accounted",
+      "passed": true
+    },
+    {
+      "check": "worker SIGKILL recovery bound",
+      "passed": true
+    },
+    {
+      "check": "worker epoch changes after SIGKILL",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: old",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: old",
+      "passed": true
+    },
+    {
+      "check": "retired request receives one interrupted terminal",
+      "passed": true
+    },
+    {
+      "check": "old-epoch completion does not retire or clear the new active slot",
+      "passed": true
+    },
+    {
+      "check": "old-epoch output cannot publish for the new request",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: current",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: current",
+      "passed": true
+    },
+    {
+      "check": "current epoch still completes normally",
+      "passed": true
+    },
+    {
+      "check": "new job durably accepted: earlier",
+      "passed": true
+    },
+    {
+      "check": "admission exists before 202",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: earlier",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: earlier",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: pending",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: pending",
+      "passed": true
+    },
+    {
+      "check": "frontend SIGKILL leaves a recoverable durable admission",
+      "passed": true
+    },
+    {
+      "check": "earlier terminal survives frontend SIGKILL unchanged",
+      "passed": true
+    },
+    {
+      "check": "frontend restart never silently repeats accepted work",
+      "passed": true
+    },
+    {
+      "check": "startup flood keeps frontend alive",
+      "passed": true
+    },
+    {
+      "check": "startup flood never ready",
+      "passed": true
+    },
+    {
+      "check": "three automatic failures latch fault without hidden retries",
+      "passed": true
+    },
+    {
+      "check": "initialization failures obey restart window",
+      "passed": true
+    },
+    {
+      "check": "new job durably accepted: temp",
+      "passed": true
+    },
+    {
+      "check": "admission exists before 202",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: temp",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: temp",
+      "passed": true
+    },
+    {
+      "check": "child private temp override: CALLR_TMPDIR",
+      "passed": true
+    },
+    {
+      "check": "child private temp override: TMPDIR",
+      "passed": true
+    },
+    {
+      "check": "child private temp override: TMP",
+      "passed": true
+    },
+    {
+      "check": "child private temp override: TEMP",
+      "passed": true
+    },
+    {
+      "check": "child private temp override: tempdir",
+      "passed": true
+    },
+    {
+      "check": "worker IPC stays inside owned runtime root",
+      "passed": true
+    },
+    {
+      "check": "worker IPC directory bound to epoch",
+      "passed": true
+    },
+    {
+      "check": "private mode: .",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16",
+      "passed": true
+    },
+    {
+      "check": "private mode: service.json",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime",
+      "passed": true
+    },
+    {
+      "check": "private mode: results",
+      "passed": true
+    },
+    {
+      "check": "private mode: events.jsonl",
+      "passed": true
+    },
+    {
+      "check": "private mode: admissions",
+      "passed": true
+    },
+    {
+      "check": "private mode: store.lock",
+      "passed": true
+    },
+    {
+      "check": "private mode: rss.csv",
+      "passed": true
+    },
+    {
+      "check": "private mode: status.json",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16",
+      "passed": true
+    },
+    {
+      "check": "private mode: results/74656d70.json",
+      "passed": true
+    },
+    {
+      "check": "private mode: admissions/74656d70.json",
+      "passed": true
+    },
+    {
+      "check": "private mode: store.lock/owner.json",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16/callr",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16/owner.json",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16/Rtmp1ueZ9r",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16/callr-env-120d6981d118",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16/callr/a2d2a4b",
+      "passed": true
+    },
+    {
+      "check": "private mode: runtime/6fbba747c2e880a85dcfa3a9cdf12c16/callr/a2d2a4b/client.so",
+      "passed": true
+    },
+    {
+      "check": "no callr IPC in inherited shared temp location",
+      "passed": true
+    },
+    {
+      "check": "no replacement under unknown death",
+      "passed": true
+    },
+    {
+      "check": "new job durably accepted: default-deadline",
+      "passed": true
+    },
+    {
+      "check": "admission exists before 202",
+      "passed": true
+    },
+    {
+      "check": "terminal visible only as committed record: default-deadline",
+      "passed": true
+    },
+    {
+      "check": "terminal accounting: default-deadline",
+      "passed": true
+    },
+    {
+      "check": "unchanged default deadline interrupts actual child",
+      "passed": true
+    },
+    {
+      "check": "default120s deadline plus confirmed death within125s",
+      "passed": true
+    }
+  ],
+  "contract_sha256": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+  "environment": null,
+  "finished_at": "2026-09-28T16:05:04Z",
+  "gates": {
+    "G3": {
+      "elapsed_seconds": 199.93938875000458,
+      "status": "passed"
+    }
+  },
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "profile": null,
+  "python": "3.14.6",
+  "source_sha256": {
+    "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+    "examples/funding-service/runtime.R": "03e5efeab4ea6aea89c1e8943a386fd22656002c3a94e89ad28c8040a1b25918",
+    "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+    "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+    "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+    "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+    "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+    "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c"
+  },
+  "started_at": "2026-09-28T16:01:41Z",
+  "status": "passed",
+  "suite": "recovery"
+}

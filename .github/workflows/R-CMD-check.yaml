@@ -199,3 +199,26 @@ jobs:
           python3 tests/funding-extraction/test_restart.py
           --relm-library rebirth/check/relm.Rcheck
           --work-dir "${{ runner.temp }}/d2-process"
+
+
+      - name: Service source prerequisites (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsodium-dev libcurl4-openssl-dev libicu-dev
+
+      - name: Prepare exact D-034 application pins (isolated library)
+        run: Rscript --vanilla tests/funding-service/install-pins.R "${{ runner.temp }}/service-library"
+
+      - name: Service HTTP, overload, process recovery and persistence
+        shell: bash
+        run: |
+          python3 tests/funding-service/accept.py --suite deterministic \
+            --source-library "${{ runner.temp }}/service-library" \
+            --work-dir "${{ runner.temp }}/service-process" --default-deadline
+
+      - name: Preserve service process acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: service-process-${{ matrix.config.os }}-${{ matrix.config.r }}
+          path: ${{ runner.temp }}/service-process
+          if-no-files-found: warn

@@ -1,0 +1,82 @@
+# Explicit final-candidate native acceptance. Never a per-PR large/stress run.
+name: Service native acceptance
+on:
+  workflow_dispatch:
+  workflow_call:
+permissions: read-all
+jobs:
+  linux-service:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: sccache
+      CMAKE_C_COMPILER_LAUNCHER: sccache
+      CMAKE_CXX_COMPILER_LAUNCHER: sccache
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: mozilla-actions/sccache-action@v0.0.10
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: rebirth
+      - name: Service source prerequisites
+        run: sudo apt-get update && sudo apt-get install -y libsodium-dev libcurl4-openssl-dev libicu-dev
+      - name: Prepare exact application pins and installed relm
+        run: |
+          Rscript --vanilla tests/funding-service/install-pins.R "$RUNNER_TEMP/service-library"
+          Rscript --vanilla -e 'stopifnot(file.copy(find.package("nanoarrow"), file.path(Sys.getenv("RUNNER_TEMP"), "service-library"), recursive=TRUE))'
+          R CMD INSTALL --library="$RUNNER_TEMP/service-library" rebirth
+      - name: Download the pinned small model and prepare the environment
+        run: |
+          Rscript --vanilla - <<'RS'
+          .libPaths(c(file.path(Sys.getenv('RUNNER_TEMP'), 'service-library'), .Library), include.site=FALSE)
+          relm::llm_download('qwen2.5-0.5b-instruct-q8_0', dir=file.path(Sys.getenv('RUNNER_TEMP'), 'service-models'))
+          RS
+          Rscript --vanilla examples/funding-service/setup.R \
+            --source-library "$RUNNER_TEMP/service-library" \
+            --model "$RUNNER_TEMP/service-models/qwen2.5-0.5b-instruct-q8_0.gguf" \
+            --model-alias qwen2.5-0.5b-instruct-q8_0 --backend cpu \
+            --environment "$RUNNER_TEMP/service-environment"
+      - name: Prepared environment and operator boundary refusals
+        run: >-
+          python3 tests/funding-service/test_environment.py
+          --source-library "$RUNNER_TEMP/service-library"
+          --model "$RUNNER_TEMP/service-models/qwen2.5-0.5b-instruct-q8_0.gguf"
+          --model-alias qwen2.5-0.5b-instruct-q8_0 --backend cpu
+          --work-dir "$RUNNER_TEMP/service-evidence/environment"
+      - name: Native isolation and operational acceptance
+        run: |
+          for suite in isolation native; do
+            python3 tests/funding-service/accept.py --suite "$suite" \
+              --environment "$RUNNER_TEMP/service-environment" --profile linux_qwen \
+              --work-dir "$RUNNER_TEMP/service-evidence/$suite"
+          done
+      - name: Enable the disposable runner's user service manager
+        run: |
+          sudo loginctl enable-linger "$USER"
+          sudo systemctl start "user@$(id -u).service"
+          echo "XDG_RUNTIME_DIR=/run/user/$(id -u)" >> "$GITHUB_ENV"
+          echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus" >> "$GITHUB_ENV"
+      - name: Actual systemd user lifecycle
+        run: >-
+          python3 tests/funding-service/accept.py --suite supervisor
+          --supervisor systemd-user --environment "$RUNNER_TEMP/service-environment"
+          --profile linux_qwen --work-dir "$RUNNER_TEMP/service-evidence/supervisor"
+      - name: One thousand actual native requests (same worker)
+        run: >-
+          python3 tests/funding-service/accept.py --suite stress
+          --environment "$RUNNER_TEMP/service-environment" --profile linux_qwen
+          --work-dir "$RUNNER_TEMP/service-evidence/stress"
+      - name: Preserve actual reports and resource measurements
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: service-linux-acceptance
+          path: ${{ runner.temp }}/service-evidence
+          if-no-files-found: error

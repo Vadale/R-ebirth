@@ -49,9 +49,10 @@ in [development workflow](development-workflow.md) (D-029). WP11a merged in PR #
 approved D-033 and its [concrete contract](probe-evaluation-contract.md).
 WP11b merged in PR #49 at `ecf3d3f`: all nine PR checks and the Linux CPU
 model/control workflow passed. See the [probe report](probe-implementation.md)
-and PR #49 for measured evidence. WP12a now proposes the
-[local service contract](service-contract.md) and exact D-034 dependency closure;
-WP12b implementation requires that concrete approval.
+and PR #49 for measured evidence. WP12a merged in PR #50 at `95066c7`, with all nine checks passing. The founder
+approved the [local service contract](service-contract.md) and exact D-034
+dependency closure. WP12b implementation is active; see its
+[implementation report](service-implementation.md) for actual acceptance.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|
@@ -147,7 +148,7 @@ For a responsive small-team pilot, evaluate an existing HTTP stack with one
 persistent inference worker, or an existing outer admission layer supervising
 one synchronous worker. Plumber plus an established worker integration is a
 candidate in the original plan. WP12a now proposes Plumber + callr + later
-in [D-034's concrete contract](service-contract.md), pending approval. Do not build
+in [D-034's concrete contract](service-contract.md), approved on 2026-09-28. Do not build
 a queue.
 
 Each worker constructs and closes its own model. Exchange configuration and
@@ -225,8 +226,7 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** review D-034 and the [WP12a service contract](service-contract.md).
-After approval, implement WP12b's application-only ticket service and execute its
+**Next action:** implement WP12b's approved application-only ticket service and execute its
 frozen Mac/Linux acceptance gates. The contract checker verifies only planning
 consistency; no service/load/stress result is claimed. D2 and WP11b are integrated;
 D1's negative quality result and deferred stronger-model comparison are unchanged.

@@ -127,7 +127,7 @@ def main():
             else:
                 raise AssertionError(f'mutation accepted: {name}')
     print(f'PASS: offline contract consistency; {len(pins)} dependency pins; {len(docs)} D2 inputs fit; JSON overflow bounds checked; '
-          f'{len(mutations)} deliberate mutations rejected. Runtime gates remain NOT RUN.')
+          f'{len(mutations)} deliberate mutations rejected. Runtime acceptance is reported separately.')
 
 
 if __name__ == '__main__':
