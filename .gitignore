@@ -23,6 +23,9 @@ __pycache__/
 *.pyc
 .golden-venv/
 
+# Local model weights; registry pins belong in rebirth/inst/models.csv.
+/models/
+
 # --- graphify knowledge graph ---
 # Track the curated graph (graph.json, manifest.json, GRAPH_REPORT.md,
 # cost.json, .graphify_labels.json). Ignore the heavy query cache, the dated

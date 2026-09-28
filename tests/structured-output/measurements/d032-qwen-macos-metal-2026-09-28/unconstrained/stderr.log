@@ -1,0 +1,20 @@
+Tracing function "rebirth_generate" in package "namespace:relm"
+Untracing function "rebirth_generate" in package "namespace:relm"
+        3.44 real         0.75 user         0.13 sys
+           928825344  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               60753  page reclaims
+                  57  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  10  voluntary context switches
+                3361  involuntary context switches
+          7414010786  instructions retired
+          2276938196  cycles elapsed
+           233358944  peak memory footprint

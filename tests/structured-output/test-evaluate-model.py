@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """D1 protocol regressions; Rust CI golden job, no model or R installation."""
 import copy
+import contextlib
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
@@ -15,6 +17,25 @@ spec.loader.exec_module(driver)
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_spark_cannot_promote_the_consumed_holdout_as_fresh(self):
+        base = ["evaluate-model.py", "--model", "unused", "--model-alias", "spark-x2.5-4b-q8_0",
+                "--backend", "cpu", "--prompt-template", "unused", "--output", "unused"]
+        for extra in (["--split", "held_out", "--candidate", "unused"],
+                      ["--freeze-only", "--development-report", "unused"]):
+            stderr = io.StringIO()
+            with mock.patch.object(driver.sys, "argv", base + extra), contextlib.redirect_stderr(stderr):
+                with self.assertRaises(SystemExit) as raised:
+                    driver.main()
+            self.assertEqual(raised.exception.code, 2)
+            self.assertIn("consumed D1 pilot", stderr.getvalue())
+
+    def test_consumed_pilot_regression_keeps_original_cases(self):
+        cases = driver.verify.loads((ROOT / "cases.json").read_text())
+        selected = [case["id"] for case in cases if case["split"] == driver.selected_split("regression")]
+        self.assertEqual(selected, [case["id"] for case in cases if case["split"] == "held_out"])
+        self.assertEqual(len(selected), 10)
+        self.assertEqual(driver.selected_split("development"), "development")
+
     @classmethod
     def setUpClass(cls):
         cls.cases = [case for case in driver.verify.loads((ROOT / "cases.json").read_text())

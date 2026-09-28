@@ -1,9 +1,16 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-27 for the maintenance baseline, S1 and the D1 evaluation.
+Updated 2026-09-28 for the native Spark integration in progress; the historical
+maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
 [current runs](https://github.com/Vadale/R-ebirth/actions) before integration.
+
+The b9726 → b10828 engine update and optional Spark checks are recorded in
+[D-032 validation](spark-native-validation.md). Local native, package, numerical,
+vision and Spark Metal acceptance passed. The reused extraction pilot improved
+to 8/10 exact records, without a new quality acceptance. Linux CPU and GitHub
+checks remain pending at this local milestone.
 
 ## Implemented checks
 

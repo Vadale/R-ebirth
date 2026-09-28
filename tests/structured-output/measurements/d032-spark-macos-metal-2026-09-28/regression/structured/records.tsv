@@ -1,0 +1,11 @@
+index	id	seed	status	elapsed_seconds	error_class	error_message
+6	nlm-total	107	success	13.223000000		
+7	nlm-annual	108	success	11.016000000		
+8	nlm-trainees	109	success	7.261000000		
+9	nlm-missing	110	success	7.610000000		
+10	nlm-budget	111	success	7.309000000		
+11	nlm-grant-count	112	success	7.536000000		
+12	brain-new	113	success	14.227000000		
+13	brain-total	114	success	10.905000000		
+14	brain-purpose	115	success	7.309000000		
+15	brain-history	116	success	7.584000000		

@@ -783,6 +783,75 @@ executes on exactly one machine in the world.
 
 ---
 
+## D-032 — Native Spark-X2.5 support through the existing llama.cpp dependency
+
+- **Date:** 2026-09-28
+- **Status:** implementation authorized by the founder; b10828 accepted as the
+  bounded integration candidate. Runtime acceptance is pending. Replacing the
+  version of the existing vendored dependency requires no repeated approval;
+  no new R/Rust dependency or public API is introduced. D-031 remains proposed.
+- **Decision:** update llama.cpp from **b9726 to b10828**, commit
+  `3ad1ba7336986d98592d3e28cafd1a406715351f`, to run Spark-X2.5-4B directly in
+  relm. This release introduces upstream Spark support and is the minimum named
+  by the model author. Move to a later release only for an evidenced blocker,
+  recorded as an addendum. Do not use an Ollama/server subprocess as the backend.
+- **Integration:** retain the pruned, self-contained static build; minimally port
+  patch 0001's intervention hook and retire patch 0002, whose library-only mtmd
+  build path is present upstream. Re-record tarball, pristine-pruned and patched
+  tree SHA256 values and preserve G4/reverse-apply coherence. Adapt the handwritten
+  model/context/mtmd ABI mirrors before loading any model. Preserve `mmap`
+  semantics using the new loading enum rather than inheriting automatic policy.
+- **Chat and schema:** implement only the existing single-user-turn Spark format,
+  checked against the author's tokenizer template. Ordinary chat retains the
+  model's thinking opener; schema-constrained chat uses its non-thinking opener
+  so the existing JSON constraint begins at the first generated token. No new
+  reasoning argument, generic Jinja engine or output repair. Other architectures
+  and the D-030 schema/error contract remain unchanged.
+- **Observation/intervention:** Spark calls the shared `build_cvec` hook. Its
+  `attn_out` callback is pre-gate/pre-projection; D-014's post-projection quantity
+  is named `attn_out_proj`. Keep unsupported captures as classed errors, or add
+  an explicit, numerically checked mapping; never infer semantics from the
+  colliding name. Trace filters, materialized-memory budgets and spill still bind.
+- **Model candidate:** Spark-X2.5-4B Q8_0 GGUF, revision
+  `9826e0be84e6e6e8b9668abc91421109a1df1e2d`, 4,375,021,152 bytes, SHA256
+  `5c2c3c190e4337e1016b8593ca8e26e8b18c972200b107385d4ec61a25d9dea2`;
+  source-model revision `0bcb35678590218655dff3765b9e61c83b35e9c4`.
+  Record the exact repository/file in the model registry and verify the downloaded
+  bytes before execution. These identities are preparation, not a successful run.
+  Spark 4B checks are explicitly model-gated; ordinary CI retains tiny fixtures
+  and does not acquire a new mandatory multi-gigabyte download.
+- **Acceptance:** provenance and patch coherence pass; ABI mirrors match the
+  target; Rust/R/package checks, synthetic goldens and Qwen/vision regressions
+  pass; same-tag pristine comparisons preserve the patch's no-op semantics.
+  Spark tokenizer/template, generation, schema, context-boundary and declared
+  trace/intervention checks pass on Mac Metal and Linux CPU. Record bounded
+  context-4096 memory/latency on the 16 GB Mac, retain the tap-off overhead gate
+  below 2% and the S1 correctness/operational gates. Investigate numerical movement
+  through the golden-update procedure rather than silently replacing references.
+  Use one integrated correctness/security review under D-029 before acceptance.
+- **Scope and evidence:** D1 PR #45 is merged at `008b130` with a negative quality
+  result. Its consumed held-out pilot is regression/exploratory evidence only;
+  do not tune on it or present a Spark rerun as new generalization evidence.
+  This WP does not accept extraction usefulness, million-token operation,
+  Windows/CUDA support or D2; D2 remains pending the separate D-031 dependency.
+- **Sources:** [b10828 release](https://github.com/ggml-org/llama.cpp/releases/tag/b10828),
+  [Spark implementation PR](https://github.com/ggml-org/llama.cpp/pull/27868),
+  [official model card](https://huggingface.co/XHToken/Spark-X2.5-4B), and
+  [target Spark graph](https://github.com/ggml-org/llama.cpp/blob/b10828/src/models/spark2-5.cpp),
+  inspected on 2026-09-28.
+
+**D-032 implementation note (2026-09-28).** Upstream b10828 makes
+`vendor-hash` a static libmtmd dependency. Retain its upstream xxHash
+(BSD-2-Clause), SHA-1/SHA-256 (public domain) and rotate-bits (MIT) sources and
+license notices in the pruned tree; record them in `NOTICE` and the native link
+stem twin pin. No R/Rust package dependency changes. Initial Spark integration
+keeps every trace component explicitly unsupported; a later activation oracle
+must validate the callback semantics before extending the allow-list.
+The optional model acceptance checks this classed refusal and tests native
+intervention effect/reversibility separately. It does not close the 4B spill gate.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

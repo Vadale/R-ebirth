@@ -1,5 +1,12 @@
 # relm 0.2.0.9000
 
+* The embedded llama.cpp engine moves from b9726 to b10828 for native
+  Spark-X2.5-4B support. The optional `spark-x2.5-4b-q8_0` download alias pins
+  the official 4.38 GB GGUF. Ollama is not required. The author's single-turn
+  chat template is supported: ordinary chat uses its thinking opener, while
+  schema-constrained chat uses its official non-thinking opener. Spark activation
+  tracing remains explicitly unsupported pending a numerical reference.
+
 * Repository tooling now records a frozen document-extraction evaluation with
   byte-checked predictions and failure accounting. The initial held-out pilot
   fails its extraction-quality gates despite valid structured JSON; no production

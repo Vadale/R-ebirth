@@ -1,0 +1,9 @@
+key	value
+package_version	0.2.0.9000
+package_path	/private/tmp/relm-spark/library/relm
+native_library	/private/tmp/relm-spark/library/relm/libs/relm.so
+native_library_sha256	17ef12b92215a1bcaa211068ab10c62882b8e4be2bc8829f11909c23b95e1019
+r_version	R version 4.5.1 (2025-06-13)
+r_platform	aarch64-apple-darwin20
+backend	metal
+context_length	4096
