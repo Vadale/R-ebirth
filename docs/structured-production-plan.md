@@ -45,9 +45,9 @@ D1 usefulness remains unaccepted. D2 implementation/operational acceptance is
 complete and merged in PR #47 (`ddf8467`);
 S0/S1 and native Spark support are complete. Stronger-model comparisons are
 deferred and do not block operational acceptance. Follow the milestone/verification policy
-in [development workflow](development-workflow.md) (D-029). WP11a is active; its
-[concrete contract](probe-evaluation-contract.md) and D-033 await founder approval
-before the product implementation in WP11b.
+in [development workflow](development-workflow.md) (D-029). WP11a merged in PR #48 at `2a65a3f`, with all nine checks passing. The founder
+approved D-033 and its [concrete contract](probe-evaluation-contract.md); WP11b
+is the active product implementation.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|
@@ -219,10 +219,9 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** review the [WP11a probe contract](probe-evaluation-contract.md)
-and proposed [D-033](../DECISIONS.md#d-033--grouped-probe-selection-and-explicit-held-out-evaluation).
-The two explicit grouping/holdout arguments and changed evaluation semantics
-require founder approval before WP11b. Independent statistical references and
-an executable leakage audit precede implementation. D2 is integrated; D1's
-negative quality result remains unchanged, and stronger-model comparisons remain
-deferred. No new dependency or native model benchmark is needed for WP11a.
+**Next action:** implement WP11b under the approved
+[probe contract](probe-evaluation-contract.md) and D-033 approval addendum.
+Grouped development selection, held-out evaluation, independent numerical
+agreement, controls, trace/memory guards and the formula/S3 workflow are the
+acceptance scope. D2 is integrated; D1's negative quality result remains
+unchanged. Stronger-model comparisons remain deferred.

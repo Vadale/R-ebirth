@@ -1,8 +1,8 @@
 # WP11a — Probe evaluation contract
 
-Date: 2026-09-28. Status: **proposal for founder approval (D-033)**.
-This freezes the evaluation and reference requirements for WP11b. It does not
-implement `llm_probe()`, change an approved signature or certify Demo A's
+Date: 2026-09-28. Status: **APPROVED by the founder (D-033 addendum)**.
+This freezes the evaluation and reference requirements for WP11b. WP11b implements the approved signature and semantics; this contract does not
+certify Demo A's
 historical estimates. No new dependency: `glmnet` remains an optional Suggests
 dependency under D-020; absent installations get an actionable classed error.
 
@@ -29,7 +29,7 @@ existing `positions = "last"` workflow. Binary ridge logistic probes only;
 decodability is association, not evidence that the model causally uses a feature.
 No new native engine work or larger-model benchmark belongs to WP11a/b.
 
-## 2. Proposed public amendment
+## 2. Approved public amendment
 
 ```r
 llm_probe(formula, data, method = "glmnet", cv = 10,
@@ -72,9 +72,9 @@ exploratory CV curve, **without confidence intervals**. It does not choose the
 highest point on the held-out curve. `summary()` exposes the audit below.
 
 This amends the Phase 4 evaluation/CI semantics in API-GRAMMAR §§2/5 as well as
-adding two arguments. Approval must cover both, not just their names.
+adding two arguments. The D-033 approval covers both, not just their names.
 
-Proposed usage (not runnable until WP11b); prompts, labels, source IDs and the
+Approved usage (implemented in WP11b); prompts, labels, source IDs and the
 reserved source IDs are prepared before looking at evaluation results:
 
 ```r
@@ -268,8 +268,8 @@ All 20 source/reference artifact byte counts and SHA256 pins were verified. A
 bounded one-ULP perturbation of the oracle math functions left the serialized
 CSVs unchanged; actual Mac/Linux CI remains the cross-platform check.
 GitHub CI hooks run the Python artifact check and R `--numerical` verifier;
-local outcomes above do not claim the new remote run has completed. D-033 remains
-proposed and WP11b product behavior remains unimplemented.
+local outcomes above do not claim the new remote run has completed. D-033 is now approved; these reference results alone do not certify WP11b
+product behavior.
 
 ## 8. Statistical sources and interpretation
 
@@ -289,4 +289,4 @@ proposed and WP11b product behavior remains unimplemented.
   control in that paper and not a causal identification strategy.
 
 The fixed holdout, conditional cluster intervals and display thresholds are the
-project's proposed design choices; they are not claimed as universal guarantees.
+project's approved design choices; they are not claimed as universal guarantees.
