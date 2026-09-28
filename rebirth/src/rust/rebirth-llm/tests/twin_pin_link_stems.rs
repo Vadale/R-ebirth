@@ -16,14 +16,17 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
     let build_rs = fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/build.rs"))
         .expect("build.rs must be readable next to the crate manifest");
 
+    // Ignore rustfmt line wrapping and its optional trailing comma.
+    let build_rs: String = build_rs.split_whitespace().collect();
+    let build_rs = build_rs.replace(",]", "]");
     // build.rs side: the ordered stem vec + the conditional/final pushes.
     for needle in [
-        r#"vec!["relm-grammar", "mtmd", "llama", "ggml", "ggml-cpu"]"#,
+        r#"vec!["relm-grammar", "mtmd", "vendor-hash", "llama", "ggml", "ggml-cpu"]"#,
         r#"lib_stems.push("ggml-metal")"#,
         r#"lib_stems.push("ggml-base")"#,
     ] {
         assert!(
-            build_rs.contains(needle),
+            build_rs.contains(&needle.split_whitespace().collect::<String>()),
             "build.rs no longer contains `{needle}` — the archive-stem list moved \
              or changed; update build.rs, rebirth/tools/config.R, and this twin pin \
              together (Hard rule 8f)"
@@ -38,7 +41,7 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
 
     // GNU-ld group form: the Windows and Linux branches each carry the full
     // ordered token list (order matters: left-to-right resolution).
-    let group = "-lrelm-grammar -lmtmd -lllama -lggml -lggml-cpu -lggml-base";
+    let group = "-lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base";
     assert_eq!(
         config_r.matches(group).count(),
         2,
@@ -49,7 +52,7 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
     // Darwin branch: the ordered common stems, the arm64-only Metal archive, and
     // the trailing base archive.
     for needle in [
-        r#"c("-lrelm-grammar", "-lmtmd", "-lllama", "-lggml", "-lggml-cpu")"#,
+        r#"c("-lrelm-grammar", "-lmtmd", "-lvendor-hash", "-lllama", "-lggml", "-lggml-cpu")"#,
         r#""-lggml-metal""#,
         r#""-lggml-base""#,
     ] {

@@ -100,7 +100,7 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
         eprintln!("SKIP encoder_output_matches: RELM_TEST_MODEL_VLM/MMPROJ unset");
         return;
     };
-    // The nightly points this at a pristine b9726 build made on the runner, so
+    // The nightly points this at a pristine build of the current pinned tag, so
     // the comparison is same-machine and stays exact there too; unset, the leg
     // uses the committed golden (correct on the machine that recorded it).
     let golden = match std::env::var("RELM_VISION_ENCODER_REFERENCE") {

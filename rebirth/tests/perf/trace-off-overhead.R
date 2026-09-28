@@ -12,10 +12,10 @@
 #
 # THE ABI PIN THIS RESTS ON. The guarantee would break only if a vendor-bump silently
 # shifted the context-params layout so the null we write elsewhere landed on
-# `cb_eval` (turning generation into a tapped pass). rebirth-llm's ffi.rs test
-# `context_params_embedding_fields_have_the_expected_abi` pins exactly that: it asserts
-# `size_of::<llama_context_params>() == 160` AND that `cb_eval`/`cb_eval_user_data`
-# default to null. So a layout drift fails `cargo test` before it could reach here.
+# `cb_eval` (turning generation into a tapped pass). rebirth-llm's ffi.rs
+# context-layout tests pin every field against compiled upstream headers,
+# and assert that `cb_eval`/`cb_eval_user_data` default to null. A layout drift
+# therefore fails `cargo test` before it could reach here.
 #
 # WHAT THIS SCRIPT DOES. It DEMONSTRATES the guarantee empirically: it times
 # `llm_generate()` alone (baseline) vs `llm_generate()` in a session that is also

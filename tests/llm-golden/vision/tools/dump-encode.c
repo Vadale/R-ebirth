@@ -5,7 +5,7 @@
  * Dumps the raw image-encoder output embeddings (`mtmd_get_output_embd` after
  * `mtmd_encode_chunk`) for one image under one text model + mmproj pair, using
  * ONLY the upstream C API — build it against the PRISTINE upstream llama.cpp
- * at the pinned tag b9726 (tarball SHA256 117e95a5...f2e0), never against the
+ * at the current pinned tag (VENDORING.md), never against the
  * vendored tree. Output: line 1 = "<n_tokens> <n_embd>", then one "%.8e" float
  * per line, row-major (token-major). See the README for the exact build and
  * run commands used to produce the committed reference.
@@ -61,7 +61,7 @@ int main(int argc, char ** argv) {
     unsigned char * bytes = read_file(argv[3], &len);
     if (!bytes) return 1;
     struct mtmd_helper_bitmap_wrapper wrapper =
-        mtmd_helper_bitmap_init_from_buf(mctx, bytes, len, false);
+        mtmd_helper_bitmap_init_from_buf(mctx, bytes, len, false, mtmd_helper_init_opt_default());
     free(bytes);
     if (!wrapper.bitmap) { fprintf(stderr, "image decode failed\n"); return 1; }
 
@@ -69,6 +69,7 @@ int main(int argc, char ** argv) {
      * text]; the encoder output depends only on the bitmap + projector. */
     mtmd_input_text text;
     text.text          = mtmd_default_marker();
+    text.text_len      = strlen(text.text);
     text.add_special   = false;
     text.parse_special = false;
     mtmd_input_chunks * chunks = mtmd_input_chunks_init();
