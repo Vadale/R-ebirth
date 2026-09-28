@@ -142,9 +142,27 @@ is `vignette("vision", "relm")`.
 
 ![Probe AUC per transformer layer, rising to 1.00 by layer 11](man/figures/anatomy-lab.png)
 
-*The anatomy-lab demo (below), real output: one cross-validated probe per layer
-locates where sentiment becomes linearly readable in Qwen2.5-1.5B — here by layer
-11 (AUC 1.00), with 95% bootstrap CIs. Produced by `run_demo_A()`.*
+*Historical exploratory output from `run_demo_A()` on Qwen2.5-1.5B. These selected
+CV scores and bootstrap bands are not independent performance estimates or
+selection-adjusted intervals.*
+
+The development version (`0.2.0.9000`) adds `llm_probe()` with explicit source
+groups and an optional untouched holdout. With labels, group IDs and reserved
+groups prepared before analysis, the anatomy-lab workflow becomes:
+
+```r
+tr <- llm_trace(m, prompts, layers = 6:18, positions = "last")
+fit <- llm_probe(labels ~ activations(layer = 6:18), tr,
+                 groups = source_ids, test_groups = reserved_groups, seed = 42)
+summary(fit)
+plot(fit)
+```
+
+The optional `glmnet` package fits binary ridge probes. Scaling and parameter/layer
+selection use development data only; reported intervals resample held-out groups
+conditional on the frozen fits. Without `test_groups`, scores remain exploratory
+and no interval is reported. The vignette explains support requirements, controls
+and prediction with saved fits. This API is not in the released v0.2.0 binary.
 
 ## Three worked demos
 

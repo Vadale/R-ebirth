@@ -1,0 +1,8 @@
+"layer","lambda","cv_score","test_score","lower","upper","interval_status","valid_draws","undefined_draws","boundary","analysis"
+6,10000,1,1,NA,NA,"degenerate_bootstrap",2000,0,TRUE,"activations"
+12,10000,1,1,NA,NA,"degenerate_bootstrap",2000,0,TRUE,"activations"
+18,10000,1,1,NA,NA,"degenerate_bootstrap",2000,0,TRUE,"activations"
+1,10000,1,1,NA,NA,"degenerate_bootstrap",2000,0,TRUE,"simple_features"
+6,0.00158489319246111,0.42,0.5525,0.4025,0.6925625,"available",2000,0,FALSE,"paired_label_control"
+12,0.0251188643150958,0.46,0.4925,0.33,0.66,"available",2000,0,FALSE,"paired_label_control"
+18,0.0398107170553497,0.32,0.58,0.44,0.7225,"available",2000,0,FALSE,"paired_label_control"

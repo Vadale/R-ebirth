@@ -53,6 +53,13 @@ The application prepares a local environment, runs offline and resumes saved
 batches. These additions are separate from the released v0.2.0 binary; batch
 reliability does not establish extraction accuracy.
 
+The development checkout also adds **`llm_probe()`**: binary ridge probes with
+source-group cross-validation, development-only selection, held-out evaluation
+and conditional intervals. It accepts activation traces, including disk slices,
+and provides ordinary S3 summaries, plots and probability predictions. See the
+[evaluation contract](docs/probe-evaluation-contract.md) and the package's
+anatomy-lab vignette. Predictive decodability does not establish causal use.
+
 ## Repository layout
 
 ```

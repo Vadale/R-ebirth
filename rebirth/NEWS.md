@@ -1,5 +1,13 @@
 # relm 0.2.0.9000
 
+* `llm_probe()` fits binary ridge probes from an `activations()` formula, with
+  explicit source groups, group-disjoint development CV and optional held-out
+  groups. Preprocessing and layer/regularization selection use development data
+  only. S3 summaries, plots and probability predictions distinguish exploratory
+  scores from conditional held-out intervals. Trace alignment and materialized
+  memory are checked, including spilled traces. The optional glmnet dependency
+  remains in Suggests; decodability does not establish causal use.
+
 * The repository's funding-extraction example now provides explicit environment
   setup, offline batch execution and verified restart/resume. Immutable results
   retain raw outputs, evidence and failure details; changed inputs/configuration

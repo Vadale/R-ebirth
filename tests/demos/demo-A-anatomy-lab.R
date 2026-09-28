@@ -1,5 +1,9 @@
 # tests/demos/demo-A-anatomy-lab.R
 #
+# Historical exploratory analysis: its selected-OOF bootstrap does not include
+# layer/lambda selection uncertainty. WP11b's approved llm_probe() workflow and
+# separate grouped evaluation/controls are in demo-probe-evaluation.R.
+#
 # Demo A -- "The anatomy lab" (SOLO-PHASE-PLAN.md Sec 8, WP7).
 #
 #   fixed sentiment contrast set -> llm_trace() over all layers

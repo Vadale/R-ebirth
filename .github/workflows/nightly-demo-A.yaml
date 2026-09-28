@@ -113,6 +113,9 @@ jobs:
                         a4$ratio_k8, a4$random_max, if (isTRUE(a4$pass)) "PASS" else "FAIL"))
             stopifnot(isTRUE(a4$pass))
             cat("Demo A nightly acceptance: PASS\n")
+
+            source("tests/demos/demo-probe-evaluation.R")
+            run_probe_evaluation(mp, "probe-evaluation", backend = "cpu")
           '
 
       - name: Upload the money plot
@@ -122,3 +125,11 @@ jobs:
           name: demo-A-money-plot
           path: demoA-money.png
           if-no-files-found: warn
+
+      - name: Upload grouped probe evaluation and controls
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: grouped-probe-evaluation
+          path: probe-evaluation/
+          if-no-files-found: error

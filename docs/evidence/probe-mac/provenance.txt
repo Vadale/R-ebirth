@@ -1,0 +1,49 @@
+Synthetic paired-source example; no independent scientific performance claim.
+The simple lexical feature is intentionally sufficient for the labels.
+The paired-label control is a predeclared fixed swap, not a formal permutation test.
+Model: qwen2.5-0.5b-instruct-q8_0.gguf
+Requested backend: metal
+Layers: 6, 12, 18
+relm: 0.2.0.9000
+List of 7
+ $ version: chr "5.0"
+ $ thresh : num 1e-14
+ $ maxit  : int 1000000
+ $ fdev   : num 0
+ $ devmax : num 1
+ $ jerr   : int 0
+ $ npasses: int 5
+List of 8
+ $ version        : chr "grouped-probe-v1"
+ $ fold_allocation: chr "class-balanced-greedy-v1"
+ $ selection      : chr "unweighted mean fold score; ties within 1e-12 prefer largest lambda and smallest layer"
+ $ bootstrap_draws: int 2000
+ $ bootstrap_unit : chr "whole evaluation groups"
+ $ quantile_type  : int 7
+ $ interval       : chr "Approximate 95% pointwise held-out sampling intervals conditional on fitted models, development data, selection and split"
+ $ evaluation     : chr "held_out"
+R version 4.5.1 (2025-06-13)
+Platform: aarch64-apple-darwin20
+Running under: macOS Tahoe 26.6.2
+
+Matrix products: default
+BLAS:   /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRblas.0.dylib 
+LAPACK: /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1
+
+locale:
+[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+
+time zone: Europe/Rome
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] relm_0.2.0.9000
+
+loaded via a namespace (and not attached):
+ [1] compiler_4.5.1   Matrix_1.7-3     tools_4.5.1      survival_3.8-3  
+ [5] Rcpp_1.1.0       splines_4.5.1    codetools_0.2-20 grid_4.5.1      
+ [9] iterators_1.0.14 foreach_1.5.2    shape_1.4.6.1    glmnet_5.0      
+[13] lattice_0.22-7  

@@ -68,7 +68,11 @@ Attributes: `model` (chr, path), `spilled` (lgl), `spill_files` (chr, if any), `
 Methods: `print.relm_trace` (dimensions + capture spec, never the data), `summary.relm_trace` (per layer/component: n, mean |value|, spill status), `as.matrix.relm_trace` (§4).
 
 ### `llm_probe` — fitted probe set
-Classed list: per-layer fitted probes + CV metrics. Methods: `print`, `summary`, `plot` (the decodability-by-layer figure: metric with CI vs layer), `predict`.
+Classed list: per-layer development-only fits, selection CV metrics, separate
+held-out metrics/predictions when supplied, split audit and uncertainty metadata
+(D-033). Methods: `print`, `summary`, `plot`, `predict`. `summary()` exposes
+counts, selection, preprocessing/solver provenance and interval status; intervals
+are conditional on frozen fits and are withheld when unsupported.
 
 ---
 
@@ -128,26 +132,41 @@ Vectorized over `prompt`; forward pass, next-token distribution. Returns a `data
 
 ## 5. Function entries — Phase 4 `[approved: D-003; implementation pending]`
 
-**D-028 implementation gate:** WP11a first specifies grouping, layer/parameter
-selection, fold-local preprocessing and uncertainty. These signatures remain
-approved as written; any needed extension or changed semantics requires a
-separately approved amendment. Copying Demo A's exploratory estimates is not
-sufficient statistical acceptance for WP11b.
+**D-033 approved (2026-09-28):** WP11a's grouping, selection, preprocessing,
+uncertainty and controls contract is binding in
+[`docs/probe-evaluation-contract.md`](docs/probe-evaluation-contract.md).
+WP11a PR #48 is merged; WP11b implements this approved amendment.
 
-**WP11a proposal:** [D-033](DECISIONS.md#d-033--grouped-probe-selection-and-explicit-held-out-evaluation)
-and the [evaluation contract](docs/probe-evaluation-contract.md) propose appending
-`groups = NULL, test_groups = NULL`, with explicit exploratory/held-out result,
-plot and prediction semantics. **Not approved:** the entries below remain unchanged
-until the founder approves the amendment; WP11b must not implement it yet.
-
-### `llm_probe(formula, data, method = "glmnet", cv = 10, metric = c("auc", "accuracy"), seed = NULL)`
-`formula`: `label ~ activations(layer = 10:20, component = "residual")` — `label` is a column the user has attached to the trace (or a vector in the calling scope, standard R formula semantics); `activations()` is a formula helper resolved only inside `llm_probe`. `data` = a `relm_trace`. Fits one cross-validated probe per layer in the requested range. Returns `llm_probe` (§2). Errors: `relm_error_probe` (label/trace mismatch, single-class labels — message states counts).
+### `llm_probe(formula, data, method = "glmnet", cv = 10, metric = c("auc", "accuracy"), seed = NULL, groups = NULL, test_groups = NULL)`
+`formula`: `label ~ activations(layer = 10:20, component = "residual")`.
+Labels come from a prompt-constant trace column or a vector in the formula
+calling environment. `data` is a `relm_trace`, with one captured position per
+prompt aligned across layers. Fits binary ridge logistic probes using the
+already-approved optional `glmnet` dependency. `groups` maps captured prompts to
+source-group IDs (named vectors match prompt IDs; unnamed vectors follow their
+increasing order); `NULL` explicitly assumes independent prompts.
+`test_groups` names entire groups reserved before analysis, or `NULL` for
+exploratory development CV only. Group-disjoint CV chooses each layer's lambda
+and the default layer on development data. Preprocessing and returned fits
+never use held-out observations. The accepted contract defines the fixed grid,
+selection ties, class/coordinate validation, RNG, memory and CI rules.
+Returns an `llm_probe` (§2). Errors: `relm_error_probe` with actionable reason and
+relevant counts/fold/layer; memory refusal is `relm_error_oom` before densification.
 
 ### `activations(layer, component = "residual")`
-Formula-helper marker; calling it outside a probe formula raises `relm_error_probe` with a pointer to correct usage.
+Formula-helper marker; calling it outside a probe formula raises `relm_error_probe`
+with a pointer to correct usage.
 
 ### `plot.llm_probe(x, ...)`
-The standardized decodability figure: metric with CI (y) vs layer (x), base graphics implementation with a documented ggplot2 recipe in the vignette. `predict.llm_probe(object, newdata, layer = NULL, ...)` scores new traces (default: best CV layer).
+The standardized decodability figure: held-out metric and available approximate
+95% pointwise conditional group-bootstrap intervals versus layer, marking the
+development-selected layer. Without held-out groups, show labelled exploratory
+CV scores without inferential intervals. Base graphics; a documented ggplot2
+recipe needs no package dependency. `predict.llm_probe(object, newdata,
+layer = NULL, ...)` returns positive-class probabilities from saved development-only
+fits, defaulting to the layer selected by development CV. It never refits on the
+holdout. Predictions are named by increasing prompt ID; `newdata` must match the
+trained component/neuron coordinates and single-position observation contract.
 
 ---
 

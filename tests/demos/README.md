@@ -15,6 +15,14 @@ The two reference demos, run as scripted acceptance tests
   (with the full swept range, saturation tail included), **A4** a
   targeted-vs-matched-random ablation effect curve, and **A5** the concept
   direction's layer × layer geometry.
+- **`demo-probe-evaluation.R`** — the WP11b grouped evaluation example: 40
+  synthetic source pairs, fixed development/test groups, `llm_probe()`, a simple
+  lexical baseline and a fixed paired-label control. Run
+  `run_probe_evaluation(model_path, output_dir, backend = "cpu")` after sourcing.
+  It writes metrics, split/control audits, provenance and a base-graphics PDF.
+  The same pinned Qwen0.5 example runs in the Demo A nightly. See
+  [implementation evidence](../../docs/probe-implementation.md); its perfect
+  lexical baseline prevents interpreting the probe score as a scientific result.
 - **`demo-B-topics.R`** — topics without Python: public abstracts →
   `llm_embed()` → `uwot::umap()` → `dbscan::hdbscan()` → cluster naming via
   `llm_generate()` → one labelled base-graphics cluster map.

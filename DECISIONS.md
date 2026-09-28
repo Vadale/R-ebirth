@@ -931,6 +931,17 @@ intervention effect/reversibility separately. It does not close the 4B spill gat
 
 ---
 
+**D-033 approval addendum (2026-09-28).** The founder approved the concrete
+proposal and authorized WP11b after the explicit D-033 approval request. The two appended `groups = NULL, test_groups = NULL`
+arguments and the exploratory/held-out return, plot, prediction and conditional
+CI semantics in `docs/probe-evaluation-contract.md` are now **APPROVED**.
+This addendum supersedes the proposal's pending status; the original proposal
+is preserved above. `glmnet` remains Suggests under D-020; no new dependency.
+WP11a PR #48 merged at `2a65a3f` after all nine checks passed (R run
+`36418150744`, Rust run `36418150876`). WP11b is the active implementation.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
