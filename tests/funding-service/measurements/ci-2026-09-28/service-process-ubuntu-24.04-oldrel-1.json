@@ -1,0 +1,49 @@
+{
+  "checks_summary": {
+    "failed": [],
+    "passed": 305,
+    "total": 305
+  },
+  "contract_sha256": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+  "environment": null,
+  "finished_at": "2026-09-28T17:01:17Z",
+  "full_report": {
+    "path": "/private/tmp/relm-service/ci-final-process/service-process-ubuntu-24.04-oldrel-1/acceptance.json",
+    "sha256": "201ec51adb7ad31232280a106cd99ec1a4de2657b2ef0b6e153a5e0f12d630a5",
+    "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36453091919"
+  },
+  "gates": {
+    "G1": {
+      "elapsed_seconds": 6.542887928000027,
+      "status": "passed"
+    },
+    "G2": {
+      "elapsed_seconds": 12.899648993000028,
+      "status": "passed"
+    },
+    "G3": {
+      "elapsed_seconds": 200.73182316500015,
+      "status": "passed"
+    },
+    "G4": {
+      "elapsed_seconds": 60.76578526200001,
+      "status": "passed"
+    }
+  },
+  "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "profile": null,
+  "python": "3.12.3",
+  "source_sha256": {
+    "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+    "examples/funding-service/runtime.R": "e87bce0f36defbcd6ff992abc4b184740a827148a83d232828c3032dfc6cc8f7",
+    "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+    "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+    "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+    "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+    "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+    "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c"
+  },
+  "started_at": "2026-09-28T16:56:24Z",
+  "status": "passed",
+  "suite": "deterministic"
+}
