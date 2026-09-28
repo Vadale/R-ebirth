@@ -854,33 +854,69 @@ def supervisor_suite(h):
             'systemctl', '--user', 'show', name + '.service', success=False)
         return value.stdout + value.stderr
     def failure_cycle(reason):
-        manager_start(); started = time.monotonic(); observations = []; changes = []
-        last = None
-        while time.monotonic()-started < 17:
-            body = observation(); elapsed = time.monotonic()-started
-            service.status()  # Track every observed worker creation identity for cleanup.
-            pattern = r'\bruns = (\d+)' if manager == 'launchd' else r'^NRestarts=(\d+)'
-            match = re.search(pattern, body, re.M)
-            if match:
-                count = int(match[1]) + (0 if manager == 'launchd' else 1)
-                if count != last:
-                    if last is not None:
-                        h.check(count == last+1, 'manager failure attempts individually observed: ' + reason)
-                    changes.append(dict(elapsed_seconds=elapsed, attempts=count)); last = count
-            observations.append(dict(elapsed_seconds=elapsed, state=body))
-            time.sleep(.25)
+        started = time.monotonic(); manager_start(); observations = []; changes = []
+        health = []; probe_errors = []; stop_probe = threading.Event()
+        def probe():
+            while not stop_probe.is_set():
+                try:
+                    value = service.http('GET', '/health/ready', timeout=1)
+                    health.append(dict(elapsed_seconds=time.monotonic()-started, status=value['status']))
+                except (OSError, http.client.HTTPException) as error:
+                    health.append(dict(elapsed_seconds=time.monotonic()-started, status=None, error=type(error).__name__))
+                except Exception as error:
+                    probe_errors.append(str(error)); return
+                stop_probe.wait(1)
+        thread = threading.Thread(target=probe, daemon=True); thread.start()
+        last = None; seen_workers = set(); previous_observation = 0
+        try:
+            while time.monotonic()-started < 17:
+                body = observation(); elapsed = time.monotonic()-started
+                status = service.status()
+                worker = status.get('worker')
+                if worker and worker['epoch'] not in seen_workers:
+                    for older in service.workers:
+                        if older['epoch'] != worker['epoch']:
+                            h.check(not h.same_alive(older), 'failed startup never overlaps model-worker identities: ' + reason)
+                    seen_workers.add(worker['epoch'])
+                # Ignore persisted readiness from a different/dead frontend.
+                # A new process may legitimately be running while startup fails.
+                pid_match = re.search(r'\bpid = (\d+)', body) if manager == 'launchd' else re.search(r'^MainPID=(\d+)', body, re.M)
+                if pid_match and status.get('frontend', {}).get('pid') == int(pid_match[1]):
+                    h.check(status.get('state') != 'ready', 'failing current frontend never publishes ready status: ' + reason)
+                pattern = r'\bruns = (\d+)' if manager == 'launchd' else r'^NRestarts=(\d+)'
+                match = re.search(pattern, body, re.M)
+                if match:
+                    count = int(match[1]) + (0 if manager == 'launchd' else 1)
+                    if count != last:
+                        if last is not None:
+                            h.check(count == last+1, 'manager failure attempts individually observed: ' + reason)
+                        changes.append(dict(elapsed_seconds=elapsed, lower_seconds=previous_observation, attempts=count)); last = count
+                observations.append(dict(elapsed_seconds=elapsed, state=body, service=status))
+                previous_observation = elapsed
+                time.sleep(.25)
+        finally:
+            stop_probe.set(); thread.join(timeout=3)
         write_json(service.directory / (reason + '-manager-observations.json'), observations)
+        write_json(service.directory / (reason + '-readiness-observations.json'), health)
+        h.check(not thread.is_alive() and bool(health) and not probe_errors, 'real readiness probes completed without harness errors: ' + reason)
+        h.check(all(row['status'] != 200 for row in health), 'failed startup never serves ready HTTP200: ' + reason)
         h.check(len(changes) >= 2, 'actual manager repeatedly attempts failed startup: ' + reason)
-        # The observation period is included as uncertainty, not a relaxed
-        # backoff setting: adjacent actual attempts must remain at least5s apart.
+        failed = r'last exit code = [1-9]\d*' if manager == 'launchd' else r'(?:^Result=exit-code$|^ExecMainStatus=[1-9]\d*$)'
+        h.check(any(re.search(failed, row['state'], re.M) for row in observations), 'manager records actual unsuccessful exits: ' + reason)
+        # Each transition lies between its preceding and detecting observations.
+        # Use those actual times, including inspection/probe overhead, to expose
+        # measurement uncertainty without changing the configured five seconds.
+        intervals = []
         for previous, current in zip(changes, changes[1:]):
-            h.check(current['elapsed_seconds']-previous['elapsed_seconds']+.25 >= 5,
-                    'observed restart spacing respects generated five-second backoff: ' + reason)
-        body = observations[-1]['state']
-        h.check('state = running' not in body if manager == 'launchd' else 'ActiveState=active\n' not in body,
-                'failed startup does not remain running: ' + reason)
+            interval = dict(lower_seconds=current['lower_seconds']-previous['elapsed_seconds'],
+                            upper_seconds=current['elapsed_seconds']-previous['lower_seconds'])
+            intervals.append(interval)
+            h.check(interval['upper_seconds'] >= 5,
+                    'observed restart spacing is compatible with five-second backoff: ' + reason)
+        h.report.setdefault('manager_backoff_intervals', {})[reason] = intervals
         manager_stop()
         for identity in service.workers: h.dead(identity)
+
     try:
         existing = run('launchctl', 'print', label, success=False) if manager == 'launchd' else run('systemctl', '--user', 'cat', name + '.service', success=False)
         h.check(existing.returncode != 0, 'disposable manager name does not replace existing user service')
