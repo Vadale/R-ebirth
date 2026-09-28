@@ -1,7 +1,6 @@
 """Real OS egress boundary for the native operational (G6) acceptance suite."""
 import errno
 import os
-from pathlib import Path
 import platform
 import socket
 import sys
@@ -37,7 +36,9 @@ def ensure_offline():
     if system == 'Linux':
         if os.readlink('/proc/self/ns/net') == os.environ.get('RELM_SERVICE_HOST_NETNS'):
             raise RuntimeError('The acceptance process did not enter a private network namespace')
-        if set(p.name for p in Path('/sys/class/net').iterdir()) != {'lo'}:
+        # sysfs can retain the host's mount-associated network namespace after
+        # unshare --net. Query the current process namespace through sockets.
+        if {name for _, name in socket.if_nameindex()} != {'lo'}:
             raise RuntimeError('A non-loopback interface exists inside the offline namespace')
     try:
         with socket.create_connection(('1.1.1.1', 443), timeout=2):

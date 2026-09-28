@@ -211,6 +211,9 @@ jobs:
       - name: Service HTTP, overload, process recovery and persistence
         shell: bash
         run: |
+          Rscript --vanilla tests/funding-service/test-ipc-scan.R
+          python3 tests/funding-service/accept.py --self-test
+          Rscript --vanilla tests/funding-service/processes.R "${{ runner.temp }}/service-library" self-test
           python3 tests/funding-service/accept.py --suite deterministic \
             --source-library "${{ runner.temp }}/service-library" \
             --work-dir "${{ runner.temp }}/service-process" --default-deadline

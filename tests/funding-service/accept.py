@@ -509,16 +509,22 @@ def recovery_suite(h):
     h.check(restarted.status()['dispatch_count'] == 0, 'frontend restart never silently repeats accepted work')
     restarted.close(); crash.close()
 
+    restart_window = h.limits['restart_window_seconds']
     startup = h.service('startup-flood', config=dict(worker=dict(mode='success', init_flood=True)))
-    until(lambda: startup.status().get('state') == 'faulted', 30, 'startup diagnostic flood latches fault')
+    until(lambda: startup.status().get('state') == 'faulted',
+          max(0, restart_window-(time.monotonic()-startup.started)), 'startup diagnostic flood latches fault')
+    h.check(time.monotonic()-startup.started <= restart_window, 'startup flood latches within frozen restart window')
     h.check(startup.http('GET', '/health/live')['status'] == 200, 'startup flood keeps frontend alive')
     h.check(startup.http('GET', '/health/ready')['status'] == 503, 'startup flood never ready')
-    h.check(startup.status()['restart_attempts'] == 3, 'three automatic failures latch fault without hidden retries')
+    h.check(startup.status()['restart_attempts'] == h.limits['restart_attempts'], 'three automatic failures latch fault without hidden retries')
     for identity in startup.workers: h.dead(identity)
     startup.close()
     failure = h.service('initialization-failure', config=dict(worker=dict(mode='success', init_fail=True)))
-    until(lambda: failure.status().get('state') == 'faulted', 30, 'initialization failures latch fault')
-    h.check(failure.status()['restart_attempts'] == 3, 'initialization failures obey restart window')
+    until(lambda: failure.status().get('state') == 'faulted',
+          max(0, restart_window-(time.monotonic()-failure.started)), 'initialization failures latch fault')
+    h.check(time.monotonic()-failure.started <= restart_window, 'initialization failures latch within frozen restart window')
+    h.check(failure.status()['restart_attempts'] == h.limits['restart_attempts'], 'initialization failures obey restart window')
+    h.check(failure.http('GET', '/health/ready')['status'] == 503, 'initialization failure never ready')
     failure.close()
 
     temp = h.service('temp-override', config=dict(worker=dict(mode='temp_echo'))).ready()
