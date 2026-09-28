@@ -84,3 +84,10 @@ recorded and cannot certify G7's complete sampling requirement.
 
 `test_environment.py` and `install-pins.R` are separate setup/pinning checks.
 The frozen contract remains in `tests/service-contract/contract.json`.
+
+`Rscript --vanilla tests/funding-service/test-ipc-scan.R` runs the focused
+model-free IPC scanner regression without installed service packages. It uses
+real disposable files and binds `file.info` locally on a copy of the product
+function to remove a listed file immediately before stat. Confirmed live IPC
+disappearance is allowed; durable disappearance, existing unstatable files,
+unverifiable ancestors, and file/directory symlinks remain errors.

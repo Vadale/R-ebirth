@@ -62,12 +62,41 @@ svc_write <- function(value, path, replace = FALSE, before = NULL, after = NULL)
   Sys.chmod(path, "0600")
   invisible(value)
 }
-svc_tree_bytes <- function(path) {
-  files <- list.files(path, all.files = TRUE, no.. = TRUE, recursive = TRUE, full.names = TRUE)
+svc_tree_bytes <- function(path, live_ipc = FALSE) {
+  fail <- function() svc_abort("Cannot account for service storage.", if (live_ipc) "ipc" else "filesystem")
+  if (live_ipc && (!dir.exists(path) || file.access(path, 5L) != 0L)) fail()
+  files <- list.files(path, all.files = TRUE, no.. = TRUE, recursive = TRUE, full.names = TRUE, include.dirs = TRUE)
   if (!length(files)) return(0)
-  if (any(nzchar(Sys.readlink(files)), na.rm = TRUE)) svc_abort("Symbolic links are forbidden in the service store.", "filesystem")
-  sizes <- file.info(files)$size
-  if (anyNA(sizes)) svc_abort("Cannot account for service storage.", "filesystem")
+  if (any(nzchar(Sys.readlink(files), keepNA = TRUE), na.rm = TRUE)) svc_abort("Symbolic links are forbidden in the service store.", "filesystem")
+  info <- file.info(files)
+  sizes <- info$size
+  directories <- which(!is.na(info$isdir) & info$isdir)
+  if (anyNA(sizes[directories]) || any(file.access(files[directories], 5L) != 0L)) fail()
+  sizes[directories] <- 0
+  if (anyNA(sizes)) {
+    if (!live_ipc) fail()
+    for (i in which(is.na(sizes))) {
+      # Worker/callr temporary files are concurrently consumed. A failed stat
+      # alone is not proof of deletion: reject a still-existing file and require
+      # a statable, accessible containing ancestor before accepting absence.
+      file <- files[[i]]
+      if (file.exists(file) || isTRUE(nzchar(Sys.readlink(file), keepNA = TRUE))) fail()
+      ancestor <- dirname(file)
+      repeat {
+        info <- file.info(ancestor)
+        if (!is.na(info$isdir)) {
+          if (!isTRUE(info$isdir) || is.na(info$size) || file.access(ancestor, 5L) != 0L ||
+              isTRUE(nzchar(Sys.readlink(ancestor), keepNA = TRUE))) fail()
+          break
+        }
+        if (file.exists(ancestor) || isTRUE(nzchar(Sys.readlink(ancestor), keepNA = TRUE)) ||
+            identical(ancestor, path) || identical(dirname(ancestor), ancestor)) fail()
+        ancestor <- dirname(ancestor)
+      }
+      if (file.exists(file) || isTRUE(nzchar(Sys.readlink(file), keepNA = TRUE))) fail()
+      sizes[[i]] <- 0
+    }
+  }
   sum(sizes)
 }
 svc_document <- function(doc, limits) {
@@ -306,6 +335,7 @@ svc_diagnostic_space <- function(e, bytes) {
 }
 svc_status_value <- function(e) list(format_version = 1L, service_identity = e$identity,
   nonce = e$nonce, state = e$state, frontend = e$frontend, worker = e$worker_identity,
+  fault_reason = e$fault, fault_class = e$fault_class,
   supervisor = e$supervisor, port = e$port, active_id = if (is.null(e$active)) NULL else e$active$id,
   dispatch_count = e$dispatch_count, accepted = length(ls(e$admissions)),
   terminal = length(ls(e$results)), restart_attempts = length(e$restart_failures), rss_bytes = e$rss, peak_rss_bytes = e$peak_rss,
@@ -316,9 +346,14 @@ svc_status_write <- function(e, force = FALSE) {
     e$status_at <- svc_now()
   }
 }
-svc_fault <- function(e, reason) {
+svc_fault <- function(e, reason, condition = NULL) {
   e$state <- "faulted"
   e$fault <- reason
+  if (!is.null(condition)) {
+    classes <- class(condition)
+    classes <- classes[grepl("^(funding_error_|service_error_)[A-Za-z0-9_]{1,80}$", classes)]
+    e$fault_class <- if (length(classes)) classes[[1L]] else "service_error_runtime"
+  }
 }
 svc_retire <- function(e, reason) {
   if (!is.null(e$retiring)) return(invisible(NULL))
@@ -330,7 +365,7 @@ svc_retire <- function(e, reason) {
       svc_publish(e, active, list(state = "interrupted", output = NULL, raw_output = NULL,
         error = svc_error(reason), elapsed_ms = as.integer(round(1000 * (svc_now() - e$operation_at)))))
       e$active <- NULL
-    }, error = function(err) { e$storage_fault <- TRUE; svc_fault(e, "storage") })
+    }, error = function(err) { e$storage_fault <- TRUE; svc_fault(e, "storage", err) })
   }
   if (e$operation == "initialization") {
     e$restart_failures <- c(e$restart_failures[e$restart_failures >= svc_now() - e$limits$restart_window_seconds], svc_now())
@@ -486,7 +521,7 @@ svc_tick <- function(e) {
           }
         }
         if (e$diagnostic_bytes > e$limits$worker_diagnostic_bytes) svc_retire(e, "diagnostic_limit")
-        if (is.null(e$retiring) && svc_tree_bytes(e$worker_identity$ipc_dir) > e$limits$epoch_ipc_bytes)
+        if (is.null(e$retiring) && svc_tree_bytes(e$worker_identity$ipc_dir, live_ipc = TRUE) > e$limits$epoch_ipc_bytes)
           svc_retire(e, "ipc_limit")
         if (is.null(e$retiring) && e$operation %in% c("initialization", "request")) {
           deadline <- if (e$operation == "initialization") e$limits$worker_start_seconds else e$limits$request_deadline_seconds
@@ -521,7 +556,7 @@ svc_tick <- function(e) {
     svc_status_write(e)
   }, error = function(err) {
     e$storage_fault <- inherits(err, "funding_error_filesystem") || e$storage_fault
-    svc_fault(e, if (e$storage_fault) "storage" else "runtime")
+    svc_fault(e, if (e$storage_fault) "storage" else if (inherits(err, "funding_error_ipc")) "ipc_accounting" else "runtime", err)
     try(svc_retire(e, if (e$storage_fault) "storage" else "worker_protocol"), silent = TRUE)
   })
   if (!e$finished) later::later(function() svc_tick(e), e$limits$control_poll_ms / 1000)
@@ -665,7 +700,7 @@ svc_run <- function(prepared, store, port = 8765L, test_config = NULL) {
   e$nonce <- app_nonce(); e$frontend <- svc_process(); e$worker <- NULL; e$worker_identity <- NULL
   e$supervisor <- NULL; e$epoch <- NULL; e$state <- "starting"; e$active <- NULL; e$operation <- "idle"
   e$retiring <- NULL; e$initializing <- FALSE; e$ever_ready <- FALSE; e$finished <- FALSE; e$locked <- FALSE
-  e$storage_fault <- FALSE; e$fault <- NULL; e$restart_failures <- numeric(); e$dispatch_count <- 0L
+  e$storage_fault <- FALSE; e$fault <- NULL; e$fault_class <- NULL; e$restart_failures <- numeric(); e$dispatch_count <- 0L
   e$admissions <- new.env(parent = emptyenv()); e$results <- new.env(parent = emptyenv())
   e$store_bytes <- 0; e$rss <- 0; e$peak_rss <- 0; e$status_at <- -Inf; e$started <- svc_now()
   e$stop_at <- NULL; e$operation_at <- e$started; e$diagnostic_bytes <- 0; e$server <- NULL
