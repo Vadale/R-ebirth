@@ -1,0 +1,228 @@
+{
+  "contract_version": "funding-service-v1",
+  "decision": "D-034",
+  "status": "proposed",
+  "bind": {
+    "host": "127.0.0.1",
+    "port": 8765,
+    "network_scope": "single-user loopback",
+    "browser_origins": false
+  },
+  "limits": {
+    "active_requests": 1,
+    "queued_requests": 0,
+    "control_poll_ms": 100,
+    "request_body_bytes": 16384,
+    "document_text_bytes": 8192,
+    "target_bytes": 256,
+    "request_id_bytes": 64,
+    "context_tokens": 4096,
+    "output_tokens": 768,
+    "raw_output_bytes": 65536,
+    "terminal_record_bytes": 131072,
+    "request_deadline_seconds": 120,
+    "worker_start_seconds": 120,
+    "worker_death_seconds": 5,
+    "recovery_seconds": 125,
+    "graceful_drain_seconds": 10,
+    "stop_seconds": 15,
+    "restart_attempts": 3,
+    "restart_window_seconds": 300,
+    "retry_after_seconds": 1,
+    "client_poll_seconds": 1,
+    "accepted_records_per_store": 10000,
+    "store_admission_floor_bytes": 1048576,
+    "store_limit_bytes": 2147483648,
+    "health_p95_ms": 250,
+    "health_max_ms": 1000,
+    "admission_p95_ms": 500,
+    "admission_max_ms": 1000,
+    "overload_clients": 20,
+    "normal_sequential_requests": 30,
+    "native_stress_requests": 1000,
+    "stress_warmup_requests": 100,
+    "stress_tail_requests": 100,
+    "stress_growth_bytes": 268435456,
+    "stress_slope_bytes_per_request": 262144,
+    "shutdown_residual_workers": 0,
+    "overflow_prefix_bytes": 4096,
+    "overflow_metadata_bytes": 4096,
+    "worker_diagnostic_bytes": 1048576,
+    "diagnostic_drain_bytes_per_tick": 65536,
+    "epoch_ipc_bytes": 67108864
+  },
+  "profiles": {
+    "mac_spark": {
+      "os": "macOS arm64",
+      "model_alias": "spark-x2.5-4b-q8_0",
+      "backend": "metal",
+      "rss_budget_bytes": 8589934592,
+      "purpose": "target-hardware smoke, deadline/crash recovery and resource acceptance"
+    },
+    "mac_qwen": {
+      "os": "macOS arm64",
+      "model_alias": "qwen2.5-0.5b-instruct-q8_0",
+      "backend": "metal",
+      "rss_budget_bytes": 3221225472,
+      "purpose": "1000 native requests and isolation acceptance"
+    },
+    "linux_qwen": {
+      "os": "Linux x86_64",
+      "model_alias": "qwen2.5-0.5b-instruct-q8_0",
+      "backend": "cpu",
+      "rss_budget_bytes": 3221225472,
+      "purpose": "1000 native requests and isolation acceptance"
+    }
+  },
+  "http": {
+    "new_request": 202,
+    "active_replay": 202,
+    "terminal_replay": 200,
+    "terminal_get": 200,
+    "unknown_request": 404,
+    "changed_replay": 409,
+    "busy": 429,
+    "unavailable": 503,
+    "malformed": 400,
+    "missing_length": 411,
+    "oversized": 413,
+    "unsupported_media": 415,
+    "invalid_fields": 422,
+    "forbidden_origin_or_host": 403
+  },
+  "request_states": [
+    "accepted",
+    "running",
+    "success",
+    "invalid",
+    "error",
+    "interrupted"
+  ],
+  "allowed_transitions": [
+    [
+      "accepted",
+      "running"
+    ],
+    [
+      "accepted",
+      "error"
+    ],
+    [
+      "accepted",
+      "interrupted"
+    ],
+    [
+      "running",
+      "success"
+    ],
+    [
+      "running",
+      "invalid"
+    ],
+    [
+      "running",
+      "error"
+    ],
+    [
+      "running",
+      "interrupted"
+    ]
+  ],
+  "accepted_terminal_states": [
+    "success",
+    "invalid",
+    "error",
+    "interrupted"
+  ],
+  "request_fields": [
+    "id",
+    "target",
+    "text",
+    "seed"
+  ],
+  "worker_states": [
+    "starting",
+    "ready",
+    "busy",
+    "stopping",
+    "restarting",
+    "faulted",
+    "stopped"
+  ],
+  "invariants": [
+    "one_frontend_writer",
+    "one_live_model_worker",
+    "no_request_queue",
+    "admission_before_dispatch",
+    "terminal_before_visibility",
+    "no_automatic_replay",
+    "same_id_same_payload_same_receipt",
+    "changed_payload_conflicts",
+    "dead_worker_before_replacement",
+    "late_worker_epoch_discarded",
+    "native_handles_never_cross_processes",
+    "immutable_terminal_records",
+    "d2_directory_never_reused",
+    "serialized_terminal_size_checked",
+    "private_epoch_ipc",
+    "dead_worker_before_epoch_cleanup"
+  ],
+  "future_runtime_gates": [
+    {
+      "id": "G1",
+      "suite": "http",
+      "fixture": "frozen request/header cases plus D2 development corpus",
+      "owner": "test engineer",
+      "status": "not_run"
+    },
+    {
+      "id": "G2",
+      "suite": "admission",
+      "fixture": "one blocked injected worker, 20 distinct concurrent clients",
+      "owner": "test engineer",
+      "status": "not_run"
+    },
+    {
+      "id": "G3",
+      "suite": "recovery",
+      "fixture": "real callr process, deadline/worker SIGKILL/frontend SIGKILL/late completion/diagnostic flood/private temp override",
+      "owner": "test engineer",
+      "status": "not_run"
+    },
+    {
+      "id": "G4",
+      "suite": "persistence",
+      "fixture": "SIGKILL before/after admission/result rename, corruption and changed identity/escaped-output overflow/owned IPC cleanup",
+      "owner": "test engineer",
+      "status": "not_run"
+    },
+    {
+      "id": "G5",
+      "suite": "isolation",
+      "fixture": "seeded A/B/A, invalid JSON/output, context overflow, fresh-worker baseline",
+      "owner": "implementation owner",
+      "status": "not_run"
+    },
+    {
+      "id": "G6",
+      "suite": "native",
+      "fixture": "Mac Spark plus Mac/Linux Qwen pinned development requests",
+      "owner": "implementation owner",
+      "status": "not_run"
+    },
+    {
+      "id": "G7",
+      "suite": "stress",
+      "fixture": "1000 unique native Qwen requests cycling D2 development cases",
+      "owner": "implementation owner",
+      "status": "not_run"
+    },
+    {
+      "id": "G8",
+      "suite": "supervisor",
+      "fixture": "launchd LaunchAgent and systemd user unit, startup/stop/crash loops",
+      "owner": "implementation owner",
+      "status": "not_run"
+    }
+  ]
+}

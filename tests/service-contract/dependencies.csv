@@ -1,0 +1,24 @@
+package,version,role,license
+callr,3.8.0,direct,MIT + file LICENSE
+cli,3.6.6,transitive,MIT + file LICENSE
+crayon,1.5.3,transitive,MIT + file LICENSE
+curl,8.0.0,transitive,MIT + file LICENSE
+fastmap,1.2.0,transitive,MIT + file LICENSE
+httpuv,1.6.17,direct,GPL (>= 2) | file LICENSE
+jsonlite,2.0.0,direct,MIT + file LICENSE
+later,1.4.8,direct,MIT + file LICENSE
+lifecycle,1.0.5,transitive,MIT + file LICENSE
+magrittr,2.0.5,transitive,MIT + file LICENSE
+mime,0.13,transitive,GPL
+otel,0.2.0,transitive,MIT + file LICENSE
+plumber,1.3.3,direct,MIT + file LICENSE
+processx,3.9.0,transitive,MIT + file LICENSE
+promises,1.5.0,transitive,MIT + file LICENSE
+ps,1.9.3,direct,MIT + file LICENSE
+R6,2.6.1,transitive,MIT + file LICENSE
+Rcpp,1.1.2,transitive,GPL (>= 2)
+rlang,1.3.0,transitive,MIT + file LICENSE
+sodium,1.4.0,transitive,MIT + file LICENSE
+stringi,1.8.9,transitive,file LICENSE
+swagger,5.32.1,transitive,Apache License 2.0 | file LICENSE
+webutils,1.2.3,transitive,MIT + file LICENSE
