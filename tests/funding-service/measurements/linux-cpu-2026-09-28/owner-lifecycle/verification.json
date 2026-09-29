@@ -1,0 +1,34 @@
+{
+  "source_commit": "7c9505aadfa2a57df8a49d03fc36473bd2016373",
+  "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36524582952",
+  "scope": {
+    "source_commit": "7c9505aadfa2a57df8a49d03fc36473bd2016373",
+    "lifecycle_only": true,
+    "unexecuted_gates": [
+      "G7"
+    ],
+    "note": "Scope only; inspect individual receipts for actual execution and outcomes. Lifecycle-only runs require separate reviewed G7 evidence."
+  },
+  "verified_gates": {
+    "G5": {
+      "status": "passed",
+      "checks": 53,
+      "source_and_harness_match": true,
+      "cleanup_errors": []
+    },
+    "G6": {
+      "status": "passed",
+      "checks": 286,
+      "source_and_harness_match": true,
+      "cleanup_errors": []
+    },
+    "G8": {
+      "status": "passed",
+      "checks": 24,
+      "source_and_harness_match": true,
+      "cleanup_errors": []
+    }
+  },
+  "G7": "unexecuted on this source; reviewed parent evidence in ../observer-priority-bootstrap/",
+  "runtime_sha256": "fc539b55cc6b20f0d0af0ce79d4f68716a3b79efaad8adc4c070429e3236b4a0"
+}

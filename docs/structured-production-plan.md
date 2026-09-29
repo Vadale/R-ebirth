@@ -51,16 +51,14 @@ WP11b merged in PR #49 at `ecf3d3f`: all nine PR checks and the Linux CPU
 model/control workflow passed. See the [probe report](probe-implementation.md)
 and PR #49 for measured evidence. WP12a merged in PR #50 at `95066c7`, with all nine checks passing. The founder
 approved the [local service contract](service-contract.md) and exact D-034
-dependency closure. WP12b implementation is active; see its
-[implementation report](service-implementation.md) for actual acceptance. Mac acceptance
-is complete; Linux G7 remains unaccepted. The observer-priority diagnostic completed
-30 minutes without a gap, supporting native validation after its offline permission
-preflight; diagnostic success does not certify a service gate. The first native
-dispatch stopped in that preflight before build/model preparation; a corrected
-permission bootstrap passed and the native workload is running. A separate Linux
-oldrel CI cleanup failure exposed an exact-timestamp ownership comparison defect;
-its Linux-only correction needs ordinary CI and final-source lifecycle validation
-while the existing long workload continues unchanged.
+dependency closure. WP12b implementation and operational acceptance are complete;
+see its [implementation report](service-implementation.md). Mac acceptance and
+Linux parent-source G7 pass with independent verification of 1,000 same-worker
+requests, continuous sampling and unchanged memory limits. The post-measurement
+teardown marker and earlier failed runs remain explicit. All nine ordinary checks
+at `7c9505a` and final-source Linux G5/G6/G8 run `36524582952` pass. G7 retains its
+original source identity. The remaining step is PR integration after checks on
+the final evidence/documentation commit.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|
@@ -234,7 +232,7 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** implement WP12b's approved application-only ticket service and execute its
-frozen Mac/Linux acceptance gates. The contract checker verifies only planning
-consistency; no service/load/stress result is claimed. D2 and WP11b are integrated;
+**Next action:** integrate the accepted WP12b service after the final PR checks
+pass. The implementation report records actual Mac/Linux outcomes and exact
+source provenance. No new work package or release is started by this milestone.
 D1's negative quality result and deferred stronger-model comparison are unchanged.

@@ -1,0 +1,45 @@
+{
+  "source_commit": "74cc156015ce022e7f6253f47451e062e9ab3ae5",
+  "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36506438374",
+  "raw_files": {
+    "stress-rss.csv.gz": {
+      "original_path": "/private/tmp/relm-service/linux-priority-bootstrap/stress/native-stress/rss.csv",
+      "raw_sha256": "5494c2049d3af536960fa048d053c2e060940b22a316928a7fa3d32117ffe138",
+      "saved_sha256": "7c9a3456cc016094e1c7e9ab66ad969a64ce98f9cdd33c7b2778cf405cc4fa64"
+    },
+    "stress-events.jsonl.gz": {
+      "original_path": "/private/tmp/relm-service/linux-priority-bootstrap/stress/native-stress/store/events.jsonl",
+      "raw_sha256": "efcf4f8e4ab459993402d0e447ce42f306bac9bcc94b32b4aea7331550716cf8",
+      "saved_sha256": "dda5cfb2395f02f41fb0fafb69a3a9e35e2cf128bc8fdf3c2615ab127a62fa72"
+    },
+    "stress-rss.error": {
+      "original_path": "/private/tmp/relm-service/linux-priority-bootstrap/stress/native-stress/rss.error",
+      "raw_sha256": "fff8c5352153c11406b286de9ad5c6b4ba5acccb46629318eb8ec5dd7700985d",
+      "saved_sha256": "fff8c5352153c11406b286de9ad5c6b4ba5acccb46629318eb8ec5dd7700985d"
+    },
+    "stress-sampler.log": {
+      "original_path": "/private/tmp/relm-service/linux-priority-bootstrap/stress/native-stress/sampler.log",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "saved_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stress.csv": {
+      "original_path": "/private/tmp/relm-service/linux-priority-bootstrap/stress/native-stress/native.csv",
+      "raw_sha256": "3ea077840cdb4fd960445c8ef848205b03b47c05345ca304fe53a001915cc387",
+      "saved_sha256": "67f29118980d2e307c6984461077878adc8f3dc9a1666f8a4d9ae8e17268ec02",
+      "saved_representation": "UTF-8 text with CRLF line endings normalized to LF; original and saved digests are distinct."
+    },
+    "native.csv": {
+      "original_path": "/private/tmp/relm-service/linux-priority-bootstrap/native/native-30/native.csv",
+      "raw_sha256": "f9ba75b7d48c6867ae27b3787708b660957d3c3ef37aebf04571835ed722deba",
+      "saved_sha256": "7b43ded20eba07ce63b4e394d246fef18150fa33acf2d729949053d59f7ac971",
+      "saved_representation": "UTF-8 text with CRLF line endings normalized to LF; original and saved digests are distinct."
+    }
+  },
+  "worker_continuity": {
+    "first_sample": 32,
+    "last_sample": 116191,
+    "all_intervening_samples_contain_same_live_worker": true
+  },
+  "workflow_status": "success",
+  "current_source_lifecycle_workflow": "https://github.com/Vadale/R-ebirth/actions/runs/36524582952"
+}
