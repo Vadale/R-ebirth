@@ -55,7 +55,9 @@ dependency closure. WP12b implementation is active; see its
 [implementation report](service-implementation.md) for actual acceptance. Mac acceptance
 is complete; Linux G7 remains unaccepted. The observer-priority diagnostic completed
 30 minutes without a gap, supporting native validation after its offline permission
-preflight; diagnostic success does not certify a service gate.
+preflight; diagnostic success does not certify a service gate. The first native
+dispatch stopped in that preflight before build/model preparation; a corrected
+permission bootstrap and same-runner comparison precede the next native workload.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|

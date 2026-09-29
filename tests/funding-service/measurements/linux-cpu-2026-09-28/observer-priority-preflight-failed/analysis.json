@@ -1,0 +1,10 @@
+{
+  "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36504143336",
+  "source_commit": "6aa1c144e7ba7540180a509d71489eff45233db0",
+  "status": "failed",
+  "scope": "Priority preflight failed; native build/model and G5-G8 were not executed.",
+  "observed": "Offline loopback and non-loopback denial checks passed; requested nice -10 and normal unprivileged harness assertions passed before launcher exit1. No launcher metadata was produced.",
+  "limitation": "The original preflight did not retain child stderr or RLIMIT_NICE, so its precise failure cause is unproven. Do not relabel it as a measured permission error.",
+  "next_step": "Establish the permission ceiling after sudo/PAM before dropping privileges, then compare original and corrected bootstrap on the same runner. Preserve limits and child stderr. Corrected preflight must pass before native work.",
+  "source_reference": "https://github.com/sudo-project/sudo/blob/main/docs/sudoers.man.in"
+}

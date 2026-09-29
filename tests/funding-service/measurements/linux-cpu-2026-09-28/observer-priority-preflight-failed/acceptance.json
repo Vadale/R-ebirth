@@ -1,0 +1,14 @@
+{
+  "status": "failed",
+  "scope": "Offline observer preflight; no G1-G8 acceptance.",
+  "boundary": {
+    "boundary": "private loopback-only network namespace",
+    "non_loopback_probe": {
+      "errno": 101,
+      "reason": "Network is unreachable"
+    },
+    "loopback_probe": "passed",
+    "inherited_by_service_and_worker": true
+  },
+  "error": "Command '['/usr/bin/python3', '/home/runner/work/R-ebirth/R-ebirth/tests/funding-service/sampler_launcher.py', '/home/runner/work/_temp/service-evidence/priority/sampler-process.json', '/usr/bin/python3', '-c', 'import json,os; print(json.dumps([os.getpid(),os.getuid(),os.geteuid(),os.getpriority(os.PRIO_PROCESS,0)]))']' returned non-zero exit status 1."
+}

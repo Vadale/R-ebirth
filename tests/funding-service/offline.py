@@ -11,7 +11,7 @@ PROFILE = ('(version 1)(allow default)(deny network*)'
            '(allow network* (local unix-socket) (remote unix-socket))')
 
 
-def ensure_offline():
+def ensure_offline(configure_priority=True):
     system = platform.system()
     marker = os.environ.get('RELM_SERVICE_OFFLINE_BOUNDARY')
     if not marker:
@@ -24,7 +24,12 @@ def ensure_offline():
             # This script executes before the service/tests exist. Only loopback
             # is brought up; then root privileges are dropped for the entire run.
             env['RELM_SERVICE_HOST_NETNS'] = os.readlink('/proc/self/ns/net')
-            script = ('ip link set lo up; '
+            # sudo/PAM may reset inherited resource limits. Establish the
+            # observer's fixed permission ceiling after that boundary and
+            # before dropping privileges; this does not change actual nice.
+            priority = ('prlimit --pid "$$" --nice=30:30; '
+                        if configure_priority and env.get('RELM_SAMPLER_NICE') == '-10' else '')
+            script = ('ip link set lo up; ' + priority +
                       'exec setpriv --reuid="$1" --regid="$2" --init-groups -- "${@:3}"')
             argv = ['sudo', '-n', '--preserve-env=PATH,RELM_SERVICE_OFFLINE_BOUNDARY,RELM_SERVICE_HOST_NETNS,RELM_SAMPLER_NICE',
                     'unshare', '--net', '--', 'bash', '-eu', '-c', script, 'service-offline',

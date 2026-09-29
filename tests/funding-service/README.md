@@ -159,3 +159,14 @@ the same explicit request through `offline.py`; a loss of permission cannot sile
 fall back. Increased observer priority is a measurement condition that may affect
 workload throughput. The successful 30-minute diagnosis supports this validation
 choice without substituting for the 1,000-request native gate.
+
+
+The offline Linux bootstrap establishes its fixed permission ceiling after sudo's
+possible target-user/PAM limit reset, before `setpriv` drops privileges. Native
+preflight first runs `test_priority.py --legacy-probe` with the original bootstrap
+on the same runner. It records either `permission_denial_reproduced` (with actual
+PermissionError and insufficient inherited ceiling) or `legacy_permission_retained`;
+neither is service acceptance. The corrected preflight must report `passed` before
+build/model preparation starts. Both paths retain inherited limits and launcher
+stdout/stderr, including failures. Actual nice values and resource guards stay
+unchanged.

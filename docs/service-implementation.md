@@ -1,6 +1,6 @@
 # WP12b — Local service implementation and acceptance
 
-Date: 2026-09-29. **Final acceptance pending; observer-priority evidence supports Linux native validation.**
+Date: 2026-09-29. **Final acceptance pending; Linux offline priority preflight correction.**
 D-034 approved; WP12a PR #50 merged at `95066c7`. The
 [frozen contract](service-contract.md) remains binding. Draft
 [PR #51](https://github.com/Vadale/R-ebirth/pull/51) contains the application and
@@ -148,11 +148,36 @@ G6 sudo/network-namespace boundary preserves the explicit priority request.
 Before any native build or model download, Linux runs `test_priority.py` through
 that actual boundary to prove unprivileged nice -10, unchanged controller priority,
 and refusal to execute when the inherited permission is removed. A failed preflight
-stops the workflow. These Linux checks are pending execution; local validation
+stops the workflow. The first execution stopped at this preflight (see below); local validation
 passes nine focused Python regressions (including supervisor readiness, unexpected
 workload priority and stale identity refusal) and 100 actual HTTP/process checks
 using the new launcher at the Mac's unchanged default priority. Neither product
 code, process discovery, request denominator nor acceptance bounds change.
+
+[Native dispatch 36504143336](https://github.com/Vadale/R-ebirth/actions/runs/36504143336)
+failed in the short priority preflight. **No native build, model preparation or
+G5–G8 workload ran.** The offline namespace passed its loopback and outside-access
+denial checks, and the explicit priority request and normal unprivileged controller
+checks passed. The observer launcher exited with status 1 before writing metadata.
+The original preflight discarded its child stderr and did not record the inherited
+nice limit, so the precise cause is not established by this receipt. The failed
+report and skipped workflow steps are retained under
+[`observer-priority-preflight-failed/`](../tests/funding-service/measurements/linux-cpu-2026-09-28/observer-priority-preflight-failed/).
+All nine ordinary checks at `6aa1c14` pass, including all four 305-check R legs.
+
+The old bootstrap assumed that the outer shell's resource ceiling survived sudo.
+[Upstream sudo documents target-user resource-limit initialization, usually via PAM on Linux](https://github.com/sudo-project/sudo/blob/main/docs/sudoers.man.in).
+The corrected bootstrap establishes the same fixed `RLIMIT_NICE=30:30` **after**
+that boundary and before dropping root privileges with `setpriv`. It does not
+change actual workload priority. The next preflight compares the original and
+corrected bootstrap on the same runner, retains inherited limits and full child
+stdout/stderr, and distinguishes a reproduced permission denial from an original
+path that retains permission. Any different error stops the workflow. Only the
+corrected positive/denied-permission checks can allow native work to begin.
+This comparison remains pending; the failed run is not relabelled as a confirmed
+sudo/PAM reset. Local sampler regressions and Python compilation pass; no changed
+Mac runtime path or repeat of its native stress is required.
+
 
 
 

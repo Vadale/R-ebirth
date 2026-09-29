@@ -57,6 +57,7 @@ jobs:
       - name: Verify offline observer priority before any model preparation
         run: |
           sudo -n prlimit --pid "$$" --nice=30:30
+          python3 tests/funding-service/test_priority.py --legacy-probe --work-dir "$RUNNER_TEMP/service-evidence/priority-legacy"
           python3 tests/funding-service/test_priority.py --work-dir "$RUNNER_TEMP/service-evidence/priority"
       - uses: dtolnay/rust-toolchain@stable
       - uses: mozilla-actions/sccache-action@v0.0.10
