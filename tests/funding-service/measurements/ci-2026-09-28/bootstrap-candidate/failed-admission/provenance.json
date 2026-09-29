@@ -1,0 +1,29 @@
+{
+  "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36506421298",
+  "status": "failed",
+  "checks_passed": 305,
+  "cleanup_error": "ordinary frontend stop exceeded frozen bound; ordinary stop exceeded15s",
+  "observed": "Admission frontend status remained ready and owner file survived until harness cleanup killed the process; no stop request artifact. These facts indicate operator stop returned without stopping a live process. Child operator diagnostics did not record identity observations.",
+  "files": {
+    "store/status.json": {
+      "original_sha256": "6ce865dd0dee7db8a5507a5b6f8028c45b0b8521e0c901adc55305a48bf635b4",
+      "stored_file": "store-status.json"
+    },
+    "store/store.lock/owner.json": {
+      "original_sha256": "6c24b1ca794d6d9118dcfad1da65bbad3715869f730577260d50134f6a9c45d2",
+      "stored_file": "store-store.lock-owner.json"
+    },
+    "store/events.jsonl": {
+      "original_sha256": "5511920eb4a21a1142e8f090b401f289fa8a9321240e5cd9a8b7b95d978e2823",
+      "stored_file": "store-events.jsonl"
+    },
+    "frontend.log": {
+      "original_sha256": "e2a232639f687eb789e55e6ddd51bb5cc86e2e3fbe426888e7bd47684f2900a4",
+      "stored_file": "frontend.log"
+    },
+    "rss.csv": {
+      "original_sha256": "4cd656a91dd97adbd1f804da96a5fca146a8255b416f63abbf2fd9d0947353c0",
+      "stored_file": "rss.csv.gz"
+    }
+  }
+}

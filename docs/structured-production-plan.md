@@ -57,7 +57,10 @@ is complete; Linux G7 remains unaccepted. The observer-priority diagnostic compl
 30 minutes without a gap, supporting native validation after its offline permission
 preflight; diagnostic success does not certify a service gate. The first native
 dispatch stopped in that preflight before build/model preparation; a corrected
-permission bootstrap and same-runner comparison precede the next native workload.
+permission bootstrap passed and the native workload is running. A separate Linux
+oldrel CI cleanup failure exposed an exact-timestamp ownership comparison defect;
+its Linux-only correction needs ordinary CI and final-source lifecycle validation
+while the existing long workload continues unchanged.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|

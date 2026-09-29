@@ -145,7 +145,7 @@ class Harness:
             try:
                 service.close()
             except Exception as error:
-                self.report.setdefault('cleanup_errors', []).append(str(error))
+                self.report.setdefault('cleanup_errors', []).append(service.name + ': ' + str(error))
                 self.report['status'] = 'failed'
             metadata = service.directory / 'sampler-process.json'
             if metadata.exists():

@@ -42,6 +42,15 @@ svc_alive <- function(identity) {
     svc_abort("Cannot establish process ownership.", "ownership")
   })
   if (is.null(handle)) return(FALSE)
+  if (identical(unname(Sys.info()[["sysname"]]), "Linux")) {
+    # ps caches a measured boot-clock offset separately in each R process.
+    # Compare the persisted creation-time handle using ps's native identity
+    # semantics, not newly formatted absolute timestamps. Keep the fresh
+    # handle above: a live process whose stat cannot be read is still an error.
+    handle <- ps::ps_handle(identity$pid,
+      time = as.POSIXct(as.numeric(identity$birth), origin = "1970-01-01"))
+    return(svc_running(handle))
+  }
   identical(svc_birth(handle), identity$birth) && svc_running(handle)
 }
 svc_private_dir <- function(path) {

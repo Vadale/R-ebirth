@@ -1,6 +1,6 @@
 # WP12b — Local service implementation and acceptance
 
-Date: 2026-09-29. **Final acceptance pending; Linux offline priority preflight correction.**
+Date: 2026-09-29. **Final acceptance pending; native stress running and Linux ownership correction under validation.**
 D-034 approved; WP12a PR #50 merged at `95066c7`. The
 [frozen contract](service-contract.md) remains binding. Draft
 [PR #51](https://github.com/Vadale/R-ebirth/pull/51) contains the application and
@@ -31,29 +31,32 @@ bounded under the contract.
 
 ## Evidence for the current candidate
 
-The final product correction is commit `a8a6ab3`, with runtime SHA256
+The earlier product correction at `a8a6ab3` has runtime SHA256
 `8e458534ccf171e4fa3ed85dab51743a5c821c47526aa634e116ca20ae973ed3`.
 Parent candidate `721dbd4` passed all nine ordinary PR checks; its runtime digest
 is `e87bce0f36defbcd6ff992abc4b184740a827148a83d232828c3032dfc6cc8f7`.
-The final candidate `30ca035` also passes all nine ordinary PR checks. Each receipt records
+Candidate `30ca035` also passed all nine ordinary PR checks. Each receipt records
 source digests; earlier measurements are not relabelled as final-source runs.
-The narrowly carried-forward G7 scope is explained below.
+The latest Linux ownership correction has runtime SHA256
+`fc539b55cc6b20f0d0af0ce79d4f68716a3b79efaad8adc4c070429e3236b4a0`;
+its ordinary CI and native lifecycle checks remain pending. The conditional
+parent-source G7 carry-forward scope is explained below.
 
 | Gate or prerequisite | Evidence and remaining work |
 |---|---|
 | Exact environment and operator boundaries | All 23 approved pins installed; 11 fresh-process cases pass on Mac and Linux, including changed packages, model/source identity and supervisor argument escaping. No model needed for these checks. |
 | Offline contract consistency | 23 pins, three D2 development inputs, overflow bounds and 11 negative mutations pass. |
 | D2 helper regression | 466 existing process/canonical/identity assertions pass after correcting source-file provenance for nested imports. |
-| G1–G4 HTTP, admission, recovery and persistence | Final candidate passes 305 checks on each of four Mac/Linux R-release/oldrel CI environments, plus nine focused process-inspection regressions per environment. This includes the unchanged 120-second request deadline, concurrent overload, worker/frontend death, rename crash boundaries, ownership/corruption refusal and bounded storage. Local final-source G3 also passes 97 checks. Final CI executes all G1–G4 gates. |
-| G5 native request isolation | Mac Qwen Metal passes 53 checks on the current runtime, including A/B/A, validation/context failure recovery, hard restart and an independent worker baseline. Linux CPU also passes 53 checks on the final product runtime (run 36490558522). |
-| G6 native operating envelope | Final Mac runtime passes 286 checks each for Qwen and Spark: 30 ordinary requests, actual offline OS isolation, worker crash/reload and stop, including the previously failed replacement. Linux CPU final-runtime run 36490558522 also passes all 286 checks. |
-| G7 same-worker memory stress | Mac Metal parent-candidate run passes all 1,000 unique native Qwen requests: same worker, zero infrastructure errors, 1.062 GiB peak RSS, -39.625 MiB tail-minus-initial growth and -83.461 KiB/request post-warmup slope. Linux CPU completed 1,000 requests but failed the continuous-sampling guard; the latest corrected run stopped at 86 completed requests on a 204 ms sampling gap; a 30-minute observer-priority diagnosis completed without gaps and now supports native validation. A separate 1,000-request deterministic HTTP/callr regression passed; it does not substitute for either native gate. |
-| G8 actual service-manager lifecycle | Final Mac runtime passes 27 launchd checks, including actual HTTP readiness, crash/restart, stop, ownership/PID-reuse refusal, occupied-port and changed-config failures with observed restart intervals. Linux final-runtime systemd run 36490558522 passes 24 checks. |
+| G1–G4 HTTP, admission, recovery and persistence | Earlier candidates passed 305 checks in each of four Mac/Linux R-release/oldrel environments, including deadline, overload, death/recovery, persistence and ownership controls. At `74cc156` Linux oldrel passed all assertions but failed cleanup, so its overall result failed. Current-source CI remains required, including 12 Mac/13 Linux process regressions. Earlier local G3 passed 97 checks. |
+| G5 native request isolation | Mac Qwen Metal passes 53 checks on runtime `8e458534`, including A/B/A, validation/context failure recovery, hard restart and an independent worker baseline. Linux CPU also passes 53 checks on that runtime (run 36490558522). Current-source Linux validation remains pending. |
+| G6 native operating envelope | Mac runtime `8e458534` passes 286 checks each for Qwen and Spark: 30 ordinary requests, actual offline OS isolation, worker crash/reload and stop. Linux CPU run 36490558522 also passes all 286 on that runtime. Current-source Linux validation remains pending. |
+| G7 same-worker memory stress | Mac Metal parent-candidate run passes all 1,000 unique native Qwen requests: same worker, zero infrastructure errors, 1.062 GiB peak RSS, -39.625 MiB tail-minus-initial growth and -83.461 KiB/request post-warmup slope. Linux CPU completed 1,000 requests but failed the continuous-sampling guard; run 36490558522 stopped at 86 completed requests on a 204 ms sampling gap; a 30-minute observer-priority diagnosis completed without gaps and supports the active native run 36506438374. A separate 1,000-request deterministic HTTP/callr regression passed; it does not substitute for either native gate. |
+| G8 actual service-manager lifecycle | Mac runtime `8e458534` passes 27 launchd checks, including actual HTTP readiness, crash/restart, stop, ownership/PID-reuse refusal, occupied-port and changed-config failures with observed restart intervals. Linux systemd run 36490558522 passes 24 checks on that runtime. Current-source Linux validation remains pending. |
 | Independent review | Integrated correctness/security review complete with no unresolved material finding. Narrow confirmations cover the zombie-stop lifecycle fix and the live IPC scanner race. |
 
 The model-free reports are retained in
 [`measurements/ci-2026-09-28/final/`](../tests/funding-service/measurements/ci-2026-09-28/final/)
-and the [final R matrix workflow](https://github.com/Vadale/R-ebirth/actions/runs/36463177499).
+and the [earlier R matrix workflow](https://github.com/Vadale/R-ebirth/actions/runs/36463177499).
 The failed Linux native execution is
 [run 36453135678](https://github.com/Vadale/R-ebirth/actions/runs/36453135678).
 Mac receipts and per-request native timings are in
@@ -77,9 +80,68 @@ separately and still requires a successful Linux G7 run.
 ## Failures and retained evidence
 
 
+The native run `36506438374` passed the corrected offline preflight, G5/G6 and
+systemd G8 and reached the 1,000-request G7 step. It continues unchanged on source
+`74cc156`; it must not be cancelled or duplicated while a separate CI issue is
+resolved. Full preflight/native receipts will be collected on completion.
+
+R CI `36506421298` at that commit failed only in the Linux oldrel leg: all 305
+G1–G4 assertions passed, but final cleanup exceeded the unchanged 15-second
+frontend-stop bound. The admission fixture's status stayed ready, its lock owner
+survived and the sampler observed it alive until forced cleanup. No stop request
+was retained and the operator command did not report an error. The stop command's
+identity observations were not recorded, so the precise cause remains inferred.
+The failed overall receipt, passing assertions and bounded process evidence are
+retained in [`bootstrap-candidate/`](../tests/funding-service/measurements/ci-2026-09-28/bootstrap-candidate/).
+The other three R legs and all Rust checks passed; this is not a green CI result.
+
+Inspection found a real cross-process identity defect: `svc_alive()` compared
+freshly formatted absolute creation times with exact six-decimal string equality.
+The pinned [ps 1.9.3 source](https://cran.r-project.org/src/contrib/ps_1.9.3.tar.gz),
+`src/api-linux.c:287–350`, caches a separately measured realtime-minus-monotonic
+boot offset in each R process. Its supported persisted handles verify process
+identity using native clock resolution, not equality of those absolute strings.
+The failed stop is consistent with premature classification of both owned
+processes as absent, but that particular timestamp mismatch is not directly proven.
+
+On Linux the adapter now retains the fresh-handle access check, reconstructs a
+handle from the saved creation time, and delegates identity/liveness to `ps`.
+Keeping the first read matters: supplying a time bypasses the initial stat read,
+so replacing it outright could misclassify an unreadable live process. Unknown
+access still raises the ownership condition. Host, nonce, durable ownership and
+PID-reuse guards remain; no new numeric tolerance is invented. Identity guarantees
+are bounded by the pinned library's native clock resolution. Mac retains its
+existing comparison. Cleanup errors now identify the affected service.
+
+The regression suite includes real persisted identity and wrong-birth checks,
+live read-denial refusal, a separate R reader of a live process's saved identity,
+and a Linux-only 2-microsecond reader-offset fixture using actual `ps` handles.
+That fixture makes the old string comparator reject a handle that `ps` identifies
+as live. Twelve applicable Mac process regressions and nine Python checks pass;
+Linux runs 13 process cases, including the offset fixture, in the next ordinary
+CI. The new runtime SHA256 is `fc539b55cc6b20f0d0af0ce79d4f68716a3b79efaad8adc4c070429e3236b4a0`.
+No core engine, dependency or resource bound changes. Final-source Linux control
+and lifecycle validation remains required; the running G7's original source and
+all failed results must remain explicit before any carry-forward decision.
+
+Focused review confirms that `svc_alive()` participates in startup, ownership,
+recovery and operator controls; the successful steady request/status/RSS path
+does not call it. If the running G7 passes with one worker and epoch, its evidence
+can support that unchanged path only with its original source and harness hashes,
+plus passing current-source Linux G5/G6/G8 and ordinary controls. Mac keeps its
+existing identity branch and accepted parent-source evidence. This is conditional
+carry-forward, not a claim that the latest source ran G7.
+
+An explicit `service_lifecycle_only=true` dispatch mode retains native preparation,
+preflight, G5/G6/G8 and ownership regressions while skipping G7. It writes
+`scope.json` with G7 marked unexecuted and requires separately reviewed G7 evidence;
+individual receipts remain authoritative for outcomes. Full acceptance remains
+the default. No lifecycle-only run has been dispatched while G7 is active.
+
+
 Run `36490558522` confirms the child-discovery correction: the Linux regression
 reproduces the original error, then passes the adapter; G5=53, G6=286 and actual
-systemd G8=24 pass on the final product runtime. All nine ordinary checks at
+systemd G8=24 pass on runtime `8e458534`. All nine ordinary checks at
 `8c57b85` also pass. G7 remains **failed**: a 204 ms sample interval at elapsed
 1,474.733 seconds triggered the unchanged 200 ms guard. The harness stopped after
 86 completed requests (request 87 had been admitted), preserving the partial
@@ -250,7 +312,7 @@ creation-time identity; both delayed-death cases fail against the original sourc
 Independent review found no material issue. Final-source G3 passes 97 checks and
 Qwen G6 passes all 286, including crash/replacement.
 
-The final runtime SHA256 is
+The runtime used for these Mac lifecycle checks has SHA256
 `8e458534ccf171e4fa3ed85dab51743a5c821c47526aa634e116ca20ae973ed3`.
 The only changes from `e87bce0f` are this helper and its use in two existing
 inspection-error branches. Successful status/RSS reads, generation, IPC,
@@ -302,8 +364,10 @@ models; no additional model download is needed. A missing required manager or
 hardware leaves a gate unexecuted and exits nonzero.
 
 All required local Mac checks have passed. WP12b remains unaccepted until the
-corrected Linux G7 run passes and its receipts are collected. All nine
-ordinary checks pass on the final product source. Source inspection, successful startup and a
+corrected Linux G7 run passes and its receipts are collected, final-source Linux
+control/lifecycle validation passes, and all nine ordinary checks pass on the
+final PR commit. The latest candidate requires fresh ordinary CI after the Linux
+ownership correction. Source inspection, successful startup and a
 passing fixture suite do not substitute for them. Operational acceptance does
 not promote extraction quality: D1's negative result and the deferred
 stronger-model comparison remain unchanged. Windows/CUDA and the broader

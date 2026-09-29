@@ -89,6 +89,48 @@ main <- function() {
   }
   handle <- ps::ps_handle(Sys.getpid())
 
+  check('persisted-owner-identity', {
+    owner <- svc_process()
+    stopifnot(svc_alive(owner))
+    stale <- owner; stale$birth <- sprintf('%.6f', as.numeric(owner$birth) - 1)
+    stopifnot(!svc_alive(stale), svc_running(handle))
+  })
+  check('owner-live-read-denial', {
+    local <- product(list(ps_handle = function(pid, time = NULL) {
+      if (is.null(time)) stop('injected live stat denial')
+      ps::ps_handle(pid, time = time)
+    }))
+    ownership_error(local$svc_alive(svc_process()))
+  })
+  check('independent-owner-reader', {
+    owner <- svc_process()
+    observed <- callr::r(function(root, runtime, owner) {
+      source(file.path(root, 'examples', 'funding-service', 'common.R'))
+      source(runtime)
+      stale <- owner; stale$birth <- sprintf('%.6f', as.numeric(owner$birth) - 1)
+      list(alive = svc_alive(owner), stale_alive = svc_alive(stale),
+           recorded_birth = owner$birth, observed_birth = svc_birth(ps::ps_handle(owner$pid)))
+    }, args = list(root, normalizePath(options$runtime), owner), libpath = .libPaths(),
+    system_profile = FALSE, user_profile = FALSE)
+    stopifnot(isTRUE(observed$alive), identical(observed$stale_alive, FALSE))
+    cat(as.character(jsonlite::toJSON(observed, auto_unbox = TRUE)), '\n')
+  })
+  if (identical(unname(Sys.info()[['sysname']]), 'Linux')) check('owner-boot-offset', {
+    owner <- svc_process()
+    # Model the per-R-process CLOCK_REALTIME/CLOCK_MONOTONIC offset in the
+    # pinned ps reader. The real library still checks each handle's identity.
+    fresh <- function(pid, time = NULL) {
+      if (is.null(time)) time <- ps::ps_create_time(ps::ps_handle(pid)) + .000002
+      ps::ps_handle(pid, time = time)
+    }
+    observed <- fresh(owner$pid)
+    stopifnot(ps::ps_is_running(observed), !identical(svc_birth(observed), owner$birth))
+    local <- product(list(ps_handle = fresh))
+    stopifnot(local$svc_alive(owner))
+    stale <- owner; stale$birth <- sprintf('%.6f', as.numeric(owner$birth) - 1)
+    stopifnot(!local$svc_alive(stale))
+  })
+
   check('rss-race', {
     fixture <- delayed_death(); e <- state()
     fixture$code$svc_rss(e)

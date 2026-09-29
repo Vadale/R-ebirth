@@ -170,3 +170,23 @@ neither is service acceptance. The corrected preflight must report `passed` befo
 build/model preparation starts. Both paths retain inherited limits and launcher
 stdout/stderr, including failures. Actual nice values and resource guards stay
 unchanged.
+
+
+`test-process-rss.R` runs 12 applicable process/ownership cases on Mac and 13 on
+Linux in every ordinary R CI leg and native acceptance. The Linux-only fixture
+models separate reader boot-clock offsets using real pinned `ps` handles; exact
+birth-string comparison would reject a still-owned process. The runtime keeps a
+fresh-handle access probe, then checks its persisted creation-time handle through
+`ps`. A separate real R reader verifies live and wrong-birth identities, and a
+live stat-denial fixture protects fail-closed ownership behavior. These checks
+use the library's native identity resolution, not an invented timing tolerance.
+
+For a reviewed final-source lifecycle confirmation, dispatch
+`nightly-model-tolerance.yaml` with `service=true`, `service_lifecycle_only=true`,
+`sampler_diagnostic=false` and `spark=false`. This retains preflight, prepared
+environment checks, ownership regressions and native G5/G6/G8; G7 is skipped.
+`scope.json` records the source commit and explicitly marks G7 unexecuted.
+Individual reports determine actual execution/outcomes. This mode cannot certify
+G7 and requires separately reviewed stress evidence with its original source
+hashes. Default full acceptance still executes G7. Do not duplicate an active
+native run to obtain this confirmation.

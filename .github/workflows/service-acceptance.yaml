@@ -7,9 +7,16 @@ on:
         type: boolean
         default: false
         description: Bounded model-free timing diagnosis only
+      lifecycle_only:
+        type: boolean
+        default: false
+        description: Native lifecycle validation only; G7 remains unexecuted
   workflow_call:
     inputs:
       sampler_diagnostic:
+        type: boolean
+        default: false
+      lifecycle_only:
         type: boolean
         default: false
 permissions: read-all
@@ -118,11 +125,29 @@ jobs:
           --supervisor systemd-user --environment "$RUNNER_TEMP/service-environment"
           --profile linux_qwen --work-dir "$RUNNER_TEMP/service-evidence/supervisor"
       - name: One thousand actual native requests (same worker)
+        if: ${{ !inputs.lifecycle_only }}
         run: |
           sudo -n prlimit --pid "$$" --nice=30:30
           python3 tests/funding-service/accept.py --suite stress \
           --environment "$RUNNER_TEMP/service-environment" --profile linux_qwen \
           --work-dir "$RUNNER_TEMP/service-evidence/stress"
+      - name: Record explicit native validation scope
+        if: always()
+        env:
+          RELM_SERVICE_LIFECYCLE_ONLY: ${{ inputs.lifecycle_only }}
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path(os.environ['RUNNER_TEMP']) / 'service-evidence'
+          path.mkdir(parents=True, exist_ok=True)
+          lifecycle = os.environ['RELM_SERVICE_LIFECYCLE_ONLY'] == 'true'
+          scope = dict(source_commit=os.environ['GITHUB_SHA'], lifecycle_only=lifecycle,
+                       unexecuted_gates=['G7'] if lifecycle else [],
+                       note='Scope only; inspect individual receipts for actual execution and outcomes. '
+                            'Lifecycle-only runs require separate reviewed G7 evidence.')
+          (path / 'scope.json').write_text(json.dumps(scope, indent=2) + '\n')
+          PY
       - name: Preserve actual reports and resource measurements
         if: always()
         uses: actions/upload-artifact@v7
