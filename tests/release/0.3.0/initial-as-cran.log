@@ -1,0 +1,116 @@
+* using log directory ‘/private/tmp/relm-release-0.3.0/check/relm.Rcheck’
+* using R version 4.5.1 (2025-06-13)
+* using platform: aarch64-apple-darwin20
+* R was compiled by
+    Apple clang version 16.0.0 (clang-1600.0.26.6)
+    GNU Fortran (GCC) 14.2.0
+* running under: macOS Tahoe 26.6.2
+* using session charset: UTF-8
+* using option ‘--as-cran’
+* checking for file ‘relm/DESCRIPTION’ ... OK
+* this is package ‘relm’ version ‘0.3.0’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... [3s/22s] NOTE
+Maintainer: ‘Alessandro Vadala <vadale93@gmail.com>’
+
+New submission
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘relm’ can be installed ... [229s/114s] OK
+* used C compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+* used C++ compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+* used SDK: ‘’
+* checking installed package size ... INFO
+  installed size is 16.1Mb
+  sub-directories of 1Mb or more:
+    doc    1.1Mb
+    libs  14.0Mb
+* checking package directory ... OK
+* checking for future file timestamps ... NOTE
+unable to verify current time
+* checking ‘build’ directory ... OK
+* checking DESCRIPTION meta-information ... OK
+* checking top-level files ... WARNING
+A complete check needs the 'checkbashisms' script.
+See section ‘Configure and cleanup’ in the ‘Writing R Extensions’
+manual.
+Non-standard file/directory found at top level:
+  ‘_pkgdown.yml’
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking code files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking whether startup messages can be suppressed ... OK
+* checking use of S3 registration ... OK
+* checking dependencies in R code ... OK
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... OK
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... OK
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... OK
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... OK
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking line endings in shell scripts ... OK
+* checking line endings in C/C++/Fortran sources/headers ... OK
+* checking line endings in Makefiles ... OK
+* checking compilation flags in Makevars ... OK
+* checking for GNU extensions in Makefiles ... OK
+* checking for portable use of $(BLAS_LIBS) and $(LAPACK_LIBS) ... OK
+* checking use of PKG_*FLAGS in Makefiles ... OK
+* checking use of SHLIB_OPENMP_*FLAGS in Makefiles ... OK
+* checking pragmas in C/C++ headers and code ... WARNING
+File which contains non-portable pragma(s)
+  ‘src/llama.cpp/vendor/miniaudio/miniaudio.h’
+Files which contain pragma(s) suppressing diagnostics:
+  ‘src/llama.cpp/ggml/src/ggml-cpu/amx/mmq.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/arch/arm/repack.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/arch/riscv/repack.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/arch/x86/repack.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/llamafile/sgemm.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/repack.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/spacemit/ime.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/spacemit/ime1_kernels.cpp’
+  ‘src/llama.cpp/ggml/src/ggml-cpu/spacemit/repack.cpp’
+  ‘src/llama.cpp/src/llama-sampler.cpp’
+  ‘src/llama.cpp/vendor/miniaudio/miniaudio.h’
+* checking compilation flags used ... OK
+* checking compiled code ... OK
+* checking Rust compilation ... WARNING
+  Downloads Rust crates
+* checking installed files from ‘inst/doc’ ... OK
+* checking files in ‘vignettes’ ... OK
+* checking examples ... OK
+* checking for unstated dependencies in ‘tests’ ... OK
+* checking tests ... [18s/27s] OK
+  Running ‘testthat.R’ [18s/27s]
+* checking for unstated dependencies in vignettes ... OK
+* checking package vignettes ... OK
+* checking re-building of vignette outputs ... [12s/13s] OK
+* checking PDF version of manual ... OK
+* checking HTML version of manual ... NOTE
+Skipping checking HTML validation: 'tidy' doesn't look like recent enough HTML Tidy.
+Please obtain a recent version of HTML Tidy by downloading a binary
+release or compiling the source code from <https://www.html-tidy.org/>.
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 3 WARNINGs, 3 NOTEs

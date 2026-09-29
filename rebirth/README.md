@@ -7,231 +7,177 @@
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](https://github.com/Vadale/R-ebirth/blob/main/LICENSE.md)
 <!-- badges: end -->
 
-**Local large language models as base-R objects.**
+**Local language models as base-R objects.**
 
-`relm` runs open-weight LLMs on your own machine — no API keys, no Python — and
-hands you the results as plain `data.frame`s and `matrix`es in ordinary base-R
-idiom. It embeds a vendored, patched
-[`llama.cpp`](https://github.com/ggml-org/llama.cpp) in a Rust native core, so the
-heavy compute runs natively while your R session gets tidy objects it already
-knows how to plot, model, and join.
+relm runs open-weight models on your machine with no Python, model server or
+API key. Generate text and constrained JSON, embed documents, and inspect a
+model's internal values using ordinary R vectors, data frames and matrices.
+Its Rust core embeds a pinned, patched llama.cpp; R remains your working
+environment for statistics, visualization and reproducible research.
 
-What sets it apart from a plain inference binding is that it opens the model up.
-Alongside generation and embeddings, `relm` exposes the model's **internals** as
-first-class, tidy data — you can trace activations layer by layer, steer the
-residual stream along a direction you found, and ablate individual units to see
-what they were doing. This is mechanistic interpretability ("AI neuroscience")
-from R, where your statistics and plotting live.
+**Version 0.3.0** adds structured generation, native Spark support, statistical
+probes, and separate batch/service examples. See the
+[release notes](https://github.com/Vadale/R-ebirth/blob/main/rebirth/NEWS.md#relm-030).
+Binary availability follows r-universe builds; check `packageVersion("relm")`
+after installation.
 
 ## Installation
 
-Prebuilt binaries (macOS, Linux) are published on
-[r-universe](https://vadale.r-universe.dev/relm) — **no Rust or C++ toolchain
-required**:
+Use [r-universe](https://vadale.r-universe.dev/relm) for macOS and Linux builds:
 
 ```r
 install.packages(
   "relm",
   repos = c("https://vadale.r-universe.dev", getOption("repos"))
 )
+packageVersion("relm")
 ```
 
-**From source (GitHub).** With a Rust toolchain ([`rustup`](https://rustup.rs)),
-CMake (>= 3.28), and a C compiler, you can install straight from the repo — this
-works today, before any release is tagged:
+r-universe tracks `main`; check the version before using the 0.3.0 features.
+Prebuilt binaries need no native toolchain. Source installation needs R >= 4.5,
+Rust >= 1.85.0, CMake >= 3.28 and a C/C++ compiler. See the
+[installation guide](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)
+for source builds and troubleshooting. Windows/CUDA acceptance is still pending.
 
-```r
-remotes::install_github("Vadale/R-ebirth", subdir = "rebirth")
-# (pak::pak("Vadale/R-ebirth/rebirth") also works)
-```
-
-`relm` needs R (>= 4.5) and depends only on
-[`nanoarrow`](https://arrow.apache.org/nanoarrow/) (for reading spilled traces);
-the demo helpers use `glmnet`, `uwot`, and `dbscan` (optional `Suggests`). See
-**[docs/getting-started.md](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)**
-for a first run, the demos, and troubleshooting.
+The only required R dependency is `nanoarrow`, which reads spilled traces.
+`glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.
+Application examples prepare their own separate dependency environments.
 
 ## Quickstart
 
-Download a small, checksum-verified model and talk to it. The pinned aliases are
-Apache-2.0 licensed and fetched over HTTPS into a per-user cache, verified by
-SHA256 (a mismatch is deleted, never used):
+The small Qwen model below is approximately 675 MB. `llm_download()` verifies
+the pinned Apache-2.0 model by SHA256 and reuses a matching cached copy.
 
 ```r
 library(relm)
 
-path <- llm_download("qwen2.5-0.5b-instruct-q8_0")  # ~675 MB, verified
+path <- llm_download("qwen2.5-0.5b-instruct-q8_0")
 m <- llm(path)
-m                                            # a one-line summary of the loaded model
 
-# A raw completion (chat = FALSE) continues the prompt; the return is the
-# continuation only, never the prompt echoed back:
-llm_generate(m, "The capital of France is", chat = FALSE, max_tokens = 8, temperature = 0)
-#> [1] " Paris."
+llm_generate(m, "The capital of France is", chat = FALSE,
+             max_tokens = 8, temperature = 0)
 
-# The default (chat = TRUE) applies the model's own chat template instead:
-llm_generate(m, "Name three primary colors.", chat = TRUE, max_tokens = 24)
+# Embeddings are numerical representations of text: one matrix row per input.
+emb <- llm_embed(m, c("cats", "kittens", "quarterly revenue"))
+tcrossprod(emb)  # cosine similarities between normalized rows
+
+# Activations are the numerical values inside the model at a selected layer.
+tr <- llm_trace(m, "The movie was wonderful.",
+                layers = 12, positions = "last", components = "residual")
+as.matrix(tr, layer = 12, component = "residual")
 ```
 
-Everything returns base-R objects. Tokenize, read the next-token distribution, or
-embed a character vector into a matrix:
+`llm_tokens()` also converts text to token IDs, and `llm_logits()` returns the
+next-token distribution as a data frame. Capture filters keep traces small;
+traces over the configured budget spill to disk and are read a slice at a time.
+The full 4B-model spill acceptance on a 16 GB Mac remains an open hardware check.
+
+## Structured output in 0.3.0
+
+Pass JSON Schema text to the existing generation function. This example reuses
+the model loaded above and returns a JSON string:
 
 ```r
-llm_tokens(m, "café")                       # named integer vector, 1-based ids
-llm_logits(m, "The opposite of hot is", top = 5)   # data.frame: prompt_id, rank, token_id, token, logit, prob
-emb <- llm_embed(m, c("cats", "kittens", "quarterly revenue"))  # 3-row matrix
-tcrossprod(emb)                              # cosine similarities (rows are unit vectors)
+schema <- '{
+  "type": "object",
+  "properties": {
+    "sentiment": {"type": "string", "enum": ["positive", "negative"]}
+  },
+  "required": ["sentiment"],
+  "additionalProperties": false
+}'
+llm_generate(m, 'Classify the sentiment of "I loved this film." Return JSON.',
+             schema = schema, max_tokens = 64, temperature = 0)
+close(m)
 ```
 
-## Look inside the model
+Successful calls return complete, validated JSON. Unsupported schemas fail
+before generation; incomplete output raises a classed R condition. The supported
+profile includes closed objects, bounded strings and integers, string enums,
+booleans and null. Arrays, general JSON Schema, image inputs and nonempty stop
+sequences are outside this mode. Schema validation establishes format, not
+factual correctness. Ordinary text and image generation retain `schema = NULL`.
 
-The interpretability toolkit is the reason `relm` exists. Capture activations
-as a tidy trace, find a direction, then intervene — all in base R:
+Spark-X2.5-4B is also supported natively through llama.cpp b10828. Its optional
+`spark-x2.5-4b-q8_0` alias downloads the official 4.38 GB GGUF. Constrained chat
+uses Spark's official non-thinking opener. **Spark activation tracing is
+unsupported** until an independent numerical reference exists.
 
-```r
-# 1. TRACE: capture the residual stream at every layer over the prompt's last token.
-tr <- llm_trace(m, "The movie was absolutely wonderful.", positions = "last")
-tr                                            # a relm_trace data.frame
-as.matrix(tr, layer = 12, component = "residual")   # one slice as a numeric matrix
+## Investigate model behavior
 
-# 2. STEER: add a direction to the residual stream at a layer (returns a NEW handle;
-#    the original m is untouched, so removing the effect is just using m again).
-#    `joy_vec` is a direction you extracted from a trace -- see the anatomy-lab demo.
-m_happy <- llm_steer(m, layer = 12, direction = joy_vec, coef = 6)
-llm_generate(m_happy, "I walked into the office and", max_tokens = 20)
+`llm_probe()` fits binary ridge models to activation traces using a formula with
+`activations()`. A probe asks how readily a label can be predicted from internal
+model values. Explicit source groups keep related prompts together during
+cross-validation; preprocessing and layer/regularization selection use development
+data only. Reserve `test_groups` before analysis for held-out evaluation and
+conditional group-bootstrap intervals. Without a holdout, results are labelled
+exploratory and carry no inferential interval.
 
-# 3. ABLATE: force chosen units to a value and watch what breaks.
-m_lesion <- llm_ablate(m, layer = 12, neurons = c(41, 220, 512), value = 0)
-```
+Use `summary()`, `plot()` and `predict()` on the fitted probe. The
+[anatomy-lab vignette](https://github.com/Vadale/R-ebirth/blob/main/rebirth/vignettes/anatomy-lab.qmd)
+explains grouped evaluation and saved-fit prediction. The complete
+[probe evaluation script](https://github.com/Vadale/R-ebirth/blob/main/tests/demos/demo-probe-evaluation.R)
+runs a paired-source example with paired-label and simple-feature controls.
+Predictive decodability does not establish causal use.
 
-Interventions **compose**, are **order-independent**, and are **exactly
-reversible** (each derived handle is a fresh context over the same read-only
-weights). If a model's architecture can't support an intervention faithfully,
-`relm` refuses with a classed error rather than silently doing nothing.
+For interventions, `llm_steer()` adds a chosen direction to the residual stream,
+the values passed between model layers. `llm_ablate()` fixes selected units to a
+value to investigate their effect. Both return a fresh model context over shared
+weights; the original handle remains available for an exact reversal. A runtime
+check refuses an intervention it cannot verify rather than silently doing nothing.
+These are instruments to audit and investigate behavior, not guarantees of safety
+or bias removal.
 
-## Now with eyes — ask about an image
+## Images and worked demos
 
-Since v0.2.0, `relm` runs **vision-language models**: load a model together
-with its companion **projector** (the `mmproj-*.gguf` published alongside a
-VLM — the small network that translates images into the space the language
-model reads), and `llm_generate()` and `llm_embed()` both take an `images`
-argument. The pinned default pair is Apache-2.0 and checksum-verified:
+Since 0.2.0, vision-language models accept JPEG, PNG and BMP inputs through
+`llm_generate(images = ...)` and `llm_embed(images = ...)`. Load the model with
+its companion `llm(projector = ...)`: the projector translates images into
+values the language model can read. Interpretability of the vision encoder itself
+is outside the current release.
 
-```r
-model  <- llm_download("qwen2-vl-2b-instruct-q4_k_m")     # ~1 GB, verified
-mmproj <- llm_download("qwen2-vl-2b-instruct-mmproj-f16") # ~1.3 GB, its projector
-v <- llm(model, projector = mmproj)                       # projector => image input
+Three vignettes provide complete workflows with pinned Apache-2.0 models:
 
-# Draw a test image with base graphics (any JPEG, PNG, or BMP file works):
-png(img <- tempfile(fileext = ".png"), width = 224, height = 224)
-par(mar = c(0, 0, 0, 0)); plot.new()
-rect(0.3, 0.3, 0.7, 0.7, col = "red", border = NA)
-dev.off()
+- **The anatomy lab:** activation traces, statistical probes and interventions.
+  Open `vignette("anatomy-lab", package = "relm")`.
+- **Topic modelling without Python:** embeddings, UMAP, HDBSCAN and model-generated
+  cluster names. Open `vignette("topics-without-python", package = "relm")`.
+- **Seeing machines:** generate test images, ask about them and compare image/text
+  embeddings. Open `vignette("vision", package = "relm")`.
 
-llm_generate(v, "What color is the square?", images = img, temperature = 0)
-#> [1] "The square is red."
+![A topic map with eight automatically named clusters](man/figures/topic-map.png)
 
-llm_embed(v, "", images = img)   # embed the image alone: a 1-row matrix
-```
+*Recorded Demo B output on 500 abstracts. The figure illustrates this corpus and
+model run; it is not a general clustering-quality benchmark.*
 
-Exactly three image formats are accepted — **JPEG, PNG, BMP** — checked on
-the file bytes before any decoding, with pre-decode size caps
-(`?llm_generate` has the details). Everything else about the API is
-unchanged; text-only calls behave byte-for-byte as before. The full walk-through
-is `vignette("vision", "relm")`.
+## From an R session to a repeatable application
 
-![Probe AUC per transformer layer, rising to 1.00 by layer 11](man/figures/anatomy-lab.png)
+The repository includes two application templates, separate from the core API:
 
-*Historical exploratory output from `run_demo_A()` on Qwen2.5-1.5B. These selected
-CV scores and bootstrap bands are not independent performance estimates or
-selection-adjusted intervals.*
+- [Restartable funding extraction](https://github.com/Vadale/R-ebirth/blob/main/examples/funding-extraction/README.md):
+  explicit setup, offline execution, immutable results and verified resume.
+- [Local funding service](https://github.com/Vadale/R-ebirth/blob/main/examples/funding-service/README.md):
+  one loopback HTTP frontend, one persistent model worker, one active request,
+  no job queue, durable tickets and recovery commands.
 
-The development version (`0.2.0.9000`) adds `llm_probe()` with explicit source
-groups and an optional untouched holdout. With labels, group IDs and reserved
-groups prepared before analysis, the anatomy-lab workflow becomes:
+Their Mac/Linux operational acceptance includes interruption recovery and
+1,000 same-worker service requests. Exact source provenance, limits and prior
+failures remain in the
+[service report](https://github.com/Vadale/R-ebirth/blob/main/docs/service-implementation.md).
+Operational reliability does not establish extraction accuracy: the frozen D1
+pilot had 10/10 schema-valid, 2/10 task-valid and 0/10 fully grounded records,
+failing all four promotion gates. See the
+[quality evaluation](https://github.com/Vadale/R-ebirth/blob/main/docs/d1-extraction-evaluation.md).
 
-```r
-tr <- llm_trace(m, prompts, layers = 6:18, positions = "last")
-fit <- llm_probe(labels ~ activations(layer = 6:18), tr,
-                 groups = source_ids, test_groups = reserved_groups, seed = 42)
-summary(fit)
-plot(fit)
-```
+## Validation and license
 
-The optional `glmnet` package fits binary ridge probes. Scaling and parameter/layer
-selection use development data only; reported intervals resample held-out groups
-conditional on the frozen fits. Without `test_groups`, scores remain exploratory
-and no interval is reported. The vignette explains support requirements, controls
-and prediction with saved fits. This API is not in the released v0.2.0 binary.
+The [validation ledger](https://github.com/Vadale/R-ebirth/blob/main/docs/validation-status.md)
+distinguishes independent numerical references, regression checks and open
+hardware/research gates. The
+[architecture](https://github.com/Vadale/R-ebirth/blob/main/ARCHITECTURE.md) and
+[decisions](https://github.com/Vadale/R-ebirth/blob/main/DECISIONS.md) explain the
+native engine and its boundaries.
 
-## Three worked demos
-
-All ship as runnable vignettes and reproduce end-to-end on Apache-2.0 default
-models — no gated downloads, no Python.
-
-- **The anatomy lab** — `vignette("anatomy-lab", "relm")`. Trace a sentiment
-  contrast set, fit one cross-validated probe per layer, and plot *where sentiment
-  becomes linearly readable* against depth; then steer along that direction and
-  confirm the effect on held-out prompts.
-
-- **Topic modelling without Python** — `vignette("topics-without-python",
-  "relm")`. Embed a corpus of abstracts with `llm_embed()`, lay it out with
-  `uwot::umap()`, cluster with `dbscan::hdbscan()`, name each cluster with
-  `llm_generate()`, and draw one labelled map — a BERTopic-class pipeline, fully
-  local. A small sample corpus ships with the package, so it runs out of the box:
-
-  ```r
-  install.packages(c("uwot", "dbscan"))       # one-time (Suggests)
-  model <- llm_download("qwen2.5-1.5b-instruct-q4_k_m")   # demo default, Apache-2.0
-  # Follow the vignette, or source tests/demos/demo-B-topics.R from the repo and:
-  #   run_demo_B(model_path = model)
-  ```
-
-  ![UMAP topic map with eight automatically named clusters](man/figures/topic-map.png)
-
-  *Real `run_demo_B()` output on 500 abstracts: eight well-separated topics, each
-  named by the model itself — a BERTopic-class pipeline, fully local, no Python.*
-
-- **Seeing machines** — `vignette("vision", "relm")`. Download the pinned
-  vision pair, draw a test image with base graphics, ask the model about it,
-  and run an image-vs-text similarity check with multimodal embeddings —
-  fully self-contained (the vignette draws its own images).
-
-## What relm is — and is not
-
-- **It runs on stock R.** No forked interpreter; `relm` is an ordinary package.
-  The differentiator is how readable and integrated interpretability becomes when
-  it lives next to your statistics — not a claim that any of it is impossible
-  elsewhere.
-- **Steering and ablation are instruments, not fixes.** The honest framing is
-  always to *audit, investigate, quantify, and localize* model behavior. `relm`
-  never claims to remove bias or make a model safe.
-- **Text and image input, since v0.2.0.** A vision-language model loaded with
-  its projector answers questions about images and embeds them (JPEG, PNG,
-  BMP). The *interpretability* toolkit still operates on the language model's
-  layers only — tracing, steering, or ablating inside the vision tower is
-  **not** part of this release.
-- **Reproducible by construction.** Pinned models are checksum-verified; greedy
-  generation is deterministic; numerical features are validated value-for-value
-  against independent references — and where no independent oracle exists for a
-  composed value (the pooled multimodal embedding), its parts are validated
-  independently and the composition is pinned against regression, stated as such
-  in the golden tests.
-
-## How it works
-
-`relm`'s Rust core (`rebirth-ffi` + `rebirth-llm`) embeds a pinned, patched
-`llama.cpp`. Activation observation uses the engine's own scheduler callback (no
-patch); steering uses its native control-vector path; ablation is the project's one
-vendored graph patch. Traces too large for memory spill to Arrow-IPC files and load
-lazily. The full design is in
-[`ARCHITECTURE.md`](https://github.com/Vadale/R-ebirth/blob/main/ARCHITECTURE.md);
-decisions are logged in
-[`DECISIONS.md`](https://github.com/Vadale/R-ebirth/blob/main/DECISIONS.md).
-
-## License
-
-Dual-licensed **MIT OR Apache-2.0** (your choice). The vendored `llama.cpp` is MIT
-(see `NOTICE`). The name *relm* is protected: modified redistributions must
-rename — see
-[`TRADEMARK.md`](https://github.com/Vadale/R-ebirth/blob/main/TRADEMARK.md).
+Original code is **MIT OR Apache-2.0**. Vendored llama.cpp is MIT. Modified
+redistributions must rename under the
+[trademark policy](https://github.com/Vadale/R-ebirth/blob/main/TRADEMARK.md).

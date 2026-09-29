@@ -1,0 +1,69 @@
+{
+  "status": "completed",
+  "pid": 27823,
+  "stages": [
+    {
+      "name": "build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "/private/tmp/relm-release-0.3.0/package-final/relm"
+      ],
+      "status": "passed",
+      "started_at": 1790666441.439574,
+      "exit_code": 0,
+      "finished_at": 1790666443.8785012
+    },
+    {
+      "name": "check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--as-cran",
+        "--no-install",
+        "--library=/private/tmp/relm-release-0.3.0/packaging-corrected/check/relm.Rcheck",
+        "--output=/private/tmp/relm-release-0.3.0/package-final/check",
+        "/private/tmp/relm-release-0.3.0/package-final/relm_0.3.0.tar.gz"
+      ],
+      "status": "passed",
+      "started_at": 1790666443.965555,
+      "exit_code": 0,
+      "finished_at": 1790666529.272327
+    }
+  ],
+  "started_at": 1790666441.343133,
+  "scope": "Packaging-only rebuild with existing built vignettes; no-install check reuses corrected full-check library. Rust installation warning remains recorded in corrected-as-cran.log.",
+  "stage": "check",
+  "source_tarball_sha256": "854b802ae1a47b030e6c5125cae8d13afbd954f2a4447c704b0ad831535ae5de",
+  "comparison": {
+    "parent_tarball_sha256": "bddf546c4476142e5f16c4ac88c5baa38124f5848980f923e03f19c34e99341d",
+    "added": [],
+    "removed": [
+      "relm/vignettes/.quarto/_freeze/anatomy-lab/execute-results/html.json",
+      "relm/vignettes/.quarto/_freeze/anatomy-lab/figure-html/decodability-vs-causality-1.png",
+      "relm/vignettes/.quarto/_freeze/anatomy-lab/figure-html/money-plot-1.png",
+      "relm/vignettes/.quarto/_freeze/topics-without-python/execute-results/html.json",
+      "relm/vignettes/.quarto/_freeze/topics-without-python/figure-html/cluster-map-1.png",
+      "relm/vignettes/.quarto/_freeze/topics-without-python/figure-html/structure-1.png",
+      "relm/vignettes/.quarto/_freeze/vision/execute-results/html.json",
+      "relm/vignettes/.quarto/_freeze/vision/figure-html/draw-cat-1.png",
+      "relm/vignettes/.quarto/_freeze/vision/figure-html/draw-square-1.png",
+      "relm/vignettes/.quarto/project-cache/deno-kv-file",
+      "relm/vignettes/.quarto/xref/1e780db2",
+      "relm/vignettes/.quarto/xref/1f97e680",
+      "relm/vignettes/.quarto/xref/INDEX",
+      "relm/vignettes/.quarto/xref/a988c538"
+    ],
+    "changed": [
+      "relm/DESCRIPTION"
+    ],
+    "all_R_native_test_and_example_payloads_unchanged": true,
+    "file_manifest_sha256": "cf15da8b99ffc070bd4573502ee0974bfbf03502df1c1e02a6468536bca2f13e",
+    "description_change": "Packaged timestamp only"
+  },
+  "acceptance": "Review warnings/notes; no-install is not a new native installation or clean CRAN claim.",
+  "finished_at": 1790666529.272747
+}

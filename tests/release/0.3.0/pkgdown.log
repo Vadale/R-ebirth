@@ -1,0 +1,155 @@
+── Initialising site ───────────────────────────────────────────────────────────
+Copying <pkgdown>/BS5/assets/katex-auto.js to katex-auto.js
+Copying <pkgdown>/BS5/assets/lightswitch.js to lightswitch.js
+Copying <pkgdown>/BS5/assets/link.svg to link.svg
+Copying <pkgdown>/BS5/assets/pkgdown.js to pkgdown.js
+Updating deps/bootstrap-5.3.1/bootstrap.bundle.min.js
+Updating deps/bootstrap-5.3.1/bootstrap.bundle.min.js.map
+Updating deps/bootstrap-5.3.1/bootstrap.min.css
+Updating deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js
+Updating deps/clipboard.js-2.0.11/clipboard.min.js
+Updating deps/font-awesome-6.5.2/css/all.css
+Updating deps/font-awesome-6.5.2/css/all.min.css
+Updating deps/font-awesome-6.5.2/css/v4-shims.css
+Updating deps/font-awesome-6.5.2/css/v4-shims.min.css
+Updating deps/font-awesome-6.5.2/webfonts/fa-brands-400.ttf
+Updating deps/font-awesome-6.5.2/webfonts/fa-brands-400.woff2
+Updating deps/font-awesome-6.5.2/webfonts/fa-regular-400.ttf
+Updating deps/font-awesome-6.5.2/webfonts/fa-regular-400.woff2
+Updating deps/font-awesome-6.5.2/webfonts/fa-solid-900.ttf
+Updating deps/font-awesome-6.5.2/webfonts/fa-solid-900.woff2
+Updating deps/font-awesome-6.5.2/webfonts/fa-v4compatibility.ttf
+Updating deps/font-awesome-6.5.2/webfonts/fa-v4compatibility.woff2
+Updating deps/headroom-0.11.0/headroom.min.js
+Updating deps/headroom-0.11.0/jQuery.headroom.min.js
+Updating deps/jquery-3.6.0/jquery-3.6.0.js
+Updating deps/jquery-3.6.0/jquery-3.6.0.min.js
+Updating deps/jquery-3.6.0/jquery-3.6.0.min.map
+Updating deps/search-1.0.0/autocomplete.jquery.min.js
+Updating deps/search-1.0.0/fuse.min.js
+Updating deps/search-1.0.0/mark.min.js
+── Building pkgdown site for package relm ──────────────────────────────────────
+Reading from: /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth
+Writing to: /private/tmp/relm-release-0.3.0/packaging-corrected/site
+── Sitrep ──────────────────────────────────────────────────────────────────────
+✖ URLs not ok.
+  In DESCRIPTION, URL is missing package url
+  (https://vadale.r-universe.dev/relm).
+  See details in `vignette(pkgdown::metadata)`.
+✔ Favicons ok.
+✔ Open graph metadata ok.
+✔ Articles metadata ok.
+✔ Reference metadata ok.
+── Initialising site ───────────────────────────────────────────────────────────
+── Building home ───────────────────────────────────────────────────────────────
+Writing `authors.html`
+Reading LICENSE.md
+Writing `LICENSE.html`
+Writing `LICENSE-text.html`
+Reading README.md
+Writing `index.html`
+Writing `404.html`
+── Building function reference ─────────────────────────────────────────────────
+Writing `reference/index.html`
+Copying man/figures/anatomy-lab.png to reference/figures/anatomy-lab.png
+Copying man/figures/topic-map.png to reference/figures/topic-map.png
+Reading man/activations.Rd
+Writing `reference/activations.html`
+Reading man/as.matrix.relm_trace.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Writing `reference/as.matrix.relm_trace.html`
+Reading man/close.llm.Rd
+Writing `reference/close.llm.html`
+Reading man/llm.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_VLM\")) &&
+nzchar(Sys.getenv(\"RELM_TEST_MMPROJ_VLM\"))" is "FALSE"
+Writing `reference/llm.html`
+Reading man/llm_ablate.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Writing `reference/llm_ablate.html`
+Reading man/llm_download.Rd
+Writing `reference/llm_download.html`
+Reading man/llm_embed.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_VLM\")) &&
+nzchar(Sys.getenv(\"RELM_TEST_MMPROJ_VLM\"))" is "FALSE"
+Writing `reference/llm_embed.html`
+Reading man/llm_generate.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_VLM\")) &&
+nzchar(Sys.getenv(\"RELM_TEST_MMPROJ_VLM\"))" is "FALSE"
+Writing `reference/llm_generate.html`
+Reading man/llm_logits.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Writing `reference/llm_logits.html`
+Reading man/llm_probe.Rd
+Writing `reference/llm_probe.html`
+Reading man/llm_steer.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Writing `reference/llm_steer.html`
+Reading man/llm_tokens.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Writing `reference/llm_tokens.html`
+Reading man/llm_trace.Rd
+Warning: @examplesIf condition "nzchar(Sys.getenv(\"RELM_TEST_MODEL_QWEN\"))" is "FALSE"
+Writing `reference/llm_trace.html`
+Reading man/predict.llm_probe.Rd
+Writing `reference/predict.llm_probe.html`
+Reading man/probe-methods.Rd
+Writing `reference/probe-methods.html`
+Reading man/summary.llm.Rd
+Writing `reference/summary.llm.html`
+── Building articles ───────────────────────────────────────────────────────────
+Writing `articles/index.html`
+Reading vignettes/anatomy-lab.qmd
+Reading vignettes/topics-without-python.qmd
+Reading vignettes/vision.qmd
+Running `quarto render`
+Writing `articles/anatomy-lab.html`
+Writing `articles/topics-without-python.html`
+Writing `articles/vision.html`
+Copying articles/anatomy-lab_files/figure-html/decodability-vs-causality-1.png
+Copying articles/anatomy-lab_files/figure-html/money-plot-1.png
+Copying articles/anatomy-lab_files/libs/quarto-html/light-border.css
+Copying articles/anatomy-lab_files/libs/quarto-html/popper.min.js
+Copying articles/anatomy-lab_files/libs/quarto-html/tippy.css
+Copying articles/anatomy-lab_files/libs/quarto-html/tippy.umd.min.js
+Copying articles/topics-without-python_files/figure-html/cluster-map-1.png
+Copying articles/topics-without-python_files/figure-html/structure-1.png
+Copying articles/topics-without-python_files/libs/quarto-html/light-border.css
+Copying articles/topics-without-python_files/libs/quarto-html/popper.min.js
+Copying articles/topics-without-python_files/libs/quarto-html/tippy.css
+Copying articles/topics-without-python_files/libs/quarto-html/tippy.umd.min.js
+Copying articles/vision_files/figure-html/draw-cat-1.png
+Copying articles/vision_files/figure-html/draw-square-1.png
+Copying articles/vision_files/libs/quarto-html/light-border.css
+Copying articles/vision_files/libs/quarto-html/popper.min.js
+Copying articles/vision_files/libs/quarto-html/tippy.css
+Copying articles/vision_files/libs/quarto-html/tippy.umd.min.js
+── Building news ───────────────────────────────────────────────────────────────
+Writing `news/index.html`
+── Building sitemap ────────────────────────────────────────────────────────────
+Writing `sitemap.xml`
+── Building docs for llms ──────────────────────────────────────────────────────
+── Building redirects ──────────────────────────────────────────────────────────
+Adding redirect from reference/plot.llm_probe.html to
+reference/probe-methods.html.
+Adding redirect from reference/print.llm.html to reference/llm.html.
+Adding redirect from reference/print.llm_probe.html to
+reference/probe-methods.html.
+Adding redirect from reference/print.relm_trace.html to
+reference/llm_trace.html.
+Adding redirect from reference/print.summary.llm.html to
+reference/summary.llm.html.
+Adding redirect from reference/print.summary.llm_probe.html to
+reference/probe-methods.html.
+Adding redirect from reference/print.summary.relm_trace.html to
+reference/llm_trace.html.
+Adding redirect from reference/summary.llm_probe.html to
+reference/probe-methods.html.
+Adding redirect from reference/summary.relm_trace.html to
+reference/llm_trace.html.
+── Building search index ───────────────────────────────────────────────────────
+── Checking for problems ───────────────────────────────────────────────────────
+── Finished building pkgdown site for package relm ─────────────────────────────

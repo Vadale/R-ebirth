@@ -13,6 +13,8 @@
 /*.tar.gz
 /*.tgz
 *.Rcheck/
+/rebirth/vignettes/.quarto/
+/rebirth/vignettes/.gitignore
 
 # --- Rust ---
 target/

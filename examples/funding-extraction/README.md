@@ -14,8 +14,10 @@ remains unchanged; review extracted values before using them.
 ## Prepare once
 
 Run commands from the repository root on macOS or Linux. Start with R >= 4.5
-and an installed **relm 0.2.0.9000** build from this checkout, including nanoarrow.
-The released relm 0.2.0 predates constrained generation and is insufficient.
+and an installed **relm 0.3.0** build from this checkout, including nanoarrow.
+relm 0.2.0 predates constrained generation and is insufficient. Prepare a new
+environment for 0.3.0; existing development snapshots retain their original
+package/source identities and must not be relabelled.
 The normal [source installation](../../docs/getting-started.md) applies; this recipe does not
 install a compiler, R, or the initial relm build for you.
 

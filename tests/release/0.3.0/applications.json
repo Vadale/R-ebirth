@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "pid": 5621,
+  "stages": [
+    {
+      "name": "install-service-binary",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--library=/private/tmp/relm-release-0.3.0/service-library",
+        "/private/tmp/relm-release-0.3.0/relm_0.3.0.tgz"
+      ],
+      "started_at": 1790665481.238608,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790665481.5626712
+    },
+    {
+      "name": "batch-version-boundary",
+      "command": [
+        "python3",
+        "tests/funding-extraction/test_restart.py",
+        "--relm-library",
+        "/private/tmp/relm-release-0.3.0/service-library",
+        "--work-dir",
+        "/private/tmp/relm-release-0.3.0/batch-acceptance"
+      ],
+      "started_at": 1790665481.5630112,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790665496.773993
+    },
+    {
+      "name": "service-version-boundary",
+      "command": [
+        "python3",
+        "tests/funding-service/test_environment.py",
+        "--source-library",
+        "/private/tmp/relm-release-0.3.0/service-library",
+        "--model",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+        "--model-alias",
+        "qwen2.5-0.5b-instruct-q8_0",
+        "--backend",
+        "metal",
+        "--work-dir",
+        "/private/tmp/relm-release-0.3.0/service-environment-acceptance"
+      ],
+      "started_at": 1790665496.7743459,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790665508.412978
+    }
+  ],
+  "started_at": 1790665480.8599,
+  "stage": "service-version-boundary",
+  "finished_at": 1790665508.413548
+}

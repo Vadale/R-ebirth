@@ -12,7 +12,7 @@ python3 tests/funding-extraction/test_restart.py \
   --relm-library /absolute/path/to/installed/library
 ```
 
-The library must provide relm 0.2.0.9000; jsonlite 2.0.0 and nanoarrow must also be
+The library must provide relm 0.3.0; jsonlite 2.0.0 and nanoarrow must also be
 available in that library or R's ordinary library paths. The harness invokes the
 real setup CLI to snapshot these packages and reference its own temporary copy
 of the tiny in-repository synthetic GGUF, with an explicit independently computed

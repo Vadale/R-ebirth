@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-28 for integrated WP11b and the WP12a service proposal; the historical
+Updated 2026-09-29 for integrated WP12b and preparation of relm 0.3.0. Historical
 maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
@@ -16,9 +16,15 @@ nine final checks passed. WP11a merged at `2a65a3f` with all nine checks green;
 the founder approved [the probe contract](probe-evaluation-contract.md) in
 D-033. WP11b implementation and local evidence are in the
 [probe report](probe-implementation.md). PR #49 merged at `ecf3d3f` with all nine
-checks and Linux CPU workflow `36434815787` passing. WP12a's
-[service contract](service-contract.md) and D-034 dependency proposal are planning
-artifacts; every HTTP/process/load/stress gate remains unexecuted.
+checks and Linux CPU workflow `36434815787` passing. WP12a merged in PR #50
+at `95066c7`; the founder approved its [service contract](service-contract.md)
+and D-034 dependencies. WP12b merged in PR #51 at `06d1f55` after operational
+acceptance and all nine final checks passed on `93d4d6f`. The
+[implementation report](service-implementation.md) separates parent-source stress
+measurements from final-source lifecycle checks; the historical receipts retain
+their original source identities. Release 0.3.0 binary verification is separate.
+See the [0.3.0 release report](release-0.3.0.md) for built-package/RStudio checks,
+application version-boundary results and the explicitly retained CRAN findings.
 
 ## Implemented checks
 
@@ -103,7 +109,8 @@ output, extraction and batch artifacts. WP11a and WP12a own the later probe and
 service contracts; I1 specifies its selected adapter checks. S0 has offline
 reference-artifact checks; S1 now has local native/runtime evidence, detailed in
 [S1 implementation](s1-implementation.md). D1 has a measured negative result; D2 has application/process acceptance evidence
-in [the D2 report](d2-batch-operation.md). Later product gates remain unexecuted.
+in [the D2 report](d2-batch-operation.md). WP11b and WP12b are integrated with
+the recorded product acceptance below; I1 remains conditional and unexecuted.
 
 | WP | Planned gate | Required execution context | Status |
 |---|---|---|---|
@@ -114,7 +121,7 @@ in [the D2 report](d2-batch-operation.md). Later product gates remain unexecuted
 | WP11a | Grouped evaluation contract, executable split audit and independent statistical reference fixtures | Model-free Python/R references in `tests/llm-golden/probe-contract/` | Local Python artifact/audit checks and independent R/glmnet checks pass (82 ridge solutions, 17 CSVs); D-033 approved; PR #48 merged at 2a65a3f with all nine checks green; WP11b product acceptance separate |
 | WP11b | Product agreement with references, selection/preprocessing invariance, S3 behavior and controls | Synthetic tests plus pinned anatomy-lab example | Merged PR #49 at ecf3d3f: all nine checks and Linux model workflow pass; 330 focused/export expectations, 82 independent solutions, Mac/Linux controls and independent review |
 | WP12a | Existing-tool recipe, exact dependency pins, numeric limits and executable WP12b acceptance plan | Offline contract checker and primary upstream documentation | D-034 approved; PR #50 merged at 95066c7 with all nine checks green. Exact 23-package closure and offline consistency/overflow checks pass; runtime acceptance separate |
-| WP12b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Mac Metal/Linux CPU recipe in service contract; G1–G8 | Mac gates pass with recorded source provenance. Linux parent-source G7 run 36506438374 passes 1,000 same-worker requests and independently verified RSS bounds: 116,194 samples, max gap 186 ms, zero infrastructure errors. A post-measurement teardown marker is retained with its reviewed scope. All nine ordinary checks at 7c9505a pass, including Linux identity regressions and cleanup. Final-source native run 36524582952 passes G5=53, G6=286 and G8=24 without cleanup errors; G7 remains explicitly parent-source evidence. Operational acceptance is complete; final PR checks/integration remain. Earlier failed runs stay failed. See [the implementation report](service-implementation.md). |
+| WP12b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Mac Metal/Linux CPU recipe in service contract; G1–G8 | Mac gates pass with recorded source provenance. Linux parent-source G7 run 36506438374 passes 1,000 same-worker requests and independently verified RSS bounds: 116,194 samples, max gap 186 ms, zero infrastructure errors. A post-measurement teardown marker is retained with its reviewed scope. All nine final checks at 93d4d6f pass, including Linux identity regressions and cleanup. Final-source native run 36524582952 passes G5=53, G6=286 and G8=24 without cleanup errors; G7 remains explicitly parent-source evidence. Operational acceptance and integration are complete: PR #51 merged at 06d1f55. Earlier failed runs stay failed. See [the implementation report](service-implementation.md). |
 | I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |
 
 S0 checks source/case/schema digests, exact Unicode spans, grouped partitions,

@@ -1,100 +1,111 @@
-# R-ebirth
+# R-ebirth · relm
 
-**R-ebirth** aims to make R a first-class environment for scientific research on
-data and AI — mechanistic interpretability ("AI neuroscience"), machine learning
-including topic modelling, and the life sciences — while staying simple for
-researchers.
+**Local language models and model research in ordinary R.**
 
-It is delivered as **`relm`**: an R package with a Rust native core that
-embeds a patched `llama.cpp`, exposing local LLMs (loading, generation,
-embeddings, activation tracing, steering, and ablation) as base-R-idiom functions
-returning plain `data.frame`s and `matrix`es.
+R-ebirth is delivered as **relm**, an R package that runs open-weight models on
+your machine. Generate text, produce constrained JSON, embed documents and
+inspect a model's internal activity. Results are ordinary character vectors,
+`data.frame`s and matrices, ready for R's statistical and plotting tools.
 
-![relm topic map: eight clusters of scientific abstracts, each named by the model](rebirth/man/figures/topic-map.png)
+The native engine is a pinned, patched llama.cpp embedded through Rust. No
+Python, model server or API key is required. relm runs on stock R >= 4.5.
 
-*Topic modelling with no Python: `llm_embed()` → UMAP → HDBSCAN → the model names
-each cluster. One of two runnable demos — see the [package README](rebirth/README.md).*
+![A topic map of scientific abstracts, with clusters named by a local model](rebirth/man/figures/topic-map.png)
 
-> **Using the package?** Start with the [package README](rebirth/README.md)
-> (quickstart, examples, the worked demos) and
-> [docs/getting-started.md](docs/getting-started.md) (install options — binaries
-> or from source — a first run, and troubleshooting). This page is the
-> repository/developer overview.
+*The [topic-modelling demo](rebirth/vignettes/topics-without-python.qmd) combines
+relm embeddings with optional UMAP and HDBSCAN packages, then asks the model to
+name each cluster.*
 
-## Status: v0.2.0 — vision (text + image input), shipped
+## relm 0.3.0
 
-v0.1.0 (text-only) shipped in July 2026; **v0.2.0 adds vision** — a
-vision-language model loaded with its projector answers questions about
-images and embeds them — and is [released](https://github.com/Vadale/R-ebirth/releases/tag/v0.2.0),
-with binaries on r-universe for macOS (Apple Silicon + Intel) and Linux.
-`relm` loads local GGUF models and exposes, as base-R objects:
+**Version 0.3.0** adds structured output, statistical probes and operational
+application examples. See the [release notes](rebirth/NEWS.md#relm-030).
+Binary availability follows r-universe builds; check the installed version
+before using the new features.
 
-- **`llm()`** model loading (now also with `projector =` for image input),
-  **`llm_tokens()`** tokenization;
-- **`llm_generate()`** text generation, **`llm_logits()`** next-token distributions;
-- **`llm_embed()`** embeddings;
-- **`llm_trace()`** activation tracing, **`llm_steer()`** steering, **`llm_ablate()`**
-  ablation — the mechanistic-interpretability core;
-- **`llm_download()`** checksum-verified fetch of pinned models.
+The new release brings together:
 
-v0.2.0 exports **no new function**: the same surface gains new arguments
-(`llm(projector =)`, `llm_generate(images =)`, `llm_embed(images =)`), with
-text-only behavior byte-identical to 0.1.0. Numerical features are validated
-value-for-value against independent references (harness B); where no
-independent oracle exists for a composed value (the pooled multimodal
-embedding), its parts are validated independently and the composition is
-pinned against regression.
-Vision-tower interpretability (tracing or steering inside the image encoder)
-is **not** part of this release. The full plan lives in the work-package documents under `docs/`.
+- **Structured output:** `llm_generate(schema = ...)` returns complete JSON
+  matching a supported bounded schema, or a classed R error.
+- **Native Spark support:** Spark-X2.5-4B generation through llama.cpp b10828,
+  including its official non-thinking opener for constrained chat. Spark
+  activation tracing remains unsupported.
+- **Statistical probes:** `llm_probe()` fits binary ridge models to activations
+  with grouped cross-validation, development-only selection and optional held-out
+  evaluation. A probe measures how readily a label can be predicted from a model's
+  internal values; predictive success alone does not establish causal use.
+- **Operational examples:** an [offline, resumable batch application](examples/funding-extraction/README.md)
+  and a [loopback service template](examples/funding-service/README.md) with a
+  persistent model worker, durable tickets and bounded resources. Their optional
+  application dependencies stay outside the relm core.
 
-The development checkout (`0.2.0.9000`) also includes constrained generation,
-native Spark support, and a [restartable funding-extraction application](examples/funding-extraction/README.md).
-The application prepares a local environment, runs offline and resumes saved
-batches. These additions are separate from the released v0.2.0 binary; batch
-reliability does not establish extraction accuracy.
+Generation, tokenization, embeddings, text-and-image input, activation tracing,
+steering and ablation remain available. Activations are the numerical values
+inside a model; steering adds a chosen direction to those values, while ablation
+sets selected units to a fixed value to investigate their effect.
 
-The development checkout also adds **`llm_probe()`**: binary ridge probes with
-source-group cross-validation, development-only selection, held-out evaluation
-and conditional intervals. It accepts activation traces, including disk slices,
-and provides ordinary S3 summaries, plots and probability predictions. See the
-[evaluation contract](docs/probe-evaluation-contract.md) and the package's
-anatomy-lab vignette. Predictive decodability does not establish causal use.
+## Install and start
 
-## Repository layout
+[r-universe](https://vadale.r-universe.dev/relm) distributes macOS and Linux builds
+and tracks the repository's `main` branch. Check the installed version before
+using the 0.3.0 additions:
 
-```
-rebirth/            the R package (R/, src/ + src/rust/ extendr crate, tests/, vignettes/)
-rust/               Cargo workspace: rebirth-ffi (R <-> Rust boundary), rebirth-llm (engine)
-rebirth/src/llama.cpp/   pinned, patched llama.cpp (vendored; see its VENDORING.md)
-tests/llm-golden/   Harness B numerical goldens
-tests/demos/        the two reference demos (anatomy lab; topics without Python)
-examples/funding-extraction/   offline batch setup, execution and recovery
+```r
+install.packages(
+  "relm",
+  repos = c("https://vadale.r-universe.dev", getOption("repos"))
+)
+packageVersion("relm")
 ```
 
-## Planning documents (the single source of truth)
+Start with the [package quickstart](rebirth/README.md#quickstart) or the
+[installation guide](docs/getting-started.md). The package README includes
+generation, structured output and a small activation trace. The guide covers
+source builds, image input and troubleshooting.
 
-`SOLO-PHASE-PLAN.md`, the work-package plans under `docs/`, `API-GRAMMAR.md`,
-`ARCHITECTURE.md`, `DECISIONS.md`, and `THESIS-PLAN.md`. If anything else
-disagrees with these files, the files win.
+## What has been validated
 
-## Building from source (developers)
+Numerical paths are checked against independent references, with the scope of
+each comparison recorded in the [validation ledger](docs/validation-status.md).
+The batch and service examples passed their declared Mac/Linux operational
+acceptance; service stress includes 1,000 requests on one persistent worker.
+The [0.3.0 release report](docs/release-0.3.0.md) records packaging, installed-package
+checks and the remaining CRAN-readiness findings.
+The [service report](docs/service-implementation.md) preserves exact source
+provenance and separates the stress measurements from later lifecycle checks.
 
-End users install prebuilt binaries from r-universe (no toolchain required).
-Building from source requires R (>= 4.5), a C toolchain, a Rust toolchain
-(`rustup`; the pinned channel is in `rust-toolchain.toml`), and CMake (>= 3.28)
-for the vendored engine.
+These results do not establish extraction accuracy. The frozen D1 pilot produced
+10/10 schema-valid outputs, but only 2/10 task-valid and 0/10 fully grounded
+records; all four quality promotion gates failed. See the
+[evaluation report](docs/d1-extraction-evaluation.md). Likewise, steering and
+ablation are research instruments for auditing model behavior, not guarantees
+of safety or bias removal.
 
-```sh
-# native workspace
-cd rust && cargo test && cargo clippy --all-targets -- -D warnings
+Windows/CUDA, tracing inside the vision encoder, and several larger-model
+hardware checks remain open. The [public execution plan](docs/structured-production-plan.md)
+records the completed increment and later work; no
+new work package is started by this release.
 
-# R package
-R CMD build rebirth && R CMD check relm_0.2.0.tar.gz
-```
+## Repository and development
+
+| Path | Contents |
+|---|---|
+| `rebirth/` | R package, installed as `relm` |
+| `rebirth/src/rust/` | Native Cargo workspace: `rebirth-llm` and `rebirth-ffi` |
+| `rebirth/src/llama.cpp/` | Pinned engine, patches and vendoring provenance |
+| `tests/llm-golden/` | Independent numerical references |
+| `tests/demos/` | Runnable research demos |
+| `examples/` | Funding batch and service applications |
+| `docs/` | Design, acceptance evidence and installation guide |
+
+For builds and contributions, read the [architecture](ARCHITECTURE.md) and
+[development workflow](docs/development-workflow.md). The public specifications
+are [SOLO-PHASE-PLAN.md](SOLO-PHASE-PLAN.md), the
+[execution plan](docs/structured-production-plan.md), [API-GRAMMAR.md](API-GRAMMAR.md)
+and [DECISIONS.md](DECISIONS.md).
 
 ## License
 
-Dual-licensed **MIT OR Apache-2.0** — see [LICENSE.md](LICENSE.md). The vendored
-`llama.cpp` is MIT (see `NOTICE`). The name is protected: modified redistributions
-must rename (see [TRADEMARK.md](TRADEMARK.md)).
-</content>
+Original code is dual-licensed **MIT OR Apache-2.0**; see [LICENSE.md](LICENSE.md).
+Vendored llama.cpp is MIT; see [NOTICE](NOTICE). Modified redistributions must
+rename under the [trademark policy](TRADEMARK.md).

@@ -1,44 +1,53 @@
-# relm 0.2.0.9000
+# relm 0.3.0
 
-* The repository adds an application-only local funding service template with
-  explicit setup/start/status/stop commands, a persistent model worker and
-  durable request tickets. The approved HTTP/process dependencies are isolated
-  from relm Imports/Suggests; no new package export is introduced. Operational
-  acceptance and resource limits are recorded separately from extraction quality.
-
-* `llm_probe()` fits binary ridge probes from an `activations()` formula, with
-  explicit source groups, group-disjoint development CV and optional held-out
-  groups. Preprocessing and layer/regularization selection use development data
-  only. S3 summaries, plots and probability predictions distinguish exploratory
-  scores from conditional held-out intervals. Trace alignment and materialized
-  memory are checked, including spilled traces. The optional glmnet dependency
-  remains in Suggests; decodability does not establish causal use.
-
-* The repository's funding-extraction example now provides explicit environment
-  setup, offline batch execution and verified restart/resume. Immutable results
-  retain raw outputs, evidence and failure details; changed inputs/configuration
-  refuse stale reuse. Application-only jsonlite 2.0.0 stays outside the package.
-  Operational reliability does not establish extraction accuracy.
-
-* The embedded llama.cpp engine moves from b9726 to b10828 for native
-  Spark-X2.5-4B support. The optional `spark-x2.5-4b-q8_0` download alias pins
-  the official 4.38 GB GGUF. Ollama is not required. The author's single-turn
-  chat template is supported: ordinary chat uses its thinking opener, while
-  schema-constrained chat uses its official non-thinking opener. Spark activation
-  tracing remains explicitly unsupported pending a numerical reference.
-
-* Repository tooling now records a frozen document-extraction evaluation with
-  byte-checked predictions and failure accounting. The initial held-out pilot
-  fails its extraction-quality gates despite valid structured JSON; no production
-  usefulness claim follows. See `docs/d1-extraction-evaluation.md`.
+## New features
 
 * `llm_generate()` accepts `schema` as JSON text for bounded structured output:
   closed objects, bounded strings and integers, string enums, booleans and null.
   Successful calls return complete validated JSON strings with prompt names and
   the existing seed attribute. Unsupported schemas and incomplete generation
   raise classed conditions; nonempty stop/image inputs are rejected in this mode.
-  Schema enforcement does not establish factual correctness. The default
-  `schema = NULL` preserves ordinary text and vision generation.
+  Schema enforcement does not establish factual correctness.
+
+* `llm_probe()` fits binary ridge probes from an `activations()` formula, with
+  explicit source groups, group-disjoint development cross-validation and
+  optional held-out groups. Preprocessing and layer/regularization selection use
+  development data only. S3 summaries, plots and probability predictions
+  distinguish exploratory scores from conditional held-out intervals. Trace
+  alignment and materialized memory are checked, including spilled traces.
+  Shuffled-label and simple-feature controls accompany the anatomy-lab workflow.
+  The optional `glmnet` dependency remains in Suggests; decodability does not
+  establish causal use.
+
+* The embedded llama.cpp engine moves from b9726 to b10828 for native
+  Spark-X2.5-4B support. The optional `spark-x2.5-4b-q8_0` download alias pins
+  the official 4.38 GB GGUF. Ollama is not required. The author's single-turn
+  chat template is supported: ordinary chat uses its thinking opener, while
+  schema-constrained chat uses its official non-thinking opener. Spark activation
+  tracing remains explicitly unsupported pending an independent numerical reference.
+
+## Application examples
+
+* The repository's funding-extraction example provides explicit environment
+  setup, offline batch execution and verified restart/resume. Immutable results
+  retain raw outputs, evidence and failure details; changed inputs/configuration
+  refuse stale reuse. Application-only `jsonlite` 2.0.0 stays outside the package.
+
+* The local funding service template adds setup/start/status/stop commands, one
+  loopback HTTP frontend, a persistent model worker, one active request with no
+  job queue, and durable request tickets. The approved HTTP/process dependencies
+  are isolated from relm Imports/Suggests; no new package export is introduced.
+  Mac/Linux operational acceptance includes recovery and 1,000 same-worker
+  requests, with source provenance recorded in `docs/service-implementation.md`.
+
+* Operational acceptance does not establish extraction accuracy. The frozen D1
+  pilot produced 10/10 schema-valid outputs, 2/10 task-valid and 0/10 fully
+  grounded records; all four quality promotion gates failed. Predictions and
+  source review remain in `docs/d1-extraction-evaluation.md`. Human correction
+  time is unmeasured, and extraction usefulness is not accepted.
+
+## Fixes
+
 * Spill files have unique names across R sessions, including caller-supplied
   directories. Existing files and symlinks are refused without overwriting them.
 * Trace slice layers and token positions reject fractional, non-finite, and
@@ -49,10 +58,21 @@
   therefore does not depend on Metal being available to the process.
 * Invalid `backend` and `pooling` choices raise `relm_error_argument`;
   documented defaults and unambiguous abbreviations remain supported.
+* Disk-trace access and the exploratory interpretation of historical Demo A
+  probe estimates are clarified.
+
+## Compatibility and installation
+
+* The default `schema = NULL` retains ordinary text and image generation.
+  Existing numerical goldens are unchanged.
 * Source installation requires Rust >= 1.85.0, matching the locked default
   dependencies. CI covers R release and oldrel, including the Rust minimum.
-* Clarified disk-trace access and the exploratory interpretation of Demo A's
-  probe estimates. Existing numerical goldens are unchanged.
+* The batch and service recipes require relm 0.3.0 and a freshly prepared
+  application environment. Existing 0.2.0.9000 snapshots and their receipts keep
+  their original identity; do not edit or reuse them as 0.3.0 environments.
+* The core package gains no R dependency. The application templates remain
+  outside the package API. Windows/CUDA support and vision-encoder
+  interpretability are not added by this release.
 
 # relm 0.2.0
 

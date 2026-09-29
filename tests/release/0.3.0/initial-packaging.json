@@ -1,0 +1,82 @@
+{
+  "pid": 84398,
+  "status": "completed_with_warnings",
+  "stages": [
+    {
+      "name": "build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "started_at": 1790664449.9446511,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790664595.225487
+    },
+    {
+      "name": "check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--as-cran",
+        "--install-args=--build",
+        "--output=/private/tmp/relm-release-0.3.0/check",
+        "/private/tmp/relm-release-0.3.0/relm_0.3.0.tar.gz"
+      ],
+      "started_at": 1790664595.228031,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790664843.355273
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--library=/private/tmp/relm-release-0.3.0/library",
+        "/private/tmp/relm-release-0.3.0/relm_0.3.0.tgz"
+      ],
+      "started_at": 1790664843.363359,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790664843.715929
+    },
+    {
+      "name": "installed-version",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        ".libPaths(c('/private/tmp/relm-release-0.3.0/library',.libPaths())); stopifnot(as.character(packageVersion('relm'))=='0.3.0'); print(find.package('relm')); print(packageVersion('relm'))"
+      ],
+      "started_at": 1790664843.716299,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790664843.793588
+    },
+    {
+      "name": "pkgdown",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        ".libPaths(c('/private/tmp/relm-release-0.3.0/library',.libPaths())); pkgdown::build_site('/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth', override=list(destination='/private/tmp/relm-release-0.3.0/site'), install=FALSE, new_process=FALSE, preview=FALSE)"
+      ],
+      "started_at": 1790664843.7939498,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790664873.941247
+    }
+  ],
+  "started_at": 1790664449.9444711,
+  "stage": "pkgdown",
+  "source_tarball_sha256": "2424fa6d63b92ed0a5317bb826ed019014d83ed6645de2cdbf9d9dc10d95132c",
+  "mac_binary": "/private/tmp/relm-release-0.3.0/relm_0.3.0.tgz",
+  "mac_binary_sha256": "5c4cd7acc2518e02bd868f474ceb721073516330367a55c2750ceb931afcf631",
+  "finished_at": 1790664873.941577,
+  "acceptance": "Not a clean CRAN check: 3 warnings and 3 notes; complete raw log retained. Packaging correction follows separately."
+}

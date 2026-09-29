@@ -1,4 +1,7 @@
 ^LICENSE\.md$
+^_pkgdown\.yml$
+^vignettes/\.quarto$
+^vignettes/\.gitignore$
 ^src/\.cargo$
 ^src/rust/vendor$
 ^src/rust/target$

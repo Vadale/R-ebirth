@@ -1,0 +1,14 @@
+{
+  "initial_source_sha256": "2424fa6d63b92ed0a5317bb826ed019014d83ed6645de2cdbf9d9dc10d95132c",
+  "corrected_source_sha256": "bddf546c4476142e5f16c4ac88c5baa38124f5848980f923e03f19c34e99341d",
+  "compared_files": 626,
+  "prefixes": [
+    "relm/R/",
+    "relm/src/",
+    "relm/man/",
+    "relm/tools/",
+    "relm/tests/"
+  ],
+  "changed_runtime_example_reference_files": [],
+  "claim": "Runtime and documentation example inputs are unchanged; completed initial-package RStudio/application smokes retain initial provenance. Corrected full install/check is separate."
+}
