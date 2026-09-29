@@ -1,0 +1,13 @@
+{
+  "scope": "External RSS observer only",
+  "pid": 5652,
+  "uid": 1001,
+  "euid": 1001,
+  "inherited_nice": 0,
+  "requested_nice": -10,
+  "actual_nice": -10,
+  "nice_limit": [
+    30,
+    30
+  ]
+}

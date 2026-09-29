@@ -1,6 +1,6 @@
 # WP12b — Local service implementation and acceptance
 
-Date: 2026-09-29. **Final acceptance pending; Linux observer-priority diagnosis next.**
+Date: 2026-09-29. **Final acceptance pending; observer-priority evidence supports Linux native validation.**
 D-034 approved; WP12a PR #50 merged at `95066c7`. The
 [frozen contract](service-contract.md) remains binding. Draft
 [PR #51](https://github.com/Vadale/R-ebirth/pull/51) contains the application and
@@ -47,7 +47,7 @@ The narrowly carried-forward G7 scope is explained below.
 | G1–G4 HTTP, admission, recovery and persistence | Final candidate passes 305 checks on each of four Mac/Linux R-release/oldrel CI environments, plus nine focused process-inspection regressions per environment. This includes the unchanged 120-second request deadline, concurrent overload, worker/frontend death, rename crash boundaries, ownership/corruption refusal and bounded storage. Local final-source G3 also passes 97 checks. Final CI executes all G1–G4 gates. |
 | G5 native request isolation | Mac Qwen Metal passes 53 checks on the current runtime, including A/B/A, validation/context failure recovery, hard restart and an independent worker baseline. Linux CPU also passes 53 checks on the final product runtime (run 36490558522). |
 | G6 native operating envelope | Final Mac runtime passes 286 checks each for Qwen and Spark: 30 ordinary requests, actual offline OS isolation, worker crash/reload and stop, including the previously failed replacement. Linux CPU final-runtime run 36490558522 also passes all 286 checks. |
-| G7 same-worker memory stress | Mac Metal parent-candidate run passes all 1,000 unique native Qwen requests: same worker, zero infrastructure errors, 1.062 GiB peak RSS, -39.625 MiB tail-minus-initial growth and -83.461 KiB/request post-warmup slope. Linux CPU completed 1,000 requests but failed the continuous-sampling guard; the latest corrected run stopped at 86 completed requests on a 204 ms sampling gap; a bounded timing diagnosis precedes any further native attempt. A separate 1,000-request deterministic HTTP/callr regression passed; it does not substitute for either native gate. |
+| G7 same-worker memory stress | Mac Metal parent-candidate run passes all 1,000 unique native Qwen requests: same worker, zero infrastructure errors, 1.062 GiB peak RSS, -39.625 MiB tail-minus-initial growth and -83.461 KiB/request post-warmup slope. Linux CPU completed 1,000 requests but failed the continuous-sampling guard; the latest corrected run stopped at 86 completed requests on a 204 ms sampling gap; a 30-minute observer-priority diagnosis completed without gaps and now supports native validation. A separate 1,000-request deterministic HTTP/callr regression passed; it does not substitute for either native gate. |
 | G8 actual service-manager lifecycle | Final Mac runtime passes 27 launchd checks, including actual HTTP readiness, crash/restart, stop, ownership/PID-reuse refusal, occupied-port and changed-config failures with observed restart intervals. Linux final-runtime systemd run 36490558522 passes 24 checks. |
 | Independent review | Integrated correctness/security review complete with no unresolved material finding. Narrow confirmations cover the zombie-stop lifecycle fix and the live IPC scanner race. |
 
@@ -114,8 +114,8 @@ compressed raw CSVs and an independently computed gap analysis are retained in
 All nine ordinary checks at `5a12533` also pass; their four 305-check R receipts
 are retained under `ci-2026-09-28/timing-diagnostic/`.
 
-The next controlled experiment changes only the diagnostic observer's Linux
-nice value to -10; its controller and four-thread workload must remain at 0.
+The controlled priority experiment changed only the diagnostic observer's Linux
+nice value to -10; its controller and four-thread workload remained at 0.
 A separate unprivileged child launcher records PID, UID, requested/actual priority
 and inherited limit before exec; inability to apply the requested value fails
 closed. The disposable runner step grants its shell an inherited `RLIMIT_NICE`
@@ -124,14 +124,35 @@ ceiling of 30 via `prlimit`; only the observer launcher changes actual priority.
 so 30 permits -10. Neither R nor the workload runs as root. Full discovery,
 100 ms sampling, the 200 ms guard and all resource bounds remain unchanged.
 Higher observer priority may affect workload throughput; that measurement
-condition must be explicit in any future native receipts. Priority is currently
-wired **only into the diagnostic job**, pending evidence; no native retry is
-justified yet. Eight focused Python regressions and a four-second actual R
-launcher smoke pass (40 RSS/timing rows, default priority unchanged). The smoke
-receipt retains the source hashes tested before the metadata-error guard.
-A focused review identified two boundaries to cover before any future native
-integration: preserve the explicit request through `offline.py`'s sudo environment,
-and inspect manager-owned frontend identity via status rather than a Popen handle.
+condition is explicit in the native receipt format. Initial validation included
+eight Python regressions and a four-second R launcher smoke at default priority;
+that smoke retains the exact source hashes tested before the metadata-error guard.
+
+[Priority diagnostic 36499565142](https://github.com/Vadale/R-ebirth/actions/runs/36499565142)
+completed all 1,800 seconds without reproducing a gap: 17,998 matching sequential
+RSS/timing rows, maximum interval **169 ms**, maximum GC elapsed 66 ms and GC CPU
+63 ms. Observer UID/EUID were 1001, actual/requested nice -10; controller and
+workload remained at 0. No observed cgroup throttling occurred. Compressed raw
+measurements and independent exact-decimal analysis are in
+[`priority-diagnostic/`](../tests/funding-service/measurements/linux-cpu-2026-09-28/priority-diagnostic/).
+The two diagnostics used different runners, so this is supporting operational
+evidence, not a same-host causal A/B experiment or a guarantee against future
+gaps. It justifies native validation; **it does not pass G7**. All nine ordinary
+checks at `3cd463b` pass, with four 305-check R receipts retained.
+
+Native acceptance now uses the same launcher, records source hashes and observer
+metadata, and verifies normal harness/frontend/worker priority against current
+service process identities. Supervisor-owned frontends use status identity rather
+than a Popen handle; priority assertions also cover recovered workers. The real
+G6 sudo/network-namespace boundary preserves the explicit priority request.
+Before any native build or model download, Linux runs `test_priority.py` through
+that actual boundary to prove unprivileged nice -10, unchanged controller priority,
+and refusal to execute when the inherited permission is removed. A failed preflight
+stops the workflow. These Linux checks are pending execution; local validation
+passes nine focused Python regressions (including supervisor readiness, unexpected
+workload priority and stale identity refusal) and 100 actual HTTP/process checks
+using the new launcher at the Mac's unchanged default priority. Neither product
+code, process discovery, request denominator nor acceptance bounds change.
 
 
 

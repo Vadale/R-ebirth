@@ -26,7 +26,7 @@ def ensure_offline():
             env['RELM_SERVICE_HOST_NETNS'] = os.readlink('/proc/self/ns/net')
             script = ('ip link set lo up; '
                       'exec setpriv --reuid="$1" --regid="$2" --init-groups -- "${@:3}"')
-            argv = ['sudo', '-n', '--preserve-env=PATH,RELM_SERVICE_OFFLINE_BOUNDARY,RELM_SERVICE_HOST_NETNS',
+            argv = ['sudo', '-n', '--preserve-env=PATH,RELM_SERVICE_OFFLINE_BOUNDARY,RELM_SERVICE_HOST_NETNS,RELM_SAMPLER_NICE',
                     'unshare', '--net', '--', 'bash', '-eu', '-c', script, 'service-offline',
                     str(os.getuid()), str(os.getgid()), *command]
             os.execvpe(argv[0], argv, env)

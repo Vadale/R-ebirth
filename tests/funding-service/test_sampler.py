@@ -105,6 +105,25 @@ class SamplerTests(unittest.TestCase):
         self.assertNotIn('MUST_NOT_EXECUTE', child.stdout)
         self.assertFalse(metadata.exists())
 
+    def test_manager_readiness_checks_status_identities_without_popen(self):
+        service = self.service
+        service.process = None; service.sampler = None; service.name = 'manager'
+        service.h = Mock(); service.h.report = {}; service.h.limits = {'worker_start_seconds': 2}
+        status = {'frontend': {'pid': 123, 'birth': 1.0}, 'worker': {'pid': 456, 'birth': 2.0}}
+        service.status = Mock(return_value=status); service.http = Mock(return_value={'status': 200})
+        service.h.inspect.return_value = [dict(x, alive=True) for x in status.values()]
+        with patch.dict(os.environ, RELM_SAMPLER_NICE='-10'), patch('accept.sys.platform', 'linux'), \
+                patch('accept.os.getpriority', return_value=0) as priority:
+            self.assertIs(service.ready(), service)
+            self.assertEqual([call.args[1] for call in priority.call_args_list], [os.getpid(), 123, 456])
+            self.assertIsNone(service.h.report['scheduling']['manager'][0]['observer'])
+            priority.side_effect = [0, 0, -10]
+            with self.assertRaisesRegex(AssertionError, 'workload priority must remain normal'):
+                service.ready()
+            service.h.inspect.return_value[1]['birth'] = 99.0
+            with self.assertRaisesRegex(AssertionError, 'current frontend and worker identities'):
+                service.ready()
+
 
 if __name__ == '__main__':
     unittest.main()

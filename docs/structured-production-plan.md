@@ -53,8 +53,9 @@ and PR #49 for measured evidence. WP12a merged in PR #50 at `95066c7`, with all 
 approved the [local service contract](service-contract.md) and exact D-034
 dependency closure. WP12b implementation is active; see its
 [implementation report](service-implementation.md) for actual acceptance. Mac acceptance
-is complete; Linux G7 remains unaccepted. A bounded observer-priority diagnosis
-follows a reproduced GC-associated sampling gap, before any new native retry.
+is complete; Linux G7 remains unaccepted. The observer-priority diagnostic completed
+30 minutes without a gap, supporting native validation after its offline permission
+preflight; diagnostic success does not certify a service gate.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|

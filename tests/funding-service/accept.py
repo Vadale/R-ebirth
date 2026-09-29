@@ -105,7 +105,7 @@ class Harness:
             source_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
                            for p in (ROOT / 'examples/funding-service').glob('*.R')})
         self.report['harness_sha256'] = {name: hashlib.sha256((HERE / name).read_bytes()).hexdigest()
-                                        for name in ('accept.py', 'processes.R', 'offline.py')}
+                                        for name in ('accept.py', 'processes.R', 'offline.py', 'sampler_launcher.py')}
         if args.environment:
             self.report['prepared_environment'] = read_json(Path(args.environment) / 'environment.json')
 
@@ -147,6 +147,13 @@ class Harness:
             except Exception as error:
                 self.report.setdefault('cleanup_errors', []).append(str(error))
                 self.report['status'] = 'failed'
+            metadata = service.directory / 'sampler-process.json'
+            if metadata.exists():
+                try:
+                    self.report.setdefault('samplers', {})[service.name] = read_json(metadata)
+                except (OSError, ValueError) as error:
+                    self.report.setdefault('cleanup_errors', []).append('Invalid sampler metadata: ' + str(error))
+                    self.report['status'] = 'failed'
         with (self.work / 'requests.csv').open('w', newline='') as stream:
             fields = ['instance', 'method', 'path', 'status', 'elapsed_ms']
             writer = csv.DictWriter(stream, fields)
@@ -195,7 +202,8 @@ class Service:
         self.process = subprocess.Popen(self.command(), stdout=self.log, stderr=subprocess.STDOUT,
                                         env=environment, start_new_session=True)
         self.sample_log = (self.directory / 'sampler.log').open('wb')
-        self.sampler = subprocess.Popen(['Rscript', '--vanilla', str(HERE / 'processes.R'), str(self.h.library),
+        self.sampler = subprocess.Popen([sys.executable, str(HERE / 'sampler_launcher.py'),
+            str(self.directory / 'sampler-process.json'), 'Rscript', '--vanilla', str(HERE / 'processes.R'), str(self.h.library),
             'sample', str(self.process.pid), str(self.samples), str(self.sampler_stop), str(self.sample_error)],
             stdout=self.sample_log, stderr=subprocess.STDOUT)
         return self
@@ -220,8 +228,34 @@ class Service:
             except (OSError, http.client.HTTPException):
                 return False
         until(check, timeout or self.h.limits['worker_start_seconds'], 'service readiness', 1)
-        self.status()
+        self.verify_priorities(self.status())
         return self
+
+    def verify_priorities(self, status):
+        requested = os.environ.get('RELM_SAMPLER_NICE')
+        if requested is None:
+            return
+        assert sys.platform == 'linux' and requested in ('0', '-10'), 'Unsupported sampler priority request'
+        # Manager-owned frontends have no Popen handle. Use the live identities
+        # published by the service for both direct and supervisor launches.
+        expected = [status['frontend'], status['worker']]
+        observed = self.h.inspect(expected)
+        assert len(observed) == 2 and all(actual.get('alive') and actual['pid'] == old['pid'] and
+            abs(float(actual['birth']) - float(old['birth'])) < .001 for old, actual in zip(expected, observed)), \
+            'Priority inspection requires current frontend and worker identities'
+        priorities = {name: os.getpriority(os.PRIO_PROCESS, pid) for name, pid in
+                      [('harness', os.getpid()), ('frontend', expected[0]['pid']), ('worker', expected[1]['pid'])]}
+        assert all(value == 0 for value in priorities.values()), 'Application workload priority must remain normal'
+        observer = None
+        if self.sampler is not None:
+            assert self.sampler.poll() is None, 'Priority-configured observer exited before readiness'
+            observer = read_json(self.directory / 'sampler-process.json')
+            assert observer['pid'] == self.sampler.pid and observer['uid'] == os.getuid() and observer['euid'] == os.geteuid(), \
+                'Observer launcher identity changed'
+            assert observer['requested_nice'] == observer['actual_nice'] == int(requested) and \
+                os.getpriority(os.PRIO_PROCESS, self.sampler.pid) == int(requested), 'Observer priority was not retained'
+        self.h.report.setdefault('scheduling', {}).setdefault(self.name, []).append(
+            dict(workload_priorities=priorities, frontend=expected[0], worker=expected[1], observer=observer))
 
     def http(self, method, path, value=None, headers=None, timeout=2):
         self.check_sampler()

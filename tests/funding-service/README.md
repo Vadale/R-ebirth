@@ -104,11 +104,11 @@ child termination. Only confirmed termination can discard a failed read; the
 original process handle is retained and retries add at most 100 ms of waiting.
 Successful reads and resource thresholds are unchanged.
 
-`python3 tests/funding-service/test_sampler.py` runs six model-free regressions
+`python3 tests/funding-service/test_sampler.py` runs nine model-free regressions
 in every R CI leg and the explicit native workflow: complete/partial quoted CSV
 rows, empty/malformed records, bounded history reads, actual fresh append and
 failure before another HTTP request. Native receipts fingerprint `accept.py`,
-`processes.R` and `offline.py`. The R sampler self-test additionally exercises
+`processes.R`, `offline.py` and `sampler_launcher.py`. The R sampler self-test additionally exercises
 live tree-discovery denial, original-parent death/reuse and CSV equivalence.
 
 The sampler locally adapts the pinned `ps::ps_children()` child-handle lookup to
@@ -138,14 +138,24 @@ For a short local plumbing check, use `--seconds 4 --threads 2` and an empty
 `--work-dir`, with `--library` pointing to the pinned ps/jsonlite library.
 
 
-The Linux diagnostic workflow currently tests `RELM_SAMPLER_NICE=-10` for the
-external observer only. Its step shell receives an inherited `RLIMIT_NICE=30:30`
-ceiling; `sampler_launcher.py` applies the actual priority in an unprivileged child
-and execs R without changing its PID or UID. Application/native acceptance jobs
-are not opted into this experiment. Controller and controlled workload remain at
-nice 0 and are checked. `sampler-process.json` records the observer's requested
-and actual priority, identity and limit, also embedded in `diagnostic.json`.
-Permission or unsupported-platform errors fail closed. With the variable unset,
-local smoke checks preserve inherited priority. Any later native use must preserve
-the request through the offline sudo environment and support supervisor-owned
-frontend identity; the diagnostic alone does not validate those paths.
+The Linux diagnostic and native acceptance workflows use `RELM_SAMPLER_NICE=-10`
+for the external observer only. Their sampler-launching step shells receive an
+inherited `RLIMIT_NICE=30:30` ceiling. `sampler_launcher.py` applies priority in an
+unprivileged child and execs R while preserving PID/UID. Controller and application
+workload remain at nice 0; native readiness checks verify current frontend/worker
+identities, including manager-owned services. `sampler-process.json` records the
+observer's requested/actual priority and identity/limit; native acceptance embeds
+these receipts and the priority observations made at readiness. Supervisor-only
+G8 has no RSS observer and records workload priorities only. Permission or
+unsupported-platform errors fail closed. With the variable unset, Mac and ordinary
+CI preserve inherited priority.
+
+Before any Linux native build/model preparation, `test_priority.py` crosses the
+actual sudo/unshare/setpriv boundary, verifies the preserved priority request and
+unprivileged observer, and removes permission in another child to check execution
+refusal. It also verifies loopback connectivity and OS denial of outside access.
+Its receipt is under `priority/acceptance.json` in the native artifact. G6 inherits
+the same explicit request through `offline.py`; a loss of permission cannot silently
+fall back. Increased observer priority is a measurement condition that may affect
+workload throughput. The successful 30-minute diagnosis supports this validation
+choice without substituting for the 1,000-request native gate.
