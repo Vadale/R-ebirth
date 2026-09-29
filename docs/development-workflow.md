@@ -28,6 +28,15 @@ Claude workflow without changing API/dependency approval or correctness rules.
   the appropriate goldens, Rust checks and boundary/resource tests. The package
   integration suite runs once on the final relevant candidate. Record scope,
   skips and failures; never present an unrun gate as passed.
+- **Long operations (founder instruction, 2026-09-28):** run tests, builds,
+  scripts, downloads, remote CI and other lengthy computation in the background
+  when supported. Prefer completion events; otherwise use sparse scheduled
+  checks to resume the same chat on completion or an actionable failure. This
+  is standing authorization for future long operations across projects.
+  End the active waiting turn; avoid polling loops, repeated log reads and
+  unchanged progress notifications. A check with no actionable change should
+  exit promptly. Reuse the current monitor, and disable it when its work is
+  complete or requires founder input. Waiting alone never justifies a rerun.
 - **Critical gates remain:** spec-first; approved dependency decisions;
   independent numerical references; regressions for data loss, memory corruption,
   boundary validation and process/thread ownership; parsing/download/service

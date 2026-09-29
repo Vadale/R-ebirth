@@ -1,0 +1,525 @@
+{
+  "checks_summary": {
+    "failed": [],
+    "passed": 305,
+    "total": 305
+  },
+  "contract_sha256": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+  "environment": null,
+  "finished_at": "2026-09-29T00:55:44Z",
+  "full_report": {
+    "path": "/private/tmp/relm-service/ci-observer-priority/service-process-ubuntu-24.04-release/acceptance.json",
+    "sha256": "1cf69e9aef202f6e59259b29f091fc0a6e4745623b855eb52cc2d48c7acecbc8",
+    "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36504092629"
+  },
+  "gates": {
+    "G1": {
+      "elapsed_seconds": 6.636878157999945,
+      "status": "passed"
+    },
+    "G2": {
+      "elapsed_seconds": 12.922112203999973,
+      "status": "passed"
+    },
+    "G3": {
+      "elapsed_seconds": 199.61591112200006,
+      "status": "passed"
+    },
+    "G4": {
+      "elapsed_seconds": 59.421845489999896,
+      "status": "passed"
+    }
+  },
+  "harness_sha256": {
+    "accept.py": "a3d78caeac50f1ff4bff2a3a5e7ee98fb59d0f7f6872c2136d58717c8ba498fd",
+    "offline.py": "f9dd629036849b6ad6d416967100436dabd2d0dbf7ed15a8f88b7a9fe24f4341",
+    "processes.R": "5f34b547333cf0dc39d2414aad6c1287d73d611b626dff9603fa097040b86c21",
+    "sampler_launcher.py": "853fb9d5bbbcfb1d143fd6aef3f0707ecc33cbb349305779b53a95b4f851ad68"
+  },
+  "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "profile": null,
+  "python": "3.12.3",
+  "samplers": {
+    "admission": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35035,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "admission-publication-failure": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37703,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "after_admission_rename": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36726,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "after_admission_rename-recovered": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36785,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "after_terminal_rename": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37026,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "after_terminal_rename-recovered": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37084,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "before_admission_rename": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36577,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "before_admission_rename-recovered": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36635,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "before_terminal_rename": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36877,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "before_terminal_rename-recovered": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36935,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "bounded-idle-diagnostics": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37807,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "changed-identity": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37377,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "corrupt-admission": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37317,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "corrupt-result": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37287,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "corrupt-service-identity": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37347,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "deadline": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35120,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "default-120-second-deadline": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36461,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "diagnostic": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35233,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "escaped-overflow": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37407,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "foreign-ipc": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37777,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "frontend-kill": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35829,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "frontend-restarted": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35900,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "http": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 34994,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "immutable": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37178,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "initialization-failure": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36158,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "ipc-flood": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35346,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "late-epoch": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35700,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "publication-failure": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37555,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "publication-repaired": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37629,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "second-writer": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37223,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "startup-flood": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35991,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "temp-override": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36280,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "unicode-overflow": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 37481,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "unreapable": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 36355,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "worker-kill": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35572,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    },
+    "wrong-epoch": {
+      "actual_nice": 0,
+      "euid": 1001,
+      "inherited_nice": 0,
+      "nice_limit": [
+        0,
+        0
+      ],
+      "pid": 35459,
+      "requested_nice": null,
+      "scope": "External RSS observer only",
+      "uid": 1001
+    }
+  },
+  "source_sha256": {
+    "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+    "examples/funding-service/runtime.R": "8e458534ccf171e4fa3ed85dab51743a5c821c47526aa634e116ca20ae973ed3",
+    "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+    "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+    "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+    "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+    "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+    "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c"
+  },
+  "started_at": "2026-09-29T00:50:53Z",
+  "status": "passed",
+  "suite": "deterministic"
+}

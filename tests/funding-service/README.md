@@ -1,0 +1,192 @@
+# Actual service acceptance
+
+`accept.py` exercises the HTTP frontend and supervised worker as real processes.
+It uses Python's standard library and the approved R service package closure.
+The trusted R launcher injects deterministic workers only for G1–G4; the public
+CLI and HTTP API have no fixture controls. No fixture, static unit inspection,
+missing manager, or unavailable model counts as a native acceptance pass.
+
+Run the deterministic suite from the repository root, with a fresh evidence
+directory and the exact installed service library:
+
+```sh
+python3 tests/funding-service/accept.py --suite deterministic \
+  --source-library /path/to/service-library \
+  --work-dir /path/to/new-evidence --default-deadline
+```
+
+The suite requires loopback networking, process-tree inspection, and permission
+to terminate its own disposable children. The default 120-second worker deadline
+is executed unchanged. Omitting `--default-deadline` leaves G3 partial and exits
+nonzero; short injected deadlines test recovery mechanics only.
+
+Individual gates use `--suite http`, `admission`, `recovery`, or `persistence`:
+
+| Gate | Executed boundary |
+| --- | --- |
+| G1 | Real HTTP framing, routes, strict JSON/Unicode, limits, zero dispatch on rejection, case-sensitive IDs and private files |
+| G2 | Simultaneous same-ID admission, 20-client overload, health latency during a blocked child, immutable replay and zero queue |
+| G3 | Real worker/frontend SIGKILL, request deadline, initialization/diagnostic/IPC failures, old-epoch completion, unconfirmed death, private temporary directories |
+| G4 | SIGKILL at all four rename boundaries, corruption and changed-identity refusal, second writer, unknown IPC ownership, output overflow, publication failures and bounded near-capacity diagnostics |
+
+G4's storage test modifies diagnostic history only while the store is stopped.
+It then restarts with a smaller private quota and observes the real append guard;
+authoritative terminal bytes must remain unchanged. No production quota changes.
+
+Native gates require an already prepared environment, the declared profile, and
+a new evidence directory for each invocation:
+
+```sh
+python3 tests/funding-service/accept.py --suite isolation \
+  --environment /path/to/environment --profile mac_qwen --work-dir /path/to/g5
+python3 tests/funding-service/accept.py --suite native \
+  --environment /path/to/environment --profile mac_qwen --work-dir /path/to/g6
+python3 tests/funding-service/accept.py --suite stress \
+  --environment /path/to/environment --profile mac_qwen --work-dir /path/to/g7
+python3 tests/funding-service/accept.py --suite supervisor \
+  --environment /path/to/environment --profile mac_qwen \
+  --supervisor launchd --work-dir /path/to/g8
+```
+
+Profiles are `mac_spark`, `mac_qwen`, and `linux_qwen`; G7 accepts the Qwen
+profiles only. Use `systemd-user` on Linux. G5 performs native A/B/A, fresh-worker
+comparison, actual context overflow and one explicitly labelled invalid-output
+injection **after** real native generation. G6 runs 30 ordinary native requests,
+a controlled worker crash and shutdown. Its whole process tree runs inside the
+actual loopback-only OS boundary supplied by `offline.py`; direct external
+socket denial and successful loopback access are recorded. Missing OS isolation
+fails closed. Proxy settings alone are not offline evidence.
+
+G7 runs all 1,000 native requests without recycling the worker and checks the
+frozen warmup/tail/slope and RSS limits. `processes.R` samples actual process
+creation identities at 100 ms, includes owned descendants, and fails on live
+inspection errors. Each request requires a new post-completion sample. A dead
+or stalled sampler cannot reuse earlier observations. Fresh-row reads use the
+last complete CSV line instead of repeatedly parsing the growing history. Stress
+exits before further HTTP requests on a sampling error; per-request CSV rows are
+flushed as they complete, preserving partial-run evidence. The 100 ms target and
+200 ms missing-period guard are unchanged. These are host RSS
+measurements, not Metal device allocation measurements.
+
+G8 creates and later removes a uniquely named disposable definition in the real
+user service manager. It executes start, SIGKILL/restart, ordinary stop, occupied
+port and changed-config refusal, records repeated failure counts and backoff,
+and checks that unrelated live or reused PIDs are never signalled. An unavailable
+manager is an unexecuted gate with a nonzero exit. It does not substitute syntax
+validation for execution or alter existing user services.
+
+Every run preserves `acceptance.json`, request timings, process RSS samples,
+service records and diagnostic logs beneath its evidence directory. Failures
+and cleanup errors make the run fail. Reports cover only gates actually invoked;
+none establish extraction quality. `--self-test` checks the harness's dead/stalled
+sampler guards and explicitly does not execute or pass a service gate.
+`Rscript --vanilla tests/funding-service/processes.R /path/to/service-library
+self-test` separately proves that a live inspection denial fails, PID reuse is
+excluded, and an actual child death becomes a missing sample. An inspection
+error allows at most 100 ms to confirm death/reuse; missing samples remain
+recorded and cannot certify G7's complete sampling requirement.
+
+`test_environment.py` and `install-pins.R` are separate setup/pinning checks.
+The frozen contract remains in `tests/service-contract/contract.json`.
+
+`Rscript --vanilla tests/funding-service/test-ipc-scan.R` runs the focused
+model-free IPC scanner regression without installed service packages. It uses
+real disposable files and binds `file.info` locally on a copy of the product
+function to remove a listed file immediately before stat. Confirmed live IPC
+disappearance is allowed; durable disappearance, existing unstatable files,
+unverifiable ancestors, and file/directory symlinks remain errors.
+
+`Rscript --vanilla tests/funding-service/test-process-rss.R /path/to/service-library`
+runs nine model-free process-lifecycle regressions in every ordinary R CI leg and
+the native Linux workflow. It verifies delayed death after RSS/status inspection
+errors, persistent live/unknown denial, creation-time identity reuse and actual
+child termination. Only confirmed termination can discard a failed read; the
+original process handle is retained and retries add at most 100 ms of waiting.
+Successful reads and resource thresholds are unchanged.
+
+`python3 tests/funding-service/test_sampler.py` runs nine model-free regressions
+in every R CI leg and the explicit native workflow: complete/partial quoted CSV
+rows, empty/malformed records, bounded history reads, actual fresh append and
+failure before another HTTP request. Native receipts fingerprint `accept.py`,
+`processes.R`, `offline.py` and `sampler_launcher.py`. The R sampler self-test additionally exercises
+live tree-discovery denial, original-parent death/reuse and CSV equivalence.
+
+The sampler locally adapts the pinned `ps::ps_children()` child-handle lookup to
+classify Linux's generic ENOENT only after confirming that specific child ended.
+The dependency namespace is unchanged. A disappeared child still sets the
+missing-sample marker, so G7 cannot silently accept it; live/unknown denials fail.
+The R self-test uses one real stale PPID snapshot and a killed/reaped child to
+compare unadapted and adapted discovery, explicitly reproducing the upstream
+Linux error before verifying the fix. PID reuse between upstream's PID-only map
+and new handle construction remains outside this evidence; already sampled
+handles retain their creation-time identity.
+
+## Bounded sampler timing diagnosis
+
+Dispatch `nightly-model-tolerance.yaml` with `sampler_diagnostic=true` to run
+only a model-free timing diagnosis, for at most 30 minutes on Linux. It installs
+the approved ps/jsonlite subset, without relm compilation or a model download.
+`diagnose_sampler.py` runs four controlled CPU-busy threads and opts into
+`RELM_SAMPLER_DIAGNOSTICS` for phase wall/CPU times, GC deltas and wake lateness;
+it also records available cgroup CPU counters. Instrumentation is separate from
+normal acceptance and does not alter the 100 ms cadence or 200 ms failure guard.
+The first sampling error is retained, and the diagnostic stops after detecting it.
+A successful diagnostic job means evidence was collected: its report can say
+`sampling_failed` or `completed_without_reproducing_gap`. Neither passes G7.
+The artifact is `sampler-timing-diagnostic`; no native test runs in this mode.
+For a short local plumbing check, use `--seconds 4 --threads 2` and an empty
+`--work-dir`, with `--library` pointing to the pinned ps/jsonlite library.
+
+
+The Linux diagnostic and native acceptance workflows use `RELM_SAMPLER_NICE=-10`
+for the external observer only. Their sampler-launching step shells receive an
+inherited `RLIMIT_NICE=30:30` ceiling. `sampler_launcher.py` applies priority in an
+unprivileged child and execs R while preserving PID/UID. Controller and application
+workload remain at nice 0; native readiness checks verify current frontend/worker
+identities, including manager-owned services. `sampler-process.json` records the
+observer's requested/actual priority and identity/limit; native acceptance embeds
+these receipts and the priority observations made at readiness. Supervisor-only
+G8 has no RSS observer and records workload priorities only. Permission or
+unsupported-platform errors fail closed. With the variable unset, Mac and ordinary
+CI preserve inherited priority.
+
+Before any Linux native build/model preparation, `test_priority.py` crosses the
+actual sudo/unshare/setpriv boundary, verifies the preserved priority request and
+unprivileged observer, and removes permission in another child to check execution
+refusal. It also verifies loopback connectivity and OS denial of outside access.
+Its receipt is under `priority/acceptance.json` in the native artifact. G6 inherits
+the same explicit request through `offline.py`; a loss of permission cannot silently
+fall back. Increased observer priority is a measurement condition that may affect
+workload throughput. The successful 30-minute diagnosis supports this validation
+choice without substituting for the 1,000-request native gate.
+
+
+The offline Linux bootstrap establishes its fixed permission ceiling after sudo's
+possible target-user/PAM limit reset, before `setpriv` drops privileges. Native
+preflight first runs `test_priority.py --legacy-probe` with the original bootstrap
+on the same runner. It records either `permission_denial_reproduced` (with actual
+PermissionError and insufficient inherited ceiling) or `legacy_permission_retained`;
+neither is service acceptance. The corrected preflight must report `passed` before
+build/model preparation starts. Both paths retain inherited limits and launcher
+stdout/stderr, including failures. Actual nice values and resource guards stay
+unchanged.
+
+
+`test-process-rss.R` runs 12 applicable process/ownership cases on Mac and 13 on
+Linux in every ordinary R CI leg and native acceptance. The Linux-only fixture
+models separate reader boot-clock offsets using real pinned `ps` handles; exact
+birth-string comparison would reject a still-owned process. The runtime keeps a
+fresh-handle access probe, then checks its persisted creation-time handle through
+`ps`. A separate real R reader verifies live and wrong-birth identities, and a
+live stat-denial fixture protects fail-closed ownership behavior. These checks
+use the library's native identity resolution, not an invented timing tolerance.
+
+For a reviewed final-source lifecycle confirmation, dispatch
+`nightly-model-tolerance.yaml` with `service=true`, `service_lifecycle_only=true`,
+`sampler_diagnostic=false` and `spark=false`. This retains preflight, prepared
+environment checks, ownership regressions and native G5/G6/G8; G7 is skipped.
+`scope.json` records the source commit and explicitly marks G7 unexecuted.
+Individual reports determine actual execution/outcomes. This mode cannot certify
+G7 and requires separately reviewed stress evidence with its original source
+hashes. Default full acceptance still executes G7. Do not duplicate an active
+native run to obtain this confirmation.

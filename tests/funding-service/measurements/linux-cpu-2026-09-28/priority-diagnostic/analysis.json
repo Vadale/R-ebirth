@@ -1,0 +1,75 @@
+{
+  "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36499565142",
+  "source_commit": "3cd463b2ea32370b495da2daf2b314dddd1fb281",
+  "scope": "Model-free timing diagnosis; not G1-G8 acceptance. Different runners, not a same-host causal A/B test.",
+  "status": "completed_without_reproducing_gap",
+  "files": {
+    "sampler.log": {
+      "original_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "original_bytes": 0,
+      "stored_file": "sampler.log",
+      "stored_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sampler-process.json": {
+      "original_sha256": "f2f3fbd2c74c22766409ee5cdcc7bd86922cb606732b3f4c35269c9953287d0c",
+      "original_bytes": 198,
+      "stored_file": "sampler-process.json",
+      "stored_sha256": "f2f3fbd2c74c22766409ee5cdcc7bd86922cb606732b3f4c35269c9953287d0c"
+    },
+    "diagnostic.json": {
+      "original_sha256": "b18aadd11a585f3c3f96c3a0a85aa8bf150a9e1af90f122bc3dc2860c60c3cf3",
+      "original_bytes": 4016,
+      "stored_file": "diagnostic.json",
+      "stored_sha256": "b18aadd11a585f3c3f96c3a0a85aa8bf150a9e1af90f122bc3dc2860c60c3cf3"
+    },
+    "rss.csv": {
+      "original_sha256": "5c93d866546dd9fe4a05eeb80f90e4c3652a4f9998cc4d265cf29118f8d597a7",
+      "original_bytes": 2099400,
+      "stored_file": "rss.csv.gz",
+      "stored_sha256": "ea1f434df312c1e84c550c67e16232cea11830fc98098902aef2933c72ada8b0"
+    },
+    "host.csv": {
+      "original_sha256": "1b3a8bfdeb1f566ce12652349a7255462f26899c7796abffcb3d89e73a81435a",
+      "original_bytes": 2526919,
+      "stored_file": "host.csv.gz",
+      "stored_sha256": "4484eaf9f7b49dfe1018a675becc7ac7fbe62f5e93c35be22a46891a1b4b3ab7"
+    },
+    "timings.csv": {
+      "original_sha256": "b555910e0b387d2d47c7c6c14842f13538f51b85ff4de55ac1844245ab4129d1",
+      "original_bytes": 3400439,
+      "stored_file": "timings.csv.gz",
+      "stored_sha256": "74e2d0c750a8b128268b7547c8cb3a169f342f96ddebf3b5eef637954512dc68"
+    }
+  },
+  "independent_analysis": {
+    "rows": 17998,
+    "maximum_gap_seconds": "0.169",
+    "gaps_above_200ms": 0,
+    "maximum_gc_elapsed_seconds": 0.066,
+    "maximum_gc_cpu_seconds": 0.063,
+    "gc_intervals": 2487,
+    "maximum_discovery_wall_seconds": 0.07600000000002183,
+    "largest_gap_timing": {
+      "sample": "16338",
+      "tick_start_seconds": "1633.700000000",
+      "discovery_end_seconds": "1633.775000000",
+      "rss_end_seconds": "1633.779000000",
+      "write_end_seconds": "1633.779000000",
+      "discovery_cpu_seconds": "0.069000000",
+      "rss_cpu_seconds": "0.001000000",
+      "write_cpu_seconds": "0.000000000",
+      "iteration_cpu_seconds": "0.070000000",
+      "interval_cpu_seconds": "0.070000000",
+      "gc_user_seconds": "0.058000000",
+      "gc_system_seconds": "0.000000000",
+      "gc_elapsed_seconds": "0.063000000",
+      "wake_lateness_seconds": "0.000000000",
+      "sample_gap_seconds": "0.169000000",
+      "discovered_children": "0",
+      "known_processes": "1",
+      "sampled_processes": "1"
+    },
+    "all_observed_cgroups_unlimited_and_unthrottled": true
+  },
+  "interpretation": "The 30-minute full-discovery diagnostic at observer nice -10 completed without reproducing the gap while four busy workload threads remained at nice 0. This supports native validation with declared observer priority, not acceptance or proof that no future gap can occur."
+}

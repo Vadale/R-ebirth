@@ -166,5 +166,5 @@ On Mac, network isolation uses `sandbox-exec`; on Linux, it uses `sudo unshare
 D2 remains a runnable batch application. The separate
 [WP12a service contract](../../docs/service-contract.md) proposes a persistent
 single-worker local HTTP template and recovery/load limits. Its D-034 dependency
-proposal still needs approval; no service command or runtime acceptance is
-included in this batch example.
+proposal is approved under D-034. The separate [service template](../funding-service/README.md)
+is under implementation; its runtime acceptance is tracked independently.

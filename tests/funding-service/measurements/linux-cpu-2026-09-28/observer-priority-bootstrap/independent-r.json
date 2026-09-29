@@ -1,0 +1,14 @@
+{
+  "method": "Independent base-R CSV checks and lm slope; no harness imports",
+  "requests": 1000,
+  "unique_ids": 1000,
+  "worker_pid": 39851,
+  "epoch": "26bec2b5b8d100c55ee94bd509556bc8",
+  "states": {
+    "invalid": 666,
+    "success": 334
+  },
+  "growth_bytes": 28315648,
+  "slope_bytes_per_request": 39993.854183560696,
+  "max_request_seconds": 26.335921764000886
+}

@@ -998,6 +998,45 @@ WP11a PR #48 merged at `2a65a3f` after all nine checks passed (R run
   bounded local operating envelope before WP12b implementation. Approval does
   not certify extraction accuracy, a deployed service or a public/network pilot.
 
+
+### D-034 approval addendum — 2026-09-28
+
+The founder approved the concrete WP12a dependency/operating-envelope proposal
+and then explicitly instructed continuation with WP12b after reviewing the
+remaining steps. D-034 is **APPROVED** for the application-only service and the
+23-package closure in `tests/service-contract/dependencies.csv`. WP12a PR #50
+merged at `95066c7` after all nine checks passed. Implement the frozen contract;
+no core export, new backend, expanded network scope or relaxed acceptance is
+authorized. Runtime G1–G8 acceptance is separate from this approval.
+
+---
+
+### D-029 addendum — background monitoring for long tests (2026-09-28)
+
+The founder explicitly authorized a background monitor for the outstanding
+WP12b Linux stress test and made this the standing workflow for all future long
+tests. Run tests independently of the active conversation and schedule sparse
+checks that resume the same chat when results require work. End active waiting
+turns; an unchanged check should exit promptly without repeated polling, log
+inspection or user updates. Notify on meaningful changes, completion, failure
+or required founder action. Disable the monitor when its work is complete or
+blocked on founder input. This reduces active waiting and redundant context
+use; it does not imply that scheduled model invocations consume no tokens.
+Preserve all acceptance gates, failure records and milestone push rules.
+
+---
+
+### D-029 clarification — all long operations (2026-09-28)
+
+The founder extended the background-monitoring instruction to every lengthy
+operation, including running code, builds, downloads and remote CI, across
+projects and future conversations. This preference is also saved in the user's
+global Codex instructions. Prefer completion events when available; otherwise
+use sparse scheduled checks. Do independent useful work while waiting, then end
+the active turn once only waiting remains. Reuse existing monitors and report
+unavailable monitoring honestly. No additional permission is needed to arrange
+these checks within already authorized work.
+
 ---
 
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)

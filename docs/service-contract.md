@@ -1,8 +1,9 @@
 # WP12a — Minimal funding-extraction service contract
 
-Date: 2026-09-28. **PROPOSED — D-034 requires founder approval before WP12b.**
-This is a reviewed implementation specification, not a running service. No
-service package has been installed and no runtime/load gate has passed.
+Date: 2026-09-28. **APPROVED — D-034 founder approval recorded on 2026-09-28.**
+This is the frozen implementation specification. WP12b implementation and actual
+acceptance outcomes are tracked in [the implementation report](service-implementation.md).
+Dependency approval and this document do not establish runtime/load acceptance.
 
 **Acceptance (verbatim, ROADMAP):** reviewable contract, exact proposed
 dependencies/versions and commands/thresholds/ownership for WP12b. This is
@@ -350,7 +351,8 @@ Reviewed on 2026-09-28:
   are recorded in `tests/service-contract/dependency-provenance.json`. This is a
   version/metadata pin, not verification of installed package bytes.
 
-**Founder decision:** approve D-034's application-only stack, full dependency
-closure and local single-worker operating envelope. Approval permits WP12b
+**Founder decision (recorded):** D-034's application-only stack, full dependency
+closure and local single-worker operating envelope were approved on 2026-09-28.
+Approval permits WP12b
 implementation and acceptance; it does not certify a working service, authorize
 public hosting, or approve a new relm API.

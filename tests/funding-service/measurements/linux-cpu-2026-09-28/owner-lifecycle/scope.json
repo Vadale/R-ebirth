@@ -1,0 +1,8 @@
+{
+  "source_commit": "7c9505aadfa2a57df8a49d03fc36473bd2016373",
+  "lifecycle_only": true,
+  "unexecuted_gates": [
+    "G7"
+  ],
+  "note": "Scope only; inspect individual receipts for actual execution and outcomes. Lifecycle-only runs require separate reviewed G7 evidence."
+}

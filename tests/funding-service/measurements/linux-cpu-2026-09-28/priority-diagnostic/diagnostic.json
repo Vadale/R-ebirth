@@ -1,0 +1,89 @@
+{
+  "scope": "Timing diagnosis only; no model, HTTP service or G1\u2013G8 acceptance.",
+  "status": "completed_without_reproducing_gap",
+  "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "duration_limit_seconds": 1800.0,
+  "busy_threads": 4,
+  "cpu_count": 4,
+  "affinity": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "host_before": {
+    "cgroup_membership": "0::/system.slice/hosted-compute-agent.service\n",
+    "cgroups": {
+      "/sys/fs/cgroup/system.slice/hosted-compute-agent.service": {
+        "cpu.stat": "usage_usec 42299706\nuser_usec 27050247\nsystem_usec 15249458\nnice_usec 3081000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=0.18 avg60=0.09 avg300=0.02 total=262997\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=90908\n"
+      },
+      "/sys/fs/cgroup/system.slice": {
+        "cpu.stat": "usage_usec 66868299\nuser_usec 42835200\nsystem_usec 24033098\nnice_usec 3089000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=0.20 avg60=0.75 avg300=0.37 total=1713153\nfull avg10=0.00 avg60=0.14 avg300=0.06 total=464863\n"
+      },
+      "/sys/fs/cgroup": {
+        "cpu.stat": "usage_usec 73922000\nuser_usec 44836000\nsystem_usec 29086000\nnice_usec 3089000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": null,
+        "cpu.pressure": "some avg10=0.17 avg60=1.16 avg300=0.61 total=2674354\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n"
+      }
+    },
+    "loadavg": [
+      0.9111328125,
+      0.27099609375,
+      0.09521484375
+    ]
+  },
+  "sources": {
+    "diagnose_sampler.py": "8b46a296ed4b802a778407880dd9e9a562c697b5efffde519ee6bff52a72e714",
+    "processes.R": "5f34b547333cf0dc39d2414aad6c1287d73d611b626dff9603fa097040b86c21",
+    "sampler_launcher.py": "853fb9d5bbbcfb1d143fd6aef3f0707ecc33cbb349305779b53a95b4f851ad68"
+  },
+  "controller_nice": 0,
+  "worker_nice": 0,
+  "measurement_rows": {
+    "rss.csv": 17998,
+    "timings.csv": 17998
+  },
+  "elapsed_seconds": 1800.319258449,
+  "host_after": {
+    "cgroup_membership": "0::/system.slice/hosted-compute-agent.service\n",
+    "cgroups": {
+      "/sys/fs/cgroup/system.slice/hosted-compute-agent.service": {
+        "cpu.stat": "usage_usec 7228189319\nuser_usec 7135665584\nsystem_usec 92523735\nnice_usec 3081000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=41.71 avg60=41.75 avg300=41.57 total=762406868\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=1690063\n"
+      },
+      "/sys/fs/cgroup/system.slice": {
+        "cpu.stat": "usage_usec 7256248003\nuser_usec 7152747763\nsystem_usec 103500239\nnice_usec 3105000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=41.69 avg60=41.79 avg300=41.60 total=764017200\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=1334677\n"
+      },
+      "/sys/fs/cgroup": {
+        "cpu.stat": "usage_usec 7266981000\nuser_usec 7157245000\nsystem_usec 109736000\nnice_usec 3105000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": null,
+        "cpu.pressure": "some avg10=42.13 avg60=41.85 avg300=41.63 total=771335160\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n"
+      }
+    },
+    "loadavg": [
+      6.42431640625,
+      6.400390625,
+      5.294921875
+    ]
+  },
+  "sampler": {
+    "scope": "External RSS observer only",
+    "pid": 5652,
+    "uid": 1001,
+    "euid": 1001,
+    "inherited_nice": 0,
+    "requested_nice": -10,
+    "actual_nice": -10,
+    "nice_limit": [
+      30,
+      30
+    ]
+  }
+}

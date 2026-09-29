@@ -1,0 +1,31 @@
+{
+  "boundary": {
+    "boundary": "private loopback-only network namespace",
+    "inherited_by_service_and_worker": true,
+    "loopback_probe": "passed",
+    "non_loopback_probe": {
+      "errno": 101,
+      "reason": "Network is unreachable"
+    }
+  },
+  "euid": 1001,
+  "full_report": {
+    "path": "/private/tmp/relm-service/linux-priority-bootstrap/priority-legacy/acceptance.json",
+    "sha256": "329e17779a12cdfdc16e486b26c0babefcf0bad07715eabbfea973e6e9d5c8b3",
+    "workflow_url": "https://github.com/Vadale/R-ebirth/actions/runs/36506438374"
+  },
+  "inherited_nice_limit": [
+    0,
+    0
+  ],
+  "launcher_result": {
+    "returncode": 1,
+    "stderr": "Traceback (most recent call last):\n  File \"/home/runner/work/R-ebirth/R-ebirth/tests/funding-service/sampler_launcher.py\", line 38, in <module>\n    main()\n  File \"/home/runner/work/R-ebirth/R-ebirth/tests/funding-service/sampler_launcher.py\", line 22, in main\n    os.setpriority(os.PRIO_PROCESS, 0, int(requested))\nPermissionError: [Errno 13] Permission denied\n",
+    "stdout": ""
+  },
+  "legacy_probe": true,
+  "requested_nice": "-10",
+  "scope": "Offline observer preflight; no G1-G8 acceptance.",
+  "status": "permission_denial_reproduced",
+  "uid": 1001
+}

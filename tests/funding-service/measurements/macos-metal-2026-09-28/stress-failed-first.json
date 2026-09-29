@@ -1,0 +1,166 @@
+{
+  "contract_sha256": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+  "development_corpus_sha256": "137d3fd977064948d9264a806a8a86ece974f9636d635642d531396da06df1dd",
+  "environment": "/private/tmp/relm-service/qwen-environment-v2",
+  "error": "AssertionError: timed out: terminal record native-0107 (245s)",
+  "finished_at": "2026-09-28T16:29:34Z",
+  "gates": {},
+  "os": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "prepared_environment": {
+    "R": "4.5.1",
+    "backend": "metal",
+    "files": {
+      "config.json": "55617338eb4fb6adb8cf3c2524de62f8be8e865d730d80127f3358c34825d3de",
+      "documents.json": "137d3fd977064948d9264a806a8a86ece974f9636d635642d531396da06df1dd",
+      "output.schema.json": "f5642247a14b63776d65709447121c221434dc203f0150f839ab295a01694cf0",
+      "prompt.txt": "8fbc71346350a6d2239badc4d60d282f69baf3e8525713f590c5bfc58adbb549"
+    },
+    "model": {
+      "alias": "qwen2.5-0.5b-instruct-q8_0",
+      "path": "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+      "sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+      "size_bytes": "675710816"
+    },
+    "packages": {
+      "R6": {
+        "sha256": "1a5b4b77e54cc6080a7be006bf1cb2c1e51a4706aeacff648c76fc407186919c",
+        "version": "2.6.1"
+      },
+      "Rcpp": {
+        "sha256": "f0388fcacf1a840e3221b77e170a4d1a4e793a830e746812c31d3a8282140271",
+        "version": "1.1.2"
+      },
+      "callr": {
+        "sha256": "44a64fd6196f1041e5da8ba3c91ec41cbf27c49e89721f50f838634414920b84",
+        "version": "3.8.0"
+      },
+      "cli": {
+        "sha256": "087251fbd6cf2efadd4afb45607286e486096e6da520732e0d14b3933b3b82bd",
+        "version": "3.6.6"
+      },
+      "crayon": {
+        "sha256": "0f30aa9a97ffc916bc5f92b599d9e0a1635eca64496b8547c9120092f871ec73",
+        "version": "1.5.3"
+      },
+      "curl": {
+        "sha256": "25567f9d253d0297e81cd098bb86154594883fbd069e6266bd702242613fa6c9",
+        "version": "8.0.0"
+      },
+      "fastmap": {
+        "sha256": "2852f39f055e7e842d4aad23ecb25b8461472c194919f1517aefd13acf4c6092",
+        "version": "1.2.0"
+      },
+      "httpuv": {
+        "sha256": "3ac0d18b5e6fada176472b472c674e7cec404b06485dc1dd5a847220c1800aa0",
+        "version": "1.6.17"
+      },
+      "jsonlite": {
+        "sha256": "b1dffaaf8482a0a216d418b3ef9f0851abfca3e602ce311991d89437572409df",
+        "version": "2.0.0"
+      },
+      "later": {
+        "sha256": "6870f3944d1f3c09cc61cf5ed33ca016a06aea4db86a4c5f35894138277d2933",
+        "version": "1.4.8"
+      },
+      "lifecycle": {
+        "sha256": "64e4aef83959a8c15b9acd8aed975fc9899b3a6ef7ff282a9c65d95d00143d99",
+        "version": "1.0.5"
+      },
+      "magrittr": {
+        "sha256": "cecc37777191a6e1a57fd42653903fbd9d2a4d2fb31e12e165de786bc59c289a",
+        "version": "2.0.5"
+      },
+      "mime": {
+        "sha256": "863058cfeb50d81d03780073768132be72f263046b0f7e0ad7e4d669ff59f697",
+        "version": "0.13"
+      },
+      "nanoarrow": {
+        "sha256": "85659ff233f07c53504640ecdd510bfda8e6c406af1ea1361eca8b33dd587b5e",
+        "version": "0.8.0-1"
+      },
+      "otel": {
+        "sha256": "467d2010b4feaa171e048a291dd427c9df61432b45aa67d7438bacb16f3aac33",
+        "version": "0.2.0"
+      },
+      "plumber": {
+        "sha256": "a5454db7341c25347e0ef3d27e8aff60ea1eda6a58e1685c620deb2a9e32e3ab",
+        "version": "1.3.3"
+      },
+      "processx": {
+        "sha256": "c764f0470cda62092439b393164db0cda0868ff3099fa55d0d1e919dad8728d7",
+        "version": "3.9.0"
+      },
+      "promises": {
+        "sha256": "015c56e51bf85a73367623b098073283ccd13f82930d9850d42f640a68a14398",
+        "version": "1.5.0"
+      },
+      "ps": {
+        "sha256": "b53b9775e6b92d9c452cbfbb81357c40f2ee9f1d02c2451231e1bd2cfefa3a8a",
+        "version": "1.9.3"
+      },
+      "relm": {
+        "sha256": "6f960ee207c3d44044fd31d24bfe43c9453d90fdd9cb718e461b6be74fdf75f8",
+        "version": "0.2.0.9000"
+      },
+      "rlang": {
+        "sha256": "71e3e8a02c3cd98e7d179dcde6aaa8556d62a11d0768f57ee85415f075179516",
+        "version": "1.3.0"
+      },
+      "sodium": {
+        "sha256": "33b744b8c954d029f74da64500553bea1459537c61eb46800537e6e330c6230f",
+        "version": "1.4.0"
+      },
+      "stringi": {
+        "sha256": "f5a919c0468d9061fe542efcff96c61f3b097a3ba1ad0e396097fe892cfe0a35",
+        "version": "1.8.9"
+      },
+      "swagger": {
+        "sha256": "29c1ed0a3514d6ddc5f57c7f4a7d74f62b0020c2b144b7fc0657aacd5c3ffc79",
+        "version": "5.32.1"
+      },
+      "webutils": {
+        "sha256": "9177315b720675cd3a9cb2ddd63f01fa7f0ce83671cf1787d47eb16d7e178c1c",
+        "version": "1.2.3"
+      }
+    },
+    "platform": "aarch64-apple-darwin20",
+    "service_environment_version": 1,
+    "service_sources": {
+      "examples/funding-extraction/app.R": "fe3410086923718e4f91cd7c3172f0b0e38a3e0424b5115bf3787bd513fd54a4",
+      "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+      "examples/funding-service/runtime.R": "03e5efeab4ea6aea89c1e8943a386fd22656002c3a94e89ad28c8040a1b25918",
+      "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+      "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+      "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+      "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+      "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+      "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c",
+      "tests/service-contract/contract.json": "614220ce2a6ff38e880d2802496c669dac52419acf15713824695a0f9a93cd17",
+      "tests/service-contract/dependencies.csv": "621feae757c4ba9e11622f6efde0bdc4703fcb51fbe8878ef42db7c4244b410a"
+    }
+  },
+  "profile": "mac_qwen",
+  "python": "3.14.6",
+  "source_sha256": {
+    "examples/funding-service/common.R": "b3ca71e8128ef6002471b694c28ac270bb9f30f688bbc31618ee3100054038e3",
+    "examples/funding-service/runtime.R": "03e5efeab4ea6aea89c1e8943a386fd22656002c3a94e89ad28c8040a1b25918",
+    "examples/funding-service/setup.R": "2ef9319ce8514e212db3434e0bb34de33a80447aa9eba4d56242d9924af8994e",
+    "examples/funding-service/start.R": "60db523782d2b7381d0b0be2decf79706aa1ba722bf2e212deb2e0b3145e476f",
+    "examples/funding-service/status.R": "b631eddd7cf418b038e82d5992fc880b4013f6336d48ebc0e03257b534197248",
+    "examples/funding-service/stop.R": "14a78869546ea517ee3f3927f712d841dddaf6e2b840502d04bb364af8a385ae",
+    "examples/funding-service/supervisor.R": "f66e25fca317660eb6d9bf9b0ae50b05478e2853bd86664417137c2acf3084e3",
+    "examples/funding-service/worker.R": "1271a860ecd02a07221554ec7b158df32506ad0b2e9b7b6cc7b8d68eff73c66c"
+  },
+  "started_at": "2026-09-28T16:19:13Z",
+  "status": "failed",
+  "suite": "stress",
+  "checks_summary": {
+    "total": 961,
+    "passed": 961,
+    "failed": []
+  },
+  "full_report": {
+    "path": "/private/tmp/relm-service/qwen-stress/acceptance.json",
+    "sha256": "619887fb39e549ca83df4140416664e4fac0210ca878d001daaacb946f8154b3"
+  }
+}

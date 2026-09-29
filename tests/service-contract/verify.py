@@ -18,7 +18,7 @@ def require(value, message):
 
 
 def validate(contract, pins):
-    require(contract['status'] == 'proposed', 'runtime approval must not be inferred')
+    require(contract['status'] == 'approved', 'D-034 approval state changed')
     require(contract['decision'] == 'D-034', 'wrong decision')
     require(contract['bind']['host'] == '127.0.0.1' and
             not contract['bind']['browser_origins'], 'local access scope changed')
@@ -127,7 +127,7 @@ def main():
             else:
                 raise AssertionError(f'mutation accepted: {name}')
     print(f'PASS: offline contract consistency; {len(pins)} dependency pins; {len(docs)} D2 inputs fit; JSON overflow bounds checked; '
-          f'{len(mutations)} deliberate mutations rejected. Runtime gates remain NOT RUN.')
+          f'{len(mutations)} deliberate mutations rejected. Runtime acceptance is reported separately.')
 
 
 if __name__ == '__main__':

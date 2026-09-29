@@ -1,5 +1,11 @@
 # relm 0.2.0.9000
 
+* The repository adds an application-only local funding service template with
+  explicit setup/start/status/stop commands, a persistent model worker and
+  durable request tickets. The approved HTTP/process dependencies are isolated
+  from relm Imports/Suggests; no new package export is introduced. Operational
+  acceptance and resource limits are recorded separately from extraction quality.
+
 * `llm_probe()` fits binary ridge probes from an `activations()` formula, with
   explicit source groups, group-disjoint development CV and optional held-out
   groups. Preprocessing and layer/regularization selection use development data

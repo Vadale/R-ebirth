@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "scope": "Explicit old-version recovery after the failed G7; does not pass G7",
+  "source_commit": "69e986e",
+  "earlier_immutable_results": 106,
+  "recovered_id": "native-0107",
+  "recovered_state": "interrupted",
+  "new_dispatches": 0
+}

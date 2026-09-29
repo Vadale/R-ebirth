@@ -1,0 +1,50 @@
+{
+  "source_commit": "7c9505aadfa2a57df8a49d03fc36473bd2016373",
+  "checks": [
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702003/job/109218896756",
+      "name": "macos-15 (R oldrel-1, Rust stable)",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702010/job/109218896986",
+      "name": "macOS x86_64 cross engine link",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702003/job/109218896810",
+      "name": "macos-15 (R release, Rust stable)",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702010/job/109218896929",
+      "name": "harness B golden self-check",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702010/job/109218896940",
+      "name": "vendored tree integrity (G4 + patch coherence)",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702010/job/109218896834",
+      "name": "cargo fmt / clippy / test",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702003/job/109218896772",
+      "name": "ubuntu-24.04 (R release, Rust stable)",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702003/job/109218896624",
+      "name": "ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/Vadale/R-ebirth/actions/runs/36509702010/job/109218896908",
+      "name": "supply-chain (cargo-deny licenses/bans/sources)",
+      "state": "SUCCESS"
+    }
+  ]
+}

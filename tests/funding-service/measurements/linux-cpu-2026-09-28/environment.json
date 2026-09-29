@@ -1,0 +1,6 @@
+{
+  "status": "passed",
+  "cases": 11,
+  "model_loaded": false,
+  "scope": "fresh-process environment refusal and generated supervisor escaping; actual manager acceptance separate"
+}

@@ -1,0 +1,74 @@
+{
+  "scope": "Timing diagnosis only; no model, HTTP service or G1\u2013G8 acceptance.",
+  "status": "sampling_failed",
+  "os": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "duration_limit_seconds": 1800.0,
+  "busy_threads": 4,
+  "cpu_count": 4,
+  "affinity": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "host_before": {
+    "cgroup_membership": "0::/system.slice/hosted-compute-agent.service\n",
+    "cgroups": {
+      "/sys/fs/cgroup/system.slice/hosted-compute-agent.service": {
+        "cpu.stat": "usage_usec 44050525\nuser_usec 28895401\nsystem_usec 15155124\nnice_usec 3490000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=0.07 avg60=0.09 avg300=0.02 total=308822\nfull avg10=0.00 avg60=0.01 avg300=0.00 total=126917\n"
+      },
+      "/sys/fs/cgroup/system.slice": {
+        "cpu.stat": "usage_usec 68856717\nuser_usec 45955482\nsystem_usec 22901234\nnice_usec 3505000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=0.13 avg60=0.78 avg300=0.34 total=1576005\nfull avg10=0.01 avg60=0.16 avg300=0.06 total=478927\n"
+      },
+      "/sys/fs/cgroup": {
+        "cpu.stat": "usage_usec 73500000\nuser_usec 46230000\nsystem_usec 27270000\nnice_usec 3505000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": null,
+        "cpu.pressure": "some avg10=0.19 avg60=1.35 avg300=0.61 total=2609740\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n"
+      }
+    },
+    "loadavg": [
+      0.755859375,
+      0.2275390625,
+      0.080078125
+    ]
+  },
+  "sources": {
+    "diagnose_sampler.py": "1e076038161dd9793e99f4aed703276040ad9ee3efbad1a0b1f23719965941e2",
+    "processes.R": "5f34b547333cf0dc39d2414aad6c1287d73d611b626dff9603fa097040b86c21"
+  },
+  "sampling_error": "missed an entire100ms sampling period\n",
+  "measurement_rows": {
+    "rss.csv": 1420,
+    "timings.csv": 1420
+  },
+  "elapsed_seconds": 142.34113744500002,
+  "host_after": {
+    "cgroup_membership": "0::/system.slice/hosted-compute-agent.service\n",
+    "cgroups": {
+      "/sys/fs/cgroup/system.slice/hosted-compute-agent.service": {
+        "cpu.stat": "usage_usec 612001272\nuser_usec 590143083\nsystem_usec 21858189\nnice_usec 3490000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=47.75 avg60=41.92 avg300=17.67 total=66305836\nfull avg10=0.16 avg60=0.05 avg300=0.00 total=327240\n"
+      },
+      "/sys/fs/cgroup/system.slice": {
+        "cpu.stat": "usage_usec 637299526\nuser_usec 608061286\nsystem_usec 29238240\nnice_usec 3505000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": "max 100000\n",
+        "cpu.pressure": "some avg10=48.09 avg60=42.09 avg300=17.92 total=67597811\nfull avg10=0.00 avg60=0.01 avg300=0.03 total=570287\n"
+      },
+      "/sys/fs/cgroup": {
+        "cpu.stat": "usage_usec 642270000\nuser_usec 607468000\nsystem_usec 34802000\nnice_usec 3505000\ncore_sched.force_idle_usec 0\nnr_periods 0\nnr_throttled 0\nthrottled_usec 0\nnr_bursts 0\nburst_usec 0\n",
+        "cpu.max": null,
+        "cpu.pressure": "some avg10=49.42 avg60=43.11 avg300=18.42 total=69664697\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0\n"
+      }
+    },
+    "loadavg": [
+      5.3759765625,
+      2.376953125,
+      0.9130859375
+    ]
+  }
+}

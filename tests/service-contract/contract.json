@@ -1,7 +1,7 @@
 {
   "contract_version": "funding-service-v1",
   "decision": "D-034",
-  "status": "proposed",
+  "status": "approved",
   "bind": {
     "host": "127.0.0.1",
     "port": 8765,

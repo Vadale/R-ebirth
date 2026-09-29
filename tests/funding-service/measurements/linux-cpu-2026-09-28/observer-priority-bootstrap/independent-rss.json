@@ -1,0 +1,25 @@
+{
+  "samples": 116194,
+  "max_gap_seconds": "0.186",
+  "peak_rss_bytes": 1518149632,
+  "worker_births": [
+    "1790644984.871285"
+  ],
+  "worker_first_sample": 32,
+  "worker_last_sample": 116191,
+  "nonlive_rows": [
+    {
+      "sample": 116193,
+      "identity": {
+        "pid": 39823,
+        "alive": false
+      }
+    }
+  ],
+  "terminal_records": 1000,
+  "terminal_states": {
+    "success": 334,
+    "invalid": 666
+  },
+  "retained_sampler_error": "process disappeared while sampling"
+}
