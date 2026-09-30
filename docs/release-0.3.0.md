@@ -1,8 +1,11 @@
 # relm 0.3.0 release verification
 
-Date: 2026-09-29. Publication authorized by the founder after WP12b integration.
-Current status: candidate verification; tag/publication and distribution checks
-are not yet complete.
+Verification: 2026-09-29. Release-specific CRAN exception approved 2026-09-30
+under [D-035](../DECISIONS.md#d-035--relm-030-distribution-scope-and-cran-warning-exception).
+This report records the local candidate evidence. The
+[release PR](https://github.com/Vadale/R-ebirth/pull/52) and
+[GitHub releases](https://github.com/Vadale/R-ebirth/releases) record final CI,
+publication and distribution verification as those steps complete.
 
 ## Delivered scope
 
@@ -91,9 +94,11 @@ Verified Mac binary SHA256:
 The binary comes from the corrected full source installation; its runtime
 inputs are byte-identical to the final archive. Receipts retain both identities.
 
-The local release checklist explicitly requests zero warnings. A founder decision
-on the two remaining CRAN-specific warnings is pending before publication.
-No waiver is inferred from the process exit code or from the successful tests.
+The founder explicitly approved publishing 0.3.0 on GitHub and r-universe with
+these two CRAN-specific warnings documented, while leaving CRAN preparation and
+publication to Phase 9 (D-035, 2026-09-30). This release-specific exception to the
+local zero-warning checklist does not waive failed tests or change numerical,
+resource, API or dependency gates. No clean CRAN check or CRAN acceptance is claimed.
 
 ## Publication and next work
 

@@ -1039,6 +1039,28 @@ these checks within already authorized work.
 
 ---
 
+## D-035 — relm 0.3.0 distribution scope and CRAN warning exception
+
+- **Date:** 2026-09-30. **Status:** approved by the founder.
+- **Decision:** publish relm 0.3.0 on GitHub and r-universe with the two recorded
+  CRAN-readiness warnings documented: vendored C/C++ pragmas and source builds
+  that obtain locked Rust crates online. This is a release-specific exception
+  to the local checklist's zero-warning requirement. CRAN preparation and the
+  publication decision remain Phase 9.
+- **Authorization:** after the two warnings and the checklist conflict were
+  explained, the founder explicitly approved proceeding and reaffirmed Phase 9
+  as the time to address CRAN publication. No further release approval is needed.
+- **Evidence:** all nine checks passed on preparation head `8095531`; built-package
+  installation, RStudio examples/demos and fresh application environments passed.
+  The [release report](docs/release-0.3.0.md) retains exact warning/skip scope and
+  source provenance. Final required checks and distribution verification remain.
+- **Limits:** no failed test is waived, no numerical/resource threshold changes,
+  no upstream code edits to hide diagnostics, and no clean CRAN check or CRAN
+  acceptance claim. The exception adds no dependency, backend or public API and
+  does not automatically waive warnings in future releases.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
