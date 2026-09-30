@@ -1,0 +1,158 @@
+{
+  "status": "passed",
+  "pid": 11999,
+  "purpose": "Classify the 30 warnings from the successful RStudio smoke; no changed acceptance gates",
+  "warnings": [
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds",
+      "call": "NULL"
+    },
+    {
+      "stage": "demo-A",
+      "message": "zero-length arrow is of indeterminate angle and so skipped",
+      "call": "graphics::arrows(L, res$lower, L, res$upper, angle = 90, code = 3,      length = 0.03, col = \"grey30\")"
+    },
+    {
+      "stage": "demo-A",
+      "message": "zero-length arrow is of indeterminate angle and so skipped",
+      "call": "graphics::arrows(L, res$lower, L, res$upper, angle = 90, code = 3,      length = 0.03, col = \"grey30\")"
+    },
+    {
+      "stage": "demo-A",
+      "message": "zero-length arrow is of indeterminate angle and so skipped",
+      "call": "graphics::arrows(L, res$lower, L, res$upper, angle = 90, code = 3,      length = 0.03, col = \"grey30\")"
+    },
+    {
+      "stage": "demo-A",
+      "message": "zero-length arrow is of indeterminate angle and so skipped",
+      "call": "graphics::arrows(L, res$lower, L, res$upper, angle = 90, code = 3,      length = 0.03, col = \"grey30\")"
+    },
+    {
+      "stage": "demo-A",
+      "message": "zero-length arrow is of indeterminate angle and so skipped",
+      "call": "graphics::arrows(L, res$lower, L, res$upper, angle = 90, code = 3,      length = 0.03, col = \"grey30\")"
+    },
+    {
+      "stage": "demo-A",
+      "message": "zero-length arrow is of indeterminate angle and so skipped",
+      "call": "graphics::arrows(L, res$lower, L, res$upper, angle = 90, code = 3,      length = 0.03, col = \"grey30\")"
+    }
+  ],
+  "warning_count": 30
+}

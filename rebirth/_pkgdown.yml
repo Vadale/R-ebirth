@@ -27,6 +27,13 @@ reference:
   - as.matrix.relm_trace
   - llm_steer
   - llm_ablate
+- title: Statistical probes
+  desc: Grouped binary ridge probes, held-out evaluation, and conditional intervals.
+  contents:
+  - activations
+  - llm_probe
+  - probe-methods
+  - predict.llm_probe
 - title: Models on disk
   desc: Fetch pinned, checksum-verified models.
   contents:

@@ -10,7 +10,9 @@ actually been tested. This is not a public network deployment or a new relm API.
 
 Use a trusted installed library containing the exact
 [23 application pins](../../tests/service-contract/dependencies.csv), the checked
-relm 0.2.0.9000 build and nanoarrow. Explicit dependency preparation can use:
+relm 0.3.0 build and nanoarrow. Prepare a new environment and store for this
+release; existing development snapshots and acceptance receipts keep their
+original package/source identities. Explicit dependency preparation can use:
 
 ```sh
 Rscript --vanilla tests/funding-service/install-pins.R /absolute/service-library

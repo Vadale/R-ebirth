@@ -81,9 +81,9 @@ before it). A prompt longer than the model's context window raises
 \code{relm_error_context_overflow}, whose message states by how much.
 
 With the supported Spark-X2.5 chat template, ordinary chat opens the response
-with the author's \code{<think>} marker. Generated reasoning text and closing
+with the author's \verb{<think>} marker. Generated reasoning text and closing
 markers are returned as generated and count toward \code{max_tokens}. With a
-\code{schema}, chat instead uses the author's \code{</think>} non-thinking opener, so
+\code{schema}, chat instead uses the author's \verb{</think>} non-thinking opener, so
 the JSON constraint starts at the first generated token. This does not strip
 or repair model output. Spark chat supports the pinned official template and
 the existing single user turn; custom templates require \code{chat = FALSE} and

@@ -1,0 +1,29 @@
+$citation
+To cite RStudio in publications use:
+
+  Posit team (2025). RStudio: Integrated Development
+  Environment for R. Posit Software, PBC, Boston, MA. URL
+  http://www.posit.co/.
+
+A BibTeX entry for LaTeX users is
+
+  @Manual{,
+    title = {RStudio: Integrated Development Environment for R},
+    author = {{Posit team}},
+    organization = {Posit Software, PBC},
+    address = {Boston, MA},
+    year = {2025},
+    url = {http://www.posit.co/},
+  }
+
+$mode
+[1] "desktop"
+
+$version
+[1] ‘2025.9.1.401’
+
+$long_version
+[1] "2025.09.1+401"
+
+$release_name
+[1] "Cucumberleaf Sunflower"

@@ -1,188 +1,138 @@
 # Getting started with relm
 
-This guide has two parts:
+relm is an ordinary R package with a native Rust/C++ engine. Use a prebuilt
+binary when one is available for your platform, or install from source with the
+toolchain below. The package name in R is **relm**; `rebirth/` is its directory
+inside the R-ebirth repository.
 
-- **Part A — Install and try it** (for anyone, including a first run on your own
-  machine).
-- **Part B — Publish it** (for the maintainer: r-universe, tagging a release, and
-  why CRAN comes later).
+Version **0.3.0** adds structured output and statistical probes; see the
+[release notes](../rebirth/NEWS.md#relm-030). Binary availability follows
+r-universe builds, so check the installed version before using the new features.
 
-`relm` is a normal R package. The only reason installation needs any thought
-is that it ships a Rust + C++ native engine (a vendored, patched `llama.cpp`), so
-you either install a **prebuilt binary** (nothing to compile) or build **from
-source** (needs a toolchain). Both are covered below.
+## Install from r-universe
 
----
-
-## Part A — Install and try it
-
-### Option 1 — Prebuilt binaries from r-universe (easiest, no toolchain)
-
-Once the r-universe is live (see Part B), anyone can install a binary — no Rust,
-no CMake, no compiler:
+The [relm r-universe page](https://vadale.r-universe.dev/relm) is live and
+distributes macOS and Linux builds. Prebuilt binaries need no Rust or C++
+toolchain:
 
 ```r
 install.packages(
   "relm",
   repos = c("https://vadale.r-universe.dev", getOption("repos"))
 )
+packageVersion("relm")
 ```
 
-This works on macOS and Linux (Windows support is a later phase) and is the
-recommended path for users.
+r-universe builds from `main`, so its version can differ from the latest tagged
+release. Check the installed version before using structured output or probes.
+Windows and CUDA remain deferred pending their own hardware acceptance.
 
-### Option 2 — From source, straight from GitHub (works today)
+## Install from source
 
-If you have a build toolchain, you can install directly from the GitHub repo
-right now, before any release is tagged. You need:
+You need R >= 4.5, Rust >= 1.85.0 (via [rustup](https://rustup.rs)),
+CMake >= 3.28, a C/C++ compiler and `xz`. On macOS, install Xcode command-line
+tools and CMake; on Linux, use the corresponding development packages.
 
-- **R** (>= 4.5)
-- **Rust** — install with [`rustup`](https://rustup.rs)
-- **CMake** (>= 3.28) — `brew install cmake` (macOS) / your distro's package
-- a **C/C++ compiler** (Xcode command-line tools on macOS; `build-essential` on
-  Debian/Ubuntu) and **xz**
-
-Then, in R:
+With the optional `remotes` package installed, run:
 
 ```r
-# install.packages("remotes")
 remotes::install_github("Vadale/R-ebirth", subdir = "rebirth")
-# (pak::pak("Vadale/R-ebirth/rebirth") also works)
 ```
 
-The first build compiles the vendored engine and takes several minutes; later
-installs are faster.
+This installs the current `main` checkout. The first native build can take
+several minutes. To install a local clone, run `devtools::install("rebirth")`
+from the repository root. The Cargo workspace is `rebirth/src/rust/`.
 
-### Option 3 — Local clone (for development)
+## First run
 
-```sh
-git clone https://github.com/Vadale/R-ebirth.git
-cd R-ebirth
-```
-```r
-# in R, from the repo root:
-devtools::install("rebirth")     # or: devtools::load_all("rebirth") to iterate
-```
-
-### First run (the smoke test)
-
-This downloads a small, checksum-verified Apache-2.0 model (~675 MB) and generates
-a few tokens. If this works, your install is good:
+This example downloads approximately 675 MB on its first run. The pinned
+Apache-2.0 model is verified by SHA256; later runs reuse a matching cached file.
 
 ```r
 library(relm)
 
-path <- llm_download("qwen2.5-0.5b-instruct-q8_0")   # verified by SHA256
+path <- llm_download("qwen2.5-0.5b-instruct-q8_0")
 m <- llm(path)
-
-# raw completion (chat = FALSE); the return is the continuation only:
-llm_generate(m, "The capital of France is", chat = FALSE, max_tokens = 8, temperature = 0)
-
+llm_generate(m, "The capital of France is", chat = FALSE,
+             max_tokens = 8, temperature = 0)
 close(m)
 ```
 
-### Run the two demos
+`chat = FALSE` continues the supplied text; only the continuation is returned.
+The default `chat = TRUE` applies the model's chat template. `temperature = 0`
+uses greedy generation.
 
-Both reproduce end-to-end on the Apache-2.0 model — no Python, no gated download:
+The [package quickstart](../rebirth/README.md#quickstart) continues with embeddings,
+a small activation trace and constrained JSON. Activations are numerical values
+inside the model; capture filters select the layers and token positions to inspect.
+Statistical probes in 0.3.0 use these values to measure predictive decodability
+with explicit source groups and optional held-out evaluation.
 
-```r
-vignette("topics-without-python", package = "relm")  # topic modelling
-vignette("anatomy-lab",           package = "relm")  # locating sentiment in a model
-```
+## Images and research demos
 
-The runnable demo scripts are in `tests/demos/` in a clone; the larger demo model
-is `llm_download("qwen2.5-1.5b-instruct-q4_k_m")`.
+For image input, load a vision-language model together with its companion
+projector, which translates images into values the language model can read.
+The pinned pair is `qwen2-vl-2b-instruct-q4_k_m` and
+`qwen2-vl-2b-instruct-mmproj-f16`. Each is downloaded separately with
+`llm_download()`; pass the projector path to `llm(projector = ...)` and a JPEG,
+PNG or BMP path to `llm_generate(images = ...)` or `llm_embed(images = ...)`.
 
-### Try vision (v0.2.0)
+The installed vignettes provide complete examples:
 
-Since v0.2.0 a vision-language model answers questions about images. Two
-registry aliases fetch the pinned Apache-2.0 pair — the model and its
-**projector** (the `mmproj-*.gguf` companion that enables image input):
+- `vignette("vision", package = "relm")` draws its own test images.
+- `vignette("anatomy-lab", package = "relm")` explores traces, probes and interventions.
+- `vignette("topics-without-python", package = "relm")` builds a topic map.
 
-```r
-model <- llm_download("qwen2-vl-2b-instruct-q4_k_m")                  # ~1 GB, verified
-v <- llm(model, projector = llm_download("qwen2-vl-2b-instruct-mmproj-f16"))
-llm_generate(v, "What is in this picture?", images = "photo.jpg")     # any JPEG/PNG/BMP
-```
+The topic demo optionally uses `uwot` and `dbscan`; probes use `glmnet`.
+Runnable scripts also live in [`tests/demos/`](../tests/demos/). Larger models
+are optional and are not needed for the first run.
 
-The fully self-contained walk-through (it draws its own test images) is
-`vignette("vision", package = "relm")`. No install step changes: r-universe
-rebuilds the binaries from `main` automatically, so the same
-`install.packages()` line from Option 1 delivers the vision build.
+## Offline batch and local service
 
-### Troubleshooting
+The 0.3.0 repository includes a
+[restartable batch application](../examples/funding-extraction/README.md) and a
+[loopback service template](../examples/funding-service/README.md). Follow each
+recipe's explicit setup step to prepare its isolated application dependencies
+and verify an existing model. Run and resume operations then work offline.
+These examples are repository applications, not new relm exports.
 
-- **"cargo/rustc not found" or a CMake error while installing** — you're building
-  from source without the toolchain. Install `rustup` + CMake (Option 2), or use a
-  binary (Option 1).
-- **macOS Metal** — used automatically on Apple Silicon; no configuration needed.
-- **Memory (16 GB Macs)** — stick to the 0.5B / 1.5B models; big `llm_trace()`
-  captures spill to disk automatically and never OOM the session.
-- **Ollama running** — stop its server before heavy sessions; it keeps models
-  resident and competes for RAM. (`relm` never depends on Ollama.)
+The service keeps one model worker alive, admits one request at a time and
+persists request tickets. Mac/Linux acceptance covers its declared resource
+limits, recovery and 1,000 same-worker requests; see the
+[acceptance report](service-implementation.md) for provenance and scope.
 
----
+Treat extraction results as data requiring review. Schema validity and reliable
+execution do not establish factual correctness. The
+[frozen D1 evaluation](d1-extraction-evaluation.md) failed all four quality
+promotion gates; operational acceptance did not change that result.
 
-## Part B — Publish it (maintainer)
+## Troubleshooting
 
-### Publish to r-universe (no review, cannot be rejected)
+- **Installation asks for cargo or CMake:** R is building from source. Install the
+  source toolchain, or select an available binary for your platform and R version.
+- **A function or argument is missing:** check `packageVersion("relm")` and restart
+  R after upgrading. Version 0.2.0 predates structured output and `llm_probe()`.
+- **Memory on a 16 GB Mac:** begin with the 0.5B model and narrow trace filters.
+  Traces above their configured budget spill to disk; model/context memory is
+  separate, and the full 4B-spill hardware acceptance remains open.
+- **Ollama is already running:** its server may keep another model in memory.
+  Stop it before memory-intensive relm sessions. relm does not depend on Ollama.
+- **Spark tracing fails:** generation is supported, but its activation trace
+  intentionally raises a classed unsupported error pending a numerical reference.
 
-r-universe is an **automatic build service**, not a gatekept repository like CRAN.
-You point it at this repo and it builds and hosts binaries (macOS — Apple
-silicon and Intel — and Linux; Windows is a later phase); there is no human
-review and nothing to be "accepted" or "rejected." Steps:
+## Maintainer release checks
 
-1. Sign in at [r-universe.dev](https://r-universe.dev) with your GitHub account.
-2. Because this package lives in the **`rebirth/` subdirectory** of the repo (not
-   at the repo root), r-universe needs to be told the subdir. Create a GitHub repo
-   named **`<your-universe>.r-universe.dev`** (e.g. `Vadale.r-universe.dev`)
-   containing a single file `packages.json`:
+The r-universe registry already points at this repository's `rebirth/`
+subdirectory and follows `main`. Account setup and repository visibility are
+complete. The maintainer's local release checklist covers versioning, package
+checks, tagging and publication; the public
+[development workflow](development-workflow.md) defines review and CI requirements.
 
-   ```json
-   [
-     { "package": "relm", "url": "https://github.com/Vadale/R-ebirth", "subdir": "rebirth" }
-   ]
-   ```
+For 0.3.0, verify the distribution build after integration, then install in a
+clean library, check `packageVersion("relm")`, load the package and run the
+first-run example. A green GitHub matrix does not by itself verify that a new
+r-universe binary is available. Record the actual published version and platform
+results; do not substitute an older binary or source build for this check.
 
-   (Confirm the exact field names against the current
-   [r-universe docs](https://docs.r-universe.dev) — the `subdir` monorepo option
-   is the key detail for our layout.)
-3. Within roughly an hour, `https://<your-universe>.r-universe.dev/relm` goes
-   live with binaries and a pkgdown site.
-
-If your universe name is **not** `vadale`, tell the maintainer notes / update the
-three places that hardcode the URL: the README badges + install block
-(`rebirth/README.md`), the root `README.md`, and `rebirth/_pkgdown.yml`.
-
-### Verify a clean install
-
-On a machine without the toolchain (or a fresh R), confirm the binary path works:
-
-```r
-install.packages("relm", repos = c("https://<your-universe>.r-universe.dev", getOption("repos")))
-library(relm); packageVersion("relm")   # the current release, e.g. 0.2.0
-```
-
-Then run the smoke test and one demo from Part A.
-
-### Tag the release
-
-Once you're happy, tag the release (this is the outward-facing step; the
-`release` skill in `.claude/skills/` walks the full checklist):
-
-```sh
-git tag -a v0.2.0 -m "relm 0.2.0"
-git push origin v0.2.0
-```
-
-### Why not CRAN yet
-
-CRAN is the restrictive, human-reviewed repository. This package is exactly the
-kind CRAN scrutinizes hardest: a **vendored Rust crate**, a **patched, vendored
-`llama.cpp`**, a **large native build**, and non-trivial `SystemRequirements`.
-CRAN also expects a mature, stable API and a clean `R CMD check --as-cran`, and
-submissions often take several rounds. The plan (see the work-package plans under `docs/`, Phase 9) is
-therefore: **r-universe now** for real, installable binaries with zero acceptance
-risk; **CRAN later**, once the package is stable and has users. How the code was
-written (with or without AI assistance) is irrelevant to either — r-universe does
-no review, and CRAN judges the code and policy compliance, not the author.
+CRAN preparation remains a later [package-plan](../SOLO-PHASE-PLAN.md) milestone alongside
+documentation and API stability work. The current package remains experimental.

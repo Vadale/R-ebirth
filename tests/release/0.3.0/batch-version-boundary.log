@@ -1,0 +1,3 @@
+PASS: 466 D2 process/canonical/identity assertions in 15.14s
+No model loading or inference; no extraction-quality or power-loss durability claim.
+Artifacts: /private/tmp/relm-release-0.3.0/batch-acceptance

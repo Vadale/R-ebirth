@@ -1,10 +1,12 @@
 # WP12b — Local service implementation and acceptance
 
-Date: 2026-09-29. **Operational acceptance complete; final PR checks and integration pending.**
+Date: 2026-09-29. **Operational acceptance and integration complete.**
 D-034 approved; WP12a PR #50 merged at `95066c7`. The
-[frozen contract](service-contract.md) remains binding. Draft
-[PR #51](https://github.com/Vadale/R-ebirth/pull/51) contains the application and
-acceptance tooling. No relm export or core dependency changes are included.
+[frozen contract](service-contract.md) remains binding.
+[PR #51](https://github.com/Vadale/R-ebirth/pull/51) merged the application and
+acceptance tooling at `06d1f555a7a698017b52dced1c583d7ac495cf02`. All nine
+checks passed on final head `93d4d6fbc1729d01c552ae2feb83ec3082e5251e`.
+No relm export or core dependency changes are included.
 
 **Acceptance (verbatim, execution plan):** Normal load, overload, failed requests
 and forced worker exit meet the WP12a limits. Run the selected path for 1,000
@@ -29,7 +31,7 @@ A failed worker is confirmed dead before replacement; interrupted admissions
 remain accounted for. Output, diagnostics, IPC, storage and process RSS are
 bounded under the contract.
 
-## Evidence for the current candidate
+## Evidence accepted for integration
 
 The earlier product correction at `a8a6ab3` has runtime SHA256
 `8e458534ccf171e4fa3ed85dab51743a5c821c47526aa634e116ca20ae973ed3`.
@@ -395,9 +397,11 @@ hardware leaves a gate unexecuted and exits nonzero.
 
 WP12b operational acceptance is complete on the declared Mac and Linux profiles,
 with reviewed source provenance: native stress on its recorded parent sources,
-separate final-source lifecycle/control checks, and all nine ordinary checks at
-`7c9505a`. Integration still requires all nine checks on the final evidence and
-documentation commit; no service or harness code changes in that milestone. Operational acceptance does
+separate final-source lifecycle/control checks, and all nine final PR checks at
+`93d4d6f`. PR #51 merged at `06d1f55`; the final evidence/documentation
+milestone changed no service or harness code. Release 0.3.0 changes the required
+relm version for freshly prepared application environments; these historical
+measurements retain their original package/source identity. Operational acceptance does
 not promote extraction quality: D1's negative result and the deferred
 stronger-model comparison remain unchanged. Windows/CUDA and the broader
 trace/generate stress obligations remain outside this service acceptance.

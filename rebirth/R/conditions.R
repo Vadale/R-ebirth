@@ -27,7 +27,7 @@ relm_abort <- function(class, message, fields = list(), call = sys.call(-1L)) {
 
 #' Raise a `relm_error_argument` for a specific argument
 #'
-#' A thin specialization of [relm_abort()] for the common case of an invalid
+#' A thin specialization of `relm_abort()` for the common case of an invalid
 #' function argument: it fixes the class to `"relm_error_argument"` and
 #' attaches the offending argument's name as the structured `argument` field, so
 #' each call site states only its argument name and its specific message.
@@ -49,7 +49,7 @@ abort_argument <- function(argument, message, call = sys.call(-1L)) {
 
 #' Raise a `relm_error_intervention` for a failed steer/ablate validation
 #'
-#' A thin specialization of [relm_abort()] fixing the class to
+#' A thin specialization of `relm_abort()` fixing the class to
 #' `"relm_error_intervention"` (API-GRAMMAR.md section 6: dimension/layer
 #' validation for `llm_steer()`/`llm_ablate()`). The intervention-domain checks
 #' (unsupported architecture, out-of-range layer, the layer-1 steer limit,
@@ -71,7 +71,7 @@ abort_intervention <- function(message, fields = list(), call = sys.call(-1L)) {
 
 #' Raise a `relm_error_image` for a failed image / vision operation
 #'
-#' A thin specialization of [relm_abort()] fixing the class to
+#' A thin specialization of `relm_abort()` fixing the class to
 #' `"relm_error_image"` (API-GRAMMAR.md section 6, D-026): image decode/parse
 #' failure, unsupported/oversized image, projector (mmproj) load failure or
 #' mmproj-model mismatch, or images supplied to a handle loaded without a
@@ -94,7 +94,7 @@ abort_image <- function(message, fields = list(), call = sys.call(-1L)) {
 
 #' Raise a `relm_error_download` for a failed model download
 #'
-#' A thin specialization of [relm_abort()] fixing the class to
+#' A thin specialization of `relm_abort()` fixing the class to
 #' `"relm_error_download"` (API-GRAMMAR.md section 6: checksum failures are
 #' fail-closed). The download-domain rejections (a non-HTTPS URL, an unknown
 #' registry alias, a network failure, a SHA256 mismatch, an unwritable cache

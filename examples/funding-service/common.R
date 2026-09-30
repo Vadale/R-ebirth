@@ -28,7 +28,7 @@ svc_library <- function(path) {
     if (pkg %in% loadedNamespaces() && normalizePath(getNamespaceInfo(asNamespace(pkg), 'path')) != where)
       app_abort(paste('Use a fresh R process; namespace already loaded:', pkg), 'environment')
     version <- read.dcf(file.path(where, 'DESCRIPTION'), 'Version')[[1L]]
-    want <- if (pkg == 'relm') '0.2.0.9000' else pins$version[match(pkg, pins$package)]
+    want <- if (pkg == 'relm') '0.3.0' else pins$version[match(pkg, pins$package)]
     if (pkg != 'nanoarrow' && !identical(version, want))
       app_abort(paste('Unapproved package version:', pkg), 'environment')
   }

@@ -1,0 +1,82 @@
+{
+  "pid": 6674,
+  "status": "completed",
+  "stages": [
+    {
+      "name": "build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "started_at": 1790665610.179313,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790665770.20225
+    },
+    {
+      "name": "check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--as-cran",
+        "--install-args=--build",
+        "--output=/private/tmp/relm-release-0.3.0/packaging-corrected/check",
+        "/private/tmp/relm-release-0.3.0/packaging-corrected/relm_0.3.0.tar.gz"
+      ],
+      "started_at": 1790665770.2058802,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790666021.6385002
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--library=/private/tmp/relm-release-0.3.0/packaging-corrected/library",
+        "/private/tmp/relm-release-0.3.0/packaging-corrected/relm_0.3.0.tgz"
+      ],
+      "started_at": 1790666021.646487,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790666021.94322
+    },
+    {
+      "name": "installed-version",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        ".libPaths(c('/private/tmp/relm-release-0.3.0/packaging-corrected/library',.libPaths())); stopifnot(as.character(packageVersion('relm'))=='0.3.0'); print(find.package('relm')); print(packageVersion('relm'))"
+      ],
+      "started_at": 1790666021.943537,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790666022.020674
+    },
+    {
+      "name": "pkgdown",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        ".libPaths(c('/private/tmp/relm-release-0.3.0/packaging-corrected/library',.libPaths())); options(warn=1); pkgdown::build_site('/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth', override=list(destination='/private/tmp/relm-release-0.3.0/packaging-corrected/site'), install=FALSE, new_process=FALSE, preview=FALSE)"
+      ],
+      "started_at": 1790666022.020988,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790666049.4023309
+    }
+  ],
+  "started_at": 1790665610.179137,
+  "stage": "pkgdown",
+  "source_tarball_sha256": "bddf546c4476142e5f16c4ac88c5baa38124f5848980f923e03f19c34e99341d",
+  "mac_binary": "/private/tmp/relm-release-0.3.0/packaging-corrected/relm_0.3.0.tgz",
+  "mac_binary_sha256": "d8d09f35df2452c87a51cb6562960e55207798f3bd083edb2dd01e89472094ba",
+  "acceptance": "inspect check log warnings and notes before release",
+  "finished_at": 1790666049.40265
+}

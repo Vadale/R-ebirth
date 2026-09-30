@@ -55,10 +55,27 @@ dependency closure. WP12b implementation and operational acceptance are complete
 see its [implementation report](service-implementation.md). Mac acceptance and
 Linux parent-source G7 pass with independent verification of 1,000 same-worker
 requests, continuous sampling and unchanged memory limits. The post-measurement
-teardown marker and earlier failed runs remain explicit. All nine ordinary checks
-at `7c9505a` and final-source Linux G5/G6/G8 run `36524582952` pass. G7 retains its
-original source identity. The remaining step is PR integration after checks on
-the final evidence/documentation commit.
+teardown marker and earlier failed runs remain explicit. Final-source Linux
+G5/G6/G8 run `36524582952` and all nine final PR checks on `93d4d6f` pass.
+PR #51 merged at `06d1f55` on 2026-09-29. G7 retains its original source identity;
+no measurement is relabelled as a release-source rerun.
+
+### After the 0.3.0 release
+
+The founder authorized packaging and publishing this completed increment on
+2026-09-29. The release does not start another implementation work package.
+Once distribution is verified, the default roadmap sequence resumes with
+**WP9, asynchronous generation**, then **WP10, token streaming**: keep RStudio
+responsive during generation, then expose incremental token results through
+the approved R interface. Their concrete designs, cancellation/error semantics
+and any API or dependency amendments must be settled before implementation.
+
+Later work remains live introspection, runtime types and general serving,
+Windows/CUDA on suitable hardware, and CRAN preparation/documentation/API freeze.
+The delivered local service is one application recipe; it does not complete the
+broader typed-serving or asynchronous core milestones. I1 is still conditional
+on an actual caller. A stronger-model extraction comparison remains a separate,
+bounded quality experiment, not a prerequisite for these engineering steps.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
 |---|---|---|---|
@@ -153,9 +170,9 @@ outside its contract.
 For a responsive small-team pilot, evaluate an existing HTTP stack with one
 persistent inference worker, or an existing outer admission layer supervising
 one synchronous worker. Plumber plus an established worker integration is a
-candidate in the original plan. WP12a now proposes Plumber + callr + later
-in [D-034's concrete contract](service-contract.md), approved on 2026-09-28. Do not build
-a queue.
+candidate in the original plan. WP12a selected Plumber + callr + later
+in [D-034's concrete contract](service-contract.md), approved on 2026-09-28;
+WP12b implemented and validated that recipe. It has no job queue.
 
 Each worker constructs and closes its own model. Exchange configuration and
 ordinary data, not serialized or fork-inherited native pointers. Calls using a
@@ -182,9 +199,9 @@ promised by this milestone.
 
 ## 5. Correctness and evaluation gates
 
-These are **planned acceptance requirements, not executed checks**. Their
-eventual commands, fixtures, platform and result belong in the
-[validation ledger](validation-status.md).
+These requirements were frozen at the planning stage. They are not themselves
+execution evidence; the commands, fixtures, platforms and actual results are
+recorded in the [validation ledger](validation-status.md).
 
 1. **Constrained output:** document and reject unsupported schema constructs;
    never silently drop constraints. Validate successful outputs independently.
@@ -232,7 +249,9 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** integrate the accepted WP12b service after the final PR checks
-pass. The implementation report records actual Mac/Linux outcomes and exact
-source provenance. No new work package or release is started by this milestone.
+**Next action:** prepare and verify relm 0.3.0 from the integrated increment.
+The implementation report records actual Mac/Linux outcomes and exact source
+provenance; package publication and binary verification remain release steps.
+No next feature WP is selected here. I1 still requires a demonstrated caller;
+the remaining async/streaming and later phases retain their roadmap order.
 D1's negative quality result and deferred stronger-model comparison are unchanged.
