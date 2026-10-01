@@ -17,3 +17,4 @@ The binding root documents are [SOLO-PHASE-PLAN.md](../SOLO-PHASE-PLAN.md),
 - [D1 extraction evaluation](d1-extraction-evaluation.md): bounded development experiment, frozen candidate and quality evidence.
 
 - [External statistical assistants](external-assistants-plan.md) — portable R skill foundation and I1 after WP9/WP10 (D-036).
+- [WP9 async proposal](wp9-async-plan.md) — proposed API, dependency and native ownership contract; not implemented.

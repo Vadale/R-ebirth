@@ -1090,6 +1090,34 @@ these checks within already authorized work.
 
 ---
 
+## D-037 — WP9 native async contract (proposal)
+
+- **Date:** 2026-10-01. **Status:** proposed; concrete founder approval pending.
+- **Proposed decision:** add `async = FALSE` and `on_progress = NULL` to
+  `llm_generate()`, plus `llm_cancel(m)`. Async returns a standard promise whose
+  resolved value preserves the existing named character vector and seed. One
+  native job per R process, no queue, bounded retained data and cooperative
+  cancellation; R objects/callbacks remain on the R main thread.
+- **Dependencies proposed:** optional `later (>= 1.4.8)` and
+  `promises (>= 1.5.0)` in Suggests, with the explicit optional transitive
+  rlang/lifecycle/magrittr exception and observed closure documented in
+  [the WP9 plan](docs/wp9-async-plan.md). No Rust dependency or vendor patch.
+- **Ownership proposed:** exclusive checked native execution permits, reuse of
+  the loaded model, safe worker handoff, and deferred freeing on close/GC while
+  a job is active. Existing creator-thread assertions cannot simply be removed.
+- **Why:** responsive interactive R without duplicating model weights or replacing
+  the already delivered process-isolated service. Establish safe bounded hooks
+  for WP10 without publishing its token interface prematurely.
+- **Alternatives:** a new process worker duplicates loading/state and overlaps the
+  service; a permanent actor rewrites all native dispatch; both are retained as
+  alternatives if the ownership feasibility gate invalidates this recommendation.
+- **Approval scope:** exact signatures, conditions, progress schema, memory/admission
+  bounds, optional dependency closure and close/cancellation behavior in the plan.
+  The instruction to resume WP9 authorizes this design work, not an unreviewed
+  exported API. No product implementation or acceptance result is claimed.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
