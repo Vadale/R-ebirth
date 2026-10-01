@@ -1,7 +1,8 @@
 # WP9 — Native asynchronous generation
 
-Date: 2026-10-01. **Implementation and local automated verification complete;
-foreground RStudio acceptance and final PR CI remain pending.** D-037 is
+Updated: 2026-10-02. **Implementation and local automated verification complete;
+initial PR CI failed on macOS. Foreground RStudio and final CI acceptance remain
+open.** D-037 is
 approved. This development change follows relm 0.3.0; it is not a new release.
 The [approved contract](wp9-async-plan.md) and API-GRAMMAR remain binding.
 
@@ -85,6 +86,31 @@ with that access; no Metal case was replaced with CPU to hide a failure.
 
 The raw failed compiler/R results remain in the measurement directory. The
 successful rerun neither erases them nor changes any numerical tolerance.
+
+## First PR CI: macOS lifecycle timeout under diagnosis
+
+At `1bd29c07c9170d112ab1735bd33b625c9eb4fc6a`, seven of nine checks passed:
+all five Rust/structural checks and both Linux R jobs, including Rust 1.85.0.
+Both macOS R jobs failed the fresh-process synthetic-model close/GC test because
+its child exceeded the unchanged 30-second deadline. macOS release recorded
+2 failed expectations, 1 warning, 66 skips and 2,475 passes. macOS oldrel also
+failed to settle the responsiveness fixture within ten seconds, followed by busy
+conditions in subsequent tests (80 failures, 1 warning, 66 skips, 947 passes).
+The pending job plausibly explains the later busy cascade; the reason for the
+original stalls is **not yet established**.
+
+The initial child log had no intermediate progress, so it cannot distinguish
+slow setup, deferred destruction or event-loop delivery. The next candidate adds
+elapsed/CPU timestamps before and after each child expression, retains the child
+script/log on failure, and reports native worker/terminal counters when promise
+waiting expires. It changes no product code, timeout or acceptance assertion.
+The two affected test files pass locally against the same installed library:
+32 cases, 1,313 expectations, four explicit model skips, no failures.
+
+Raw failed CI logs/check results and the local diagnostic-harness verification
+are preserved in [the CI measurement directory](../tests/async/measurements/ci-2026-10-02/).
+The added diagnostics justify a new remote execution; they do not establish a
+fix, and a later passing run alone must not be presented as a proven root cause.
 
 ## Remaining acceptance and integration
 

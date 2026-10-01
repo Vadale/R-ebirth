@@ -29,8 +29,10 @@ application version-boundary results and the explicitly retained CRAN findings.
 WP9's approved D-037 implementation has passed local native, R async/lifecycle/
 memory and remaining package regressions. Its [execution report](wp9-implementation.md)
 retains the initial callback/sandbox failures and scoped package-check warnings.
-Foreground RStudio responsiveness and final PR CI remain open; WP9 is not yet
-accepted or released.
+Foreground RStudio responsiveness and final PR CI remain open. Initial PR54 CI
+passed seven checks but failed both macOS R legs on a lifecycle subprocess
+timeout; additional diagnostics preserve the limits while investigating the
+unknown cause. WP9 is not yet accepted or released.
 
 ## Implemented checks
 

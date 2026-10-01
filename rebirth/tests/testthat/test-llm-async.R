@@ -34,7 +34,15 @@ async_test_wait <- function(result, timeout = 10) {
   while (!result$done && unname(proc.time()[["elapsed"]]) < deadline) {
     later::run_now(0.05, loop = later::global_loop())
   }
-  expect_true(result$done, info = "async promise did not settle before test timeout")
+  diagnostic <- "async promise did not settle before test timeout"
+  if (!result$done) {
+    # Distinguish a still-running worker from a terminal result whose R callback
+    # was not delivered. Read-only counters do not collect or cancel the job.
+    counters <- relm:::rebirth_async_test_stats()
+    diagnostic <- paste(diagnostic,
+      paste(capture.output(str(counters)), collapse = "\n"), sep = "\n")
+  }
+  expect_true(result$done, info = diagnostic)
   invisible(result)
 }
 

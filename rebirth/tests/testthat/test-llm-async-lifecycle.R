@@ -8,8 +8,26 @@ async_lifecycle_process <- function(body, timeout = 30) {
   log <- tempfile(fileext = ".log")
   on.exit(unlink(c(script, log)), add = TRUE)
   libraries <- paste(capture.output(dput(.libPaths())), collapse = "\n")
-  prelude <- c(paste0(".libPaths(", libraries, ")"),
+  # Keep the existing deadline and assertions. Per-expression timing identifies
+  # whether a remote timeout is in model setup, deferred destruction or draining.
+  expressions <- parse(text = body, keep.source = FALSE)
+  instrumented <- unlist(lapply(seq_along(expressions), function(i) {
+    code <- deparse(expressions[[i]], width.cutoff = 500L)
+    label <- encodeString(sprintf("%03d %s", i, code[[1L]]), quote = '"')
+    c(paste0(".relm_lifecycle_step('begin', ", label, ")"), code,
+      paste0(".relm_lifecycle_step('end', ", label, ")"))
+  }), use.names = FALSE)
+  prelude <- c(
+    ".relm_lifecycle_started <- proc.time()",
+    ".relm_lifecycle_step <- function(phase, label) {",
+    "  t <- proc.time() - .relm_lifecycle_started",
+    "  cat(sprintf('ASYNC_STAGE %s elapsed=%.3f cpu=%.3f %s\\n', phase, t[['elapsed']], t[['user.self']] + t[['sys.self']], label))",
+    "  flush(stdout())",
+    "}",
+    ".relm_lifecycle_step('begin', 'load namespaces')",
+    paste0(".libPaths(", libraries, ")"),
     "library(relm)", "stopifnot(requireNamespace('later'), requireNamespace('promises'))",
+    ".relm_lifecycle_step('end', 'load namespaces')",
     "new_fixture <- function(mode = 'success', steps = 100L, delay = 2L) {",
     "  m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()), '<fixture>')",
     "  relm:::relm_check(relm:::rebirth_async_test_config(m$ptr, mode, steps, delay))",
@@ -26,10 +44,15 @@ async_lifecycle_process <- function(body, timeout = 30) {
     "  while (!x$done && proc.time()[['elapsed']] < until) later::run_now(0.05)",
     "  stopifnot(x$done, x$count == 1L, is.null(relm:::.relm_async$job))",
     "}")
-  writeLines(c(prelude, body, "cat('ASYNC_LIFECYCLE_OK\\n')"), script)
+  writeLines(c(prelude, instrumented, "cat('ASYNC_LIFECYCLE_OK\\n')"), script)
   status <- system2(file.path(R.home("bin"), "Rscript"),
     c("--vanilla", shQuote(script)), stdout = log, stderr = log, timeout = timeout)
   output <- paste(readLines(log, warn = FALSE), collapse = "\n")
+  if (!identical(status, 0L)) {
+    # R CMD check artifacts retain these even after its temporary child exits.
+    dir.create("_problems", showWarnings = FALSE)
+    file.copy(c(script, log), "_problems", overwrite = TRUE)
+  }
   expect_equal(status, 0L, info = output)
   expect_match(output, "ASYNC_LIFECYCLE_OK", fixed = TRUE)
   expect_false(grepl("panicked at|thread.*panicked|fatal error|segmentation fault", output,

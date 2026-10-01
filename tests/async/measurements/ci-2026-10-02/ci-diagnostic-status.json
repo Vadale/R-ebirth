@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "phase": "ci-diagnostic",
+  "pid": 12528,
+  "started_at": 1790893334.830574,
+  "stages": [
+    {
+      "name": "r-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-wp9/ci-diagnostic.R"
+      ],
+      "started_at": 1790893334.834674,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790893352.403956
+    }
+  ],
+  "stage": "r-tests",
+  "finished_at": 1790893352.404364
+}
