@@ -7,7 +7,7 @@
 #   can never gate a PR (the nightly-model-tolerance.yaml discipline).
 #
 # WHAT IT RUNS (the [MODEL] vision suite, WP-V2..V4):
-#   R side  — tests/testthat filter "vision": the T1 byte-exact greedy text leg vs
+#   R side  — tests/testthat filter "vision|async": the T1 byte-exact greedy text leg vs
 #             the unpatched b9726 reference, the mmproj-mismatch and degenerate-dims
 #             contracts, the rule-8a over-n_batch multimodal decode, and the T2
 #             cat-vs-car similarity gate. (The T2 exact pooled pin skips here by
@@ -79,6 +79,8 @@ jobs:
     timeout-minutes: 120
 
     env:
+      # D-037: controlled concurrency tests own their threads; other native tests serialize.
+      RUST_TEST_THREADS: "1"
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
       TARBALL_URL: https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz
@@ -147,7 +149,7 @@ jobs:
           close(m)
           library(testthat)
           res <- test_dir("tests/testthat",
-            filter = "vision", reporter = "summary", stop_on_failure = TRUE
+            filter = "vision|async", reporter = "summary", stop_on_failure = TRUE
           )
           df <- as.data.frame(res)
           # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
@@ -217,6 +219,16 @@ jobs:
              tests/vision/red-square.png "$RUNNER_TEMP/upstream-here.txt"
           echo "RELM_VISION_ENCODER_REFERENCE=$RUNNER_TEMP/upstream-here.txt" >> "$GITHUB_ENV"
           echo "this machine's upstream reference: $(head -1 "$RUNNER_TEMP/upstream-here.txt")"
+
+      - name: Async vision cancellation and shared-projector lifetime
+        working-directory: rebirth/src/rust
+        shell: bash
+        env:
+          RELM_REQUIRE_ASYNC_VLM: "1"
+        run: |
+          set -euo pipefail
+          cargo test --locked -p rebirth-llm --lib async_vlm_cancel_and_drop_at_native_boundaries -- --nocapture 2>&1 | tee async-vlm-tests.log
+          grep -Fx "ASYNC_VLM_BOUNDARIES_PASSED" async-vlm-tests.log
 
       - name: Run the engine-side golden gates (embd-ATOL leg + token-ids pin + T2 probe)
         working-directory: rebirth/src/rust

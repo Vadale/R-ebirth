@@ -20,6 +20,8 @@
 
 use std::ffi::CStr;
 
+mod async_job;
+mod domain;
 mod embed;
 mod engine;
 mod error;
@@ -34,6 +36,14 @@ mod structured;
 mod trace;
 mod vision;
 
+pub use async_job::{
+    restore_async_panic_hook, AsyncCompletion, AsyncFixtureMode, AsyncJob, AsyncRequest,
+    AsyncStartFailure, ProgressSnapshot, ASYNC_IMAGE_ROW_BYTES, ASYNC_IMAGE_ROW_OVERHEAD,
+    ASYNC_MAX_ARGUMENT_BYTES, ASYNC_MAX_DESCRIPTOR_BYTES, ASYNC_MAX_OUTPUT_BYTES,
+    ASYNC_MAX_PROMPTS, ASYNC_MAX_PROMPT_BYTES, ASYNC_MAX_STORAGE_BYTES, ASYNC_MAX_TOKENS,
+    ASYNC_STRING_DESCRIPTOR_BYTES, ASYNC_STRING_OVERHEAD,
+};
+pub use domain::{ExecutionGuard, ExecutionPermit, NativeGuard};
 pub use embed::{Embeddings, Pooling};
 pub use engine::{
     available_backends, load, load_with_batch, BackendKind, LoadRequest, LoadedModel, ModelMetadata,
@@ -62,12 +72,14 @@ pub use vision::{validate_image_file, IMAGE_HARD_MAX_BYTES, IMAGE_MAX_DIM, IMAGE
 /// Low-level: prefer [`engine::available_backends`] / [`load`], which manage a
 /// reference-counted backend for you. Pairs with [`backend_free`].
 pub fn backend_init() {
+    let _native = NativeGuard::acquire("backend_init");
     // SAFETY: takes no arguments; only sets up global engine state.
     unsafe { ffi::llama_backend_init() }
 }
 
 /// Free the process-global backend. Pairs with [`backend_init`].
 pub fn backend_free() {
+    let _native = NativeGuard::acquire("backend_free");
     // SAFETY: takes no arguments; only tears down global engine state.
     unsafe { ffi::llama_backend_free() }
 }
@@ -76,6 +88,7 @@ pub fn backend_free() {
 ///
 /// Returns an owned copy of the engine's static string (empty if unavailable).
 pub fn system_info() -> String {
+    let _native = NativeGuard::acquire("system_info");
     // SAFETY: llama_print_system_info returns a pointer to a static, NUL-
     // terminated C string owned by the engine; we only read and copy it.
     let ptr = unsafe { ffi::llama_print_system_info() };
@@ -90,24 +103,28 @@ pub fn system_info() -> String {
 
 /// Whether this build can offload compute to a GPU backend (e.g. Metal).
 pub fn supports_gpu_offload() -> bool {
+    let _native = NativeGuard::acquire("supports_gpu_offload");
     // SAFETY: takes no arguments; pure query into the ggml backend registry.
     unsafe { ffi::llama_supports_gpu_offload() }
 }
 
 /// Whether this build supports memory-mapping model files.
 pub fn supports_mmap() -> bool {
+    let _native = NativeGuard::acquire("supports_mmap");
     // SAFETY: takes no arguments; pure capability query.
     unsafe { ffi::llama_supports_mmap() }
 }
 
 /// Whether this build supports locking model pages in RAM.
 pub fn supports_mlock() -> bool {
+    let _native = NativeGuard::acquire("supports_mlock");
     // SAFETY: takes no arguments; pure capability query.
     unsafe { ffi::llama_supports_mlock() }
 }
 
 /// Maximum number of devices this build can address.
 pub fn max_devices() -> usize {
+    let _native = NativeGuard::acquire("max_devices");
     // SAFETY: takes no arguments; pure capability query.
     unsafe { ffi::llama_max_devices() }
 }

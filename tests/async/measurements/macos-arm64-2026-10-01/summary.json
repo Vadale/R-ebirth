@@ -1,0 +1,34 @@
+{
+  "async": {
+    "cases": 35,
+    "expectations_passed": 1355,
+    "expectations_failed": 0,
+    "skipped_cases": 0,
+    "error_cases": 0,
+    "test_warnings": 0
+  },
+  "integration": {
+    "cases": 251,
+    "expectations_passed": 1177,
+    "expectations_failed": 0,
+    "skipped_cases": 48,
+    "error_cases": 0,
+    "test_warnings": 0
+  },
+  "native_vlm_boundary_cases": 6,
+  "native_vlm_marker_present": true,
+  "package_check": {
+    "errors": 0,
+    "warnings": 2,
+    "reason": "Source built without rendered vignettes; no-install/no-tests/no-vignettes/no-manual scope. Examples executed."
+  },
+  "rstudio": "not_run_locked_mac",
+  "final_pr_ci": "not_dispatched",
+  "historical_failures": [
+    "compile tuple type inference (fixed)",
+    "acceptance R final-callback lazy argument (fixed)",
+    "acceptance Metal denied in sandbox (diagnosed; passed with GPU permission)"
+  ],
+  "out_of_test_warning": "testthat built under R 4.5.2; local R 4.5.1",
+  "format_check": "cargo fmt --all --check and explicit async_boundary.rs rustfmt passed after last native edit"
+}

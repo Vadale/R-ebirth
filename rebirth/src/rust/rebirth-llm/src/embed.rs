@@ -140,7 +140,7 @@ impl EmbeddingContext {
         // SAFETY: `self.ptr` is a live context; `llama_get_memory` returns its
         // (non-owning) memory handle, cleared in place.
         unsafe {
-            let mem = ffi::llama_get_memory(self.ptr.as_ptr());
+            let mem = ffi::llama_get_memory(self.as_ptr());
             if !mem.is_null() {
                 ffi::llama_memory_clear(mem, true);
             }
@@ -167,7 +167,7 @@ impl EmbeddingContext {
         // fully-populated batch whose arrays outlive the call (owned by `batch`,
         // dropped after it). `llama_decode` reads the batch by value; `ptr::read`
         // bitwise-copies it without giving up ownership of the backing arrays.
-        let status = unsafe { ffi::llama_decode(self.ptr.as_ptr(), std::ptr::read(&batch.raw)) };
+        let status = unsafe { ffi::llama_decode(self.as_ptr(), std::ptr::read(&batch.raw)) };
         if status != 0 {
             return Err(RebirthError::Embed {
                 reason: format!(
@@ -191,7 +191,7 @@ impl EmbeddingContext {
         // a pointer to `n_embd` f32 owned by the context (valid until the next
         // decode). NULL means the slot produced no embedding — an inconsistency,
         // since we flagged every token for output.
-        let ptr = unsafe { ffi::llama_get_embeddings_ith(self.ptr.as_ptr(), ith) };
+        let ptr = unsafe { ffi::llama_get_embeddings_ith(self.as_ptr(), ith) };
         if ptr.is_null() {
             return Err(RebirthError::Embed {
                 reason: format!(
@@ -274,6 +274,7 @@ impl LoadedModel {
     /// Exact-value building block for the synthetic golden test: the per-token
     /// post-final-norm embeddings for a raw id sequence (no tokenizer needed).
     pub fn token_embeddings(&self, ids: &[i32]) -> Result<Vec<Vec<f32>>, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("token_embeddings")?;
         self.validate_ids(ids)?;
         self.check_embed_fits(ids.len())?;
         let ctx = self.create_embedding_context(self.embedding_n_ctx(ids.len()))?;
@@ -288,6 +289,7 @@ impl LoadedModel {
         pooling: Pooling,
         normalize: bool,
     ) -> Result<Embeddings, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("embed_token_batch")?;
         let reduction = self.resolve_reduction(pooling)?;
         let mut longest = 0usize;
         for ids in batches {
@@ -314,6 +316,7 @@ impl LoadedModel {
         pooling: Pooling,
         normalize: bool,
     ) -> Result<Embeddings, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("embed_texts")?;
         self.require_tokenizer()?;
         let reduction = self.resolve_reduction(pooling)?;
 

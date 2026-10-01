@@ -1,0 +1,91 @@
+{
+  "status": "passed",
+  "phase": "rust",
+  "pid": 89360,
+  "started_at": 1790888773.33773,
+  "stages": [
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_at": 1790888773.342048,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790888813.9273028
+    },
+    {
+      "name": "async-debug",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "async"
+      ],
+      "started_at": 1790888813.927627,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790888821.393835
+    },
+    {
+      "name": "async-release",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "rebirth-llm",
+        "async"
+      ],
+      "started_at": 1790888821.395048,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790888892.76791
+    },
+    {
+      "name": "engine",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm"
+      ],
+      "started_at": 1790888892.7691798,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790888893.9182458
+    },
+    {
+      "name": "ffi",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi"
+      ],
+      "started_at": 1790888893.918557,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790888936.1165261
+    }
+  ],
+  "stage": "ffi",
+  "finished_at": 1790888936.116948
+}

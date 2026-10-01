@@ -551,7 +551,7 @@ impl TraceContext {
         // SAFETY: `self.ptr` is a live context; `llama_get_memory` returns its
         // (non-owning) memory handle, cleared in place.
         unsafe {
-            let mem = ffi::llama_get_memory(self.ptr.as_ptr());
+            let mem = ffi::llama_get_memory(self.as_ptr());
             if !mem.is_null() {
                 ffi::llama_memory_clear(mem, true);
             }
@@ -572,7 +572,7 @@ impl TraceContext {
         // populated batch whose arrays outlive the call (owned by `batch`).
         // `llama_decode` reads the batch by value; `ptr::read` bitwise-copies it
         // without giving up ownership of the backing arrays.
-        let status = unsafe { ffi::llama_decode(self.ptr.as_ptr(), std::ptr::read(&batch.raw)) };
+        let status = unsafe { ffi::llama_decode(self.as_ptr(), std::ptr::read(&batch.raw)) };
         if status != 0 {
             return Err(RebirthError::Trace {
                 reason: format!(
@@ -964,6 +964,7 @@ impl LoadedModel {
         ids: &[i32],
         spec: &CaptureSpec,
     ) -> Result<Vec<CaptureRow>, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("activations")?;
         self.capture_in_memory(&[ids], &[], spec)
     }
 
@@ -977,6 +978,7 @@ impl LoadedModel {
         spec: &CaptureSpec,
         plan: &SpillPlan,
     ) -> Result<TraceOutput, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("trace_token_batch_spill")?;
         self.trace_capture_planned(batches, &[], spec, plan)
     }
 
@@ -993,6 +995,7 @@ impl LoadedModel {
         spec: &CaptureSpec,
         plan: &SpillPlan,
     ) -> Result<TraceOutput, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("trace_texts_spill")?;
         self.require_tokenizer()?;
         if texts.is_empty() {
             return Ok(TraceOutput::Memory {

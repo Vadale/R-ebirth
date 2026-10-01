@@ -49,10 +49,9 @@ use std::os::raw::{c_char, c_int};
 use std::path::Path;
 use std::ptr::NonNull;
 use std::sync::{Mutex, Once, PoisonError};
-use std::thread::ThreadId;
 
 use crate::embed::{l2_normalize, reduce, Embeddings, Pooling};
-use crate::engine::{assert_r_main_thread, EmbeddingContext, LoadedModel};
+use crate::engine::{EmbeddingContext, LoadedModel};
 use crate::error::RebirthError;
 use crate::ffi;
 use crate::generate::Batch;
@@ -331,20 +330,19 @@ fn parse_embd_mismatch(log: &str) -> Option<(i32, i32)> {
 /// the last handle is gone.
 pub(crate) struct VisionContext {
     ptr: NonNull<ffi::mtmd_context>,
-    /// The R main thread the context was created on (D-008 G2 confinement).
-    owner: ThreadId,
 }
 
 impl VisionContext {
     pub(crate) fn as_ptr(&self) -> *mut ffi::mtmd_context {
-        assert_r_main_thread(self.owner, "VisionContext::as_ptr");
+        crate::domain::assert_current();
         self.ptr.as_ptr()
     }
 }
 
 impl Drop for VisionContext {
     fn drop(&mut self) {
-        assert_r_main_thread(self.owner, "VisionContext::drop");
+        let _native = crate::domain::NativeGuard::for_drop();
+        crate::domain::assert_current();
         // SAFETY: `ptr` came from `mtmd_init_from_file` and is freed exactly
         // once, before the model it references (Model::drop takes the vision
         // context first).
@@ -368,6 +366,7 @@ pub(crate) fn load_projector(
     mmproj: &Path,
     use_gpu: bool,
 ) -> Result<VisionContext, RebirthError> {
+    crate::domain::assert_current();
     let path_display = mmproj.display().to_string();
     let image_err =
         |reason: String, expected: Option<i32>, actual: Option<i32>| RebirthError::Image {
@@ -461,10 +460,7 @@ pub(crate) fn load_projector(
     };
 
     // From here on the probe is RAII-owned: any early return frees it.
-    let probe = VisionContext {
-        ptr: probe_ptr,
-        owner: std::thread::current().id(),
-    };
+    let probe = VisionContext { ptr: probe_ptr };
 
     let vision = if use_gpu {
         // NOTE for the vendor-bump maintainer: a GPU-backend load parses the
@@ -494,10 +490,7 @@ pub(crate) fn load_projector(
                 None,
             ));
         };
-        VisionContext {
-            ptr,
-            owner: std::thread::current().id(),
-        }
+        VisionContext { ptr }
     } else {
         // The kept CPU-backend context IS the probe, created with
         // `warmup = false` — a perf-only difference (no dummy warmup encode;
@@ -533,6 +526,7 @@ struct Bitmap {
 
 impl Drop for Bitmap {
     fn drop(&mut self) {
+        let _native = crate::domain::NativeGuard::for_drop();
         // SAFETY: `ptr` came from the decode helper and is freed exactly once.
         unsafe { ffi::mtmd_bitmap_free(self.ptr.as_ptr()) };
     }
@@ -586,6 +580,7 @@ impl Chunks {
 
 impl Drop for Chunks {
     fn drop(&mut self) {
+        let _native = crate::domain::NativeGuard::for_drop();
         // SAFETY: `ptr` came from `mtmd_input_chunks_init`; freed exactly once.
         unsafe { ffi::mtmd_input_chunks_free(self.ptr.as_ptr()) };
     }
@@ -596,6 +591,7 @@ impl Drop for Chunks {
 /// a reserved later capability). The fallback literal equals the default the
 /// ffi.rs ABI test pins against `mtmd_default_marker()`.
 fn default_marker() -> String {
+    crate::domain::assert_current();
     // SAFETY: returns a static engine-owned NUL-terminated string.
     let ptr = unsafe { ffi::mtmd_default_marker() };
     if ptr.is_null() {
@@ -669,6 +665,7 @@ impl LoadedModel {
     ) -> Result<Vec<Bitmap>, RebirthError> {
         let mut bitmaps: Vec<Bitmap> = Vec::with_capacity(images.len());
         for path in images {
+            crate::async_job::checkpoint()?;
             let bytes = read_and_validate_image(path, image_max_bytes)?;
             drain_mtmd_log();
             // SAFETY: `mctx` is the live vision context; `bytes` is the gated
@@ -699,6 +696,7 @@ impl LoadedModel {
                 }
             })?;
             bitmaps.push(Bitmap { ptr });
+            crate::async_job::checkpoint()?;
         }
         Ok(bitmaps)
     }
@@ -715,6 +713,15 @@ impl LoadedModel {
         parse_special: bool,
         bitmaps: &[Bitmap],
     ) -> Result<Chunks, RebirthError> {
+        crate::async_job::checkpoint()?;
+        if crate::async_job::output_remaining().is_some()
+            && text.len() > crate::async_job::ASYNC_MAX_ARGUMENT_BYTES
+        {
+            return Err(RebirthError::Argument {
+                argument: "prompt".into(),
+                reason: "async image prompt exceeds 16 MiB".into(),
+            });
+        }
         let c_text = CString::new(text).map_err(|_| RebirthError::Generation {
             reason: "the prompt contains an interior NUL byte".to_string(),
         })?;
@@ -789,6 +796,7 @@ impl LoadedModel {
         image_max_bytes: u64,
         params: &GenerateParams,
     ) -> Result<Generation, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("generate_prompt_with_images")?;
         if images.is_empty() {
             // Text-only: byte-identical behavior, zero mtmd involvement.
             return self.generate_prompt(prompt, chat, params);
@@ -826,8 +834,10 @@ impl LoadedModel {
         //    split into interleaved text/image chunks.
         let content = markers_then_text(&marker, images.len(), prompt);
         let (text, add_special, parse_special) = self.resolve_prompt_text(&content, chat)?;
+        crate::async_job::checkpoint()?;
         let chunks =
             self.tokenize_with_images(mctx, &text, add_special, parse_special, &bitmaps)?;
+        crate::async_job::checkpoint()?;
 
         // The tokenizer preprocessed the bitmaps into the chunks' own storage;
         // free the decoded RGB buffers now (grammar rule 6: image buffers are
@@ -847,6 +857,9 @@ impl LoadedModel {
         drain_mtmd_log();
         // SAFETY: `mctx`/`ctx_ptr` are live; `chunks` outlives the call;
         // `new_n_past` is a valid out-pointer.
+        #[cfg(test)]
+        crate::async_job::test_checkpoint(crate::async_job::TestStage::BeforeVisionIngest);
+        crate::async_job::checkpoint()?;
         let status = unsafe {
             ffi::mtmd_helper_eval_chunks(
                 mctx,
@@ -859,6 +872,9 @@ impl LoadedModel {
                 &mut new_n_past,
             )
         };
+        #[cfg(test)]
+        crate::async_job::test_checkpoint(crate::async_job::TestStage::AfterVisionIngest);
+        crate::async_job::checkpoint()?;
         if status != 0 {
             let detail = drain_mtmd_detail();
             return Err(RebirthError::Generation {
@@ -893,6 +909,7 @@ impl LoadedModel {
         image: &str,
         image_max_bytes: u64,
     ) -> Result<(Vec<f32>, usize, usize), RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("image_encoder_output")?;
         let Some(mctx) = self.vision_ptr() else {
             return Err(RebirthError::Image {
                 reason: "This model was loaded without a projector, so it has no \
@@ -982,6 +999,7 @@ impl LoadedModel {
         normalize: bool,
         image_max_bytes: u64,
     ) -> Result<Embeddings, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("embed_texts_with_images")?;
         // A real check, not a debug_assert (reviewer finding, WP-V3 round): in
         // release a shorter `image_sets` would silently truncate the zip below
         // while `n_rows` stayed `texts.len()`, so R's matrix() would recycle
@@ -1098,7 +1116,7 @@ impl LoadedModel {
     ) -> Result<Vec<Vec<f32>>, RebirthError> {
         ectx.clear_memory();
         // SAFETY: `ectx.ptr` is a live context; read-only getter.
-        let n_batch = (unsafe { ffi::llama_n_batch(ectx.ptr.as_ptr()) }).max(1) as i32;
+        let n_batch = (unsafe { ffi::llama_n_batch(ectx.as_ptr()) }).max(1) as i32;
         let mut rows: Vec<Vec<f32>> = Vec::new();
         let mut n_past: ffi::llama_pos = 0;
         for chunk in chunks.chunk_ptrs() {
@@ -1123,7 +1141,7 @@ impl LoadedModel {
                 // SAFETY: `ectx.ptr` is live; `batch.raw` is fully populated
                 // and its arrays outlive the call (owned by `batch`).
                 let status =
-                    unsafe { ffi::llama_decode(ectx.ptr.as_ptr(), std::ptr::read(&batch.raw)) };
+                    unsafe { ffi::llama_decode(ectx.as_ptr(), std::ptr::read(&batch.raw)) };
                 if status != 0 {
                     return Err(RebirthError::Embed {
                         reason: format!(
@@ -1152,7 +1170,7 @@ impl LoadedModel {
                 let status = unsafe {
                     ffi::mtmd_helper_eval_chunk_single(
                         mctx,
-                        ectx.ptr.as_ptr(),
+                        ectx.as_ptr(),
                         chunk,
                         n_past,
                         0,

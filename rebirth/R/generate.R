@@ -29,6 +29,46 @@
 #' the existing single user turn; custom templates require `chat = FALSE` and
 #' caller-supplied formatting. Other models keep their existing chat behavior.
 #'
+#' @section Background generation:
+#' `async = TRUE` requires optional packages later (>= 1.4.8) and promises
+#' (>= 1.5.0), and returns a promise resolving to the same named character vector
+#' and seed attribute. Generation runs on a native worker using the loaded model.
+#' Only one native job may run per R process; competing native operations raise
+#' `relm_error_busy`. Ordinary R calculations and metadata printing remain usable.
+#' R validation and admission precede the omitted-seed draw. Execution errors
+#' reject the promise with their classed conditions. Use [llm_cancel()] to request
+#' cooperative cancellation, or [close()][close.llm] to close the handle.
+#'
+#' Optional `on_progress(state)` runs on R's thread with a fresh one-row
+#' `data.frame`: integer columns `prompt_id`, `prompts_completed`, `prompts_total`,
+#' `generated_tokens`, `max_tokens`, then character `phase` (`"prefill"`,
+#' `"generate"`, `"complete"`). Snapshots are coalesced and may skip intermediate
+#' states; generated tokens count the current prompt, including removed stop
+#' suffixes. Success delivers one final `complete` snapshot before resolving.
+#' A callback error requests cancellation and rejects with `relm_error_callback`,
+#' retaining the original condition in `parent`. Callback return values are ignored.
+#'
+#' One timer checks progress at a 50 ms target interval on the global event loop.
+#' Callbacks normally run at the interactive prompt. In scripts, attach handlers
+#' with `promises::then()` and pump `later::run_now()` until your handler records
+#' completion. A long R expression delays delivery; a slow callback can block R.
+#' Dropping the promise or handle does not cancel a pending job. Namespace
+#' shutdown requests cancellation and joins the worker. The native library stays
+#' mapped so retained external-pointer finalizers can run safely. Forced
+#' `dyn.unload()` while external pointers remain alive is unsupported.
+#'
+#' Async accepts at most 128 prompts, 1 MiB UTF-8 per prompt, 16 MiB total copied
+#' text (including names, stop strings, schema and image paths), and 8192 tokens
+#' per prompt. A separate 16 MiB descriptor budget bounds retained string/vector
+#' overhead, including empty strings. Output is limited to 8 MiB UTF-8 per call (`relm_error_oom`);
+#' existing stricter schema and image limits also apply. Nothing is truncated
+#' or retried to satisfy these bounds. Native cancellation is cooperative and
+#' may wait for an in-flight decode or image encoder call to finish.
+#' The 8 MiB output cap measures UTF-8 text bytes, not resident memory: copied
+#' inputs, templates, token vectors, transient output buffers and R character
+#' objects need additional storage. Existing model/context, sampler/grammar and
+#' vision working memory are separate from these transport limits.
+#'
 #' @section Structured output:
 #' Supply `schema` as JSON text to constrain text generation to a bounded subset
 #' of JSON Schema 2020-12. The root must be a non-nullable object with explicit
@@ -119,9 +159,13 @@
 #' @param schema `NULL` (default) or one non-NA UTF-8 string containing JSON
 #'   Schema text in the supported profile. This is JSON text, not a file path or
 #'   R list; one schema applies to every prompt. See *Structured output*.
+#' @param async One nonmissing logical. `FALSE` returns synchronously; `TRUE`
+#'   returns a promises promise backed by native background generation.
+#' @param on_progress `NULL` or a function accepting one progress data frame.
+#'   Requires `async = TRUE`; see *Background generation*.
 #' @return A character vector the same length as `prompt` (names preserved), each
 #'   element the generated continuation. The seed used is attached as
-#'   `attr(result, "seed")`.
+#'   `attr(result, "seed")`. With `async = TRUE`, a promise resolving to that vector.
 #' @seealso [llm()], [llm_tokens()]
 #' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
 #' m <- llm(Sys.getenv("RELM_TEST_MODEL_QWEN"))
@@ -151,13 +195,21 @@
 #' @export
 llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
                          top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL,
-                         images = NULL, schema = NULL) {
+                         images = NULL, schema = NULL, async = FALSE,
+                         on_progress = NULL) {
   if (!inherits(m, "llm")) {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
   ensure_open(m)
 
-  if (!is.null(schema)) {
+  if (!is.logical(async) || length(async) != 1L || is.na(async)) {
+    abort_argument("async", "`async` must be one nonmissing logical value.")
+  }
+  if (!is.null(on_progress) && (!is.function(on_progress) || !async)) {
+    abort_argument("on_progress", "`on_progress` must be NULL or a function, and requires `async = TRUE`.")
+  }
+
+  if (!is.null(schema) || async) {
     # Complex numbers satisfy is.numeric() but cannot enter the ordered real
     # comparisons below. Keep the ordinary generation path unchanged.
     scalars <- list(max_tokens = max_tokens, temperature = temperature,
@@ -174,6 +226,11 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
       "prompt",
       "`prompt` must be a non-empty character vector without NA."
     )
+  }
+  # Reject before normalize_images() can replicate an image-list row for every
+  # prompt. The complete byte/descriptor checks still run before native copies.
+  if (async && length(prompt) > relm_async_max_prompts) {
+    abort_argument("prompt", "Async generation accepts at most 128 prompts per call.")
   }
   if (!is_count(max_tokens) || max_tokens < 1L || max_tokens > .Machine$integer.max) {
     abort_argument("max_tokens", "`max_tokens` must be a single positive integer.")
@@ -257,7 +314,21 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   }
   check_prompt_markers(prompt, image_sets, arg_name = "prompt")
   max_bytes <- if (has_images) image_max_bytes() else relm_image_max_bytes_default
+  if (async) {
+    checked <- async_validate_inputs(prompt, stop_seqs, schema, image_sets,
+      max_tokens, temperature, seed)
+    prompt <- checked$prompt
+    stop_seqs <- checked$stop
+    schema <- checked$schema
+    image_sets <- checked$images
+  }
   check_images_usable(m, image_sets)
+  if (async) {
+    async_check_dependencies()
+    # Admission precedes the omitted-seed draw. This reaches no model pointer
+    # and performs no inference; the native submit repeats the admission check.
+    relm_check(rebirth_async_ready(m$ptr))
+  }
 
   if (is.null(seed)) {
     # Draw from R's RNG so set.seed() makes even an unspecified seed reproducible.
@@ -274,6 +345,12 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
       abort_argument("seed", "Structured generation requires a finite seed less than 2^64.")
     }
     seed_val <- as.double(seed)
+  }
+
+  if (async) {
+    return(async_generate(m, prompt, chat, as.integer(max_tokens),
+      as.double(temperature), as.double(top_p), seed_val, stop_seqs,
+      image_sets, max_bytes, schema, on_progress))
   }
 
   out <- if (!is.null(schema)) {

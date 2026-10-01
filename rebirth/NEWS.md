@@ -1,3 +1,16 @@
+# relm (development)
+
+## WP9: background generation
+
+* `llm_generate(async = TRUE)` returns a promise while a native worker uses the
+  existing model. Optional `later` and `promises` packages deliver coalesced
+  progress callbacks on R's event loop. Synchronous generation is unchanged.
+* `llm_cancel()` requests cooperative cancellation. Only one native job is
+  admitted per process, with bounded input/output, classed failures, deferred
+  close while busy, and worker cleanup on namespace shutdown. The native library
+  stays mapped for retained external-pointer finalizers; forced `dyn.unload()`
+  with live external pointers is unsupported.
+
 # relm 0.3.0
 
 ## New features

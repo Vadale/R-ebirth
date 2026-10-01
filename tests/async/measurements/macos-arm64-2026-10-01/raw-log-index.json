@@ -1,0 +1,77 @@
+{
+  "acceptance-async-tests.log": {
+    "file": "acceptance-async-tests.log.gz",
+    "uncompressed_sha256": "bc57d0586c63b772686c1888b33985d2230cb8ad937fbad8be1c669b844d9dbe",
+    "uncompressed_bytes": 6222
+  },
+  "acceptance-clippy.log": {
+    "file": "acceptance-clippy.log.gz",
+    "uncompressed_sha256": "88d869bf30235ea5bce7357b0dcd4413e625fdac96fad5aecf7ce6a41c951b08",
+    "uncompressed_bytes": 282
+  },
+  "acceptance-vision-boundaries.log": {
+    "file": "acceptance-vision-boundaries.log.gz",
+    "uncompressed_sha256": "ce202fac19d0c6f21ba4a25b2d6a4c8a287c506ffe72d55b8941c9e2aeb38238",
+    "uncompressed_bytes": 2398
+  },
+  "compile-check.log": {
+    "file": "compile-check.log.gz",
+    "uncompressed_sha256": "5702036e6b5f1be5784b7c80107ff520f8276c013fe603628816b9179b2f07c8",
+    "uncompressed_bytes": 2083
+  },
+  "integration-package-check.log": {
+    "file": "integration-package-check.log.gz",
+    "uncompressed_sha256": "e439585937b60e828c85146feacabb6d09b201108c7f6e2761b38e495a6ce7b7",
+    "uncompressed_bytes": 2687
+  },
+  "integration-package-tests.log": {
+    "file": "integration-package-tests.log.gz",
+    "uncompressed_sha256": "167830b167ef7b5d37c06b56fd6d654787d41eabc25574779b1cd8e46244cb67",
+    "uncompressed_bytes": 11990
+  },
+  "integration-source-build.log": {
+    "file": "integration-source-build.log.gz",
+    "uncompressed_sha256": "89fe985fe6653d2fad2d2185ca5d38ea41d316535bc6d12cb0a57c47f6587e52",
+    "uncompressed_bytes": 417
+  },
+  "r-corrected-async-tests.log": {
+    "file": "r-corrected-async-tests.log.gz",
+    "uncompressed_sha256": "0738013c6c9bfa1b3e6a26aa0f9036a93c0bf9178b5dbdc75dac85f9696ca669",
+    "uncompressed_bytes": 1979
+  },
+  "r-corrected-install.log": {
+    "file": "r-corrected-install.log.gz",
+    "uncompressed_sha256": "13d8a6f213b43e49cf9a8c1ffaa6b9ead2e1382523a0d7a91d68830e48655ff1",
+    "uncompressed_bytes": 11088
+  },
+  "r-session.txt": {
+    "file": "r-session.txt.gz",
+    "uncompressed_sha256": "3e6227773808c1962573d4f6d037fbe0440805fe6d236597a7db54d42d373851",
+    "uncompressed_bytes": 648
+  },
+  "rust-async-debug.log": {
+    "file": "rust-async-debug.log.gz",
+    "uncompressed_sha256": "bb344ed4d4375d6d5a814d6cfd81650f4279653e8e520bb354af06bd97abba10",
+    "uncompressed_bytes": 4140
+  },
+  "rust-async-release.log": {
+    "file": "rust-async-release.log.gz",
+    "uncompressed_sha256": "3fb020ec09e43aaad0aea57544ab42e4738d4a59ac2189b04de2b06e9bc80c1b",
+    "uncompressed_bytes": 5502
+  },
+  "rust-clippy.log": {
+    "file": "rust-clippy.log.gz",
+    "uncompressed_sha256": "596be0b0bb4d81adec96ce1a1f49a25066eb91ab16513a41f492bdd06eb0fa49",
+    "uncompressed_bytes": 283
+  },
+  "rust-engine.log": {
+    "file": "rust-engine.log.gz",
+    "uncompressed_sha256": "d6c7045756837a4b9812dd75dacae667f3037b8e5b56cee8ede482b70cfe4441",
+    "uncompressed_bytes": 12404
+  },
+  "rust-ffi.log": {
+    "file": "rust-ffi.log.gz",
+    "uncompressed_sha256": "c632182b1f17d0cb6cb8a0bc91a85755837ccc8836ba6f1abb2c78e72833e14c",
+    "uncompressed_bytes": 1311
+  }
+}

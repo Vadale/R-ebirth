@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "phase": "r-corrected",
+  "pid": 2241,
+  "started_at": 1790890328.645273,
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-multiarch",
+        "--library=/private/tmp/relm-wp9/library",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "started_at": 1790890328.649892,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790890439.3925881
+    },
+    {
+      "name": "async-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-wp9/async-tests.R"
+      ],
+      "started_at": 1790890439.392905,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790890462.236448
+    }
+  ],
+  "stage": "async-tests",
+  "finished_at": 1790890462.236908
+}

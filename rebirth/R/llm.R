@@ -168,6 +168,7 @@ llm <- function(path,
     abort_argument("backend", paste0("Invalid `backend`: ", conditionMessage(backend)))
   }
   available <- rebirth_available_backends()
+  if (is.list(available)) relm_check(available)
   if (identical(backend, "auto")) {
     backend <- if ("metal" %in% available) {
       "metal"
@@ -259,9 +260,15 @@ finalize_llm_state <- function(state) {
   invisible(NULL)
 }
 
-# Raise `relm_error_closed` if the handle has been closed. The R-side flag is
-# the authoritative closed tag every method consults first (ARCHITECTURE.md section 3).
+# Raise `relm_error_closed` if the handle has been closed. Native shutdown/panic
+# can close a handle without an R close() call, so synchronize its native tag.
+# This reads only wrapper state (no engine permit/C access), preserving metadata
+# access during a job. NULL-pointer metadata stubs stay entirely R-side.
 ensure_open <- function(m, call = sys.call(-1L)) {
+  if (!isTRUE(m$state$closed) && typeof(m$ptr) == "externalptr" &&
+    isTRUE(rebirth_handle_is_closed(m$ptr))) {
+    m$state$closed <- TRUE
+  }
   if (isTRUE(m$state$closed)) {
     relm_abort(
       "relm_error_closed",
@@ -274,11 +281,15 @@ ensure_open <- function(m, call = sys.call(-1L)) {
 
 #' Free a model handle
 #'
-#' Deterministically frees the native memory behind an `llm` handle. On a
+#' Frees the native memory behind an `llm` handle when native execution is idle. On a
 #' memory-constrained machine this lets you release several gigabytes
 #' immediately rather than waiting for garbage collection (the finalizer remains
 #' the safety net). A double close is a no-op; any later use of the handle
 #' raises `relm_error_closed`.
+#' While async generation owns the native execution domain, closing any handle
+#' marks it closed immediately and defers native destruction until safe.
+#' Closing the submitting handle also requests cancellation. A pending promise
+#' keeps its submitting handle alive when ordinary R references are removed.
 #'
 #' @param con An `llm` handle.
 #' @param ... Ignored (present for compatibility with the `close()` generic).
