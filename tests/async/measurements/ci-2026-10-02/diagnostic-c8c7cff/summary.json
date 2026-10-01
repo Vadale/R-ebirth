@@ -1,0 +1,26 @@
+{
+  "diagnostic_parent_commit": "c8c7cffdf4922a0aefa74fd8398e226dca952f23",
+  "r_run": 36934929799,
+  "rust_run": 36934929788,
+  "observed_phase": "initial synchronous CPU model load, before any async job",
+  "oldrel_first_load_wall_seconds": 37.561,
+  "oldrel_first_load_cpu_seconds": 0.135,
+  "underlying_native_or_OS_wait": "not diagnosed",
+  "product_inputs_match_original_verified_snapshot": true,
+  "changed_test_files": {
+    "rebirth/tests/testthat/test-llm-async-lifecycle.R": "d6c8950a0f75aeaa347abae7b4fb6f895841f8d67ce0f5ce942f67a28712830e",
+    "rebirth/tests/testthat/test-llm-async.R": "4a64bdcb637422ed0eb8cff1be2bac0b5272533d947c1100db8f94eb6dfee484"
+  },
+  "test_envelope": {
+    "cold_setup_seconds": 90,
+    "lifecycle_seconds": 30,
+    "drain_seconds": 10,
+    "outer_watchdog_seconds": 120,
+    "other_subprocess_deadlines": "unchanged"
+  },
+  "local_cases": 32,
+  "local_passed_expectations": 1313,
+  "local_skips": 4,
+  "remote_confirmation": "pending",
+  "original_oldrel_responsiveness_timeout": "did not recur unchanged; root cause not established"
+}

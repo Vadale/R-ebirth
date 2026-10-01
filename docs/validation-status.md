@@ -31,8 +31,10 @@ memory and remaining package regressions. Its [execution report](wp9-implementat
 retains the initial callback/sandbox failures and scoped package-check warnings.
 Foreground RStudio responsiveness and final PR CI remain open. Initial PR54 CI
 passed seven checks but failed both macOS R legs on a lifecycle subprocess
-timeout; additional diagnostics preserve the limits while investigating the
-unknown cause. WP9 is not yet accepted or released.
+timeout. Diagnostics localized that wait to initial synchronous model loading,
+before any async worker; the test now budgets that preparation separately while
+retaining its lifecycle and drain limits. Remote confirmation remains pending.
+WP9 is not yet accepted or released.
 
 ## Implemented checks
 

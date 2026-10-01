@@ -3,20 +3,23 @@
 # process package. The cached-Qwen ownership test is explicitly [MODEL]-gated.
 # Child-process exit/panic-output assertions complement native drop counters.
 
-async_lifecycle_process <- function(body, timeout = 30) {
+async_lifecycle_process <- function(body, timeout = 30, setup = NULL, setup_timeout = 0) {
   script <- tempfile(fileext = ".R")
   log <- tempfile(fileext = ".log")
   on.exit(unlink(c(script, log)), add = TRUE)
   libraries <- paste(capture.output(dput(.libPaths())), collapse = "\n")
   # Keep the existing deadline and assertions. Per-expression timing identifies
   # whether a remote timeout is in model setup, deferred destruction or draining.
-  expressions <- parse(text = body, keep.source = FALSE)
-  instrumented <- unlist(lapply(seq_along(expressions), function(i) {
-    code <- deparse(expressions[[i]], width.cutoff = 500L)
-    label <- encodeString(sprintf("%03d %s", i, code[[1L]]), quote = '"')
-    c(paste0(".relm_lifecycle_step('begin', ", label, ")"), code,
-      paste0(".relm_lifecycle_step('end', ", label, ")"))
-  }), use.names = FALSE)
+  instrument <- function(lines, phase) {
+    expressions <- parse(text = lines, keep.source = FALSE)
+    unlist(lapply(seq_along(expressions), function(i) {
+      code <- deparse(expressions[[i]], width.cutoff = 500L)
+      label <- encodeString(sprintf("%s %03d %s", phase, i, code[[1L]]), quote = '"')
+      c(paste0(".relm_lifecycle_step('begin', ", label, ")"), code,
+        paste0(".relm_lifecycle_step('end', ", label, ")"))
+    }), use.names = FALSE)
+  }
+  instrumented <- instrument(body, "lifecycle")
   prelude <- c(
     ".relm_lifecycle_started <- proc.time()",
     ".relm_lifecycle_step <- function(phase, label) {",
@@ -44,9 +47,17 @@ async_lifecycle_process <- function(body, timeout = 30) {
     "  while (!x$done && proc.time()[['elapsed']] < until) later::run_now(0.05)",
     "  stopifnot(x$done, x$count == 1L, is.null(relm:::.relm_async$job))",
     "}")
-  writeLines(c(prelude, instrumented, "cat('ASYNC_LIFECYCLE_OK\\n')"), script)
+  preparation <- if (is.null(setup)) character() else c(
+    instrument(setup, "setup"),
+    sprintf("stopifnot((proc.time() - .relm_lifecycle_started)[['elapsed']] <= %s)", setup_timeout))
+  writeLines(c(prelude, preparation,
+    ".relm_lifecycle_budget_start <- proc.time()[['elapsed']]",
+    instrumented,
+    sprintf("stopifnot(proc.time()[['elapsed']] - .relm_lifecycle_budget_start <= %s)", timeout),
+    "cat('ASYNC_LIFECYCLE_OK\\n')"), script)
   status <- system2(file.path(R.home("bin"), "Rscript"),
-    c("--vanilla", shQuote(script)), stdout = log, stderr = log, timeout = timeout)
+    c("--vanilla", shQuote(script)), stdout = log, stderr = log,
+    timeout = timeout + setup_timeout)
   output <- paste(readLines(log, warn = FALSE), collapse = "\n")
   if (!identical(status, 0L)) {
     # R CMD check artifacts retain these even after its temporary child exits.
@@ -132,11 +143,17 @@ test_that("namespace shutdown joins work and retains the DLL for live finalizers
 test_that("real synthetic models defer close and GC while a fixture owns native execution", {
   path <- normalizePath(synthetic_model_path(), mustWork = TRUE)
   literal <- paste(capture.output(dput(path)), collapse = "\n")
-  async_lifecycle_process(c(
+  # The first CPU load on hosted macOS can spend >30 s in cold native setup
+  # before any worker exists (CI 36934929799: 37.56 s wall, 0.135 s CPU).
+  # Bound preparation separately; lifecycle execution still must finish in 30 s
+  # and promise draining keeps its original 10 s deadline. Neither gate is waived.
+  setup <- c(
     paste0("path <- ", literal),
     "parent <- llm(path, backend = 'cpu', gpu_layers = 0)",
     "sibling <- llm_ablate(parent, layer = 1, neurons = 1)",
-    "unrelated <- llm(path, backend = 'cpu', gpu_layers = 0)",
+    "unrelated <- llm(path, backend = 'cpu', gpu_layers = 0)"
+  )
+  async_lifecycle_process(c(
     "worker <- new_fixture('success', 500L, 2L)",
     "result <- observe(llm_generate(worker, 'hold native execution', seed = 1, async = TRUE))",
     "stopifnot(relm:::rebirth_async_test_stats()$active_jobs == 1)",
@@ -149,7 +166,7 @@ test_that("real synthetic models defer close and GC while a fixture owns native 
     "stats <- relm:::rebirth_async_test_stats()",
     "stopifnot(stats$active_jobs == 0, stats$worker_threads == 0, stats$deferred_handles == 0)",
     "close(worker); rm(parent, worker); gc()"
-  ))
+  ), setup = setup, setup_timeout = 90)
 })
 
 test_that("[MODEL] derived Qwen ownership survives parent sibling and unrelated close or GC", {

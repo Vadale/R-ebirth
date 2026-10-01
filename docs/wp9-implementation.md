@@ -87,7 +87,7 @@ with that access; no Metal case was replaced with CPU to hide a failure.
 The raw failed compiler/R results remain in the measurement directory. The
 successful rerun neither erases them nor changes any numerical tolerance.
 
-## First PR CI: macOS lifecycle timeout under diagnosis
+## PR CI: separate cold model setup from lifecycle execution
 
 At `1bd29c07c9170d112ab1735bd33b625c9eb4fc6a`, seven of nine checks passed:
 all five Rust/structural checks and both Linux R jobs, including Rust 1.85.0.
@@ -99,7 +99,7 @@ conditions in subsequent tests (80 failures, 1 warning, 66 skips, 947 passes).
 The pending job plausibly explains the later busy cascade; the reason for the
 original stalls is **not yet established**.
 
-The initial child log had no intermediate progress, so it cannot distinguish
+The initial child log had no intermediate progress, so it could not distinguish
 slow setup, deferred destruction or event-loop delivery. The next candidate adds
 elapsed/CPU timestamps before and after each child expression, retains the child
 script/log on failure, and reports native worker/terminal counters when promise
@@ -109,8 +109,25 @@ The two affected test files pass locally against the same installed library:
 
 Raw failed CI logs/check results and the local diagnostic-harness verification
 are preserved in [the CI measurement directory](../tests/async/measurements/ci-2026-10-02/).
-The added diagnostics justify a new remote execution; they do not establish a
-fix, and a later passing run alone must not be presented as a proven root cause.
+The diagnostic candidate `c8c7cff` again passed seven checks and failed both Mac
+jobs, but identified the stalled phase: the first synchronous `llm(...,
+backend = "cpu")`, before any async worker or deferred destruction exists. On
+oldrel it returned after 37.561 seconds of elapsed time and about 0.135 seconds
+of CPU time; the outer 30-second watchdog had already expired. The underlying
+native/OS initialization wait is not diagnosed further. The earlier oldrel
+responsiveness timeout did not recur under unchanged limits; its exact cause
+remains unproven.
+
+Only the real-model lifecycle fixture now separates preparation from execution:
+90 seconds for fresh-process namespace/model setup, then the original 30 seconds
+for lifecycle work, with the original ten-second promise-draining deadline.
+Each phase checks its elapsed budget explicitly; the outer process watchdog is
+their 120-second sum, bounding native calls that cannot be interrupted immediately.
+Other subprocess tests retain their original total deadlines. Model setup is
+still required and bounded; it is not a skipped acceptance gate. Product code,
+worker behavior and all ownership assertions are unchanged. The two affected
+test files pass locally against the existing binary (1,313 expectations, four
+explicit model skips); remote confirmation of the separated budgets is pending.
 
 ## Remaining acceptance and integration
 
