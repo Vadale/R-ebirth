@@ -60,6 +60,9 @@ jobs:
           r-version: ${{ matrix.config.r }}
           use-public-rspm: true
 
+      - name: External statistical skill artifact runner (base R, no models)
+        run: Rscript --vanilla tests/skills/r-statistical-analysis/test-runner.R .
+
       - name: toolchain declarations and configure MSRV regression (model-free)
         run: Rscript tests/toolchain/test-msrv.R
 

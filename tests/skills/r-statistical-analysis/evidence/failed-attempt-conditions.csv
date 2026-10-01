@@ -1,0 +1,2 @@
+"type","class","message","call"
+"error","simpleError/error/condition","could not find function ""lme.formula""","lme.formula(fixed = score ~ group * visit, data = d, random = ~visit |      person, method = ""ML"", na.action = na.fail)"

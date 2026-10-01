@@ -1061,6 +1061,35 @@ these checks within already authorized work.
 
 ---
 
+## D-036 — Statistical skill companion and external-assistant integration
+
+- **Date:** 2026-10-01. **Status:** approved direction and sequence, by explicit
+  founder instruction in this session.
+- **Decision:** create an external R-ebirth skill for general and complex
+  statistical analysis, choosing R when the user has not specified a language.
+  Reuse appropriate R packages across the ecosystem, preserve study design and
+  report interpretable results, uncertainty, diagnostics and executable code.
+  Respect explicit language/workflow constraints. No near-certain model selection,
+  automatic installation, universal correctness or package-wide validation claim.
+- **Sequence:** skill foundation now; resume WP9 then WP10; perform the focused
+  external-assistant integration I1 after both. The founder's statistical workflow
+  now supplies the concrete caller requirement previously left conditional.
+- **Boundary:** this is a companion outside relm core, not a generic statistical
+  API inside the native inference package. No new core export, R/Rust dependency
+  or model download. Actual transport and any optional adapter/dependency need
+  their own concrete design; reuse existing tools rather than build a generic
+  MCP/chat framework. Marketplace submission is separate from local creation.
+- **Why:** make R's established statistical ecosystem accessible to assistants
+  through a coherent, inspectable workflow without coupling ordinary analyses
+  to local LLM inference or duplicating statistical implementations.
+- **Alternatives rejected:** keyword stuffing/overbroad activation; ignoring an
+  explicit Python request; installing all R packages; making relm mandatory for
+  unrelated statistics; pulling integration ahead of the approved async/streaming
+  sequence; claiming market visibility guarantees runtime use.
+- **Details:** [external-assistant plan](docs/external-assistants-plan.md).
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

@@ -15,3 +15,5 @@ The binding root documents are [SOLO-PHASE-PLAN.md](../SOLO-PHASE-PLAN.md),
 - [S1 implementation and evidence](s1-implementation.md) — bounded native JSON generation, regression checks and operational measurements; extraction quality remains D1.
 - [D1/D2 execution](d1-d2-execution.md) — current evaluated extraction experiment, proposed application-only JSON dependency, then restartable batch operation.
 - [D1 extraction evaluation](d1-extraction-evaluation.md): bounded development experiment, frozen candidate and quality evidence.
+
+- [External statistical assistants](external-assistants-plan.md) — portable R skill foundation and I1 after WP9/WP10 (D-036).
