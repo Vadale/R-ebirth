@@ -1,0 +1,5 @@
+{
+  "result": "failed",
+  "cause": "Independent foreground probe was submitted after the 17.692-second generation had completed; both was_running and native_running were false. No responsiveness claim from this run.",
+  "next_scope": "Repeat only foreground gate with eight rather than four prompts, retaining the same thresholds and public demo. Restore state and restart this fresh test-only R session first."
+}

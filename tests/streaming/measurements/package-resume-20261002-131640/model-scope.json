@@ -1,0 +1,58 @@
+{
+  "source_run": "package-resume-20261002-131640",
+  "source_run_status": "failed",
+  "passed_expectations": 340,
+  "failed_expectations": 1,
+  "model_cases": [
+    {
+      "file": "test-llm-stream.R",
+      "context": "llm-stream",
+      "test": "[MODEL] cached Qwen retains seeded sync async and stream equality",
+      "nb": "7",
+      "failed": "0",
+      "skipped": "FALSE",
+      "error": "FALSE",
+      "warning": "0",
+      "user": "2",
+      "system": "0.104",
+      "real": "1.339",
+      "passed": "7"
+    },
+    {
+      "file": "test-llm-stream.R",
+      "context": "llm-stream",
+      "test": "[MODEL] cached Qwen ordinary structured and CSV streams preserve results",
+      "nb": "17",
+      "failed": "0",
+      "skipped": "FALSE",
+      "error": "FALSE",
+      "warning": "0",
+      "user": "0.398",
+      "system": "0.043",
+      "real": "0.836",
+      "passed": "17"
+    },
+    {
+      "file": "test-llm-stream.R",
+      "context": "llm-stream",
+      "test": "[MODEL] cached vision over-batch prefill retains streaming parity",
+      "nb": "5",
+      "failed": "0",
+      "skipped": "FALSE",
+      "error": "FALSE",
+      "warning": "0",
+      "user": "0.322",
+      "system": "0.418",
+      "real": "2.448",
+      "passed": "5"
+    }
+  ],
+  "changed_since_model_acceptance": [
+    "rebirth/R/stream.R",
+    "rebirth/src/rust/rebirth-ffi/src/async_boundary.rs",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs",
+    "rebirth/tests/testthat/test-llm-stream-helpers.R"
+  ],
+  "carry_forward_scope": "Actual generation/decoder/queue/CSV serialization paths unchanged. The corrected regular-file admission is validated separately with installed-package controlled-worker/file tests; source run remains failed.",
+  "final_admission_validation": "file-admission-20261002-132232 plus warning-free helpers in package-docs-20261002-133118"
+}

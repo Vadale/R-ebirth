@@ -1,0 +1,226 @@
+boundary: ....gguf_init_from_reader: invalid magic characters: '????', expected 'GGUF'
+llama_model_load: error loading model: llama_model_loader: failed to load model from /var/folders/0g/w9qy3m615_9bn_8kslpcn87w0000gn/T//RtmpSi930h/fileb6d23adad87f.gguf
+llama_model_load_from_file_impl: failed to load model
+...............
+conditions: ............
+llm-async-lifecycle: ...............S......
+llm-async-memory: ....................
+llm-async: ....................................................................................................................................S........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................SS
+llm-close: .................
+llm-download: ...............................................................................S
+llm-embed: ..........................................SSSSS
+llm-generate: ....................SSSSSSSS
+llm-intervene: ............................................................................SSSS
+llm-load: ..........................................
+llm-logits: ...............SSSSS
+llm-model: SSSS
+llm-print: ..................................
+llm-probe-memory: ..................
+llm-probe-statistics: ..................................................................
+llm-probe-validation: ....................................................................
+llm-probe: .................................................................................................................................................................
+llm-spark: S
+llm-steer-valence: ...........S
+llm-stream-helpers: ..................1...............................................
+llm-stream: ..................................................................................................................................................................................................2SS.........................................
+llm-synthetic: ................
+llm-tokens: ............SSSSS
+llm-trace-golden: .......................S
+llm-trace-spill-session: .........
+llm-trace-spill: ...............................................................................
+llm-trace: ...................................................................................................SSSSSSSS
+llm-vision-embed: ...................................encoding image slice...
+image slice encoded in 135 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 5 ms
+.....encoding image slice...
+image slice encoded in 129 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 3 ms
+..encoding image slice...
+image slice encoded in 129 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 3 ms
+...encoding image slice...
+image slice encoded in 130 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 3 ms
+.encoding image slice...
+image slice encoded in 1199 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 277 ms
+...encoding image slice...
+image slice encoded in 154 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 1 ms
+....
+llm-vision: ...............................................................................................encoding image slice...
+image slice encoded in 167 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 1 ms
+...Sllama_model_load: error loading model: CLIP cannot be used as main model, use it with --mmproj instead
+llama_model_load_from_file_impl: failed to load model
+.Sencoding image slice...
+image slice encoded in 62 ms
+decoding image batch 1/1, n_tokens_batch = 9
+image decoded (batch 1/1) in 0 ms
+.encoding image slice...
+image slice encoded in 1623 ms
+decoding image batch 1/1, n_tokens_batch = 585
+image decoded (batch 1/1) in 467 ms
+.encoding image slice...
+image slice encoded in 1630 ms
+decoding image batch 1/1, n_tokens_batch = 585
+image decoded (batch 1/1) in 467 ms
+...encoding image slice...
+image slice encoded in 153 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 1 ms
+.encoding image slice...
+image slice encoded in 1188 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 222 ms
+.
+package: .................
+structured-output: ...................................................................................SSS
+
+══ Skipped ═════════════════════════════════════════════════════════════════════
+1. [MODEL] derived Qwen ownership survives parent sibling and unrelated close or GC ('test-llm-async-lifecycle.R:173:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+2. [MODEL] async matches sync for greedy sampled stop and structured generation ('test-llm-async.R:325:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+3. [MODEL] async preserves interventions and cancellation recovery ('test-llm-async.R:425:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+4. [MODEL] async vision matches the existing image generation path ('test-llm-async.R:447:3') - Reason: RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required
+
+5. [MODEL] llm_download() fetches and verifies the pinned 0.5B end-to-end ('test-llm-download.R:374:3') - Reason: set RELM_DOWNLOAD_E2E=1 to run the real network download
+
+6. embedding dimensions match the model card ('test-llm-embed.R:108:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+7. embedding is vectorized and preserves names as row names ('test-llm-embed.R:118:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+8. normalize = TRUE yields unit rows; FALSE does not (no silent change) ('test-llm-embed.R:130:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+9. pooling = "model" on a generative model is a clean embed error ('test-llm-embed.R:141:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+10. related sentence pairs rank above unrelated ones (semantic similarity) ('test-llm-embed.R:158:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+11. greedy generation is deterministic ('test-llm-generate.R:73:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+12. a seed reproduces a sampled run and is attached to the result ('test-llm-generate.R:84:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+13. generation is vectorized over prompt and preserves names ('test-llm-generate.R:96:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+14. chat = TRUE differs from raw completion ('test-llm-generate.R:105:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+15. a stop string truncates the output before it ('test-llm-generate.R:113:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+16. a prompt longer than the batch size still generates (chunked decode) ('test-llm-generate.R:129:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+17. an over-long prompt raises relm_error_context_overflow ('test-llm-generate.R:140:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+18. chat = TRUE works on a Gemma 4 model via the arch template fallback [MODEL] ('test-llm-generate.R:159:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+19. steering measurably changes generated output ('test-llm-intervene.R:285:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+20. ablation measurably changes generated output ('test-llm-intervene.R:301:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+21. the original handle reproduces its output bit-for-bit after derivation ('test-llm-intervene.R:315:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+22. generation is derivation-order-independent (steer/ablate commute) ('test-llm-intervene.R:331:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+23. llm_logits() returns the documented schema, top rows per prompt ('test-llm-logits.R:71:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+24. llm_logits() ranks by descending logit with a valid probability head ('test-llm-logits.R:100:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+25. llm_logits() is deterministic for a fixed prompt ('test-llm-logits.R:117:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+26. llm_logits() vectorizes over prompt with per-prompt ranks ('test-llm-logits.R:125:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+27. llm_logits() reflects an active intervention -- diverges from base [MODEL] ('test-llm-logits.R:155:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+28. llm() loads a real Qwen2.5-0.5B and reports card-accurate metadata ('test-llm-model.R:15:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+29. llm() honours a non-default context_length on a real model ('test-llm-model.R:34:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+30. summary() on a real model carries tokenizer and memory information ('test-llm-model.R:40:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+31. repeated load/unload of a real model does not leak native memory ('test-llm-model.R:49:3') - Reason: On CRAN
+
+32. Spark native generation and declared capabilities work [SPARK] ('test-llm-spark.R:6:3') - Reason: RELM_TEST_MODEL_SPARK not set (optional 4B acceptance)
+
+33. steering along the valence direction shifts generated valence (+ up, - down) [MODEL] ('test-llm-steer-valence.R:134:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+34. [MODEL] cached Qwen ordinary structured and CSV streams preserve results ('test-llm-stream.R:250:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+35. [MODEL] cached vision over-batch prefill retains streaming parity ('test-llm-stream.R:288:3') - Reason: RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required
+
+36. encode returns a named integer vector of 1-based ids ('test-llm-tokens.R:71:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+37. encode/decode is an exact round-trip (ASCII) ('test-llm-tokens.R:82:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+38. encode/decode round-trips Italian accented text (UTF-8) ('test-llm-tokens.R:90:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+39. encode is vectorized: a list with names preserved ('test-llm-tokens.R:101:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+40. decode rejects an id outside the vocabulary (classed, not a crash) ('test-llm-tokens.R:115:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+41. llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8_0 tolerance) [MODEL] ('test-llm-trace-golden.R:253:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+42. llm_trace() on a real model returns the relm_trace schema and slices [MODEL] ('test-llm-trace.R:447:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+43. llm_trace() attn_out on a qwen2 model is a classed, honest error [MODEL] ('test-llm-trace.R:479:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+44. llm_trace() residual on a Gemma 4 model returns plausible activations [MODEL] ('test-llm-trace.R:493:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+45. llm_trace() attn_out on a Gemma 4 model is a classed error (name collision) [MODEL] ('test-llm-trace.R:523:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+46. llm_trace() mlp_out on a Gemma 4 model is a classed error (MoE layers) [MODEL] ('test-llm-trace.R:537:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+47. llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [MODEL] ('test-llm-trace.R:550:3') - Reason: RELM_TEST_MODEL_QWEN3 is not set to an existing GGUF file
+
+48. llm_trace() residual on a Qwen 3.5 model returns plausible activations [MODEL] ('test-llm-trace.R:574:3') - Reason: RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file
+
+49. llm_trace() warns when explicit positions are recycled across differing lengths [MODEL] ('test-llm-trace.R:594:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+50. [MODEL] a mismatched mmproj names both embedding sizes ('test-llm-vision.R:410:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+51. [MODEL] a text GGUF passed as the projector is a classed image error ('test-llm-vision.R:432:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+52. structured generation preserves names, scalar seeds and complete JSON [MODEL] ('test-structured-output.R:128:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+53. structured exhaustion carries bounded diagnostics and leaves the handle usable [MODEL] ('test-structured-output.R:147:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+54. structured prompt ingestion retains chunked decoding [MODEL] ('test-structured-output.R:171:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test-llm-stream-helpers.R:32:5'): only caller-owned empty writable
+<relm_error_argument/relm_error/error/condition>
+Error in `reject()`: `on_token` requires `async = TRUE` and must be a function or an already-open, writable binary file() connection to an empty regular file at position zero.
+Backtrace:
+    ▆
+ 1. └─relm:::stream_validate_sink(con, TRUE) at test-llm-stream-helpers.R:32:5
+ 2.   └─relm (local) reject()
+ 3.     └─relm:::abort_argument(...)
+ 4.       └─relm:::relm_abort(...)
+
+── 2. Error ('test-llm-stream.R:231:3'): in-repo tiny model retains seeded sync 
+<relm_error_tokenize/relm_error/error/condition>
+Error in `FUN(X[[i]], ...)`: Tokenization failed (the model carries no tokenizer (no_vocab)). The model may lack a tokenizer, or a token id may be outside its vocabulary. Check the input and that the model file carries a tokenizer.
+Backtrace:
+    ▆
+ 1. └─relm::llm_generate(m, prompt, chat = FALSE, max_tokens = 8, seed = 19) at test-llm-stream.R:231:3
+ 2.   └─base::vapply(...)
+ 3.     └─relm (local) FUN(X[[i]], ...)
+ 4.       └─relm:::relm_check(...)
+ 5.         └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Keep trying!
+Error:
+! Test failures.
+Warning messages:
+1: package ‘testthat’ was built under R version 4.5.2 
+2: In for (i in seq_len(n)) { :
+  closing unused connection 4 (/var/folders/0g/w9qy3m615_9bn_8kslpcn87w0000gn/T//RtmpSi930h/fileb6d2565afcbd)
+Execution halted

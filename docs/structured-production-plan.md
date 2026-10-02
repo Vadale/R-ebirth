@@ -64,11 +64,11 @@ no measurement is relabelled as a release-source rerun.
 
 The founder authorized packaging and publishing this completed increment on
 2026-09-29. The release does not start another implementation work package.
-Once distribution is verified, the default roadmap sequence resumes with
-**WP9, asynchronous generation**, then **WP10, token streaming**: keep RStudio
-responsive during generation, then expose incremental token results through
-the approved R interface. Their concrete designs, cancellation/error semantics
-and any API or dependency amendments must be settled before implementation.
+Distribution is verified and **WP9, asynchronous generation**, is complete
+(PR #54, `b16e2c0`). **WP10, token streaming**, has passed local automated and foreground
+RStudio acceptance after D-038 approval, with final PR checks pending: expose token data and committed text through bounded callbacks or CSV
+while preserving the final result. See the [approved contract](wp10-streaming-plan.md)
+and [acceptance ledger](wp10-implementation.md). No new dependency is introduced.
 
 Later work remains live introspection, runtime types and general serving,
 Windows/CUDA on suitable hardware, and CRAN preparation/documentation/API freeze.
@@ -253,8 +253,8 @@ model benchmark was executed for this planning change.
 
 **Current state (2026-10-02):** relm 0.3.0 publication and r-universe binary
 installation are verified. The external statistical skill foundation is the
-authorized companion increment, merged in PR #53. WP9 has approved D-037 and
-completed operational acceptance; final integration remains in PR #54. Next
-come WP10, then I1 (D-036). The remaining later phases retain their
+authorized companion increment, merged in PR #53. WP9/D-037 is complete and
+integrated in PR #54. WP10/D-038 implementation is current, then I1 (D-036).
+The remaining later phases retain their
 roadmap scope.
 D1's negative quality result and deferred stronger-model comparison are unchanged.

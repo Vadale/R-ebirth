@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "pid": 60936,
+  "started_at": 1790940874.3606,
+  "version": "0.3.0",
+  "library": "/private/tmp/relm-wp10/library/relm",
+  "rstudio_version": "2025.9.1.401",
+  "probe": {
+    "value": 2,
+    "elapsed": 0,
+    "was_running": true,
+    "native_running": true,
+    "tokens_delivered": 1903,
+    "at": 1790940890.8728
+  },
+  "error": null,
+  "generation_seconds": 34.788,
+  "submission_seconds": 0.002,
+  "first_batch_seconds": 0.101,
+  "heartbeats": 578,
+  "tokens": 4096
+}

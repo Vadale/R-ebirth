@@ -5,11 +5,12 @@ use crate::{
     CompiledSchema, ExecutionPermit, GenerateParams, Generation, LoadedModel, RebirthError,
 };
 use std::cell::{Cell, RefCell};
+use std::collections::VecDeque;
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Condvar, Mutex};
 use std::thread::{self, JoinHandle};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 // Twin-pinned by the R admission tests; these are async-only D-037 limits.
 pub const ASYNC_MAX_PROMPTS: usize = 128;
@@ -27,6 +28,48 @@ pub const ASYNC_MAX_STORAGE_BYTES: usize = ASYNC_MAX_DESCRIPTOR_BYTES;
 pub const ASYNC_STRING_OVERHEAD: usize = ASYNC_STRING_DESCRIPTOR_BYTES;
 pub const ASYNC_IMAGE_ROW_OVERHEAD: usize = ASYNC_IMAGE_ROW_BYTES;
 
+// D-038 transport bounds; twin-pinned by R delivery tests. Text uses Box<str>,
+// so the charged payload equals its allocation instead of String spare capacity.
+pub const STREAM_QUEUE_ROWS: usize = 256;
+pub const STREAM_QUEUE_BYTES: usize = 256 * 1024;
+pub const STREAM_CHUNK_BYTES: usize = 16 * 1024;
+pub const STREAM_BATCH_ROWS: usize = 64;
+pub const STREAM_BATCH_BYTES: usize = 64 * 1024;
+
+#[derive(Debug)]
+pub struct StreamEvent {
+    pub event_id: i32,
+    pub event: &'static str,
+    pub prompt_id: i32,
+    pub token_pos: Option<i32>,
+    pub token_id: Option<i32>,
+    pub text: Box<str>,
+    pub elapsed: f64,
+    pub finish_reason: &'static str,
+    pub validated: Option<bool>,
+}
+struct StreamQueue {
+    rows: VecDeque<StreamEvent>,
+    bytes: usize,
+    next_id: usize,
+    discarded: bool,
+}
+impl StreamQueue {
+    fn new() -> Self {
+        Self {
+            rows: VecDeque::with_capacity(STREAM_QUEUE_ROWS),
+            bytes: 0,
+            next_id: 1,
+            discarded: false,
+        }
+    }
+    fn discard(&mut self) {
+        self.rows.clear();
+        self.bytes = 0;
+        self.discarded = true;
+    }
+}
+
 pub struct AsyncRequest {
     pub prompts: Vec<String>,
     pub chat: bool,
@@ -34,6 +77,7 @@ pub struct AsyncRequest {
     pub schema: Option<CompiledSchema>,
     pub images: Option<Vec<Vec<String>>>,
     pub image_max_bytes: u64,
+    pub stream: bool,
     // Numeric synthetic fixtures use the production worker/control path without
     // claiming tokenizer coverage. This seam does not exist in shipped builds.
     #[cfg(test)]
@@ -55,8 +99,8 @@ impl AsyncRequest {
         {
             return Err(invalid("prompt", "async prompt exceeds 1 MiB"));
         }
-        if self.params.max_tokens > ASYNC_MAX_TOKENS {
-            return Err(invalid("max_tokens", "async token bound exceeds 8192"));
+        if self.params.max_tokens == 0 || self.params.max_tokens > ASYNC_MAX_TOKENS {
+            return Err(invalid("max_tokens", "async requires 1..8192 tokens"));
         }
         if let Some(images) = &self.images {
             if images.len() != self.prompts.len() {
@@ -119,21 +163,34 @@ struct State {
     terminal: bool,
     cancellation_accepted: bool,
     committed_output: usize,
+    stream: Option<StreamQueue>,
 }
 struct Control {
     cancel: AtomicBool,
     seed: u64,
     state: Mutex<State>,
+    space: Condvar,
+    started: Instant,
+    streaming: bool,
+    structured: bool,
     #[cfg(test)]
     test_pause: Mutex<Option<TestPause>>,
+    #[cfg(test)]
+    queue_waiter: Mutex<Option<std::sync::mpsc::Sender<()>>>,
 }
 impl Control {
     fn new(request: &AsyncRequest) -> Self {
         Self {
             #[cfg(test)]
             test_pause: Mutex::new(TEST_PAUSE.with(|slot| slot.borrow_mut().take())),
+            #[cfg(test)]
+            queue_waiter: Mutex::new(TEST_QUEUE_WAITER.with(|slot| slot.borrow_mut().take())),
             cancel: AtomicBool::new(false),
             seed: request.params.seed,
+            space: Condvar::new(),
+            started: Instant::now(),
+            streaming: request.stream,
+            structured: request.schema.is_some(),
             state: Mutex::new(State {
                 progress: ProgressSnapshot {
                     prompt_id: 1,
@@ -146,6 +203,7 @@ impl Control {
                 terminal: false,
                 cancellation_accepted: false,
                 committed_output: 0,
+                stream: request.stream.then(StreamQueue::new),
             }),
         }
     }
@@ -166,6 +224,81 @@ impl Control {
         }
         Ok(())
     }
+    fn stream_error(&self, reason: &str, state: &State) -> RebirthError {
+        RebirthError::Stream {
+            reason: reason.into(),
+            prompt_id: Some(state.progress.prompt_id),
+            event_id: state.stream.as_ref().map(|stream| stream.next_id),
+        }
+    }
+    fn enqueue(
+        &self,
+        event: &'static str,
+        token_pos: Option<i32>,
+        token_id: Option<i32>,
+        text: Box<str>,
+        finish_reason: &'static str,
+    ) -> Result<(), RebirthError> {
+        let mut state = self.lock();
+        let elapsed = self.started.elapsed().as_secs_f64();
+        loop {
+            if state.cancellation_accepted {
+                return Err(self.cancelled(&state));
+            }
+            let Some(stream) = state.stream.as_ref() else {
+                return Ok(());
+            };
+            if stream.discarded || state.terminal {
+                return Err(self.cancelled(&state));
+            }
+            let fits = stream.rows.len() < STREAM_QUEUE_ROWS
+                && stream
+                    .bytes
+                    .checked_add(text.len())
+                    .is_some_and(|n| n <= STREAM_QUEUE_BYTES);
+            if fits {
+                break;
+            }
+            // Cancellation changes this predicate with the same mutex before
+            // notifying: no notification can be lost between check and sleep.
+            #[cfg(test)]
+            if let Some(waiter) = self.queue_waiter.lock().unwrap().take() {
+                waiter.send(()).expect("queue wait observer");
+            }
+            state = self.space.wait(state).unwrap_or_else(|e| e.into_inner());
+        }
+        let prompt_id = state.progress.prompt_id as i32;
+        let stream = state.stream.as_mut().expect("enabled stream");
+        let event_id = i32::try_from(stream.next_id).map_err(|_| RebirthError::Stream {
+            reason: "invariant".into(),
+            prompt_id: Some(prompt_id as usize),
+            event_id: None,
+        })?;
+        stream.next_id = stream
+            .next_id
+            .checked_add(1)
+            .ok_or_else(|| RebirthError::Stream {
+                reason: "invariant".into(),
+                prompt_id: Some(prompt_id as usize),
+                event_id: None,
+            })?;
+        stream.bytes = stream
+            .bytes
+            .checked_add(text.len())
+            .expect("checked queue size");
+        stream.rows.push_back(StreamEvent {
+            event_id,
+            event,
+            prompt_id,
+            token_pos,
+            token_id,
+            text,
+            elapsed,
+            finish_reason,
+            validated: self.structured.then_some(event == "prompt_end"),
+        });
+        Ok(())
+    }
     fn publish(&self, result: &mut Result<Vec<Generation>, RebirthError>, panicked: bool) {
         let mut state = self.lock();
         if state.cancellation_accepted && !panicked {
@@ -176,8 +309,15 @@ impl Control {
             state.progress.prompt_id = state.progress.prompts_total;
             state.progress.phase = "complete";
         }
-        // cancel and terminal publication arbitrate under the same short lock.
+        // A failed native outcome never starts any more consumers. Terminal
+        // publication, cancellation and the producer predicate share this lock.
+        if result.is_err() {
+            if let Some(stream) = state.stream.as_mut() {
+                stream.discard();
+            }
+        }
         state.terminal = true;
+        self.space.notify_all();
     }
 }
 #[cfg(test)]
@@ -196,7 +336,10 @@ struct TestPause {
     resume: std::sync::mpsc::Receiver<()>,
 }
 #[cfg(test)]
-thread_local! { static TEST_PAUSE: RefCell<Option<TestPause>> = const { RefCell::new(None) }; }
+thread_local! {
+    static TEST_PAUSE: RefCell<Option<TestPause>> = const { RefCell::new(None) };
+    static TEST_QUEUE_WAITER: RefCell<Option<std::sync::mpsc::Sender<()>>> = const { RefCell::new(None) };
+}
 #[cfg(test)]
 pub(crate) fn test_checkpoint(stage: TestStage) {
     with_control(|control| {
@@ -257,6 +400,64 @@ fn with_control<T>(f: impl FnOnce(Option<&Control>) -> T) -> T {
 /// Shared text/vision ingest and sampler checkpoints are no-ops synchronously.
 pub(crate) fn checkpoint() -> Result<(), RebirthError> {
     with_control(|control| control.map_or(Ok(()), Control::checkpoint))
+}
+pub(crate) fn streaming() -> bool {
+    with_control(|control| control.is_some_and(|control| control.streaming))
+}
+pub(crate) fn stream_error(reason: &str) -> RebirthError {
+    with_control(|control| match control {
+        Some(control) => control.stream_error(reason, &control.lock()),
+        None => RebirthError::Stream {
+            reason: reason.into(),
+            prompt_id: None,
+            event_id: None,
+        },
+    })
+}
+pub(crate) fn stream_token(token_id: i32, token_pos: usize) -> Result<(), RebirthError> {
+    with_control(|control| {
+        let Some(control) = control.filter(|control| control.streaming) else {
+            return Ok(());
+        };
+        let token_id = token_id
+            .checked_add(1)
+            .filter(|id| *id > 0)
+            .ok_or_else(|| control.stream_error("invariant", &control.lock()))?;
+        let token_pos = i32::try_from(token_pos)
+            .ok()
+            .filter(|pos| *pos > 0)
+            .ok_or_else(|| control.stream_error("invariant", &control.lock()))?;
+        control.enqueue("token", Some(token_pos), Some(token_id), "".into(), "")
+    })
+}
+pub(crate) fn stream_text(text: &str) -> Result<(), RebirthError> {
+    with_control(|control| {
+        let Some(control) = control.filter(|control| control.streaming) else {
+            return Ok(());
+        };
+        if text.contains('\0') {
+            return Err(control.stream_error("encoding", &control.lock()));
+        }
+        let mut remaining = text;
+        while !remaining.is_empty() {
+            let mut end = remaining.len().min(STREAM_CHUNK_BYTES);
+            while !remaining.is_char_boundary(end) {
+                end -= 1;
+            }
+            // Allocate only this chunk: while blocked there is one pending box.
+            control.enqueue("text", None, None, remaining[..end].into(), "")?;
+            remaining = &remaining[end..];
+        }
+        Ok(())
+    })
+}
+pub(crate) fn stream_prompt_end(finish_reason: &'static str) -> Result<(), RebirthError> {
+    with_control(
+        |control| match control.filter(|control| control.streaming) {
+            Some(control) => control.enqueue("prompt_end", None, None, "".into(), finish_reason),
+            None => Ok(()),
+        },
+    )
 }
 pub(crate) fn prompt_started(prompt_id: usize) -> Result<(), RebirthError> {
     #[cfg(test)]
@@ -353,6 +554,8 @@ pub enum AsyncFixtureMode {
     Success,
     Error,
     Panic,
+    StreamText,
+    StreamEncoding,
 }
 struct Fixture {
     mode: AsyncFixtureMode,
@@ -499,7 +702,55 @@ impl AsyncJob {
         }
         state.cancellation_accepted = true;
         self.control.cancel.store(true, Ordering::Release);
+        self.control.space.notify_all();
         true
+    }
+    /// Abandon undelivered rows and wake a producer before any terminal wait.
+    /// Native terminal arbitration is unchanged: cancel remains false afterward.
+    pub fn discard_stream(&self) {
+        let mut state = self.control.lock();
+        if let Some(stream) = state.stream.as_mut() {
+            stream.discard();
+        }
+        if !state.terminal {
+            state.cancellation_accepted = true;
+            self.control.cancel.store(true, Ordering::Release);
+        }
+        self.control.space.notify_all();
+    }
+    /// A bounded drain; None means contention and the next R timer retries.
+    /// The bool reports whether all queued rows were transferred in this batch.
+    pub fn drain_stream(&self) -> Option<(Vec<StreamEvent>, bool)> {
+        let mut state = self.control.state.try_lock().ok()?;
+        let Some(stream) = state.stream.as_mut() else {
+            return Some((Vec::new(), true));
+        };
+        let mut rows = Vec::with_capacity(STREAM_BATCH_ROWS);
+        let mut bytes = 0usize;
+        while rows.len() < STREAM_BATCH_ROWS {
+            let Some(row) = stream.rows.front() else {
+                break;
+            };
+            let Some(next) = bytes.checked_add(row.text.len()) else {
+                break;
+            };
+            if next > STREAM_BATCH_BYTES {
+                break;
+            }
+            bytes = next;
+            rows.push(stream.rows.pop_front().expect("peeked row"));
+        }
+        stream.bytes -= bytes;
+        let empty = stream.rows.is_empty();
+        self.control.space.notify_all();
+        Some((rows, empty))
+    }
+    pub fn stream_empty(&self) -> bool {
+        self.control
+            .lock()
+            .stream
+            .as_ref()
+            .is_none_or(|stream| stream.rows.is_empty())
     }
     pub fn is_running(&self) -> bool {
         self.worker
@@ -552,6 +803,7 @@ fn run_request(
             prompt_started(i + 1)?;
             let generated = model.generate(tokens, &request.params)?;
             prompt_completed(generated.text.len())?;
+            stream_prompt_end(generated.stop_reason.as_str())?;
             output.push(generated);
         }
         return Ok(output);
@@ -579,21 +831,56 @@ fn run_request(
             model.generate_prompt(prompt, request.chat, &request.params)?
         };
         prompt_completed(generation.text.len())?;
+        stream_prompt_end(generation.stop_reason.as_str())?;
         output.push(generation);
     }
     Ok(output)
 }
 fn run_fixture(request: &AsyncRequest, fixture: Fixture) -> Result<Vec<Generation>, RebirthError> {
-    for i in 0..fixture.steps {
-        checkpoint()?;
-        if fixture.delay_ms > 0 {
-            thread::sleep(Duration::from_millis(fixture.delay_ms));
+    let mut output = Vec::with_capacity(request.prompts.len());
+    // Streaming fixtures exercise real transport and ownership; they make no
+    // tokenizer/model claim. Preserve the established nonstream fixture timing.
+    let prompts = if request.stream {
+        request.prompts.len()
+    } else {
+        1
+    };
+    for prompt in 0..prompts {
+        prompt_started(prompt + 1)?;
+        for i in 0..fixture.steps {
+            checkpoint()?;
+            if fixture.delay_ms > 0 {
+                thread::sleep(Duration::from_millis(fixture.delay_ms));
+            }
+            sampled((i as usize + 1).min(request.params.max_tokens))?;
+            stream_token((i % 32) as i32, i as usize + 1)?;
         }
-        sampled((i as usize + 1).min(request.params.max_tokens))?;
+        let text = match fixture.mode {
+            AsyncFixtureMode::StartError => unreachable!("startup failure never enters worker"),
+            AsyncFixtureMode::Error => {
+                return Err(RebirthError::Generation {
+                    reason: "async_fixture".into(),
+                })
+            }
+            AsyncFixtureMode::Panic => panic!("controlled asynchronous fixture panic"),
+            AsyncFixtureMode::StreamText => "NA,\"quoted\"\nλ🙂 ".repeat(32_768),
+            AsyncFixtureMode::StreamEncoding => "before\0after".into(),
+            AsyncFixtureMode::Success => "fixture".into(),
+        };
+        stream_text(&text)?;
+        if request.stream {
+            prompt_completed(text.len())?;
+            stream_prompt_end(crate::StopReason::MaxTokens.as_str())?;
+            output.push(Generation {
+                tokens: (0..fixture.steps).map(|i| (i % 32) as i32).collect(),
+                text,
+                stop_reason: crate::StopReason::MaxTokens,
+                seed: request.params.seed,
+            });
+        }
     }
-    match fixture.mode {
-        AsyncFixtureMode::StartError => unreachable!("startup failure never enters worker"),
-        AsyncFixtureMode::Success => Ok(request
+    if !request.stream {
+        output = request
             .prompts
             .iter()
             .map(|_| Generation {
@@ -602,12 +889,9 @@ fn run_fixture(request: &AsyncRequest, fixture: Fixture) -> Result<Vec<Generatio
                 stop_reason: crate::StopReason::MaxTokens,
                 seed: request.params.seed,
             })
-            .collect()),
-        AsyncFixtureMode::Error => Err(RebirthError::Generation {
-            reason: "async_fixture".into(),
-        }),
-        AsyncFixtureMode::Panic => panic!("controlled asynchronous fixture panic"),
+            .collect();
     }
+    Ok(output)
 }
 
 #[cfg(test)]
@@ -627,6 +911,7 @@ mod tests {
             schema: None,
             images: None,
             image_max_bytes: 1,
+            stream: false,
             numeric_prompts: None,
         }
     }
@@ -639,6 +924,374 @@ mod tests {
             delay,
         )
         .unwrap_or_else(|_| panic!("fixture startup"))
+    }
+    fn stream_control() -> Arc<Control> {
+        let mut req = request();
+        req.stream = true;
+        Arc::new(Control::new(&req))
+    }
+    fn enqueue_token(control: &Control) -> Result<(), RebirthError> {
+        control.enqueue("token", Some(1), Some(1), "".into(), "")
+    }
+    fn control_job(control: Arc<Control>) -> AsyncJob {
+        AsyncJob {
+            control,
+            worker: None,
+        }
+    }
+    // Rust PR CI, download-free. Caps cover actual allocated text and descriptor
+    // slots, independent row/byte saturation, and lossless FIFO drains.
+    #[test]
+    fn stream_caps_and_lossless_bounded_drains() {
+        assert!(std::mem::size_of::<StreamEvent>() <= 128);
+        let control = stream_control();
+        for _ in 0..STREAM_QUEUE_ROWS {
+            enqueue_token(&control).unwrap();
+        }
+        {
+            let state = control.lock();
+            let stream = state.stream.as_ref().unwrap();
+            assert_eq!(stream.rows.len(), STREAM_QUEUE_ROWS);
+            assert_eq!(stream.rows.capacity(), STREAM_QUEUE_ROWS);
+            assert_eq!(stream.bytes, 0);
+        }
+        let job = control_job(control.clone());
+        for batch in 0..4 {
+            let (rows, empty) = job.drain_stream().unwrap();
+            assert_eq!(rows.len(), STREAM_BATCH_ROWS);
+            assert_eq!(empty, batch == 3);
+            for (i, row) in rows.iter().enumerate() {
+                assert_eq!(row.event_id as usize, batch * STREAM_BATCH_ROWS + i + 1);
+            }
+        }
+        for _ in 0..STREAM_QUEUE_BYTES / STREAM_CHUNK_BYTES {
+            control
+                .enqueue(
+                    "text",
+                    None,
+                    None,
+                    "x".repeat(STREAM_CHUNK_BYTES).into_boxed_str(),
+                    "",
+                )
+                .unwrap();
+        }
+        assert_eq!(
+            control.lock().stream.as_ref().unwrap().bytes,
+            STREAM_QUEUE_BYTES
+        );
+        for batch in 0..4 {
+            let (rows, empty) = job.drain_stream().unwrap();
+            assert_eq!(
+                rows.iter().map(|r| r.text.len()).sum::<usize>(),
+                STREAM_BATCH_BYTES
+            );
+            assert_eq!(empty, batch == 3);
+        }
+    }
+    // Rust PR CI. Observer is triggered under the predicate mutex immediately
+    // before Condvar::wait; cancel/close/shutdown can never slip past that lock.
+    #[test]
+    fn stream_full_queue_cancel_discard_and_drain_wake_producer() {
+        use std::sync::mpsc;
+        for mode in 0..3 {
+            for byte_full in [false, true] {
+                let control = stream_control();
+                if byte_full {
+                    for _ in 0..STREAM_QUEUE_BYTES / STREAM_CHUNK_BYTES {
+                        control
+                            .enqueue(
+                                "text",
+                                None,
+                                None,
+                                "x".repeat(STREAM_CHUNK_BYTES).into_boxed_str(),
+                                "",
+                            )
+                            .unwrap();
+                    }
+                } else {
+                    for _ in 0..STREAM_QUEUE_ROWS {
+                        enqueue_token(&control).unwrap();
+                    }
+                }
+                let (entered, observed) = mpsc::channel();
+                *control.queue_waiter.lock().unwrap() = Some(entered);
+                let worker_control = control.clone();
+                let (done, finished) = mpsc::channel();
+                let producer = thread::spawn(move || {
+                    let result = worker_control.enqueue("text", None, None, "next".into(), "");
+                    done.send(result).unwrap();
+                });
+                observed
+                    .recv_timeout(Duration::from_secs(2))
+                    .expect("producer waits at limit");
+                let job = control_job(control);
+                match mode {
+                    0 => {
+                        assert!(job.cancel());
+                    }
+                    1 => job.discard_stream(),
+                    _ => {
+                        job.drain_stream().unwrap();
+                    }
+                }
+                let result = finished
+                    .recv_timeout(Duration::from_secs(2))
+                    .expect("producer wakes");
+                assert_eq!(result.is_ok(), mode == 2);
+                producer.join().unwrap();
+                if mode == 1 {
+                    assert!(job.stream_empty());
+                }
+            }
+        }
+    }
+    // Rust PR CI. Deterministic UTF-8 boundaries, NUL rejection, typed schema
+    // markers and terminal publication discard use the same worker-local hooks.
+    #[test]
+    fn stream_utf8_chunks_schema_encoding_and_native_error() {
+        let mut req = request();
+        req.stream = true;
+        req.schema = Some(CompiledSchema::compile(r#"{"type":"object","properties":{"ok":{"type":"boolean"}},"required":["ok"],"additionalProperties":false}"#).unwrap());
+        let control = Arc::new(Control::new(&req));
+        CONTROL.with(|slot| *slot.borrow_mut() = Some(control.clone()));
+        let text = "λ🙂".repeat(STREAM_CHUNK_BYTES / 3);
+        stream_token(0, 1).unwrap();
+        stream_text(&text).unwrap();
+        stream_prompt_end("length").unwrap();
+        assert!(
+            matches!(stream_text("a\0b"), Err(RebirthError::Stream { reason, .. }) if reason == "encoding")
+        );
+        CONTROL.with(|slot| slot.borrow_mut().take());
+        let job = control_job(control.clone());
+        let (rows, empty) = job.drain_stream().unwrap();
+        assert!(empty);
+        assert_eq!(rows[0].token_id, Some(1));
+        assert_eq!(rows[0].validated, Some(false));
+        assert_eq!(rows.last().unwrap().validated, Some(true));
+        assert_eq!(
+            rows.iter()
+                .filter(|r| r.event == "text")
+                .map(|r| r.text.as_ref())
+                .collect::<String>(),
+            text
+        );
+        assert!(rows.iter().all(|r| r.text.len() <= STREAM_CHUNK_BYTES));
+        assert!(rows
+            .windows(2)
+            .all(|rows| rows[0].elapsed <= rows[1].elapsed));
+        enqueue_token(&control).unwrap();
+        let mut failure = Err(RebirthError::Generation {
+            reason: "fixture".into(),
+        });
+        control.publish(&mut failure, false);
+        assert!(job.stream_empty());
+        assert!(!job.cancel());
+    }
+    // Rust PR CI. Exercise many cancellation/wait interleavings with a bounded
+    // watchdog, without relying on sleep duration or a scheduler timing guess.
+    #[test]
+    fn stream_cancel_wait_race_has_no_lost_wakeup() {
+        use std::sync::mpsc;
+        for round in 0..128 {
+            let control = stream_control();
+            for _ in 0..STREAM_QUEUE_ROWS {
+                enqueue_token(&control).unwrap();
+            }
+            let (entered, observed) = mpsc::channel();
+            if round % 2 == 0 {
+                *control.queue_waiter.lock().unwrap() = Some(entered);
+            }
+            let worker_control = control.clone();
+            let (done, finished) = mpsc::channel();
+            let producer = thread::spawn(move || {
+                done.send(enqueue_token(&worker_control)).unwrap();
+            });
+            if round % 2 == 0 {
+                observed.recv_timeout(Duration::from_secs(2)).unwrap();
+            }
+            let job = control_job(control);
+            assert!(job.cancel());
+            assert!(matches!(
+                finished.recv_timeout(Duration::from_secs(2)).unwrap(),
+                Err(RebirthError::Cancelled { .. })
+            ));
+            producer.join().unwrap();
+        }
+    }
+    // Rust PR CI. A real completion owns the process reservation even after its
+    // final native row has been drained; only explicit completion disposal frees it.
+    #[test]
+    fn stream_native_completion_retains_permit_until_delivery_ack() {
+        let mut req = request();
+        req.stream = true;
+        let mut job = AsyncJob::start_fixture(
+            req,
+            ExecutionPermit::try_acquire("stream fixture").unwrap(),
+            AsyncFixtureMode::Success,
+            1,
+            0,
+        )
+        .unwrap_or_else(|_| panic!("stream starts"));
+        let completion = job.worker.take().unwrap().join().unwrap();
+        assert!(!job.cancel());
+        assert!(completion.result.is_ok());
+        let (rows, empty) = job.drain_stream().unwrap();
+        assert!(empty);
+        assert_eq!(
+            rows.iter().map(|r| r.event).collect::<Vec<_>>(),
+            vec!["token", "text", "prompt_end"]
+        );
+        assert!(ExecutionPermit::try_acquire("last consumer").is_err());
+        drop(completion);
+        assert!(ExecutionPermit::try_acquire("final progress").is_ok());
+    }
+    // Rust PR CI. Production worker shutdown and panic/error collection after
+    // backpressure retain their exactly-once ownership behavior.
+    #[test]
+    fn stream_shutdown_and_failures_after_backpressure_release_ownership() {
+        use std::sync::mpsc;
+        for mode in [
+            AsyncFixtureMode::Success,
+            AsyncFixtureMode::Error,
+            AsyncFixtureMode::Panic,
+        ] {
+            let (entered, observed) = mpsc::channel();
+            TEST_QUEUE_WAITER.with(|slot| *slot.borrow_mut() = Some(entered));
+            let mut req = request();
+            req.stream = true;
+            let mut job = AsyncJob::start_fixture(
+                req,
+                ExecutionPermit::try_acquire("blocked fixture").unwrap(),
+                mode,
+                STREAM_QUEUE_ROWS as u32 + 1,
+                0,
+            )
+            .unwrap_or_else(|_| panic!("stream starts"));
+            observed
+                .recv_timeout(Duration::from_secs(2))
+                .expect("worker waits");
+            let completion = if matches!(mode, AsyncFixtureMode::Success) {
+                job.shutdown().unwrap()
+            } else {
+                job.drain_stream().unwrap();
+                job.worker.take().unwrap().join().unwrap()
+            };
+            assert_eq!(
+                completion.result.as_ref().unwrap_err().class(),
+                match mode {
+                    AsyncFixtureMode::Success => "relm_error_cancelled",
+                    AsyncFixtureMode::Error => "relm_error_generation",
+                    _ => "relm_error_internal",
+                }
+            );
+            assert!(job.stream_empty());
+            assert!(ExecutionPermit::try_acquire("retained failure").is_err());
+            drop(completion);
+            assert!(ExecutionPermit::try_acquire("recovered after failure").is_ok());
+        }
+    }
+    // Rust PR CI. The no-token prompt still emits its ordered end marker.
+    #[test]
+    fn stream_zero_tokens_and_nonstream_allocate_no_spurious_rows() {
+        let ordinary = Control::new(&request());
+        assert!(ordinary.lock().stream.is_none());
+        let control = stream_control();
+        CONTROL.with(|slot| *slot.borrow_mut() = Some(control.clone()));
+        stream_text("").unwrap();
+        stream_prompt_end("stop").unwrap();
+        CONTROL.with(|slot| slot.borrow_mut().take());
+        let (rows, empty) = control_job(control).drain_stream().unwrap();
+        assert!(empty);
+        assert_eq!(rows.len(), 1);
+        assert_eq!(rows[0].event, "prompt_end");
+        assert_eq!(rows[0].event_id, 1);
+        assert_eq!(rows[0].finish_reason, "stop");
+        assert_eq!(rows[0].validated, None);
+    }
+    #[test]
+    fn stream_limits_are_twin_pinned_to_r_delivery() {
+        // Rust PR CI, paired with R tests on each R-CMD-check leg.
+        let source = include_str!("../../../../R/stream.R");
+        for (name, value) in [
+            ("queue_rows", STREAM_QUEUE_ROWS),
+            ("queue_bytes", STREAM_QUEUE_BYTES),
+            ("chunk_bytes", STREAM_CHUNK_BYTES),
+            ("batch_rows", STREAM_BATCH_ROWS),
+            ("batch_bytes", STREAM_BATCH_BYTES),
+        ] {
+            assert!(
+                source
+                    .lines()
+                    .any(|line| line == format!("relm_stream_{name} <- {value}")),
+                "R/native stream bound differs: {name}"
+            );
+        }
+    }
+    // Rust PR CI: seeded sync/async stream parity on the in-repo numeric GGUF,
+    // including the last sampled token before context exhaustion.
+    #[test]
+    fn stream_synthetic_token_parity_includes_context_exhaustion() {
+        let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../../tests/llm-golden/synthetic/synthetic-llama-2l.gguf");
+        let mut model = crate::load_with_batch(
+            crate::LoadRequest {
+                path,
+                context_length: 64,
+                gpu_layers: None,
+                backend: crate::BackendKind::Cpu,
+                mmap: true,
+                projector: None,
+            },
+            Some(1),
+        )
+        .unwrap();
+        // llama.cpp pads the requested window; exhaust the actual context,
+        // rather than assuming the requested 64 tokens are the native limit.
+        let context_length = model.context_length() as usize;
+        for input in [vec![1, 7, 3], vec![1; context_length]] {
+            let mut req = request();
+            req.stream = true;
+            req.params.max_tokens = 16;
+            req.params.temperature = 0.8;
+            req.numeric_prompts = Some(vec![input.clone()]);
+            let expected = model.generate(&input, &req.params).unwrap();
+            if input.len() == context_length {
+                assert_eq!(expected.stop_reason, crate::StopReason::ContextFull);
+                assert_eq!(expected.tokens.len(), 1);
+            } else {
+                assert_eq!(expected.stop_reason, crate::StopReason::MaxTokens);
+                assert_eq!(expected.tokens.len(), req.params.max_tokens);
+            }
+            let mut job = AsyncJob::start(
+                model,
+                req,
+                ExecutionPermit::try_acquire("numeric stream").unwrap(),
+            )
+            .unwrap_or_else(|_| panic!("numeric stream starts"));
+            let mut completion = job.worker.take().unwrap().join().unwrap();
+            let (rows, empty) = job.drain_stream().unwrap();
+            assert!(empty);
+            assert_eq!(
+                rows.iter()
+                    .filter_map(|row| row.token_id)
+                    .map(|id| id - 1)
+                    .collect::<Vec<_>>(),
+                expected.tokens
+            );
+            assert_eq!(
+                rows.iter()
+                    .filter_map(|row| row.token_pos)
+                    .collect::<Vec<_>>(),
+                (1..=expected.tokens.len() as i32).collect::<Vec<_>>()
+            );
+            assert_eq!(
+                rows.last().unwrap().finish_reason,
+                expected.stop_reason.as_str()
+            );
+            assert_eq!(completion.result.as_ref().unwrap()[0], expected);
+            model = completion.model.take().unwrap();
+            drop(completion);
+        }
     }
     // Rust PR job, debug/release. All scheduler proofs precede model execution.
     #[test]
@@ -1001,6 +1654,7 @@ mod tests {
                     schema: None,
                     images: Some(vec![images.clone()]),
                     image_max_bytes,
+                    stream: false,
                     numeric_prompts: None,
                 };
                 let (entered, observed) = mpsc::channel();

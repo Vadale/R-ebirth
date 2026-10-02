@@ -1,0 +1,217 @@
+* installing *source* package ‘relm’ ...
+** this is package ‘relm’ version ‘0.3.0’
+** using staged installation
+Using cargo 1.96.0 (30a34c682 2026-05-25)
+Using rustc 1.96.0 (ac68faa20 2026-05-25)
+Using cmake 4.3.4
+Building for CRAN.
+Cleaning previous `src/Makevars`.
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+** libs
+using C compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+using C++ compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+using SDK: ‘’
+if [ -d ./vendor ]; then \
+		echo "=== Using offline vendor directory ==="; \
+		mkdir -p /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo && \
+		cp rust/vendor-config.toml /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo/config.toml; \
+	elif [ -f ./rust/vendor.tar.xz ]; then \
+		echo "=== Using offline vendor tarball ==="; \
+		tar xf rust/vendor.tar.xz && \
+		mkdir -p /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo && \
+		cp rust/vendor-config.toml /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo/config.toml; \
+	fi
+export CARGO_HOME=/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo && \
+	export PATH="/private/tmp/relm-maintenance-2026-09-27/quarto/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/alessandrovadala/.local/bin:/Users/alessandrovadala/.antigravity/antigravity/bin:/Users/alessandrovadala/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/alessandrovadala/.codex/tmp/arg0/codex-arg0aoWAqQ:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/alessandrovadala/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/alessandrovadala/.local/bin:/Users/alessandrovadala/.antigravity/antigravity/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/Users/alessandrovadala/.cargo/bin:/Users/alessandrovadala/.lmstudio/bin:/Users/alessandrovadala/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/alessandrovadala/.lmstudio/bin:/Users/alessandrovadala/.cargo/bin" && \
+	RUSTFLAGS=" --print=native-static-libs" cargo build  -p rebirth-ffi --lib --release --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded num-traits v0.2.19
+  Downloaded const-random-macro v0.1.16
+  Downloaded lazy_static v1.5.0
+  Downloaded crunchy v0.2.4
+  Downloaded const-random v0.1.18
+  Downloaded version_check v0.9.5
+  Downloaded cfg-if v1.0.4
+  Downloaded itoa v1.0.18
+  Downloaded rustc_version v0.4.1
+  Downloaded tiny-keccak v2.0.2
+  Downloaded shlex v2.0.1
+  Downloaded extendr-macros v0.9.0
+  Downloaded quote v1.0.46
+  Downloaded iana-time-zone v0.1.65
+  Downloaded semver v1.0.28
+  Downloaded unicode-ident v1.0.24
+  Downloaded serde_core v1.0.228
+  Downloaded bytes v1.12.0
+  Downloaded zerocopy-derive v0.8.52
+  Downloaded num-bigint v0.4.8
+  Downloaded arrow-select v59.0.0
+  Downloaded arrow-ipc v59.0.0
+  Downloaded serde_json v1.0.145
+  Downloaded libm v0.2.16
+  Downloaded hashbrown v0.17.1
+  Downloaded extendr-api v0.9.0
+  Downloaded arrow-buffer v59.0.0
+  Downloaded arrow-array v59.0.0
+  Downloaded zerocopy v0.8.52
+  Downloaded chrono v0.4.45
+  Downloaded syn v2.0.118
+  Downloaded serde v1.0.228
+  Downloaded memchr v2.8.3
+  Downloaded cc v1.2.65
+  Downloaded arrow-schema v59.0.0
+  Downloaded ryu v1.0.23
+  Downloaded once_cell v1.21.4
+  Downloaded half v2.7.1
+  Downloaded getrandom v0.3.4
+  Downloaded bitflags v2.13.0
+  Downloaded arrow-data v59.0.0
+  Downloaded proc-macro2 v1.0.106
+  Downloaded ahash v0.8.12
+  Downloaded getrandom v0.2.17
+  Downloaded core-foundation-sys v0.8.7
+  Downloaded paste v1.0.15
+  Downloaded num-integer v0.1.46
+  Downloaded extendr-ffi v0.9.0
+  Downloaded flatbuffers v25.12.19
+  Downloaded find-msvc-tools v0.1.9
+  Downloaded readonly v0.2.13
+  Downloaded num-complex v0.4.6
+  Downloaded cmake v0.1.58
+  Downloaded autocfg v1.5.1
+  Downloaded libc v0.2.186
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.46
+   Compiling libm v0.2.16
+   Compiling autocfg v1.5.1
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling getrandom v0.3.4
+   Compiling version_check v0.9.5
+   Compiling core-foundation-sys v0.8.7
+   Compiling bytes v1.12.0
+   Compiling once_cell v1.21.4
+   Compiling ahash v0.8.12
+   Compiling num-traits v0.2.19
+   Compiling semver v1.0.28
+   Compiling rustc_version v0.4.1
+   Compiling iana-time-zone v0.1.65
+   Compiling find-msvc-tools v0.1.9
+   Compiling arrow-schema v59.0.0
+   Compiling shlex v2.0.1
+   Compiling serde_core v1.0.228
+   Compiling cc v1.2.65
+   Compiling flatbuffers v25.12.19
+   Compiling hashbrown v0.17.1
+   Compiling extendr-ffi v0.9.0
+   Compiling cmake v0.1.58
+   Compiling syn v2.0.118
+   Compiling paste v1.0.15
+   Compiling serde_json v1.0.145
+   Compiling serde v1.0.228
+   Compiling bitflags v2.13.0
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling extendr-api v0.9.0
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling ryu v1.0.23
+   Compiling lazy_static v1.5.0
+   Compiling num-integer v0.1.46
+   Compiling chrono v0.4.45
+   Compiling zerocopy-derive v0.8.52
+   Compiling num-bigint v0.4.8
+   Compiling num-complex v0.4.6
+   Compiling extendr-macros v0.9.0
+   Compiling readonly v0.2.13
+   Compiling half v2.7.1
+   Compiling arrow-buffer v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling arrow-array v59.0.0
+   Compiling arrow-select v59.0.0
+   Compiling arrow-ipc v59.0.0
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+note: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms
+
+note: native-static-libs: -lc++ -framework Accelerate -framework Metal -framework MetalKit -framework Foundation -lc -lm -liconv -framework CoreFoundation -lR -lSystem -lc -lm
+
+    Finished `release` profile [optimized] target(s) in 59.25s
+export CARGO_HOME=/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo && \
+	export PATH="/private/tmp/relm-maintenance-2026-09-27/quarto/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/alessandrovadala/.local/bin:/Users/alessandrovadala/.antigravity/antigravity/bin:/Users/alessandrovadala/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/alessandrovadala/.codex/tmp/arg0/codex-arg0aoWAqQ:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/alessandrovadala/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/alessandrovadala/.local/bin:/Users/alessandrovadala/.antigravity/antigravity/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/Users/alessandrovadala/.cargo/bin:/Users/alessandrovadala/.lmstudio/bin:/Users/alessandrovadala/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/alessandrovadala/.lmstudio/bin:/Users/alessandrovadala/.cargo/bin" && \
+	cargo run  -p rebirth-ffi --bin document --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.46
+   Compiling autocfg v1.5.1
+   Compiling libm v0.2.16
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling getrandom v0.3.4
+   Compiling version_check v0.9.5
+   Compiling once_cell v1.21.4
+   Compiling core-foundation-sys v0.8.7
+   Compiling semver v1.0.28
+   Compiling ahash v0.8.12
+   Compiling bytes v1.12.0
+   Compiling rustc_version v0.4.1
+   Compiling num-traits v0.2.19
+   Compiling iana-time-zone v0.1.65
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling arrow-schema v59.0.0
+   Compiling serde_core v1.0.228
+   Compiling cc v1.2.65
+   Compiling flatbuffers v25.12.19
+   Compiling hashbrown v0.17.1
+   Compiling extendr-ffi v0.9.0
+   Compiling cmake v0.1.58
+   Compiling syn v2.0.118
+   Compiling paste v1.0.15
+   Compiling bitflags v2.13.0
+   Compiling serde v1.0.228
+   Compiling serde_json v1.0.145
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling ryu v1.0.23
+   Compiling extendr-api v0.9.0
+   Compiling lazy_static v1.5.0
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling num-integer v0.1.46
+   Compiling chrono v0.4.45
+   Compiling num-bigint v0.4.8
+   Compiling num-complex v0.4.6
+   Compiling zerocopy-derive v0.8.52
+   Compiling extendr-macros v0.9.0
+   Compiling readonly v0.2.13
+   Compiling half v2.7.1
+   Compiling arrow-buffer v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling arrow-array v59.0.0
+   Compiling arrow-select v59.0.0
+   Compiling arrow-ipc v59.0.0
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.87s
+     Running `rust/target/debug/document`
+# Always clean up CARGOTMP
+rm -Rf /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo;
+clang++ -arch arm64 -std=gnu++17 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -L/Library/Frameworks/R.framework/Resources/lib -L/opt/R/arm64/lib -o relm.so entrypoint.o -L./rust/target/release -lrelm -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-metal -lggml-base -framework Metal -framework MetalKit -framework Foundation -framework Accelerate -lc++ -F/Library/Frameworks/R.framework/.. -framework R
+ld: warning: ignoring duplicate libraries: '-lc++'
+rm -Rf /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/.cargo /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/vendor ./rust/target
+installing to /private/tmp/relm-wp10/library/00LOCK-rebirth/00new/relm/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (relm)

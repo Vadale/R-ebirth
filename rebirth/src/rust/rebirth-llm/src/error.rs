@@ -34,6 +34,12 @@ pub enum RebirthError {
         prompt_id: usize,
         generated_tokens: usize,
     },
+    /// Streaming representation or stable-prefix invariant failure (D-038).
+    Stream {
+        reason: String,
+        prompt_id: Option<usize>,
+        event_id: Option<usize>,
+    },
     /// Invalid bounded asynchronous request (also checked before R copies it).
     Argument { argument: String, reason: String },
     /// Tokenization or detokenization failed (e.g. the model has no tokenizer,
@@ -119,6 +125,7 @@ impl RebirthError {
             RebirthError::Busy { .. } => "relm_error_busy",
             RebirthError::Cancelled { .. } => "relm_error_cancelled",
             RebirthError::Argument { .. } => "relm_error_argument",
+            RebirthError::Stream { .. } => "relm_error_stream",
             RebirthError::Tokenize { .. } => "relm_error_tokenize",
             RebirthError::Generation { .. } => "relm_error_generation",
             RebirthError::Schema { .. } => "relm_error_schema",
@@ -166,6 +173,10 @@ impl fmt::Display for RebirthError {
             RebirthError::Cancelled { reason, .. } => write!(
                 f,
                 "Generation cancelled: {reason}. No partial result was returned."
+            ),
+            RebirthError::Stream { reason, .. } => write!(
+                f,
+                "Stream delivery failed ({reason}). No successful result was returned."
             ),
             RebirthError::Argument { argument, reason } => {
                 write!(f, "Invalid {argument}: {reason}.")

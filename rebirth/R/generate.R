@@ -69,6 +69,64 @@
 #' objects need additional storage. Existing model/context, sampler/grammar and
 #' vision working memory are separate from these transport limits.
 #'
+#' @section Token streaming:
+#' Supply `on_token = function(batch) ...` to receive nonempty plain data frames
+#' on R's thread. Each dispatch contains at most 64 rows and 64 KiB of text.
+#' The columns, in order, are integer `event_id`, character `event`, integer
+#' `prompt_id`, integer `token_pos`, integer `token_id`, character `text`, double
+#' `elapsed`, character `finish_reason`, and logical `validated`. Event IDs are
+#' contiguous across the call; prompt IDs and vocabulary token IDs are 1-based.
+#'
+#' `event = "token"` records each sampled non-EOG token, including tokens later
+#' removed with a stop suffix or sampled at context exhaustion. `token_pos` is
+#' its generated position. `event = "text"` carries a nonempty committed UTF-8
+#' delta; concatenating these per prompt reproduces the successful returned
+#' string exactly. Tokens and text chunks need not correspond one-to-one.
+#' `event = "prompt_end"` records `finish_reason` (`"length"`, `"stop"`,
+#' `"stop_string"`, or `"context_full"`). Non-token rows have missing token
+#' fields; non-text rows have empty `text`; non-end rows have empty
+#' `finish_reason`. `elapsed` is nonnegative monotonic production time in seconds
+#' since submission. `validated` is missing for ordinary generation, `FALSE`
+#' for structured token/text, and `TRUE` for a successful structured prompt end.
+#' Structured text is provisional until that prompt's independent schema
+#' validation succeeds; this validates format, not factual accuracy.
+#'
+#' Alternatively, supply a writable binary base `file()` connection to an empty
+#' regular local file at position zero. Append, text, compressed, raw, socket,
+#' pipe and device connections are rejected. relm neither opens nor closes the
+#' connection. Do not independently seek, write, truncate or replace its file
+#' until settlement. CSV contains one header, UTF-8 bytes, LF delimiters, comma
+#' separators and no row names. Character fields are always quoted; embedded
+#' quotes are doubled. Missing numeric/logical fields are empty; elapsed uses
+#' round-trip numeric precision independently of print options. Read it with:
+#' \preformatted{
+#' read.csv(path, fileEncoding = "UTF-8", check.names = FALSE,
+#'   na.strings = character(),
+#'   colClasses = c("integer", "character", "integer", "integer", "integer",
+#'                 "character", "numeric", "character", "logical"))
+#' }
+#' The connection is flushed after batches and before success; no atomic commit
+#' or disk-durability guarantee is made. Failed calls may leave a delivered
+#' prefix or an incomplete record. Successful settlement establishes completion.
+#'
+#' Streaming retains the execution reservation until all batches are delivered.
+#' Native operations from every `on_token`, including the last, see busy; final
+#' `on_progress` runs after release. Closing the model before release abandons
+#' delivery and rejects an otherwise successful result with
+#' `relm_error_cancelled`, reason `stream_closed`. A token/progress callback error
+#' or interrupt rejects with `relm_error_callback`, identifying `callback` and
+#' preserving the original `parent`. Connection and representation failures use
+#' `relm_error_stream`, with `reason`, `prompt_id`, `event_id` and `parent` when
+#' available. The first consumer failure takes precedence over subsequent native
+#' errors; once a native failure is observed, remaining events are discarded.
+#'
+#' A slow consumer applies backpressure to a queue bounded at 256 rows and
+#' 256 KiB text, with text chunks at most 16 KiB. Callbacks and file writes run
+#' synchronously on R and can block it. Batch boundaries and elapsed times vary
+#' across runs. Consumer side effects remain on failure, and caller-retained
+#' batches are outside relm's memory estimate. `on_token = NULL` retains the
+#' ordinary async behavior without a stream queue.
+#'
 #' @section Structured output:
 #' Supply `schema` as JSON text to constrain text generation to a bounded subset
 #' of JSON Schema 2020-12. The root must be a non-nullable object with explicit
@@ -163,6 +221,9 @@
 #'   returns a promises promise backed by native background generation.
 #' @param on_progress `NULL` or a function accepting one progress data frame.
 #'   Requires `async = TRUE`; see *Background generation*.
+#' @param on_token `NULL`, a function accepting one event data frame, or an
+#'   already-open writable binary base `file()` connection. Requires
+#'   `async = TRUE`; see *Token streaming*.
 #' @return A character vector the same length as `prompt` (names preserved), each
 #'   element the generated continuation. The seed used is attached as
 #'   `attr(result, "seed")`. With `async = TRUE`, a promise resolving to that vector.
@@ -196,7 +257,7 @@
 llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
                          top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL,
                          images = NULL, schema = NULL, async = FALSE,
-                         on_progress = NULL) {
+                         on_progress = NULL, on_token = NULL) {
   if (!inherits(m, "llm")) {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
@@ -208,6 +269,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   if (!is.null(on_progress) && (!is.function(on_progress) || !async)) {
     abort_argument("on_progress", "`on_progress` must be NULL or a function, and requires `async = TRUE`.")
   }
+  stream <- stream_validate_sink(on_token, async)
 
   if (!is.null(schema) || async) {
     # Complex numbers satisfy is.numeric() but cannot enter the ordered real
@@ -350,7 +412,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   if (async) {
     return(async_generate(m, prompt, chat, as.integer(max_tokens),
       as.double(temperature), as.double(top_p), seed_val, stop_seqs,
-      image_sets, max_bytes, schema, on_progress))
+      image_sets, max_bytes, schema, on_progress, stream))
   }
 
   out <- if (!is.null(schema)) {

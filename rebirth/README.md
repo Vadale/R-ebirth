@@ -41,7 +41,33 @@ for source builds and troubleshooting. Windows/CUDA acceptance is still pending.
 
 The only required R dependency is `nanoarrow`, which reads spilled traces.
 `glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.
+Optional `later` and `promises` enable development async/streaming generation.
 Application examples prepare their own separate dependency environments.
+
+## Development: asynchronous token data
+
+After the 0.3.0 tag, `llm_generate(async = TRUE)` keeps generation on a native
+worker. The WP10 development interface adds `on_token`: short callbacks receive
+bounded plain-data-frame batches of token IDs, committed text and prompt-end
+events. The promise still resolves to the ordinary named text vector and seed.
+A caller-owned binary file connection can receive UTF-8 CSV instead.
+Check `"on_token" %in% names(formals(llm_generate))` for installed support.
+
+```r
+pending <- llm_generate(m, "Explain a confidence interval.", seed = 17,
+  async = TRUE, on_token = function(batch) {
+    cat(paste0(batch$text[batch$event == "text"], collapse = ""))
+  })
+observed <- promises::then(pending, function(value) print(value),
+  onRejected = function(error) message(conditionMessage(error)))
+```
+
+Load `m` as in the quickstart below and install optional `later`/`promises` first.
+Callbacks run on R's main thread; slow callbacks or storage can block R and
+backpressure the worker. `llm_cancel(m)` is cooperative. See the
+[token-streaming guide](https://github.com/Vadale/R-ebirth/blob/main/rebirth/vignettes/token-streaming.qmd)
+for the event schema, CSV and rolling statistics. Live activations and changing
+interventions during generation are separate future work.
 
 ## Quickstart
 

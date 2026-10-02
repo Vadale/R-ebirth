@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "rows": 8200,
+  "tokens": 4096,
+  "prompts": 8,
+  "text_matches_final": true,
+  "sequential_events": true,
+  "nondecreasing_elapsed": true,
+  "max_window": 128
+}

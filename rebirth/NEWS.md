@@ -1,5 +1,20 @@
 # relm (development)
 
+## WP10: token streaming
+
+* `llm_generate(async = TRUE, on_token = ...)` delivers ordered batches of
+  token identities, committed UTF-8 text and prompt-end events as plain data
+  frames. Text fragments reconstruct the successful final result; structured
+  fragments remain provisional until independent schema validation.
+* A caller-owned empty binary file connection can receive the same events as
+  UTF-8 CSV. Native queue and per-callback limits bound transport payload;
+  slow consumers apply backpressure. Consumer failures cancel/wake native work
+  and reject safely. Callbacks and file writes run on R's thread and should be
+  short. No new package dependency or exported function is added.
+* The token-streaming vignette and repository demo show rolling token counts,
+  throughput and growing data-frame collection. Live activations and intervention
+  changes remain outside this interface.
+
 ## WP9: background generation
 
 * `llm_generate(async = TRUE)` returns a promise while a native worker uses the

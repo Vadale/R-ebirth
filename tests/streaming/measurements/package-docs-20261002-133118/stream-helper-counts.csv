@@ -1,0 +1,8 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-llm-stream-helpers.R","llm-stream-helpers","stream admission rejects invalid sinks before RNG submission or header",12,0,FALSE,FALSE,0,0.047,0.002,0.049,12
+"test-llm-stream-helpers.R","llm-stream-helpers","native file admission distinguishes regular files from devices and invalid paths",17,0,FALSE,FALSE,0,0.02,0.004,0.023,17
+"test-llm-stream-helpers.R","llm-stream-helpers","only caller-owned empty writable seekable binary regular files are admitted",18,0,FALSE,FALSE,0,0.019,0.003,0.021,18
+"test-llm-stream-helpers.R","llm-stream-helpers","closed and reused connection slots cannot redirect the stream",5,0,FALSE,FALSE,0,0.00299999999999997,0.001,0.004,5
+"test-llm-stream-helpers.R","llm-stream-helpers","CSV preserves quoting newlines Unicode literal NA and typed missing fields",6,0,FALSE,FALSE,0,0.006,0.001,0.00699999999999998,6
+"test-llm-stream-helpers.R","llm-stream-helpers","representation validation rejects malformed data before consumer execution",27,0,FALSE,FALSE,0,0.013,0.003,0.015,27
+"test-llm-stream-helpers.R","llm-stream-helpers","stream memory bounds cover materialized columns and CSV escaping copies",9,0,FALSE,FALSE,0,0.019,0.000999999999999997,0.021,9

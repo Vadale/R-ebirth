@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/private/tmp/relm-wp10/verify.py", line 73, in <module>
+    stage('clippy', ['cargo','clippy','--locked','--offline','--workspace','--all-targets','--','-D','warnings'])
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/relm-wp10/verify.py", line 64, in stage
+    raise RuntimeError(name+' failed; retain '+str(log))
+RuntimeError: clippy failed; retain /private/tmp/relm-wp10/native-20261002-125206/clippy.log

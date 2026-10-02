@@ -1,0 +1,39 @@
+   Compiling once_cell v1.21.4
+   Compiling zerocopy v0.8.52
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling extendr-ffi v0.9.0
+   Compiling extendr-api v0.9.0
+   Compiling half v2.7.1
+   Compiling ahash v0.8.12
+   Compiling arrow-buffer v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling arrow-array v59.0.0
+   Compiling arrow-select v59.0.0
+   Compiling arrow-ipc v59.0.0
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 44.29s
+     Running unittests src/lib.rs (target/debug/deps/relm-f42f214fdf4d4ef7)
+
+running 7 tests
+test tests::checked_budget_bytes_rejects_negative_and_nan_but_passes_inf ... ok
+test tests::checked_count_rejects_below_one_and_passes_positive ... ok
+test tests::checked_image_max_bytes_rejects_non_positive_and_nan ... ok
+test tests::engine_index_round_trips_over_the_valid_range ... ok
+test tests::split_image_sets_rebuilds_the_per_text_sets_and_rejects_inconsistency ... ok
+test tests::tensor_name_layer_surfaces_as_one_based_api_layer ... ok
+test tests::to_engine_index_rejects_out_of_contract_indices ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests document.rs (target/debug/deps/document-96e818f850ef6baa)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests relm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

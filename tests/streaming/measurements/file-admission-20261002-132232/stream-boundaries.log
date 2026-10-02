@@ -1,0 +1,16 @@
+llm-stream-helpers: ...........................W...................................................................
+llm-stream: ..................................................................................................................................................................................................SSS.........................................
+
+══ Skipped ═════════════════════════════════════════════════════════════════════
+1. [MODEL] cached Qwen retains seeded sync async and stream equality ('test-llm-stream.R:230:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+2. [MODEL] cached Qwen ordinary structured and CSV streams preserve results ('test-llm-stream.R:252:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+3. [MODEL] cached vision over-batch prefill retains streaming parity ('test-llm-stream.R:290:3') - Reason: RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required
+
+══ Warnings ════════════════════════════════════════════════════════════════════
+1. native file admission distinguishes regular files from devices and invalid paths ('test-llm-stream-helpers.R:46:5') - 'raw = FALSE' but '/var/folders/0g/w9qy3m615_9bn_8kslpcn87w0000gn/T//RtmpGnGaDv/fileeb9c7f0745bc' is not a regular file
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 

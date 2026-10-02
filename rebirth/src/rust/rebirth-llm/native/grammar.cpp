@@ -1,6 +1,7 @@
 // Relm-owned exception boundary; the vendored engine remains unchanged.
 #include "llama.h"
 #include "llama-grammar.h"
+#include "llama-vocab.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -9,6 +10,13 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+
+// The streaming decoder reads the same per-vocabulary switches as detokenize.
+// This relm-owned accessor does not alter the vendored decoder or its defaults.
+extern "C" uint32_t relm_stream_decoder_flags(const llama_vocab * vocab) noexcept {
+    return (vocab->get_add_space_prefix() ? 1u : 0u)
+         | (vocab->get_clean_spaces() ? 2u : 0u);
+}
 
 namespace {
 struct grammar_state {

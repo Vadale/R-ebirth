@@ -1,0 +1,11 @@
+{
+  "ui": "Actual RStudio foreground console, R 4.5.1, RStudio 2025.09.1+401; no background job",
+  "pid": 60936,
+  "package_library": "/private/tmp/relm-wp10/library/relm",
+  "dll_sha256": "d3f5893e0ff28a2d3ac0a40bce63eacfefe83ceb3412bbe5f975028748ff48d7",
+  "input_scripts": "acceptance.R then a separately submitted probe.R while generating; restore.R after passed marker",
+  "model": "Existing cached Qwen2.5-0.5B-Instruct-Q8_0, CPU, context 2048, eight prompts, 512 tokens each, temperature 0, seed 17",
+  "editor_documents": "No editor documents opened or changed; test-only temporary RStudio project",
+  "initial_failed_attempt": "../rstudio-late-probe-2026-10-02",
+  "timing_precision": "Probe elapsed 0 means below R elapsed-clock resolution, not zero work time."
+}

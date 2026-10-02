@@ -1,0 +1,154 @@
+   Compiling autocfg v1.5.1
+   Compiling libm v0.2.16
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.46
+   Compiling unicode-ident v1.0.24
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling getrandom v0.3.4
+   Compiling version_check v0.9.5
+   Compiling semver v1.0.28
+   Compiling bytes v1.12.0
+   Compiling ahash v0.8.12
+   Compiling num-traits v0.2.19
+   Compiling core-foundation-sys v0.8.7
+   Compiling iana-time-zone v0.1.65
+   Compiling rustc_version v0.4.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling shlex v2.0.1
+   Compiling once_cell v1.21.4
+   Compiling arrow-schema v59.0.0
+   Compiling serde_core v1.0.228
+   Compiling cc v1.2.65
+   Compiling flatbuffers v25.12.19
+   Compiling hashbrown v0.17.1
+   Compiling cmake v0.1.58
+   Compiling bitflags v2.13.0
+   Compiling serde v1.0.228
+   Compiling serde_json v1.0.145
+   Compiling syn v2.0.118
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling memchr v2.8.3
+   Compiling ryu v1.0.23
+   Compiling itoa v1.0.18
+   Compiling zerocopy-derive v0.8.52
+   Compiling num-integer v0.1.46
+   Compiling chrono v0.4.45
+   Compiling num-complex v0.4.6
+   Compiling num-bigint v0.4.8
+   Compiling half v2.7.1
+   Compiling arrow-buffer v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling arrow-array v59.0.0
+   Compiling arrow-select v59.0.0
+   Compiling arrow-ipc v59.0.0
+    Finished `release` profile [optimized] target(s) in 1m 11s
+     Running unittests src/lib.rs (target/release/deps/rebirth_llm-8fc00e7171057e13)
+
+running 23 tests
+test async_job::tests::async_admission_bounds_and_utf8_bytes ... ok
+test async_job::tests::async_cancel_after_computation_before_publication_wins ... ok
+test async_job::tests::async_cancel_busy_and_shutdown_return_ownership ... ok
+test async_job::tests::async_cancel_real_prefill_sample_and_prompt_boundaries_recover ... ok
+test async_job::tests::async_empty_strings_cannot_bypass_retained_descriptor_budget ... ok
+test async_job::tests::async_limits_are_twin_pinned_to_r_admission ... ok
+test async_job::tests::async_output_budget_accounts_for_prior_prompts ... ok
+test async_job::tests::async_start_failure_returns_reservation ... ok
+test async_job::tests::async_synthetic_failure_returns_original_context_and_shared_parent ... ok
+test async_job::tests::async_terminal_cancel_is_false_and_progress_is_coalesced ... ok
+test async_job::tests::async_vlm_cancel_and_drop_at_native_boundaries ... ok
+test async_job::tests::async_worker_panic_and_error_release_the_domain ... ok
+test async_job::tests::stream_cancel_wait_race_has_no_lost_wakeup ... ok
+test async_job::tests::stream_caps_and_lossless_bounded_drains ... ok
+test async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer ... ok
+test async_job::tests::stream_limits_are_twin_pinned_to_r_delivery ... ok
+test async_job::tests::stream_native_completion_retains_permit_until_delivery_ack ... ok
+test async_job::tests::stream_shutdown_and_failures_after_backpressure_release_ownership ... ok
+test async_job::tests::stream_synthetic_token_parity_includes_context_exhaustion ... ok
+test async_job::tests::stream_utf8_chunks_schema_encoding_and_native_error ... ok
+test async_job::tests::stream_zero_tokens_and_nonstream_allocate_no_spurious_rows ... ok
+test domain::tests::async_domain_handoff_and_release_checks ... ok
+test generate::tests::async_output_sizing_rejects_before_allocating_over_budget ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 91 filtered out; finished in 13.44s
+
+     Running tests/async_synthetic.rs (target/release/deps/async_synthetic-7ea5b786c21015b5)
+
+running 1 test
+test async_synthetic_owned_handoff_preserves_golden_and_sampling ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/cpu_backend.rs (target/release/deps/cpu_backend-4b44dc8c523f447a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/intervene_kl.rs (target/release/deps/intervene_kl-c44ebe8897923b27)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/synthetic_embed.rs (target/release/deps/synthetic_embed-54c7c5f10de069f0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+     Running tests/synthetic_generate.rs (target/release/deps/synthetic_generate-78d1c4fdaa40db83)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+     Running tests/synthetic_intervene.rs (target/release/deps/synthetic_intervene-c59e70335a8fa71f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/synthetic_logits.rs (target/release/deps/synthetic_logits-9c5497d208b8b86b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/synthetic_probe.rs (target/release/deps/synthetic_probe-a6b9da8d185e983f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running tests/synthetic_spill.rs (target/release/deps/synthetic_spill-8314865ea1c27ad9)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+     Running tests/synthetic_trace.rs (target/release/deps/synthetic_trace-994fb5aa2d2a0f01)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/twin_pin_link_stems.rs (target/release/deps/twin_pin_link_stems-d3466d56921e96fc)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/vlm_embed.rs (target/release/deps/vlm_embed-d796de2fa4574fea)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+     Running tests/vlm_golden.rs (target/release/deps/vlm_golden-a714664a50bd5855)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+

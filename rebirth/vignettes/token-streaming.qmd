@@ -1,0 +1,125 @@
+---
+title: "Generation as a stream of R data"
+format: html
+engine: knitr
+vignette: >
+  %\VignetteIndexEntry{Generation as a stream of R data}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+Token streaming is a development feature after relm 0.3.0. It adds `on_token`
+to asynchronous generation. The worker uses the loaded model while R receives
+small, ordered batches as ordinary data frames. The final promise still resolves
+to the same named character vector and seed. These examples require a local
+model and are shown without running or downloading one during document rendering.
+
+## Collect text and inspect tokens
+
+```{r}
+#| eval: false
+library(relm)
+m <- llm("/path/to/your/model.gguf")
+chunks <- list()
+pending <- llm_generate(m, "Explain a confidence interval in two sentences.",
+  seed = 17, async = TRUE,
+  on_token = function(batch) {
+    chunks[[length(chunks) + 1L]] <<- batch
+    cat(paste0(batch$text[batch$event == "text"], collapse = ""))
+  })
+observed <- promises::then(pending, function(value) {
+  events <- do.call(rbind, chunks)
+  reconstructed <- paste0(events$text[events$event == "text"], collapse = "")
+  stopifnot(identical(reconstructed, unname(as.character(value))))
+  print(head(events[events$event == "token", c("token_pos", "token_id", "elapsed")]))
+}, function(error) {
+  message(conditionMessage(error))
+})
+```
+
+Run each example after the preceding promise has settled; close `m` after the
+last call. RStudio's console stays available while the worker generates and the event loop
+delivers callbacks. A callback runs on R's main thread: keep it short. Slow
+callbacks or storage can block R and slow the producer. `llm_cancel(m)` requests
+cooperative cancellation; it cannot interrupt an arbitrary C call immediately.
+
+Rows have `event_id`, `event`, `prompt_id`, `token_pos`, `token_id`, `text`,
+`elapsed`, `finish_reason` and `validated`. Indices are 1-based. A `token` row
+records a sampled non-EOG token; `text` rows contain committed text fragments;
+`prompt_end` marks successful completion of that prompt. Tokens are not words,
+characters or necessarily standalone UTF-8 strings. Text can be buffered to
+preserve decoder/stop semantics; long stop sequences can delay display.
+Concatenating text rows reproduces the final
+successful result, even when token boundaries split characters or stop strings.
+
+With `schema`, token/text rows are provisional (`validated = FALSE`); only that
+prompt's successful end is independently schema-validated. A later failure can
+still reject the entire call. Already delivered data is not rolled back, and
+schema validity does not establish factual accuracy.
+
+## Keep a rolling window instead of retaining everything
+
+```{r}
+#| eval: false
+window <- NULL
+pending <- llm_generate(m, "Count from 1 to 100.", seed = 17, async = TRUE,
+  on_token = function(batch) {
+    tokens <- batch[batch$event == "token", , drop = FALSE]
+    if (!nrow(tokens)) return(invisible(NULL))
+    window <<- tail(rbind(window, tokens), 128L)
+    seconds <- diff(range(window$elapsed))
+    if (seconds > 0) {
+      message(round((nrow(window) - 1L) / seconds, 1), " tokens/s in this window")
+    }
+  })
+```
+
+This measures token production under the current workload, including any
+backpressure; it is not an unconstrained engine benchmark. Compare production
+`elapsed` with local receipt time when delivery lag matters. The native queue
+holds at most 256 events/256 KiB text and each callback at most 64 rows/64 KiB.
+Those are payload limits, not a whole-process RSS limit. A caller that stores
+every batch, as in the first example, owns that additional memory.
+
+## Write an event CSV
+
+```{r}
+#| eval: false
+con <- file("tokens.csv", open = "wb")
+pending <- llm_generate(m, "Explain bootstrap resampling.", seed = 17,
+  async = TRUE, on_token = con)
+observed <- promises::then(pending, function(value) {
+  close(con) # The caller opens and closes the connection.
+  print(value)
+}, function(error) {
+  close(con)
+  message(conditionMessage(error))
+})
+```
+
+Use an empty, seekable regular file opened in binary write mode. Text/raw
+connections, sockets, pipes and append destinations are outside this interface.
+Do not write or seek the connection while generation owns its stream. Closing
+it early stops delivery and rejects the call; errors can leave a partial file.
+The promise establishes successful completion, not the presence of one end row.
+
+Read the file with fixed column types and preserve literal `"NA"` text:
+
+```{r}
+#| eval: false
+events <- read.csv("tokens.csv", fileEncoding = "UTF-8", check.names = FALSE,
+  na.strings = character(),
+  colClasses = c("integer", "character", "integer", "integer", "integer",
+    "character", "numeric", "character", "logical"))
+```
+
+The CSV writer preserves the original text bytes. Base R's reader normalizes
+embedded CRLF line endings to LF even inside quotes. If those exact line endings
+matter, retain callback text or use a CSV reader that preserves quoted CRLF;
+do not infer byte identity from this convenience reader.
+
+`on_progress` remains a coalesced progress summary. `on_token` supplies ordered
+data without coalescing on successful calls. During every token callback the
+model is reserved, so other native operations report busy. Final `on_progress`
+runs after ownership is released. Streaming does not expose live activations or
+permit changing interventions while a worker is using the model.

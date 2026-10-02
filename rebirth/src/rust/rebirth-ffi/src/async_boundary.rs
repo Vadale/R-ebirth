@@ -2,8 +2,9 @@
 // Every R value and registry lives on the main thread. Only owned native data
 // crosses into AsyncJob; neither external pointers nor R callbacks do.
 use rebirth_llm::{
-    AsyncFixtureMode, AsyncJob, AsyncRequest, ExecutionPermit, NativeGuard, ProgressSnapshot,
-    ASYNC_MAX_ARGUMENT_BYTES, ASYNC_MAX_PROMPTS, ASYNC_MAX_PROMPT_BYTES, ASYNC_MAX_TOKENS,
+    AsyncCompletion, AsyncFixtureMode, AsyncJob, AsyncRequest, ExecutionPermit, NativeGuard,
+    ProgressSnapshot, StreamEvent, ASYNC_MAX_ARGUMENT_BYTES, ASYNC_MAX_PROMPTS,
+    ASYNC_MAX_PROMPT_BYTES, ASYNC_MAX_TOKENS,
 };
 use std::cell::Cell;
 use std::hash::{BuildHasher, Hasher};
@@ -27,6 +28,10 @@ struct ActiveJob {
     owner: Weak<HandleState>,
     id: String,
     job: AsyncJob,
+    completion: Option<AsyncCompletion>,
+    streaming: bool,
+    discarded: bool,
+    seed: u64,
 }
 thread_local! {
     static HANDLES: RefCell<Vec<Weak<HandleState>>> = const { RefCell::new(Vec::new()) };
@@ -62,9 +67,14 @@ impl LlmHandle {
             return false;
         }
         ACTIVE_JOB.with(|slot| {
-            if let Some(active) = slot.borrow().as_ref() {
+            if let Some(active) = slot.borrow_mut().as_mut() {
                 if owns(active, &self.state) {
-                    active.job.cancel();
+                    if active.streaming {
+                        active.discarded = true;
+                        active.job.discard_stream();
+                    } else {
+                        active.job.cancel();
+                    }
                 }
             }
         });
@@ -131,6 +141,23 @@ fn async_argument(argument: &str, reason: &str) -> RebirthError {
         argument: argument.into(),
         reason: reason.into(),
     }
+}
+
+// R's file_test("-f") also accepts devices on supported R versions. Use the
+// OS metadata type, without opening or writing the caller-owned stream file.
+#[extendr]
+fn rebirth_stream_regular_file(path: Robj) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        if path.len() != 1 {
+            return Err(async_argument("on_token", "expected one file path"));
+        }
+        let path = path
+            .as_str()
+            .filter(|value| !value.is_na() && !value.is_empty())
+            .ok_or_else(|| async_argument("on_token", "expected a non-missing file path"))?;
+        let regular = std::fs::metadata(path).is_ok_and(|metadata| metadata.is_file());
+        Ok(list!(ok = true, regular = regular).into())
+    })))
 }
 
 #[extendr]
@@ -201,6 +228,7 @@ fn rebirth_async_submit(
     images_lens: Robj,
     image_max_bytes: f64,
     schema: Robj,
+    stream: bool,
 ) -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(|| {
         let handle = checked_handle(&ptr)?;
@@ -286,6 +314,7 @@ fn rebirth_async_submit(
                 Some(image_sets)
             },
             image_max_bytes: checked_image_max_bytes(image_max_bytes)?,
+            stream,
         };
         request.validate()?;
         let id = job_nonce();
@@ -309,6 +338,10 @@ fn rebirth_async_submit(
                         owner: Rc::downgrade(&handle.state),
                         id: id.clone(),
                         job,
+                        completion: None,
+                        streaming: stream,
+                        discarded: false,
+                        seed: seed as u64,
                     });
                 });
                 Ok(list!(ok = true, job_id = id).into())
@@ -339,83 +372,214 @@ fn progress_payload(snapshot: Option<ProgressSnapshot>) -> Robj {
     }
 }
 
+// Conversion happens after releasing every native mutex and registry borrow.
+fn stream_payload(rows: Vec<StreamEvent>) -> Result<Robj, RebirthError> {
+    if rows.is_empty() {
+        return Ok(().into());
+    }
+    let count = rows.len() as i32;
+    let mut result: Robj = list!(
+        event_id = rows.iter().map(|r| r.event_id).collect::<Vec<_>>(),
+        event = rows.iter().map(|r| r.event).collect::<Vec<_>>(),
+        prompt_id = rows.iter().map(|r| r.prompt_id).collect::<Vec<_>>(),
+        token_pos = rows
+            .iter()
+            .map(|r| r.token_pos.unwrap_or(i32::MIN))
+            .collect::<Vec<_>>(),
+        token_id = rows
+            .iter()
+            .map(|r| r.token_id.unwrap_or(i32::MIN))
+            .collect::<Vec<_>>(),
+        text = rows.iter().map(|r| r.text.as_ref()).collect::<Vec<_>>(),
+        elapsed = rows.iter().map(|r| r.elapsed).collect::<Vec<_>>(),
+        finish_reason = rows.iter().map(|r| r.finish_reason).collect::<Vec<_>>(),
+        validated = rows
+            .iter()
+            .map(|r| r.validated.map(Rbool::from).unwrap_or_else(Rbool::na))
+            .collect::<Vec<_>>()
+    )
+    .into();
+    let representation_error = |_| RebirthError::Stream {
+        reason: "invariant".into(),
+        prompt_id: rows.first().map(|r| r.prompt_id as usize),
+        event_id: rows.first().map(|r| r.event_id as usize),
+    };
+    result
+        .set_attrib("class", "data.frame")
+        .map_err(representation_error)?;
+    result
+        .set_attrib("row.names", vec![i32::MIN, -count])
+        .map_err(representation_error)?;
+    Ok(result)
+}
+fn active_for<'a>(
+    slot: &'a mut Option<ActiveJob>,
+    handle: &LlmHandle,
+    job_id: &str,
+) -> Result<&'a mut ActiveJob, RebirthError> {
+    let active = slot
+        .as_mut()
+        .ok_or_else(|| async_argument("job_id", "no active job"))?;
+    if active.id != job_id || !owns(active, &handle.state) {
+        return Err(async_argument(
+            "job_id",
+            "job does not belong to this handle",
+        ));
+    }
+    Ok(active)
+}
+fn finish_active(
+    mut active: ActiveJob,
+    handle: &LlmHandle,
+    snapshot: Option<ProgressSnapshot>,
+) -> Robj {
+    let mut completion = active.completion.take().expect("collected completion");
+    {
+        let _bound = completion.permit.enter();
+        if completion.panicked {
+            handle.state.closed.set(true);
+        }
+        if handle.is_closed() {
+            completion.model.take();
+        } else {
+            *handle.state.model.borrow_mut() = completion.model.take();
+        }
+        drain_deferred();
+    }
+    let mut outcome = std::mem::replace(&mut completion.result, Ok(Vec::new()));
+    if active.streaming && handle.is_closed() && outcome.is_ok() {
+        outcome = Err(RebirthError::Cancelled {
+            reason: "stream_closed".into(),
+            seed: active.seed,
+            prompt_id: snapshot.as_ref().map_or(1, |p| p.prompt_id),
+            generated_tokens: snapshot.as_ref().map_or(0, |p| p.generated_tokens),
+        });
+    }
+    drop(completion); // release reservation before final progress/settlement
+    let (state, text, error): (&str, Robj, Robj) = match outcome {
+        Ok(output) => (
+            "completed",
+            output
+                .into_iter()
+                .map(|g| g.text)
+                .collect::<Vec<_>>()
+                .into(),
+            ().into(),
+        ),
+        Err(error) => (
+            if matches!(error, RebirthError::Cancelled { .. }) {
+                "cancelled"
+            } else {
+                "failed"
+            },
+            ().into(),
+            error_payload(error),
+        ),
+    };
+    list!(
+        ok = true,
+        state = state,
+        progress = progress_payload(snapshot),
+        text = text,
+        error = error,
+        closed = handle.is_closed(),
+        batch = (),
+        delivery_ready = false
+    )
+    .into()
+}
+
 #[extendr]
 fn rebirth_async_poll(ptr: Robj, job_id: &str) -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(|| {
-        // Closed handles still collect their worker; collection owns teardown.
         let handle = checked_handle(&ptr)?;
-        let collected = ACTIVE_JOB.with(|slot| {
+        let (finished, snapshot, rows, delivery_ready, native_complete) =
+            ACTIVE_JOB.with(|slot| {
+                let mut slot = slot.borrow_mut();
+                let active = active_for(&mut slot, handle, job_id)?;
+                if active.completion.is_none() {
+                    active.completion = active.job.try_collect();
+                }
+                let snapshot = active.job.snapshot();
+                let native_complete = active.completion.is_some();
+                if native_complete
+                    && (!active.streaming
+                        || active.discarded
+                        || active
+                            .completion
+                            .as_ref()
+                            .is_some_and(|done| done.result.is_err()))
+                {
+                    active.job.discard_stream();
+                    return Ok::<_, RebirthError>((slot.take(), snapshot, Vec::new(), false, true));
+                }
+                let (rows, empty) = if active.streaming {
+                    active
+                        .job
+                        .drain_stream()
+                        .unwrap_or_else(|| (Vec::new(), false))
+                } else {
+                    (Vec::new(), true)
+                };
+                Ok((
+                    None,
+                    snapshot,
+                    rows,
+                    native_complete && empty,
+                    native_complete,
+                ))
+            })?;
+        if let Some(active) = finished {
+            return Ok(finish_active(active, handle, snapshot));
+        }
+        Ok(list!(
+            ok = true,
+            state = if native_complete {
+                "draining"
+            } else {
+                "running"
+            },
+            progress = progress_payload(snapshot),
+            closed = handle.is_closed(),
+            batch = stream_payload(rows)?,
+            delivery_ready = delivery_ready
+        )
+        .into())
+    })))
+}
+
+#[extendr]
+fn rebirth_async_ack(ptr: Robj, job_id: &str) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        let handle = checked_handle(&ptr)?;
+        let (active, snapshot) = ACTIVE_JOB.with(|slot| {
             let mut slot = slot.borrow_mut();
-            let active = slot
-                .as_mut()
-                .ok_or_else(|| async_argument("job_id", "no active job"))?;
-            if active.id != job_id || !owns(active, &handle.state) {
+            let active = active_for(&mut slot, handle, job_id)?;
+            if !active.streaming || active.completion.is_none() || !active.job.stream_empty() {
                 return Err(async_argument(
                     "job_id",
-                    "job does not belong to this handle",
+                    "stream delivery is not ready for acknowledgement",
                 ));
             }
-            let completion = active.job.try_collect();
             let snapshot = active.job.snapshot();
-            if completion.is_some() {
-                slot.take();
-            }
-            Ok((completion, snapshot))
+            Ok((slot.take().expect("validated active job"), snapshot))
         })?;
-        let (completion, snapshot) = collected;
-        if let Some(mut completion) = completion {
-            {
-                let _bound = completion.permit.enter();
-                if completion.panicked {
-                    handle.state.closed.set(true);
-                }
-                if handle.is_closed() {
-                    completion.model.take();
-                } else {
-                    *handle.state.model.borrow_mut() = completion.model.take();
-                }
-                drain_deferred();
-            }
-            let outcome = std::mem::replace(&mut completion.result, Ok(Vec::new()));
-            drop(completion); // return the process slot before R callbacks can run
-            let (state, text, error): (&str, Robj, Robj) = match outcome {
-                Ok(output) => (
-                    "completed",
-                    output
-                        .into_iter()
-                        .map(|g| g.text)
-                        .collect::<Vec<_>>()
-                        .into(),
-                    ().into(),
-                ),
-                Err(error) => (
-                    if matches!(error, RebirthError::Cancelled { .. }) {
-                        "cancelled"
-                    } else {
-                        "failed"
-                    },
-                    ().into(),
-                    error_payload(error),
-                ),
-            };
-            Ok(list!(
-                ok = true,
-                state = state,
-                progress = progress_payload(snapshot),
-                text = text,
-                error = error,
-                closed = handle.is_closed()
-            )
-            .into())
-        } else {
-            Ok(list!(
-                ok = true,
-                state = "running",
-                progress = progress_payload(snapshot),
-                closed = handle.is_closed()
-            )
-            .into())
-        }
+        Ok(finish_active(active, handle, snapshot))
+    })))
+}
+
+#[extendr]
+fn rebirth_async_discard(ptr: Robj, job_id: &str) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        let handle = checked_handle(&ptr)?;
+        ACTIVE_JOB.with(|slot| {
+            let mut slot = slot.borrow_mut();
+            let active = active_for(&mut slot, handle, job_id)?;
+            active.discarded = true;
+            active.job.discard_stream();
+            Ok::<_, RebirthError>(())
+        })?;
+        Ok(async_ok())
     })))
 }
 
@@ -440,7 +604,9 @@ fn rebirth_async_shutdown() -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(|| {
         let active = ACTIVE_JOB.with(|slot| slot.borrow_mut().take());
         if let Some(mut active) = active {
-            if let Some(mut completion) = active.job.shutdown() {
+            active.job.discard_stream();
+            if let Some(mut completion) = active.completion.take().or_else(|| active.job.shutdown())
+            {
                 let _bound = completion.permit.enter();
                 completion.model.take();
                 close_all_handles();
@@ -512,6 +678,8 @@ fn rebirth_async_test_config(ptr: Robj, mode: &str, steps: i32, delay_ms: i32) -
             "error" => AsyncFixtureMode::Error,
             "panic" => AsyncFixtureMode::Panic,
             "start_error" => AsyncFixtureMode::StartError,
+            "stream_text" => AsyncFixtureMode::StreamText,
+            "stream_encoding" => AsyncFixtureMode::StreamEncoding,
             _ => return Err(async_argument("mode", "unknown fixture mode")),
         };
         if !(1..=100_000).contains(&steps)

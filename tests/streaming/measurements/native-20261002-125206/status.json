@@ -1,0 +1,60 @@
+{
+  "status": "failed",
+  "phase": "native",
+  "pid": 26843,
+  "directory": "/private/tmp/relm-wp10/native-20261002-125206",
+  "started_at": 1790938326.714995,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790938326.7558799,
+      "exit_code": 0,
+      "finished_at": 1790938327.050223
+    },
+    {
+      "name": "format-ffi-include",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "rebirth-ffi/src/async_boundary.rs"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790938327.050857,
+      "exit_code": 0,
+      "finished_at": 1790938327.091763
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "failed",
+      "started_at": 1790938327.092396,
+      "exit_code": 101,
+      "finished_at": 1790938376.5392509
+    }
+  ],
+  "stage": "clippy",
+  "error": "clippy failed; retain /private/tmp/relm-wp10/native-20261002-125206/clippy.log",
+  "finished_at": 1790938376.540837
+}

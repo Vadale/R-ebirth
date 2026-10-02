@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/private/tmp/relm-wp10/verify.py", line 74, in <module>
+    log = stage('engine', ['cargo','test','--locked','--offline','-p','rebirth-llm'], timeout=1800)
+  File "/private/tmp/relm-wp10/verify.py", line 64, in stage
+    raise RuntimeError(name+' failed; retain '+str(log))
+RuntimeError: engine failed; retain /private/tmp/relm-wp10/native-20261002-125502/engine.log

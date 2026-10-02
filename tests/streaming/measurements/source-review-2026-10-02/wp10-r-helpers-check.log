@@ -1,0 +1,3 @@
+rows=1 R batch=18472 CSV copies=133960 bound=206848
+rows=64 R batch=78496 CSV copies=547824 bound=925696
+PASS: source-only R admission, identity, exact schema, CSV round-trip/options, memory bounds, and parsing. No native execution or full package suite.

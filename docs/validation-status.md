@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-10-02 for WP9 operational acceptance. Historical
+Updated 2026-10-02 for WP9 integration and WP10 implementation. Historical
 maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
@@ -35,15 +35,26 @@ passed seven checks but failed both macOS R legs on a lifecycle subprocess
 timeout. Diagnostics localized that wait to initial synchronous model loading,
 before any async worker; the test now budgets that preparation separately while
 retaining its lifecycle and drain limits. All nine checks passed at `8053bf8`,
-including both Mac versions. Final evidence-head CI and merge remain open.
-WP9 operational acceptance is complete; it is not yet integrated or released.
+including both Mac versions. All nine final checks at `f419fd7` passed and PR #54
+merged at `b16e2c0`, with the reviewed tree verified on main. WP9 is complete;
+this development increment is beyond the 0.3.0 release tag.
+
+WP10's concrete D-038 contract was approved on 2026-10-02. Implementation of
+token/text streaming, bounded queue and callback/CSV delivery has passed local
+native/R/model checks and actual foreground RStudio acceptance: 34.788 s,
+first batch 101 ms, independent console execution while native generation was
+active, and 578 heartbeats. Its [separate ledger](wp10-implementation.md) retains
+all failed attempts, the OS file-type correction and two intentionally omitted-
+vignette warnings in the scoped local check. Full final PR CI and integration
+remain required; this is not a new release.
 
 ## Implemented checks
 
 | Obligation | Executable evidence | Where it runs / prerequisite |
 |---|---|---|
 | Public arguments, conditions, S3 contracts | `rebirth/tests/testthat/` | R-CMD-check on macOS/Linux, release and oldrel; model-free cases always run |
-| Native async ownership, cancellation and promises | Rust `async_job`, `domain`, `async_synthetic`; R `test-llm-async*.R` | Local automated checks passed; PR jobs require optional async dependencies. Cached-model parity and VLM boundary tests run locally/in existing model nightlies; actual foreground RStudio and all nine checks at `8053bf8` passed. Final evidence-head CI remains required before merge. |
+| Native async ownership, cancellation and promises | Rust `async_job`, `domain`, `async_synthetic`; R `test-llm-async*.R` | Local automated checks passed; PR jobs require optional async dependencies. Cached-model parity and VLM boundary tests run locally/in existing model nightlies; actual foreground RStudio and all nine checks at `8053bf8` passed. Final checks at `f419fd7` passed and PR #54 is merged. |
+| Native token/text streams and CSV sinks | `text_stream`, `async_job`, `test-llm-stream*.R`, `tests/streaming/` | Local decoder/queue/FFI/R/cached-model and foreground RStudio gates passed; final WP10 PR checks pending. |
 | No cross-session spill overwrite | `test-llm-trace-spill-session.R`; Rust `synthetic_spill` | R CI checks fresh-process names and RNG neutrality; Rust checks existing file and symlink preservation |
 | Memory/disk slice agreement and corruption refusal | `test-llm-trace-spill.R` | R CI, synthetic fixture, no download |
 | CPU operation independent of Metal | Rust `cpu_backend` | Executed in R-CMD-check on macOS/Linux, including Metal-enabled builds; no model download |

@@ -1,0 +1,22 @@
+{
+  "scope": "Independent integrated source review, not executed acceptance",
+  "base": "dfbb1de9a46d13fef4e4d053ef3c61fb08ed2ccd",
+  "finding": "P2 quadratic long-stop suffix scan; corrected before first native pipeline using constant-work conservative holdback. Targeted regression added, execution pending.",
+  "remaining_blocking_findings": [],
+  "reviewed_sha256": {
+    "rebirth/src/rust/rebirth-llm/src/text_stream.rs": "13c3e3da5ba3dd0be2388e4159c901dbd122a61d73b4fd046990a57bb14a0517",
+    "rebirth/src/rust/rebirth-llm/src/async_job.rs": "3b8f6a3682ab2b3d8b78e288014812efb869a99c96d53f395491cb458df348e4",
+    "rebirth/src/rust/rebirth-ffi/src/async_boundary.rs": "3b764e81e00b2e7937275ae44c9d2042ce2556574fc545ae97e5830ffe1656a4",
+    "rebirth/R/stream.R": "ee6ca588446e203421d0166cba2d7eb8e2aff4e30a87b896bec9e950d86a3607",
+    "rebirth/R/async.R": "f83c28968e85ef6e54cfe9c23489058861635f24746eb4378c8dafa9de53b82b"
+  },
+  "current_sha256": {
+    "rebirth/src/rust/rebirth-llm/src/text_stream.rs": "10a2394d10a35d7e071068720137c7a71befa85df6b4acf2b13063ea61a58741",
+    "rebirth/src/rust/rebirth-llm/src/async_job.rs": "3b8f6a3682ab2b3d8b78e288014812efb869a99c96d53f395491cb458df348e4",
+    "rebirth/src/rust/rebirth-ffi/src/async_boundary.rs": "3b764e81e00b2e7937275ae44c9d2042ce2556574fc545ae97e5830ffe1656a4",
+    "rebirth/R/stream.R": "ee6ca588446e203421d0166cba2d7eb8e2aff4e30a87b896bec9e950d86a3607",
+    "rebirth/R/async.R": "f83c28968e85ef6e54cfe9c23489058861635f24746eb4378c8dafa9de53b82b"
+  },
+  "matches": false,
+  "pending": "Generated wrappers, native/R/model tests, foreground RStudio streaming and final CI."
+}

@@ -1,8 +1,7 @@
 # WP9 — Native asynchronous generation
 
-Updated: 2026-10-02. **Implementation and operational acceptance complete;
-foreground RStudio and all nine checks at `8053bf8` passed. Final evidence-head
-CI and integration remain open.** D-037 is
+Updated: 2026-10-02. **COMPLETE: implementation, foreground RStudio acceptance,
+all nine final checks at `f419fd7` and integration in PR #54 at `b16e2c0`.** D-037 is
 approved. This development change follows relm 0.3.0; it is not a new release.
 The [approved contract](wp9-async-plan.md) and API-GRAMMAR remain binding.
 
@@ -157,14 +156,19 @@ No background RStudio job, repeated package build or model download substituted
 for this gate. Post-run hashes confirm all 55 recorded runtime inputs still
 match the earlier verified installation's source manifest.
 
-## Remaining integration
+## Completed integration
 
-- Require all nine checks on the final evidence/documentation commit. The green
-  product-source checks above do not automatically certify a later commit.
+- All nine final checks passed on `f419fd7530ce9ad9a76ddb417ec5689f80ad236a`:
+  [R CI](https://github.com/Vadale/R-ebirth/actions/runs/36983157037) and
+  [Rust CI](https://github.com/Vadale/R-ebirth/actions/runs/36983156197).
 - Skill/planning PR #53 merged with explicit founder consent at `c614269` and
   is integrated into this branch. D-036 and its skill files are retained; approved
   D-037 supersedes the original proposal, preserved as decision history.
-- Merge WP9 only after final checks and applicable founder merge authorization.
+- [PR #54](https://github.com/Vadale/R-ebirth/pull/54) merged on 2026-10-02 at
+  `b16e2c0ab74371825562f71c1f9a2f1cfcf58898`. Fetched main's tree exactly matches
+  the reviewed head (`30fcc8152bc21e22a51a9da182ae55ddb57f9523`). Earlier failed
+  attempts retain their recorded outcomes; no acceptance test was repeated to
+  document this integration.
 
 WP10 token streaming, I1 external-assistant integration and a release remain
 outside this work package. No claim of new extraction accuracy or CRAN readiness

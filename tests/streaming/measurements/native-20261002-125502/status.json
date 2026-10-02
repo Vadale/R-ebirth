@@ -1,0 +1,76 @@
+{
+  "status": "failed",
+  "phase": "native",
+  "pid": 30347,
+  "directory": "/private/tmp/relm-wp10/native-20261002-125502",
+  "started_at": 1790938502.6110961,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790938502.642796,
+      "exit_code": 0,
+      "finished_at": 1790938502.829487
+    },
+    {
+      "name": "format-ffi-include",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "rebirth-ffi/src/async_boundary.rs"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790938502.830206,
+      "exit_code": 0,
+      "finished_at": 1790938502.871222
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790938502.871861,
+      "exit_code": 0,
+      "finished_at": 1790938503.66465
+    },
+    {
+      "name": "engine",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "failed",
+      "started_at": 1790938503.665277,
+      "exit_code": 101,
+      "finished_at": 1790938556.0190349
+    }
+  ],
+  "stage": "engine",
+  "error": "engine failed; retain /private/tmp/relm-wp10/native-20261002-125502/engine.log",
+  "finished_at": 1790938556.020923
+}
