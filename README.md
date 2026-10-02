@@ -83,8 +83,22 @@ of safety or bias removal.
 
 Windows/CUDA, tracing inside the vision encoder, and several larger-model
 hardware checks remain open. The [public execution plan](docs/structured-production-plan.md)
-records the completed increment and later work; no
-new work package is started by this release.
+records the completed increment and later work. The next core work is async
+generation (WP9), then token streaming (WP10).
+
+## Statistical analysis with an external assistant
+
+The optional [R Statistical Analysis skill](integrations/skills/r-statistical-analysis/SKILL.md)
+guides a compatible assistant through statistical work using the R ecosystem:
+from group comparisons to repeated-measures, survival and other specialist
+analyses. It produces reproducible code, interpretable estimates, uncertainty
+and diagnostics. Ordinary statistics does not require relm or a model download.
+
+This repository companion is separate from the relm 0.3.0 package. It requires
+an R runtime and an assistant with execution tools; broad ecosystem support is
+a routing capability, not a claim that every method has been tested. See
+[installation, limits and the integration plan](docs/external-assistants-plan.md).
+External-client integration and marketplace packaging follow WP9 and WP10.
 
 ## Repository and development
 
@@ -96,6 +110,7 @@ new work package is started by this release.
 | `tests/llm-golden/` | Independent numerical references |
 | `tests/demos/` | Runnable research demos |
 | `examples/` | Funding batch and service applications |
+| `integrations/skills/` | Portable assistant skills outside the relm core |
 | `docs/` | Design, acceptance evidence and installation guide |
 
 For builds and contributions, read the [architecture](ARCHITECTURE.md) and

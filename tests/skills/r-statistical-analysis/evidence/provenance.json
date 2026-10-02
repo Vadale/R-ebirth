@@ -1,0 +1,24 @@
+{
+  "date": "2026-10-01",
+  "type": "guided independent agent execution; synthetic data",
+  "r": "4.5.1",
+  "nlme": "3.1-168",
+  "automatic_host_selection_tested": false,
+  "original_scratch": "/private/tmp/relm-stat-skill-eval/forward-test",
+  "files": {
+    "analysis.R": "c9ffd5345f7e22c49a14d5cbfc67e7e96b9d48dad73e30f343c527d653835652",
+    "conditions.csv": "f30035570c21b595864d5eff8bced3a5a9069dcb5dbac0e6d6f2d8ce90440a64",
+    "diagnostics.csv": "0847f1c736c276a69c1dce8096d87c9db42c37268733ef12131bdfba1d0fa934",
+    "estimates.csv": "5caa64fbaa44641701c88b1b96ad0d5ba3246eb8d1e4b0b89ee3c3fe2e28a6e1",
+    "failed-attempt-analysis.R": "7d427b474fbff72924b1cf0134c331dc930d9e00bda2f625c37686daedc7d524",
+    "failed-attempt-conditions.csv": "90eb744d5c036d4f49229238e37087ceeff0e96d2bb3633417e75665dd141f34",
+    "observations.csv": "ab07bc797a581c9a39e8e05be1180513d828ecf91d628a4f31846c6a2c7861eb",
+    "review.md": "e6089110968c597e76fd05b35a2ca6bee7a3aa6e8760f644a33874baf14eae2c",
+    "routing-assessment.json": "d528aa0b39759fc6ac328251a9e4b70128fa8b339d9dc5d31dbe541ea63bd30d",
+    "session-info.txt": "f1f4a4cfdcb57d8edee5293ba3f996e95cae11da49ddbdd0301e4b0bf35e4c03",
+    "summary.md": "0270fafd6ff1db13799bdc783e79bf9a80babb7b74c073f299f0478a79027e6b",
+    "trajectories.png": "d2cf20deb2632c615fc192bfd13f9f01078814e40013222fe1533ce3aa5c40e0"
+  },
+  "runner_sha256": "7d6b54ed11743f49f97aa58b971ac3da9d05d7e2fdd8aba32ddfb3bc53d8e32c",
+  "session_info_normalization": "Trailing line whitespace removed in portable copy; content unchanged."
+}

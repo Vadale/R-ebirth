@@ -161,8 +161,9 @@ match the earlier verified installation's source manifest.
 
 - Require all nine checks on the final evidence/documentation commit. The green
   product-source checks above do not automatically certify a later commit.
-- Integrate the separate skill/planning PR #53 only after its pending explicit
-  merge authorization; preserve D-037 approval when combining planning changes.
+- Skill/planning PR #53 merged with explicit founder consent at `c614269` and
+  is integrated into this branch. D-036 and its skill files are retained; approved
+  D-037 supersedes the original proposal, preserved as decision history.
 - Merge WP9 only after final checks and applicable founder merge authorization.
 
 WP10 token streaming, I1 external-assistant integration and a release remain

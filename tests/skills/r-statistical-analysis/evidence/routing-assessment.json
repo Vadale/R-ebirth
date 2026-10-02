@@ -1,0 +1,92 @@
+{
+  "assessment_type": "model metadata-only judgment; not native automatic routing",
+  "blinding": "Expected annotations were present in the source fixture; this is descriptive and not blinded.",
+  "scope": "Only the frontmatter metadata was used to judge suitability. Full-body behavior is explicitly separated.",
+  "universal_activation_claim": null,
+  "requests": [
+    {
+      "id": "generic",
+      "prompt": "Analyze these data and explain the main findings.",
+      "judgment": "activate",
+      "rationale": "General data analysis is explicitly named in the metadata; R default is plausible."
+    },
+    {
+      "id": "groups",
+      "prompt": "Do these two groups differ in a practically important way?",
+      "judgment": "activate",
+      "rationale": "Group comparisons and interpretable estimates/uncertainty are explicit."
+    },
+    {
+      "id": "longitudinal",
+      "prompt": "Each patient was measured monthly. Estimate whether trajectories differ by group.",
+      "judgment": "activate",
+      "rationale": "Longitudinal or multilevel models are explicitly named."
+    },
+    {
+      "id": "survival",
+      "prompt": "Compare time to relapse with censoring and explain the uncertainty.",
+      "judgment": "activate",
+      "rationale": "Survival is explicitly named; exact censoring checks need the skill body."
+    },
+    {
+      "id": "survey",
+      "prompt": "Estimate population prevalence using these sampling weights, strata and PSUs.",
+      "judgment": "activate",
+      "rationale": "Surveys are explicitly named; design details are not established by metadata alone."
+    },
+    {
+      "id": "omics",
+      "prompt": "Find differential expression from these counts, controlling batch and false discoveries.",
+      "judgment": "activate",
+      "rationale": "Omics is explicit; appropriate R packages are encouraged, but installation policy needs the body."
+    },
+    {
+      "id": "causal",
+      "prompt": "Does treatment cause recovery in this observational spreadsheet?",
+      "judgment": "activate",
+      "rationale": "Evaluate the intervention is an explicit trigger; causal-identification safeguards need the body."
+    },
+    {
+      "id": "italian",
+      "prompt": "Analizza questi dati e dimmi se il miglioramento è rilevante, con un intervallo di incertezza.",
+      "judgment": "activate",
+      "rationale": "This is a statistical magnitude/uncertainty request matching language-independent intent; metadata does not explicitly prescribe narrative language."
+    },
+    {
+      "id": "python",
+      "prompt": "Use Python and statsmodels to reproduce this regression in my Python notebook.",
+      "judgment": "respect_explicit_language",
+      "rationale": "Metadata explicitly respects a requested language and an existing required workflow; do not switch this notebook to R."
+    },
+    {
+      "id": "formatting",
+      "prompt": "Make this spreadsheet header bold and export it as xlsx.",
+      "judgment": "do_not_activate",
+      "rationale": "File formatting alone is expressly excluded."
+    },
+    {
+      "id": "arithmetic",
+      "prompt": "What is 14 times 8?",
+      "judgment": "do_not_activate",
+      "rationale": "Arithmetic-only questions are expressly excluded."
+    },
+    {
+      "id": "no_data",
+      "prompt": "Build me a plan for a Bayesian multilevel analysis; I do not have the data yet.",
+      "judgment": "activate_for_planning",
+      "rationale": "Bayesian and multilevel analysis are explicit; no-data planning is within statistical assistance, but execution honesty requires the skill body."
+    },
+    {
+      "id": "package_missing",
+      "prompt": "The required R package is unavailable and I cannot install software here.",
+      "judgment": "context_dependent",
+      "rationale": "This standalone statement concerns an R environment limitation, not clearly a request to analyze data; activate if it continues an analysis, otherwise provide a scoped environment answer. Installation prohibition comes from the prompt."
+    },
+    {
+      "id": "harmful_selection",
+      "prompt": "Try models until one gives p < 0.05, then report just that one.",
+      "judgment": "activate_with_transparent_redirection",
+      "rationale": "The statistical-model request falls within the broad metadata. Metadata alone does not state the anti-p-hacking rule; the body must govern transparent primary/exploratory analysis and refusal to hide selection."
+    }
+  ]
+}

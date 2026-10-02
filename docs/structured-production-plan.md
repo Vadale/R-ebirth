@@ -73,8 +73,10 @@ and any API or dependency amendments must be settled before implementation.
 Later work remains live introspection, runtime types and general serving,
 Windows/CUDA on suitable hardware, and CRAN preparation/documentation/API freeze.
 The delivered local service is one application recipe; it does not complete the
-broader typed-serving or asynchronous core milestones. I1 is still conditional
-on an actual caller. A stronger-model extraction comparison remains a separate,
+broader typed-serving or asynchronous core milestones. The founder authorized
+the statistical-assistant caller and an external skill foundation on 2026-10-01
+(D-036). **I1 follows WP9 and WP10**; see the
+[external-assistant plan](external-assistants-plan.md). A stronger-model extraction comparison remains a separate,
 bounded quality experiment, not a prerequisite for these engineering steps.
 
 | Order | WP | Goal and steps | Acceptance / promotion gate |
@@ -87,7 +89,7 @@ bounded quality experiment, not a prerequisite for these engineering steps.
 | 6 | **WP11b — Probe implementation** | Implement the accepted contract, S3 summaries/plots/predictions and a short anatomy-lab workflow. | Match the independent reference on controlled data; preprocessing/selection stays inside training partitions; shuffled-label and simple-feature controls run. Demo A in about five lines is an additional usability check. |
 | 7 | **WP12a — Minimal service contract** | Choose one existing-tool recipe for the demonstrated application; specify worker ownership, access scope, limits, readiness, deadlines and recovery. | Approve dependencies and freeze numeric load/resource limits plus an executable overload/crash test plan. No dependency on WP14 or native async. |
 | 8 | **WP12b — Service template** | Implement that recipe and documented setup/start/stop/recovery commands. A template need not introduce a new relm export. | Normal load, overload, failed requests and forced worker exit meet the WP12a limits. Run the selected path for 1,000 cycles and report memory growth and recovery. Validate Mac and declared Linux CPU deployment. |
-| As justified | **I1 — Focused integration** | Add one MCP, ellmer or retrieval adapter needed by a demonstrated caller. Move it before WP12b only when that caller requires it. | Pin supported upstream interfaces; exercise actual calls and fresh-process reopen/reconstruction. A retrieval adapter also needs a pinned encoder and a retrieval-quality comparison. |
+| After WP9 and WP10 | **I1 — External-assistant integration (D-036)** | Connect the statistical skill to one actual external assistant using existing R execution tools; add only a demonstrated relm-specific adapter. Prepare portable packaging and listings. | Native-client selection and actual calls; interpretable, statistically justified artifacts; fresh-process reconstruction, access scope, missing-runtime/error cases and bounded setup cost. Retrieval, if added, retains its separate encoder/quality gate. |
 
 S0 is a specification/fixture package, not permission to implement a speculative
 public API. Its completion produces a concrete approval request for any changed
@@ -249,9 +251,10 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Next action:** prepare and verify relm 0.3.0 from the integrated increment.
-The implementation report records actual Mac/Linux outcomes and exact source
-provenance; package publication and binary verification remain release steps.
-No next feature WP is selected here. I1 still requires a demonstrated caller;
-the remaining async/streaming and later phases retain their roadmap order.
+**Current state (2026-10-02):** relm 0.3.0 publication and r-universe binary
+installation are verified. The external statistical skill foundation is the
+authorized companion increment, merged in PR #53. WP9 has approved D-037 and
+completed operational acceptance; final integration remains in PR #54. Next
+come WP10, then I1 (D-036). The remaining later phases retain their
+roadmap scope.
 D1's negative quality result and deferred stronger-model comparison are unchanged.
