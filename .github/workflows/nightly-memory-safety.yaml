@@ -140,14 +140,16 @@ jobs:
     env:
       # Exact Ubuntu package pin; compatibility controls fail before native build.
       LLVM_PACKAGE_VERSION: '1:19.1.1-1ubuntu1~24.04.2'
-      SANITIZER_EVIDENCE: ${{ runner.temp }}/relm-sanitizer-evidence
-      SANITIZER_TARGET: ${{ runner.temp }}/relm-sanitizer-target
 
     steps:
       - uses: actions/checkout@v7
 
       - name: Prepare retained evidence directory
-        run: mkdir -p "$SANITIZER_EVIDENCE"
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/relm-sanitizer-evidence"
+          echo "SANITIZER_EVIDENCE=$RUNNER_TEMP/relm-sanitizer-evidence" >> "$GITHUB_ENV"
+          echo "SANITIZER_TARGET=$RUNNER_TEMP/relm-sanitizer-target" >> "$GITHUB_ENV"
 
       - uses: dtolnay/rust-toolchain@master
         with:

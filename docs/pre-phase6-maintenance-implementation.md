@@ -70,7 +70,11 @@ This is not protection against an adversary controlling the user's account.
 The separate implementation blocks add the planned Linux instrumentation
 controls/job and a verified snapshot handoff for the vision reference. Actual
 Linux sanitizer execution and final-source Mac/Linux vision comparisons are
-pending. Ten sanitizer harness controls and fourteen reference manifest/handoff
+pending. The first dispatch at `060e5a8` was rejected before execution: GitHub
+does not expose the `runner` expression context in job-level `env`. The workflow
+now initializes those paths from shell `RUNNER_TEMP` in its first step. No native
+job ran or test passed in that rejected dispatch; the receipt is retained in
+`tests/sanitizers/evidence/dispatch-2026-10-02.json`. Ten sanitizer harness controls and fourteen reference manifest/handoff
 controls pass locally, along with workflow parsing/shell validation; no native
 Linux sanitizer or real vision result is inferred from them. Workflow definitions
 and model-free helper tests alone do not close these gates. Final compiler versions, hashes, commands and receipts will be
