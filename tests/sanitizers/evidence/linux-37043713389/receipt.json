@@ -1,0 +1,255 @@
+{
+  "run": 37043713389,
+  "source": "4707b39c06c6231cd8466d556bbe1c2fcffa06dd",
+  "status": "failed_after_build_before_audit_and_execution",
+  "preflight": "mixed-language safe case, Rust/C/C++ ASan fault cases, C++ UBSan fault, uninstrumented rejection all passed",
+  "cargo_build_exit": 0,
+  "named_product_tests_executed": 0,
+  "cause": "cargo -vv emits prefixed build-script lines alongside JSON; prior parser tried to JSON-decode every line.",
+  "correction": "Recognize only Cargo-prefixed script lines as non-events; require one successful build-finished and exactly the seven expected unique test artifacts. Malformed/unrecognized events fail.",
+  "regression": "Retained real build.out replay returns all seven required artifacts;12 local controls pass, including malformed/missing/duplicate/spoofed completion controls.",
+  "product_runtime_changes": false,
+  "scope": "No object/runtime instrumentation acceptance or product sanitizer execution is inferred from compilation alone.",
+  "raw_artifacts": {
+    "clang-resource-dir.out.gz": {
+      "raw_sha256": "54d94388e36d046b6eb7b8a6e5108e069ff597feab705015afceae2bb0a94b40",
+      "gzip_sha256": "f5d0386e8a32a08d95191dbed0c93e77188524bce2356756ae0204be40cab03a"
+    },
+    "runtime-digests.json.gz": {
+      "raw_sha256": "edaf21b2054b9745f0f2ebc7b7e32a524e0beff02facd02c5f26e74dd34d8316",
+      "gzip_sha256": "109040484e3381af4a8f9167b65590adba68bf4c2e5ed255ff6189f96a3474a8"
+    },
+    "harness-controls.log.gz": {
+      "raw_sha256": "6894fc3a3bba39db8496788645617661516f3cb60794c1c29b947acf21a20602",
+      "gzip_sha256": "9b7756dd31b196efbc5c714ec0739944fb47ea7b42c2d2b0571664c30e8fb9eb"
+    },
+    "cargo-version.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "compile-c_probe-instrumented.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "build.err.gz": {
+      "raw_sha256": "0e8024417d6a470aefc81a46a3de40cf7c613978a2890db1f683b968e042e1f9",
+      "gzip_sha256": "4038cdf83682779433ef57ddf725d8ffeffd4424927e1b05a8ad08d2cde5a5d8"
+    },
+    "symbols-instrumented.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "symbols-plain.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "cpp-ubsan.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "clang-19-version.out.gz": {
+      "raw_sha256": "b3cb03f0f6691a660981461c40489b0ad377a7563bb813e8ed4c5f1ad0302179",
+      "gzip_sha256": "1cca184f39cb92f0f3876db6fa39c4b71202df1356cbf762af0b5c10236aa4c2"
+    },
+    "platform.out.gz": {
+      "raw_sha256": "6ecb75ce9d770bd2cfb6898b267dd8f29398821b25cb233675e182e0323ba0d2",
+      "gzip_sha256": "e58b2e717d97791199099cb8ae11a5b46f6c1ff960ce4fc059e3f96ef66c342e"
+    },
+    "provenance.json.gz": {
+      "raw_sha256": "6c2dfd2458aadf17f9b49e4a6a85a63d5aa8c457edcbf8befd9e06f83b0d36ad",
+      "gzip_sha256": "4b6b7facc78a76740c2c24e502e6e518a97408232292dd11b64cbcfa8e7122ba"
+    },
+    "link-probe-instrumented.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "link-probe-instrumented.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "cpp-ubsan.err.gz": {
+      "raw_sha256": "680f170f02f4fd0162ccc78d9bbb0b2b906a3ba104cda57f02a240e6d3406f9a",
+      "gzip_sha256": "77316e9a3d29341119481dfa5c3b5d24b9bf5e6195bafb7b70aaa52482d72004"
+    },
+    "symbols-plain.out.gz": {
+      "raw_sha256": "88edbd29fb8e35f7419cbbd7b9284da635c38a38e55ce70a2d1520ee05a1c419",
+      "gzip_sha256": "5494bff10788ca45825facace9ad20ccfd2cfbbc3f17308802bb30d845203ea5"
+    },
+    "clang-19-version.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "platform.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "commands.jsonl.gz": {
+      "raw_sha256": "c14fd607fb48096ff2cd5aa9f18cfb78702ed0ace37fc13e1e79d4fd7e5da3bb",
+      "gzip_sha256": "53ab95502b4c08815deb79beaec404472881d45092de60dfebabf3bb0eb369ca"
+    },
+    "toolchain-install.log.gz": {
+      "raw_sha256": "663c585297a305fb2e0ee867f61d682979fe6aa4b5d616bcc4946b2f0d0032da",
+      "gzip_sha256": "3f5a32655b3be6326040d2b1296a454cdbed66a17db884eb7b6224404c55f5ae"
+    },
+    "clang-resource-dir.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "symbols-instrumented.out.gz": {
+      "raw_sha256": "274a827ebf554070b33eb10fc0d029724537ae11c849add66b316f0f301818d6",
+      "gzip_sha256": "be0ca52dd94e99c12ed38a2145b8b28b39abaab1edd112bcbee0a184a4db7020"
+    },
+    "build.out.gz": {
+      "raw_sha256": "96d3a3cecddf9d141209d8294966f769db525b8d8e03e4b90da5593e6308257e",
+      "gzip_sha256": "0f482274e194687e91b17f3e82aba167617d3b76b78636569162821f92fd0359"
+    },
+    "compile-c_probe-instrumented.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "cargo-version.out.gz": {
+      "raw_sha256": "66c6010b894bfa1f21fff4a2b962839b5580fdf8c7556dece27572d5aa0051ac",
+      "gzip_sha256": "2dabedee4ee366d86d3a55f7cca27fcf760276c6e295da061cf326b53df703d5"
+    },
+    "compile-c_probe-plain.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "safe-plain.out.gz": {
+      "raw_sha256": "2e0afceae52444c18d0cf356f892ac001e0c169d188266809dcfb07192332bff",
+      "gzip_sha256": "bbef16b1e2a4cade4f84d8be5422e914bbbe1c2290392d4e7fc7ccc47702f40e"
+    },
+    "FAILURE.txt.gz": {
+      "raw_sha256": "fe080f4998a2036e10458faddfcb092812e76af9d84641d32768545d1ad8f40a",
+      "gzip_sha256": "1d602efcdd5776f07fd8675f814d9eaca238c15d0ca776063b6e69eaf0f3763f"
+    },
+    "cpp-asan.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "safe-instrumented.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "clang++-19-version.out.gz": {
+      "raw_sha256": "b3cb03f0f6691a660981461c40489b0ad377a7563bb813e8ed4c5f1ad0302179",
+      "gzip_sha256": "1cca184f39cb92f0f3876db6fa39c4b71202df1356cbf762af0b5c10236aa4c2"
+    },
+    "uninstrumented-control.txt.gz": {
+      "raw_sha256": "0808834b7e01a2c731c562cca60d8c17c69b9ac3d1327ca8093e791bf865e464",
+      "gzip_sha256": "a5f5fd1528e059cf45be00a2eba8c37515fb4493d8890250942ae4fdb2d2328e"
+    },
+    "link-probe-plain.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "source-head.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "source-files.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "c-asan.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "cmake-version.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "rust-version.out.gz": {
+      "raw_sha256": "4d7f6fc0d45ae3c9c66c44b021a140326a942389ad33d2e57b0af8c4f51d70ac",
+      "gzip_sha256": "9c88c624336a1a43938ae3e7bbee22cbb024237005479f67fc863184b41511c8"
+    },
+    "compile-cpp_probe-plain.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "runtime-linkage-probe.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "rust-asan.err.gz": {
+      "raw_sha256": "b696bc6a7be5f0cf6e684d3c5b08875d2fdf9655b670499c7487ce279deef081",
+      "gzip_sha256": "44987a4f5383bf02dad2f3219593f6f9d3f7dcacd57becaa0e35b44d1cabcb8b"
+    },
+    "compile-cpp_probe-instrumented.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "packages.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "runtime-linkage-probe.out.gz": {
+      "raw_sha256": "b0c9bc7439de779d4684321e782d631573b762aaf171536cd7e35b54cf2d4c5a",
+      "gzip_sha256": "75d8f245a19aca25d89ad04d3dc67e3dc084a710f11052ce83e44a4a6d00aa3c"
+    },
+    "compile-cpp_probe-plain.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "compile-cpp_probe-instrumented.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "packages.out.gz": {
+      "raw_sha256": "e9e26ae029109c935062d17fdf1d323a2dceef5d5633cbaf7fe0984b6d221ee9",
+      "gzip_sha256": "9653492b67384d79eef8a230b03e1b091731148f8b4f1c864201b9783e915aad"
+    },
+    "rust-asan.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "source-files.out.gz": {
+      "raw_sha256": "ee6f30921f37c048e81d8027039b94ac2462d335187436c52905c8af2591e4c4",
+      "gzip_sha256": "1af94f743872c5231891fb0820410102206b379c5ad9c2341ce4b371ff5cd047"
+    },
+    "harness.log.gz": {
+      "raw_sha256": "70478c11b7980726b80ae1ac8a720f791ced759427c83102c912b18688db4ca9",
+      "gzip_sha256": "4f028a97d3a6e34863036d0844579b1053d3a0c833c1a93eb68fe8a8a140c432"
+    },
+    "source-head.out.gz": {
+      "raw_sha256": "572a70984fef1ccbcb9b8dee409731b41f5525699b5571413f42e1a5135f1cbf",
+      "gzip_sha256": "35ed945bdeec1e4ad2a7736bfe21a8034e6764df28e8175784600265417b7717"
+    },
+    "link-probe-plain.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "rust-version.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "cmake-version.out.gz": {
+      "raw_sha256": "f6e81c2559f3ce00c5fdad01d7b226c301f5d6b07ee04f65db6dbfdc1cc5970b",
+      "gzip_sha256": "290fa7fbdb746191e1604df28ea6dda6a2d47d51a9a0fa7bd4ce79b0d8f0f817"
+    },
+    "c-asan.err.gz": {
+      "raw_sha256": "9582ad436568c8d727356556df463db398e54e2907c1bcc18c65c29acb7ad547",
+      "gzip_sha256": "4c8f8f6f32e23aa9bb1fb30c2c071038e56837bb19c98fa6fa640969839e3e9d"
+    },
+    "clang++-19-version.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "safe-instrumented.out.gz": {
+      "raw_sha256": "2e0afceae52444c18d0cf356f892ac001e0c169d188266809dcfb07192332bff",
+      "gzip_sha256": "bbef16b1e2a4cade4f84d8be5422e914bbbe1c2290392d4e7fc7ccc47702f40e"
+    },
+    "cpp-asan.err.gz": {
+      "raw_sha256": "bbbf51047f75786f8ca95f4a5b27e8336f1dc25c41929b1340ecb23666673873",
+      "gzip_sha256": "f58649cc2bb23143d994225c47f67def73ca2bf20fe03022f51e2b0363156d97"
+    },
+    "safe-plain.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "compile-c_probe-plain.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    }
+  }
+}

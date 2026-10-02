@@ -97,6 +97,32 @@ def check_unconditional_source(source, name):
             f"selected test contains a possible early-return/model skip: {name}")
 
 
+def build_artifacts(output):
+    """Separate Cargo JSON from the build-script lines emitted by -vv.
+
+    Keep those lines in the raw receipt. They are never compiler-artifact events,
+    even when the build script prints JSON-looking text after its Cargo prefix.
+    """
+    artifacts, finished = {}, []
+    for line in output.splitlines():
+        if not line.strip():
+            continue
+        if re.match(r"^\[[A-Za-z0-9_-]+ [0-9][^\]]*\] ", line):
+            continue
+        event = json.loads(line)  # malformed/unrecognized output still fails
+        require(isinstance(event, dict), "Cargo event must be a JSON object")
+        if event.get("reason") == "build-finished":
+            finished.append(event.get("success"))
+        if event.get("reason") == "compiler-artifact" and event.get("executable"):
+            name = event["target"]["name"]
+            if name in CASES and event["profile"]["test"]:
+                require(name not in artifacts, f"duplicate artifact {name}")
+                artifacts[name] = Path(event["executable"])
+    require(finished == [True], "missing, failed or duplicate Cargo build-finished event")
+    require(set(artifacts) == set(CASES), "missing selected test binary")
+    return artifacts
+
+
 class Run:
     def __init__(self, root, evidence, target):
         self.root, self.evidence, self.target = root, evidence, target
@@ -227,15 +253,7 @@ class Run:
             if name != "rebirth_llm":
                 command += ["--test", name]
         _, output, _ = self.command(command, "build", timeout=4200)
-        artifacts = {}
-        for line in output.splitlines():
-            event = json.loads(line)
-            if event.get("reason") == "compiler-artifact" and event.get("executable"):
-                name = event["target"]["name"]
-                if name in CASES and event["profile"]["test"]:
-                    require(name not in artifacts, f"duplicate artifact {name}")
-                    artifacts[name] = Path(event["executable"])
-        require(set(artifacts) == set(CASES), "missing selected test binary")
+        artifacts = build_artifacts(output)
         self.audit_objects()
         # Evidence that Rust itself, dependencies and std were recompiled with ASan.
         build_log = (self.evidence / "build.err").read_text()

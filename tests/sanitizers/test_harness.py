@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import unittest
 
-from run import CASES, check_fault, check_runtime_symbols, check_test_events, check_unconditional_source
+from run import CASES, build_artifacts, check_fault, check_runtime_symbols, check_test_events, check_unconditional_source
 
 
 def events(name="actual_test", outcome="ok", passed=1, ignored=0):
@@ -16,6 +16,28 @@ def events(name="actual_test", outcome="ok", passed=1, ignored=0):
 
 
 class HarnessControls(unittest.TestCase):
+    @staticmethod
+    def build_events():
+        return [json.dumps({"reason": "compiler-artifact", "target": {"name": name},
+                            "profile": {"test": True}, "executable": "/tmp/" + name})
+                for name in CASES] + [json.dumps({"reason": "build-finished", "success": True})]
+
+    def test_verbose_build_script_lines_are_not_artifacts(self):
+        rows = self.build_events()
+        rows.insert(0, '[compiler_builtins 0.1.143] cargo::rerun-if-changed=build.rs')
+        rows.insert(2, '[rebirth-llm 0.0.0] ' + rows[-1])
+        self.assertEqual(set(build_artifacts("\n".join(rows))), set(CASES))
+
+    def test_build_log_cannot_hide_missing_or_bad_events(self):
+        rows = self.build_events()
+        corruptions = [rows[:-1], rows + [rows[-1]], rows + [rows[0]],
+                       rows[1:], rows[:-1] + ['{"reason":"build-finished","success":false}'],
+                       rows + ['{malformed'], rows + ['unrecognized output'],
+                       rows[:-1] + ['[rebirth-llm 0.0.0] ' + rows[-1]]]
+        for bad in corruptions:
+            with self.subTest(output=bad), self.assertRaises((RuntimeError, ValueError)):
+                build_artifacts("\n".join(bad))
+
     def test_expected_fault_requires_failure_and_matching_diagnostic(self):
         check_fault(1, "ERROR: AddressSanitizer: stack-buffer-overflow", "stack-buffer-overflow")
         for status, output in [(0, "stack-buffer-overflow"), (1, "ordinary crash"),

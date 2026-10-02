@@ -37,7 +37,10 @@ After compilation the harness checks both compilation databases and every
 resulting C/C++ object for ASan references, verifies UBSan references, and retains
 `build_cvec` disassembly containing both sanitizer calls. Cargo's verbose log must
 show ASan commands for the engine wrapper, Arrow and rebuilt Rust std; their
-compiled archives must also contain ASan references. Every real
+compiled archives must also contain ASan references. Cargo's verbose build-script
+lines are retained as text beside its JSON stream; only compiler-artifact events
+count, and the parser requires one successful build-finished event and every
+selected binary without duplicates. Every real
 test binary must define the ASan and UBSan runtime symbols; runtime archive hashes
 and `ldd` output record static-runtime/dynamic-system-library linkage. Compiler
 commands, source/fixture hashes and binary hashes are preserved with the results.

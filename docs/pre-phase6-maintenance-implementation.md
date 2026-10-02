@@ -84,7 +84,19 @@ leaving C++ ABI symbols in Clang's runtime unresolved. The isolated flags now
 explicitly link the existing `libstdc++`; compiler pins, sanitizer settings and
 all acceptance criteria are unchanged. Failed raw receipts are retained under
 `tests/sanitizers/evidence/linux-37042396331`. The scoped retry skips the already
-passing Valgrind job; scheduled runs still execute both. Final compiler versions, hashes, commands and receipts will be
+passing Valgrind job; scheduled runs still execute both.
+
+Run `37043713389` then passed all mixed-language safe/fault and uninstrumented
+controls and completed the instrumented Cargo build with exit zero. It failed
+before object auditing or product-test execution because the reader attempted to
+parse Cargo's `-vv` build-script lines as JSON. The corrected reader recognizes
+those prefixed lines, requires one successful `build-finished` event and the
+complete unique set of seven test binaries, and still rejects malformed or
+unrecognized output. Replaying the retained real log passes; twelve harness
+controls include missing, failed, duplicate and script-prefixed fake completion
+cases. Raw evidence is under `tests/sanitizers/evidence/linux-37043713389`.
+No instrumented product test has yet been accepted; a successful build alone
+is not sanitizer acceptance. Final compiler versions, hashes, commands and receipts will be
 recorded after execution.
 
 ## Verification boundary
