@@ -1,0 +1,2 @@
+"model","converged","iterations","boundary","warning_count","warning"
+"glm(outcome ~ x, family = binomial(), control = glm.control(maxit = 1))",FALSE,1,FALSE,1,"glm.fit: algorithm did not converge"

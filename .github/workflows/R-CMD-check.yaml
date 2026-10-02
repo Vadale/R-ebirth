@@ -66,6 +66,9 @@ jobs:
       - name: External statistical skill artifact runner (base R, no models)
         run: Rscript --vanilla tests/skills/r-statistical-analysis/test-runner.R .
 
+      - name: Assistant installation and packaging boundaries (no model/network)
+        run: python3 tests/assistant-integration/test-tools.py
+
       - name: toolchain declarations and configure MSRV regression (model-free)
         run: Rscript tests/toolchain/test-msrv.R
 

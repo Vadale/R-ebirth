@@ -1,0 +1,174 @@
+
+R version 4.6.1 (2026-06-24) -- "Happy Hop"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin23
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # This file is part of the standard setup for testthat.
+> # It is recommended that you do not modify it.
+> #
+> # Where should you do additional test configuration?
+> # Learn more about the roles of various files in:
+> # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
+> # * https://testthat.r-lib.org/articles/special-files.html
+> 
+> library(testthat)
+> library(relm)
+> 
+> test_check("relm")
+gguf_init_from_reader: invalid magic characters: '????', expected 'GGUF'
+llama_model_load: error loading model: llama_model_loader: failed to load model from /var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T//Rtmp2gWTdm/fileee07c259dc6.gguf
+llama_model_load_from_file_impl: failed to load model
+ASYNC_RESPONSIVENESS_DIAGNOSTIC
+list(timeout = 10, elapsed = 10.138, wall_seconds = 10.1397020816803, 
+    polls = 77L, max_poll_seconds = 0.200999999999993, current_loop = 0L, 
+    global_loop = 0L, transitions = list(list(elapsed = 0.078000000000003, 
+        cpu = 0.00399999999999989, poll_seconds = 0.078000000000003, 
+        job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 10.136, cpu = 0.095, poll_seconds = 0.188999999999993, 
+            job_present = FALSE, promise = "fulfilled", observed = FALSE)), 
+    last_polls = list(list(elapsed = 9.188, cpu = 0.0850000000000001, 
+        poll_seconds = 0.146000000000001, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 9.38199999999999, 
+        cpu = 0.086, poll_seconds = 0.192999999999998, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 9.44, 
+        cpu = 0.0870000000000001, poll_seconds = 0.0580000000000069, 
+        job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 9.593, cpu = 0.0870000000000001, poll_seconds = 0.153000000000006, 
+            job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 9.75399999999999, cpu = 0.0870000000000001, 
+            poll_seconds = 0.160999999999987, job_present = TRUE, 
+            promise = "pending", observed = FALSE), list(elapsed = 9.889, 
+            cpu = 0.088, poll_seconds = 0.135000000000005, job_present = TRUE, 
+            promise = "pending", observed = FALSE), list(elapsed = 9.947, 
+            cpu = 0.088, poll_seconds = 0.0570000000000022, job_present = TRUE, 
+            promise = "pending", observed = FALSE), list(elapsed = 10.136, 
+            cpu = 0.095, poll_seconds = 0.188999999999993, job_present = FALSE, 
+            promise = "fulfilled", observed = FALSE)), queue_at_boundary = list(
+        list(id = 156, when = -0.001447), list(id = 155, when = 0.043941)), 
+    native = list(ok = TRUE, active_jobs = 0L, worker_threads = 0L, 
+        deferred_handles = 0L, snapshot_slots = 0L, terminal_slots = 0L, 
+        queued_jobs = 0L), observer_done = FALSE, R = "R version 4.6.1 (2026-06-24)", 
+    later = "1.4.8", promises = "1.5.0", testthat = "3.3.2", 
+    parent_status = "fulfilled", observer_status = "pending")
+Saving _problems/test-llm-async-194.R
+Saving _problems/test-llm-async-198.R
+Saving _problems/test-llm-async-199.R
+Saving _problems/test-llm-async-200.R
+Saving _problems/test-llm-async-201.R
+Saving _problems/test-llm-async-202.R
+[ FAIL 6 | WARN 0 | SKIP 69 | PASS 2796 ]
+
+══ Skipped tests (69) ══════════════════════════════════════════════════════════
+• embedding pin not present (repo layout only) (1):
+  'test-llm-vision-embed.R:306:3'
+• no mmproj: set RELM_TEST_MMPROJ_VLM or
+  llm_download("qwen2-vl-2b-instruct-mmproj-f16") (1):
+  'test-llm-vision.R:425:3'
+• no VLM: set RELM_TEST_MODEL_VLM or
+  llm_download("qwen2-vl-2b-instruct-q4_k_m") (10):
+  'test-llm-vision-embed.R:233:3', 'test-llm-vision-embed.R:269:3',
+  'test-llm-vision-embed.R:324:3', 'test-llm-vision-embed.R:339:3',
+  'test-llm-vision-embed.R:352:3', 'test-llm-vision.R:385:3',
+  'test-llm-vision.R:394:3', 'test-llm-vision.R:431:3',
+  'test-llm-vision.R:441:3', 'test-llm-vision.R:462:3'
+• RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file (4):
+  'test-llm-generate.R:159:3', 'test-llm-trace.R:493:3',
+  'test-llm-trace.R:523:3', 'test-llm-trace.R:537:3'
+• RELM_TEST_MODEL_QWEN is not set to an existing GGUF file (39):
+  'test-llm-async-lifecycle.R:173:3', 'test-llm-async.R:371:3',
+  'test-llm-async.R:471:3', 'test-llm-embed.R:108:3', 'test-llm-embed.R:118:3',
+  'test-llm-embed.R:130:3', 'test-llm-embed.R:141:3', 'test-llm-embed.R:158:3',
+  'test-llm-generate.R:73:3', 'test-llm-generate.R:84:3',
+  'test-llm-generate.R:96:3', 'test-llm-generate.R:105:3',
+  'test-llm-generate.R:113:3', 'test-llm-generate.R:129:3',
+  'test-llm-generate.R:140:3', 'test-llm-intervene.R:285:3',
+  'test-llm-intervene.R:301:3', 'test-llm-intervene.R:315:3',
+  'test-llm-intervene.R:331:3', 'test-llm-logits.R:71:3',
+  'test-llm-logits.R:100:3', 'test-llm-logits.R:117:3',
+  'test-llm-logits.R:125:3', 'test-llm-logits.R:155:3',
+  'test-llm-model.R:15:3', 'test-llm-model.R:34:3', 'test-llm-model.R:40:3',
+  'test-llm-model.R:50:3', 'test-llm-steer-valence.R:134:3',
+  'test-llm-stream.R:230:3', 'test-llm-stream.R:252:3',
+  'test-llm-trace-golden.R:253:3', 'test-llm-trace.R:447:3',
+  'test-llm-trace.R:479:3', 'test-llm-trace.R:594:3',
+  'test-llm-vision.R:410:3', 'test-structured-output.R:128:3',
+  'test-structured-output.R:147:3', 'test-structured-output.R:171:3'
+• RELM_TEST_MODEL_QWEN not set (5): 'test-llm-tokens.R:71:3',
+  'test-llm-tokens.R:82:3', 'test-llm-tokens.R:90:3',
+  'test-llm-tokens.R:101:3', 'test-llm-tokens.R:115:3'
+• RELM_TEST_MODEL_QWEN3 is not set to an existing GGUF file (1):
+  'test-llm-trace.R:550:3'
+• RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file (1):
+  'test-llm-trace.R:574:3'
+• RELM_TEST_MODEL_SPARK not set (optional 4B acceptance) (1):
+  'test-llm-spark.R:6:3'
+• RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required (2):
+  'test-llm-async.R:493:3', 'test-llm-stream.R:290:3'
+• repo-root canonical image not present (1): 'test-llm-vision.R:375:3'
+• set RELM_DOWNLOAD_E2E=1 to run the real network download (1):
+  'test-llm-download.R:374:3'
+• vision golden not present (repo layout only) (1): 'test-llm-vision.R:491:3'
+• vision goldens not present (outside the tarball; see the R-CMD-check step)
+  (1): 'test-llm-vision-embed.R:61:3'
+
+══ Failed tests ════════════════════════════════════════════════════════════════
+── Failure ('test-llm-async.R:194:3'): native async promise is responsive and services independent R heartbeats ──
+Expected `result$done` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+async promise did not settle before test timeout
+List of 7
+ $ ok              : logi TRUE
+ $ active_jobs     : int 0
+ $ worker_threads  : int 0
+ $ deferred_handles: int 0
+ $ snapshot_slots  : int 0
+ $ terminal_slots  : int 0
+ $ queued_jobs     : int 0
+Backtrace:
+    ▆
+ 1. └─relm (local) async_test_wait(result, promise = p) at test-llm-async.R:194:3
+ 2.   └─testthat::expect_true(result$done, info = diagnostic) at test-llm-async.R:91:3
+── Failure ('test-llm-async.R:198:3'): native async promise is responsive and services independent R heartbeats ──
+Expected `result$value` to have type "character".
+Actual type: "NULL"
+── Failure ('test-llm-async.R:199:3'): native async promise is responsive and services independent R heartbeats ──
+Expected `result$value` to have length 2.
+Actual length: 0.
+── Failure ('test-llm-async.R:200:3'): native async promise is responsive and services independent R heartbeats ──
+Expected `names(result$value)` to be identical to `c("first", "second")`.
+Differences:
+`actual` is NULL
+`expected` is a character vector ('first', 'second')
+
+── Failure ('test-llm-async.R:201:3'): native async promise is responsive and services independent R heartbeats ──
+Expected `attr(result$value, "seed")` to be identical to 17.
+Differences:
+`actual` is NULL
+`expected` is a double vector (17)
+
+── Failure ('test-llm-async.R:202:3'): native async promise is responsive and services independent R heartbeats ──
+Expected `result$settlements` to be identical to 1L.
+Differences:
+  `actual`: 0
+`expected`: 1
+
+
+[ FAIL 6 | WARN 0 | SKIP 69 | PASS 2796 ]
+Error:
+! Test failures.
+Execution halted

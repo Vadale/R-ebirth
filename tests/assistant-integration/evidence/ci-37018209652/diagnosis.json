@@ -1,0 +1,26 @@
+{
+  "run": 37018209652,
+  "head": "cb914da8c2eab4218a6d3400d7fcf11417fab7c0",
+  "passed_checks": 8,
+  "failed_job": 110874256513,
+  "failed_platform": "macos-15 R oldrel-1",
+  "scope": "Six assertions in one pre-existing async responsiveness case. I1 installer and skill-runner checks passed on every leg.",
+  "observed": "Observer remained pending after 10-second wait. Native counters all zero and R job root NULL; later cases passed.",
+  "unproven": "Whether the parent promise was fulfilled, whether a callback remained queued, and elapsed/callback scheduling at the deadline were not recorded. No confirmed GitHub outage or product root cause.",
+  "next_step": "Test-only timing/parent-state/queue diagnostic with unchanged fixture, timeout and assertions. No runtime change; no blind unchanged rerun.",
+  "files": {
+    "local-isolated.log": "1fab9022a5d787bc9d97923ff732096cd7f9927c01c63a48848fbe1e05761545",
+    "00check.log": "cc25e07d017b6969d533fe57b17d38fd6161d3ec330ba2e5e0a1a0447a89f9ce",
+    "testthat.Rout.fail": "a07091bb89520110e3e748ab6e12054d2a09d41fca4deda529da8ff29d41dc95",
+    "testthat-problems.rds": "0b42cfe8f50b483d072a969d07f586a9734fe8d0f398c7ea5c8b9d40013339be",
+    "failed-job.log": "cbfb3fce75929030cb639a7d9533c3057a7724dc4f22c76dfefbe35db5c9ab9c"
+  },
+  "local_diagnostic": "Instrumented original case passed 12 assertions in 2.804s; forced zero-timeout guard confirmed fulfilled parent/pending observer and no extra drain. Existing WP10 library; no native rebuild.",
+  "review": "Focused independent review approves test-only diagnostics; original bounds/assertions preserved.",
+  "diagnostic_test_sha256": "3505a61d260dec9bf692fa620ff463c53ab529dd7c2fd39d80eee999e72613f9",
+  "new_receipts": {
+    "diagnostic-local-status.json": "13c73c832f84d3deea6aae4997071c31d11bba236bfbbfd8f896685b1987180e",
+    "diagnostic-local.log": "49b02581978a82450171072a5684d01c1ffd6838e6100804417616f5acf1671d",
+    "diagnostic-local.R": "cfdcd7e70f4c25d98e78087139be8edbdfc7ef5002acb84949bf8734e29eff74"
+  }
+}

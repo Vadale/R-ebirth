@@ -1,0 +1,13 @@
+{
+  "scope": "One integrated independent source, event and artifact review; no fits or tests repeated",
+  "reviewer": "i1_integrated_review",
+  "blocking_findings": [],
+  "limitations": [
+    "Guided temporary-file scope deviation",
+    "Guided X11/cairo warning output outside conditions.csv; final Quartz Mac-only",
+    "Simple plot unseeded jitter",
+    "Approximate mixed-model inference; diagnostics are not validation",
+    "Ambient client, one model, synthetic data; no general activation claim"
+  ],
+  "owner_followup": "All final analysis code reviewed, numerical CSV replay matched, independent arithmetic matched, plots inspected; report preserves every limitation"
+}

@@ -1,0 +1,2 @@
+"result_id","outcome","term","estimate","conf_low","conf_high","conf_level","scale","units","n","n_A","n_B","df","p_value","method","status"
+"primary_welch","outcome","mean difference: B minus A",3.83333333333333,2.30490219599571,5.36176447067096,0.95,"difference in means","outcome units (not specified)",24,12,12,21.9198603267664,3.26741241945916e-05,"Welch two-sample t confidence interval","ok"

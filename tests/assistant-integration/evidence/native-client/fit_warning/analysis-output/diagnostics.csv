@@ -1,0 +1,8 @@
+"check","status","detail"
+"fit_convergence","fail","glm converged = FALSE; iterations = 1."
+"iteration_budget","warn","The requested incident configuration used glm.control(maxit = 1); no alternative fit was run."
+"fit_warning","fail","glm.fit: algorithm did not converge"
+"outcome_support","pass","Analytic n = 25; outcome 0 = 12; outcome 1 = 13."
+"missingness","pass","There are no missing x or outcome values."
+"complete_ordering_separation","fail","Complete ordering by x = TRUE; max x for outcome 0 = -0.25; min x for outcome 1 = 0. This indicates complete separation when TRUE."
+"independence","assumed","The file has one row per observation, but independence cannot be verified from these two columns."

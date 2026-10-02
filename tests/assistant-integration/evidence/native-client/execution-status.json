@@ -1,0 +1,99 @@
+{
+  "state": "complete",
+  "pid": 64691,
+  "started": 1790948202.750227,
+  "cases_sha256": "816ffc5593ebf83e733639945a9cf0a25c4d6c76cbd2dc79909682239e2ba8ab",
+  "results": [
+    {
+      "id": "simple",
+      "mode": "implicit",
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 146.9767529964447,
+      "prompt_sha256": "875d60dbf1caa8b03a229f2b7cfe38b01add7a49a0d6043b4d94293ef9236ea4",
+      "input_sha256": {
+        "observations.csv": "4e2fc680bce26a0372c76eb330dd4808611f3920cbd28714268966f42a713cd2"
+      },
+      "events_sha256": "381d92b13729adfabfe14df5da736418a168a5a54f7a67995cb04c5c9fe47ab7",
+      "outcome": "requires semantic/artifact review"
+    },
+    {
+      "id": "longitudinal",
+      "mode": "implicit",
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 293.6749641895294,
+      "prompt_sha256": "cd65ed32cbe2ab289fc3236ce02dab77ea55fce43eff0400c85e68a40f966958",
+      "input_sha256": {
+        "observations.csv": "ab07bc797a581c9a39e8e05be1180513d828ecf91d628a4f31846c6a2c7861eb"
+      },
+      "events_sha256": "dc66de6bce812d93df026cf7b69ffcd4c85f03f78334690d64b3c1dc0934d11d",
+      "outcome": "requires semantic/artifact review"
+    },
+    {
+      "id": "insufficient",
+      "mode": "implicit",
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 101.11177396774292,
+      "prompt_sha256": "c8e73b229cba6434ce1d3d839c7550b21a77bd85e11f91a2d44b5d7cadf79746",
+      "input_sha256": {
+        "observations.csv": "cd00aacf8456789a5f12f83e2a8ada2118debcf93bc6829c564652115ec9df02"
+      },
+      "events_sha256": "f30b0f2244d7c25cedb9ad97a06ee46b8bb3930aff1f309d80edc253346b63a1",
+      "outcome": "requires semantic/artifact review"
+    },
+    {
+      "id": "missing_package",
+      "mode": "explicit_R",
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 94.73517274856567,
+      "prompt_sha256": "c30dd4ff651457650995cf03d245df912660a3989b3a38be124ede25f68093ba",
+      "input_sha256": {},
+      "events_sha256": "974b4b58d7f3ae5bbfcc5bf51449a935d531ee4c54b843989f6a76de9b0de260",
+      "outcome": "requires semantic/artifact review"
+    },
+    {
+      "id": "fit_warning",
+      "mode": "explicit_R",
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 120.73910593986511,
+      "prompt_sha256": "366aab0ccf85992d3cdc51fe0326bd6d36d6e2477438d04dfb458ff871438832",
+      "input_sha256": {
+        "observations.csv": "8e78c221cdf40c2ae1c36029fa26179706ce64584a219dd70790fa7dc3a05f4c"
+      },
+      "events_sha256": "acf6f0a2bfc87ecafda8b5f6ceaf682be0bfc96e009030b612eabad94d21d9e4",
+      "outcome": "requires semantic/artifact review"
+    },
+    {
+      "id": "python",
+      "mode": "explicit_other_language",
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 55.73724102973938,
+      "prompt_sha256": "63063f08fdc2a61eaa70ef0253f668c7beff5fbc8eca4dd0e3147ccb74aa4446",
+      "input_sha256": {
+        "observations.csv": "4e2fc680bce26a0372c76eb330dd4808611f3920cbd28714268966f42a713cd2"
+      },
+      "events_sha256": "55551e20329858a4a89e9e021d0e16ca4485c1b31327ae639f47c898ce7f359c",
+      "outcome": "requires semantic/artifact review"
+    },
+    {
+      "id": "guided",
+      "mode": "explicit_skill",
+      "exit_code": 0,
+      "timeout": false,
+      "seconds": 219.10277676582336,
+      "prompt_sha256": "fc7b96ef241f4d05f485e7ec64be22b631e8150dd8e9ff18085164930238e93d",
+      "input_sha256": {
+        "observations.csv": "4e2fc680bce26a0372c76eb330dd4808611f3920cbd28714268966f42a713cd2"
+      },
+      "events_sha256": "754313c2aaf41a7e28a66d6b3dece1ca9a53ad59fc48f5c3e75c6d2327f52a95",
+      "outcome": "requires semantic/artifact review"
+    }
+  ],
+  "active_case": null,
+  "finished": 1790949234.8583732
+}

@@ -1,0 +1,17 @@
+{
+  "packaging_tests": {
+    "passed": 18,
+    "skipped": 0,
+    "reported_by": "i1_packaging implementation agent; actual local execution",
+    "runtime": "Python 3.14.6 / R 4.5.1 macOS arm64"
+  },
+  "artifact_runner": "PASS: numerical fixture, warning retention, spaced paths, overwrite rejection, fit failure, invalid interval, input mutation; root local execution",
+  "hashes": {
+    "integrations/assistant-tools.py": "9e493a3ad7dad7f660aef41a47e942329fba529384f5ebc2af177f500231454a",
+    "tests/assistant-integration/test-tools.py": "56a7902bbed0b51a6dca75d352f2ba48ca1bb65b712469471a5922932ed50fbc",
+    "integrations/plugin.json": "45bde5f1ab8384064f6ef1d286113f6bd1a751ef67acd81698a5431ba7f7742a",
+    "tests/assistant-integration/cases.json": "816ffc5593ebf83e733639945a9cf0a25c4d6c76cbd2dc79909682239e2ba8ab",
+    "tests/assistant-integration/run-client.py": "4d724eeaef7480fe779414a2a2b46c0d3a6b7f8818465c40ca02cf275b51bcbc",
+    "tests/assistant-integration/reference.R": "54b489c7f8b7a880b2d5f7a042b7663dc30db6c18cba5c76ee32cb6419f96678"
+  }
+}

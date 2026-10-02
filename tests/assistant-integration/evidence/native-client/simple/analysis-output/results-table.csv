@@ -1,0 +1,4 @@
+"result","n","mean_points","sd_points","difference_B_minus_A","ci_95_low","ci_95_high","p_value","method"
+"Group A",12,10.1666666666667,1.74945879077104,,,,,"Descriptive"
+"Group B",12,14,1.85864075456917,,,,,"Descriptive"
+"B minus A",24,,,3.83333333333333,2.30490219599571,5.36176447067096,3.26741241945916e-05,"Welch two-sample t interval"

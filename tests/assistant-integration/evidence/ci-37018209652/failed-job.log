@@ -1,0 +1,591 @@
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	﻿2026-10-02T14:19:13.9786900Z ##[group]Run r-lib/actions/check-r-package@v2
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9787450Z with:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9787860Z   working-directory: rebirth
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9788230Z   args: c("--no-manual")
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9788490Z   error-on: "warning"
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9788840Z   upload-snapshots: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9789180Z   build_args: "--no-manual"
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9789430Z   check-dir: "check"
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9789750Z   upload-results: false
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9797760Z env:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9800260Z   GITHUB_PAT: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9800590Z   R_KEEP_PKG_SOURCE: yes
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9800930Z   RUSTUP_TOOLCHAIN: stable
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9801180Z   RUST_TEST_THREADS: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9801510Z   SCCACHE_GHA_ENABLED: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9801800Z   RUSTC_WRAPPER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9802170Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9802550Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9802830Z   CARGO_HOME: /Users/runner/.cargo
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9803350Z   CARGO_INCREMENTAL: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9803600Z   CARGO_TERM_COLOR: always
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9804030Z   SCCACHE_PATH: /Users/runner/hostedtoolcache/sccache/0.18.0/arm64/sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9804480Z   ACTIONS_CACHE_SERVICE_V2: on
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9804970Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9866660Z   ACTIONS_RUNTIME_TOKEN: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9867300Z   R_LIBS_USER: /Users/runner/work/_temp/Library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9870050Z   TZ: UTC
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9877780Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9967130Z   NOT_CRAN: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9967540Z   RSPM: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9967930Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9968580Z   R_LIB_FOR_PAK: /Library/Frameworks/R.framework/Resources/site-library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9968910Z   BUNDLE_EXT: macos.pkg
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9969330Z ##[endgroup]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:13.9986810Z ##[start-action display=Check;id=__r-lib_actions_4.rcmdcheck]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0018100Z ##[group]Run ## --------------------------------------------------------------------
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0018810Z ^[[36;1m## --------------------------------------------------------------------^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0019210Z ^[[36;1moptions(crayon.enabled = TRUE)^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0019630Z ^[[36;1mcat("LOGNAME=", Sys.info()[["user"]], "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0020360Z ^[[36;1mif (Sys.getenv("_R_CHECK_FORCE_SUGGESTS_", "") == "") Sys.setenv("_R_CHECK_FORCE_SUGGESTS_" = "false")^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0020960Z ^[[36;1mif (Sys.getenv("_R_CHECK_CRAN_INCOMING_", "") == "") Sys.setenv("_R_CHECK_CRAN_INCOMING_" = "false")^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0021640Z ^[[36;1mcat("check-dir-path=", file.path(getwd(), ("check")), "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0022520Z ^[[36;1mcheck_results <- rcmdcheck::rcmdcheck(args = (c("--no-manual")), build_args = ("--no-manual"), error_on = ("warning"), check_dir = ("check"))^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0208990Z shell: /usr/local/bin/Rscript {0}
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0209390Z env:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0211690Z   GITHUB_PAT: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0211940Z   R_KEEP_PKG_SOURCE: yes
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0212180Z   RUSTUP_TOOLCHAIN: stable
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0212470Z   RUST_TEST_THREADS: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0212730Z   SCCACHE_GHA_ENABLED: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0213030Z   RUSTC_WRAPPER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0216760Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0217090Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0217450Z   CARGO_HOME: /Users/runner/.cargo
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0217730Z   CARGO_INCREMENTAL: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0218090Z   CARGO_TERM_COLOR: always
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0218620Z   SCCACHE_PATH: /Users/runner/hostedtoolcache/sccache/0.18.0/arm64/sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0219070Z   ACTIONS_CACHE_SERVICE_V2: on
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0220420Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0264400Z   ACTIONS_RUNTIME_TOKEN: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0264880Z   R_LIBS_USER: /Users/runner/work/_temp/Library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0265160Z   TZ: UTC
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0265430Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0265690Z   NOT_CRAN: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0266030Z   RSPM: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0266850Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0267320Z   R_LIB_FOR_PAK: /Library/Frameworks/R.framework/Resources/site-library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0267770Z   BUNDLE_EXT: macos.pkg
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:14.0268060Z ##[endgroup]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:17.8907940Z ^[[36m── R CMD build ─────────────────────────────────────────────────────────────────^[[39m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:19.4468120Z * checking for file ‘.../DESCRIPTION’ ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:25.8065870Z * preparing ‘relm’:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:25.8483650Z * checking DESCRIPTION meta-information ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:25.8507770Z * cleaning src
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:25.8519790Z * running ‘cleanup’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:19:26.4521320Z * installing the package to build vignettes
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:53.2206890Z * creating vignettes ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:53.2608450Z * cleaning src
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:53.3014330Z * running ‘cleanup’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:55.1421440Z * checking for LF line-endings in source and make files and shell scripts
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:56.1354690Z * checking for empty or unneeded directories
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:56.1359930Z Removed empty directory ‘relm/.github’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:56.1570010Z * building ‘relm_0.3.0.tar.gz’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:58.8017260Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:25:59.5500000Z ^[[36m── R CMD check ─────────────────────────────────────────────────────────────────^[[39m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.0889190Z * using log directory ‘/Users/runner/work/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.0920700Z * using R version 4.5.3 (2026-03-11)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.1022730Z * using platform: aarch64-apple-darwin20
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.1035680Z * R was compiled by
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.1036290Z     Apple clang version 16.0.0 (clang-1600.0.26.6)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.1036710Z     GNU Fortran (GCC) 14.2.0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.1037190Z * running under: macOS Sequoia 15.7.9
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:00.1037530Z * using session charset: UTF-8
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:01.1651410Z * using option ‘--no-manual’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:01.1659140Z * checking for file ‘relm/DESCRIPTION’ ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:01.1659700Z * this is package ‘relm’ version ‘0.3.0’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:01.1662400Z * package encoding: UTF-8
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:01.1691440Z * checking package namespace information ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:03.7202080Z * checking package dependencies ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:03.7339920Z * checking if this is a source package ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:03.7346810Z * checking if there is a namespace ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:06.9093230Z * checking for executable files ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:06.9248420Z * checking for hidden files and directories ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:06.9568090Z * checking for portable file names ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:26:06.9596660Z * checking for sufficient/correct file permissions ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5076040Z * checking whether package ‘relm’ can be installed ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5091440Z * used C compiler: ‘Apple clang version 17.0.0 (clang-1700.0.13.5)’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5097230Z * used C++ compiler: ‘Apple clang version 17.0.0 (clang-1700.0.13.5)’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5104160Z * used SDK: ‘MacOSX15.5.sdk’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5386470Z * checking installed package size ... INFO
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5389920Z   installed size is 16.7Mb
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5426070Z   sub-directories of 1Mb or more:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5497870Z     doc    1.2Mb
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5498600Z     libs  14.3Mb
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5499030Z * checking package directory ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.5499890Z * checking ‘build’ directory ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.7650860Z * checking DESCRIPTION meta-information ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.7684940Z * checking top-level files ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:28:59.7748840Z * checking for left-over files ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:00.3584910Z * checking index information ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:01.5411790Z * checking package subdirectories ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:01.6021770Z * checking code files for non-ASCII characters ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:01.6797290Z * checking R files for syntax errors ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:01.9099770Z * checking whether the package can be loaded ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:02.1114740Z * checking whether the package can be loaded with stated dependencies ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:02.2761690Z * checking whether the package can be unloaded cleanly ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:02.4594220Z * checking whether the namespace can be loaded with stated dependencies ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:02.6984330Z * checking whether the namespace can be unloaded cleanly ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:02.9970610Z * checking loading without being on the library search path ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:03.5430070Z * checking whether startup messages can be suppressed ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:04.6273300Z * checking dependencies in R code ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:04.8746960Z * checking S3 generic/method consistency ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:05.0320660Z * checking replacement functions ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:05.2824870Z * checking foreign function calls ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:08.4861150Z * checking R code for possible problems ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:08.8267110Z * checking Rd files ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:08.9049880Z * checking Rd metadata ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:09.0706070Z * checking Rd cross-references ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:09.2346620Z * checking for missing documentation entries ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:09.8700530Z * checking for code/documentation mismatches ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:10.3242140Z * checking Rd \usage sections ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:10.4818390Z * checking Rd contents ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:10.6575190Z * checking for unstated dependencies in examples ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:10.6662290Z * checking line endings in shell scripts ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:11.2025860Z * checking line endings in C/C++/Fortran sources/headers ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:11.2153530Z * checking line endings in Makefiles ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:11.4338040Z * checking compilation flags in Makevars ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:11.4446520Z * checking for GNU extensions in Makefiles ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:11.4548750Z * checking for portable use of $(BLAS_LIBS) and $(LAPACK_LIBS) ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:11.4857980Z * checking use of PKG_*FLAGS in Makefiles ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:12.0068850Z * checking compiled code ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:12.6954450Z * checking installed files from ‘inst/doc’ ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:13.3122120Z * checking files in ‘vignettes’ ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:15.0475650Z * checking examples ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:15.2128320Z * checking for unstated dependencies in ‘tests’ ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:29:15.5389680Z * checking tests ...
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.4896500Z   Running ‘testthat.R’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5464390Z  ERROR
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5665100Z Running the tests in ‘tests/testthat.R’ failed.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5677960Z Last 13 lines of output:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5678860Z   Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5679720Z   `actual` is NULL
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5681670Z   `expected` is a double vector (17)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5682270Z   
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5692260Z   ── Failure ('test-llm-async.R:156:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5697200Z   Expected `result$settlements` to be identical to 1L.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5699010Z   Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5699530Z     `actual`: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5703920Z   `expected`: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5704250Z   
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5706200Z   
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5707180Z   [ FAIL 6 | WARN 0 | SKIP 69 | PASS 2800 ]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5711640Z   Error:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.5713220Z   ! Test failures.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:20.6006890Z   Execution halted
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:22.6102750Z * checking for unstated dependencies in vignettes ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:22.7916200Z * checking package vignettes ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:43.2607370Z * checking re-building of vignette outputs ... OK
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:43.2756890Z * DONE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:43.2858710Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:43.2992960Z Status: 1 ERROR
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:43.3093650Z See
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:43.3201080Z   ‘/Users/runner/work/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00check.log’
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:43.3302770Z for details.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0241790Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0610790Z ^[[36m── R CMD check results ───────────────────────────────────────── relm 0.3.0 ────^[[39m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0658220Z Duration: 6m 45.1s
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0658980Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0698490Z ^[[31m❯ checking tests ...^[[39m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0701090Z   See below...
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0701450Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0712270Z ^[[36m── Test failures ───────────────────────────────────────────────── testthat ────^[[39m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0713610Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0714380Z > # This file is part of the standard setup for testthat.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0718830Z > # It is recommended that you do not modify it.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0721270Z > #
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0722710Z > # Where should you do additional test configuration?
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0724820Z > # Learn more about the roles of various files in:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0734520Z > # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0736910Z > # * https://testthat.r-lib.org/articles/special-files.html
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0738700Z > 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0739790Z > library(testthat)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0742440Z > library(relm)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0744160Z > 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0746580Z > test_check("relm")
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0748260Z gguf_init_from_reader: invalid magic characters: '????', expected 'GGUF'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0750780Z llama_model_load: error loading model: llama_model_loader: failed to load model from /var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T//Rtmpg2lbwm/filef15f7dd6f9a9.gguf
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0754100Z llama_model_load_from_file_impl: failed to load model
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0755340Z Saving _problems/test-llm-async-148.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0756910Z Saving _problems/test-llm-async-152.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0758870Z Saving _problems/test-llm-async-153.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0762980Z Saving _problems/test-llm-async-154.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0764980Z Saving _problems/test-llm-async-155.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0766190Z Saving _problems/test-llm-async-156.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0766760Z [ FAIL 6 | WARN 0 | SKIP 69 | PASS 2800 ]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0767040Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0767850Z ══ Skipped tests (69) ══════════════════════════════════════════════════════════
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0771630Z • embedding pin not present (repo layout only) (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0772150Z   'test-llm-vision-embed.R:306:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0772650Z • no mmproj: set RELM_TEST_MMPROJ_VLM or
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0773220Z   llm_download("qwen2-vl-2b-instruct-mmproj-f16") (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0773720Z   'test-llm-vision.R:425:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.0774260Z • no VLM: set RELM_TEST_MODEL_VLM or
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1329840Z ##[error]Error: R CMD check found ERRORs
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1360620Z   llm_download("qwen2-vl-2b-instruct-q4_k_m") (10):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1361460Z   'test-llm-vision-embed.R:233:3', 'test-llm-vision-embed.R:269:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1362060Z   'test-llm-vision-embed.R:324:3', 'test-llm-vision-embed.R:339:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1369720Z   'test-llm-vision-embed.R:352:3', 'test-llm-vision.R:385:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1370960Z   'test-llm-vision.R:394:3', 'test-llm-vision.R:431:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1371460Z   'test-llm-vision.R:441:3', 'test-llm-vision.R:462:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1372340Z • RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file (4):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1372860Z   'test-llm-generate.R:159:3', 'test-llm-trace.R:493:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1393340Z   'test-llm-trace.R:523:3', 'test-llm-trace.R:537:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1394120Z • RELM_TEST_MODEL_QWEN is not set to an existing GGUF file (39):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1395900Z   'test-llm-async-lifecycle.R:173:3', 'test-llm-async.R:325:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1401510Z   'test-llm-async.R:425:3', 'test-llm-embed.R:108:3', 'test-llm-embed.R:118:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1404970Z   'test-llm-embed.R:130:3', 'test-llm-embed.R:141:3', 'test-llm-embed.R:158:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1407790Z   'test-llm-generate.R:73:3', 'test-llm-generate.R:84:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1408330Z   'test-llm-generate.R:96:3', 'test-llm-generate.R:105:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1408850Z   'test-llm-generate.R:113:3', 'test-llm-generate.R:129:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1409350Z   'test-llm-generate.R:140:3', 'test-llm-intervene.R:285:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1409810Z   'test-llm-intervene.R:301:3', 'test-llm-intervene.R:315:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1410310Z   'test-llm-intervene.R:331:3', 'test-llm-logits.R:71:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1410740Z   'test-llm-logits.R:100:3', 'test-llm-logits.R:117:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1411390Z   'test-llm-logits.R:125:3', 'test-llm-logits.R:155:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1419640Z   'test-llm-model.R:15:3', 'test-llm-model.R:34:3', 'test-llm-model.R:40:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1423110Z   'test-llm-model.R:50:3', 'test-llm-steer-valence.R:134:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1427170Z   'test-llm-stream.R:230:3', 'test-llm-stream.R:252:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1427900Z   'test-llm-trace-golden.R:253:3', 'test-llm-trace.R:447:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1428390Z   'test-llm-trace.R:479:3', 'test-llm-trace.R:594:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1432160Z   'test-llm-vision.R:410:3', 'test-structured-output.R:128:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1432880Z   'test-structured-output.R:147:3', 'test-structured-output.R:171:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1433840Z • RELM_TEST_MODEL_QWEN not set (5): 'test-llm-tokens.R:71:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1439080Z   'test-llm-tokens.R:82:3', 'test-llm-tokens.R:90:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1439610Z   'test-llm-tokens.R:101:3', 'test-llm-tokens.R:115:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1440320Z • RELM_TEST_MODEL_QWEN3 is not set to an existing GGUF file (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1440840Z   'test-llm-trace.R:550:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1441260Z • RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1446500Z   'test-llm-trace.R:574:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1450600Z • RELM_TEST_MODEL_SPARK not set (optional 4B acceptance) (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1451040Z   'test-llm-spark.R:6:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1451580Z • RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required (2):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1452030Z   'test-llm-async.R:447:3', 'test-llm-stream.R:290:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1452660Z • repo-root canonical image not present (1): 'test-llm-vision.R:375:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1453240Z • set RELM_DOWNLOAD_E2E=1 to run the real network download (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1453620Z   'test-llm-download.R:374:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1454310Z • vision golden not present (repo layout only) (1): 'test-llm-vision.R:491:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1455020Z • vision goldens not present (outside the tarball; see the R-CMD-check step)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1459080Z   (1): 'test-llm-vision-embed.R:61:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1459330Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1459790Z ══ Failed tests ════════════════════════════════════════════════════════════════
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1465260Z ── Failure ('test-llm-async.R:148:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1465810Z Expected `result$done` to be TRUE.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1466200Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1466420Z `actual`:   FALSE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1467670Z `expected`: TRUE 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1467850Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1468150Z async promise did not settle before test timeout
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1468470Z List of 7
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1468850Z  $ ok              : logi TRUE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1469190Z  $ active_jobs     : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1469520Z  $ worker_threads  : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1469810Z  $ deferred_handles: int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1470150Z  $ snapshot_slots  : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1470470Z  $ terminal_slots  : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1470840Z  $ queued_jobs     : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1471870Z Backtrace:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1475960Z     ▆
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1476660Z  1. └─relm (local) async_test_wait(result) at test-llm-async.R:148:3
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1494720Z  2.   └─testthat::expect_true(result$done, info = diagnostic) at test-llm-async.R:45:3
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1495680Z ── Failure ('test-llm-async.R:152:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1496350Z Expected `result$value` to have type "character".
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1497180Z Actual type: "NULL"
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1502410Z ── Failure ('test-llm-async.R:153:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1503320Z Expected `result$value` to have length 2.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1504250Z Actual length: 0.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1509680Z ── Failure ('test-llm-async.R:154:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1511090Z Expected `names(result$value)` to be identical to `c("first", "second")`.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1512740Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1513150Z `actual` is NULL
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1515200Z `expected` is a character vector ('first', 'second')
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1515820Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1517260Z ── Failure ('test-llm-async.R:155:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1518730Z Expected `attr(result$value, "seed")` to be identical to 17.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1519980Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1524680Z `actual` is NULL
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1526240Z `expected` is a double vector (17)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1527570Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1530360Z ── Failure ('test-llm-async.R:156:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1531770Z Expected `result$settlements` to be identical to 1L.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1532230Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1536780Z   `actual`: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1537420Z `expected`: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1540700Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1540710Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1541130Z [ FAIL 6 | WARN 0 | SKIP 69 | PASS 2800 ]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1541640Z Error:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1541930Z ! Test failures.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1542890Z Execution halted
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1543270Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1544110Z ^[[31m1 error ✖^[[39m | ^[[32m0 warnings ✔^[[39m | ^[[32m0 notes ✔^[[39m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1544940Z Execution halted
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1569210Z ##[error]Process completed with exit code 1.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1722850Z ##[end-action id=__r-lib_actions_4.rcmdcheck;outcome=failure;conclusion=failure;duration_ms=810173]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.1765110Z ##[start-action display=Show testthat output;id=__r-lib_actions_4.__run]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2035260Z ##[group]Run ## --------------------------------------------------------------------
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2037640Z ^[[36;1m## --------------------------------------------------------------------^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2041770Z ^[[36;1mecho ::group::Show testthat output^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2042450Z ^[[36;1mfind '/Users/runner/work/R-ebirth/R-ebirth/rebirth/check' -name 'testthat.Rout*' -exec cat '{}' \; || true^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2043100Z ^[[36;1mecho ::endgroup::^[[0m
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2536860Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2545820Z env:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2549340Z   GITHUB_PAT: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2550060Z   R_KEEP_PKG_SOURCE: yes
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2551600Z   RUSTUP_TOOLCHAIN: stable
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2557950Z   RUST_TEST_THREADS: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2559910Z   SCCACHE_GHA_ENABLED: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2560280Z   RUSTC_WRAPPER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2564010Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2570220Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2572120Z   CARGO_HOME: /Users/runner/.cargo
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2576510Z   CARGO_INCREMENTAL: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2578350Z   CARGO_TERM_COLOR: always
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2579510Z   SCCACHE_PATH: /Users/runner/hostedtoolcache/sccache/0.18.0/arm64/sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2582840Z   ACTIONS_CACHE_SERVICE_V2: on
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2583920Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2641960Z   ACTIONS_RUNTIME_TOKEN: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2642350Z   R_LIBS_USER: /Users/runner/work/_temp/Library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2642710Z   TZ: UTC
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2642990Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2643530Z   NOT_CRAN: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2643870Z   RSPM: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2644340Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2644940Z   R_LIB_FOR_PAK: /Library/Frameworks/R.framework/Resources/site-library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2645480Z   BUNDLE_EXT: macos.pkg
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2645700Z   LOGNAME: runner
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.2646000Z ##[endgroup]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.7799250Z ##[group]Show testthat output
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8323510Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8365130Z R version 4.5.3 (2026-03-11) -- "Reassured Reassurer"
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8377090Z Copyright (C) 2026 The R Foundation for Statistical Computing
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8377830Z Platform: aarch64-apple-darwin20
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8378120Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8378450Z R is free software and comes with ABSOLUTELY NO WARRANTY.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8378980Z You are welcome to redistribute it under certain conditions.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8379720Z Type 'license()' or 'licence()' for distribution details.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8380050Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8380340Z R is a collaborative project with many contributors.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8380820Z Type 'contributors()' for more information and
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8381390Z 'citation()' on how to cite R or R packages in publications.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8381700Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8382000Z Type 'demo()' for some demos, 'help()' for on-line help, or
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8382500Z 'help.start()' for an HTML browser interface to help.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8382900Z Type 'q()' to quit R.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8383120Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8383420Z > # This file is part of the standard setup for testthat.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8384000Z > # It is recommended that you do not modify it.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8384330Z > #
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8384710Z > # Where should you do additional test configuration?
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8385210Z > # Learn more about the roles of various files in:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8385770Z > # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8386370Z > # * https://testthat.r-lib.org/articles/special-files.html
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8386810Z > 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8387090Z > library(testthat)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8387390Z > library(relm)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8387650Z > 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8387910Z > test_check("relm")
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8388410Z gguf_init_from_reader: invalid magic characters: '????', expected 'GGUF'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8389440Z llama_model_load: error loading model: llama_model_loader: failed to load model from /var/folders/nj/vtw8zd2j31d1gdrtntc5y4600000gn/T//Rtmpg2lbwm/filef15f7dd6f9a9.gguf
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8390880Z llama_model_load_from_file_impl: failed to load model
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8391400Z Saving _problems/test-llm-async-148.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8391790Z Saving _problems/test-llm-async-152.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8393500Z Saving _problems/test-llm-async-153.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8393880Z Saving _problems/test-llm-async-154.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8394570Z Saving _problems/test-llm-async-155.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8394870Z Saving _problems/test-llm-async-156.R
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8395180Z [ FAIL 6 | WARN 0 | SKIP 69 | PASS 2800 ]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8395350Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8396260Z ══ Skipped tests (69) ══════════════════════════════════════════════════════════
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8396770Z • embedding pin not present (repo layout only) (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8397110Z   'test-llm-vision-embed.R:306:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8397440Z • no mmproj: set RELM_TEST_MMPROJ_VLM or
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8398110Z   llm_download("qwen2-vl-2b-instruct-mmproj-f16") (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8398420Z   'test-llm-vision.R:425:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8399070Z • no VLM: set RELM_TEST_MODEL_VLM or
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8399420Z   llm_download("qwen2-vl-2b-instruct-q4_k_m") (10):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8399860Z   'test-llm-vision-embed.R:233:3', 'test-llm-vision-embed.R:269:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8400390Z   'test-llm-vision-embed.R:324:3', 'test-llm-vision-embed.R:339:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8400930Z   'test-llm-vision-embed.R:352:3', 'test-llm-vision.R:385:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8401380Z   'test-llm-vision.R:394:3', 'test-llm-vision.R:431:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8401810Z   'test-llm-vision.R:441:3', 'test-llm-vision.R:462:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8402360Z • RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file (4):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8402860Z   'test-llm-generate.R:159:3', 'test-llm-trace.R:493:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8403310Z   'test-llm-trace.R:523:3', 'test-llm-trace.R:537:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8403850Z • RELM_TEST_MODEL_QWEN is not set to an existing GGUF file (39):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8406630Z   'test-llm-async-lifecycle.R:173:3', 'test-llm-async.R:325:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8408230Z   'test-llm-async.R:425:3', 'test-llm-embed.R:108:3', 'test-llm-embed.R:118:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8409790Z   'test-llm-embed.R:130:3', 'test-llm-embed.R:141:3', 'test-llm-embed.R:158:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8411140Z   'test-llm-generate.R:73:3', 'test-llm-generate.R:84:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8411620Z   'test-llm-generate.R:96:3', 'test-llm-generate.R:105:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8412040Z   'test-llm-generate.R:113:3', 'test-llm-generate.R:129:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8412490Z   'test-llm-generate.R:140:3', 'test-llm-intervene.R:285:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8412920Z   'test-llm-intervene.R:301:3', 'test-llm-intervene.R:315:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8413440Z   'test-llm-intervene.R:331:3', 'test-llm-logits.R:71:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8413880Z   'test-llm-logits.R:100:3', 'test-llm-logits.R:117:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8414370Z   'test-llm-logits.R:125:3', 'test-llm-logits.R:155:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8414960Z   'test-llm-model.R:15:3', 'test-llm-model.R:34:3', 'test-llm-model.R:40:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8415490Z   'test-llm-model.R:50:3', 'test-llm-steer-valence.R:134:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8415920Z   'test-llm-stream.R:230:3', 'test-llm-stream.R:252:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8416360Z   'test-llm-trace-golden.R:253:3', 'test-llm-trace.R:447:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8416800Z   'test-llm-trace.R:479:3', 'test-llm-trace.R:594:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8417240Z   'test-llm-vision.R:410:3', 'test-structured-output.R:128:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8417740Z   'test-structured-output.R:147:3', 'test-structured-output.R:171:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8418450Z • RELM_TEST_MODEL_QWEN not set (5): 'test-llm-tokens.R:71:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8419140Z   'test-llm-tokens.R:82:3', 'test-llm-tokens.R:90:3',
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8419680Z   'test-llm-tokens.R:101:3', 'test-llm-tokens.R:115:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8420420Z • RELM_TEST_MODEL_QWEN3 is not set to an existing GGUF file (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8421350Z   'test-llm-trace.R:550:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8421890Z • RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8422260Z   'test-llm-trace.R:574:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8422700Z • RELM_TEST_MODEL_SPARK not set (optional 4B acceptance) (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8423050Z   'test-llm-spark.R:6:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8423440Z • RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required (2):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8424070Z   'test-llm-async.R:447:3', 'test-llm-stream.R:290:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8424580Z • repo-root canonical image not present (1): 'test-llm-vision.R:375:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8425110Z • set RELM_DOWNLOAD_E2E=1 to run the real network download (1):
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8425480Z   'test-llm-download.R:374:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8425940Z • vision golden not present (repo layout only) (1): 'test-llm-vision.R:491:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8426560Z • vision goldens not present (outside the tarball; see the R-CMD-check step)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8426990Z   (1): 'test-llm-vision-embed.R:61:3'
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8427140Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8427500Z ══ Failed tests ════════════════════════════════════════════════════════════════
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8428280Z ── Failure ('test-llm-async.R:148:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8428790Z Expected `result$done` to be TRUE.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8429040Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8429240Z `actual`:   FALSE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8429480Z `expected`: TRUE 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8429600Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8429780Z async promise did not settle before test timeout
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8431070Z List of 7
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8431350Z  $ ok              : logi TRUE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8431610Z  $ active_jobs     : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8431870Z  $ worker_threads  : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8432130Z  $ deferred_handles: int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8432370Z  $ snapshot_slots  : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8432660Z  $ terminal_slots  : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8432930Z  $ queued_jobs     : int 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8433250Z Backtrace:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8433560Z     ▆
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8434020Z  1. └─relm (local) async_test_wait(result) at test-llm-async.R:148:3
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8434890Z  2.   └─testthat::expect_true(result$done, info = diagnostic) at test-llm-async.R:45:3
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8437520Z ── Failure ('test-llm-async.R:152:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8438310Z Expected `result$value` to have type "character".
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8438660Z Actual type: "NULL"
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8439370Z ── Failure ('test-llm-async.R:153:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8440040Z Expected `result$value` to have length 2.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8440350Z Actual length: 0.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8441470Z ── Failure ('test-llm-async.R:154:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8442310Z Expected `names(result$value)` to be identical to `c("first", "second")`.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8442770Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8443070Z `actual` is NULL
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8443500Z `expected` is a character vector ('first', 'second')
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8443830Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8445180Z ── Failure ('test-llm-async.R:155:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8451130Z Expected `attr(result$value, "seed")` to be identical to 17.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8453330Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8454750Z `actual` is NULL
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8458440Z `expected` is a double vector (17)
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8459120Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8460290Z ── Failure ('test-llm-async.R:156:3'): native async promise is responsive and services independent R heartbeats ──
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8462150Z Expected `result$settlements` to be identical to 1L.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8463410Z Differences:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8464210Z   `actual`: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8468040Z `expected`: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8468240Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8468250Z 
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8468490Z [ FAIL 6 | WARN 0 | SKIP 69 | PASS 2800 ]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8468820Z Error:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8469080Z ! Test failures.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8475800Z Execution halted
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8476560Z ##[endgroup]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8491280Z ##[end-action id=__r-lib_actions_4.__run;outcome=success;conclusion=success;duration_ms=672]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8501210Z ##[start-action display=Upload check results;id=__r-lib_actions_4.__actions_upload-artifact]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8606540Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8606990Z with:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8607240Z   name: macOS-ARM64-roldrel-1-2-results
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8607550Z   path: /Users/runner/work/R-ebirth/R-ebirth/rebirth/check
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8607840Z   if-no-files-found: warn
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8608040Z   compression-level: 6
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8608230Z   overwrite: false
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8608400Z   include-hidden-files: false
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8608610Z   archive: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8608750Z env:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8611040Z   GITHUB_PAT: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8611210Z   R_KEEP_PKG_SOURCE: yes
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8611400Z   RUSTUP_TOOLCHAIN: stable
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8611580Z   RUST_TEST_THREADS: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8611760Z   SCCACHE_GHA_ENABLED: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8611970Z   RUSTC_WRAPPER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8612160Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8612390Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8612660Z   CARGO_HOME: /Users/runner/.cargo
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8612910Z   CARGO_INCREMENTAL: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8613090Z   CARGO_TERM_COLOR: always
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8613380Z   SCCACHE_PATH: /Users/runner/hostedtoolcache/sccache/0.18.0/arm64/sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8613700Z   ACTIONS_CACHE_SERVICE_V2: on
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8614030Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8672650Z   ACTIONS_RUNTIME_TOKEN: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8673590Z   R_LIBS_USER: /Users/runner/work/_temp/Library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8673930Z   TZ: UTC
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8674170Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8675310Z   NOT_CRAN: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8676420Z   RSPM: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8678420Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8679730Z   R_LIB_FOR_PAK: /Library/Frameworks/R.framework/Resources/site-library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8681480Z   BUNDLE_EXT: macos.pkg
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8682160Z   LOGNAME: runner
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:44.8683020Z ##[endgroup]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:45.6670510Z With the provided path, there will be 792 files uploaded
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:45.6673720Z Artifact name is valid!
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:45.6674660Z Root directory input is valid!
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:46.0033950Z Uploading artifact: macOS-ARM64-roldrel-1-2-results.zip
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:46.0162060Z Beginning upload of artifact content to blob storage
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:47.5928450Z Uploaded bytes 8388608
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:48.4922070Z Uploaded bytes 16777216
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:48.7246020Z Uploaded bytes 21887407
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:48.7628870Z Finished uploading artifact content to blob storage!
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:48.7663130Z SHA256 digest of uploaded artifact is cfb439080fa2526c953667bf7ec49251c86e4cfaf29c1598e954d769803b11df
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:48.7664600Z Finalizing artifact upload
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0306190Z Artifact macOS-ARM64-roldrel-1-2-results successfully finalized. Artifact ID 11231624984
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0408130Z Artifact macOS-ARM64-roldrel-1-2-results has been successfully uploaded! Final size is 21887407 bytes. Artifact ID is 11231624984
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0510410Z Artifact download URL: https://github.com/Vadale/R-ebirth/actions/runs/37018209652/artifacts/11231624984
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0546080Z ##[end-action id=__r-lib_actions_4.__actions_upload-artifact;outcome=success;conclusion=success;duration_ms=4204]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0555460Z ##[start-action display=Upload snapshots;id=__r-lib_actions_4.__actions_upload-artifact_2]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0706170Z ##[group]Run actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0706770Z with:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0707120Z   name: macOS-ARM64-roldrel-1-2-testthat-snapshots
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0707630Z   path: /Users/runner/work/R-ebirth/R-ebirth/rebirth/check/**/tests*/testthat/_snaps
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0708810Z   if-no-files-found: ignore
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0709090Z   compression-level: 6
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0709390Z   overwrite: false
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0709600Z   include-hidden-files: false
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0709910Z   archive: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0710150Z env:
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0712860Z   GITHUB_PAT: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0713080Z   R_KEEP_PKG_SOURCE: yes
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0713410Z   RUSTUP_TOOLCHAIN: stable
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0713840Z   RUST_TEST_THREADS: 1
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0714120Z   SCCACHE_GHA_ENABLED: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0714450Z   RUSTC_WRAPPER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0714820Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0715160Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0715590Z   CARGO_HOME: /Users/runner/.cargo
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0715930Z   CARGO_INCREMENTAL: 0
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0716230Z   CARGO_TERM_COLOR: always
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0716580Z   SCCACHE_PATH: /Users/runner/hostedtoolcache/sccache/0.18.0/arm64/sccache
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0717030Z   ACTIONS_CACHE_SERVICE_V2: on
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0717530Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0791450Z   ACTIONS_RUNTIME_TOKEN: ***
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0793650Z   R_LIBS_USER: /Users/runner/work/_temp/Library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0794260Z   TZ: UTC
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0796580Z   _R_CHECK_SYSTEM_CLOCK_: FALSE
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0798000Z   NOT_CRAN: true
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0799060Z   RSPM: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0800580Z   RENV_CONFIG_REPOS_OVERRIDE: https://packagemanager.posit.co/cran/latest
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0803520Z   R_LIB_FOR_PAK: /Library/Frameworks/R.framework/Resources/site-library
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0804470Z   BUNDLE_EXT: macos.pkg
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0805620Z   LOGNAME: runner
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.0806520Z ##[endgroup]
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.4025880Z No files were found with the provided path: /Users/runner/work/R-ebirth/R-ebirth/rebirth/check/**/tests*/testthat/_snaps. No artifacts will be uploaded.
+macos-15 (R oldrel-1, Rust stable)	Run r-lib/actions/check-r-package@v2	2026-10-02T14:32:49.4115800Z ##[end-action id=__r-lib_actions_4.__actions_upload-artifact_2;outcome=success;conclusion=success;duration_ms=355]

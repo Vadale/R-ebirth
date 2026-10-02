@@ -1,0 +1,10 @@
+{
+  "comparison": "fresh-process numerical/diagnostic artifact bytes",
+  "files_equal": {
+    "estimates.csv": true,
+    "diagnostics.csv": true,
+    "conditions.csv": true,
+    "results-table.csv": true
+  },
+  "plot_limit": "Original script uses unseeded stripchart jitter; coordinates are not byte-reproducible. No numeric fit depends on it."
+}

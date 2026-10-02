@@ -1,0 +1,29 @@
+{
+  "head": "9e4739c3cd28f693b20b27508ec2792b363d2a9d",
+  "run": 37022686285,
+  "failed_job": 110889446629,
+  "platform": "macos-15 R release 4.6.1",
+  "observed": {
+    "terminal_collection_seconds": 10.136,
+    "timeout_seconds": 10,
+    "wait_elapsed_seconds": 10.138,
+    "wait_cpu_seconds": 0.095,
+    "polls": 77,
+    "max_poll_seconds": 0.201,
+    "parent": "fulfilled",
+    "observer": "pending",
+    "queued_callback_due_seconds": -0.001447
+  },
+  "interpretation": "Terminal collection crossed the test deadline and left a deferred observer queued. This identifies the failure boundary; accumulated scheduling delay in 200 relative sleeps is supported but the OS root cause is not independently proven.",
+  "fix": "Only the responsiveness fixture changes from 200 x 10ms sleeps to 1 x 2000ms sleep. Same nominal hold, original sub250ms submission/10heartbeats/10s completion and all result/lifecycle assertions. No product, FFI, dependency, cancellation or progress-test change.",
+  "review": "Focused independent review approves scope; one sleep can still overshoot, so no exact scheduler-timing guarantee.",
+  "raw_full_job_log_sha256": "f13ce974eab7ff30ff2d598c941a1458a175ba96706b314a97fed5c5abf2f2dd",
+  "files_sha256": {
+    "async-responsiveness.txt": "1bd1f37ae1dd75b666b701a0827f6bf53cd89a9d36556216071b5773869beee4",
+    "single-hold-output.log": "bf78cb4de85a6b0192910656984367466d96fe2aa2922effc1a052d1c23604d4",
+    "single-hold-run.R": "4dadae9cd3d8a5000e56ea68d40efc97bc3003580b8068966826f143f71ddb01",
+    "00check.log": "ff81daf4d4a169284c795657b70663f1a766fafa53127f9951ecaf5b64658740",
+    "testthat.Rout.fail": "f0a396c9f86cc02fbff047d8c5bfb2561bdfb2845e823f15435e4a573831a531",
+    "single-hold-status.json": "41de1415306c9b19c860ec30cb048b9eac645e543bf5d9f3e69be592bb0eb74e"
+  }
+}

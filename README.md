@@ -107,8 +107,8 @@ of safety or bias removal.
 
 Windows/CUDA, tracing inside the vision encoder, and several larger-model
 hardware checks remain open. The [public execution plan](docs/structured-production-plan.md)
-records the completed increment and later work. WP9 is integrated; WP10 is the
-current streaming increment, followed by I1 external-assistant integration.
+records the completed increment and later work. WP9 and WP10 are integrated in
+development; I1 external-assistant integration is the current companion work.
 
 ## Statistical analysis with an external assistant
 
@@ -121,8 +121,11 @@ and diagnostics. Ordinary statistics does not require relm or a model download.
 This repository companion is separate from the relm 0.3.0 package. It requires
 an R runtime and an assistant with execution tools; broad ecosystem support is
 a routing capability, not a claim that every method has been tested. See
-[installation, limits and the integration plan](docs/external-assistants-plan.md).
-External-client integration and marketplace packaging follow WP9 and WP10.
+[local installation and usage](integrations/README.md), the
+[integration plan](docs/i1-assistant-plan.md) and
+[observed results and limits](docs/i1-implementation.md).
+Local R computation does not make a hosted assistant offline: selected tool
+results can enter model context. Public marketplace acceptance is separate.
 
 ## Repository and development
 

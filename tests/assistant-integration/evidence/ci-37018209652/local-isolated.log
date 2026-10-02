@@ -1,0 +1,9 @@
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Runtime: R version 4.5.1 (2025-06-13) promises 1.5.0 later 1.4.8 
+Tracing function "async_settle" in package "namespace:relm"
+[1] "async_settle"
+SETTLE 2.747 
+WAIT_DONE 2.486 promise fulfilled observed TRUE 
+Test passed with 12 successes 😸.
+FOCUSED_ASYNC_REPRO_COMPLETE

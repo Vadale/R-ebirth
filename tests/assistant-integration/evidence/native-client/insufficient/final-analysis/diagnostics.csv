@@ -1,0 +1,7 @@
+"check","status","detail"
+"independence","assumed","Independent people, as supplied by the user; one row per participant was assumed."
+"missingness","pass","No missing values in id, group, or outcome."
+"unique_participants","pass","Participant IDs are unique."
+"group_sample_sizes","fail","Only 1 observation in A and 1 observation in B."
+"sampling_variance","fail","With one observation per group, neither within-group variance nor the standard error of the mean difference can be estimated."
+"distributional_shape","not_assessed","Normality, skewness, outliers, and variance heterogeneity cannot be evaluated with one observation per group."

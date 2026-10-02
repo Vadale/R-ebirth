@@ -1,0 +1,13 @@
+{
+  "id": "simple",
+  "mode": "implicit",
+  "exit_code": 1,
+  "timeout": false,
+  "seconds": 3.223560094833374,
+  "prompt_sha256": "875d60dbf1caa8b03a229f2b7cfe38b01add7a49a0d6043b4d94293ef9236ea4",
+  "input_sha256": {
+    "observations.csv": "4e2fc680bce26a0372c76eb330dd4808611f3920cbd28714268966f42a713cd2"
+  },
+  "events_sha256": "95bbab0b54640cdb414575f9f18cd6faa9363ed16d096f1e2d0eeae9d625f3c8",
+  "outcome": "requires semantic/artifact review"
+}

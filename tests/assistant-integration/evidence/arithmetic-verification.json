@@ -1,0 +1,96 @@
+{
+  "simple": {
+    "reference": {
+      "estimate": "3.83333333333333",
+      "conf_low": "2.30490219599571",
+      "conf_high": "5.36176447067096",
+      "df": "21.9198603267664",
+      "n": "24"
+    },
+    "selected_estimate": {
+      "result_id": "primary_B_minus_A",
+      "outcome": "outcome",
+      "term": "mean(B) - mean(A)",
+      "estimate": "3.83333333333333",
+      "conf_low": "2.30490219599571",
+      "conf_high": "5.36176447067096",
+      "conf_level": "0.95",
+      "scale": "mean difference",
+      "units": "points",
+      "n": "24",
+      "n_A": "12",
+      "n_B": "12",
+      "p_value": "3.26741241945916e-05",
+      "degrees_freedom": "21.9198603267664",
+      "method": "Welch two-sample t confidence interval",
+      "status": "ok"
+    },
+    "matches": {
+      "estimate": true,
+      "conf_low": true,
+      "conf_high": true
+    }
+  },
+  "guided": {
+    "reference": {
+      "estimate": "3.83333333333333",
+      "conf_low": "2.30490219599571",
+      "conf_high": "5.36176447067096",
+      "df": "21.9198603267664",
+      "n": "24"
+    },
+    "selected_estimate": {
+      "result_id": "primary_welch",
+      "outcome": "outcome",
+      "term": "mean difference: B minus A",
+      "estimate": "3.83333333333333",
+      "conf_low": "2.30490219599571",
+      "conf_high": "5.36176447067096",
+      "conf_level": "0.95",
+      "scale": "difference in means",
+      "units": "outcome units (not specified)",
+      "n": "24",
+      "n_A": "12",
+      "n_B": "12",
+      "df": "21.9198603267664",
+      "p_value": "3.26741241945916e-05",
+      "method": "Welch two-sample t confidence interval",
+      "status": "ok"
+    },
+    "matches": {
+      "estimate": true,
+      "conf_low": true,
+      "conf_high": true
+    }
+  },
+  "longitudinal": {
+    "reference": {
+      "estimate": "1.36107303197745",
+      "conf_low": "1.10343758031529",
+      "conf_high": "1.61870848363961",
+      "df": "55.257457247801",
+      "n": "60"
+    },
+    "selected_estimate": {
+      "result_id": "person_level_sensitivity",
+      "outcome": "score",
+      "term": "Programme minus comparison difference in mean person-specific slope",
+      "estimate": "1.36107303197745",
+      "conf_low": "1.1034375803153",
+      "conf_high": "1.61870848363961",
+      "conf_level": "0.95",
+      "scale": "difference in mean OLS slopes",
+      "units": "points per visit",
+      "n": "60",
+      "n_clusters": "60",
+      "p_value": "6.5784321392786e-15",
+      "method": "Welch comparison of independently estimated person-level OLS slopes; 95% CI",
+      "status": "ok"
+    },
+    "matches": {
+      "estimate": true,
+      "conf_low": true,
+      "conf_high": true
+    }
+  }
+}

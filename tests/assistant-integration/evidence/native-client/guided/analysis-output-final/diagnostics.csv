@@ -1,0 +1,7 @@
+"check","status","detail"
+"independence","assumed","User specified independent groups; one row per unique ID (24 of 24 IDs unique)."
+"group support","pass","Both prespecified groups are present (A n=12; B n=12)."
+"missingness","pass","No missing values in id, group, or outcome; all 24 rows analyzed."
+"variance heterogeneity","pass","Larger/smaller sample variance ratio = 1.13; Welch inference does not assume equal variances."
+"distribution and outliers","warn","Small samples limit distribution assessment. Adjusted skewness: A -0.18, B 0.00; Tukey boxplot flags: A 0, B 0. Inspect the raw-data plot."
+"single-observation influence","pass","Across leave-one-out analyses, estimate ranged 3.55 to 4.11; 95% CI lower bounds 2.07 to 2.62 and upper bounds 5.01 to 5.59."

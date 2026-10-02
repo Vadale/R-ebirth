@@ -1,0 +1,113 @@
+{
+  "receipt": {
+    "id": "insufficient",
+    "mode": "implicit",
+    "exit_code": 0,
+    "timeout": false,
+    "seconds": 101.11177396774292,
+    "prompt_sha256": "c8e73b229cba6434ce1d3d839c7550b21a77bd85e11f91a2d44b5d7cadf79746",
+    "input_sha256": {
+      "observations.csv": "cd00aacf8456789a5f12f83e2a8ada2118debcf93bc6829c564652115ec9df02"
+    },
+    "events_sha256": "f30b0f2244d7c25cedb9ad97a06ee46b8bb3930aff1f309d80edc253346b63a1",
+    "outcome": "requires semantic/artifact review"
+  },
+  "commands": [
+    {
+      "id": "item_1",
+      "command": "/bin/zsh -lc \"sed -n '1,240p' /Users/alessandrovadala/.codex/skills/r-statistical-analysis/SKILL.md\"",
+      "exit_code": 0,
+      "output_sha256": "d1893e6112de6f929a371965f85e7923c0b956e3750c4fbf6bdd304f2f4b04dc"
+    },
+    {
+      "id": "item_2",
+      "command": "/bin/zsh -lc \"sed -n '1,280p' /Users/alessandrovadala/.codex/skills/r-statistical-analysis/references/output-contract.md\"",
+      "exit_code": 0,
+      "output_sha256": "a23b5c5bde4d63e99f2508f0ca81766f8abc955a6559d1e78dae2b5d4087e841"
+    },
+    {
+      "id": "item_3",
+      "command": "/bin/zsh -lc \"sed -n '1,260p' /Users/alessandrovadala/.codex/skills/r-statistical-analysis/references/statistical-checks.md\"",
+      "exit_code": 0,
+      "output_sha256": "89cfd9148bfa1ce53ae49b853ae431f76e5cbc4e82fd083054ea80cf740f428f"
+    },
+    {
+      "id": "item_4",
+      "command": "/bin/zsh -lc \"pwd && rg --files -g 'observations.csv' -g 'AGENTS.md' -g '\"'!**/.git/**'\"'\"",
+      "exit_code": 0,
+      "output_sha256": "edb2cce04cedb5e5c65ae145a2e9381120b81df4485e121621a3243136a83acc"
+    },
+    {
+      "id": "item_5",
+      "command": "/bin/zsh -lc \"wc -l observations.csv && sed -n '1,8p' observations.csv\"",
+      "exit_code": 0,
+      "output_sha256": "94218b5b5e708f20d7a81f4c8b9cfabaf68c7b1c16f10ea4e3d5d783855383c9"
+    },
+    {
+      "id": "item_6",
+      "command": "/bin/zsh -lc 'Rscript --vanilla /Users/alessandrovadala/.codex/skills/r-statistical-analysis/scripts/inspect-environment.R'",
+      "exit_code": 0,
+      "output_sha256": "0e353819bcc00b5af158ced39809104f537401b8160c1652063351b14ee8f5bc"
+    },
+    {
+      "id": "item_9",
+      "command": "/bin/zsh -lc 'test ! -e analysis-results && Rscript --vanilla /Users/alessandrovadala/.codex/skills/r-statistical-analysis/scripts/run-analysis.R analysis.R analysis-results observations.csv'",
+      "exit_code": 0,
+      "output_sha256": "6df8f6ecc636094ea938c25f6e13d8de4e3d6c22d6366c6a4efdfec67692239e"
+    },
+    {
+      "id": "item_10",
+      "command": "/bin/zsh -lc \"sed -n '1,220p' analysis-results/summary.md && sed -n '1,80p' analysis-results/estimates.csv && sed -n '1,120p' analysis-results/diagnostics.csv\"",
+      "exit_code": 0,
+      "output_sha256": "50ee7f855a4201ea7f90f80fb4a15f6fe8b601e9037a88b9e633c908f12eab44"
+    },
+    {
+      "id": "item_11",
+      "command": "/bin/zsh -lc \"sed -n '1,80p' analysis-results/status.dcf && sed -n '1,120p' analysis-results/conditions.csv && sed -n '1,120p' analysis-results/manifest.csv\"",
+      "exit_code": 0,
+      "output_sha256": "e4105ab1c4fc2f83d566fb810670939b866025ba9c123edda03d45a068956ff8"
+    },
+    {
+      "id": "item_13",
+      "command": "/bin/zsh -lc 'test ! -e final-analysis && Rscript --vanilla /Users/alessandrovadala/.codex/skills/r-statistical-analysis/scripts/run-analysis.R analysis.R final-analysis observations.csv && sed -n '\"'1,80p' final-analysis/status.dcf && sed -n '1,12p' final-analysis/estimates.csv\"",
+      "exit_code": 0,
+      "output_sha256": "e83331e9c4d23ca3912175c55ba9535bb4ccab0558e7bfb0fe5cd8930191131b"
+    }
+  ],
+  "messages": [
+    "I\u2019m using the statistical-analysis skill because this is an inferential comparison of two independent groups. I\u2019ll inspect only the relevant workspace files, run bounded local checks, and report both the estimate and the assumptions limiting the conclusion.",
+    "The file contains only two observations\u2014one person in A and one in B. The observed difference is easy to describe, but population reliability hinges on estimating person-to-person variability, which these data cannot provide within either group. I\u2019ll preserve that distinction explicitly in the analysis artifacts.",
+    "No\u2014group B does not have a *reliably* higher population mean based on these data.\n\n- Group A: 1 person, outcome 10\n- Group B: 1 person, outcome 13\n- Observed difference (B \u2212 A): **3 units**\n\nWith only one observation per group, within-group variability and the standard error cannot be estimated. Therefore, no defensible confidence interval or conventional hypothesis-test p-value is available. The 3-unit difference could simply reflect person-to-person variation.\n\nIndependence does not overcome the sample-size limitation. Population generalization would also require an appropriate sampling design; no causal group effect can be inferred.\n\nArtifacts: [summary](</private/tmp/relm-i1/native-client-02/insufficient/final-analysis/summary.md>) \u00b7 [estimates](</private/tmp/relm-i1/native-client-02/insufficient/final-analysis/estimates.csv>) \u00b7 [diagnostics](</private/tmp/relm-i1/native-client-02/insufficient/final-analysis/diagnostics.csv>) \u00b7 [R code](</private/tmp/relm-i1/native-client-02/insufficient/analysis.R>)"
+  ],
+  "usage": {
+    "input_tokens": 182051,
+    "cached_input_tokens": 164480,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 3343,
+    "reasoning_output_tokens": 593
+  },
+  "artifacts_sha256": {
+    "analysis-results/analysis.R": "19f2035e51e9c54e2d1633dc8a883615e5057ade73989819bf964e210bd351ac",
+    "analysis-results/conditions.csv": "f30035570c21b595864d5eff8bced3a5a9069dcb5dbac0e6d6f2d8ce90440a64",
+    "analysis-results/diagnostics.csv": "0fdcb4e7d629d6ec95dfa729fd59c8d35cb333e647915ca4c08fbe3fbb89db6b",
+    "analysis-results/estimates.csv": "a468133d98e2264ed24e131544a22c6028260088ae55a1b019aad9547cc95434",
+    "analysis-results/manifest.csv": "b43cb7379de59cc85e1bba31e130c39bf369a91c0edbbe4355473604791a96e7",
+    "analysis-results/session-info.txt": "1634047624e74537ce696c91e89221e71a6713dfb7b59ac323f232792b16a451",
+    "analysis-results/status.dcf": "d5afece57263b1275b0002aca3c30544d9429999d7d52fb1c9d1daa8154e590f",
+    "analysis-results/summary.md": "c34013ef570596844a2211001280b945066a167b77865a2b000bf1092632f4a2",
+    "analysis.R": "dca490884b77167ed550a583e2968a27fc07429b670e27a76513f93e44169d2b",
+    "answer.md": "8affc4cf2c33ccf0caa29533161ebfcffebd54abd4ffad31a8962a4db785227f",
+    "final-analysis/analysis.R": "dca490884b77167ed550a583e2968a27fc07429b670e27a76513f93e44169d2b",
+    "final-analysis/conditions.csv": "f30035570c21b595864d5eff8bced3a5a9069dcb5dbac0e6d6f2d8ce90440a64",
+    "final-analysis/diagnostics.csv": "0fdcb4e7d629d6ec95dfa729fd59c8d35cb333e647915ca4c08fbe3fbb89db6b",
+    "final-analysis/estimates.csv": "e65dfa9ca1274e31bbb1e8686616a95afce2b5e884e47b8b1d2610b78837dccd",
+    "final-analysis/manifest.csv": "5183b0cb951be4cdfdb2f6585001db92408b155bb9289147c26119caa8b6ba76",
+    "final-analysis/session-info.txt": "1634047624e74537ce696c91e89221e71a6713dfb7b59ac323f232792b16a451",
+    "final-analysis/status.dcf": "d57bba0acc4f24d59725a51e1caed01ecf2f1b220bfb316a7dfc1dc2248f7b9e",
+    "final-analysis/summary.md": "c34013ef570596844a2211001280b945066a167b77865a2b000bf1092632f4a2",
+    "observations.csv": "cd00aacf8456789a5f12f83e2a8ada2118debcf93bc6829c564652115ec9df02",
+    "prompt.txt": "c8e73b229cba6434ce1d3d839c7550b21a77bd85e11f91a2d44b5d7cadf79746"
+  },
+  "source_event_sha256": "f30b0f2244d7c25cedb9ad97a06ee46b8bb3930aff1f309d80edc253346b63a1",
+  "note": "Recorded observations only. Selection, correctness and interpretation require review."
+}

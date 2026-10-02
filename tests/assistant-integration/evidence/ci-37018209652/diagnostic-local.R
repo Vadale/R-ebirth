@@ -1,0 +1,25 @@
+.libPaths(c('/private/tmp/relm-wp10/library', .libPaths()))
+library(relm)
+library(testthat)
+cat('Runtime:', R.version.string, 'promises', as.character(packageVersion('promises')), 'later', as.character(packageVersion('later')), '\n')
+stopifnot(normalizePath(find.package('relm')) == '/private/tmp/relm-wp10/library/relm')
+expressions <- parse('/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/tests/testthat/test-llm-async.R')
+for (expr in expressions) {
+  if (identical(expr[[1]], as.name('<-'))) eval(expr)
+}
+trace('async_settle', where=asNamespace('relm'), tracer=quote(cat('SETTLE', proc.time()[['elapsed']], '\n')), print=FALSE)
+selected <- Filter(function(e) identical(e[[1]],as.name('test_that')) && identical(e[[2]], 'native async promise is responsive and services independent R heartbeats'), as.list(expressions))
+stopifnot(length(selected)==1L)
+eval(selected[[1]])
+cat('FOCUSED_ASYNC_REPRO_COMPLETE\n')
+
+# Boundary guard: diagnostics must not drain a queued observer to turn failure into success.
+resolved <- promises::promise_resolve(1)
+boundary <- async_test_observe(resolved, diagnostic=TRUE)
+testthat::expect_failure(async_test_wait(boundary, timeout=0, promise=resolved))
+stopifnot(!boundary$done)
+receipt <- dget('_diagnostics/async-responsiveness.txt')
+stopifnot(identical(receipt$parent_status, 'fulfilled'), identical(receipt$observer_status, 'pending'), length(receipt$queue_at_boundary)>0L)
+later::run_now(0, loop=later::global_loop())
+stopifnot(boundary$done)
+cat('READ_ONLY_BOUNDARY_DIAGNOSTIC_PASSED\n')

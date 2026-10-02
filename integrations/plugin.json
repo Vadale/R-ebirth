@@ -1,0 +1,6 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "r-statistical-analysis",
+  "version": "0.1.0",
+  "description": "Statistical analysis with R: interpretable estimates, uncertainty, diagnostics, plots and reproducible code. Requires local R and an assistant with execution tools."
+}
