@@ -120,3 +120,29 @@ did not rerun fits or certify every assumption. Its explicit limitations above
 are carried into this report. Final CI and integration are the remaining I1
 delivery steps; no further native build, model call, release, marketplace
 submission or subsequent work package is part of this milestone.
+
+## Final CI: retained asynchronous delivery failure
+
+At head `cb914da8`, eight of nine checks passed. R run `37018209652` failed
+only on macOS oldrel in the existing async responsiveness case: six assertions
+followed an observer that had not settled within its unchanged ten-second wait.
+The failed leg reported 2,800 passing expectations and 69 explicit skips. The I1
+installer and statistical runner checks passed on all four R legs.
+
+The timeout snapshot shows no native job, worker, terminal or queue slot; the R
+job root was also cleared. That is compatible with native completion followed
+by a still-queued promise continuation, but the original log does not establish
+the parent-promise state or the timing. A tiny model-free experiment confirms
+that this intermediate state is possible; it does not identify the remote root
+cause. The original isolated case passes on the existing local WP10 installation
+in 2.486 seconds, which likewise does not invalidate the remote failure.
+
+The follow-up changes only test diagnostics: parent/observer states, event-loop
+timings, last poll samples, state transitions, loop identities, queued callback
+due times and native counters. The observer is retained for this one diagnostic
+case. Fixture work, timeout and every acceptance assertion remain unchanged;
+no extra callbacks are drained after the deadline. A forced zero-timeout check
+verifies that diagnostic capture leaves an already-queued observer undelivered
+and the original assertion failing. Failed logs and the exact original check
+output are in `evidence/ci-37018209652/`. The native and R product code are
+unchanged. A green diagnostic run must not be described as a proven runtime fix.
