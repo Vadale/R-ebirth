@@ -1,8 +1,8 @@
 # WP9 — Native asynchronous generation
 
-Updated: 2026-10-02. **Implementation and local automated verification complete;
-initial PR CI failed on macOS. Foreground RStudio and final CI acceptance remain
-open.** D-037 is
+Updated: 2026-10-02. **Implementation and operational acceptance complete;
+foreground RStudio and all nine checks at `8053bf8` passed. Final evidence-head
+CI and integration remain open.** D-037 is
 approved. This development change follows relm 0.3.0; it is not a new release.
 The [approved contract](wp9-async-plan.md) and API-GRAMMAR remain binding.
 
@@ -50,7 +50,8 @@ emits a built-under-R-4.5.2 warning, retained in the raw log.
 | Native ownership and numerical behavior | Workspace clippy, debug/release async tests, the full default engine/golden suite and FFI tests passed. Existing goldens were unchanged. Ownership assertions also execute in optimized builds. |
 | Native vision boundaries | Six real cached-VLM cases passed with `ASYNC_VLM_BOUNDARIES_PASSED`: cancellation/recovery and terminal-owner destruction around multimodal ingest and sampled-token boundaries, including a surviving shared projector. These are boundaries around synchronous C calls, not interruption inside the image encoder. |
 | R promises, lifecycle and memory | 35 cases, 1,355 passing expectations, zero failures/errors/skips. Includes seeded sync/async parity, structured/intervened and vision paths, callback errors/reentrancy, one seed draw, cancellation, real deferred destruction, fresh-process shutdown, foreign-pointer refusal and full-size materialized result bounds. |
-| R responsiveness fixture | A controlled two-second worker verifies prompt return and independent event-loop heartbeats. This is automated R event-loop evidence, not the pending real RStudio gate. |
+| R responsiveness fixture | A controlled two-second worker verifies prompt return and independent event-loop heartbeats. This is automated R event-loop evidence; the separate foreground result is recorded below. |
+| Foreground RStudio | Actual cached-Qwen CPU generation lasted 17.788 s; submission took 105 ms. An independently submitted `1 + 1` returned 2 while generation was active, below 500 ms at the R clock resolution, with 322 independent heartbeats. Session/model/backend hashes and restoration receipts are retained. |
 | Remaining package tests | 251 cases: 1,177 passing expectations, 48 explicit skips, zero failures/errors. The skipped cases require opt-in models, network or other environment conditions; see the retained log. Async cases were excluded because the preceding suite had already executed them. |
 | Package integration | Fresh installation and source build passed. The scoped check ran examples, R analysis, help and namespace checks with zero errors and two warnings about absent rendered vignettes. It deliberately used `--no-install --no-tests --no-vignettes --no-manual`; the PR matrix retains full package/vignette checks. This is not a clean CRAN check. |
 | Formatting and review | Final workspace formatting and explicit included-FFI formatting passed. One integrated independent review completed; its missing checkpoint, real-resource and memory acceptance cases were added and executed. No repeated broad review was needed. |
@@ -127,19 +128,42 @@ Other subprocess tests retain their original total deadlines. Model setup is
 still required and bounded; it is not a skipped acceptance gate. Product code,
 worker behavior and all ownership assertions are unchanged. The two affected
 test files pass locally against the existing binary (1,313 expectations, four
-explicit model skips); remote confirmation of the separated budgets is pending.
+explicit model skips). All nine checks then passed on exact head
+`8053bf83d6723dc30d9fee1ad8bf49446491d289`: [R matrix](https://github.com/Vadale/R-ebirth/actions/runs/36937676493)
+and [Rust/structural checks](https://github.com/Vadale/R-ebirth/actions/runs/36937676492).
+Both Mac versions confirmed the separated preparation/lifecycle budgets. This
+does not establish the cause of the original native/OS initialization delay or
+the isolated responsiveness outlier.
 
-## Remaining acceptance and integration
+## Foreground RStudio acceptance
 
-- Run the prepared foreground RStudio check in a separate fresh session after
-  the founder unlocks the Mac, preserving the existing workspace. Record a real
-  generation lasting at least five seconds, an independent `1 + 1` response below
-  500 ms while generation is active, and at least ten event-loop heartbeats.
-- Require all nine checks on the final PR commit, including the Mac/Linux R
-  matrix, Rust default/no-spill checks and existing goldens. A workflow definition
-  is not a passing result.
+The [RStudio evidence](../tests/async/measurements/rstudio-2026-10-02/) records an
+actual foreground console run on R 4.5.1 / RStudio 2025.9.1.401, using the existing
+verified WP9 installation and cached Qwen 0.5B on CPU. Four seeded prompts ran
+for 17.788 seconds. The promise returned after 105 ms, and an independently
+submitted console probe returned 2 while generation remained active. Its R
+expression elapsed time was below clock resolution (recorded as 0 s), below
+the 500 ms gate; this excludes UI automation transport latency. There were 322
+independent 50 ms heartbeat callbacks. The result retained seed 17.
+
+The session had just started with only RStudio's hidden `.Random.seed` global.
+The initial setup preflight rejected that hidden seed before loading relm; the
+corrected preflight retained it for exact restoration. A separately launched
+project could not be selected by the UI controller, so the fresh, otherwise
+empty existing foreground console was used. The founder's editor documents
+were preserved. Original globals, seed, library paths and search path were
+restored after completion. The namespace/DLL remain mapped for safe finalization.
+No background RStudio job, repeated package build or model download substituted
+for this gate. Post-run hashes confirm all 55 recorded runtime inputs still
+match the earlier verified installation's source manifest.
+
+## Remaining integration
+
+- Require all nine checks on the final evidence/documentation commit. The green
+  product-source checks above do not automatically certify a later commit.
 - Integrate the separate skill/planning PR #53 only after its pending explicit
   merge authorization; preserve D-037 approval when combining planning changes.
+- Merge WP9 only after final checks and applicable founder merge authorization.
 
 WP10 token streaming, I1 external-assistant integration and a release remain
 outside this work package. No claim of new extraction accuracy or CRAN readiness

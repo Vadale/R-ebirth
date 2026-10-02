@@ -385,6 +385,6 @@ acceptance or approve any I1 API or dependency.
 
 The founder approved D-037 in full on 2026-10-01. No approval remains pending for
 this contract. The ownership/lifecycle gate and implementation are in place;
-local automated checks pass. Foreground RStudio acceptance and final PR CI
-remain open in the execution report. Keep implementation and acceptance separate;
-failures must not be hidden by marking the plan complete.
+local automated and actual foreground RStudio checks pass. All nine checks at
+`8053bf8` passed. Final evidence-head CI and integration remain open in the
+execution report; retained earlier failures are not relabelled as successes.
