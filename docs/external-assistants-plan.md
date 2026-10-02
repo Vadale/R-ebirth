@@ -26,7 +26,13 @@ an optional companion rather than expanding the native engine's scope.
 
 ## Execution order
 
-1. **Now: skill foundation.** Portable instructions, progressive references,
+Status on 2026-10-02: the skill foundation, WP9 (PR #54), WP10 (PR #55) and I1
+(PR #56) are integrated. See [I1's bounded results](i1-implementation.md).
+The next proposed package is [targeted maintenance](pre-phase6-maintenance-plan.md),
+followed by Phase-6 design and Phase 7. The sequence below records the completed
+companion increment; it does not imply a public marketplace listing.
+
+1. **Skill foundation.** Portable instructions, progressive references,
    dependency-free R environment inspection and artifact runner, bounded
    behavior/execution checks. This is not a transport implementation or public
    marketplace submission.

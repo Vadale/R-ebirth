@@ -1,8 +1,14 @@
 # I1 — External statistical assistant: implementation and evidence
 
-Date: 2026-10-02. Local functional verification and independent review complete;
-final CI and PR integration pending. Contract: [I1 plan](i1-assistant-plan.md),
+Date: 2026-10-02. Local functional verification, independent review, all nine
+final CI checks and integration complete. PR #56 merged at `ee06d30`; its tree
+matches reviewed head `796f785`. Contract: [I1 plan](i1-assistant-plan.md),
 under D-036. The access/graphics limitations below are not passed gates.
+
+Final checks: [R 37025503028](https://github.com/Vadale/R-ebirth/actions/runs/37025503028)
+and [Rust 37025502485](https://github.com/Vadale/R-ebirth/actions/runs/37025502485).
+The following [maintenance plan](pre-phase6-maintenance-plan.md) is separate;
+I1's historical failures remain recorded below.
 
 ## Delivered integration
 
@@ -117,9 +123,9 @@ Receipts are in `replay/`, `native-client/simple-replay.json` and
 One integrated independent source/event/artifact review found no blocking
 implementation defect and confirmed the bounded statistical interpretation. It
 did not rerun fits or certify every assumption. Its explicit limitations above
-are carried into this report. Final CI and integration are the remaining I1
-delivery steps; no further native build, model call, release, marketplace
-submission or subsequent work package is part of this milestone.
+are carried into this report. Final CI and integration subsequently completed
+as recorded above; no further native build, model call, release or marketplace
+submission is required to close I1.
 
 ## Final CI: retained asynchronous delivery failure
 

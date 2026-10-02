@@ -45,8 +45,17 @@ native/R/model checks and actual foreground RStudio acceptance: 34.788 s,
 first batch 101 ms, independent console execution while native generation was
 active, and 578 heartbeats. Its [separate ledger](wp10-implementation.md) retains
 all failed attempts, the OS file-type correction and two intentionally omitted-
-vignette warnings in the scoped local check. Full final PR CI and integration
-remain required; this is not a new release.
+vignette warnings in the scoped local check. All nine final checks passed at
+`a77011f`; PR #55 merged at `9d9a62c` with the reviewed tree verified on main.
+WP10 is complete; this is not a new release.
+
+I1's [implementation report](i1-implementation.md) records actual client calls,
+fresh-process replay, independent arithmetic and installer checks, with explicit
+graphics, scope and client/model limitations. All nine final checks passed at
+`796f785` (R `37025503028`, Rust `37025502485`); PR #56 merged at `ee06d30`,
+whose tree matches the reviewed head. I1 is complete. The
+[targeted pre-Phase-6 maintenance plan](pre-phase6-maintenance-plan.md) is the
+next proposed implementation package; its gates have not yet been executed.
 
 ## Implemented checks
 
@@ -54,7 +63,7 @@ remain required; this is not a new release.
 |---|---|---|
 | Public arguments, conditions, S3 contracts | `rebirth/tests/testthat/` | R-CMD-check on macOS/Linux, release and oldrel; model-free cases always run |
 | Native async ownership, cancellation and promises | Rust `async_job`, `domain`, `async_synthetic`; R `test-llm-async*.R` | Local automated checks passed; PR jobs require optional async dependencies. Cached-model parity and VLM boundary tests run locally/in existing model nightlies; actual foreground RStudio and all nine checks at `8053bf8` passed. Final checks at `f419fd7` passed and PR #54 is merged. |
-| Native token/text streams and CSV sinks | `text_stream`, `async_job`, `test-llm-stream*.R`, `tests/streaming/` | Local decoder/queue/FFI/R/cached-model and foreground RStudio gates passed; final WP10 PR checks pending. |
+| Native token/text streams and CSV sinks | `text_stream`, `async_job`, `test-llm-stream*.R`, `tests/streaming/` | Local decoder/queue/FFI/R/cached-model and foreground RStudio gates passed; all nine final checks passed and PR #55 is merged. |
 | No cross-session spill overwrite | `test-llm-trace-spill-session.R`; Rust `synthetic_spill` | R CI checks fresh-process names and RNG neutrality; Rust checks existing file and symlink preservation |
 | Memory/disk slice agreement and corruption refusal | `test-llm-trace-spill.R` | R CI, synthetic fixture, no download |
 | CPU operation independent of Metal | Rust `cpu_backend` | Executed in R-CMD-check on macOS/Linux, including Metal-enabled builds; no model download |
@@ -96,6 +105,11 @@ documentation update does not constitute a new feature test run.
 
 ## Open work, not delivered guarantees
 
+The [maintenance plan](pre-phase6-maintenance-plan.md) prioritizes spill
+ownership, full native sanitizer execution and vision-reference content binding.
+It separates those gates from later packaging, hardware and research work;
+planning them does not mark the open items below as complete.
+
 - **Unpatched text-logit comparator:** `tests/llm-golden/reference/` is a plan,
   separate from the implemented upstream vision comparison.
 - **Large-trace memory acceptance:** a full 4B-model spill run on the 16 GB target
@@ -134,7 +148,8 @@ service contracts; I1 specifies its selected adapter checks. S0 has offline
 reference-artifact checks; S1 now has local native/runtime evidence, detailed in
 [S1 implementation](s1-implementation.md). D1 has a measured negative result; D2 has application/process acceptance evidence
 in [the D2 report](d2-batch-operation.md). WP11b and WP12b are integrated with
-the recorded product acceptance below; I1 remains conditional and unexecuted.
+the recorded product acceptance below; I1 has the bounded execution evidence
+and verified integration described above.
 
 | WP | Planned gate | Required execution context | Status |
 |---|---|---|---|
@@ -146,7 +161,7 @@ the recorded product acceptance below; I1 remains conditional and unexecuted.
 | WP11b | Product agreement with references, selection/preprocessing invariance, S3 behavior and controls | Synthetic tests plus pinned anatomy-lab example | Merged PR #49 at ecf3d3f: all nine checks and Linux model workflow pass; 330 focused/export expectations, 82 independent solutions, Mac/Linux controls and independent review |
 | WP12a | Existing-tool recipe, exact dependency pins, numeric limits and executable WP12b acceptance plan | Offline contract checker and primary upstream documentation | D-034 approved; PR #50 merged at 95066c7 with all nine checks green. Exact 23-package closure and offline consistency/overflow checks pass; runtime acceptance separate |
 | WP12b | Declared load limits, overload, worker exit/recovery, request isolation and 1,000-cycle memory stress | Mac Metal/Linux CPU recipe in service contract; G1–G8 | Mac gates pass with recorded source provenance. Linux parent-source G7 run 36506438374 passes 1,000 same-worker requests and independently verified RSS bounds: 116,194 samples, max gap 186 ms, zero infrastructure errors. A post-measurement teardown marker is retained with its reviewed scope. All nine final checks at 93d4d6f pass, including Linux identity regressions and cleanup. Final-source native run 36524582952 passes G5=53, G6=286 and G8=24 without cleanup errors; G7 remains explicitly parent-source evidence. Operational acceptance and integration are complete: PR #51 merged at 06d1f55. Earlier failed runs stay failed. See [the implementation report](service-implementation.md). |
-| I1 | Actual adapter calls and reconstruction after a new R process; retrieval quality when applicable | One pinned upstream integration per WP | Not run |
+| I1 | Actual client calls and reconstruction after a new R process; retrieval quality when applicable | Codex 0.152.1 / gpt-5.6-sol medium / R 4.5.1; local shell execution | Completed, PR #56. Seven transport completions, six R and one Python replay, independent numerical checks; graphics/scope failures retained. No retrieval backend or universal activation claim. |
 
 S0 checks source/case/schema digests, exact Unicode spans, grouped partitions,
 output-record constraints, and deliberate corruption/missing-prediction guards.
