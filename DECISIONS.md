@@ -1146,6 +1146,51 @@ was superseded by the founder's explicit 2026-10-01 approval recorded above.
 
 ---
 
+## D-038 — Bounded token streaming on the WP9 worker (PROPOSED)
+
+- **Date:** 2026-10-02. **Status:** proposed; concrete founder approval pending.
+- **Context:** WP9 is accepted and merged in PR #54 at `b16e2c0`. The founder
+  authorized moving to WP10. D-037 intentionally deferred the token interface;
+  general continuation does not approve an unspecified public API amendment.
+- **Proposed decision:** append `on_token = NULL` to `llm_generate()`, requiring
+  async mode when supplied. Accept a callback receiving bounded plain-data-frame
+  batches or a caller-owned binary regular-file connection receiving CSV. Keep
+  the existing final named-character promise result and seed. No new exports,
+  R/Rust dependencies, native backend or vendor patch.
+- **Contract:** [WP10 sections 2–5](docs/wp10-streaming-plan.md) define exact
+  event/CSV schemas, 1-based token IDs, stable text reconstruction, provisional
+  structured output, conditions, connection ownership and delivery ordering.
+  Queue limits are 256 rows/256 KiB text, chunks at most 16 KiB and dispatches
+  at most 64 rows/64 KiB. Existing input/output bounds remain. Materialized R
+  and conversion/decoder buffers must also be accounted for before acceptance.
+- **Side effect:** narrowly amend API-GRAMMAR rule 9 for writes to an explicitly
+  supplied file connection. relm does not open/close it or choose a pathname.
+- **Lifecycle:** retain the execution reservation until delivery completes;
+  then restore/free and release before final progress/settlement. Cancel/close
+  and consumer failure wake a blocked producer; terminal/control state never
+  waits for queue capacity. Native cancellation arbitration remains D-037;
+  a sink failure after native completion is a delivery failure. Explicit model
+  close before ownership release abandons remaining delivery and rejects safely;
+  close inside successful final progress keeps WP9's resolved result. Consumer
+  failure/native outcome precedence is explicit in the plan.
+- **Why:** turn generation into usable R data without duplicate model weights
+  or a second process framework. Separate token identities from committed text
+  because UTF-8 and the pinned decoder's whitespace cleanup are not append-only
+  per token. The stable-prefix rule must be demonstrated against the decoder;
+  the design's candidate six-byte cleanup suffix is not an accepted proof.
+- **Alternatives rejected:** concatenated display-token pieces change text;
+  unbounded queues violate the 16 GB target; lossy/coalesced token delivery
+  invalidates statistics; a new streaming framework/dependency exceeds this WP.
+- **Acceptance:** deterministic decoder/queue/lifecycle gates, R/file boundary
+  and memory checks, relevant numerical parity, bounded cached-model paths and
+  one actual foreground RStudio live-statistics demo. No implementation or
+  acceptance result is claimed. I1, Phase-6 introspection and releases remain
+  outside WP10.
+- **Decision required:** founder approval of this concrete amendment, recorded
+  before promoting API-GRAMMAR section 10 or writing the product implementation.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

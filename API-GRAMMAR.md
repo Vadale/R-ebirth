@@ -241,7 +241,8 @@ Flagged per the decision-preparation rule; everything else above is conventional
 Append `async = FALSE` and `on_progress = NULL` to `llm_generate()` and export
 `llm_cancel(m)`. The exact input, promise, progress-schema, error, resource and
 lifecycle contract is approved in [WP9 sections 3–6](docs/wp9-async-plan.md).
-It is binding with this entry. Implementation and acceptance are still in progress.
+It is binding with this entry. Implementation, acceptance and integration are
+complete in PR #54 at `b16e2c0` (2026-10-02); this is development beyond v0.3.0.
 
 `async` is one nonmissing logical. Non-NULL `on_progress` is a function and
 requires `async = TRUE`. Synchronous return/behavior stays unchanged. Async
@@ -274,3 +275,37 @@ the call. Input refusal is `relm_error_argument`; output refusal is
 implicit retry. Only one native job is active per process, with no queued jobs.
 Optional later/promises dependency/version failures use `relm_error_generation`
 with `reason = "async_dependency"`; native startup failure uses `async_start`.
+
+## 10. Token streaming — `[proposed: D-038, NOT approved]`
+
+The approved signature above remains unchanged until founder approval.
+Proposed addition: append `on_token = NULL` to `llm_generate()`. Non-NULL requires
+`async = TRUE` and accepts a function receiving plain data-frame batches or a
+caller-owned, already-open writable binary regular-file connection. No new
+export or dependency. The final promise/value/names/seed contract stays D-037.
+
+The exact proposal is [WP10 sections 2–5](docs/wp10-streaming-plan.md): ordered
+`token`, `text`, `prompt_end` events with columns `event_id`, `event`,
+`prompt_id`, `token_pos`, `token_id`, `text`, `elapsed`, `finish_reason`,
+`validated`; R indices are 1-based. Stable UTF-8 text deltas reconstruct each
+successful final string. Structured deltas are provisional until independent
+validation. CSV has the same schema and explicit quoting/missing-value rules.
+
+Proposed limits: 256 queued rows / 256 KiB text; 16 KiB maximum text chunk;
+64 rows / 64 KiB per R dispatch; all D-037 input/final-output bounds retained.
+These payload bounds do not describe total resident memory. Completion waits
+for delivery while retaining the execution reservation; final `on_progress`
+runs after release. Native cancellation arbitration remains D-037. Explicit
+model close during delivery (before release) or consumer failure abandons
+undelivered data and rejects safely; close inside successful final progress
+retains WP9's resolved result. The plan specifies failure precedence;
+no partial successful result or consumer-side-effect rollback.
+
+Proposed new condition: `relm_error_stream` with `reason` in `closed`, `write`,
+`encoding`, `invariant`, event/prompt metadata and original parent when present.
+Callback failures retain `relm_error_callback` with callback identification.
+
+Proposed narrow exception to global rule 9: an explicitly supplied
+`llm_generate(on_token = con)` file connection receives output. relm neither
+chooses a path nor opens/closes that connection. This exception, the schemas
+and lifecycle amendment are **not active before D-038 approval**.
