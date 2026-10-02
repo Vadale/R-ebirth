@@ -1,9 +1,10 @@
 # WP10 — Token streaming as R data
 
-Date: 2026-10-02. Decision: **D-038 proposed; founder approval pending**.
+Date: 2026-10-02. Decision: **D-038 approved by the founder on 2026-10-02**.
+Approval reply following the concrete proposal: "ok vai di wp10".
 Baseline: merged WP9, `b16e2c0ab74371825562f71c1f9a2f1cfcf58898` (PR #54).
-Branch: `codex/token-streaming`. This is a design, not implemented behavior or
-acceptance evidence. D-037 remains the approved API until D-038 is approved.
+Branch: `codex/token-streaming`. This is the approved design, not executed acceptance evidence. D-038
+extends D-037; implementation and validation are now authorized.
 
 ## 1. Deliverable and scope
 
@@ -21,7 +22,7 @@ backend, vendor patch, server, job queue or general streaming framework is
 proposed. This reuses `later`/`promises` under D-037. Logits, live activations and
 intervention changes during generation belong to Phase 6; I1 follows WP10.
 
-## 2. Proposed public API
+## 2. Approved public API
 
 Append one argument, preserving all existing positions and defaults:
 
@@ -160,7 +161,14 @@ events <- read.csv(
 )
 ```
 
-This is a narrow proposed amendment to API-GRAMMAR rule 9: opt-in
+Reader limitation verified during implementation: base R `read.csv()` normalizes
+literal CRLF inside quoted fields to LF, including with `text=` input; binary
+connections do not support its pushback path. The writer preserves the original
+UTF-8/CRLF bytes. The short reader above is for ordinary analysis, not a claim
+of byte-exact reconstruction for every CSV parser. Exact CRLF preservation is
+checked against serialized bytes; callback text retains the exact string.
+
+This is a narrow approved amendment to API-GRAMMAR rule 9: opt-in
 `llm_generate(on_token = con)` writes to the caller's supplied connection.
 It creates no relm-managed file. A callback's own writes remain caller code.
 Base R provides the required file, byte-write and CSV facilities; no JSON
@@ -168,7 +176,7 @@ serializer or external transport dependency is introduced.
 
 ## 5. Bounded transport and lifecycle
 
-| Boundary | Proposed limit / behavior |
+| Boundary | Approved limit / behavior |
 |---|---|
 | Queued events | At most 256 rows and 256 KiB allocated text payload. No coalescing or loss on success. |
 | Producer text chunk | At most 16 KiB, split only at UTF-8 boundaries; at most one pending chunk outside the queue. |
@@ -238,7 +246,7 @@ ingestion. A busy consumer/blocked filesystem operation cannot be preempted from
 R by this worker. Namespace shutdown cancels/wakes/joins; it retains the DLL for
 live finalizers as WP9 does. Forced DLL unmapping stays unsupported.
 
-### Proposed conditions
+### Approved conditions
 
 - `relm_error_argument`: invalid `on_token`, missing `async = TRUE` or invalid
   connection admission; synchronous, with no submitted job or header.
@@ -297,8 +305,7 @@ Primary references: [R connections](https://stat.ethz.ch/R-manual/R-patched/libr
 Tiny model-free R probes confirmed binary-file metadata/identity and the reader's
 literal-NA/missing-field behavior; they are design checks, not stream acceptance.
 
-**Founder decision:** approve D-038's `on_token` signature, event/CSV schemas,
-connection side-effect exception, bounded delivery and condition/lifecycle
-contract. No new dependency approval is requested. After explicit approval,
-promote API-GRAMMAR section 10 and implement the native text/queue gates first,
-then R delivery and the end-to-end demo within this same work package.
+**Founder decision:** D-038 approved on 2026-10-02 after presentation of this
+concrete contract. Implement the native text/queue gates, then R delivery and
+the end-to-end demo within this same work package. No approval remains pending
+for the signature, schemas, connection side effect or lifecycle contract.

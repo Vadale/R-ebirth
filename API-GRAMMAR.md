@@ -20,7 +20,7 @@ These apply to every function, present and future.
 6. **Memory-safe defaults** (the 16 GB rule): defaults never capture more than needed — `llm_trace()` defaults to `positions = "last"`, `components = "residual"`; expanding capture is always an explicit user choice. Any function that can exceed memory must support disk spill rather than crash.
 7. **Determinism contract:** same model file + same parameters + same `seed` + same build + same backend ⇒ identical output, across runs and R sessions. Bitwise identity **across backends** (Metal vs CPU vs CUDA) is *not* promised — floating-point op order differs; cross-backend agreement is a documented tolerance (harness B).
 8. **Errors are classed conditions** (hierarchy in §5): every error inherits `c("<specific>", "relm_error", "error", "condition")` with a message stating *what happened → likely cause → what to try*. A raw Rust panic reaching the console is a bug.
-9. **Side effects are declared.** Only two functions write to disk: `llm_download()` (model files) and `llm_trace(spill = TRUE)` (managed session spill files are cleaned on exit; a custom `spill_dir` is caller-managed). Nothing else touches the filesystem.
+9. **Side effects are declared.** Only two functions write to disk: `llm_download()` (model files) and `llm_trace(spill = TRUE)` (managed session spill files are cleaned on exit; a custom `spill_dir` is caller-managed). D-038 additionally permits `llm_generate(on_token = con)` to write event CSV to a caller-owned, already-open binary regular-file connection (§10); it does not choose a path or open/close the connection. No other package-managed write is introduced.
 10. **Printing:** `print` methods are one-screen summaries (no data dumps); `summary` methods return an object (classed list) whose own print is richer; wide/long data is left to the user's tools.
 11. **English everywhere** — identifiers, arguments, messages, docs.
 
@@ -94,7 +94,7 @@ Print: one screen — file, architecture, parameters, quantization, layers × hi
 ### `llm_tokens(m, x, decode = FALSE)` — Phase 1
 `decode = FALSE`: `x` is character (vectorized) → **named integer vector** per prompt (names = token pieces); for `length(x) > 1`, a list of such vectors. `decode = TRUE`: `x` is an integer vector of token ids → single character string. UTF-8 correct (Italian text in the test suite). Errors: `relm_error_tokenize`.
 
-### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL, images = NULL, schema = NULL, async = FALSE, on_progress = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
+### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL, images = NULL, schema = NULL, async = FALSE, on_progress = NULL, on_token = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
 Vectorized over `prompt`; returns a character vector of the same length (names preserved). `chat = TRUE` applies the model's chat template (Gemma + Qwen verified); `chat = FALSE` = raw completion. `seed = NULL` draws and *records* a seed; the used seed is attached as `attr(result, "seed")` (reproducibility is always recoverable). `stop` = character vector of stop sequences. Active interventions on `m` apply. `images = NULL` (default) = text-only, unchanged. Otherwise a **list parallel to `prompt`**: `images[[i]]` is a character vector of image **file paths** for prompt `i` (`character(0)` for none); a bare character vector is treated as `list(images)` and requires `length(prompt) == 1` (else recycled with a warning if lengths differ — the `llm_trace(positions=)` recycling contract). Each prompt's images are inserted **before** its text (interleaved-marker control is a reserved later capability); one output per prompt (the `prompt_id` mapping is unchanged). Requires a handle loaded with `projector=`. Errors: `relm_error_generation`, `relm_error_context_overflow` (combined text+image tokens exceed `context_length` — message says by how much), `relm_error_image` (decode/parse failure, unsupported/oversized image, images on a non-vision handle), `relm_error_argument` (bad `images` type/length).
 
 With `schema` supplied, text generation follows the approved D-030 bounded JSON
@@ -276,22 +276,22 @@ implicit retry. Only one native job is active per process, with no queued jobs.
 Optional later/promises dependency/version failures use `relm_error_generation`
 with `reason = "async_dependency"`; native startup failure uses `async_start`.
 
-## 10. Token streaming — `[proposed: D-038, NOT approved]`
+## 10. Token streaming — `[approved: D-038, 2026-10-02]`
 
-The approved signature above remains unchanged until founder approval.
-Proposed addition: append `on_token = NULL` to `llm_generate()`. Non-NULL requires
+The founder approved the concrete contract on 2026-10-02.
+Approved addition: append `on_token = NULL` to `llm_generate()`. Non-NULL requires
 `async = TRUE` and accepts a function receiving plain data-frame batches or a
 caller-owned, already-open writable binary regular-file connection. No new
 export or dependency. The final promise/value/names/seed contract stays D-037.
 
-The exact proposal is [WP10 sections 2–5](docs/wp10-streaming-plan.md): ordered
+The binding contract is [WP10 sections 2–5](docs/wp10-streaming-plan.md): ordered
 `token`, `text`, `prompt_end` events with columns `event_id`, `event`,
 `prompt_id`, `token_pos`, `token_id`, `text`, `elapsed`, `finish_reason`,
 `validated`; R indices are 1-based. Stable UTF-8 text deltas reconstruct each
 successful final string. Structured deltas are provisional until independent
 validation. CSV has the same schema and explicit quoting/missing-value rules.
 
-Proposed limits: 256 queued rows / 256 KiB text; 16 KiB maximum text chunk;
+Approved limits: 256 queued rows / 256 KiB text; 16 KiB maximum text chunk;
 64 rows / 64 KiB per R dispatch; all D-037 input/final-output bounds retained.
 These payload bounds do not describe total resident memory. Completion waits
 for delivery while retaining the execution reservation; final `on_progress`
@@ -301,11 +301,11 @@ undelivered data and rejects safely; close inside successful final progress
 retains WP9's resolved result. The plan specifies failure precedence;
 no partial successful result or consumer-side-effect rollback.
 
-Proposed new condition: `relm_error_stream` with `reason` in `closed`, `write`,
+Approved new condition: `relm_error_stream` with `reason` in `closed`, `write`,
 `encoding`, `invariant`, event/prompt metadata and original parent when present.
 Callback failures retain `relm_error_callback` with callback identification.
 
-Proposed narrow exception to global rule 9: an explicitly supplied
+Approved narrow exception to global rule 9: an explicitly supplied
 `llm_generate(on_token = con)` file connection receives output. relm neither
-chooses a path nor opens/closes that connection. This exception, the schemas
-and lifecycle amendment are **not active before D-038 approval**.
+chooses a path nor opens/closes that connection. This exception, the schemas and lifecycle amendment are binding.
+Implementation and acceptance are in progress.

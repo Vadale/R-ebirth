@@ -50,6 +50,18 @@ The two reference demos, run as scripted acceptance tests
 
 ## Running them
 
+WP10 adds **`demo-streaming.R`**, a separate foreground demonstration. Sourcing
+only defines functions: it never starts work or downloads a model. With the
+WP10 development package and optional later/promises installed, load a local
+model, source the script and call `state <- start_streaming_demo(m)`. RStudio
+returns to its console while the chart updates. Inspect `state$status`, then
+`state$events`, `state$text` and `state$statistics` after completion. Close the
+model when done. The 128-token rolling window is bounded; optional full-event
+collection is explicitly caller memory with a 100,000-row demo guard. Counts
+use token rows, not text chunks. Throughput includes consumer backpressure;
+production and delivery times are separate. This does not repeat Demo A/B or
+claim extraction quality.
+
 Demo A's probe AUC and bootstrap intervals are exploratory. Regularization and
 layer selection use the same validation results; resampling fixed predictions
 does not include that selection uncertainty. Confirmatory use needs nested

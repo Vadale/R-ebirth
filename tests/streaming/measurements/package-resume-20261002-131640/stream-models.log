@@ -1,0 +1,20 @@
+llm-stream-helpers: .............................1...............................................
+llm-stream: ...........................................................................................................................................................................................................................encoding image slice...
+image slice encoded in 158 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 1 ms
+encoding image slice...
+image slice encoded in 148 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 1 ms
+.............................................
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test-llm-stream-helpers.R:62:5'): only caller-owned empty writab
+Expected `relm:::stream_validate_sink(con, TRUE)` to throw a error with class <relm_error_argument>.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: !any(counts$failed > 0) is not TRUE
+Execution halted

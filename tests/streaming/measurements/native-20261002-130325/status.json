@@ -1,0 +1,109 @@
+{
+  "status": "passed",
+  "phase": "native",
+  "pid": 33972,
+  "directory": "/private/tmp/relm-wp10/native-20261002-130325",
+  "started_at": 1790939005.7407281,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790939005.7708118,
+      "exit_code": 0,
+      "finished_at": 1790939005.921323
+    },
+    {
+      "name": "format-ffi-include",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "rebirth-ffi/src/async_boundary.rs"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790939005.921976,
+      "exit_code": 0,
+      "finished_at": 1790939005.9700081
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790939005.970609,
+      "exit_code": 0,
+      "finished_at": 1790939006.678545
+    },
+    {
+      "name": "engine",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790939006.679151,
+      "exit_code": 0,
+      "finished_at": 1790939015.924993
+    },
+    {
+      "name": "async-release",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "-p",
+        "rebirth-llm",
+        "async"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790939015.925649,
+      "exit_code": 0,
+      "finished_at": 1790939105.3576372
+    },
+    {
+      "name": "ffi",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790939105.360527,
+      "exit_code": 0,
+      "finished_at": 1790939150.493414
+    }
+  ],
+  "stage": "ffi",
+  "finished_at": 1790939150.520185
+}

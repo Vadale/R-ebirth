@@ -1,0 +1,8 @@
+{
+  "status": "ready",
+  "pid": 25953,
+  "r": "4.5.1",
+  "rstudio": "2025.09.1+401",
+  "observed": "2026-10-02",
+  "evidence": "Actual RStudio console printed WP10_RSTUDIO_PREFLIGHT_READY after rejecting nonempty globals or a loaded relm namespace. Existing project is the prior temporary WP9 project; no editor documents changed. Acceptance scripts are prepared but unexecuted."
+}

@@ -1146,7 +1146,21 @@ was superseded by the founder's explicit 2026-10-01 approval recorded above.
 
 ---
 
-## D-038 — Bounded token streaming on the WP9 worker (PROPOSED)
+## D-038 — Bounded token streaming on the WP9 worker (APPROVED)
+
+### Approval — 2026-10-02
+
+The founder replied **"ok vai di wp10"** to the concrete D-038 contract and
+approval request. This approves the on_token signature, exact event/CSV schemas,
+connection side-effect exception, memory limits and condition/lifecycle contract
+in `docs/wp10-streaming-plan.md` sections 2–5. No new dependency or export is
+introduced. API-GRAMMAR section 10 is promoted before product implementation.
+Acceptance remains to be executed; approval is not a test result.
+
+### Original proposal (superseded by the approval above)
+
+The following proposed-decision text is retained as history. Its pending
+approval language is superseded by the explicit reply recorded above.
 
 - **Date:** 2026-10-02. **Status:** proposed; concrete founder approval pending.
 - **Context:** WP9 is accepted and merged in PR #54 at `b16e2c0`. The founder

@@ -1,0 +1,10 @@
+{
+  "prior_package_run": "package-20261002-131002",
+  "changed_files": [
+    "rebirth/tests/testthat/test-llm-stream-helpers.R",
+    "rebirth/tests/testthat/test-llm-stream.R"
+  ],
+  "installed_runtime_unchanged": true,
+  "native_acceptance": "native-20261002-130325",
+  "resume_scope": "Corrected streaming tests with cached models, then unexecuted vignette/source/scoped-check stages; no install or native rerun."
+}

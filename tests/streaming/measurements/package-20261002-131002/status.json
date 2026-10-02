@@ -1,0 +1,55 @@
+{
+  "status": "failed",
+  "phase": "package",
+  "pid": 41062,
+  "directory": "/private/tmp/relm-wp10/package-20261002-131002",
+  "started_at": 1790939402.5886972,
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-multiarch",
+        "--library=/private/tmp/relm-wp10/library",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "passed",
+      "started_at": 1790939402.6080809,
+      "exit_code": 0,
+      "finished_at": 1790939474.5521212
+    },
+    {
+      "name": "document",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "roxygen2::roxygenise(\"rebirth\", roclets=c(\"rd\", \"namespace\"), load_code=roxygen2::load_installed)"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "passed",
+      "started_at": 1790939474.5526679,
+      "exit_code": 0,
+      "finished_at": 1790939475.047284
+    },
+    {
+      "name": "r-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-wp10/r-tests.R"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "failed",
+      "started_at": 1790939475.047866,
+      "exit_code": 1,
+      "finished_at": 1790939540.359678
+    }
+  ],
+  "stage": "r-tests",
+  "error": "r-tests failed; retain /private/tmp/relm-wp10/package-20261002-131002/r-tests.log",
+  "finished_at": 1790939540.3620968
+}

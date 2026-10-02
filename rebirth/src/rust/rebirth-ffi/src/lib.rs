@@ -200,6 +200,29 @@ fn error_fields(error: &RebirthError) -> Robj {
             ("prompt_id", Robj::from(*prompt_id as i32)),
             ("generated_tokens", Robj::from(*generated_tokens as i32)),
         ],
+        RebirthError::Stream {
+            reason,
+            prompt_id,
+            event_id,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            (
+                "prompt_id",
+                Robj::from(
+                    prompt_id
+                        .and_then(|n| i32::try_from(n).ok())
+                        .unwrap_or(i32::MIN),
+                ),
+            ),
+            (
+                "event_id",
+                Robj::from(
+                    event_id
+                        .and_then(|n| i32::try_from(n).ok())
+                        .unwrap_or(i32::MIN),
+                ),
+            ),
+        ],
         RebirthError::Tokenize { reason } => {
             vec![("reason", Robj::from(reason.as_str()))]
         }
@@ -1106,8 +1129,11 @@ extendr_api::extendr_module! {
     fn rebirth_generate;
     fn rebirth_generate_structured;
     fn rebirth_async_ready;
+    fn rebirth_stream_regular_file;
     fn rebirth_async_submit;
     fn rebirth_async_poll;
+    fn rebirth_async_ack;
+    fn rebirth_async_discard;
     fn rebirth_async_cancel;
     fn rebirth_async_shutdown;
     fn rebirth_async_test_handle;

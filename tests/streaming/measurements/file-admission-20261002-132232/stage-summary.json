@@ -1,0 +1,7 @@
+{
+  "passed": 329,
+  "skips": 3,
+  "warnings": 1,
+  "whole_pipeline": "failed at unlaunched Quarto due to obsolete harness PATH",
+  "fix": "Use existing RStudio-bundled Quarto 1.7.32. Set raw=TRUE when constructing the test-only device symlink connection to avoid R buffering warning."
+}

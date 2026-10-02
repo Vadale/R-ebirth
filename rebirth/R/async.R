@@ -135,7 +135,7 @@ async_payload_condition <- function(payload) {
 
 async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
                            seed, stop, images, image_max_bytes, schema,
-                           on_progress) {
+                           on_progress, stream = NULL) {
   job <- new.env(parent = emptyenv())
   job$model <- m
   job$names <- names(prompt)
@@ -146,6 +146,14 @@ async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
   job$timer <- NULL
   job$settled <- FALSE
   job$id <- NULL
+  job$stream <- stream
+  job$structured <- !is.null(schema)
+  job$prompts_total <- length(prompt)
+  job$stream_event_id <- 0L
+  job$stream_elapsed <- 0
+  job$stream_prompt_id <- 1L
+  job$stream_token_pos <- 0L
+  job$polling <- FALSE
   promise <- promises::promise(function(resolve, reject) {
     job$resolve <- resolve
     job$reject <- reject
@@ -156,7 +164,7 @@ async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
     max_tokens, temperature, top_p, seed, stop,
     if (is.null(images)) character() else as.character(unlist(images, use.names = FALSE)),
     if (is.null(images)) rep.int(0L, length(prompt)) else as.integer(lengths(images)),
-    image_max_bytes, schema), error = identity, interrupt = identity)
+    image_max_bytes, schema, !is.null(stream)), error = identity, interrupt = identity)
   if (inherits(payload, "condition")) {
     async_transport_failure(job, payload)
     return(promise)
@@ -167,6 +175,7 @@ async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
   }
   job$id <- payload$job_id
   .relm_async$job <- job
+  if (!is.null(stream) && identical(stream$kind, "file")) stream_file_delivery(job)
   async_schedule(job)
   promise
 }
@@ -211,25 +220,69 @@ async_progress <- function(job, progress, terminal = FALSE) {
     max_tokens = as.integer(progress$max_tokens), phase = as.character(progress$phase),
     stringsAsFactors = FALSE)
   fail <- function(error) {
-    job$callback_error <- async_condition("relm_error_callback",
-      "The async progress callback failed; no generation result was returned.", list(parent = error))
-    job$callback <- NULL
-    # Bypass the public open-handle check: the callback may have closed m.
-    # Keep polling until native ownership is returned, even after cancellation.
-    if (!terminal) rebirth_async_cancel(job$model$ptr)
+    async_consumer_failure(job, async_condition("relm_error_callback",
+      "The async progress callback failed; no generation result was returned.",
+      list(callback = "on_progress", parent = error)), terminal)
   }
   tryCatch(job$callback(state), error = fail, interrupt = fail)
   invisible(NULL)
 }
 
+async_consumer_failure <- function(job, error, terminal = FALSE) {
+  if (!is.null(job$callback_error)) return(invisible(NULL))
+  job$callback_error <- error
+  job$callback <- NULL
+  # No join here: wake/discard and keep scheduled nonblocking polls until native
+  # ownership is returned. Bypass the public check if a callback closed m.
+  if (!terminal && !is.null(job$id)) {
+    if (is.null(job$stream)) rebirth_async_cancel(job$model$ptr) else
+      relm_check(rebirth_async_discard(job$model$ptr, job$id))
+  }
+  invisible(NULL)
+}
+
 async_poll <- function(job) {
+  if (job$settled || .relm_async$stopping || isTRUE(job$polling)) return(invisible(NULL))
+  job$polling <- TRUE
+  on.exit(job$polling <- FALSE, add = TRUE)
   job$timer <- NULL
-  if (job$settled || .relm_async$stopping) return(invisible(NULL))
-  payload <- relm_check(rebirth_async_poll(job$model$ptr, job$id))
+  if (!is.null(job$stream) && identical(job$stream$kind, "file") &&
+    is.null(job$callback_error) && !job$model$state$closed) {
+    # Closure is observed even during prefill, before the first event exists.
+    tryCatch(stream_check_connection(job$stream),
+      error = function(error) async_consumer_failure(job, error))
+  }
+  payload <- tryCatch(relm_check(rebirth_async_poll(job$model$ptr, job$id)),
+    relm_error_stream = function(error) {
+      async_consumer_failure(job, error)
+      NULL
+    })
+  if (is.null(payload)) {
+    async_schedule(job)
+    return(invisible(NULL))
+  }
   if (isTRUE(payload$closed)) job$model$state$closed <- TRUE
+  if (!is.null(job$stream) && payload$state %in% c("running", "draining")) {
+    stream_deliver(job, payload$batch)
+    if (isTRUE(payload$delivery_ready) && is.null(job$callback_error) &&
+      !job$model$state$closed) {
+      if (job$stream_prompt_id != job$prompts_total + 1L) {
+        async_consumer_failure(job, stream_condition("invariant",
+          "The token stream completed without ending every prompt."))
+      } else if (identical(job$stream$kind, "file")) {
+        stream_file_delivery(job, flush_only = TRUE)
+      }
+      if (is.null(job$callback_error)) {
+        # Even the last on_token runs while busy; only this acknowledgement
+        # restores ownership. Final progress below therefore preserves WP9.
+        payload <- relm_check(rebirth_async_ack(job$model$ptr, job$id))
+        if (isTRUE(payload$closed)) job$model$state$closed <- TRUE
+      }
+    }
+  }
   terminal <- payload$state %in% c("completed", "failed", "cancelled")
   if (!terminal) {
-    async_progress(job, payload$progress)
+    if (is.null(job$stream) || !job$model$state$closed) async_progress(job, payload$progress)
     async_schedule(job)
     return(invisible(NULL))
   }
@@ -265,7 +318,7 @@ async_settle <- function(job, value = NULL, error = NULL) {
   if (identical(.relm_async$job, job)) .relm_async$job <- NULL
   # Remove roots before invoking promise continuations; callbacks can create a
   # subsequent job after native terminal collection without losing its roots.
-  job$timer <- job$callback <- job$model <- job$resolve <- job$reject <- NULL
+  job$timer <- job$callback <- job$model <- job$resolve <- job$reject <- job$stream <- NULL
   job$last_progress <- job$callback_error <- job$names <- NULL
   if (is.null(error)) resolve(value) else reject(error)
   invisible(NULL)

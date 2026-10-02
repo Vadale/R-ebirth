@@ -15,6 +15,7 @@ reference:
   desc: Produce text and read the model's next-token distribution.
   contents:
   - llm_generate
+  - llm_cancel
   - llm_logits
 - title: Embeddings
   desc: Encode text into a numeric matrix.
@@ -46,3 +47,4 @@ articles:
   - anatomy-lab
   - topics-without-python
   - vision
+  - token-streaming

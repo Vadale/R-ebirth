@@ -944,6 +944,25 @@ impl LoadedModel {
         // One bounded current text snapshot; token ids and the final result use
         // the same sampler/detokenizer as sync. No unbounded event queue.
         let mut async_text = None;
+        let mut stream_add_space = false;
+        let mut stream = if crate::async_job::streaming() {
+            let structured = constraint.is_some();
+            let (add_space, clean_spaces) = if !structured && self.has_tokenizer() {
+                crate::text_stream::decoder_flags(vocab)
+            } else {
+                (false, false)
+            };
+            stream_add_space = add_space;
+            Some(crate::text_stream::TextStream::new(
+                clean_spaces,
+                structured,
+                crate::async_job::output_remaining()
+                    .ok_or_else(|| crate::async_job::stream_error("invariant"))?,
+                &params.stop,
+            ))
+        } else {
+            None
+        };
 
         // `n_past` is the position the next continuation token occupies: the
         // prompt filled 0..start_pos, so continuation i lands at start_pos + i.
@@ -980,6 +999,9 @@ impl LoadedModel {
             }
             out.push(next);
             crate::async_job::sampled(out.len())?;
+            if stream.is_some() {
+                crate::async_job::stream_token(next, out.len())?;
+            }
             if crate::async_job::output_remaining().is_some() && self.has_tokenizer() {
                 // Bound every intermediate output before allocating the next
                 // result; includes stop suffixes and invalid UTF-8 replacement.
@@ -990,16 +1012,22 @@ impl LoadedModel {
                 state.accept(next, out.len())?;
                 let remaining = STRUCTURED_MAX_OUTPUT_BYTES - state.bytes.len();
                 let piece = self
-                    .token_piece_bounded(next, remaining)
+                    .token_piece_bounded(next, remaining, 0)
                     .map_err(|why| state.error(why, out.len()))?;
                 state.bytes.extend_from_slice(&piece);
                 if let Some(text) = state.complete(out.len())? {
+                    if let Some(stream) = &stream {
+                        crate::async_job::stream_text(stream.finish(&text)?)?;
+                    }
                     return Ok(Generation {
                         tokens: out,
                         text,
                         stop_reason: StopReason::EndOfGeneration,
                         seed: params.seed,
                     });
+                }
+                if let Some(stream) = &mut stream {
+                    crate::async_job::stream_text(stream.push(&piece)?)?;
                 }
                 if state.bytes.len() == STRUCTURED_MAX_OUTPUT_BYTES {
                     return Err(state.error("output byte budget exhausted", out.len()));
@@ -1017,12 +1045,35 @@ impl LoadedModel {
                     None => self.decode_tokens(&out, false, false)?,
                 };
                 if let Some(cut) = first_stop(&text, &params.stop) {
+                    if let Some(stream) = &stream {
+                        crate::async_job::stream_text(stream.finish(&text[..cut])?)?;
+                    }
                     return Ok(Generation {
                         tokens: out,
                         text: text[..cut].to_string(),
                         stop_reason: StopReason::StopString,
                         seed: params.seed,
                     });
+                }
+            }
+
+            // Keep the existing whole-snapshot stop timing above, including
+            // provisional lossy replacements. Only then publish stable bytes.
+            if constraint.is_none() && self.has_tokenizer() {
+                if let Some(stream) = &mut stream {
+                    let limit = crate::async_job::output_remaining()
+                        .ok_or_else(|| crate::async_job::stream_error("invariant"))?;
+                    let lstrip = i32::from(stream_add_space && out.len() == 1);
+                    let piece = self
+                        .token_piece_bounded(next, limit, lstrip)
+                        .map_err(|why| {
+                            if why == "output byte budget exhausted" {
+                                crate::async_job::output_budget_error(limit.saturating_add(1))
+                            } else {
+                                crate::async_job::stream_error("invariant")
+                            }
+                        })?;
+                    crate::async_job::stream_text(stream.push(&piece)?)?;
                 }
             }
 
@@ -1057,6 +1108,9 @@ impl LoadedModel {
         } else {
             String::new()
         };
+        if let Some(stream) = &stream {
+            crate::async_job::stream_text(stream.finish(&text)?)?;
+        }
         Ok(Generation {
             tokens: out,
             text,
@@ -1125,6 +1179,7 @@ impl LoadedModel {
             }
             bytes += generation.text.len();
             crate::async_job::prompt_completed(generation.text.len())?;
+            crate::async_job::stream_prompt_end(generation.stop_reason.as_str())?;
             output.push(generation);
         }
         Ok(output)
@@ -1156,7 +1211,12 @@ impl LoadedModel {
 
     /// Assemble actual token bytes without lossy UTF-8 conversion. A token can
     /// end inside a code point; validation happens only at grammar completion.
-    fn token_piece_bounded(&self, id: i32, remaining: usize) -> Result<Vec<u8>, &'static str> {
+    fn token_piece_bounded(
+        &self,
+        id: i32,
+        remaining: usize,
+        lstrip: i32,
+    ) -> Result<Vec<u8>, &'static str> {
         let mut bytes = vec![0u8; remaining.min(32)];
         loop {
             // SAFETY: id came from this vocabulary's masked candidates; the
@@ -1167,7 +1227,7 @@ impl LoadedModel {
                     id,
                     bytes.as_mut_ptr().cast::<c_char>(),
                     bytes.len() as i32,
-                    0,
+                    lstrip,
                     false,
                 )
             };
@@ -1185,7 +1245,8 @@ impl LoadedModel {
             if need <= bytes.len() {
                 return Err("invalid native token piece sizing");
             }
-            bytes.resize(need, 0);
+            // Keep capacity within the byte limit, including stream scratch.
+            bytes = vec![0; need];
         }
     }
 

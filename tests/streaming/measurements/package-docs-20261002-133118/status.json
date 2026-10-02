@@ -1,0 +1,74 @@
+{
+  "status": "passed",
+  "phase": "package-docs",
+  "pid": 60538,
+  "directory": "/private/tmp/relm-wp10/package-docs-20261002-133118",
+  "started_at": 1790940678.3912609,
+  "stages": [
+    {
+      "name": "stream-helpers",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-wp10/stream-helpers.R"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "passed",
+      "started_at": 1790940678.411433,
+      "exit_code": 0,
+      "finished_at": 1790940678.736332
+    },
+    {
+      "name": "stream-vignette",
+      "command": [
+        "quarto",
+        "render",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/vignettes/token-streaming.qmd",
+        "--output-dir",
+        "/private/tmp/relm-wp10/package-docs-20261002-133118/vignette"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "passed",
+      "started_at": 1790940678.736856,
+      "exit_code": 0,
+      "finished_at": 1790940682.9504561
+    },
+    {
+      "name": "source-build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "--no-manual",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "cwd": "/private/tmp/relm-wp10/package-docs-20261002-133118",
+      "status": "passed",
+      "started_at": 1790940682.95119,
+      "exit_code": 0,
+      "finished_at": 1790940685.112139
+    },
+    {
+      "name": "scoped-package-check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--no-install",
+        "--no-tests",
+        "--no-vignettes",
+        "--no-manual",
+        "--library=/private/tmp/relm-wp10/library",
+        "/private/tmp/relm-wp10/package-docs-20261002-133118/relm_0.3.0.tar.gz"
+      ],
+      "cwd": "/private/tmp/relm-wp10/package-docs-20261002-133118",
+      "status": "passed",
+      "started_at": 1790940685.1127858,
+      "exit_code": 0,
+      "finished_at": 1790940689.780948
+    }
+  ],
+  "stage": "scoped-package-check",
+  "finished_at": 1790940689.7975092
+}

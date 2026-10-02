@@ -33,15 +33,17 @@ mod schema;
 #[cfg(feature = "spill")]
 mod spill;
 mod structured;
+mod text_stream;
 mod trace;
 mod vision;
 
 pub use async_job::{
     restore_async_panic_hook, AsyncCompletion, AsyncFixtureMode, AsyncJob, AsyncRequest,
-    AsyncStartFailure, ProgressSnapshot, ASYNC_IMAGE_ROW_BYTES, ASYNC_IMAGE_ROW_OVERHEAD,
-    ASYNC_MAX_ARGUMENT_BYTES, ASYNC_MAX_DESCRIPTOR_BYTES, ASYNC_MAX_OUTPUT_BYTES,
-    ASYNC_MAX_PROMPTS, ASYNC_MAX_PROMPT_BYTES, ASYNC_MAX_STORAGE_BYTES, ASYNC_MAX_TOKENS,
-    ASYNC_STRING_DESCRIPTOR_BYTES, ASYNC_STRING_OVERHEAD,
+    AsyncStartFailure, ProgressSnapshot, StreamEvent, ASYNC_IMAGE_ROW_BYTES,
+    ASYNC_IMAGE_ROW_OVERHEAD, ASYNC_MAX_ARGUMENT_BYTES, ASYNC_MAX_DESCRIPTOR_BYTES,
+    ASYNC_MAX_OUTPUT_BYTES, ASYNC_MAX_PROMPTS, ASYNC_MAX_PROMPT_BYTES, ASYNC_MAX_STORAGE_BYTES,
+    ASYNC_MAX_TOKENS, ASYNC_STRING_DESCRIPTOR_BYTES, ASYNC_STRING_OVERHEAD, STREAM_BATCH_BYTES,
+    STREAM_BATCH_ROWS, STREAM_CHUNK_BYTES, STREAM_QUEUE_BYTES, STREAM_QUEUE_ROWS,
 };
 pub use domain::{ExecutionGuard, ExecutionPermit, NativeGuard};
 pub use embed::{Embeddings, Pooling};

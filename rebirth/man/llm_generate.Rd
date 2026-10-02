@@ -16,7 +16,8 @@ llm_generate(
   images = NULL,
   schema = NULL,
   async = FALSE,
-  on_progress = NULL
+  on_progress = NULL,
+  on_token = NULL
 )
 }
 \arguments{
@@ -61,6 +62,10 @@ returns a promises promise backed by native background generation.}
 
 \item{on_progress}{\code{NULL} or a function accepting one progress data frame.
 Requires \code{async = TRUE}; see \emph{Background generation}.}
+
+\item{on_token}{\code{NULL}, a function accepting one event data frame, or an
+already-open writable binary base \code{file()} connection. Requires
+\code{async = TRUE}; see \emph{Token streaming}.}
 }
 \value{
 A character vector the same length as \code{prompt} (names preserved), each
@@ -137,6 +142,66 @@ The 8 MiB output cap measures UTF-8 text bytes, not resident memory: copied
 inputs, templates, token vectors, transient output buffers and R character
 objects need additional storage. Existing model/context, sampler/grammar and
 vision working memory are separate from these transport limits.
+}
+
+\section{Token streaming}{
+
+Supply \code{on_token = function(batch) ...} to receive nonempty plain data frames
+on R's thread. Each dispatch contains at most 64 rows and 64 KiB of text.
+The columns, in order, are integer \code{event_id}, character \code{event}, integer
+\code{prompt_id}, integer \code{token_pos}, integer \code{token_id}, character \code{text}, double
+\code{elapsed}, character \code{finish_reason}, and logical \code{validated}. Event IDs are
+contiguous across the call; prompt IDs and vocabulary token IDs are 1-based.
+
+\code{event = "token"} records each sampled non-EOG token, including tokens later
+removed with a stop suffix or sampled at context exhaustion. \code{token_pos} is
+its generated position. \code{event = "text"} carries a nonempty committed UTF-8
+delta; concatenating these per prompt reproduces the successful returned
+string exactly. Tokens and text chunks need not correspond one-to-one.
+\code{event = "prompt_end"} records \code{finish_reason} (\code{"length"}, \code{"stop"},
+\code{"stop_string"}, or \code{"context_full"}). Non-token rows have missing token
+fields; non-text rows have empty \code{text}; non-end rows have empty
+\code{finish_reason}. \code{elapsed} is nonnegative monotonic production time in seconds
+since submission. \code{validated} is missing for ordinary generation, \code{FALSE}
+for structured token/text, and \code{TRUE} for a successful structured prompt end.
+Structured text is provisional until that prompt's independent schema
+validation succeeds; this validates format, not factual accuracy.
+
+Alternatively, supply a writable binary base \code{file()} connection to an empty
+regular local file at position zero. Append, text, compressed, raw, socket,
+pipe and device connections are rejected. relm neither opens nor closes the
+connection. Do not independently seek, write, truncate or replace its file
+until settlement. CSV contains one header, UTF-8 bytes, LF delimiters, comma
+separators and no row names. Character fields are always quoted; embedded
+quotes are doubled. Missing numeric/logical fields are empty; elapsed uses
+round-trip numeric precision independently of print options. Read it with:
+\preformatted{
+read.csv(path, fileEncoding = "UTF-8", check.names = FALSE,
+  na.strings = character(),
+  colClasses = c("integer", "character", "integer", "integer", "integer",
+                "character", "numeric", "character", "logical"))
+}
+The connection is flushed after batches and before success; no atomic commit
+or disk-durability guarantee is made. Failed calls may leave a delivered
+prefix or an incomplete record. Successful settlement establishes completion.
+
+Streaming retains the execution reservation until all batches are delivered.
+Native operations from every \code{on_token}, including the last, see busy; final
+\code{on_progress} runs after release. Closing the model before release abandons
+delivery and rejects an otherwise successful result with
+\code{relm_error_cancelled}, reason \code{stream_closed}. A token/progress callback error
+or interrupt rejects with \code{relm_error_callback}, identifying \code{callback} and
+preserving the original \code{parent}. Connection and representation failures use
+\code{relm_error_stream}, with \code{reason}, \code{prompt_id}, \code{event_id} and \code{parent} when
+available. The first consumer failure takes precedence over subsequent native
+errors; once a native failure is observed, remaining events are discarded.
+
+A slow consumer applies backpressure to a queue bounded at 256 rows and
+256 KiB text, with text chunks at most 16 KiB. Callbacks and file writes run
+synchronously on R and can block it. Batch boundaries and elapsed times vary
+across runs. Consumer side effects remain on failure, and caller-retained
+batches are outside relm's memory estimate. \code{on_token = NULL} retains the
+ordinary async behavior without a stream queue.
 }
 
 \section{Structured output}{

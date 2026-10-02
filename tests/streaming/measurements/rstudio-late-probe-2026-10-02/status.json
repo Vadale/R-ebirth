@@ -1,0 +1,22 @@
+{
+  "status": "failed",
+  "pid": 25953,
+  "started_at": 1790940776.8086,
+  "version": "0.3.0",
+  "library": "/private/tmp/relm-wp10/library/relm",
+  "rstudio_version": "2025.9.1.401",
+  "probe": {
+    "value": 2,
+    "elapsed": 0,
+    "was_running": false,
+    "native_running": false,
+    "tokens_delivered": 2048,
+    "at": 1790940797.3778
+  },
+  "error": "Foreground stream/probe/heartbeat acceptance gate failed.",
+  "generation_seconds": 17.692,
+  "submission_seconds": 0.003,
+  "first_batch_seconds": 0.147,
+  "heartbeats": 293,
+  "tokens": 2048
+}

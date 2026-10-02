@@ -63,6 +63,30 @@ Start with the [package quickstart](rebirth/README.md#quickstart) or the
 generation, structured output and a small activation trace. The guide covers
 source builds, image input and troubleshooting.
 
+## Development: background generation and token streaming
+
+WP9 adds background generation; WP10 adds streaming data on the same worker.
+These are development features after the 0.3.0 tag. Check that your installed
+`llm_generate()` has `on_token` before trying the streaming example:
+
+```r
+pending <- llm_generate(m, "Explain bootstrap resampling.", seed = 17,
+  async = TRUE, on_token = function(batch) {
+    cat(paste0(batch$text[batch$event == "text"], collapse = ""))
+  })
+observed <- promises::then(pending, function(value) print(value),
+  onRejected = function(error) message(conditionMessage(error)))
+```
+
+Load `m` using the quickstart first. Optional `later` and `promises` packages
+are required. Callbacks receive bounded plain-data-frame batches containing
+token IDs, committed text and prompt-end events. They run on R's thread, so
+keep them short. `llm_cancel(m)` requests cooperative cancellation; a caller-owned
+binary file connection can receive the event CSV instead. See the
+[streaming guide](rebirth/vignettes/token-streaming.qmd),
+[live token-statistics demo](tests/demos/demo-streaming.R) and
+[implementation status](docs/wp10-implementation.md).
+
 ## What has been validated
 
 Numerical paths are checked against independent references, with the scope of
@@ -83,8 +107,8 @@ of safety or bias removal.
 
 Windows/CUDA, tracing inside the vision encoder, and several larger-model
 hardware checks remain open. The [public execution plan](docs/structured-production-plan.md)
-records the completed increment and later work. The next core work is async
-generation (WP9), then token streaming (WP10).
+records the completed increment and later work. WP9 is integrated; WP10 is the
+current streaming increment, followed by I1 external-assistant integration.
 
 ## Statistical analysis with an external assistant
 

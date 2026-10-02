@@ -1,0 +1,235 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.29s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-0f0613474562baff)
+
+running 114 tests
+test async_job::tests::async_admission_bounds_and_utf8_bytes ... ok
+test async_job::tests::async_cancel_after_computation_before_publication_wins ... ok
+test async_job::tests::async_cancel_busy_and_shutdown_return_ownership ... ok
+test async_job::tests::async_cancel_real_prefill_sample_and_prompt_boundaries_recover ... ok
+test async_job::tests::async_empty_strings_cannot_bypass_retained_descriptor_budget ... ok
+test async_job::tests::async_limits_are_twin_pinned_to_r_admission ... ok
+test async_job::tests::async_output_budget_accounts_for_prior_prompts ... ok
+test async_job::tests::async_start_failure_returns_reservation ... ok
+test async_job::tests::async_synthetic_failure_returns_original_context_and_shared_parent ... ok
+test async_job::tests::async_terminal_cancel_is_false_and_progress_is_coalesced ... ok
+test async_job::tests::async_vlm_cancel_and_drop_at_native_boundaries ... ok
+test async_job::tests::async_worker_panic_and_error_release_the_domain ... ok
+test async_job::tests::stream_cancel_wait_race_has_no_lost_wakeup ... ok
+test async_job::tests::stream_caps_and_lossless_bounded_drains ... ok
+test async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer ... ok
+test async_job::tests::stream_limits_are_twin_pinned_to_r_delivery ... ok
+test async_job::tests::stream_native_completion_retains_permit_until_delivery_ack ... ok
+test async_job::tests::stream_shutdown_and_failures_after_backpressure_release_ownership ... ok
+test async_job::tests::stream_synthetic_token_parity_includes_context_exhaustion ... ok
+test async_job::tests::stream_utf8_chunks_schema_encoding_and_native_error ... ok
+test async_job::tests::stream_zero_tokens_and_nonstream_allocate_no_spurious_rows ... ok
+test domain::tests::async_domain_handoff_and_release_checks ... ok
+test embed::tests::l2_normalize_leaves_a_zero_vector_as_zeros_not_nan ... ok
+test embed::tests::l2_normalize_makes_a_unit_vector ... ok
+test embed::tests::mean_reduce_averages_each_column ... ok
+test embed::tests::model_pooling_maps_mean_cls_last_and_errors_on_none_rank_unknown ... ok
+test embed::tests::pooling_parses_the_three_modes_and_rejects_others ... ok
+test embed::tests::reduce_picks_the_right_row_per_mode ... ok
+test engine::tests::backend_kind_roundtrips_and_parses ... ok
+test engine::tests::cpu_is_always_available ... ok
+test engine::tests::ftype_name_maps_known_and_unknown ... ok
+test engine::tests::load_garbage_file_is_model_load_error_not_a_crash ... ok
+test engine::tests::load_nonexistent_path_is_model_load_error ... ok
+test engine::tests::load_unavailable_backend_is_backend_error ... ok
+test engine::tests::metal_available_only_on_macos_arm64 ... ok
+test error::tests::human_bytes_twin_pins_the_r_format_bytes ... ok
+test ffi::tests::context_params_embedding_fields_have_the_expected_abi ... ok
+test ffi::tests::mirrored_layouts_match_the_vendored_headers ... ok
+test ffi::tests::mtmd_context_params_defaults_have_the_expected_abi ... ok
+test generate::tests::apply_template_formats_chatml ... ok
+test generate::tests::apply_template_rejects_an_unsupported_template ... ok
+test generate::tests::arch_builtin_template_maps_the_known_families ... ok
+test generate::tests::async_output_sizing_rejects_before_allocating_over_budget ... ok
+test generate::tests::resolve_template_errors_when_the_model_has_no_template ... ok
+test generate::tests::resolve_template_falls_back_to_chatml_for_qwen ... ok
+test generate::tests::resolve_template_falls_back_to_gemma_for_a_gemma4_model ... ok
+test generate::tests::resolve_template_prefers_a_working_embedded_template_unchanged ... ok
+test generate::tests::resolve_template_surfaces_the_original_error_without_a_fallback ... ok
+test generate::tests::spark_loaded_model_matches_official_prompt_bytes_and_special_token_ids ... ok
+test generate::tests::spark_rejects_missing_modified_and_unknown_templates ... ok
+test generate::tests::spark_rejects_unsupported_message_shapes_and_nul_bytes ... ok
+test generate::tests::spark_templates_match_official_single_user_turn_fixtures ... ok
+test generate::tests::split_mix64_is_deterministic_and_advances ... ok
+test generate::tests::structured_context_boundary_and_masked_sampling_model ... ok
+test generate::tests::structured_formatting_preserves_non_spark_embedded_and_fallback_behavior ... ok
+test generate::tests::top_k_logits_breaks_ties_by_ascending_id_and_clamps_top ... ok
+test generate::tests::top_k_logits_orders_by_descending_logit_with_full_vocab_softmax ... ok
+test intervene::tests::ablation_layers_lists_only_genuinely_ablated_layers ... ok
+test intervene::tests::ablation_sets_mask_and_add_full_coverage_from_layer_zero ... ok
+test intervene::tests::ablation_union_is_last_write_wins_per_neuron ... ok
+test intervene::tests::new_spec_has_no_buffers ... ok
+test intervene::tests::nonzero_steer_layers_lists_only_layers_with_a_nonzero_vector ... ok
+test intervene::tests::repeated_steers_on_a_layer_sum_and_range_widens ... ok
+test intervene::tests::steer_lands_at_the_engine_layer_row_and_the_native_view_aligns ... ok
+test probe::tests::ablation_pin_check_discriminates_the_sentinel_from_a_natural_value ... ok
+test probe::tests::deliberately_wrong_sentinel_expectations_fail ... ok
+test probe::tests::probe_cache_reports_only_unproven_layers_and_records_passes ... ok
+test probe::tests::steer_shift_check_requires_the_exact_shift ... ok
+test schema::tests::canonical_grammar_is_stable_when_schema_keys_reorder ... ok
+test schema::tests::frozen_pilot_labels_validate_against_the_frozen_schema ... ok
+test schema::tests::integer_lexemes_and_endpoints_are_exact ... ok
+test schema::tests::native_enum_grammar_accepts_equivalent_scalar_encodings ... ok
+test schema::tests::native_integer_grammar_matches_interval_boundaries ... ok
+test schema::tests::native_string_repetition_has_exact_scalar_bounds ... ok
+test schema::tests::nullable_branches_enums_and_null_are_distinct ... ok
+test schema::tests::parser_and_grammar_allocation_limits_fail_cleanly ... ok
+test schema::tests::property_and_enum_resource_limits_are_checked ... ok
+test schema::tests::resource_limits_are_inclusive ... ok
+test schema::tests::scalar_lengths_count_decoded_unicode ... ok
+test schema::tests::schema_paths_are_json_pointers ... ok
+test schema::tests::strict_objects_reject_duplicates_aliases_and_extra_keys ... ok
+test schema::tests::unsupported_or_incomplete_profiles_fail_before_generation ... ok
+test spill::tests::dropping_a_sink_joins_the_writer_thread ... ok
+test spill::tests::spill_sink_writes_all_rows_and_reports_the_count ... ok
+test structured::tests::native_grammar_accepts_only_complete_profile_values ... ok
+test structured::tests::structured_limits_twin_pin_r_validation ... ok
+test tests::backend_initializes_and_reports_system_info ... ok
+test text_stream::tests::actual_decoder_covers_cleanup_utf8_empty_special_and_stop_boundaries ... ok
+test text_stream::tests::cleanup_transducers_match_actual_pinned_decoder_exhaustively ... ok
+test text_stream::tests::pinned_detokenize_source_requires_revalidation_on_vendor_changes ... ok
+test text_stream::tests::stop_holdback_is_constant_work_for_a_maximum_size_near_match ... ok
+test text_stream::tests::stop_holdback_rounds_back_to_utf8_and_ignores_empty_stops ... ok
+test text_stream::tests::stream_storage_is_bounded_and_text_arrives_before_finish ... ok
+test text_stream::tests::structured_stream_preserves_raw_spaces_and_rejects_invalid_text ... ok
+test text_stream::tests::utf8_prefix_matches_rust_lossy_and_keeps_incomplete_characters ... ok
+test trace::tests::arch_allow_list_message_matches_the_matcher ... ok
+test trace::tests::component_names_are_per_architecture_never_a_union ... ok
+test trace::tests::component_parses_the_three_names_and_rejects_others ... ok
+test trace::tests::explicit_positions_recycling_signal_fires_only_on_a_dropped_position ... ok
+test trace::tests::gemma4_attn_out_name_collision_is_rejected ... ok
+test trace::tests::materialized_expansion_factor_is_the_pinned_value ... ok
+test trace::tests::parse_tensor_name_splits_base_and_zero_based_layer ... ok
+test trace::tests::positions_resolve_against_the_token_count ... ok
+test trace::tests::resolved_spec_matches_only_requested_names ... ok
+test vision::tests::a_top_down_bmp_negative_height_is_the_format_convention_not_degenerate ... ok
+test vision::tests::embd_mismatch_parse_pins_the_upstream_format_string ... ok
+test vision::tests::hard_byte_ceiling_is_the_stb_int_limit ... ok
+test vision::tests::magic_allow_list_accepts_exactly_jpeg_png_bmp ... ok
+test vision::tests::magic_allow_list_rejects_gif_audio_and_garbage ... ok
+test vision::tests::read_and_validate_maps_a_missing_file_to_a_classed_image_error ... ok
+test vision::tests::validate_enforces_the_byte_cap_after_the_magic_gate ... ok
+test vision::tests::validate_enforces_the_dimension_and_pixel_caps_in_u64 ... ok
+test vision::tests::validate_rejects_a_truncated_header_of_an_allowed_format ... ok
+test vision::tests::validate_rejects_disallowed_formats_at_stage_one ... ok
+
+test result: ok. 114 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.39s
+
+     Running tests/async_synthetic.rs (target/debug/deps/async_synthetic-6539637755ca2aa9)
+
+running 1 test
+test async_synthetic_owned_handoff_preserves_golden_and_sampling ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/cpu_backend.rs (target/debug/deps/cpu_backend-18a90b6211d6eedd)
+
+running 1 test
+test cpu_load_and_all_context_types_use_no_gpu_device ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running tests/intervene_kl.rs (target/debug/deps/intervene_kl-3c5aceaaa0941c8d)
+
+running 2 tests
+test ablation_shifts_next_token_distribution_kl ... ok
+test calibrate_kl ... ignored, provenance scan for TARGETED_NEURONS; run explicitly with --ignored
+
+test result: ok. 1 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/synthetic_embed.rs (target/debug/deps/synthetic_embed-81b16395d6120730)
+
+running 2 tests
+test embed_texts_with_images_rejects_a_length_mismatch ... ok
+test engine_embeddings_match_numpy_oracle_within_tolerance ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/synthetic_generate.rs (target/debug/deps/synthetic_generate-75f268b8ca28e679)
+
+running 3 tests
+test greedy_generation_matches_numpy_golden ... ok
+test max_tokens_zero_yields_an_empty_generation ... ok
+test sampling_is_deterministic_under_a_fixed_seed ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/synthetic_intervene.rs (target/debug/deps/synthetic_intervene-0546136d3708ad74)
+
+running 1 test
+test engine_interventions_match_numpy_oracle_and_are_reversible ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/synthetic_logits.rs (target/debug/deps/synthetic_logits-620a549b44a763e2)
+
+running 4 tests
+test chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row ... ok
+test chunked_over_batch_teacher_forced_logits_match_the_full_golden_matrix ... ok
+test engine_logits_match_numpy_oracle_within_tolerance ... ok
+test top_k_extraction_matches_numpy_oracle_at_the_final_position ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/synthetic_probe.rs (target/debug/deps/synthetic_probe-ee479a3f2859b436)
+
+running 4 tests
+test a_wrong_sentinel_ablation_would_fail_the_probe_but_the_real_one_passes ... ok
+test probe_passes_and_interventions_derive_on_a_supported_model ... ok
+test probe_rejects_a_steer_where_the_mechanism_silently_no_ops ... ok
+test the_probe_leaves_the_source_handle_bit_for_bit_unchanged ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/synthetic_spill.rs (target/debug/deps/synthetic_spill-99b756568ce2601e)
+
+running 6 tests
+test an_existing_spill_file_is_rejected_without_truncation_or_cleanup ... ok
+test explicit_positions_recycled_across_differing_lengths_is_reported ... ok
+test in_budget_captures_in_memory ... ok
+test over_budget_spills_and_the_file_equals_the_in_memory_capture ... ok
+test over_budget_without_spill_is_oom_before_capture ... ok
+test spill_creation_rejects_symlinks_and_preserves_their_targets ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/synthetic_trace.rs (target/debug/deps/synthetic_trace-c72f34eeb01c5012)
+
+running 1 test
+test engine_activations_match_numpy_oracle_within_tolerance ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/twin_pin_link_stems.rs (target/debug/deps/twin_pin_link_stems-d7810159d2780949)
+
+running 1 test
+test build_rs_and_config_r_pin_the_same_archive_stems ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/vlm_embed.rs (target/debug/deps/vlm_embed-b0f1836e312843f1)
+
+running 1 test
+test multimodal_embedding_mechanics_on_the_pinned_vlm ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/vlm_golden.rs (target/debug/deps/vlm_golden-73ad1a5da4fd54ee)
+
+running 2 tests
+test encoder_output_matches_the_unpatched_reference_within_atol ... ok
+test greedy_generation_reproduces_the_committed_token_ids ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests rebirth_llm
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

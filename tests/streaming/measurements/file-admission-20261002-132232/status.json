@@ -1,0 +1,119 @@
+{
+  "status": "failed",
+  "phase": "file-admission",
+  "pid": 48001,
+  "directory": "/private/tmp/relm-wp10/file-admission-20261002-132232",
+  "started_at": 1790940152.686291,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790940152.7056,
+      "exit_code": 0,
+      "finished_at": 1790940152.835526
+    },
+    {
+      "name": "format-ffi-include",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "rebirth-ffi/src/async_boundary.rs"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790940152.8361862,
+      "exit_code": 0,
+      "finished_at": 1790940152.876966
+    },
+    {
+      "name": "clippy-ffi",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790940152.877495,
+      "exit_code": 0,
+      "finished_at": 1790940199.5861912
+    },
+    {
+      "name": "ffi",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "status": "passed",
+      "started_at": 1790940199.586782,
+      "exit_code": 0,
+      "finished_at": 1790940245.153772
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-multiarch",
+        "--library=/private/tmp/relm-wp10/library",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "passed",
+      "started_at": 1790940245.1544461,
+      "exit_code": 0,
+      "finished_at": 1790940315.03708
+    },
+    {
+      "name": "stream-boundaries",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-wp10/stream-boundaries.R"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "passed",
+      "started_at": 1790940315.037884,
+      "exit_code": 0,
+      "finished_at": 1790940319.408674
+    },
+    {
+      "name": "stream-vignette",
+      "command": [
+        "quarto",
+        "render",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/vignettes/token-streaming.qmd",
+        "--output-dir",
+        "/private/tmp/relm-wp10/file-admission-20261002-132232/vignette"
+      ],
+      "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "status": "running",
+      "started_at": 1790940319.409298
+    }
+  ],
+  "stage": "stream-vignette",
+  "error": "[Errno 2] No such file or directory: 'quarto'",
+  "finished_at": 1790940319.413685
+}

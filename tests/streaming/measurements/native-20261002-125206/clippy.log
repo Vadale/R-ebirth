@@ -1,0 +1,63 @@
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.46
+   Compiling libm v0.2.16
+   Compiling autocfg v1.5.1
+   Compiling zerocopy v0.8.52
+    Checking cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling version_check v0.9.5
+   Compiling getrandom v0.3.4
+   Compiling semver v1.0.28
+    Checking core-foundation-sys v0.8.7
+   Compiling ahash v0.8.12
+    Checking bytes v1.12.0
+    Checking once_cell v1.21.4
+   Compiling num-traits v0.2.19
+    Checking iana-time-zone v0.1.65
+   Compiling rustc_version v0.4.1
+   Compiling serde_core v1.0.228
+   Compiling find-msvc-tools v0.1.9
+    Checking arrow-schema v59.0.0
+   Compiling shlex v2.0.1
+   Compiling cc v1.2.65
+   Compiling flatbuffers v25.12.19
+    Checking hashbrown v0.17.1
+   Compiling cmake v0.1.58
+    Checking bitflags v2.13.0
+   Compiling serde_json v1.0.145
+   Compiling serde v1.0.228
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Checking itoa v1.0.18
+    Checking memchr v2.8.3
+    Checking ryu v1.0.23
+   Compiling extendr-ffi v0.9.0
+   Compiling paste v1.0.15
+   Compiling lazy_static v1.5.0
+   Compiling extendr-api v0.9.0
+   Compiling syn v2.0.118
+    Checking num-integer v0.1.46
+    Checking chrono v0.4.45
+    Checking num-complex v0.4.6
+    Checking num-bigint v0.4.8
+   Compiling zerocopy-derive v0.8.52
+   Compiling extendr-macros v0.9.0
+   Compiling readonly v0.2.13
+    Checking half v2.7.1
+    Checking arrow-buffer v59.0.0
+    Checking arrow-data v59.0.0
+    Checking arrow-array v59.0.0
+    Checking arrow-select v59.0.0
+    Checking arrow-ipc v59.0.0
+error[E0609]: no field `use_mmap` on type `ffi::llama_model_params`
+   --> rebirth-llm/src/text_stream/tests.rs:101:20
+    |
+101 |             params.use_mmap = false;
+    |                    ^^^^^^^^ unknown field
+    |
+    = note: available fields are: `devices`, `tensor_buft_overrides`, `n_gpu_layers`, `split_mode`, `load_mode` ... and 12 others
+
+    Checking rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+For more information about this error, try `rustc --explain E0609`.
+error: could not compile `rebirth-llm` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

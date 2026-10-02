@@ -1,0 +1,23 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-llm-stream-helpers.R","llm-stream-helpers","stream admission rejects invalid sinks before RNG submission or header",12,0,FALSE,FALSE,0,0.049,0.002,0.052,12
+"test-llm-stream-helpers.R","llm-stream-helpers","only caller-owned empty writable seekable binary regular files are admitted",18,1,FALSE,FALSE,0,0.022,0.003,0.025,17
+"test-llm-stream-helpers.R","llm-stream-helpers","closed and reused connection slots cannot redirect the stream",5,0,FALSE,FALSE,0,0.003,0.001,0.00399999999999998,5
+"test-llm-stream-helpers.R","llm-stream-helpers","CSV preserves quoting newlines Unicode literal NA and typed missing fields",6,0,FALSE,FALSE,0,0.005,0.002,0.006,6
+"test-llm-stream-helpers.R","llm-stream-helpers","representation validation rejects malformed data before consumer execution",27,0,FALSE,FALSE,0,0.012,0.003,0.015,27
+"test-llm-stream-helpers.R","llm-stream-helpers","stream memory bounds cover materialized columns and CSV escaping copies",9,0,FALSE,FALSE,0,0.019,0.001,0.021,9
+"test-llm-stream.R","llm-stream","stream batches preserve exact schema sequence names seed and ownership phases",124,0,FALSE,FALSE,0,0.259,0.022,0.878,124
+"test-llm-stream.R","llm-stream","CSV and callback delivery have identical deterministic event content",10,0,FALSE,FALSE,0,0.097,0.013,1.274,10
+"test-llm-stream.R","llm-stream","consumer errors and interrupts stop callbacks and return ownership without joining",18,0,FALSE,FALSE,0,0.04,0.012,0.287,18
+"test-llm-stream.R","llm-stream","the first progress error suppresses future token delivery",6,0,FALSE,FALSE,0,0.018,0.004,0.139,6
+"test-llm-stream.R","llm-stream","native completion retains busy until delivery and model close abandons it",10,0,FALSE,FALSE,0,0.038,0.00699999999999999,0.165,10
+"test-llm-stream.R","llm-stream","consumer error after native completion wins over close and native success",3,0,FALSE,FALSE,0,0.0109999999999999,0.003,0.131,3
+"test-llm-stream.R","llm-stream","successful final progress can close the model after stream ownership release",5,0,FALSE,FALSE,0,0.017,0.005,0.0709999999999997,5
+"test-llm-stream.R","llm-stream","sink closure is detected at an empty prefill poll and cannot reuse a slot",6,0,FALSE,FALSE,0,0.015,0.00499999999999999,0.139,6
+"test-llm-stream.R","llm-stream","write and flush failure warnings preserve their parent and never retry",12,0,FALSE,FALSE,0,0.031,0.00700000000000001,0.159,12
+"test-llm-stream.R","llm-stream","[MODEL] cached Qwen retains seeded sync async and stream equality",7,0,FALSE,FALSE,0,2,0.104,1.339,7
+"test-llm-stream.R","llm-stream","[MODEL] cached Qwen ordinary structured and CSV streams preserve results",17,0,FALSE,FALSE,0,0.398,0.043,0.836,17
+"test-llm-stream.R","llm-stream","[MODEL] cached vision over-batch prefill retains streaming parity",5,0,FALSE,FALSE,0,0.322,0.418,2.448,5
+"test-llm-stream.R","llm-stream","native failure discards queued rows and encoding rejection remains classed",16,0,FALSE,FALSE,0,0.0399999999999996,0.011,0.231,16
+"test-llm-stream.R","llm-stream","a partial CSV write or final flush failure rejects without final progress",16,0,FALSE,FALSE,0,0.04,0.0109999999999999,0.277000000000001,16
+"test-llm-stream.R","llm-stream","FFI representation failure follows nonblocking cancellation and preserves its condition",5,0,FALSE,FALSE,0,0.0139999999999998,0.005,0.131,5
+"test-llm-stream.R","llm-stream","structured fixture rows stay provisional until each prompt ends",4,0,FALSE,FALSE,0,0.0150000000000001,0.004,0.0790000000000006,4

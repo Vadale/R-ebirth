@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/private/tmp/relm-wp10/verify.py", line 81, in <module>
+    stage('r-tests', ['Rscript','--vanilla',str(root/'r-tests.R')], cwd=repo, timeout=1800)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/relm-wp10/verify.py", line 64, in stage
+    raise RuntimeError(name+' failed; retain '+str(log))
+RuntimeError: r-tests failed; retain /private/tmp/relm-wp10/package-20261002-131002/r-tests.log
