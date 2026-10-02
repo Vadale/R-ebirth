@@ -60,6 +60,7 @@ impl<'m> Grammar<'m> {
     }
 
     fn fresh(&self) -> Result<Self, RebirthError> {
+        crate::domain::assert_current();
         // SAFETY: source stays live throughout the copy; llama owns the clone's
         // independent grammar state. The caller only clones the unused template.
         let ptr = unsafe { relm_grammar_clone(self.ptr.as_ptr()) };
@@ -75,6 +76,7 @@ impl<'m> Grammar<'m> {
 
 impl Drop for Grammar<'_> {
     fn drop(&mut self) {
+        crate::domain::assert_current();
         // SAFETY: unique owner of a live bridge allocation; freed exactly once.
         unsafe { relm_grammar_free(self.ptr.as_ptr()) };
     }

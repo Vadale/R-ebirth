@@ -25,6 +25,17 @@ pub enum RebirthError {
     },
     /// The handle has been closed (deterministically or by the GC finalizer).
     Closed,
+    /// Nonwaiting process-wide native admission failed.
+    Busy { operation: String, reason: String },
+    /// Cooperative cancellation accepted before terminal publication.
+    Cancelled {
+        reason: String,
+        seed: u64,
+        prompt_id: usize,
+        generated_tokens: usize,
+    },
+    /// Invalid bounded asynchronous request (also checked before R copies it).
+    Argument { argument: String, reason: String },
     /// Tokenization or detokenization failed (e.g. the model has no tokenizer,
     /// or an id is outside the vocabulary). `reason` names the failing step.
     Tokenize { reason: String },
@@ -105,6 +116,9 @@ impl RebirthError {
             RebirthError::ModelLoad { .. } => "relm_error_model_load",
             RebirthError::Backend { .. } => "relm_error_backend",
             RebirthError::Closed => "relm_error_closed",
+            RebirthError::Busy { .. } => "relm_error_busy",
+            RebirthError::Cancelled { .. } => "relm_error_cancelled",
+            RebirthError::Argument { .. } => "relm_error_argument",
             RebirthError::Tokenize { .. } => "relm_error_tokenize",
             RebirthError::Generation { .. } => "relm_error_generation",
             RebirthError::Schema { .. } => "relm_error_schema",
@@ -145,6 +159,17 @@ impl fmt::Display for RebirthError {
                 "This model handle is closed. \
                  Load the model again with llm() to obtain a fresh handle."
             ),
+            RebirthError::Busy { operation, reason } => write!(
+                f,
+                "Cannot run {operation}: {reason}. Wait for the active operation to finish."
+            ),
+            RebirthError::Cancelled { reason, .. } => write!(
+                f,
+                "Generation cancelled: {reason}. No partial result was returned."
+            ),
+            RebirthError::Argument { argument, reason } => {
+                write!(f, "Invalid {argument}: {reason}.")
+            }
             RebirthError::Tokenize { reason } => write!(
                 f,
                 "Tokenization failed ({reason}). \
@@ -204,9 +229,7 @@ impl fmt::Display for RebirthError {
                 suggestion,
             } => write!(
                 f,
-                "This trace would need about {} in memory, over the {} budget. {suggestion} \
-                 Or set spill = TRUE to stream it to disk, or raise \
-                 options(relm.trace_budget=).",
+                "This operation would need about {}, over the {} budget. {suggestion}",
                 human_bytes(*estimate_bytes),
                 human_bytes(*budget_bytes)
             ),

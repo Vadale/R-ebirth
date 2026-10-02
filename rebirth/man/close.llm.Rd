@@ -15,11 +15,15 @@
 \code{invisible(NULL)}.
 }
 \description{
-Deterministically frees the native memory behind an \code{llm} handle. On a
+Frees the native memory behind an \code{llm} handle when native execution is idle. On a
 memory-constrained machine this lets you release several gigabytes
 immediately rather than waiting for garbage collection (the finalizer remains
 the safety net). A double close is a no-op; any later use of the handle
 raises \code{relm_error_closed}.
+While async generation owns the native execution domain, closing any handle
+marks it closed immediately and defers native destruction until safe.
+Closing the submitting handle also requests cancellation. A pending promise
+keeps its submitting handle alive when ordinary R references are removed.
 }
 \seealso{
 \code{\link[=llm]{llm()}}

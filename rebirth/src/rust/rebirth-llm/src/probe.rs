@@ -361,7 +361,7 @@ impl LoadedModel {
                          memory?); free memory, e.g. close() other loaded models, and retry"
                     .to_string(),
             })?;
-        spec.apply_to_context(ctx.ptr.as_ptr())?;
+        spec.apply_to_context(ctx.as_ptr())?;
         let decode_result = ctx.decode_all(&[PROBE_TOKEN]);
         // SAFETY: single-threaded; the callback has finished for this decode.
         let capture_err = unsafe { (*state_ptr).error.take() };

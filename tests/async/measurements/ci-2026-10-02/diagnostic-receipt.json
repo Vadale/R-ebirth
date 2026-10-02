@@ -1,0 +1,21 @@
+{
+  "parent_commit": "1bd29c07c9170d112ab1735bd33b625c9eb4fc6a",
+  "product_inputs_match_verified_parent": true,
+  "changed_test_files": {
+    "rebirth/tests/testthat/test-llm-async-lifecycle.R": "445c21f001c5181131d7ad1e34d76459023b4d620227a755307c3b3f16188e03",
+    "rebirth/tests/testthat/test-llm-async.R": "4a64bdcb637422ed0eb8cff1be2bac0b5272533d947c1100db8f94eb6dfee484"
+  },
+  "ci_summary": {
+    "passed_checks": 7,
+    "failed_checks": 2,
+    "failed_run": 36930884444,
+    "passed_rust_run": 36930884442
+  },
+  "diagnosis": "Unresolved macOS child timeout; oldrel also left responsiveness promise pending and subsequent native operations busy. Stage timing and pending-worker counters added without changed timeouts/assertions.",
+  "local_diagnostic_tests": {
+    "cases": 32,
+    "passed_expectations": 1313,
+    "skipped_model_cases": 4,
+    "failures": 0
+  }
+}

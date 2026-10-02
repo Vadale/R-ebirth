@@ -99,12 +99,25 @@ sweep_old_spill_dirs <- function(max_age_days = 7) {
 }
 
 .onLoad <- function(libname, pkgname) {
+  .relm_async$stopping <- FALSE
+  .relm_async$unloaded <- FALSE
   # Register the exit-time cleanup on a sentinel environment: reg.finalizer with
   # onexit = TRUE runs cleanup_spill_session() when R shuts down normally.
   sentinel <- new.env(parent = emptyenv())
-  reg.finalizer(sentinel, function(e) cleanup_spill_session(), onexit = TRUE)
+  reg.finalizer(sentinel, function(e) {
+    if (!isTRUE(.relm_async$unloaded)) async_shutdown()
+    cleanup_spill_session()
+  }, onexit = TRUE)
   .relm_state$sentinel <- sentinel
   # Sweep spill directories orphaned by earlier crashed sessions (never errors).
   tryCatch(sweep_old_spill_dirs(), error = function(e) NULL)
   invisible(NULL)
+}
+
+.onUnload <- function(libpath) {
+  # Keep the DLL mapped: existing llm external pointers still own finalizers
+  # implemented there, even after native model resources have been released.
+  async_shutdown()
+  .relm_async$unloaded <- TRUE
+  cleanup_spill_session()
 }

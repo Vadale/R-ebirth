@@ -75,6 +75,8 @@ jobs:
     timeout-minutes: 90
 
     env:
+      # D-037: controlled concurrency tests own their threads; other native tests serialize.
+      RUST_TEST_THREADS: "1"
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
       # The pinned CI-integration model (see the header for full provenance).

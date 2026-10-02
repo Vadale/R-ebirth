@@ -75,6 +75,7 @@ pub(crate) struct Batch {
 
 impl Batch {
     pub(crate) fn new(n_tokens: i32) -> Result<Self, RebirthError> {
+        crate::domain::assert_current();
         // SAFETY: allocates a batch holding `n_tokens` tokens (embd = 0 -> token
         // array), one sequence id per token (n_seq_max = 1). Freed in Drop.
         let raw = unsafe { ffi::llama_batch_init(n_tokens, 0, 1) };
@@ -94,6 +95,7 @@ impl Batch {
     /// (generation) or every token does (teacher-forced scoring, and the
     /// embedding path, which flags every token for per-token output).
     pub(crate) fn fill(&mut self, tokens: &[i32], start_pos: i32, logits_last_only: bool) {
+        crate::domain::assert_current();
         debug_assert!(tokens.len() as i32 <= self.capacity);
         let n = tokens.len();
         self.raw.n_tokens = n as i32;
@@ -119,6 +121,7 @@ impl Batch {
 
 impl Drop for Batch {
     fn drop(&mut self) {
+        crate::domain::assert_current();
         // SAFETY: `raw` came from `llama_batch_init` and is freed exactly once
         // (this owner drops once). `ptr::read` bitwise-copies the by-value batch
         // the C function consumes; the copy is not used afterwards.
@@ -154,6 +157,80 @@ fn sized_buffer<T: Clone + Default>(
     }
 }
 
+/// Exact size before materializing lossy UTF-8, including replacement bytes.
+fn lossy_utf8_len(mut bytes: &[u8]) -> usize {
+    let mut size = 0;
+    while let Err(error) = std::str::from_utf8(bytes) {
+        size += error.valid_up_to() + 3;
+        bytes = match error.error_len() {
+            Some(invalid) => &bytes[error.valid_up_to() + invalid..],
+            None => return size,
+        };
+    }
+    size + bytes.len()
+}
+
+/// Allocate exactly the validated UTF-8 size instead of allowing String's
+/// geometric growth to hide retained capacity beyond the output estimator.
+fn lossy_utf8_exact(mut bytes: &[u8]) -> String {
+    let mut output = String::with_capacity(lossy_utf8_len(bytes));
+    loop {
+        match std::str::from_utf8(bytes) {
+            Ok(valid) => {
+                output.push_str(valid);
+                return output;
+            }
+            Err(error) => {
+                output.push_str(std::str::from_utf8(&bytes[..error.valid_up_to()]).unwrap());
+                output.push('\u{fffd}');
+                match error.error_len() {
+                    Some(invalid) => bytes = &bytes[error.valid_up_to() + invalid..],
+                    None => return output,
+                }
+            }
+        }
+    }
+}
+
+fn bounded_output_buffer(
+    initial: usize,
+    limit: usize,
+    mut fill: impl FnMut(*mut u8, i32) -> i32,
+) -> Result<Vec<u8>, RebirthError> {
+    let mut capacity = initial.min(limit);
+    loop {
+        let mut bytes = vec![0; capacity];
+        let written = fill(bytes.as_mut_ptr(), capacity as i32);
+        if written >= 0 {
+            if written as usize > capacity {
+                return Err(RebirthError::Internal {
+                    context: "invalid detokenizer size".into(),
+                });
+            }
+            bytes.truncate(written as usize);
+            let size = lossy_utf8_len(&bytes);
+            if size > limit {
+                return Err(crate::async_job::output_budget_error(size));
+            }
+            return Ok(bytes);
+        }
+        let needed = written
+            .checked_neg()
+            .ok_or_else(|| RebirthError::Internal {
+                context: "invalid detokenizer size".into(),
+            })? as usize;
+        if needed > limit {
+            return Err(crate::async_job::output_budget_error(needed));
+        }
+        if needed <= capacity {
+            return Err(RebirthError::Internal {
+                context: "non-increasing detokenizer size".into(),
+            });
+        }
+        capacity = needed;
+    }
+}
+
 impl LoadedModel {
     /// `Ok(())` if the model carries a tokenizer, else `RebirthError::Tokenize`.
     /// The text-facing entry points (encode / decode / templated generation /
@@ -178,6 +255,7 @@ impl LoadedModel {
         add_special: bool,
         parse_special: bool,
     ) -> Result<Encoding, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("encode")?;
         self.require_tokenizer()?;
         let ids = self.tokenize(text, add_special, parse_special)?;
         let pieces = ids
@@ -197,6 +275,7 @@ impl LoadedModel {
         remove_special: bool,
         unparse_special: bool,
     ) -> Result<String, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("decode_tokens")?;
         self.require_tokenizer()?;
         self.validate_ids(ids)?;
         if ids.is_empty() {
@@ -204,7 +283,7 @@ impl LoadedModel {
         }
         let vocab = self.vocab_ptr();
         // First guess ~8 bytes/token; sized_buffer grows on the engine's request.
-        let buf = sized_buffer::<u8>(ids.len() * 8 + 16, |ptr, cap| {
+        let fill = |ptr: *mut u8, cap| {
             // SAFETY: `vocab` is live; `ids` is a valid slice; `ptr` names `cap`
             // bytes (allocated by sized_buffer). The engine writes at most `cap`
             // bytes (no NUL).
@@ -219,10 +298,15 @@ impl LoadedModel {
                     unparse_special,
                 )
             }
-        });
-        // Lossy: a well-formed id sequence detokenizes to valid UTF-8; lossy only
-        // guards against a caller passing a mid-character id subset.
-        Ok(String::from_utf8_lossy(&buf).into_owned())
+        };
+        if let Some(limit) = crate::async_job::output_remaining() {
+            let buf = bounded_output_buffer(ids.len() * 8 + 16, limit, fill)?;
+            Ok(lossy_utf8_exact(&buf))
+        } else {
+            let buf = sized_buffer::<u8>(ids.len() * 8 + 16, fill);
+            // Preserve the synchronous materialization path unchanged.
+            Ok(String::from_utf8_lossy(&buf).into_owned())
+        }
     }
 
     /// Reject ids outside `[0, n_vocab)` before they reach the engine (a bad id
@@ -245,11 +329,20 @@ impl LoadedModel {
         add_special: bool,
         parse_special: bool,
     ) -> Result<Vec<i32>, RebirthError> {
+        crate::async_job::checkpoint()?;
+        if crate::async_job::output_remaining().is_some()
+            && text.len() > crate::async_job::ASYNC_MAX_ARGUMENT_BYTES
+        {
+            return Err(RebirthError::Argument {
+                argument: "prompt".into(),
+                reason: "async templated prompt exceeds 16 MiB".into(),
+            });
+        }
         let vocab = self.vocab_ptr();
         let bytes = text.as_bytes();
         // Generous first guess; +8 covers any added special tokens on an empty or
         // tiny input. sized_buffer grows to the exact count if the engine asks.
-        let tokens = sized_buffer::<i32>(bytes.len() + 8, |ptr, cap| {
+        let fill = |ptr, cap| {
             // SAFETY: `vocab` is live; `bytes` outlives the call; `ptr` names
             // `cap` i32 (allocated by sized_buffer). Passing an explicit length
             // (not NUL-terminated) handles interior NUL bytes in `text`.
@@ -264,7 +357,39 @@ impl LoadedModel {
                     parse_special,
                 )
             }
-        });
+        };
+        let tokens = if crate::async_job::output_remaining().is_some() {
+            // A native sizing response must never allocate an over-context
+            // token vector merely to discover overflow afterwards.
+            let mut capacity = (bytes.len() + 8).min(self.context_length() as usize);
+            loop {
+                let mut tokens = vec![0i32; capacity];
+                let written = fill(tokens.as_mut_ptr(), capacity as i32);
+                if written >= 0 {
+                    if written as usize > capacity {
+                        return Err(RebirthError::Internal {
+                            context: "invalid tokenizer size".into(),
+                        });
+                    }
+                    tokens.truncate(written as usize);
+                    break tokens;
+                }
+                let needed = written
+                    .checked_neg()
+                    .ok_or_else(|| RebirthError::Internal {
+                        context: "invalid tokenizer size".into(),
+                    })? as usize;
+                self.check_fits(needed)?;
+                if needed <= capacity {
+                    return Err(RebirthError::Internal {
+                        context: "non-increasing tokenizer size".into(),
+                    });
+                }
+                capacity = needed;
+            }
+        } else {
+            sized_buffer::<i32>(bytes.len() + 8, fill)
+        };
         Ok(tokens)
     }
 
@@ -405,8 +530,12 @@ impl LoadedModel {
         let n_batch = (self.n_batch() as usize).max(1);
         let mut start = 0usize;
         while start < tokens.len() {
+            crate::async_job::checkpoint()?;
             let end = (start + n_batch).min(tokens.len());
             self.decode(&tokens[start..end], start as i32, logits_last_only)?;
+            #[cfg(test)]
+            crate::async_job::test_checkpoint(crate::async_job::TestStage::PrefillChunk);
+            crate::async_job::checkpoint()?;
             on_chunk(start, end - start)?;
             start = end;
         }
@@ -454,6 +583,7 @@ impl LoadedModel {
         tokens: &[i32],
         n_vocab: usize,
     ) -> Result<Vec<f32>, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("prompt_last_logits")?;
         self.clear_memory();
         let total = tokens.len();
         let mut last: Vec<f32> = Vec::new();
@@ -482,6 +612,7 @@ impl LoadedModel {
     /// decode); the KV cache accumulates across chunks, so a position attends to
     /// the whole prefix exactly as a single oversized decode would.
     pub fn logits_for_tokens(&self, tokens: &[i32]) -> Result<Logits, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("logits_for_tokens")?;
         self.check_fits(tokens.len())?;
         let n_vocab = self.n_vocab_checked()?;
         self.clear_memory();
@@ -522,6 +653,7 @@ impl LoadedModel {
         prompt: &str,
         top: usize,
     ) -> Result<Vec<TokenLogit>, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("next_token_logits")?;
         self.require_tokenizer()?;
         let ids = self.tokenize(prompt, true, false)?;
         if ids.is_empty() {
@@ -754,6 +886,7 @@ impl LoadedModel {
         prompt: &[i32],
         params: &GenerateParams,
     ) -> Result<Generation, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("generate")?;
         self.check_fits(prompt.len())?;
         if params.max_tokens == 0 {
             return Ok(Generation {
@@ -808,10 +941,14 @@ impl LoadedModel {
         let mut rng = SplitMix64::new(params.seed);
         let mut out: Vec<i32> = Vec::with_capacity(params.max_tokens);
         let mut stop_reason = StopReason::MaxTokens;
+        // One bounded current text snapshot; token ids and the final result use
+        // the same sampler/detokenizer as sync. No unbounded event queue.
+        let mut async_text = None;
 
         // `n_past` is the position the next continuation token occupies: the
         // prompt filled 0..start_pos, so continuation i lands at start_pos + i.
         for n_past in (start_pos..).take(params.max_tokens) {
+            crate::async_job::checkpoint()?;
             if let Some(state) = constraint.as_deref_mut() {
                 if n_past as usize >= ctx_len {
                     return Err(state.error("context budget exhausted", out.len()));
@@ -842,6 +979,12 @@ impl LoadedModel {
                 break;
             }
             out.push(next);
+            crate::async_job::sampled(out.len())?;
+            if crate::async_job::output_remaining().is_some() && self.has_tokenizer() {
+                // Bound every intermediate output before allocating the next
+                // result; includes stop suffixes and invalid UTF-8 replacement.
+                async_text = Some(self.decode_tokens(&out, false, false)?);
+            }
 
             if let Some(state) = constraint.as_deref_mut() {
                 state.accept(next, out.len())?;
@@ -869,7 +1012,10 @@ impl LoadedModel {
             }
 
             if !params.stop.is_empty() && self.has_tokenizer() {
-                let text = self.decode_tokens(&out, false, false)?;
+                let text = match &async_text {
+                    Some(text) => text.clone(),
+                    None => self.decode_tokens(&out, false, false)?,
+                };
                 if let Some(cut) = first_stop(&text, &params.stop) {
                     return Ok(Generation {
                         tokens: out,
@@ -890,6 +1036,7 @@ impl LoadedModel {
             // direct single-batch decode — trivially within n_batch — not a
             // decode_chunked call). Its logits land at output slot 0.
             self.decode(&[next], n_past, true)?;
+            crate::async_job::checkpoint()?;
             logits = self.logits_ith(0, n_vocab)?;
         }
 
@@ -903,7 +1050,9 @@ impl LoadedModel {
         // Detokenize the continuation only when the model carries a tokenizer;
         // the numeric synthetic test model has a vocabulary but no tokenizer, so
         // it produces token ids with no text form.
-        let text = if self.has_tokenizer() {
+        let text = if let Some(text) = async_text {
+            text
+        } else if self.has_tokenizer() {
             self.decode_tokens(&out, false, false)?
         } else {
             String::new()
@@ -932,6 +1081,7 @@ impl LoadedModel {
         chat: bool,
         params: &GenerateParams,
     ) -> Result<Generation, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("generate_prompt")?;
         self.require_tokenizer()?;
         let (text, add_special, parse_special) = self.resolve_prompt_text(prompt, chat)?;
         let prompt_ids = self.tokenize(&text, add_special, parse_special)?;
@@ -947,6 +1097,7 @@ impl LoadedModel {
         params: &GenerateParams,
         schema: &CompiledSchema,
     ) -> Result<Vec<Generation>, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("generate_prompts_structured")?;
         if prompts.is_empty()
             || prompts.len() > STRUCTURED_MAX_PROMPTS
             || prompts
@@ -964,6 +1115,7 @@ impl LoadedModel {
         let mut output = Vec::with_capacity(prompts.len());
         let mut bytes = 0;
         for (i, prompt) in prompts.iter().enumerate() {
+            crate::async_job::prompt_started(i + 1)?;
             let mut state = Constraint::new(&template, schema, i + 1, params)?;
             let generation = self.generate_prompt_constrained(prompt, chat, params, &mut state)?;
             if generation.text.len() > STRUCTURED_MAX_TOTAL_OUTPUT_BYTES - bytes {
@@ -972,6 +1124,7 @@ impl LoadedModel {
                 );
             }
             bytes += generation.text.len();
+            crate::async_job::prompt_completed(generation.text.len())?;
             output.push(generation);
         }
         Ok(output)
@@ -1097,6 +1250,7 @@ impl LoadedModel {
     /// The model's built-in chat template (the GGUF `tokenizer.chat_template`),
     /// or `None` if it carries none.
     pub fn chat_template(&self) -> Option<String> {
+        let _native = crate::domain::NativeGuard::acquire("chat_template");
         // SAFETY: `model_ptr` is a live model; a non-null return is a
         // NUL-terminated string owned by the model, valid for its lifetime.
         let ptr = unsafe { ffi::llama_model_chat_template(self.model_ptr(), std::ptr::null()) };
@@ -1126,6 +1280,7 @@ impl LoadedModel {
         messages: &[ChatMessage],
         add_assistant: bool,
     ) -> Result<TemplatedPrompt, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("apply_chat_template")?;
         self.apply_chat_template_for_output(messages, add_assistant, false)
     }
 
@@ -1135,7 +1290,26 @@ impl LoadedModel {
         add_assistant: bool,
         structured: bool,
     ) -> Result<TemplatedPrompt, RebirthError> {
-        let embedded = self.chat_template();
+        let embedded = if crate::async_job::output_remaining().is_some() {
+            // SAFETY: checked model_ptr belongs to the currently bound model;
+            // template bytes are immutable and remain model-owned during copy.
+            let ptr = unsafe { ffi::llama_model_chat_template(self.model_ptr(), std::ptr::null()) };
+            if ptr.is_null() {
+                None
+            } else {
+                // SAFETY: non-null template is NUL-terminated by llama.cpp.
+                let bytes = unsafe { std::ffi::CStr::from_ptr(ptr) }.to_bytes();
+                if lossy_utf8_len(bytes) > crate::async_job::ASYNC_MAX_ARGUMENT_BYTES {
+                    return Err(RebirthError::Argument {
+                        argument: "prompt".into(),
+                        reason: "async model template exceeds 16 MiB".into(),
+                    });
+                }
+                Some(lossy_utf8_exact(bytes))
+            }
+        } else {
+            self.chat_template()
+        };
         resolve_and_apply_template(
             embedded.as_deref(),
             &self.architecture(),
@@ -1312,6 +1486,7 @@ fn apply_template(
     messages: &[ChatMessage],
     add_assistant: bool,
 ) -> Result<String, RebirthError> {
+    let _native = crate::domain::NativeGuard::try_acquire("chat formatting")?;
     use std::ffi::CString;
 
     let nul = |_| RebirthError::Generation {
@@ -1346,6 +1521,14 @@ fn apply_template(
         .sum();
     let mut cap = (msg_bytes * 2 + 64).max(256);
     loop {
+        if crate::async_job::output_remaining().is_some()
+            && cap > crate::async_job::ASYNC_MAX_ARGUMENT_BYTES
+        {
+            return Err(RebirthError::Argument {
+                argument: "prompt".into(),
+                reason: "async templated prompt exceeds 16 MiB".into(),
+            });
+        }
         let mut buf = vec![0u8; cap];
         // SAFETY: `tmpl_c` and the CStrings behind `chat` outlive the call;
         // `buf`/`cap` are consistent; the engine writes at most `cap` bytes.
@@ -1372,12 +1555,67 @@ fn apply_template(
             continue;
         }
         buf.truncate(n);
+        if crate::async_job::output_remaining().is_some() {
+            if lossy_utf8_len(&buf) > crate::async_job::ASYNC_MAX_ARGUMENT_BYTES {
+                return Err(RebirthError::Argument {
+                    argument: "prompt".into(),
+                    reason: "async templated prompt exceeds 16 MiB".into(),
+                });
+            }
+            return Ok(lossy_utf8_exact(&buf));
+        }
         return Ok(String::from_utf8_lossy(&buf).into_owned());
     }
 }
 
 #[cfg(test)]
 mod tests {
+    // Rust PR job; no model. Enforces the actual retained UTF-8 result bound,
+    // including lossy expansion before a String is allocated.
+    #[test]
+    fn async_output_sizing_rejects_before_allocating_over_budget() {
+        assert_eq!(super::lossy_utf8_len(b"hello"), 5);
+        assert_eq!(super::lossy_utf8_len(&[0xff, 0xfe]), 6);
+        assert_eq!(super::lossy_utf8_len(&[0xe2, 0x82]), 3);
+        for bytes in [
+            b"valid".as_slice(),
+            &[0xff, 0xfe],
+            &[0xe2, 0x82],
+            &[b'a', 0xff, b'b'],
+        ] {
+            let text = super::lossy_utf8_exact(bytes);
+            assert_eq!(text, String::from_utf8_lossy(bytes));
+            assert_eq!(
+                text.capacity(),
+                text.len(),
+                "bounded String must not grow geometrically"
+            );
+        }
+        let result = super::bounded_output_buffer(8, 10, |_, _| -11);
+        assert!(matches!(result, Err(crate::RebirthError::Oom { .. })));
+        let result = super::bounded_output_buffer(8, 10, |_, _| i32::MIN);
+        assert!(matches!(result, Err(crate::RebirthError::Internal { .. })));
+        let result = super::bounded_output_buffer(2, 2, |ptr, _| {
+            // SAFETY: the bounded helper supplied exactly two writable bytes.
+            unsafe {
+                *ptr = 0xff;
+                *ptr.add(1) = 0xfe;
+            }
+            2
+        });
+        assert!(matches!(result, Err(crate::RebirthError::Oom { .. })));
+        let exact = super::bounded_output_buffer(2, 2, |ptr, _| {
+            // SAFETY: the bounded helper supplied exactly two writable bytes.
+            unsafe {
+                *ptr = b'o';
+                *ptr.add(1) = b'k';
+            }
+            2
+        })
+        .unwrap();
+        assert_eq!(exact, b"ok");
+    }
+
     // CI: pinned-model nightly after its checksum gate; ordinary cargo jobs have
     // no model and skip this fixture. Controlled logits isolate context/grammar
     // boundaries without relying on the model to prefer a particular answer.
@@ -1386,6 +1624,7 @@ mod tests {
         let Ok(path) = std::env::var("RELM_TEST_MODEL_QWEN") else {
             return;
         };
+        let _native = crate::NativeGuard::try_acquire("structured test").unwrap();
         let model = crate::load(crate::LoadRequest {
             path: path.into(),
             context_length: 64,

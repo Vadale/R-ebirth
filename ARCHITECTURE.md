@@ -42,22 +42,27 @@ Bridge: **extendr** (scaffolded by `rextendr`). Fallback if CRAN friction ever d
 
 ## 3. Object lifecycle and threading model
 
-- An `llm` handle is an R external pointer to the FFI wrapper containing
-  `RefCell<Option<LoadedModel>>`. `LoadedModel` owns a mutable context, which holds
-  shared weights through `Arc<Model>`. **Interventions preserve the original:**
-  `llm_steer`/`llm_ablate` clone the weight reference and allocate a fresh context
-  with its own intervention state (D-016). Contexts still consume memory; shared
-  weights do not make arbitrary numbers of derived handles free.
-- **Two deallocation paths:** R GC finalizer (safety net) and `close.llm`
-  (deterministic). Closing takes the `LoadedModel` out of the wrapper; subsequent
-  use returns `relm_error_closed`. Shared weights remain until their final owner
-  is released.
-- **Threading rules (non-negotiable):** current model/context access stays on its
-  owning R thread. The spill writer receives owned plain data. `Send`/`Sync`
-  declarations rely on that confinement; they do not prove concurrent handle
-  safety. No worker thread calls R or constructs SEXPs. The Phase-5 design in §10
-  requires a separate ownership review before moving inference to another thread.
-- Long operations hold no R allocations: inputs are copied to Rust-owned buffers at entry, results materialize as SEXPs only at exit.
+- An `llm` handle is an R external pointer to an `Rc`-owned, main-thread-only
+  state containing the closed flag and `RefCell<Option<LoadedModel>>`. The weak
+  registry supports orderly unload without keeping unused wrappers alive.
+  `LoadedModel` owns a mutable context and shared weights through `Arc<Model>`.
+  Interventions retain those weights and create a fresh context (D-016).
+- R GC and `close.llm` mark a wrapper closed immediately. During async execution,
+  native destruction is deferred until ownership returns. This applies to the
+  submitting model and to unrelated or weight-sharing handles. Shared weights
+  remain until their final native owner is released.
+- **D-037 ownership:** one process-wide native permit authorizes one bound thread
+  at a time, including queries, load, context access and destruction. Raw pointer
+  gateways enforce this in release builds. An async worker temporarily owns the
+  submitting `LoadedModel`; all R external-pointer wrappers remain !Send/!Sync.
+  Other native work fails busy without waiting. The completion retains its permit
+  until the FFI restores or destroys the model and drains deferred destruction.
+- No worker calls R, runs callbacks, uses R RNG or constructs SEXPs. Inputs are
+  owned Rust data; results become R objects only on main-thread collection.
+  Polling never joins a live worker. Controlled unload cancels and joins before
+  removing native resources; it does not force DLL unmapping while R external
+  pointer finalizers may still reference the library. Spill writers still receive
+  owned plain data and are joined within the native operation.
 
 **Process boundaries (D-028):** a live handle is neither a serialized job artifact
 nor an object to transfer/fork into another worker. Pass verified model paths,
@@ -107,13 +112,17 @@ Greedy decoding: deterministic per backend by construction. Sampling: the sample
 
 ## 10. Async and live-callback design (Phase 5–6, designed now so Phase 0–4 code doesn't preclude it)
 
-**Planned, not implemented:** generation may move to a Rust worker thread after
-the ownership/lifecycle contract is redesigned and reviewed; existing handles
-cannot simply be sent there. Tokens would flow over a bounded channel; the R
-side would drain it through an approved event-loop integration such as `later`
-and resolve a promise. Dependencies require an ADR. Phase-6 callbacks must run
-on the R main thread. Current generation is synchronous; the D-028 batch example
-and a process-worker service do not depend on this future native-async design.
+**Approved D-037; implementation in progress:** native generation moves to a
+single exclusive worker through a checked execution permit and explicit owned
+model/context handoff. All native access and destruction participate in the
+process-wide domain; R external-pointer wrappers remain !Send/!Sync. R callbacks,
+conditions and allocations stay on the R thread, with optional later/promises
+integration. Close/GC defers native destruction while another job owns the domain;
+unload cancels/joins before code is unmapped. See the approved
+[WP9 ownership/lifecycle and acceptance contract](docs/wp9-async-plan.md).
+Coalesced progress and bounded result storage precede WP10's separately specified
+lossless token channel. No changes to the process-isolated D-034 service.
+
 
 ## 11. Golden pipeline and the synthetic model
 

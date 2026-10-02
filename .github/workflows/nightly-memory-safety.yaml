@@ -83,6 +83,8 @@ jobs:
         working-directory: rebirth/src/rust
 
     env:
+      # D-037: controlled concurrency tests own their threads; other native tests serialize.
+      RUST_TEST_THREADS: "1"
       # Force ggml to a baseline (no -march=native, no AVX) so Valgrind can decode
       # every instruction (see header). A fixed, reproducible epoch value.
       SOURCE_DATE_EPOCH: "1700000000"

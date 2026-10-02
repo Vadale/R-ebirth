@@ -1090,7 +1090,35 @@ these checks within already authorized work.
 
 ---
 
-## D-037 — WP9 native async contract (proposal)
+## D-037 — WP9 native asynchronous generation
+
+- **Date:** 2026-10-01. **Status:** approved by explicit founder reply:
+  "Approvo D-037, procedi con WP9".
+- **Decision:** append `async = FALSE`, `on_progress = NULL` to `llm_generate()`;
+  export `llm_cancel(m)`. Async returns a standard promise resolving to the
+  existing named character vector and seed. Adopt the progress/condition schema,
+  resource bounds and lifecycle behavior in [the approved plan](docs/wp9-async-plan.md).
+- **Dependencies:** optional `later (>= 1.4.8)` and `promises (>= 1.5.0)` in
+  Suggests, including the documented optional transitive closure and narrow
+  rlang/lifecycle/magrittr exception. No Rust dependency, LinkingTo, direct Rcpp
+  use, process framework or vendor patch. Synchronous use remains independent.
+- **Ownership:** one active native job per R process, no queue; reuse loaded
+  model/context through an audited exclusive permit and thread handoff. R-facing
+  wrappers and all R callbacks/objects stay on the main R thread. Busy close/GC
+  defers native freeing safely; cancellation is cooperative, not a hard deadline.
+- **Why:** responsive interactive generation without duplicate model weights;
+  safe hooks for later WP10 token streaming. The completed callr service remains
+  the process-isolation/durability option.
+- **Alternatives rejected:** duplicate process-worker framework; global native
+  actor rewrite before a bounded ownership feasibility test. If that test fails,
+  revise the design explicitly rather than silently remove ownership checks.
+- **Limits:** no WP10 token API, Phase-6 live interventions, server or release.
+  Approval is not executed acceptance. Existing numerical/reference gates remain.
+
+### Original D-037 proposal (superseded by the approval above)
+
+The following proposal is retained as history. Its pending-approval language
+was superseded by the founder's explicit 2026-10-01 approval recorded above.
 
 - **Date:** 2026-10-01. **Status:** proposed; concrete founder approval pending.
 - **Proposed decision:** add `async = FALSE` and `on_progress = NULL` to

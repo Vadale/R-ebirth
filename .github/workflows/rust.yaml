@@ -33,6 +33,9 @@ jobs:
     name: cargo fmt / clippy / test
 
     env:
+      # D-037 reserves one native execution domain per process. Concurrency
+      # regressions spawn their own controlled threads; unrelated tests serialize.
+      RUST_TEST_THREADS: "1"
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
       CMAKE_C_COMPILER_LAUNCHER: "sccache"
@@ -63,7 +66,11 @@ jobs:
       # compiled and validated by the R-CMD-check workflow (which sets up R);
       # that workflow also lints the boundary crate with R available.
       - name: cargo fmt --check (whole workspace)
-        run: cargo fmt --all --check
+        run: |
+          cargo fmt --all --check
+          # include! keeps extendr registration in one module; rustfmt does not
+          # follow include files automatically.
+          rustfmt --check --edition 2021 rebirth-ffi/src/async_boundary.rs
 
       - name: cargo clippy (R-free engine crate; deny warnings)
         run: cargo clippy --locked -p rebirth-llm --all-targets -- -D warnings
@@ -74,6 +81,13 @@ jobs:
       # the documented F32-vs-F64 tolerance. Download-free, synthetic-only.
       - name: cargo test (R-free engine crate)
         run: cargo test --locked -p rebirth-llm
+
+      # Ownership assertions must remain active in optimized builds (D-037).
+      - name: async ownership and cancellation (release profile)
+        run: cargo test --locked --release -p rebirth-llm --lib async
+
+      - name: async synthetic handoff golden (release profile)
+        run: cargo test --locked --release -p rebirth-llm --test async_synthetic
 
       # The no-spill configuration (--no-default-features drops the `spill` feature
       # in both crates, D-013) must stay compilable and green: its

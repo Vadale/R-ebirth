@@ -1,0 +1,26 @@
+{
+  "status": "failed",
+  "phase": "compile",
+  "pid": 86689,
+  "started_at": 1790888274.794996,
+  "stages": [
+    {
+      "name": "check",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets"
+      ],
+      "started_at": 1790888274.7986329,
+      "status": "failed",
+      "exit_code": 101,
+      "finished_at": 1790888315.335053
+    }
+  ],
+  "stage": "check",
+  "error": "check failed; inspect its retained log",
+  "finished_at": 1790888315.3358872
+}

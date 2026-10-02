@@ -249,6 +249,7 @@ impl LoadedModel {
         &self,
         spec: &InterventionSpec,
     ) -> Result<LoadedModel, RebirthError> {
+        let _native = crate::domain::NativeGuard::try_acquire("derive_with_interventions")?;
         // Defensive: the R layer builds the spec from this model's metadata, so a
         // dimension mismatch here is an internal error, not a user error.
         let n_embd = self.hidden_size().max(0) as usize;

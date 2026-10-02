@@ -1,0 +1,33 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-llm-async-lifecycle.R","llm-async-lifecycle","close and forced GC during a native job are safe in a fresh process",3,0,FALSE,FALSE,0,0.00900000000000001,0.004,0.24,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","pending job roots survive dropped model and promise references",3,0,FALSE,FALSE,0,0.041,0.006,0.948,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","normal failures cancel and panic release native ownership in subprocesses",3,0,FALSE,FALSE,0,0.00699999999999998,0.004,0.359,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","namespace shutdown joins work and retains the DLL for live finalizers",3,0,FALSE,FALSE,0,0.005,0.004,0.193,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","real synthetic models defer close and GC while a fixture owns native execution",3,0,FALSE,FALSE,0,0.005,0.003,1.733,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","[MODEL] derived Qwen ownership survives parent sibling and unrelated close or GC",1,0,TRUE,FALSE,0,0.001,0,0.00099999999999989,0
+"test-llm-async-lifecycle.R","llm-async-lifecycle","foreign external pointers fail safely before an extendr downcast",3,0,FALSE,FALSE,0,0.003,0.003,0.17,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","session exit joins an active job without an event-loop drain",3,0,FALSE,FALSE,0,0.002,0.003,0.167,3
+"test-llm-async.R","llm-async","async dependencies are present on required R CI legs",3,0,FALSE,FALSE,0,0.025,0.003,0.0289999999999999,3
+"test-llm-async.R","llm-async","async argument and admission failures preserve the RNG",19,0,FALSE,FALSE,0,0.028,0,0.0299999999999998,19
+"test-llm-async.R","llm-async","missing or outdated optional packages fail before admission or RNG",9,0,FALSE,FALSE,0,0.006,0.001,0.00800000000000001,9
+"test-llm-async.R","llm-async","async UTF-8 and aggregate limits include names stop schema and image paths",13,0,FALSE,FALSE,0,0.106,0.004,0.11,13
+"test-llm-async.R","llm-async","native async promise is responsive and services independent R heartbeats",12,0,FALSE,FALSE,0,0.042,0.012,2.908,12
+"test-llm-async.R","llm-async","progress is fresh coalesced data with exactly one final snapshot",14,0,FALSE,FALSE,0,0.039,0.00899999999999999,0.446,14
+"test-llm-async.R","llm-async","the omitted seed is drawn once on submission and callbacks do not draw it",4,0,FALSE,FALSE,0,0.015,0.004,0.309,4
+"test-llm-async.R","llm-async","empty image sets remain ordinary text input",3,0,FALSE,FALSE,0,0.013,0.004,0.0840000000000005,3
+"test-llm-async.R","llm-async","callback cancellation and reentrancy leave one settlement and reusable handle",10,0,FALSE,FALSE,0,0.031,0.00599999999999999,0.148000000000001,10
+"test-llm-async.R","llm-async","callback failures retain the original condition and drain native work",7,0,FALSE,FALSE,0,0.02,0.006,0.145999999999999,7
+"test-llm-async.R","llm-async","a callback failing on final completion rejects instead of resolving",5,0,FALSE,FALSE,0,0.018,0.004,0.081999999999999,5
+"test-llm-async.R","llm-async","native fixture errors and panics become typed promise rejections",10,0,FALSE,FALSE,0,0.0279999999999999,0.00899999999999999,0.155999999999999,10
+"test-llm-async.R","llm-async","cancel validates handles and targets only the submitting handle",9,0,FALSE,FALSE,0,0.018,0.003,0.077,9
+"test-llm-async.R","llm-async","R handle state synchronizes after native-only close",5,0,FALSE,FALSE,0,0.011,0.001,0.0120000000000005,5
+"test-llm-async.R","llm-async","incomplete native error payloads remain classed internal failures",6,0,FALSE,FALSE,0,0.00900000000000001,0.001,0.00900000000000034,6
+"test-llm-async.R","llm-async","async tokenizer failures reject classed conditions without model downloads",3,0,FALSE,FALSE,0,0.028,0.01,0.112,3
+"test-llm-async.R","llm-async","[MODEL] async matches sync for greedy sampled stop and structured generation",1,0,TRUE,FALSE,0,0.001,0,0.000999999999999446,0
+"test-llm-async.R","llm-async","schema compilation errors reject their existing class",8,0,FALSE,FALSE,0,0.00900000000000001,0.003,0.011000000000001,8
+"test-llm-async.R","llm-async","terminal callbacks may start a subsequent job without losing its roots",7,0,FALSE,FALSE,0,0.014,0.004,0.133000000000001,7
+"test-llm-async.R","llm-async","repeated small success cancel and error jobs release R roots",1133,0,FALSE,FALSE,0,1.916,0.421,8.077,1133
+"test-llm-async.R","llm-async","a stalled event loop retains one snapshot and one terminal slot",6,0,FALSE,FALSE,0,0.0209999999999999,0.015,0.518000000000001,6
+"test-llm-async.R","llm-async","worker startup failure rejects without leaking admission or R roots",6,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.00999999999999801,6
+"test-llm-async.R","llm-async","[MODEL] async preserves interventions and cancellation recovery",1,0,TRUE,FALSE,0,0.00600000000000023,0.001,0.004999999999999,0
+"test-llm-async.R","llm-async","[MODEL] async vision matches the existing image generation path",1,0,TRUE,FALSE,0,0.00099999999999989,0,0.000999999999997669,0

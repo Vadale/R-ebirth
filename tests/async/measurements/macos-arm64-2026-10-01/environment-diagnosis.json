@@ -1,0 +1,19 @@
+{
+  "source": "observed command-tool results, 2026-10-01",
+  "library": "/private/tmp/relm-wp9/library",
+  "model": "rebirth/tests/testthat/fixtures/synthetic-llama-2l.gguf",
+  "backend": "metal",
+  "sandboxed": {
+    "exit_code": 1,
+    "failure": "failed to create command queue; context_init"
+  },
+  "with_gpu_permission": {
+    "exit_code": 0,
+    "architecture": "llama",
+    "layers": 2,
+    "hidden_size": 32,
+    "context": 4096,
+    "backend": "metal"
+  },
+  "conclusion": "The same installed binary and tiny model load under explicit GPU access, but not inside the tool sandbox."
+}

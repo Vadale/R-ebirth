@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-09-29 for integrated WP12b and preparation of relm 0.3.0. Historical
+Updated 2026-10-02 for WP9 operational acceptance. Historical
 maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
@@ -26,11 +26,24 @@ their original source identities. Release 0.3.0 binary verification is separate.
 See the [0.3.0 release report](release-0.3.0.md) for built-package/RStudio checks,
 application version-boundary results and the explicitly retained CRAN findings.
 
+WP9's approved D-037 implementation has passed local native, R async/lifecycle/
+memory and remaining package regressions. Its [execution report](wp9-implementation.md)
+retains the initial callback/sandbox failures and scoped package-check warnings.
+Actual foreground RStudio responsiveness passed: 17.788 s real generation,
+105 ms submission, independent `1 + 1` while active and 322 heartbeats. Initial PR54 CI
+passed seven checks but failed both macOS R legs on a lifecycle subprocess
+timeout. Diagnostics localized that wait to initial synchronous model loading,
+before any async worker; the test now budgets that preparation separately while
+retaining its lifecycle and drain limits. All nine checks passed at `8053bf8`,
+including both Mac versions. Final evidence-head CI and merge remain open.
+WP9 operational acceptance is complete; it is not yet integrated or released.
+
 ## Implemented checks
 
 | Obligation | Executable evidence | Where it runs / prerequisite |
 |---|---|---|
 | Public arguments, conditions, S3 contracts | `rebirth/tests/testthat/` | R-CMD-check on macOS/Linux, release and oldrel; model-free cases always run |
+| Native async ownership, cancellation and promises | Rust `async_job`, `domain`, `async_synthetic`; R `test-llm-async*.R` | Local automated checks passed; PR jobs require optional async dependencies. Cached-model parity and VLM boundary tests run locally/in existing model nightlies; actual foreground RStudio and all nine checks at `8053bf8` passed. Final evidence-head CI remains required before merge. |
 | No cross-session spill overwrite | `test-llm-trace-spill-session.R`; Rust `synthetic_spill` | R CI checks fresh-process names and RNG neutrality; Rust checks existing file and symlink preservation |
 | Memory/disk slice agreement and corruption refusal | `test-llm-trace-spill.R` | R CI, synthetic fixture, no download |
 | CPU operation independent of Metal | Rust `cpu_backend` | Executed in R-CMD-check on macOS/Linux, including Metal-enabled builds; no model download |

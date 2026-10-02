@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "pid": 20033,
+  "rstudio": "1",
+  "version": "0.3.0",
+  "library": "/private/tmp/relm-wp9/library/relm",
+  "started_at": 1790928346.1198,
+  "finished_at": 1790928363.9078,
+  "probe": {
+    "value": 2,
+    "elapsed": 0,
+    "was_running": true,
+    "at": 1790928360.1543
+  },
+  "heartbeat_count": 322,
+  "error": null,
+  "rstudio_version": "2025.9.1.401"
+}

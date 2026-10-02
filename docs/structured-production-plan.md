@@ -251,9 +251,10 @@ model benchmark was executed for this planning change.
 - [Ragnar store creation](https://ragnar.tidyverse.org/reference/ragnar_store_create.html): reopening serialized embedding callbacks requires a deliberate model-reconstruction contract.
 - [Probe control tasks](https://aclanthology.org/D19-1275/): predictive probe performance requires controls before representational claims.
 
-**Current state (2026-10-01):** relm 0.3.0 publication and r-universe binary
+**Current state (2026-10-02):** relm 0.3.0 publication and r-universe binary
 installation are verified. The external statistical skill foundation is the
-authorized companion increment. Resume WP9 with its concrete API/dependency
-proposal, then WP10, then I1 (D-036). The remaining later phases retain their
+authorized companion increment, merged in PR #53. WP9 has approved D-037 and
+completed operational acceptance; final integration remains in PR #54. Next
+come WP10, then I1 (D-036). The remaining later phases retain their
 roadmap scope.
 D1's negative quality result and deferred stronger-model comparison are unchanged.

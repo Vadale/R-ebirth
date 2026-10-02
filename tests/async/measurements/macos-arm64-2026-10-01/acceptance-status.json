@@ -1,0 +1,75 @@
+{
+  "status": "failed",
+  "phase": "acceptance",
+  "pid": 97161,
+  "started_at": 1790889217.896183,
+  "stages": [
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "started_at": 1790889217.9013948,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790889218.621172
+    },
+    {
+      "name": "vision-boundaries",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "async_vlm_cancel_and_drop_at_native_boundaries",
+        "--",
+        "--nocapture"
+      ],
+      "started_at": 1790889218.621514,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790889243.26332
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-multiarch",
+        "--library=/private/tmp/relm-wp9/library",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "started_at": 1790889243.263977,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790889303.7116091
+    },
+    {
+      "name": "async-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-wp9/async-tests.R"
+      ],
+      "started_at": 1790889303.711947,
+      "status": "failed",
+      "exit_code": 1,
+      "finished_at": 1790889324.790907
+    }
+  ],
+  "stage": "async-tests",
+  "error": "async-tests failed; inspect its retained log",
+  "finished_at": 1790889324.7921631
+}

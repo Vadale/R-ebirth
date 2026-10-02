@@ -1,0 +1,12 @@
+{
+  "ci-r-36934929799-failed.log": {
+    "file": "ci-r-36934929799-failed.log.gz",
+    "uncompressed_sha256": "0ee198b1ad5479be3beb8eacb93b624936ce593d92fcc0cdf81720f112cca73d",
+    "uncompressed_bytes": 178026
+  },
+  "ci-setup-r-tests.log": {
+    "file": "ci-setup-r-tests.log.gz",
+    "uncompressed_sha256": "c1d2b431de3260d48edaa8a975fab38a31b896eda8077d03d8b5ea689103479d",
+    "uncompressed_bytes": 2566
+  }
+}

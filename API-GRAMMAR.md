@@ -12,7 +12,7 @@
 
 These apply to every function, present and future.
 
-1. **Base-R idiom.** S3 classes and generics; returns are plain `data.frame` and base `matrix` (classed only for printing/method dispatch, never a required dependency); native `|>` composes everything; no tidyverse imports.
+1. **Base-R idiom.** S3 classes and generics; returns are plain `data.frame` and base `matrix` (classed only for printing/method dispatch, never a required dependency); native `|>` composes everything; no tidyverse imports. The approved D-037 async transport (§9) returns a standard promise resolving to the same base-R value; later/promises are optional and scoped to that transport.
 2. **`llm_` prefix** for all module functions (`base::embed()` collision makes short names unsafe; prefixed families are base-R idiom — `Sys.*`, `file.*`).
 3. **All indices are 1-based** in the R API — tokens, layers, neurons, positions. `layer = 1` is the first transformer block. Conversion to 0-based happens at the FFI boundary and nowhere else. Off-by-one at this boundary is the project's canonical defect class: every function touching indices gets explicit 1-based tests.
 4. **Plain-English argument names**, snake_case, no engine jargon: `context_length` (not `n_ctx`), `gpu_layers` (not `n_gpu_layers`), `max_tokens`, `temperature`, `top_p`, `seed`, `stop`, `pooling`, `normalize`, `layers`, `positions`, `components`, `spill`. The model handle is always the first argument, always named `m` (except S3 methods bound to a generic's argument names).
@@ -82,7 +82,11 @@ are conditional on frozen fits and are withheld when unsupported.
 Loads a GGUF model; returns an `llm` handle. `gpu_layers = NULL` = auto (all that fit); `backend = "auto"` picks the best available. `projector` = a path to an **mmproj GGUF** (or a registry alias resolved to a path) enabling image input; `NULL` (default) = text-only, unchanged. When set, `llm()` also initializes the vision encoder bound to the loaded model — the projector is a session property fixed at load (it shares the model pointer), exactly like the model file, so it belongs on `llm()`, not on each call. A projector whose input embedding size does not match the model raises `relm_error_image` naming both sizes (reject-not-clamp). New handle slots: `projector` (chr path or `NULL`), `vision` (lgl); `print.llm` shows the projector when present. Errors: `relm_error_argument` (invalid `context_length`/`gpu_layers`/`mmap`), `relm_error_model_load` (missing/corrupt/unsupported file — message names the failing check), `relm_error_backend` (requested backend unavailable), `relm_error_image` (projector load failure / mmproj–model mismatch).
 
 ### `close(con, ...)` method `close.llm` — Phase 0
-Frees native memory deterministically (finalizer remains the safety net). Returns `invisible(NULL)`. Subsequent use of the handle → `relm_error_closed`.
+Frees native memory deterministically when the native execution domain is idle
+(finalizer remains the safety net). Under D-037, close during an active native job
+marks the handle closed immediately and defers freeing until safe; closing the
+submitting handle requests cancellation. Returns `invisible(NULL)` idempotently.
+Subsequent use of the handle → `relm_error_closed`.
 
 ### `print.llm(x, ...)`, `summary.llm(object, ...)` — Phase 0
 Print: one screen — file, architecture, parameters, quantization, layers × hidden size, context, backend, active interventions count. Summary object adds memory footprint, tokenizer info, full intervention list.
@@ -90,7 +94,7 @@ Print: one screen — file, architecture, parameters, quantization, layers × hi
 ### `llm_tokens(m, x, decode = FALSE)` — Phase 1
 `decode = FALSE`: `x` is character (vectorized) → **named integer vector** per prompt (names = token pieces); for `length(x) > 1`, a list of such vectors. `decode = TRUE`: `x` is an integer vector of token ids → single character string. UTF-8 correct (Italian text in the test suite). Errors: `relm_error_tokenize`.
 
-### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL, images = NULL, schema = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
+### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL, images = NULL, schema = NULL, async = FALSE, on_progress = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
 Vectorized over `prompt`; returns a character vector of the same length (names preserved). `chat = TRUE` applies the model's chat template (Gemma + Qwen verified); `chat = FALSE` = raw completion. `seed = NULL` draws and *records* a seed; the used seed is attached as `attr(result, "seed")` (reproducibility is always recoverable). `stop` = character vector of stop sequences. Active interventions on `m` apply. `images = NULL` (default) = text-only, unchanged. Otherwise a **list parallel to `prompt`**: `images[[i]]` is a character vector of image **file paths** for prompt `i` (`character(0)` for none); a bare character vector is treated as `list(images)` and requires `length(prompt) == 1` (else recycled with a warning if lengths differ — the `llm_trace(positions=)` recycling contract). Each prompt's images are inserted **before** its text (interleaved-marker control is a reserved later capability); one output per prompt (the `prompt_id` mapping is unchanged). Requires a handle loaded with `projector=`. Errors: `relm_error_generation`, `relm_error_context_overflow` (combined text+image tokens exceed `context_length` — message says by how much), `relm_error_image` (decode/parse failure, unsupported/oversized image, images on a non-vision handle), `relm_error_argument` (bad `images` type/length).
 
 With `schema` supplied, text generation follows the approved D-030 bounded JSON
@@ -186,7 +190,11 @@ trained component/neuron coordinates and single-position observation contract.
 | `relm_error_context_overflow` | generate/trace/logits | message includes overflow size |
 | `relm_error_embed` | `llm_embed()` | |
 | `relm_error_trace` | `llm_trace()` | |
-| `relm_error_oom` | trace with `spill = FALSE` | predictive, pre-allocation |
+| `relm_error_oom` | trace budget; async output budget (D-037) | checked before exceeding the applicable bound |
+| `relm_error_busy` | competing native operation | `operation`, `reason`; one active native job |
+| `relm_error_cancelled` | async generation | `reason`, `seed`, `prompt_id`, `generated_tokens`; no partial text |
+| `relm_error_callback` | async progress callback | original condition in `parent` |
+| `relm_error_internal` | caught native/internal failures | classed failure, no raw panic |
 | `relm_error_intervention` | steer/ablate | dimension/layer validation |
 | `relm_error_probe` | `llm_probe()`, `activations()` | |
 | `relm_error_download` | `llm_download()` | checksum failures are fail-closed |
@@ -227,3 +235,42 @@ Flagged per the decision-preparation rule; everything else above is conventional
 1. **`positions = "last"` as the trace default** (memory-safe, matches Demo A) vs `"all"` (more intuitive, OOM-prone on 16 GB). Chosen: `"last"` — explicit expansion beats accidental spill.
 2. **Interventions return new handles** (functional, R-idiomatic, trivially reversible) vs mutating the model in place (imperative, one object). Chosen: new handles — "removal = use the original object" is the cleanest possible contract for the acceptance test "outputs reproduce bit-for-bit after removal."
 3. **Plain-English argument names** (`context_length`, `gpu_layers`) vs engine-standard jargon (`n_ctx`, `n_gpu_layers`). Chosen: plain English — researchers first; the jargon appears once, in the docs, as "(llama.cpp: `n_ctx`)".
+
+## 9. Asynchronous generation — `[approved: D-037, 2026-10-01]`
+
+Append `async = FALSE` and `on_progress = NULL` to `llm_generate()` and export
+`llm_cancel(m)`. The exact input, promise, progress-schema, error, resource and
+lifecycle contract is approved in [WP9 sections 3–6](docs/wp9-async-plan.md).
+It is binding with this entry. Implementation and acceptance are still in progress.
+
+`async` is one nonmissing logical. Non-NULL `on_progress` is a function and
+requires `async = TRUE`. Synchronous return/behavior stays unchanged. Async
+returns a `promises` promise resolving to the same named character vector and
+seed attribute. This pending object is an explicit exception to the base-return
+rule; the completed result remains base R. R argument/dependency/closed/busy
+checks fail before submission. Native failures reject with classed conditions.
+No R object, callback or RNG use is allowed on the native worker.
+
+Progress is a coalesced one-row data.frame: integer `prompt_id`,
+`prompts_completed`, `prompts_total`, `generated_tokens`, `max_tokens`, then
+character `phase` (`prefill`, `generate`, `complete`). Successful completion
+emits one final snapshot before resolving. Callbacks run on R's thread outside
+native locks. A failing callback requests cancellation and rejects with its
+original condition in `relm_error_callback$parent`.
+
+`llm_cancel(m)` returns invisible TRUE only for the first accepted cancellation
+before terminal publication for that exact submitting handle; otherwise FALSE
+when idle, already cancelling or native-terminal. Invalid/closed handles raise
+their existing classes. Cancellation is cooperative; no thread killing, hard
+interrupt deadline or successful partial result. Completion/error/cancellation
+returns ownership before another job is admitted. Unexpected worker panic
+closes the affected handle safely. Close/GC/unload behavior is specified in
+WP9 section 5, including deferred frees and joining before DLL unloading.
+
+Async limits: 128 prompts; 1 MiB UTF-8 per prompt; 16 MiB copied text arguments
+in aggregate; 8,192 requested tokens per prompt; 8 MiB final UTF-8 output across
+the call. Input refusal is `relm_error_argument`; output refusal is
+`relm_error_oom`. Existing stricter schema/image bounds remain. No truncation or
+implicit retry. Only one native job is active per process, with no queued jobs.
+Optional later/promises dependency/version failures use `relm_error_generation`
+with `reason = "async_dependency"`; native startup failure uses `async_start`.

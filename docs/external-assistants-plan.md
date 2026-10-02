@@ -30,8 +30,9 @@ an optional companion rather than expanding the native engine's scope.
    dependency-free R environment inspection and artifact runner, bounded
    behavior/execution checks. This is not a transport implementation or public
    marketplace submission.
-2. **WP9: async generation**, under its separately proposed API/dependency and
-   native ownership contract.
+2. **WP9: async generation**, under its approved D-037 API/dependency and native ownership
+   contract. Implementation and operational acceptance are complete; final PR
+   integration is tracked in [the execution report](wp9-implementation.md).
 3. **WP10: token streaming**, under its own reviewed API and buffer contract.
 4. **I1: external-assistant integration.** A single coherent work package after
    WP9 and WP10; the founder's statistical-assistant workflow supplies the caller.

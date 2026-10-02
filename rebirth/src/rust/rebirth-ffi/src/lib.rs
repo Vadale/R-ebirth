@@ -31,50 +31,8 @@ use rebirth_llm::{
     STRUCTURED_MAX_SCHEMA_BYTES, STRUCTURED_MAX_TOKENS, STRUCTURED_MAX_TOTAL_PROMPT_BYTES,
 };
 
-/// The native side of an `llm` handle: an owned loaded model, or `None` once the
-/// handle has been closed. Interior mutability lets a shared `&LlmHandle` (all
-/// extendr hands out) free the model deterministically. Access is confined to
-/// the R main thread (ARCHITECTURE.md §3), so a `RefCell` is sound here.
-struct LlmHandle {
-    inner: RefCell<Option<LoadedModel>>,
-}
-
-impl LlmHandle {
-    fn new(model: LoadedModel) -> Self {
-        LlmHandle {
-            inner: RefCell::new(Some(model)),
-        }
-    }
-
-    /// An already-closed handle (a real external pointer with no model), used to
-    /// exercise the close / is-closed boundary without a GGUF file.
-    fn empty() -> Self {
-        LlmHandle {
-            inner: RefCell::new(None),
-        }
-    }
-
-    fn is_closed(&self) -> bool {
-        self.inner.borrow().is_none()
-    }
-
-    /// Free the model now. Returns `true` if this call freed it (was open),
-    /// `false` if it was already closed (double-close is a no-op).
-    fn close(&self) -> bool {
-        self.inner.borrow_mut().take().is_some()
-    }
-
-    /// Run `f` against the live model, or `relm_error_closed` if the handle
-    /// has been closed. Keeps `inner` private to this type.
-    fn run<F, T>(&self, f: F) -> Result<T, RebirthError>
-    where
-        F: FnOnce(&LoadedModel) -> Result<T, RebirthError>,
-    {
-        let borrow = self.inner.borrow();
-        let model = borrow.as_ref().ok_or(RebirthError::Closed)?;
-        f(model)
-    }
-}
+// R-main-thread handle registry and async boundary (D-037).
+include!("async_boundary.rs");
 
 // --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
 
@@ -180,7 +138,7 @@ where
     F: FnOnce(&LoadedModel) -> Result<Robj, RebirthError>,
 {
     resolve(catch_unwind(AssertUnwindSafe(|| {
-        let handle = <&ExternalPtr<LlmHandle>>::try_from(ptr).map_err(|_| RebirthError::Closed)?;
+        let handle = checked_handle(ptr)?;
         handle.run(f)
     })))
 }
@@ -223,6 +181,25 @@ fn error_fields(error: &RebirthError) -> Robj {
             ("available", Robj::from(available.as_str())),
         ],
         RebirthError::Closed => Vec::new(),
+        RebirthError::Busy { operation, reason } => vec![
+            ("operation", Robj::from(operation.as_str())),
+            ("reason", Robj::from(reason.as_str())),
+        ],
+        RebirthError::Argument { argument, reason } => vec![
+            ("argument", Robj::from(argument.as_str())),
+            ("reason", Robj::from(reason.as_str())),
+        ],
+        RebirthError::Cancelled {
+            reason,
+            seed,
+            prompt_id,
+            generated_tokens,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            ("seed", Robj::from(*seed as f64)),
+            ("prompt_id", Robj::from(*prompt_id as i32)),
+            ("generated_tokens", Robj::from(*generated_tokens as i32)),
+        ],
         RebirthError::Tokenize { reason } => {
             vec![("reason", Robj::from(reason.as_str()))]
         }
@@ -400,6 +377,7 @@ fn rebirth_model_load(
     // to a classed relm_error_internal (ARCHITECTURE.md §2.2), never a generic
     // extendr error.
     resolve(catch_unwind(AssertUnwindSafe(|| {
+        let _native = native_guard("llm")?;
         let loaded = rebirth_llm::load(request)?;
         let meta = loaded.metadata();
         let ptr: Robj = ExternalPtr::new(LlmHandle::new(loaded)).into();
@@ -412,7 +390,7 @@ fn rebirth_model_load(
 // is a no-op. Returns an R NULL.
 #[extendr]
 fn rebirth_handle_close(ptr: Robj) -> Robj {
-    if let Ok(handle) = <&ExternalPtr<LlmHandle>>::try_from(&ptr) {
+    if let Ok(handle) = checked_handle(&ptr) {
         let _ = handle.close();
     }
     // A null (finalized) or foreign pointer is treated as already closed.
@@ -423,7 +401,7 @@ fn rebirth_handle_close(ptr: Robj) -> Robj {
 // (ARCHITECTURE.md §3). A finalized or foreign pointer counts as closed.
 #[extendr]
 fn rebirth_handle_is_closed(ptr: Robj) -> bool {
-    match <&ExternalPtr<LlmHandle>>::try_from(&ptr) {
+    match checked_handle(&ptr) {
         Ok(handle) => handle.is_closed(),
         Err(_) => true,
     }
@@ -433,6 +411,10 @@ fn rebirth_handle_is_closed(ptr: Robj) -> bool {
 // to resolve `backend = "auto"` and to validate an explicit backend.
 #[extendr]
 fn rebirth_available_backends() -> Robj {
+    let _native = match native_guard("available_backends") {
+        Ok(guard) => guard,
+        Err(error) => return error_payload(error),
+    };
     let names: Vec<String> = rebirth_llm::available_backends()
         .iter()
         .map(|b| b.as_str().to_string())
@@ -1123,6 +1105,14 @@ extendr_api::extendr_module! {
     fn rebirth_detokenize;
     fn rebirth_generate;
     fn rebirth_generate_structured;
+    fn rebirth_async_ready;
+    fn rebirth_async_submit;
+    fn rebirth_async_poll;
+    fn rebirth_async_cancel;
+    fn rebirth_async_shutdown;
+    fn rebirth_async_test_handle;
+    fn rebirth_async_test_config;
+    fn rebirth_async_test_stats;
     fn rebirth_logits;
     fn rebirth_embed;
     fn rebirth_trace;

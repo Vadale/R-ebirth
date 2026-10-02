@@ -5,32 +5,17 @@
 //! (`close.llm`) both reduce to dropping the owning value. The crate stays
 //! R-free (ARCHITECTURE.md §2): everything here takes/returns plain Rust types.
 
+use crate::domain::{assert_current, NativeGuard};
 use std::ffi::{c_void, CStr, CString};
 use std::os::raw::{c_char, c_int};
 use std::path::PathBuf;
 use std::ptr::NonNull;
 use std::sync::{Arc, Mutex, Once, PoisonError};
-use std::thread::ThreadId;
 
 use crate::error::RebirthError;
 use crate::ffi;
 use crate::probe::ProbeCache;
 use crate::vision::VisionContext;
-
-/// D-008 gate G2: the raw llama.cpp handles are confined to the R main thread
-/// (ARCHITECTURE.md section 3). WP4 Step 5 introduces the first background thread
-/// (the spill writer), which receives only owned plain `CaptureRow` data — never
-/// a handle — so the confinement holds. This debug-only tripwire fires if any
-/// future code ever touches a handle from another thread: the `unsafe impl Send +
-/// Sync` below is then no longer sound, and the misuse trips here first.
-#[inline]
-pub(crate) fn assert_r_main_thread(owner: ThreadId, what: &str) {
-    debug_assert_eq!(
-        std::thread::current().id(),
-        owner,
-        "relm: {what} touched off the R main thread (D-008 G2 violation)"
-    );
-}
 
 /// A concrete compute backend. `"auto"` is resolved to one of these in R before
 /// the boundary; the engine never sees `"auto"`.
@@ -80,6 +65,7 @@ impl BackendKind {
 
 /// The backends this build can use, in R-facing preference order (GPU first).
 pub fn available_backends() -> Vec<BackendKind> {
+    let _native = NativeGuard::acquire("available_backends");
     // Touch the backend so the ggml device registry is populated before the
     // capability queries in `is_available` run.
     let _guard = Backend::acquire();
@@ -128,6 +114,7 @@ pub struct Backend {
 impl Backend {
     /// Acquire a backend reference, initializing llama.cpp on the first one.
     pub fn acquire() -> Backend {
+        let _native = NativeGuard::acquire("backend initialization");
         let mut count = refcount();
         if *count == 0 {
             LOG_FILTER.call_once(|| {
@@ -150,6 +137,7 @@ impl Clone for Backend {
 
 impl Drop for Backend {
     fn drop(&mut self) {
+        let _native = NativeGuard::for_drop();
         let mut count = refcount();
         *count = count.saturating_sub(1);
         if *count == 0 {
@@ -166,13 +154,11 @@ impl Drop for Backend {
 pub struct Model {
     ptr: NonNull<ffi::llama_model>,
     resolved_backend: BackendKind,
-    /// The R main thread the handle was created on (D-008 G2 confinement check).
-    owner: ThreadId,
     /// The sentinel-probe verdict cache (D-021), shared through every `Arc<Model>`
     /// clone so a derived handle inherits it: the intervention mechanism is proven
     /// on this model's weights once per (mechanism, layer), then reused. `Mutex`
-    /// only for the `Sync` bound `Arc<Model>` requires — access is on the R main
-    /// thread and always uncontended.
+    /// protects the cache itself; native calls additionally require the
+    /// process-wide execution domain.
     probe_cache: Mutex<ProbeCache>,
     /// The vision-encoder (mtmd) context bound to this model when it was loaded
     /// with `llm(projector=)`; `None` for a text-only handle (WP-V2, D-026).
@@ -188,17 +174,15 @@ pub struct Model {
     _backend: Backend,
 }
 
-// The raw handle is only ever touched on the R main thread (ARCHITECTURE.md §3),
-// but `Arc<Model>` requires `Send + Sync`. This is asserted, not proven: WP4's
-// spill writer thread never receives a `Model`/`Context` (only owned `CaptureRow`
-// data over a bounded channel), so the handle is never actually sent across a
-// thread boundary. The `owner` thread-id `debug_assert` in the getters and Drop
-// (D-008 G2) is the tripwire that catches any future code that breaks this.
+// SAFETY: every public native operation reserves the process-wide execution
+// domain; raw getters assert its live generation and thread in release builds.
+// Arc shares weights/projector lifetimes, never concurrent native access.
 unsafe impl Send for Model {}
 unsafe impl Sync for Model {}
 
 impl Model {
     fn meta_str(&self, key: &str) -> Option<String> {
+        assert_current();
         let c_key = CString::new(key).ok()?;
         // First call with a zero-size buffer to learn the length.
         // SAFETY: `ptr` is a live model; a null/zero buffer only measures.
@@ -246,6 +230,7 @@ impl Model {
     }
 
     fn description(&self) -> String {
+        assert_current();
         let mut buf = vec![0_u8; 256];
         // SAFETY: `ptr` is a live model; buffer/len are consistent.
         let written = unsafe {
@@ -265,6 +250,7 @@ impl Model {
     }
 
     fn vocab_size(&self) -> i32 {
+        assert_current();
         // SAFETY: `ptr` is a live model; the vocab is owned by the model.
         let vocab = unsafe { ffi::llama_model_get_vocab(self.ptr.as_ptr()) };
         if vocab.is_null() {
@@ -277,7 +263,8 @@ impl Model {
 
 impl Drop for Model {
     fn drop(&mut self) {
-        assert_r_main_thread(self.owner, "Model::drop");
+        let _native = NativeGuard::for_drop();
+        assert_current();
         // Free the vision context BEFORE the model it is bound to (it holds
         // the model's vocab pointer): fields would otherwise drop after this
         // body, i.e. after llama_model_free.
@@ -296,18 +283,17 @@ pub struct Context {
     context_length: u32,
     gpu_layers: i32,
     mmap: bool,
-    /// The R main thread the context was created on (D-008 G2 confinement check).
-    owner: ThreadId,
 }
 
-// Asserted, not proven — see the `Model` note above. The context handle is used
-// only on the R main thread; the spill writer thread never receives it.
+// SAFETY: moving exclusive ownership is allowed only under the execution
+// domain. Context is intentionally !Sync: mutation never has shared access
+// across threads. Its Arc<Model> keeps weights and projector alive on handoff.
 unsafe impl Send for Context {}
-unsafe impl Sync for Context {}
 
 impl Drop for Context {
     fn drop(&mut self) {
-        assert_r_main_thread(self.owner, "Context::drop");
+        let _native = NativeGuard::for_drop();
+        assert_current();
         // SAFETY: `ptr` came from `llama_init_from_model`; freed exactly once and
         // before the `Arc<Model>` it borrows (dropped right after this).
         unsafe { ffi::llama_free(self.ptr.as_ptr()) };
@@ -335,6 +321,7 @@ impl OwnedContext {
         mut cparams: ffi::llama_context_params,
         on_fail: impl FnOnce() -> RebirthError,
     ) -> Result<OwnedContext, RebirthError> {
+        assert_current();
         // b10828 defaults to one output per sequence. relm also returns
         // per-token logits/embeddings, so retain the pre-bump batch-wide limit.
         cparams.n_outputs_max_per_seq = 0;
@@ -354,6 +341,7 @@ impl OwnedContext {
     /// The raw context pointer, for read-only queries (e.g. `llama_n_ctx`) made
     /// while the guard still owns the context.
     fn as_ptr(&self) -> *mut ffi::llama_context {
+        assert_current();
         self.ptr.as_ptr()
     }
 
@@ -368,6 +356,7 @@ impl OwnedContext {
 
 impl Drop for OwnedContext {
     fn drop(&mut self) {
+        let _native = NativeGuard::for_drop();
         // SAFETY: `ptr` came from `llama_init_from_model` and is freed exactly
         // once — `into_raw` forgets the guard when ownership transfers out, so
         // this runs only on the leak-prevention (early-return) path.
@@ -378,17 +367,24 @@ impl Drop for OwnedContext {
 /// A transient embeddings-mode context (D-011): `create_embedding_context` builds
 /// one per `llm_embed` call, sized to the batch, and it drops at the call's end.
 /// Unlike [`Context`] it is never stored in the `Arc`-shared handle, so it needs
-/// no `unsafe impl Send + Sync` — it lives and dies on the R main thread inside a
-/// single call (keeping the D-008 G2 thread-safety gate closed).
+/// no Send/Sync assertion: it lives and dies inside one guarded operation.
 pub(crate) struct EmbeddingContext {
-    pub(crate) ptr: NonNull<ffi::llama_context>,
+    ptr: NonNull<ffi::llama_context>,
     /// Keeps the model alive for the context's lifetime; dropped after `ptr`.
     _model: Arc<Model>,
     pub(crate) n_embd: usize,
 }
 
+impl EmbeddingContext {
+    pub(crate) fn as_ptr(&self) -> *mut ffi::llama_context {
+        assert_current();
+        self.ptr.as_ptr()
+    }
+}
+
 impl Drop for EmbeddingContext {
     fn drop(&mut self) {
+        let _native = NativeGuard::for_drop();
         // SAFETY: `ptr` came from `llama_init_from_model`; freed exactly once and
         // before the `Arc<Model>` it holds (dropped right after this).
         unsafe { ffi::llama_free(self.ptr.as_ptr()) };
@@ -399,18 +395,25 @@ impl Drop for EmbeddingContext {
 /// builds one per `llm_trace` call with the scheduler eval callback installed
 /// (`cb_eval`/`cb_eval_user_data`), so the forward pass can be observed. Like
 /// [`EmbeddingContext`] it is never stored in the `Arc`-shared handle — it lives
-/// and dies on the R main thread inside one call, needing no `unsafe impl Send +
-/// Sync` (keeping the D-008 G2 thread-safety gate closed). The generation context
+/// and dies inside one guarded operation, needing no Send/Sync assertion. The generation context
 /// never gets a callback, so tap-off overhead is structurally zero. The methods
 /// live in `trace.rs` next to the `CaptureState` the callback drives.
 pub(crate) struct TraceContext {
-    pub(crate) ptr: NonNull<ffi::llama_context>,
+    ptr: NonNull<ffi::llama_context>,
     /// Keeps the model alive for the context's lifetime; dropped after `ptr`.
     _model: Arc<Model>,
 }
 
+impl TraceContext {
+    pub(crate) fn as_ptr(&self) -> *mut ffi::llama_context {
+        assert_current();
+        self.ptr.as_ptr()
+    }
+}
+
 impl Drop for TraceContext {
     fn drop(&mut self) {
+        let _native = NativeGuard::for_drop();
         // SAFETY: `ptr` came from `llama_init_from_model`; freed exactly once and
         // before the `Arc<Model>` it holds. Freeing the context tears down the
         // scheduler (and thus the installed callback), so no capture can run after
@@ -448,6 +451,7 @@ pub struct ModelMetadata {
 impl LoadedModel {
     /// Snapshot every metadata value the R layer stores in the handle.
     pub fn metadata(&self) -> ModelMetadata {
+        let _native = NativeGuard::acquire("metadata");
         let model = &self.ctx.model;
         // SAFETY: `model.ptr` is live for the whole call; these are read-only
         // scalar getters.
@@ -485,13 +489,13 @@ impl LoadedModel {
     /// The live context pointer (`llama_decode`/`llama_get_logits_ith` take
     /// `*mut`; the KV cache is mutated in place behind it).
     pub(crate) fn ctx_ptr(&self) -> *mut ffi::llama_context {
-        assert_r_main_thread(self.ctx.owner, "Context::ctx_ptr");
+        assert_current();
         self.ctx.ptr.as_ptr()
     }
 
     /// The model's vocabulary (owned by the model; valid for its whole lifetime).
     pub(crate) fn vocab_ptr(&self) -> *const ffi::llama_vocab {
-        assert_r_main_thread(self.ctx.model.owner, "Model::vocab_ptr");
+        assert_current();
         // SAFETY: `model.ptr` is a live model; the vocab is owned by it and the
         // returned pointer is valid for as long as the model is.
         unsafe { ffi::llama_model_get_vocab(self.ctx.model.ptr.as_ptr()) }
@@ -499,7 +503,7 @@ impl LoadedModel {
 
     /// The live model pointer (metadata and chat-template queries).
     pub(crate) fn model_ptr(&self) -> *const ffi::llama_model {
-        assert_r_main_thread(self.ctx.model.owner, "Model::model_ptr");
+        assert_current();
         self.ctx.model.ptr.as_ptr()
     }
 
@@ -546,6 +550,7 @@ impl LoadedModel {
         &self,
         n_ctx: u32,
     ) -> Result<EmbeddingContext, RebirthError> {
+        assert_current();
         let model = self.ctx.model.clone();
 
         // SAFETY: default params are a plain by-value C struct we only tweak. The
@@ -602,14 +607,14 @@ impl LoadedModel {
     /// The model's architecture string (`general.architecture`, e.g. `"llama"`,
     /// `"qwen2"`), used by the tap's per-architecture component-name matcher.
     pub(crate) fn architecture(&self) -> String {
-        assert_r_main_thread(self.ctx.model.owner, "Model::architecture");
+        assert_current();
         self.ctx.model.architecture()
     }
 
     /// The residual-stream width (`n_embd`); every tapped component tensor
     /// (residual/attn_out/mlp_out) is this wide, so it is the expected row length.
     pub(crate) fn hidden_size(&self) -> i32 {
-        assert_r_main_thread(self.ctx.model.owner, "Model::hidden_size");
+        assert_current();
         // SAFETY: `model.ptr` is a live model; read-only scalar getter.
         unsafe { ffi::llama_model_n_embd(self.ctx.model.ptr.as_ptr()) }
     }
@@ -617,7 +622,7 @@ impl LoadedModel {
     /// The number of transformer blocks (`n_layer`); the capture's layer count
     /// when `layers = None` (all blocks), used for the predictive spill estimate.
     pub(crate) fn num_layers(&self) -> i32 {
-        assert_r_main_thread(self.ctx.model.owner, "Model::num_layers");
+        assert_current();
         // SAFETY: `model.ptr` is a live model; read-only scalar getter.
         unsafe { ffi::llama_model_n_layer(self.ctx.model.ptr.as_ptr()) }
     }
@@ -636,6 +641,7 @@ impl LoadedModel {
         cb_eval: ffi::GgmlSchedEvalCallback,
         cb_eval_user_data: *mut c_void,
     ) -> Result<TraceContext, RebirthError> {
+        assert_current();
         let model = self.ctx.model.clone();
 
         // SAFETY: default params are a plain by-value C struct we only tweak. The
@@ -707,6 +713,7 @@ impl LoadedModel {
     /// interventions live on the per-context adapters, not the shared weights, so
     /// a fresh context is a clean slate regardless of what the source carried.
     pub(crate) fn clone_with_fresh_context(&self) -> Result<LoadedModel, RebirthError> {
+        assert_current();
         let model = self.ctx.model.clone();
 
         // SAFETY: default params are a plain by-value C struct we only tweak;
@@ -732,7 +739,6 @@ impl LoadedModel {
                 context_length,
                 gpu_layers: self.ctx.gpu_layers,
                 mmap: self.ctx.mmap,
-                owner: std::thread::current().id(),
             },
         })
     }
@@ -754,6 +760,7 @@ pub struct LoadRequest {
 
 /// Load a GGUF model into an owned `LoadedModel`, or return a classed error.
 pub fn load(req: LoadRequest) -> Result<LoadedModel, RebirthError> {
+    let _native = NativeGuard::try_acquire("load")?;
     load_impl(req, None)
 }
 
@@ -769,6 +776,7 @@ pub fn load_with_batch(
     req: LoadRequest,
     n_batch: Option<u32>,
 ) -> Result<LoadedModel, RebirthError> {
+    let _native = NativeGuard::try_acquire("load_with_batch")?;
     load_impl(req, n_batch)
 }
 
@@ -845,7 +853,6 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
     let mut model = Model {
         ptr: model_ptr,
         resolved_backend: req.backend,
-        owner: std::thread::current().id(),
         probe_cache: Mutex::new(ProbeCache::default()),
         vision: None,
         _offload_devices: offload_devices,
@@ -891,7 +898,6 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
             context_length,
             gpu_layers: resolved_gpu_layers,
             mmap: req.mmap,
-            owner: std::thread::current().id(),
         },
     })
 }

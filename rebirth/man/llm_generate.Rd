@@ -14,7 +14,9 @@ llm_generate(
   chat = TRUE,
   stop = NULL,
   images = NULL,
-  schema = NULL
+  schema = NULL,
+  async = FALSE,
+  on_progress = NULL
 )
 }
 \arguments{
@@ -53,11 +55,17 @@ section.}
 \item{schema}{\code{NULL} (default) or one non-NA UTF-8 string containing JSON
 Schema text in the supported profile. This is JSON text, not a file path or
 R list; one schema applies to every prompt. See \emph{Structured output}.}
+
+\item{async}{One nonmissing logical. \code{FALSE} returns synchronously; \code{TRUE}
+returns a promises promise backed by native background generation.}
+
+\item{on_progress}{\code{NULL} or a function accepting one progress data frame.
+Requires \code{async = TRUE}; see \emph{Background generation}.}
 }
 \value{
 A character vector the same length as \code{prompt} (names preserved), each
 element the generated continuation. The seed used is attached as
-\code{attr(result, "seed")}.
+\code{attr(result, "seed")}. With \code{async = TRUE}, a promise resolving to that vector.
 }
 \description{
 Autoregressively continues each \code{prompt}. With \code{chat = TRUE} (the default) the
@@ -89,6 +97,48 @@ or repair model output. Spark chat supports the pinned official template and
 the existing single user turn; custom templates require \code{chat = FALSE} and
 caller-supplied formatting. Other models keep their existing chat behavior.
 }
+\section{Background generation}{
+
+\code{async = TRUE} requires optional packages later (>= 1.4.8) and promises
+(>= 1.5.0), and returns a promise resolving to the same named character vector
+and seed attribute. Generation runs on a native worker using the loaded model.
+Only one native job may run per R process; competing native operations raise
+\code{relm_error_busy}. Ordinary R calculations and metadata printing remain usable.
+R validation and admission precede the omitted-seed draw. Execution errors
+reject the promise with their classed conditions. Use \code{\link[=llm_cancel]{llm_cancel()}} to request
+cooperative cancellation, or \link[=close.llm]{close()} to close the handle.
+
+Optional \code{on_progress(state)} runs on R's thread with a fresh one-row
+\code{data.frame}: integer columns \code{prompt_id}, \code{prompts_completed}, \code{prompts_total},
+\code{generated_tokens}, \code{max_tokens}, then character \code{phase} (\code{"prefill"},
+\code{"generate"}, \code{"complete"}). Snapshots are coalesced and may skip intermediate
+states; generated tokens count the current prompt, including removed stop
+suffixes. Success delivers one final \code{complete} snapshot before resolving.
+A callback error requests cancellation and rejects with \code{relm_error_callback},
+retaining the original condition in \code{parent}. Callback return values are ignored.
+
+One timer checks progress at a 50 ms target interval on the global event loop.
+Callbacks normally run at the interactive prompt. In scripts, attach handlers
+with \code{promises::then()} and pump \code{later::run_now()} until your handler records
+completion. A long R expression delays delivery; a slow callback can block R.
+Dropping the promise or handle does not cancel a pending job. Namespace
+shutdown requests cancellation and joins the worker. The native library stays
+mapped so retained external-pointer finalizers can run safely. Forced
+\code{dyn.unload()} while external pointers remain alive is unsupported.
+
+Async accepts at most 128 prompts, 1 MiB UTF-8 per prompt, 16 MiB total copied
+text (including names, stop strings, schema and image paths), and 8192 tokens
+per prompt. A separate 16 MiB descriptor budget bounds retained string/vector
+overhead, including empty strings. Output is limited to 8 MiB UTF-8 per call (\code{relm_error_oom});
+existing stricter schema and image limits also apply. Nothing is truncated
+or retried to satisfy these bounds. Native cancellation is cooperative and
+may wait for an in-flight decode or image encoder call to finish.
+The 8 MiB output cap measures UTF-8 text bytes, not resident memory: copied
+inputs, templates, token vectors, transient output buffers and R character
+objects need additional storage. Existing model/context, sampler/grammar and
+vision working memory are separate from these transport limits.
+}
+
 \section{Structured output}{
 
 Supply \code{schema} as JSON text to constrain text generation to a bounded subset

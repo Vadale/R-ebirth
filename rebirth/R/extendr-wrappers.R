@@ -21,6 +21,22 @@ rebirth_generate <- function(ptr, prompt, chat, max_tokens, temperature, top_p, 
 
 rebirth_generate_structured <- function(ptr, prompts, chat, max_tokens, temperature, top_p, seed, schema) .Call(wrap__rebirth_generate_structured, ptr, prompts, chat, max_tokens, temperature, top_p, seed, schema)
 
+rebirth_async_ready <- function(ptr) .Call(wrap__rebirth_async_ready, ptr)
+
+rebirth_async_submit <- function(ptr, prompts, chat, max_tokens, temperature, top_p, seed, stop, images_flat, images_lens, image_max_bytes, schema) .Call(wrap__rebirth_async_submit, ptr, prompts, chat, max_tokens, temperature, top_p, seed, stop, images_flat, images_lens, image_max_bytes, schema)
+
+rebirth_async_poll <- function(ptr, job_id) .Call(wrap__rebirth_async_poll, ptr, job_id)
+
+rebirth_async_cancel <- function(ptr) .Call(wrap__rebirth_async_cancel, ptr)
+
+rebirth_async_shutdown <- function() .Call(wrap__rebirth_async_shutdown)
+
+rebirth_async_test_handle <- function() .Call(wrap__rebirth_async_test_handle)
+
+rebirth_async_test_config <- function(ptr, mode, steps, delay_ms) .Call(wrap__rebirth_async_test_config, ptr, mode, steps, delay_ms)
+
+rebirth_async_test_stats <- function() .Call(wrap__rebirth_async_test_stats)
+
 rebirth_logits <- function(ptr, prompt, top) .Call(wrap__rebirth_logits, ptr, prompt, top)
 
 rebirth_embed <- function(ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes)

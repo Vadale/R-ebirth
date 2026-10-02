@@ -1,12 +1,12 @@
-# WP9 — Native asynchronous generation proposal
+# WP9 — Native asynchronous generation contract
 
-Date: 2026-10-01. Decision: D-037. **Status: proposed; founder approval required before product
-implementation.** This document is an option analysis and executable work plan,
-not an approved API amendment or evidence that asynchronous generation works.
+Date: 2026-10-01. Decision: D-037. **Status: approved by the founder on 2026-10-01.** The explicit reply was
+"Approvo D-037, procedi con WP9". The contract below is approved for implementation;
+its planned tests are not execution evidence.
 The baseline is relm 0.3.0, main `82fcf134` (the release receipt in `CLAUDE.md`
 remains authoritative for the full SHA).
 
-## 1. Recommended decision
+## 1. Approved decision
 
 Implement WP9 as native Rust background generation on the already loaded model,
 with R-side `later` scheduling and a standard `promises` result. Start with **one
@@ -15,10 +15,9 @@ remain available. A competing native model operation fails promptly with a
 classed busy condition. This is concurrency between R and inference, not parallel
 inference across models.
 
-Approve the exact API in section 3, optional dependencies and their scoped
-transitive exception in section 4, and the native ownership/lifecycle amendment
-in section 5. These are one proposed WP9 decision; the owner records its ADR ID
-and copies approved entries into `API-GRAMMAR.md` before implementation.
+The founder approved the exact API in section 3, optional dependencies and their
+scoped transitive exception in section 4, and the native ownership/lifecycle
+amendment in section 5 as D-037. The approved grammar is recorded before coding.
 
 The existing D-034 service remains the choice for process isolation, durable
 tickets, deadlines and restart recovery. WP9 adds no server, request queue,
@@ -32,7 +31,8 @@ authentication, persistent job store or replacement service worker.
 | Existing process tools (`callr` or `mirai`) | A child must load its own model from paths/configuration; an external pointer cannot be transferred. Keeping both parent and child models resident adds memory, startup and state-reconstruction costs. Hard child termination is a useful isolation feature. | Retain the delivered callr service for this need; do not introduce a second process-worker framework into core generation. |
 | Permanent native actor owning every model from load to close | Clear fixed-thread resource ownership, but all existing load/token/embed/trace/intervention/generation operations need dispatch and marshalling through it. | Defer the broad rewrite. Reconsider only if the bounded ownership-transfer gate fails. |
 
-Focused source inspection confirms the critical constraints:
+The pre-implementation source inspection established these constraints (the
+implementation changes the ownership mechanism; see the [execution report](wp9-implementation.md)):
 
 - `rebirth/src/rust/rebirth-ffi/src/lib.rs`: `LlmHandle` contains
   `RefCell<Option<LoadedModel>>`; `with_model()` assumes the R thread and
@@ -72,7 +72,7 @@ Process alternatives are supported by
 [mirai cancellation](https://mirai.r-lib.org/reference/stop_mirai.html) explicitly
 does not guarantee interruption of compiled code.
 
-## 3. Proposed API amendment
+## 3. Approved API amendment
 
 ```r
 llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95,
@@ -133,7 +133,7 @@ An invalid handle raises `relm_error_argument`; a closed handle raises
 siblings. Cancellation leaves an open handle reusable after native completion;
 it does not immediately free its model or return a successful partial result.
 
-New conditions proposed for the grammar:
+New conditions approved for the grammar:
 
 - `relm_error_busy`: native engine access while another operation owns the
   process-wide execution permit; includes `operation` and `reason`.
@@ -148,7 +148,7 @@ class with `reason = "async_start"`. Caught internal failures use the existing
 implemented `relm_error_internal`; add its missing explicit grammar-table row
 while documenting the boundary rather than inventing another internal class.
 
-**Bounded admission proposed for async only:** at most 128 prompts, 1 MiB of
+**Bounded admission approved for async only:** at most 128 prompts, 1 MiB of
 UTF-8 prompt text per prompt, 16 MiB of copied text arguments in aggregate
 (prompts, names, stop strings, schema and image paths), and 8,192 requested
 tokens per prompt. Count/check bytes before native copying. Async holds at most
@@ -160,7 +160,7 @@ There is no truncation or implicit retry. These fixed limits make retained work
 reviewable on the 16 GB target; expanding them is a later API decision. They do
 not cap model/context memory or change synchronous limits.
 
-## 4. Proposed dependencies
+## 4. Approved dependencies
 
 Add exactly these direct R entries to `Suggests`:
 
@@ -194,7 +194,7 @@ Read-only inspection of the local R 4.5.1 installation found `later 1.4.8` and
 | rlang | 1.2.0 |
 
 These observations are not a package-wide lockfile or compatibility test.
-The ADR must explicitly permit this optional transitive closure, including
+D-037 explicitly permits this optional transitive closure, including
 rlang/lifecycle/magrittr, as a narrow exception to the no-tidyverse-dependency
 rule. relm continues using base data structures and `|>` and does not call those
 packages directly. A hard-import exception is not requested. The existing
@@ -300,6 +300,28 @@ bound for those objects and verify `object.size(result)` against it; duplicated
 R/Rust limits need twin-pin tests. A bounded progress channel alone does not
 prove bounded job memory.
 
+### Namespace unload and DLL lifetime
+
+Normal `unloadNamespace("relm")` cancels callbacks, joins active native work,
+closes registered model/context resources and restores the prior Rust panic
+hook. The shared library remains mapped while existing extendr external-pointer
+finalizers may still reference its code. Validation must explicitly assert this
+scope; namespace shutdown is not evidence of physical DLL unmapping. Forced
+`dyn.unload()` with live native pointers is unsupported and unverified. Session
+exit performs the same resource cleanup before process teardown.
+
+### Implementation memory guard
+
+The literal text-byte caps above stay unchanged. Admission also bounds retained
+string descriptors separately to 16 MiB: a conservative 64 bytes per string
+(prompt, name, stop, schema and image path), plus 32 bytes per image-list row.
+This prevents arbitrarily many empty strings bypassing the text bound. It is an
+allocation-overhead safeguard, raises `relm_error_argument` before copying, and
+is twin-pinned between R and Rust; R additionally includes names retained only
+on its main thread. Materialized result estimates include R headers, names,
+native output/token storage and simultaneous conversion buffers, rather than
+claiming the 8 MiB text limit is the entire resident cost.
+
 ## 7. Work sequence and acceptance
 
 Keep one WP in flight and one reviewable implementation milestone. Work is
@@ -319,8 +341,9 @@ gate produces a revised proposal, not silent expansion into an actor rewrite.
 4. One integrated independent review covers native ownership, numerical parity,
    memory and callback lifecycle; fix material findings and run final checks.
 
-The following are **planned gates, none executed for this proposal**. Introduce
-the named test files during implementation; they do not yet exist.
+The following are the approved acceptance gates. Their implementation and actual
+execution status are recorded separately in [the WP9 report](wp9-implementation.md).
+This table defines the criteria; it does not claim that every gate has passed.
 
 | Gate | Executable evidence and pass criterion | Run location |
 |---|---|---|
@@ -335,8 +358,8 @@ the named test files during implementation; they do not yet exist.
 | Integration | Existing `R CMD check` matrix, golden jobs, `cargo fmt --all --check`, clippy, default/no-spill Rust tests and required CI pass on the final candidate. Tests/examples document their gates and skips. | Final local relevant suites and existing CI. |
 
 Run long builds/tests in the background and use completion events or the existing
-same-chat monitor; do not poll unchanged output. This planning pass runs no build,
-native test, model download or generation and establishes no performance result.
+same-chat monitor; do not poll unchanged output. The original planning pass ran
+no build or generation and established no performance result.
 
 ## 8. WP10 compatibility and boundary
 
@@ -358,13 +381,10 @@ Phase-6 activation callbacks and live intervention changes remain separate.
 The requested I1 work follows WP9 and WP10; this plan does not pull it into async
 acceptance or approve any I1 API or dependency.
 
-## 9. Decision and exact next action
+## 9. Approval and exact next action
 
-The founder must approve or amend the combined WP9 proposal: existing-function
-async arguments plus `llm_cancel(m)`, optional later/promises and their explicit
-transitive exception, bounded job limits, one native job without a queue, and
-deferred close semantics during active work.
-
-On approval, the owner records the ADR and approved grammar entries, then starts
-step 1's ownership/lifecycle feasibility implementation. Until then, this remains
-a planning artifact and the shipped API stays synchronous.
+The founder approved D-037 in full on 2026-10-01. No approval remains pending for
+this contract. The ownership/lifecycle gate and implementation are in place;
+local automated and actual foreground RStudio checks pass. All nine checks at
+`8053bf8` passed. Final evidence-head CI and integration remain open in the
+execution report; retained earlier failures are not relabelled as successes.

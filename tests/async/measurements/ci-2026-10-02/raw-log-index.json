@@ -1,0 +1,32 @@
+{
+  "failed-steps.log": {
+    "file": "failed-steps.log.gz",
+    "uncompressed_sha256": "57723b5603d49b5df912099d5f5d982f8669d11a5102cef3e5c34f618d41e16c",
+    "uncompressed_bytes": 394716
+  },
+  "rrelease-0-00check.log": {
+    "file": "rrelease-0-00check.log.gz",
+    "uncompressed_sha256": "544ca28a762677ac8d9bf166e9443bc1368f8aa75833a0ec0e5f7195e0570cb3",
+    "uncompressed_bytes": 4045
+  },
+  "rrelease-0-testthat.Rout.fail": {
+    "file": "rrelease-0-testthat.Rout.fail.gz",
+    "uncompressed_sha256": "f9d26479da2071dbd21d852bd3b897714a186ec0ad2f795202c7ebfc67989a4f",
+    "uncompressed_bytes": 6657
+  },
+  "roldrel-1-2-00check.log": {
+    "file": "roldrel-1-2-00check.log.gz",
+    "uncompressed_sha256": "8114422c6f2d26d165422d6f88edb61e026fae4ad753c037618c03b5dda4122d",
+    "uncompressed_bytes": 4398
+  },
+  "roldrel-1-2-testthat.Rout.fail": {
+    "file": "roldrel-1-2-testthat.Rout.fail.gz",
+    "uncompressed_sha256": "fb1e6a5beb122963bcdd492db8ade99febc135fcbf41cf21681b0e406094326b",
+    "uncompressed_bytes": 52928
+  },
+  "ci-diagnostic-r-tests.log": {
+    "file": "ci-diagnostic-r-tests.log.gz",
+    "uncompressed_sha256": "ac12d00aeb78964082edb91512300041bca85abebd6c6df25336c7e1ac24caeb",
+    "uncompressed_bytes": 2566
+  }
+}

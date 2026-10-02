@@ -34,6 +34,9 @@ jobs:
       # Override the repository's floating stable channel even inside the
       # R CMD check build subprocess, so the MSRV leg actually uses the floor.
       RUSTUP_TOOLCHAIN: ${{ matrix.config.rust }}
+      # D-037 reserves one native execution domain per process. Concurrency
+      # regressions spawn their own controlled threads; unrelated tests serialize.
+      RUST_TEST_THREADS: "1"
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
       CMAKE_C_COMPILER_LAUNCHER: "sccache"

@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "phase": "integration",
+  "pid": 10752,
+  "started_at": 1790890749.941875,
+  "stages": [
+    {
+      "name": "package-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-wp9/integration.R"
+      ],
+      "started_at": 1790890749.946909,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790890780.123633
+    },
+    {
+      "name": "source-build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "--no-manual",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "started_at": 1790890780.1239839,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790890782.273649
+    },
+    {
+      "name": "package-check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--no-install",
+        "--no-tests",
+        "--no-vignettes",
+        "--no-manual",
+        "--library=/private/tmp/relm-wp9/library",
+        "/private/tmp/relm-wp9/relm_0.3.0.tar.gz"
+      ],
+      "started_at": 1790890782.2740102,
+      "status": "passed",
+      "exit_code": 0,
+      "finished_at": 1790890787.022845
+    }
+  ],
+  "stage": "package-check",
+  "finished_at": 1790890787.0231879
+}
