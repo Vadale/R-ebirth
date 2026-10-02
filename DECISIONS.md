@@ -1061,6 +1061,63 @@ these checks within already authorized work.
 
 ---
 
+## D-036 — Statistical skill companion and external-assistant integration
+
+- **Date:** 2026-10-01. **Status:** approved direction and sequence, by explicit
+  founder instruction in this session.
+- **Decision:** create an external R-ebirth skill for general and complex
+  statistical analysis, choosing R when the user has not specified a language.
+  Reuse appropriate R packages across the ecosystem, preserve study design and
+  report interpretable results, uncertainty, diagnostics and executable code.
+  Respect explicit language/workflow constraints. No near-certain model selection,
+  automatic installation, universal correctness or package-wide validation claim.
+- **Sequence:** skill foundation now; resume WP9 then WP10; perform the focused
+  external-assistant integration I1 after both. The founder's statistical workflow
+  now supplies the concrete caller requirement previously left conditional.
+- **Boundary:** this is a companion outside relm core, not a generic statistical
+  API inside the native inference package. No new core export, R/Rust dependency
+  or model download. Actual transport and any optional adapter/dependency need
+  their own concrete design; reuse existing tools rather than build a generic
+  MCP/chat framework. Marketplace submission is separate from local creation.
+- **Why:** make R's established statistical ecosystem accessible to assistants
+  through a coherent, inspectable workflow without coupling ordinary analyses
+  to local LLM inference or duplicating statistical implementations.
+- **Alternatives rejected:** keyword stuffing/overbroad activation; ignoring an
+  explicit Python request; installing all R packages; making relm mandatory for
+  unrelated statistics; pulling integration ahead of the approved async/streaming
+  sequence; claiming market visibility guarantees runtime use.
+- **Details:** [external-assistant plan](docs/external-assistants-plan.md).
+
+---
+
+## D-037 — WP9 native async contract (proposal)
+
+- **Date:** 2026-10-01. **Status:** proposed; concrete founder approval pending.
+- **Proposed decision:** add `async = FALSE` and `on_progress = NULL` to
+  `llm_generate()`, plus `llm_cancel(m)`. Async returns a standard promise whose
+  resolved value preserves the existing named character vector and seed. One
+  native job per R process, no queue, bounded retained data and cooperative
+  cancellation; R objects/callbacks remain on the R main thread.
+- **Dependencies proposed:** optional `later (>= 1.4.8)` and
+  `promises (>= 1.5.0)` in Suggests, with the explicit optional transitive
+  rlang/lifecycle/magrittr exception and observed closure documented in
+  [the WP9 plan](docs/wp9-async-plan.md). No Rust dependency or vendor patch.
+- **Ownership proposed:** exclusive checked native execution permits, reuse of
+  the loaded model, safe worker handoff, and deferred freeing on close/GC while
+  a job is active. Existing creator-thread assertions cannot simply be removed.
+- **Why:** responsive interactive R without duplicating model weights or replacing
+  the already delivered process-isolated service. Establish safe bounded hooks
+  for WP10 without publishing its token interface prematurely.
+- **Alternatives:** a new process worker duplicates loading/state and overlaps the
+  service; a permanent actor rewrites all native dispatch; both are retained as
+  alternatives if the ownership feasibility gate invalidates this recommendation.
+- **Approval scope:** exact signatures, conditions, progress schema, memory/admission
+  bounds, optional dependency closure and close/cancellation behavior in the plan.
+  The instruction to resume WP9 authorizes this design work, not an unreviewed
+  exported API. No product implementation or acceptance result is claimed.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

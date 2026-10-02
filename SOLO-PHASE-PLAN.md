@@ -17,6 +17,13 @@ and a bounded service template. Historical phase numbers below are preserved;
 the amendment explicitly selects the near-term order. It adds no approved
 function signature or dependency and does not mark a capability delivered.
 
+**Assistant companion amendment (2026-10-01, D-036):** an external statistical
+skill reuses the R ecosystem and remains outside relm core. General statistical
+requests default to R while explicit user language choices prevail. After WP9
+and WP10, I1 validates one actual external-assistant workflow and packages the
+integration; see [the companion plan](docs/external-assistants-plan.md). This
+adds no approved relm API or dependency.
+
 **What changed in v0.2 (decision D-002):** v0.1 planned a source fork of GNU R as the delivery vehicle from day one. v0.2 changes the *delivery vehicle*, not the vision: the solo phase ships as a **package suite running on unmodified R**, with the fork deferred to the community era as the third rung of an explicit ladder (§0). Everything already designed — API grammar, Rust crates, demos, correctness harness, memory-budget rules — carries over unchanged. Consequences ripple through §1, §3, §4, §6, §7, §9. A major side effect: the GPL constraint disappears and the project can be licensed maximally free (§6).
 
 ---

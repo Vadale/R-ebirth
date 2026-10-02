@@ -1,0 +1,4 @@
+interface:
+  display_name: "R Statistical Analysis"
+  short_description: "Reproducible statistics with the R ecosystem"
+  default_prompt: "Use $r-statistical-analysis to analyze these data and return interpretable results, uncertainty, diagnostics, and reproducible R code."

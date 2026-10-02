@@ -1,0 +1,7 @@
+"result_id","term","estimate","conf_low","conf_high","conf_level","scale","units","n","n_clusters","method","status","p_value"
+"primary_slope","Programme minus comparison: monthly change",1.36107303197745,1.10779019168946,1.61435587226544,0.95,"difference","score units/month",300,60,"REML mixed model; Wald t 95% CI; df 238","ok",1.03638104272496e-21
+"primary_4month","Programme minus comparison: 4-month change",5.4442921279098,4.43116076675785,6.45742348906175,0.95,"difference","score units",300,60,"REML mixed model; Wald t 95% CI; df 238","ok",1.03638104272496e-21
+"comparison_slope","Comparison monthly change",0.439345326631322,0.260247312705497,0.618443340557146,0.95,"difference","score units/month",300,60,"REML mixed model; Wald t 95% CI; df 238","ok",2.41699126407595e-06
+"programme_slope","Programme monthly change",1.80041835860877,1.62132034468295,1.9795163725346,0.95,"difference","score units/month",300,60,"REML mixed model; Wald t 95% CI; df 238","ok",3.09849627281729e-52
+"baseline_difference","Programme minus comparison at visit 0",0.79297115528664,-2.49384460438757,4.07978691496085,0.95,"difference","score units",300,60,"REML mixed model; Wald t 95% CI; df 58","ok",0.63096286958089
+"sensitivity_4month","Programme minus comparison: observed 4-month change",5.34742285141327,4.20943954319575,6.48540615963079,0.95,"difference","score units",60,60,"Welch t 95% CI on independent person-level changes; df 56.39","exploratory",3.66979311132649e-13

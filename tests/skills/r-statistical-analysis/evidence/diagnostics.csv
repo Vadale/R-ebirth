@@ -1,0 +1,8 @@
+"check","status","detail"
+"data","pass","300 complete rows, 60 persons, 30 per group, unique person/visit and stable groups."
+"dependence","pass","Random intercepts and slopes by person; residual errors assumed independent conditional on random effects."
+"convergence","pass","nlme::lme returned without a reported convergence failure; inspect captured conditions and variance components."
+"linearity","pass","Exploratory ML test of categorical vs linear group trajectories: p=0.2888; non-significance does not prove linearity."
+"residual_correlation","not_assessed","Residual ACF retained for inspection; five visits per person limit covariance diagnosis."
+"distribution","not_assessed","Residual/fitted and Q-Q plots retained for visual inspection; Gaussian random effects and conditional errors are assumptions."
+"causality","warn","Nonrandom group allocation; no adjustment covariates or pretreatment trends supplied. Association only."
