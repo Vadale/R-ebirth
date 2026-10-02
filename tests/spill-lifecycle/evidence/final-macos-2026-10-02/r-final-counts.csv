@@ -1,0 +1,313 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-boundary.R","boundary","the boundary maps a missing file to a model_load payload",4,0,FALSE,FALSE,0,0.03,0.015,0.08,4
+"test-boundary.R","boundary","the boundary maps garbage bytes to a model_load payload (no crash)",3,0,FALSE,FALSE,0,0.033,0.001,0.033,3
+"test-boundary.R","boundary","the boundary maps an unavailable backend to a backend payload",4,0,FALSE,FALSE,0,0.003,0.001,0.00399999999999995,4
+"test-boundary.R","boundary","a forced panic maps to relm_error_internal, never reaching R raw",4,0,FALSE,FALSE,0,0.005,0.000999999999999994,0.006,4
+"test-boundary.R","boundary","rebirth_available_backends reports cpu and never cuda in WP1",4,0,FALSE,FALSE,0,0.002,0.001,0.004,4
+"test-conditions.R","conditions","relm_abort raises the classed hierarchy with structured fields",6,0,FALSE,FALSE,0,0.003,0.001,0.004,6
+"test-conditions.R","conditions","relm_error is never raised bare (always has a specific leaf class)",1,0,FALSE,FALSE,0,0.001,0,0.001,1
+"test-conditions.R","conditions","relm_check returns success payloads unchanged",1,0,FALSE,FALSE,0,0.001,0.001,0.001,1
+"test-conditions.R","conditions","relm_check raises the classed condition described by a failure payload",4,0,FALSE,FALSE,0,0.003,0.001,0.005,4
+"test-llm-async-lifecycle.R","llm-async-lifecycle","close and forced GC during a native job are safe in a fresh process",3,0,FALSE,FALSE,0,0.003,0.005,0.246,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","pending job roots survive dropped model and promise references",3,0,FALSE,FALSE,0,0.011,0.005,0.766,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","normal failures cancel and panic release native ownership in subprocesses",3,0,FALSE,FALSE,0,0.006,0.005,0.354,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","namespace shutdown joins work and retains the DLL for live finalizers",3,0,FALSE,FALSE,0,0.004,0.006,0.204,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","real synthetic models defer close and GC while a fixture owns native execution",3,0,FALSE,FALSE,0,0.006,0.012,14.393,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","[MODEL] derived Qwen ownership survives parent sibling and unrelated close or GC",1,0,TRUE,FALSE,0,0.001,0.001,0.00100000000000122,0
+"test-llm-async-lifecycle.R","llm-async-lifecycle","foreign external pointers fail safely before an extendr downcast",3,0,FALSE,FALSE,0,0.003,0.004,0.183,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","session exit joins an active job without an event-loop drain",3,0,FALSE,FALSE,0,0.004,0.004,0.181000000000001,3
+"test-llm-async-memory.R","llm-async-memory","the R result estimate covers the full UTF-8 output bound and names",12,0,FALSE,FALSE,0,0.092,0.00599999999999999,0.108000000000001,12
+"test-llm-async-memory.R","llm-async-memory","the full buffer accounting separates copies tokens and R materialization",7,0,FALSE,FALSE,0,0.005,0.002,0.00600000000000023,7
+"test-llm-async-memory.R","llm-async-memory","prompt admission precedes image-list recycling",1,0,FALSE,FALSE,0,0.003,0,0.00300000000000011,1
+"test-llm-async.R","llm-async","async dependencies are present on required R CI legs",3,0,FALSE,FALSE,0,0.025,0.002,0.0269999999999975,3
+"test-llm-async.R","llm-async","async argument and admission failures preserve the RNG",19,0,FALSE,FALSE,0,0.031,0.001,0.0309999999999988,19
+"test-llm-async.R","llm-async","missing or outdated optional packages fail before admission or RNG",9,0,FALSE,FALSE,0,0.006,0.002,0.00700000000000145,9
+"test-llm-async.R","llm-async","async UTF-8 and aggregate limits include names stop schema and image paths",13,0,FALSE,FALSE,0,0.133,0.00699999999999999,0.145,13
+"test-llm-async.R","llm-async","native async promise is responsive and services independent R heartbeats",12,0,FALSE,FALSE,0,0.0389999999999999,0.012,2.082,12
+"test-llm-async.R","llm-async","progress is fresh coalesced data with exactly one final snapshot",14,0,FALSE,FALSE,0,0.049,0.00800000000000001,0.361999999999998,14
+"test-llm-async.R","llm-async","the omitted seed is drawn once on submission and callbacks do not draw it",4,0,FALSE,FALSE,0,0.012,0.004,0.277999999999999,4
+"test-llm-async.R","llm-async","empty image sets remain ordinary text input",3,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.065999999999999,3
+"test-llm-async.R","llm-async","callback cancellation and reentrancy leave one settlement and reusable handle",10,0,FALSE,FALSE,0,0.0339999999999999,0.00800000000000001,0.148,10
+"test-llm-async.R","llm-async","callback failures retain the original condition and drain native work",7,0,FALSE,FALSE,0,0.018,0.00599999999999998,0.133000000000003,7
+"test-llm-async.R","llm-async","a callback failing on final completion rejects instead of resolving",5,0,FALSE,FALSE,0,0.01,0.002,0.0680000000000014,5
+"test-llm-async.R","llm-async","native fixture errors and panics become typed promise rejections",10,0,FALSE,FALSE,0,0.014,0.003,0.126999999999999,10
+"test-llm-async.R","llm-async","cancel validates handles and targets only the submitting handle",9,0,FALSE,FALSE,0,0.014,0.001,0.0670000000000002,9
+"test-llm-async.R","llm-async","R handle state synchronizes after native-only close",5,0,FALSE,FALSE,0,0.006,0,0.0069999999999979,5
+"test-llm-async.R","llm-async","incomplete native error payloads remain classed internal failures",6,0,FALSE,FALSE,0,0.003,0.001,0.00400000000000134,6
+"test-llm-async.R","llm-async","async tokenizer failures reject classed conditions without model downloads",3,0,FALSE,FALSE,0,0.004,0.002,0.0609999999999999,3
+"test-llm-async.R","llm-async","[MODEL] async matches sync for greedy sampled stop and structured generation",1,0,TRUE,FALSE,0,0.001,0,0.00100000000000122,0
+"test-llm-async.R","llm-async","schema compilation errors reject their existing class",8,0,FALSE,FALSE,0,0.00900000000000001,0.003,0.0120000000000005,8
+"test-llm-async.R","llm-async","terminal callbacks may start a subsequent job without losing its roots",7,0,FALSE,FALSE,0,0.01,0.003,0.119,7
+"test-llm-async.R","llm-async","repeated small success cancel and error jobs release R roots",1133,0,FALSE,FALSE,0,1.751,0.386,7.478,1133
+"test-llm-async.R","llm-async","a stalled event loop retains one snapshot and one terminal slot",6,0,FALSE,FALSE,0,0.0220000000000002,0.016,0.518999999999998,6
+"test-llm-async.R","llm-async","worker startup failure rejects without leaking admission or R roots",6,0,FALSE,FALSE,0,0.00700000000000012,0.001,0.00900000000000034,6
+"test-llm-async.R","llm-async","[MODEL] async preserves interventions and cancellation recovery",1,0,TRUE,FALSE,0,0.00499999999999989,0,0.00500000000000256,0
+"test-llm-async.R","llm-async","[MODEL] async vision matches the existing image generation path",1,0,TRUE,FALSE,0,0.00199999999999978,0,0.00200000000000244,0
+"test-llm-close.R","llm-close","close.llm on an already-closed handle is an invisible NULL no-op",2,0,FALSE,FALSE,0,0.00099999999999989,0.001,0.00199999999999889,2
+"test-llm-close.R","llm-close","any use of a closed handle raises relm_error_closed",2,0,FALSE,FALSE,0,0.004,0,0.00500000000000256,2
+"test-llm-close.R","llm-close","close.llm marks the handle closed and is idempotent (empty handle)",5,0,FALSE,FALSE,0,0.004,0.001,0.00600000000000023,5
+"test-llm-close.R","llm-close","the closed tag is shared across copies of a handle (env semantics)",2,0,FALSE,FALSE,0,0.00300000000000011,0,0.00300000000000011,2
+"test-llm-close.R","llm-close","the boundary closed tag: is_closed TRUE on an empty handle, close a no-op",3,0,FALSE,FALSE,0,0.00300000000000011,0.001,0.00300000000000011,3
+"test-llm-close.R","llm-close","is_closed treats a NULL or foreign object as closed (defensive)",3,0,FALSE,FALSE,0,0.00199999999999978,0.001,0.00300000000000011,3
+"test-llm-download.R","llm-download","llm_download() rejects a non-string model",5,0,FALSE,FALSE,0,0.00800000000000001,0.001,0.00799999999999912,5
+"test-llm-download.R","llm-download","llm_download() validates dir and quiet before touching the network",5,0,FALSE,FALSE,0,0.00700000000000012,0,0.0069999999999979,5
+"test-llm-download.R","llm-download","the model registry is well-formed (https, 64-hex sha256, unique aliases)",7,0,FALSE,FALSE,0,0.004,0.002,0.00600000000000023,7
+"test-llm-download.R","llm-download","resolve_model() fails closed on a malformed registry SHA256",2,0,FALSE,FALSE,0,0.00300000000000011,0,0.00300000000000011,2
+"test-llm-download.R","llm-download","the CI-integration alias pins the same SHA256 the nightly workflow uses",2,0,FALSE,FALSE,0,0.00200000000000022,0.001,0.00199999999999889,2
+"test-llm-download.R","llm-download","the vision aliases pin the same SHA256s the nightly vision workflow uses",5,0,FALSE,FALSE,0,0.004,0.001,0.004999999999999,5
+"test-llm-download.R","llm-download","resolve_model() maps a known alias to its pinned URL and checksum",4,0,FALSE,FALSE,0,0.00300000000000011,0.001,0.00400000000000134,4
+"test-llm-download.R","llm-download","resolve_model() rejects an unknown alias and lists the known ones",3,0,FALSE,FALSE,0,0.00199999999999978,0.001,0.00300000000000011,3
+"test-llm-download.R","llm-download","resolve_model() accepts an https URL but with no expected checksum",3,0,FALSE,FALSE,0,0.00300000000000011,0,0.00300000000000011,3
+"test-llm-download.R","llm-download","resolve_model() rejects non-HTTPS URLs (http/ftp/file)",6,0,FALSE,FALSE,0,0.00199999999999978,0,0.00300000000000011,6
+"test-llm-download.R","llm-download","basename_from_url() derives the filename and strips query/fragment",3,0,FALSE,FALSE,0,0.00299999999999967,0.001,0.004999999999999,3
+"test-llm-download.R","llm-download","download_verify() rejects a URL whose file name would escape the directory",2,0,FALSE,FALSE,0,0.00100000000000033,0,0.00199999999999889,2
+"test-llm-download.R","llm-download","download_verify() verifies the checksum and returns the destination path",5,0,FALSE,FALSE,0,0.00300000000000011,0.002,0.00500000000000256,5
+"test-llm-download.R","llm-download","download_verify() is fail-closed on a checksum mismatch: file deleted + classed error",6,0,FALSE,FALSE,0,0.004,0.001,0.004999999999999,6
+"test-llm-download.R","llm-download","download_verify() skips the download on a verified cache hit",2,0,FALSE,FALSE,0,0.00199999999999978,0.001,0.00200000000000244,2
+"test-llm-download.R","llm-download","download_verify() re-downloads when the cached file is corrupt",2,0,FALSE,FALSE,0,0.00100000000000033,0.001,0.00300000000000011,2
+"test-llm-download.R","llm-download","download_verify() creates a missing (nested) destination directory",3,0,FALSE,FALSE,0,0.00199999999999978,0.001,0.00400000000000134,3
+"test-llm-download.R","llm-download","download_verify() reports the hash for a bare URL and never claims it verified",3,0,FALSE,FALSE,0,0.00499999999999989,0.001,0.0069999999999979,3
+"test-llm-download.R","llm-download","download_verify() re-fetches a bare URL even if a same-named file exists",2,0,FALSE,FALSE,0,0.00199999999999978,0.001,0.00300000000000011,2
+"test-llm-download.R","llm-download","download_verify() surfaces a network failure as relm_error_download",3,0,FALSE,FALSE,0,0.00099999999999989,0,0.00300000000000011,3
+"test-llm-download.R","llm-download","llm_download() returns the destination path invisibly",2,0,FALSE,FALSE,0,0.00099999999999989,0.001,0.00300000000000011,2
+"test-llm-download.R","llm-download","llm_download() enforces the registry checksum through the public API (fail-closed)",4,0,FALSE,FALSE,0,0.00299999999999967,0.002,0.00400000000000134,4
+"test-llm-download.R","llm-download","[MODEL] llm_download() fetches and verifies the pinned 0.5B end-to-end",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.00100000000000122,0
+"test-llm-embed.R","llm-embed","llm_embed() rejects a non-llm handle",1,0,FALSE,FALSE,0,0.00200000000000022,0.001,0.00200000000000244,1
+"test-llm-embed.R","llm-embed","llm_embed() validates its arguments",10,0,FALSE,FALSE,0,0.016,0.001,0.017000000000003,10
+"test-llm-embed.R","llm-embed","llm_embed() keeps classed pooling validation and match.arg semantics",23,0,FALSE,FALSE,0,0.012,0.002,0.0150000000000006,23
+"test-llm-embed.R","llm-embed","llm_embed() on a tokenizer-less model raises relm_error_tokenize",1,0,FALSE,FALSE,0,0.00199999999999978,0.002,0.00400000000000134,1
+"test-llm-embed.R","llm-embed","llm_embed() rejects a closed handle",1,0,FALSE,FALSE,0,0.00199999999999978,0.001,0.00300000000000011,1
+"test-llm-embed.R","llm-embed","the semantic-similarity fixture is well-formed and topic-separated",6,0,FALSE,FALSE,0,0.004,0.001,0.004999999999999,6
+"test-llm-embed.R","llm-embed","embedding dimensions match the model card",1,0,TRUE,FALSE,0,0.00100000000000033,0.001,0.00100000000000122,0
+"test-llm-embed.R","llm-embed","embedding is vectorized and preserves names as row names",1,0,TRUE,FALSE,0,0.00099999999999989,0,0.000999999999997669,0
+"test-llm-embed.R","llm-embed","normalize = TRUE yields unit rows; FALSE does not (no silent change)",1,0,TRUE,FALSE,0,0.00099999999999989,0,0,0
+"test-llm-embed.R","llm-embed","pooling = ""model"" on a generative model is a clean embed error",1,0,TRUE,FALSE,0,0.00099999999999989,0.001,0.000999999999997669,0
+"test-llm-embed.R","llm-embed","related sentence pairs rank above unrelated ones (semantic similarity)",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.00100000000000122,0
+"test-llm-generate.R","llm-generate","llm_generate() rejects a non-llm handle",1,0,FALSE,FALSE,0,0.00199999999999978,0,0.00199999999999889,1
+"test-llm-generate.R","llm-generate","llm_generate() validates its arguments",17,0,FALSE,FALSE,0,0.0259999999999998,0.002,0.0289999999999999,17
+"test-llm-generate.R","llm-generate","llm_generate() on a tokenizer-less model raises relm_error_tokenize",1,0,FALSE,FALSE,0,0.00200000000000022,0.001,0.00400000000000134,1
+"test-llm-generate.R","llm-generate","llm_generate() rejects a closed handle",1,0,FALSE,FALSE,0,0.00199999999999978,0.001,0.00400000000000134,1
+"test-llm-generate.R","llm-generate","greedy generation is deterministic",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-generate.R","llm-generate","a seed reproduces a sampled run and is attached to the result",1,0,TRUE,FALSE,0,0,0.001,0.00100000000000122,0
+"test-llm-generate.R","llm-generate","generation is vectorized over prompt and preserves names",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-generate.R","llm-generate","chat = TRUE differs from raw completion",1,0,TRUE,FALSE,0,0,0,0.000999999999997669,0
+"test-llm-generate.R","llm-generate","a stop string truncates the output before it",1,0,TRUE,FALSE,0,0,0.001,0,0
+"test-llm-generate.R","llm-generate","a prompt longer than the batch size still generates (chunked decode)",1,0,TRUE,FALSE,0,0,0,0.000999999999997669,0
+"test-llm-generate.R","llm-generate","an over-long prompt raises relm_error_context_overflow",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-generate.R","llm-generate","chat = TRUE works on a Gemma 4 model via the arch template fallback [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000033,0.001,0.000999999999997669,0
+"test-llm-intervene.R","llm-intervene","llm_steer() / llm_ablate() reject a non-llm handle",2,0,FALSE,FALSE,0,0.00499999999999989,0,0.004999999999999,2
+"test-llm-intervene.R","llm-intervene","INTERVENTION_VALIDATED_ARCHS is documentation for the validated tier, not a gate",6,0,FALSE,FALSE,0,0.004,0.002,0.00600000000000023,6
+"test-llm-intervene.R","llm-intervene","llm_steer() validates layer / direction / coef / positions",17,0,FALSE,FALSE,0,0.0209999999999999,0.001,0.022000000000002,17
+"test-llm-intervene.R","llm-intervene","llm_ablate() validates layer / neurons / value / component",12,0,FALSE,FALSE,0,0.0169999999999999,0.001,0.0179999999999971,12
+"test-llm-intervene.R","llm-intervene","interventions reject a closed handle",2,0,FALSE,FALSE,0,0.004,0.002,0.00600000000000023,2
+"test-llm-intervene.R","llm-intervene","llm_steer() returns a new handle and never mutates the source",10,0,FALSE,FALSE,0,0.0100000000000002,0.00700000000000001,0.0629999999999988,10
+"test-llm-intervene.R","llm-intervene","llm_ablate() returns a new handle carrying the ablation spec",8,0,FALSE,FALSE,0,0.00800000000000001,0.004,0.0169999999999995,8
+"test-llm-intervene.R","llm-intervene","summary() lists a derived handle's interventions; print() counts them",3,0,FALSE,FALSE,0,0.00700000000000012,0.005,0.0139999999999993,3
+"test-llm-intervene.R","llm-intervene","interventions compose and are derivation-order-independent (spec level)",4,0,FALSE,FALSE,0,0.00700000000000012,0.006,0.014999999999997,4
+"test-llm-intervene.R","llm-intervene","stacking steers on one layer keeps both entries in the spec",2,0,FALSE,FALSE,0,0.00499999999999989,0.005,0.0130000000000017,2
+"test-llm-intervene.R","llm-intervene","a derived handle outlives the source it was derived from",3,0,FALSE,FALSE,0,0.00499999999999989,0.004,0.0139999999999993,3
+"test-llm-intervene.R","llm-intervene","closing a derived handle does not close its source",3,0,FALSE,FALSE,0,0.00600000000000023,0.005,0.0130000000000017,3
+"test-llm-intervene.R","llm-intervene","embedding / tracing an intervened handle is a classed error (stub)",2,0,FALSE,FALSE,0,0.004,0,0.00400000000000134,2
+"test-llm-intervene.R","llm-intervene","a real intervened handle blocks embed and trace",2,0,FALSE,FALSE,0,0.00700000000000012,0.003,0.0109999999999992,2
+"test-llm-intervene.R","llm-intervene","steering measurably changes generated output",1,0,TRUE,FALSE,0,0.00099999999999989,0,0,0
+"test-llm-intervene.R","llm-intervene","ablation measurably changes generated output",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-intervene.R","llm-intervene","the original handle reproduces its output bit-for-bit after derivation",1,0,TRUE,FALSE,0,0.00099999999999989,0,0.00100000000000122,0
+"test-llm-intervene.R","llm-intervene","generation is derivation-order-independent (steer/ablate commute)",1,0,TRUE,FALSE,0,0.00100000000000033,0,0,0
+"test-llm-load.R","llm-load","llm() rejects a non-string path with relm_error_model_load",5,0,FALSE,FALSE,0,0.00800000000000001,0,0.00700000000000145,5
+"test-llm-load.R","llm-load","llm() names the failing check for a missing file",2,0,FALSE,FALSE,0,0.00199999999999978,0,0.00199999999999889,2
+"test-llm-load.R","llm-load","llm() rejects a directory path",2,0,FALSE,FALSE,0,0.00100000000000033,0.001,0.00199999999999889,2
+"test-llm-load.R","llm-load","llm() validates context_length / gpu_layers / mmap with relm_error_argument",14,0,FALSE,FALSE,0,0.02,0.001,0.0210000000000008,14
+"test-llm-load.R","llm-load","llm() rejects invalid backend choices with classed argument errors",12,0,FALSE,FALSE,0,0.00700000000000012,0.001,0.00900000000000034,12
+"test-llm-load.R","llm-load","llm() keeps match.arg defaults and unambiguous backend abbreviations",4,0,FALSE,FALSE,0,0.00499999999999989,0.001,0.00600000000000023,4
+"test-llm-load.R","llm-load","llm() raises relm_error_backend for a backend the build lacks",3,0,FALSE,FALSE,0,0.00100000000000033,0.001,0.00199999999999889,3
+"test-llm-logits.R","llm-logits","llm_logits() rejects a non-llm handle",2,0,FALSE,FALSE,0,0.00200000000000022,0,0.00300000000000011,2
+"test-llm-logits.R","llm-logits","llm_logits() validates prompt and top before the engine",11,0,FALSE,FALSE,0,0.0169999999999999,0.002,0.0199999999999996,11
+"test-llm-logits.R","llm-logits","llm_logits() on a tokenizer-less model raises relm_error_tokenize",1,0,FALSE,FALSE,0,0.00300000000000011,0.002,0.00399999999999778,1
+"test-llm-logits.R","llm-logits","llm_logits() rejects a closed handle",1,0,FALSE,FALSE,0,0.00300000000000011,0.001,0.00400000000000134,1
+"test-llm-logits.R","llm-logits","llm_logits() returns the documented schema, top rows per prompt",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-logits.R","llm-logits","llm_logits() ranks by descending logit with a valid probability head",1,0,TRUE,FALSE,0,0,0,0.000999999999997669,0
+"test-llm-logits.R","llm-logits","llm_logits() is deterministic for a fixed prompt",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-logits.R","llm-logits","llm_logits() vectorizes over prompt with per-prompt ranks",1,0,TRUE,FALSE,0,0,0,0.000999999999997669,0
+"test-llm-logits.R","llm-logits","llm_logits() reflects an active intervention -- diverges from base [MODEL]",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-model.R","llm-model","llm() loads a real Qwen2.5-0.5B and reports card-accurate metadata",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-model.R","llm-model","llm() honours a non-default context_length on a real model",1,0,TRUE,FALSE,0,0,0,0.00100000000000122,0
+"test-llm-model.R","llm-model","summary() on a real model carries tokenizer and memory information",1,0,TRUE,FALSE,0,0,0,0,0
+"test-llm-model.R","llm-model","repeated load/unload of a real model does not leak native memory",1,0,TRUE,FALSE,0,0,0.001,0.00100000000000122,0
+"test-llm-print.R","llm-print","print.llm renders one screen of metadata and returns invisibly",9,0,FALSE,FALSE,0,0.00599999999999978,0.002,0.00799999999999912,9
+"test-llm-print.R","llm-print","print.llm reports the active-intervention count",1,0,FALSE,FALSE,0,0.00099999999999989,0.001,0.00199999999999889,1
+"test-llm-print.R","llm-print","summary.llm returns a classed list with footprint and tokenizer info",6,0,FALSE,FALSE,0,0.00300000000000011,0.001,0.004999999999999,6
+"test-llm-print.R","llm-print","print.summary.llm renders the richer view",5,0,FALSE,FALSE,0,0.00300000000000011,0.001,0.00500000000000256,5
+"test-llm-print.R","llm-print","format helpers render human-readable magnitudes",6,0,FALSE,FALSE,0,0.004,0.001,0.004999999999999,6
+"test-llm-print.R","llm-print","format_bytes twin-pins the Rust human_bytes formula",7,0,FALSE,FALSE,0,0.00499999999999989,0.001,0.00700000000000145,7
+"test-llm-probe-memory.R","llm-probe-memory","probe memory refusal precedes dense layer allocation for both storage modes",8,0,FALSE,FALSE,0,0.238,0.0129999999999999,0.276,8
+"test-llm-probe-memory.R","llm-probe-memory","the estimate covers measured materialized input and concurrent fit objects",5,0,FALSE,FALSE,0,0.0140000000000002,0.001,0.0159999999999982,5
+"test-llm-probe-memory.R","llm-probe-memory","a missing optional solver fails through the real classed dependency guard",3,0,FALSE,FALSE,0,0.00200000000000022,0,0.00300000000000011,3
+"test-llm-probe-memory.R","llm-probe-memory","large Arrow string buffers count toward the slice read budget",2,0,FALSE,FALSE,0,0.0139999999999998,0.003,0.0180000000000007,2
+"test-llm-probe-statistics.R","llm-probe-statistics","ridge coefficients solve the mean-loss objective with an unpenalized intercept",10,0,FALSE,FALSE,0,0.0089999999999999,0.001,0.0109999999999992,10
+"test-llm-probe-statistics.R","llm-probe-statistics","train-only RMS preprocessing drops constants and handles one retained neuron",8,0,FALSE,FALSE,0,0.00900000000000034,0.002,0.0109999999999992,8
+"test-llm-probe-statistics.R","llm-probe-statistics","metric ties and threshold equality follow the frozen pair-count contract",5,0,FALSE,FALSE,0,0.004,0.001,0.004999999999999,5
+"test-llm-probe-statistics.R","llm-probe-statistics","cluster intervals preserve multiplicities, use type7 and fail closed",13,0,FALSE,FALSE,0,0.00999999999999979,0.002,0.0120000000000005,13
+"test-llm-probe-statistics.R","llm-probe-statistics","a validation-only extreme cannot affect its fold's training transformation",2,0,FALSE,FALSE,0,0.187,0.00700000000000001,0.236999999999998,2
+"test-llm-probe-statistics.R","llm-probe-statistics","solver failures and incomplete paths cannot become partial probe fits",14,0,FALSE,FALSE,0,0.0180000000000002,0.002,0.0309999999999988,14
+"test-llm-probe-statistics.R","llm-probe-statistics","a deliberately leaky allocator is rejected before fitting",2,0,FALSE,FALSE,0,0.004,0,0.0150000000000006,2
+"test-llm-probe-statistics.R","llm-probe-statistics","caller glmnet controls are restored and cannot silently change the objective path",2,0,FALSE,FALSE,0,0.104,0.004,0.122,2
+"test-llm-probe-statistics.R","llm-probe-statistics","the development refit warm-starts through the selected endpoint and retains it",10,0,FALSE,FALSE,0,0.012,0.004,0.0350000000000001,10
+"test-llm-probe-validation.R","llm-probe-validation","probe labels and group identities are checked without coercion or recycling",25,0,FALSE,FALSE,0,0.223,0.018,0.466000000000001,25
+"test-llm-probe-validation.R","llm-probe-validation","probe formulas and fitting controls reject unsupported ambiguity",22,0,FALSE,FALSE,0,0.0340000000000003,0.002,0.0480000000000018,22
+"test-llm-probe-validation.R","llm-probe-validation","balanced row counts cannot conceal duplicate or missing neuron coordinates",9,0,FALSE,FALSE,0,0.0339999999999998,0.004,0.128,9
+"test-llm-probe-validation.R","llm-probe-validation","long trace labels must be constant within prompt and prediction coordinates exact",4,0,FALSE,FALSE,0,0.118,0.004,0.166,4
+"test-llm-probe-validation.R","llm-probe-validation","authentic Arrow spill, memory and shuffled rows yield identical fitted probes",8,0,FALSE,FALSE,0,0.131,0.00900000000000001,0.196000000000002,8
+"test-llm-probe.R","llm-probe","probes keep source pairs isolated and choose using development data",121,0,FALSE,FALSE,0,0.107,0.011,0.130000000000003,121
+"test-llm-probe.R","llm-probe","holdout mutations cannot alter folds, preprocessing, fits or selection",9,0,FALSE,FALSE,0,0.177,0.00900000000000001,0.262,9
+"test-llm-probe.R","llm-probe","trace row order and exact prompt-name matching leave predictions invariant",4,0,FALSE,FALSE,0,0.117999999999999,0.005,0.177,4
+"test-llm-probe.R","llm-probe","seeded fitting restores RNG state including its absence and error paths",8,0,FALSE,FALSE,0,0.228,0.00800000000000001,0.298000000000002,8
+"test-llm-probe.R","llm-probe","S3 methods distinguish held-out and exploratory results",11,0,FALSE,FALSE,0,0.0880000000000001,0.005,0.121000000000002,11
+"test-llm-probe.R","llm-probe","a whole-procedure paired-label control exposes perfect lexical confounding",5,0,FALSE,FALSE,0,0.116,0.004,0.146000000000001,5
+"test-llm-probe.R","llm-probe","selection diagnostics average unequal folds without observation weights",3,0,FALSE,FALSE,0,0.00900000000000034,0.001,0.0200000000000031,3
+"test-llm-spark.R","llm-spark","Spark native generation and declared capabilities work [SPARK]",1,0,TRUE,FALSE,0,0,0,0.000999999999997669,0
+"test-llm-steer-valence.R","llm-steer-valence","the valence lexicon is well-formed and two-sided",6,0,FALSE,FALSE,0,0.00300000000000011,0.001,0.00499999999999545,6
+"test-llm-steer-valence.R","llm-steer-valence","the committed valence direction is well-formed and matches its SHA256",5,0,FALSE,FALSE,0,0.00399999999999956,0.001,0.00600000000000023,5
+"test-llm-steer-valence.R","llm-steer-valence","steering along the valence direction shifts generated valence (+ up, - down) [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.000999999999997669,0
+"test-llm-stream-helpers.R","llm-stream-helpers","stream admission rejects invalid sinks before RNG submission or header",12,0,FALSE,FALSE,0,0.0149999999999997,0.001,0.017000000000003,12
+"test-llm-stream-helpers.R","llm-stream-helpers","native file admission distinguishes regular files from devices and invalid paths",17,0,FALSE,FALSE,0,0.0190000000000001,0.002,0.0219999999999985,17
+"test-llm-stream-helpers.R","llm-stream-helpers","only caller-owned empty writable seekable binary regular files are admitted",18,0,FALSE,FALSE,0,0.0190000000000001,0.003,0.0219999999999985,18
+"test-llm-stream-helpers.R","llm-stream-helpers","closed and reused connection slots cannot redirect the stream",5,0,FALSE,FALSE,0,0.00299999999999923,0.00099999999999989,0.00399999999999778,5
+"test-llm-stream-helpers.R","llm-stream-helpers","CSV preserves quoting newlines Unicode literal NA and typed missing fields",6,0,FALSE,FALSE,0,0.00499999999999989,0.001,0.00600000000000023,6
+"test-llm-stream-helpers.R","llm-stream-helpers","representation validation rejects malformed data before consumer execution",27,0,FALSE,FALSE,0,0.0140000000000002,0.003,0.0159999999999982,27
+"test-llm-stream-helpers.R","llm-stream-helpers","stream memory bounds cover materialized columns and CSV escaping copies",9,0,FALSE,FALSE,0,0.00900000000000034,0.001,0.0100000000000051,9
+"test-llm-stream.R","llm-stream","stream batches preserve exact schema sequence names seed and ownership phases",124,0,FALSE,FALSE,0,0.198,0.02,0.753,124
+"test-llm-stream.R","llm-stream","CSV and callback delivery have identical deterministic event content",10,0,FALSE,FALSE,0,0.0960000000000001,0.014,1.184,10
+"test-llm-stream.R","llm-stream","consumer errors and interrupts stop callbacks and return ownership without joining",18,0,FALSE,FALSE,0,0.0379999999999994,0.011,0.263999999999996,18
+"test-llm-stream.R","llm-stream","the first progress error suppresses future token delivery",6,0,FALSE,FALSE,0,0.0149999999999997,0.004,0.123999999999995,6
+"test-llm-stream.R","llm-stream","native completion retains busy until delivery and model close abandons it",10,0,FALSE,FALSE,0,0.0389999999999997,0.006,0.155000000000001,10
+"test-llm-stream.R","llm-stream","consumer error after native completion wins over close and native success",3,0,FALSE,FALSE,0,0.00999999999999979,0.002,0.121000000000002,3
+"test-llm-stream.R","llm-stream","successful final progress can close the model after stream ownership release",5,0,FALSE,FALSE,0,0.0129999999999999,0.004,0.0720000000000027,5
+"test-llm-stream.R","llm-stream","sink closure is detected at an empty prefill poll and cannot reuse a slot",6,0,FALSE,FALSE,0,0.016,0.005,0.128,6
+"test-llm-stream.R","llm-stream","write and flush failure warnings preserve their parent and never retry",12,0,FALSE,FALSE,0,0.0300000000000002,0.00900000000000001,0.147999999999996,12
+"test-llm-stream.R","llm-stream","[MODEL] cached Qwen retains seeded sync async and stream equality",1,0,TRUE,FALSE,0,0.00199999999999978,0,0.00200000000000244,0
+"test-llm-stream.R","llm-stream","[MODEL] cached Qwen ordinary structured and CSV streams preserve results",1,0,TRUE,FALSE,0,0.000999999999999446,0,0.000999999999997669,0
+"test-llm-stream.R","llm-stream","[MODEL] cached vision over-batch prefill retains streaming parity",1,0,TRUE,FALSE,0,0.00100000000000033,0.001,0.000999999999997669,0
+"test-llm-stream.R","llm-stream","native failure discards queued rows and encoding rejection remains classed",16,0,FALSE,FALSE,0,0.0339999999999998,0.00900000000000001,0.208000000000006,16
+"test-llm-stream.R","llm-stream","a partial CSV write or final flush failure rejects without final progress",16,0,FALSE,FALSE,0,0.0330000000000004,0.00800000000000001,0.260000000000005,16
+"test-llm-stream.R","llm-stream","FFI representation failure follows nonblocking cancellation and preserves its condition",5,0,FALSE,FALSE,0,0.0120000000000005,0.003,0.124000000000002,5
+"test-llm-stream.R","llm-stream","structured fixture rows stay provisional until each prompt ends",4,0,FALSE,FALSE,0,0.0120000000000005,0.003,0.0700000000000003,4
+"test-llm-synthetic.R","llm-synthetic","the synthetic GGUF loads and reports its tiny dimensions",9,0,FALSE,FALSE,0,0.0140000000000002,0.00700000000000001,0.0200000000000031,9
+"test-llm-synthetic.R","llm-synthetic","the synthetic model loads on the CPU backend",3,0,FALSE,FALSE,0,0.00499999999999989,0.002,0.0069999999999979,3
+"test-llm-synthetic.R","llm-synthetic","summary() on the synthetic model carries the tiny vocabulary",4,0,FALSE,FALSE,0,0.00699999999999967,0.002,0.0100000000000051,4
+"test-llm-tokens.R","llm-tokens","llm_tokens rejects a non-llm handle",1,0,FALSE,FALSE,0,0.00200000000000067,0,0.00199999999999534,1
+"test-llm-tokens.R","llm-tokens","llm_tokens rejects a non-logical decode",3,0,FALSE,FALSE,0,0.00599999999999934,0.001,0.00499999999999545,3
+"test-llm-tokens.R","llm-tokens","llm_tokens (encode) rejects non-character x",2,0,FALSE,FALSE,0,0.00400000000000045,0,0.00399999999999778,2
+"test-llm-tokens.R","llm-tokens","llm_tokens (decode) rejects non-integer or non-positive ids",3,0,FALSE,FALSE,0,0.00499999999999989,0,0.00600000000000023,3
+"test-llm-tokens.R","llm-tokens","llm_tokens on a closed handle raises relm_error_closed",1,0,FALSE,FALSE,0,0.00199999999999978,0,0.00200000000000244,1
+"test-llm-tokens.R","llm-tokens","llm_tokens on a no_vocab model raises relm_error_tokenize",2,0,FALSE,FALSE,0,0.00399999999999956,0,0.00499999999999545,2
+"test-llm-tokens.R","llm-tokens","encode returns a named integer vector of 1-based ids",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.00100000000000477,0
+"test-llm-tokens.R","llm-tokens","encode/decode is an exact round-trip (ASCII)",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.000999999999997669,0
+"test-llm-tokens.R","llm-tokens","encode/decode round-trips Italian accented text (UTF-8)",1,0,TRUE,FALSE,0,0.000999999999999446,0,0.00100000000000477,0
+"test-llm-tokens.R","llm-tokens","encode is vectorized: a list with names preserved",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.000999999999997669,0
+"test-llm-tokens.R","llm-tokens","decode rejects an id outside the vocabulary (classed, not a crash)",1,0,TRUE,FALSE,0,0.000999999999999446,0,0.000999999999997669,0
+"test-llm-trace-golden.R","llm-trace-golden","the committed HF activation golden fixture is well-formed and matches its SHA256",6,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.0100000000000051,6
+"test-llm-trace-golden.R","llm-trace-golden","golden gate is SATISFIED when a slice is compared to itself (no-op guard)",5,0,FALSE,FALSE,0,0.0830000000000002,0.002,0.0850000000000009,5
+"test-llm-trace-golden.R","llm-trace-golden","golden gate CATCHES a +1 layer-shift mutation (off-by-one, ARCHITECTURE section 4)",4,0,FALSE,FALSE,0,0.00700000000000056,0,0.007000000000005,4
+"test-llm-trace-golden.R","llm-trace-golden","golden gate CATCHES a wrong-component swap (residual<->mlp_out)",3,0,FALSE,FALSE,0,0.00499999999999989,0.001,0.00600000000000023,3
+"test-llm-trace-golden.R","llm-trace-golden","golden gate CATCHES a scalar blow-up that cosine/Spearman are BLIND to",5,0,FALSE,FALSE,0,0.00600000000000023,0.001,0.0069999999999979,5
+"test-llm-trace-golden.R","llm-trace-golden","llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8_0 tolerance) [MODEL]",1,0,TRUE,FALSE,0,0,0,0.000999999999997669,0
+"test-llm-trace-spill-ownership.R","llm-trace-spill-ownership","a real live R owner keeps an aged spill readable and cleans on exit",5,0,FALSE,FALSE,0,0.00800000000000001,0.004,0.173000000000002,5
+"test-llm-trace-spill-ownership.R","llm-trace-spill-ownership","only an aged verifiably orphaned R spill is reclaimed after a crash",4,0,FALSE,FALSE,0,0.00900000000000034,0.003,0.153999999999996,4
+"test-llm-trace-spill-ownership.R","llm-trace-spill-ownership","R sweep retains unknown aged directories and caller-owned files",3,0,FALSE,FALSE,0,0.00300000000000011,0.001,0.00399999999999778,3
+"test-llm-trace-spill-session.R","llm-trace-spill-session","custom spill paths remain distinct across live R sessions",5,0,FALSE,FALSE,0,0.00499999999999989,0.002,0.0790000000000006,5
+"test-llm-trace-spill-session.R","llm-trace-spill-session","spill path allocation is lazy and does not alter the user's RNG",4,0,FALSE,FALSE,0,0.00300000000000011,0,0.00399999999999778,4
+"test-llm-trace-spill.R","llm-trace-spill","a spilled trace's slices equal the in-memory slices exactly",47,0,FALSE,FALSE,0,0.0369999999999999,0.01,0.0499999999999972,47
+"test-llm-trace-spill.R","llm-trace-spill","a materialized trace fits K x its f32-activation bytes (D-017 pins the factor)",2,0,FALSE,FALSE,0,0.00300000000000011,0.003,0.00799999999999557,2
+"test-llm-trace-spill.R","llm-trace-spill","a no_vocab in-memory trace surfaces NA token pieces (matching the spill path)",3,0,FALSE,FALSE,0,0.00399999999999956,0.003,0.00900000000000034,3
+"test-llm-trace-spill.R","llm-trace-spill","the trace payload carries the positions_recycled signal (Rust->R wiring)",2,0,FALSE,FALSE,0,0.00300000000000011,0.002,0.0069999999999979,2
+"test-llm-trace-spill.R","llm-trace-spill","print() and summary() on a spilled trace never read the file",9,0,FALSE,FALSE,0,0.00900000000000034,0.00299999999999989,0.0130000000000052,9
+"test-llm-trace-spill.R","llm-trace-spill","a spill file whose footer disagrees with the object is rejected",2,0,FALSE,FALSE,0,0.00499999999999989,0.002,0.00900000000000034,2
+"test-llm-trace-spill.R","llm-trace-spill","the spec key varies with prompts and the trace id is a nonce (M-2)",5,0,FALSE,FALSE,0,0.00300000000000011,0.002,0.0069999999999979,5
+"test-llm-trace-spill.R","llm-trace-spill","a spill file with a truncated/corrupt body fails as a classed condition",4,0,FALSE,FALSE,0,0.00600000000000023,0.002,0.0100000000000051,4
+"test-llm-trace-spill.R","llm-trace-spill","a spill file with a tampered column type is rejected (schema check)",5,0,FALSE,FALSE,0,0.00999999999999979,0.002,0.00999999999999801,5
+"test-llm-trace.R","llm-trace","the constructed relm_trace fixture matches the API-GRAMMAR schema",14,0,FALSE,FALSE,0,0.00600000000000023,0.00100000000000011,0.00800000000000267,14
+"test-llm-trace.R","llm-trace","llm_trace() rejects a non-llm handle",2,0,FALSE,FALSE,0,0.00300000000000011,0,0.00300000000000011,2
+"test-llm-trace.R","llm-trace","llm_trace() validates `prompts`",6,0,FALSE,FALSE,0,0.00899999999999945,0.002,0.0109999999999957,6
+"test-llm-trace.R","llm-trace","llm_trace() validates `layers` (type and 1-based range)",6,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.0100000000000051,6
+"test-llm-trace.R","llm-trace","llm_trace() validates `positions`",7,0,FALSE,FALSE,0,0.00999999999999979,0.002,0.0110000000000028,7
+"test-llm-trace.R","llm-trace","validate_positions() de-duplicates explicit positions (M-1)",5,0,FALSE,FALSE,0,0.00400000000000045,0.00100000000000011,0.00399999999999778,5
+"test-llm-trace.R","llm-trace","oversized trace positions are rejected before integer conversion",9,0,FALSE,FALSE,0,0.00399999999999956,0.00099999999999989,0.00499999999999545,9
+"test-llm-trace.R","llm-trace","llm_trace() validates `components` (subset of the allowed set)",6,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.00999999999999801,6
+"test-llm-trace.R","llm-trace","llm_trace() validates `spill` and `spill_dir`",7,0,FALSE,FALSE,0,0.0109999999999992,0.002,0.0129999999999981,7
+"test-llm-trace.R","llm-trace","llm_trace() rejects a closed handle",1,0,FALSE,FALSE,0,0.00300000000000011,0.002,0.00399999999999778,1
+"test-llm-trace.R","llm-trace","llm_trace(spill = FALSE) over budget raises relm_error_oom before allocation",4,0,FALSE,FALSE,0,0.00200000000000067,0,0.00300000000000011,4
+"test-llm-trace.R","llm-trace","the default trace budget is the D-017 materialized-bytes cap (2 GB)",3,0,FALSE,FALSE,0,0.00100000000000033,0,0.0069999999999979,3
+"test-llm-trace.R","llm-trace","TRACE_MATERIALIZED_EXPANSION matches the engine's pinned factor (twin pin)",1,0,FALSE,FALSE,0,0.00100000000000033,0.00099999999999989,0.00100000000000477,1
+"test-llm-trace.R","llm-trace","print.relm_trace shows dims + capture spec and never dumps the data",7,0,FALSE,FALSE,0,0.00800000000000001,0.00100000000000011,0.00900000000000034,7
+"test-llm-trace.R","llm-trace","summary.relm_trace digests per (layer, component): n and mean|value|",8,0,FALSE,FALSE,0,0.00599999999999934,0.002,0.00800000000000267,8
+"test-llm-trace.R","llm-trace","as.matrix.relm_trace extracts one (layer, component) slice as a matrix",10,0,FALSE,FALSE,0,0.0119999999999996,0.002,0.0140000000000029,10
+"test-llm-trace.R","llm-trace","as.matrix.relm_trace fails loud on a mis-shaped (duplicated) slice (M-1)",3,0,FALSE,FALSE,0,0.00400000000000045,0,0.00399999999999778,3
+"test-llm-trace.R","llm-trace","llm_trace() on a real model returns the relm_trace schema and slices [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.00100000000000477,0
+"test-llm-trace.R","llm-trace","llm_trace() attn_out on a qwen2 model is a classed, honest error [MODEL]",1,0,TRUE,FALSE,0,0.000999999999999446,0,0.000999999999997669,0
+"test-llm-trace.R","llm-trace","llm_trace() residual on a Gemma 4 model returns plausible activations [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000033,0,0,0
+"test-llm-trace.R","llm-trace","llm_trace() attn_out on a Gemma 4 model is a classed error (name collision) [MODEL]",1,0,TRUE,FALSE,0,0.000999999999999446,0.00100000000000011,0.000999999999997669,0
+"test-llm-trace.R","llm-trace","llm_trace() mlp_out on a Gemma 4 model is a classed error (MoE layers) [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.000999999999997669,0
+"test-llm-trace.R","llm-trace","llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.00100000000000477,0
+"test-llm-trace.R","llm-trace","llm_trace() residual on a Qwen 3.5 model returns plausible activations [MODEL]",1,0,TRUE,FALSE,0,0.000999999999999446,0.00099999999999989,0,0
+"test-llm-trace.R","llm-trace","llm_trace() warns when explicit positions are recycled across differing lengths [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000033,0,0.00100000000000477,0
+"test-llm-vision-embed.R","llm-vision-embed","the machine fingerprint is derived, well-formed, and stable",4,0,FALSE,FALSE,0,0.00499999999999989,0.00100000000000011,0.0120000000000005,4
+"test-llm-vision-embed.R","llm-vision-embed","on macOS the fingerprint names the CPU, not just the platform",1,0,FALSE,FALSE,0,0.00100000000000033,0.00099999999999989,0.00500000000000256,1
+"test-llm-vision-embed.R","llm-vision-embed","the committed T2 sidecar names a real machine and matches its golden",4,0,FALSE,FALSE,0,0.00199999999999978,0.00100000000000011,0.00399999999999778,4
+"test-llm-vision-embed.R","llm-vision-embed","a sidecar that does not match its golden is a loud error, not a skip",1,0,FALSE,FALSE,0,0.00700000000000056,0,0.00800000000000267,1
+"test-llm-vision-embed.R","llm-vision-embed","a matching digest returns the recorded machine",1,0,FALSE,FALSE,0,0.00100000000000033,0,0.00100000000000477,1
+"test-llm-vision-embed.R","llm-vision-embed","a sidecar with no digest is refused rather than trusted",1,0,FALSE,FALSE,0,0.00199999999999978,0.00100000000000011,0.00200000000000244,1
+"test-llm-vision-embed.R","llm-vision-embed","an absent sidecar reports NA rather than crashing",2,0,FALSE,FALSE,0,0.00100000000000033,0,0.00300000000000011,2
+"test-llm-vision-embed.R","llm-vision-embed","the CPU is parsed from both /proc/cpuinfo shapes",5,0,FALSE,FALSE,0,0.00300000000000011,0.00099999999999989,0.00499999999999545,5
+"test-llm-vision-embed.R","llm-vision-embed","llm_embed() applies the shared images pairing contract",8,0,FALSE,FALSE,0,0.00999999999999979,0.00099999999999989,0.0120000000000005,8
+"test-llm-vision-embed.R","llm-vision-embed","llm_embed() images on a projector-less handle raise relm_error_image",2,0,FALSE,FALSE,0,0.00100000000000033,0.002,0.00300000000000011,2
+"test-llm-vision-embed.R","llm-vision-embed","llm_embed() empty-string rules: text-only rejected, image-bearing allowed",3,0,FALSE,FALSE,0,0.00499999999999989,0.00100000000000011,0.00600000000000023,3
+"test-llm-vision-embed.R","llm-vision-embed","llm_embed() text path is untouched by the images plumbing",3,0,FALSE,FALSE,0,0.00499999999999989,0.002,0.00600000000000023,3
+"test-llm-vision-embed.R","llm-vision-embed","[MODEL] multimodal embeddings: row contract, x = '', determinism",10,0,FALSE,FALSE,0,5.69,1.086,8.05,10
+"test-llm-vision-embed.R","llm-vision-embed","[MODEL] the cat image embeds closer to 'a cat' than to 'a car'",1,0,FALSE,FALSE,0,0.32,0.45,1.022,1
+"test-llm-vision-embed.R","llm-vision-embed","[MODEL] the pooled multimodal embedding matches the committed pin",2,0,FALSE,FALSE,0,6.551,0.406,2.356,2
+"test-llm-vision-embed.R","llm-vision-embed","[MODEL] multimodal embed over the context window is a classed error",1,0,FALSE,FALSE,0,0.309999999999999,0.44,0.749000000000002,1
+"test-llm-vision-embed.R","llm-vision-embed","[MODEL] a multimodal prompt with a text portion over n_batch decodes (rule 8a)",2,0,FALSE,FALSE,0,0.327000000000002,0.454,3.33000000000001,2
+"test-llm-vision-embed.R","llm-vision-embed","[MODEL] combined text+image tokens over the window raise context overflow",2,0,FALSE,FALSE,0,0.305000000000003,0.433,0.741999999999997,2
+"test-llm-vision.R","llm-vision","the image gate accepts exactly JPEG, PNG, and BMP",6,0,FALSE,FALSE,0,0.004999999999999,0.00199999999999978,0.00800000000000267,6
+"test-llm-vision.R","llm-vision","the image gate rejects audio magics, GIF, and garbage at the magic stage",28,0,FALSE,FALSE,0,0.0130000000000017,0.00400000000000045,0.0180000000000007,28
+"test-llm-vision.R","llm-vision","the image gate rejects a truncated file of each allowed format",6,0,FALSE,FALSE,0,0.00200000000000244,0,0.00300000000000011,6
+"test-llm-vision.R","llm-vision","the image gate rejects over-cap dimensions before any decode",4,0,FALSE,FALSE,0,0.00199999999999889,0,0.00200000000000244,4
+"test-llm-vision.R","llm-vision","the image gate enforces the byte cap and names the override",3,0,FALSE,FALSE,0,0.00100000000000122,0,0.00200000000000244,3
+"test-llm-vision.R","llm-vision","the image gate accepts the degenerate-but-legal dimension fixtures",3,0,FALSE,FALSE,0,0.00200000000000244,0.000999999999999446,0.00299999999999301,3
+"test-llm-vision.R","llm-vision","a missing image file is a classed image error with the path field",2,0,FALSE,FALSE,0,0.00199999999999889,0.00100000000000033,0.00199999999999534,2
+"test-llm-vision.R","llm-vision","llm_generate() validates the images argument type and pairing",7,0,FALSE,FALSE,0,0.0109999999999992,0.00999999999999979,0.0210000000000008,7
+"test-llm-vision.R","llm-vision","a bare images vector recycles across prompts with a warning",2,0,FALSE,FALSE,0,0.00400000000000134,0.00300000000000011,0.00800000000000267,2
+"test-llm-vision.R","llm-vision","images on a handle loaded without a projector raise relm_error_image",3,0,FALSE,FALSE,0,0.00200000000000244,0.00199999999999978,0.00500000000000256,3
+"test-llm-vision.R","llm-vision","an image-bearing prompt containing the media marker is rejected pre-boundary",6,0,FALSE,FALSE,0,0.00600000000000023,0.00199999999999978,0.00900000000000034,6
+"test-llm-vision.R","llm-vision","the R media-marker literal twin-pins the engine's marker",1,0,FALSE,FALSE,0,0.00100000000000122,0,0.00200000000000244,1
+"test-llm-vision.R","llm-vision","character(0) image sets mean no images and need no projector",1,0,FALSE,FALSE,0,0.00300000000000011,0.00100000000000033,0.00399999999999778,1
+"test-llm-vision.R","llm-vision","an empty bare images vector means no images and never warns",4,0,FALSE,FALSE,0,0.004999999999999,0.00100000000000033,0.00600000000000023,4
+"test-llm-vision.R","llm-vision","images = NULL leaves the text path byte-identical (same classed error)",1,0,FALSE,FALSE,0,0.00199999999999889,0.00100000000000033,0.00399999999999778,1
+"test-llm-vision.R","llm-vision","a broken relm.image_max_bytes option is a classed argument error",1,0,FALSE,FALSE,0,0.00199999999999889,0.00100000000000033,0.00399999999999778,1
+"test-llm-vision.R","llm-vision","llm() validates the projector argument",5,0,FALSE,FALSE,0,0.004999999999999,0.000999999999999446,0.00600000000000023,5
+"test-llm-vision.R","llm-vision","a non-mmproj file as projector is a classed image error, not a crash",2,0,FALSE,FALSE,0,0.00199999999999889,0,0.00200000000000244,2
+"test-llm-vision.R","llm-vision","a text-only handle has NULL projector and vision FALSE",3,0,FALSE,FALSE,0,0.00300000000000011,0.00200000000000067,0.00400000000000489,3
+"test-llm-vision.R","llm-vision","print.llm shows the projector on a vision handle",3,0,FALSE,FALSE,0,0.00200000000000244,0.000999999999999446,0.00200000000000244,3
+"test-llm-vision.R","llm-vision","the committed fixture equals the canonical repo image byte-for-byte",1,0,FALSE,FALSE,0,0.00300000000000011,0,0.00399999999999778,1
+"test-llm-vision.R","llm-vision","[MODEL] llm(projector=) loads a VLM and the handle reflects it",3,0,FALSE,FALSE,0,0.308,0.442,0.749000000000002,3
+"test-llm-vision.R","llm-vision","[MODEL] the VLM answers a factual question about the committed image",3,0,FALSE,FALSE,0,0.315000000000001,0.444999999999999,1.055,3
+"test-llm-vision.R","llm-vision","[MODEL] a mismatched mmproj names both embedding sizes",1,0,TRUE,FALSE,0,0,0,0.000999999999997669,0
+"test-llm-vision.R","llm-vision","[MODEL] an mmproj passed as the model is a classed error, not a crash",1,0,FALSE,FALSE,0,0.00400000000000134,0.00100000000000033,0.00500000000000256,1
+"test-llm-vision.R","llm-vision","[MODEL] a text GGUF passed as the projector is a classed image error",1,0,TRUE,FALSE,0,0.00100000000000122,0,0.000999999999997669,0
+"test-llm-vision.R","llm-vision","[MODEL] degenerate-but-legal dimensions never abort (audit req 4)",3,0,FALSE,FALSE,0,0.348000000000003,0.465,5.337,3
+"test-llm-vision.R","llm-vision","[MODEL] an intervened handle derived from a vision handle keeps images working",3,0,FALSE,FALSE,0,0.338000000000001,0.482,1.172,3
+"test-llm-vision.R","llm-vision","[MODEL] the CPU greedy continuation matches the unpatched upstream reference",1,0,FALSE,FALSE,0,6.653,0.339,2.308,1
+"test-package.R","package","the relm namespace loads with its compiled library",1,0,FALSE,FALSE,0,0.000999999999997669,0,0.00199999999999534,1
+"test-package.R","package","only API-GRAMMAR-approved functions are exported (spec-first gate)",1,0,FALSE,FALSE,0,0.00100000000000122,0,0.00100000000000477,1
+"test-package.R","package","the WP4 relm_trace S3 methods are registered (API-GRAMMAR section 2/4)",7,0,FALSE,FALSE,0,0.00600000000000023,0.00100000000000033,0.0069999999999979,7
+"test-package.R","package","the WP1 S3 methods are registered (API-GRAMMAR section 3)",8,0,FALSE,FALSE,0,0.00600000000000023,0.00199999999999978,0.007000000000005,8
+"test-structured-output.R","structured-output","structured schema scalar errors identify the public argument",10,0,FALSE,FALSE,0,0.00600000000000023,0.00100000000000033,0.00600000000000023,10
+"test-structured-output.R","structured-output","structured schema byte and Unicode gates produce schema conditions",7,0,FALSE,FALSE,0,0.00400000000000134,0.00100000000000033,0.00499999999999545,7
+"test-structured-output.R","structured-output","structured prompt and token budgets fail before native copies",10,0,FALSE,FALSE,0,0.0150000000000006,0.00100000000000033,0.0160000000000053,10
+"test-structured-output.R","structured-output","structured sampling rejects non-finite values and overflowing casts",16,0,FALSE,FALSE,0,0.00700000000000145,0.00199999999999978,0.00900000000000034,16
+"test-structured-output.R","structured-output","structured requests reject stop strings and images before file or model checks",6,0,FALSE,FALSE,0,0.00300000000000011,0.00100000000000033,0.00400000000000489,6
+"test-structured-output.R","structured-output","malformed and unsupported schemas fail before tokenization",28,0,FALSE,FALSE,0,0.0169999999999995,0.00399999999999956,0.0210000000000008,28
+"test-structured-output.R","structured-output","valid structured bounds and empty collections reach tokenization",6,0,FALSE,FALSE,0,0.0189999999999984,0.00300000000000011,0.0209999999999937,6
+"test-structured-output.R","structured-output","structured generation preserves names, scalar seeds and complete JSON [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000122,0,0.00100000000000477,0
+"test-structured-output.R","structured-output","structured exhaustion carries bounded diagnostics and leaves the handle usable [MODEL]",1,0,TRUE,FALSE,0,0.00100000000000122,0,0.000999999999990564,0
+"test-structured-output.R","structured-output","structured prompt ingestion retains chunked decoding [MODEL]",1,0,TRUE,FALSE,0,0.000999999999997669,0,0.00100000000000477,0

@@ -1,7 +1,7 @@
 # Targeted maintenance before Phase 6
 
-Date: 2026-10-02. Status: reviewed plan; implementation
-not started. The founder authorized preparation of this plan after I1.
+Date: 2026-10-02. Status: reviewed plan, implementation authorized by the
+founder after review ("vai"). Acceptance remains pending.
 Baseline: main `ee06d30b1295f779a3f77a5a18afeff7a1896a07` (PR #56).
 
 ## Goal and boundary

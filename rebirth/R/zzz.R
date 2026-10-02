@@ -1,7 +1,7 @@
 # Package-level state and lifecycle (WP4 Step 5): the disk-spill session directory
 # and its cleanup. Spill files live under a per-session directory below the user
-# cache, are removed when the session ends, and any directory left by a crashed
-# earlier session is swept on load.
+# cache and are removed when the session ends. Only aged, verifiably unowned
+# managed directories are swept on load; legacy or ambiguous entries are retained.
 
 # Per-session state, private to the package. `session_dir` is created lazily on
 # the first spill; `sentinel` carries the exit finalizer that removes the session
@@ -23,12 +23,14 @@ spill_root_dir <- function() {
 spill_session_dir <- function() {
   dir <- .relm_state$session_dir
   if (!is.null(dir)) {
+    relm_check(rebirth_spill_prepare(dir))
     return(dir)
   }
   # basename(tempfile()) is unique within the session and uses tempfile's own
   # counter, so it does not touch (or reseed) the user's random-number state.
   token <- paste(Sys.getpid(), basename(tempfile("")), sep = "-")
   dir <- file.path(spill_root_dir(), token)
+  relm_check(rebirth_spill_prepare(dir))
   .relm_state$session_dir <- dir
   dir
 }
@@ -68,15 +70,16 @@ next_trace_id <- function() {
 # effort: never errors, so it is safe during R's shutdown.
 cleanup_spill_session <- function() {
   dir <- .relm_state$session_dir
-  if (!is.null(dir) && dir.exists(dir)) {
-    unlink(dir, recursive = TRUE, force = TRUE)
+  if (!is.null(dir)) {
+    tryCatch(relm_check(rebirth_spill_cleanup(dir)), error = function(e) NULL)
+    .relm_state$session_dir <- NULL
   }
   invisible(NULL)
 }
 
-# Remove spill directories left by earlier sessions that ended more than
-# `max_age_days` ago (a crashed session cannot run its exit finalizer). Best
-# effort and silent: a locked or vanished directory is skipped.
+# Age is only a retention floor: native reclamation also requires an exclusive
+# lifetime lease, valid managed marker and unchanged non-symlink identities.
+# Unknown/legacy directories are intentionally retained, even when old.
 sweep_old_spill_dirs <- function(max_age_days = 7) {
   root <- spill_root_dir()
   if (!dir.exists(root)) {
@@ -90,10 +93,8 @@ sweep_old_spill_dirs <- function(max_age_days = 7) {
       normalizePath(keep, mustWork = FALSE)) {
       next
     }
-    mtime <- tryCatch(file.info(d)$mtime, error = function(e) NA)
-    if (length(mtime) == 1L && !is.na(mtime) && mtime < cutoff) {
-      unlink(d, recursive = TRUE, force = TRUE)
-    }
+    tryCatch(relm_check(rebirth_spill_sweep(d, as.double(cutoff))),
+      error = function(e) NULL)
   }
   invisible(NULL)
 }

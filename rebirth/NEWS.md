@@ -1,5 +1,16 @@
 # relm (development)
 
+## Managed trace storage
+
+* On macOS/Linux, managed spill directories hold a native lifetime lease from
+  the first disk write through session cleanup. Age alone no longer permits
+  another session to remove a live trace. Cleanup rejects changed paths,
+  symlink redirection and unrecognized contents.
+* Old directories without verifiable ownership metadata are retained, including
+  files left by earlier package versions. Caller-supplied `spill_dir` directories
+  remain caller-managed. This conservative policy can leave files for manual
+  cleanup; normal cleanup remains best-effort.
+
 ## WP10: token streaming
 
 * `llm_generate(async = TRUE, on_token = ...)` delivers ordered batches of

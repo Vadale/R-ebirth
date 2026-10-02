@@ -1,0 +1,15 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-llm-trace-spill-ownership.R","llm-trace-spill-ownership","a real live R owner keeps an aged spill readable and cleans on exit",5,0,FALSE,FALSE,0,0.048,0.004,0.232,5
+"test-llm-trace-spill-ownership.R","llm-trace-spill-ownership","only an aged verifiably orphaned R spill is reclaimed after a crash",4,0,FALSE,FALSE,0,0.013,0.004,0.185,4
+"test-llm-trace-spill-ownership.R","llm-trace-spill-ownership","R sweep retains unknown aged directories and caller-owned files",3,0,FALSE,FALSE,0,0.003,0.000999999999999997,0.004,3
+"test-llm-trace-spill-session.R","llm-trace-spill-session","custom spill paths remain distinct across live R sessions",5,0,FALSE,FALSE,0,0.004,0.002,0.0910000000000001,5
+"test-llm-trace-spill-session.R","llm-trace-spill-session","spill path allocation is lazy and does not alter the user's RNG",4,0,FALSE,FALSE,0,0.003,0.001,0.003,4
+"test-llm-trace-spill.R","llm-trace-spill","a spilled trace's slices equal the in-memory slices exactly",47,0,FALSE,FALSE,0,0.06,0.019,0.239,47
+"test-llm-trace-spill.R","llm-trace-spill","a materialized trace fits K x its f32-activation bytes (D-017 pins the factor)",2,0,FALSE,FALSE,0,0.004,0.003,0.0089999999999999,2
+"test-llm-trace-spill.R","llm-trace-spill","a no_vocab in-memory trace surfaces NA token pieces (matching the spill path)",3,0,FALSE,FALSE,0,0.00399999999999995,0.00199999999999999,0.0089999999999999,3
+"test-llm-trace-spill.R","llm-trace-spill","the trace payload carries the positions_recycled signal (Rust->R wiring)",2,0,FALSE,FALSE,0,0.003,0.003,0.00800000000000001,2
+"test-llm-trace-spill.R","llm-trace-spill","print() and summary() on a spilled trace never read the file",9,0,FALSE,FALSE,0,0.011,0.003,0.016,9
+"test-llm-trace-spill.R","llm-trace-spill","a spill file whose footer disagrees with the object is rejected",2,0,FALSE,FALSE,0,0.006,0.002,0.01,2
+"test-llm-trace-spill.R","llm-trace-spill","the spec key varies with prompts and the trace id is a nonce (M-2)",5,0,FALSE,FALSE,0,0.004,0.002,0.006,5
+"test-llm-trace-spill.R","llm-trace-spill","a spill file with a truncated/corrupt body fails as a classed condition",4,0,FALSE,FALSE,0,0.00800000000000001,0.00199999999999999,0.012,4
+"test-llm-trace-spill.R","llm-trace-spill","a spill file with a tampered column type is rejected (schema check)",5,0,FALSE,FALSE,0,0.00700000000000001,0.002,0.00800000000000001,5

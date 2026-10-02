@@ -1,6 +1,6 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-10-02 for WP9 integration and WP10 implementation. Historical
+Updated 2026-10-02 for integrated WP9/WP10/I1 and targeted maintenance. Historical
 maintenance, S1 and D1 results below retain their original scope.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
@@ -55,7 +55,10 @@ graphics, scope and client/model limitations. All nine final checks passed at
 `796f785` (R `37025503028`, Rust `37025502485`); PR #56 merged at `ee06d30`,
 whose tree matches the reviewed head. I1 is complete. The
 [targeted pre-Phase-6 maintenance plan](pre-phase6-maintenance-plan.md) is the
-next proposed implementation package; its gates have not yet been executed.
+authorized current implementation package. Its [execution report](pre-phase6-maintenance-implementation.md)
+records final local installed-package/spill checks and model-free harness controls.
+Remote sanitizer, reference-comparison and final CI acceptance remain pending.
+None of those pending gates is inferred from a workflow definition.
 
 ## Implemented checks
 
@@ -65,6 +68,7 @@ next proposed implementation package; its gates have not yet been executed.
 | Native async ownership, cancellation and promises | Rust `async_job`, `domain`, `async_synthetic`; R `test-llm-async*.R` | Local automated checks passed; PR jobs require optional async dependencies. Cached-model parity and VLM boundary tests run locally/in existing model nightlies; actual foreground RStudio and all nine checks at `8053bf8` passed. Final checks at `f419fd7` passed and PR #54 is merged. |
 | Native token/text streams and CSV sinks | `text_stream`, `async_job`, `test-llm-stream*.R`, `tests/streaming/` | Local decoder/queue/FFI/R/cached-model and foreground RStudio gates passed; all nine final checks passed and PR #55 is merged. |
 | No cross-session spill overwrite | `test-llm-trace-spill-session.R`; Rust `synthetic_spill` | R CI checks fresh-process names and RNG neutrality; Rust checks existing file and symlink preservation |
+| Managed spill ownership and reclamation | `tests/spill-lifecycle/test-native.py`; `test-llm-trace-spill-ownership.R` | Candidate: 14 standalone process/path controls and final installed R cases pass; four CI legs pending |
 | Memory/disk slice agreement and corruption refusal | `test-llm-trace-spill.R` | R CI, synthetic fixture, no download |
 | CPU operation independent of Metal | Rust `cpu_backend` | Executed in R-CMD-check on macOS/Linux, including Metal-enabled builds; no model download |
 | Native correctness and static analysis | `cargo test`, `cargo clippy`, `cargo fmt --check` | Rust engine CI; FFI tests/clippy in R-CMD-check; no-spill engine configuration also tested |
@@ -77,6 +81,8 @@ next proposed implementation package; its gates have not yet been executed.
 | Statistical probes and independent numerical agreement | `test-llm-probe*.R`; `tests/probe-product/run.R` | R CI tests grouping, leakage, controls, RNG, S3, spill and memory; mandatory installed-product gate checks 82 frozen solutions and bootstrap references |
 | Grouped anatomy workflow with controls | `tests/demos/demo-probe-evaluation.R` | Local pinned Qwen0.5 Metal and Linux CPU workflow 36434815787 passed; metrics/audits retained; no scientific-performance threshold |
 | Native memory safety | `tests/valgrind/` | Scheduled Linux Valgrind/leak job; synthetic model |
+| Native sanitizer instrumentation and execution | `tests/sanitizers/`; separate ASan/UBSan job | Candidate: 10 model-free controls pass; actual pinned Linux instrumented execution pending |
+| Vision reference content and run identity | `tests/llm-golden/vision/tools/reference_manifest.py` | Candidate: 14 corruption/handoff controls pass; final-source Mac/Linux same-runner comparisons pending |
 | Repeated model lifetime | `test-llm-model.R` | Local/model nightly with Qwen and `NOT_CRAN=true`; 30 load/unload cycles, not the planned 1,000 trace/generate workload |
 | Vendor integrity | `verify_vendored_tree.sh` | Per-commit hashes and reverse-patch coherence |
 | Rust supply chain | `cargo deny` and `cargo audit` | Deterministic licenses/bans/sources per commit; advisory-feed checks nightly |
@@ -116,15 +122,18 @@ planning them does not mark the open items below as complete.
   remains a hardware acceptance. Small synthetic and 0.5B tests do not prove it.
 - **Long-session stress:** the planned 1,000 trace/generate cycles are not a
   scheduled gate. Current repeated-load and Valgrind checks cover narrower paths.
-- **ASan/UBSan:** rebuild and instrument the full vendored C++ path; not replaced
-  by the existing Valgrind job. Restricting native self-tests to a non-default
-  feature also remains tracked work.
+- **ASan/UBSan:** the maintenance candidate adds the isolated instrumented
+  Rust/C/C++ job and mandatory fault/instrumentation controls. Actual Linux
+  execution is still required. Restricting native self-tests to a non-default
+  feature remains separate tracked work.
 - **Embedding and model breadth:** pin a small dedicated non-causal encoder and
   complete the pending modern-model matrix. Correct opt-in variables are
   `RELM_TEST_MODEL_*`, as used by the tests.
-- **Spill lifecycle:** the existing seven-day managed-directory sweep is based on
-  age, not proof that the owner process exited. Protecting long-lived sessions
-  during that sweep remains separate lifecycle work; custom directories are not swept.
+- **Spill lifecycle:** the maintenance candidate replaces age-only cleanup with
+  a native lifetime lease and conservative identity checks. Standalone native
+  process/path controls and final installed R cases pass; CI acceptance is still
+  pending. Legacy/ambiguous directories are retained, and custom directories
+  remain caller-managed. See the [maintenance report](pre-phase6-maintenance-implementation.md).
 - **Vision debt:** the upstream failed-projector-construction leak remains
   documented in NEWS; stronger content provenance for the nightly reference is
   still pending.

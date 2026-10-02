@@ -48,6 +48,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Vision reference manifest corruption controls (no model or native build)
+        working-directory: .
+        run: python3 tests/llm-golden/vision/tools/test_reference_manifest.py
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy

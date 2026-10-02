@@ -1,0 +1,62 @@
+{
+  "source.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "809fd598e5c77814378d76811fb90b02dd0c4a5c365e842eea6723be45c7cc74",
+    "raw_bytes": 427
+  },
+  "format.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw_bytes": 0
+  },
+  "clippy.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "fa3f286a7f4f7eaf72c3e1b7e1c20641d5a56e18053a477fd826f0dc867aacab",
+    "raw_bytes": 282
+  },
+  "00check.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "154a14549a96224da79711031097ef9659c44acff655c7495c42e34ecaf1be48",
+    "raw_bytes": 2708
+  },
+  "r-session.txt.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "8c7d642f3bfbd2e18e6c6b62337a903f47c30b8ba777feaf77efa4e33c39a8a7",
+    "raw_bytes": 1213
+  },
+  "r-tests.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "c112b2981e6e47e28657e6fd0ed6a45d022850e0dff650e2b190a5df3e438514",
+    "raw_bytes": 17494
+  },
+  "no-spill.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "8a7f6d0f0a0861372b627d8c3c7b3af28b07a4996b4aeac7a4258a659dab9f3e",
+    "raw_bytes": 13550
+  },
+  "check.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "4cda82408934a10e672f3ee5857313529d3b207072e7279140dc27fb8c65d025",
+    "raw_bytes": 2819
+  },
+  "async-responsiveness-control.txt.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "ba9b1b4a1d236cc5ee05faeb78a870663a7bf1da8e2372c4393871de1b9d9f69",
+    "raw_bytes": 2474
+  },
+  "engine.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "3e33860c0d14e6aca4f863cfc8340a5bba94904f8f36cf4e670b39906b382902",
+    "raw_bytes": 14091
+  },
+  "install.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "a55def4ac98dd0cfcb30de620e13ec36c81b37cd5d17bc7bd15ee215534b4a62",
+    "raw_bytes": 11216
+  },
+  "format-ffi.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw_bytes": 0
+  }
+}

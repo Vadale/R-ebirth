@@ -340,6 +340,38 @@ fn resolve(result: std::thread::Result<Result<Robj, RebirthError>>) -> Robj {
 
 // --- boundary entries ------------------------------------------------------
 
+// Filesystem ownership is independent of the inference permit. These calls
+// never access a model or invoke R from another thread.
+#[extendr]
+fn rebirth_spill_prepare(path: &str) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        rebirth_llm::prepare_managed_spill(path)?;
+        Ok(list!(ok = true).into())
+    })))
+}
+
+#[extendr]
+fn rebirth_spill_cleanup(path: &str) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        Ok(list!(
+            ok = true,
+            removed = rebirth_llm::cleanup_managed_spill(path)
+        )
+        .into())
+    })))
+}
+
+#[extendr]
+fn rebirth_spill_sweep(path: &str, cutoff: f64) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        Ok(list!(
+            ok = true,
+            removed = rebirth_llm::sweep_managed_spill(path, cutoff)
+        )
+        .into())
+    })))
+}
+
 // Load a GGUF model. All argument validation and defaulting happen in R before
 // this call (ARCHITECTURE.md §2); here we only normalize the enum/sentinel args
 // (§4), run the engine under `catch_unwind`, and return a classed payload.
@@ -1142,6 +1174,9 @@ extendr_api::extendr_module! {
     fn rebirth_logits;
     fn rebirth_embed;
     fn rebirth_trace;
+    fn rebirth_spill_prepare;
+    fn rebirth_spill_cleanup;
+    fn rebirth_spill_sweep;
     fn rebirth_intervene;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_validate_image;

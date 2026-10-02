@@ -1,0 +1,146 @@
+{
+  "status": "passed",
+  "pid": 97144,
+  "directory": "/private/tmp/relm-maintenance/final-package-20261002-191734",
+  "started_at": 1790961454.491405,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1790961454.520556,
+      "exit_code": 0,
+      "finished_at": 1790961454.671285
+    },
+    {
+      "name": "format-ffi",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "rebirth-ffi/src/async_boundary.rs"
+      ],
+      "status": "passed",
+      "started_at": 1790961454.671811,
+      "exit_code": 0,
+      "finished_at": 1790961454.72033
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1790961454.720821,
+      "exit_code": 0,
+      "finished_at": 1790961457.694705
+    },
+    {
+      "name": "engine",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm"
+      ],
+      "status": "passed",
+      "started_at": 1790961457.6950872,
+      "exit_code": 0,
+      "finished_at": 1790961480.9969301
+    },
+    {
+      "name": "no-spill",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features"
+      ],
+      "status": "passed",
+      "started_at": 1790961480.997462,
+      "exit_code": 0,
+      "finished_at": 1790961534.115436
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-multiarch",
+        "--library=/private/tmp/relm-maintenance/library",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "started_at": 1790961534.1159282,
+      "exit_code": 0,
+      "finished_at": 1790961644.616873
+    },
+    {
+      "name": "r-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance/r-final.R"
+      ],
+      "status": "passed",
+      "started_at": 1790961644.617433,
+      "exit_code": 0,
+      "finished_at": 1790961709.178634
+    },
+    {
+      "name": "source",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "--no-manual",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "started_at": 1790961709.179373,
+      "exit_code": 0,
+      "finished_at": 1790961711.492815
+    },
+    {
+      "name": "check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--no-install",
+        "--no-tests",
+        "--no-vignettes",
+        "--no-manual",
+        "--library=/private/tmp/relm-maintenance/library",
+        "/private/tmp/relm-maintenance/final-package-20261002-191734/relm_0.3.0.tar.gz"
+      ],
+      "status": "passed",
+      "started_at": 1790961711.493268,
+      "exit_code": 0,
+      "finished_at": 1790961716.4806988
+    }
+  ],
+  "stage": "check",
+  "finished_at": 1790961716.4811578
+}
