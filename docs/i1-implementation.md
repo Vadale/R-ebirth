@@ -146,3 +146,26 @@ verifies that diagnostic capture leaves an already-queued observer undelivered
 and the original assertion failing. Failed logs and the exact original check
 output are in `evidence/ci-37018209652/`. The native and R product code are
 unchanged. A green diagnostic run must not be described as a proven runtime fix.
+
+The diagnostic candidate `9e4739c3` reproduced the failure on macOS R release
+4.6.1 in run `37022686285`. It now records the exact boundary: the parent stayed
+pending through 9.947 s, native collection fulfilled it at 10.136 s, and its
+observer remained queued when the ten-second test deadline expired. Elapsed
+wait was 10.138 s versus 0.095 s of R CPU; the maximum event-loop pump was 0.201 s.
+There was no missing native result or rejected observer in this recorded case.
+
+The focused correction changes the responsiveness fixture from 200 successive
+10 ms sleeps to one 2,000 ms sleep. Its nominal native hold remains two seconds;
+submission below 250 ms, at least ten R heartbeats, completion within ten seconds,
+result metadata, one settlement and cleanup remain required. Progress and
+cancellation still use their separate multi-step fixtures. Removing repeated
+timed wakeups reduces sensitivity to accumulated scheduling delays without
+extending a timeout, draining late callbacks or changing package runtime code.
+The evidence supports this correction; it does not identify a specific OS
+scheduler defect or promise that a single sleep can never overshoot.
+
+The corrected case passes its original twelve assertions locally against the
+unchanged installed WP10 library, with an additional check of the measured hold
+and promise states. Focused independent review approved the correction. The
+new failure, diagnostic receipt and local outcome are retained separately in
+`evidence/ci-37022686285/`; fresh remote checks remain required before integration.

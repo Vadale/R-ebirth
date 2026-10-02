@@ -173,7 +173,12 @@ test_that("async UTF-8 and aggregate limits include names stop schema and image 
 })
 
 test_that("native async promise is responsive and services independent R heartbeats", {
-  m <- async_test_handle(steps = 200L, delay_ms = 10L)
+  # Hold the real native worker for the same nominal two seconds with one sleep.
+  # Hundreds of short relative sleeps accumulate runner scheduling delays; CI
+  # observed collection at 10.136 s with the old 200 x 10 ms fixture. This case
+  # tests R responsiveness, not the host's short-sleep precision. Progress and
+  # cancellation have separate multi-step fixtures below. Keep every gate intact.
+  m <- async_test_handle(steps = 1L, delay_ms = 2000L)
   on.exit(close(m), add = TRUE)
   beats <- 0L
   done <- FALSE

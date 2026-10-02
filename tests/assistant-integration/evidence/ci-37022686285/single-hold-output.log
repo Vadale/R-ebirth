@@ -1,0 +1,41 @@
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Runtime: R version 4.5.1 (2025-06-13) promises 1.5.0 later 1.4.8 
+Tracing function "async_settle" in package "namespace:relm"
+[1] "async_settle"
+SETTLE 2.351 
+ASYNC_RESPONSIVENESS_DIAGNOSTIC
+list(timeout = 10, elapsed = 2.03, wall_seconds = 2.02982807159424, 
+    polls = 39L, max_poll_seconds = 0.056, current_loop = 0L, 
+    global_loop = 0L, transitions = list(list(elapsed = 0.035, 
+        cpu = 0, poll_seconds = 0.035, job_present = TRUE, promise = "pending", 
+        observed = FALSE), list(elapsed = 2.029, cpu = 0.021, 
+        poll_seconds = 0.052, job_present = FALSE, promise = "fulfilled", 
+        observed = FALSE), list(elapsed = 2.03, cpu = 0.021, 
+        poll_seconds = 0, job_present = FALSE, promise = "fulfilled", 
+        observed = TRUE)), last_polls = list(list(elapsed = 1.709, 
+        cpu = 0.017, poll_seconds = 0.056, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 1.763, 
+        cpu = 0.018, poll_seconds = 0.0539999999999998, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 1.815, 
+        cpu = 0.019, poll_seconds = 0.052, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 1.87, 
+        cpu = 0.019, poll_seconds = 0.0550000000000002, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 1.925, 
+        cpu = 0.02, poll_seconds = 0.0550000000000002, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 1.977, 
+        cpu = 0.02, poll_seconds = 0.0509999999999997, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 2.029, 
+        cpu = 0.021, poll_seconds = 0.052, job_present = FALSE, 
+        promise = "fulfilled", observed = FALSE), list(elapsed = 2.03, 
+        cpu = 0.021, poll_seconds = 0, job_present = FALSE, promise = "fulfilled", 
+        observed = TRUE)), queue_at_boundary = list(list(id = 79, 
+        when = -0.000148), list(id = 77, when = 0.048746)), native = list(
+        ok = TRUE, active_jobs = 0L, worker_threads = 0L, deferred_handles = 0L, 
+        snapshot_slots = 0L, terminal_slots = 0L, queued_jobs = 0L), 
+    observer_done = TRUE, R = "R version 4.5.1 (2025-06-13)", 
+    later = "1.4.8", promises = "1.5.0", testthat = "3.3.2", 
+    parent_status = "fulfilled", observer_status = "fulfilled")
+Test passed with 12 successes 🎊.
+FOCUSED_ASYNC_REPRO_COMPLETE
+SINGLE_HOLD_RESPONSIVENESS_PASSED
