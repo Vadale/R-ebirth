@@ -1,0 +1,9 @@
+{
+  "initial_skill_inventory_sha256": "b65a09f0cdbc2082b67fd5d32a574c77f315aadff4834a616583e94df1612b60",
+  "project_inventory_sha256": "3c87b7667fe32691b8f46e916516a06aa00d12d2f70eca94f37fe0bd10051864",
+  "project_install_discovered": true,
+  "context_not_redistributed": true,
+  "source_version": "0.1.0",
+  "ambient_personal_copy_present": true,
+  "limitations": "Same-name ambient and project copies may both be listed; no clean-account or native plugin installation claim."
+}

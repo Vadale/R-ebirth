@@ -1,0 +1,2 @@
+"result_id","outcome","term","estimate","conf_low","conf_high","conf_level","scale","units","n","n_A","n_B","p_value","degrees_freedom","method","status"
+"primary_B_minus_A","outcome","mean(B) - mean(A)",3.83333333333333,2.30490219599571,5.36176447067096,0.95,"mean difference","points",24,12,12,3.26741241945916e-05,21.9198603267664,"Welch two-sample t confidence interval","ok"

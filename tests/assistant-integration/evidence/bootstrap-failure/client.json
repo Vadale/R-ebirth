@@ -1,0 +1,6 @@
+{
+  "version": "codex-cli 0.152.1",
+  "executable": "/Users/alessandrovadala/.local/bin/codex",
+  "settings": "Existing user configuration; no model/reasoning override",
+  "isolation": "workspace-write, approvals never, ephemeral; ambient skills retained"
+}

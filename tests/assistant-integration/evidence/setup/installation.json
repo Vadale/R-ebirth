@@ -1,0 +1,17 @@
+{
+  "content_sha256": "2fb209d4bf8eec3fb3026af90970ede23b4d1f6156bc680c733c7414320587c9",
+  "destination": "/private/tmp/relm-i1/installed-project/.agents/skills/r-statistical-analysis",
+  "files": {
+    "LICENSE-APACHE": "11035c504a1c41e1a86b5880075040b35505d3c4e81a5307283359f25a957247",
+    "LICENSE-MIT": "4292868ea88f88a1f5c3f251742091a8e6ae1b8975824fef80bfbef1249ed8d7",
+    "SKILL.md": "d1893e6112de6f929a371965f85e7923c0b956e3750c4fbf6bdd304f2f4b04dc",
+    "agents/openai.yaml": "4d3c32ac4c0ce768579929d7e802622d0d56d97c57640cd154bed93442f97fdc",
+    "references/method-routing.md": "67deb37dc45a3ac602d8cc9491dbc030d983f76b7678fa3391aab73d3fe1242f",
+    "references/output-contract.md": "a23b5c5bde4d63e99f2508f0ca81766f8abc955a6559d1e78dae2b5d4087e841",
+    "references/statistical-checks.md": "89cfd9148bfa1ce53ae49b853ae431f76e5cbc4e82fd083054ea80cf740f428f",
+    "scripts/inspect-environment.R": "f0506cf750166468df749293175bc53926a026ce72805e8cc62e91ee6f6535a1",
+    "scripts/run-analysis.R": "7d6b54ed11743f49f97aa58b971ac3da9d05d7e2fdd8aba32ddfb3bc53d8e32c"
+  },
+  "format": 1,
+  "skill": "r-statistical-analysis"
+}

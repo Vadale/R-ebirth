@@ -1,0 +1,8 @@
+{
+  "version": "codex-cli 0.152.1",
+  "executable": "/Users/alessandrovadala/.local/bin/codex",
+  "model": "gpt-5.6-sol",
+  "reasoning": "medium",
+  "settings": "Per-invocation overrides only; user configuration unchanged",
+  "isolation": "workspace-write, approvals never, ephemeral; ambient skills retained"
+}

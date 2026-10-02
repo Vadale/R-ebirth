@@ -1,0 +1,8 @@
+"check","status","detail"
+"independence","assumed","One row per independent participant, according to the supplied design; independence cannot be tested from these data."
+"unique_participants","pass","All 24 participant IDs are unique."
+"missingness","pass","No missing values in id, group, or outcome; all rows were analyzed."
+"group_support","pass","A: n=12; B: n=12."
+"variance_imbalance","pass","Larger-to-smaller sample variance ratio = 1.13; Welch inference allows unequal variances."
+"distribution_shape","not_assessed","Inspect diagnostic-plot.png. Shapiro-Wilk p-values: A=0.954, B=0.852; with n=12 per group these have limited power and are not an assumption gate."
+"single_observation_sensitivity","not_assessed","Leave-one-out B-minus-A estimates range from 3.55 to 4.11 points (full estimate 3.83)."

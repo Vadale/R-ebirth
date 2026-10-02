@@ -1,0 +1,60 @@
+[
+  {
+    "item_id": "item_1",
+    "exit_code": 0,
+    "excerpts": [
+      "- **Complex fits:** retain optimizer/convergence and singular-fit warnings. For",
+      "or exploratory and explain the consequence. Do not silently suppress warnings,",
+      "not authentication or a security guarantee. Warnings remain in `conditions.csv`",
+      "and a warning count appears in the summary. `complete` means execution and"
+    ]
+  },
+  {
+    "item_id": "item_8",
+    "exit_code": 1,
+    "excerpts": [
+      "Captured warnings: 0"
+    ]
+  },
+  {
+    "item_id": "item_11",
+    "exit_code": 0,
+    "excerpts": [
+      "               \"\", paste(\"Captured warnings:\", sum(conditions$type == \"warning\")),",
+      "}, warning = function(w) {",
+      "  record_condition(w, \"warning\")",
+      "  invokeRestart(\"muffleWarning\")"
+    ]
+  },
+  {
+    "item_id": "item_13",
+    "exit_code": 0,
+    "excerpts": [
+      "  png cairo ",
+      "Warning message:",
+      "  unable to load shared object '/Library/Frameworks/R.framework/Resources/modules//R_X11.so':",
+      "  dlopen(/Library/Frameworks/R.framework/Resources/modules//R_X11.so, 0x0006): Library not loaded: /opt/X11/lib/libSM.6.dylib",
+      "  Referenced from: <D469498A-D948-3064-86EA-DF67F05DCE0F> /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/modules/R_X11.so",
+      "  Reason: tried: '/opt/X11/lib/libSM.6.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/X11/lib/libSM.6.dylib' (no such file), '/opt/X11/lib/libSM.6.dylib' (no such file), '/Library/Frameworks/R.framework/Resources/lib/libSM.6.dylib' (no such file), '/Library/Java/JavaVirtualMachines/jdk-11.0.18+10/Contents/Home/lib/server/libSM.6.dylib' (no such file)"
+    ]
+  },
+  {
+    "item_id": "item_17",
+    "exit_code": 1,
+    "excerpts": [
+      "Warning messages:",
+      "  unable to load shared object '/Library/Frameworks/R.framework/Resources/modules//R_X11.so':",
+      "  dlopen(/Library/Frameworks/R.framework/Resources/modules//R_X11.so, 0x0006): Library not loaded: /opt/X11/lib/libSM.6.dylib",
+      "  Referenced from: <D469498A-D948-3064-86EA-DF67F05DCE0F> /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/modules/R_X11.so",
+      "  Reason: tried: '/opt/X11/lib/libSM.6.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/X11/lib/libSM.6.dylib' (no such file), '/opt/X11/lib/libSM.6.dylib' (no such file), '/Library/Frameworks/R.framework/Resources/lib/libSM.6.dylib' (no such file), '/Library/Java/JavaVirtualMachines/jdk-11.0.18+10/Contents/Home/lib/server/libSM.6.dylib' (no such file)",
+      "2: In cairoVersion() :",
+      "  unable to load shared object '/Library/Frameworks/R.framework/Resources/library/grDevices/libs//cairo.so':",
+      "  dlopen(/Library/Frameworks/R.framework/Resources/library/grDevices/libs//cairo.so, 0x0006): Library not loaded: /opt/X11/lib/libXrender.1.dylib",
+      "  Referenced from: <8BEC12F7-999D-3BC3-8F3A-2F9F34808E56> /Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/grDevices/libs/cairo.so",
+      "  Reason: tried: '/opt/X11/lib/libXrender.1.dylib' (no such file), '/System/Volumes/Preboot/Cryptexes/OS/opt/X11/lib/libXrender.1.dylib' (no such file), '/opt/X11/lib/libXrender.1.dylib' (no such file), '/Library/Frameworks/R.framework/Resources/lib/libXrender.1.dylib' (no such file), '/Library/Java/JavaVirtualMachines/jdk-11.0.18+10/Contents/Home/lib/server/libXrender.1.dylib' (no such file)",
+      "3: In grDevices::png(\"/tmp/codex-cairo-check.png\", type = \"cairo\") :",
+      "  failed to load cairo DLL",
+      "ls: /tmp/codex-cairo-check.png: No such file or directory"
+    ]
+  }
+]

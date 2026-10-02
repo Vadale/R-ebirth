@@ -49,6 +49,16 @@ completed 0.3.0 release. Dependency/API proposals still need concrete approval;
 I1 transport, access permissions and hosting are not implicitly authorized by
 creating a local skill.
 
+**I1 implementation started 2026-10-02:** the founder authorized the next work
+package after WP9 and WP10 merged. The concrete
+[I1 plan](i1-assistant-plan.md) selects the installed Codex CLI's existing shell
+tools and local Rscript, without a new transport server, dependency or core API.
+Installation/distribution instructions are in the
+[companion guide](../integrations/README.md). The fixed native-client cases,
+fresh-process numerical replay and one integrated review are complete; final CI
+and PR integration remain pending. The [implementation report](i1-implementation.md)
+preserves graphics failures, a temporary-file scope deviation and bounded claims.
+
 ## I1 acceptance
 
 - One actual external assistant receives a language-unspecified statistical
@@ -77,7 +87,10 @@ creating a local skill.
 The source folder follows the [Agent Skills format](https://agentskills.io/specification).
 A compatible agent needs file/execution tools and an R runtime. Copy the complete
 folder, including references and scripts, into its skills directory. For Codex,
-use `~/.codex/skills/r-statistical-analysis`; for Claude Code, use
+use the documented project `.agents/skills/r-statistical-analysis` or user
+`~/.agents/skills/r-statistical-analysis` location; the existing development
+installation at `~/.codex/skills/r-statistical-analysis` is also observed by
+Codex 0.152.1. Avoid duplicate installations. For Claude Code, use
 `~/.claude/skills/r-statistical-analysis`. Refresh the client's skill inventory as
 required. These local locations do not create public marketplace listings.
 

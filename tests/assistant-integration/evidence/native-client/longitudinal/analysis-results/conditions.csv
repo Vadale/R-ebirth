@@ -1,0 +1,8 @@
+"type","class","message","call"
+"error","rlang_error/error/condition","Problem while computing aesthetics.
+ℹ Error occurred in the 1st layer.
+Caused by error:
+! Aesthetics are not valid data columns.
+✖ The following aesthetics are invalid:
+• `y = mean`
+ℹ Did you mistype the name of a data column or forget to add `after_stat()`?","ggplot2::geom_ribbon(data = pred_grid, ggplot2::aes(ymin = low,      ymax = high, fill = group), colour = NA, alpha = 0.14, inherit.aes = TRUE)"

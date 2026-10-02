@@ -1,0 +1,2 @@
+"result_id","outcome","term","estimate","conf_low","conf_high","conf_level","scale","units","n","method","status"
+"preregistered_primary",NA,"Proprietary measurement-error estimand",NA,NA,NA,NA,"preregistered scale not supplied","not supplied",NA,"studyModelI1 proprietary measurement-error estimator (not run)","withheld"

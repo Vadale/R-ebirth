@@ -1,0 +1,17 @@
+{
+  "bytes": 39909,
+  "destination": "/private/tmp/relm-i1/distribution/r-statistical-analysis.zip",
+  "files": [
+    "plugin.json",
+    "skills/r-statistical-analysis/LICENSE-APACHE",
+    "skills/r-statistical-analysis/LICENSE-MIT",
+    "skills/r-statistical-analysis/SKILL.md",
+    "skills/r-statistical-analysis/agents/openai.yaml",
+    "skills/r-statistical-analysis/references/method-routing.md",
+    "skills/r-statistical-analysis/references/output-contract.md",
+    "skills/r-statistical-analysis/references/statistical-checks.md",
+    "skills/r-statistical-analysis/scripts/inspect-environment.R",
+    "skills/r-statistical-analysis/scripts/run-analysis.R"
+  ],
+  "sha256": "9b3e1a365349dca46be719aa77274061cde56b94c430166f0987151c6442b83f"
+}

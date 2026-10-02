@@ -1,0 +1,5 @@
+{
+  "file": "tests/assistant-integration/reference.R",
+  "sha256": "3f3899fa0b45a9be602cc71c58be895a77d408a1a673235ff8c3e1e1ad63097b",
+  "note": "Added manual person-level OLS slope reference after observed analysis choice; fixed prompts and expectations unchanged. Earlier setup hash is retained."
+}

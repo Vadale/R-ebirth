@@ -1,0 +1,3 @@
+"result_id","outcome","term","estimate","conf_low","conf_high","conf_level","scale","units","n","standard_error","p_value","method","status"
+"coefficient_intercept","outcome","(Intercept)",0.0972778248800576,-0.807990762380879,1.00254641214099,0.95,"log odds","log odds at x = 0",25,0.461880215351701,0.833189525679783,"Nominal 95% model-based Wald interval from the nonconverged maxit=1 fit","withheld"
+"coefficient_x","outcome","x",1.16733389856069,0.665181235570515,1.66948656155087,0.95,"log odds","log odds per one-unit increase in x",25,0.256205046088139,5.2075283775387e-06,"Nominal 95% model-based Wald interval from the nonconverged maxit=1 fit","withheld"

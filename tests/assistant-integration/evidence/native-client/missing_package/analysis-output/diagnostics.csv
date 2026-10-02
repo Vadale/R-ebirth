@@ -1,0 +1,5 @@
+"check","status","detail"
+"required_package_available","fail","studyModelI1 is not installed in the R libraries visible to this clean session."
+"synthetic_analysis_data_present","fail","No synthetic analysis dataset is present among the workspace inputs."
+"analysis_specification_present","fail","No estimator call, variable mapping, estimand definition, or model specification is present."
+"substitute_model_fitted","pass","No substitute regression or alternative estimator was fitted."

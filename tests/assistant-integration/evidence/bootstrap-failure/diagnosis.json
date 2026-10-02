@@ -1,0 +1,16 @@
+{
+  "cli": "0.152.1",
+  "initial_model": "gpt-6.1-sol",
+  "initial_result": "rejected before model response or tool execution",
+  "corrected_model": "gpt-5.6-sol",
+  "corrected_reasoning": "medium",
+  "personal_configuration_changed": false,
+  "prompt_changed": false,
+  "catalog_sha256": "a554cd2fe86d3537d8ca6ffd730a94cc12acf66e0fb87079efaa99c25747226a",
+  "visible_models": [
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-5.5"
+  ]
+}

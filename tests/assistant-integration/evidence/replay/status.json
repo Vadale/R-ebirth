@@ -1,0 +1,71 @@
+{
+  "state": "passed",
+  "started": 1790949921.395576,
+  "results": [
+    {
+      "case": "longitudinal",
+      "exit_code": 0,
+      "source_sha256": "f67abb706b47ec983d6d6cfed09eb44c1b1bfa8565c08e003bcd5935aba83959",
+      "numerical_files_equal": {
+        "estimates.csv": true,
+        "person_slopes.csv": true,
+        "descriptive_by_visit.csv": true,
+        "diagnostics.csv": true,
+        "conditions.csv": true
+      }
+    },
+    {
+      "case": "insufficient",
+      "exit_code": 0,
+      "source_sha256": "dca490884b77167ed550a583e2968a27fc07429b670e27a76513f93e44169d2b",
+      "numerical_files_equal": {
+        "estimates.csv": true,
+        "diagnostics.csv": true,
+        "conditions.csv": true
+      }
+    },
+    {
+      "case": "missing_package",
+      "exit_code": 0,
+      "source_sha256": "7178d06297c061b101abd3c14b68282b185ccfc6cb10d804d05eab6b8d5b34a8",
+      "numerical_files_equal": {
+        "estimates.csv": true,
+        "diagnostics.csv": true,
+        "conditions.csv": true,
+        "package-availability.csv": true
+      }
+    },
+    {
+      "case": "fit_warning",
+      "exit_code": 0,
+      "source_sha256": "f9f4d8ef4effd682e4e5325e1157f0984074981e086b77753f966cd915582503",
+      "numerical_files_equal": {
+        "estimates.csv": true,
+        "diagnostics.csv": true,
+        "conditions.csv": true,
+        "fit-status.csv": true
+      }
+    },
+    {
+      "case": "guided",
+      "exit_code": 0,
+      "source_sha256": "f7d40709f3befaf9188e04afbb471351fb59d1fb335b68f6237ed6640804793c",
+      "numerical_files_equal": {
+        "estimates.csv": true,
+        "group-summary.csv": true,
+        "diagnostics.csv": true,
+        "conditions.csv": true,
+        "leave-one-out.csv": true
+      }
+    },
+    {
+      "case": "python",
+      "exit_code": 0,
+      "numerical_files_equal": {
+        "group_mean_outcomes.csv": true
+      }
+    }
+  ],
+  "active_case": null,
+  "finished": 1790949923.349605
+}

@@ -1,0 +1,5 @@
+"result_id","outcome","term","estimate","conf_low","conf_high","conf_level","scale","units","n","n_A","n_B","p_value","method","status"
+"group_A_mean","outcome","Observed mean, group A",10,NA,NA,NA,"mean","outcome units",2,1,1,NA,"Arithmetic mean","ok"
+"group_B_mean","outcome","Observed mean, group B",13,NA,NA,NA,"mean","outcome units",2,1,1,NA,"Arithmetic mean","ok"
+"B_minus_A","outcome","Observed mean difference, B minus A",3,NA,NA,NA,"difference","outcome units",2,1,1,NA,"Difference of arithmetic means","ok"
+"B_higher_test","outcome","Evidence that population mean B exceeds A",3,NA,NA,0.95,"difference","outcome units",2,1,1,NA,"Population inference unavailable: within-group variances and a standard error cannot be estimated","withheld"

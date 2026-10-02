@@ -1,0 +1,94 @@
+{
+  "receipt": {
+    "id": "fit_warning",
+    "mode": "explicit_R",
+    "exit_code": 0,
+    "timeout": false,
+    "seconds": 120.73910593986511,
+    "prompt_sha256": "366aab0ccf85992d3cdc51fe0326bd6d36d6e2477438d04dfb458ff871438832",
+    "input_sha256": {
+      "observations.csv": "8e78c221cdf40c2ae1c36029fa26179706ce64584a219dd70790fa7dc3a05f4c"
+    },
+    "events_sha256": "acf6f0a2bfc87ecafda8b5f6ceaf682be0bfc96e009030b612eabad94d21d9e4",
+    "outcome": "requires semantic/artifact review"
+  },
+  "commands": [
+    {
+      "id": "item_1",
+      "command": "/bin/zsh -lc \"sed -n '1,240p' /Users/alessandrovadala/.codex/skills/r-statistical-analysis/SKILL.md\"",
+      "exit_code": 0,
+      "output_sha256": "d1893e6112de6f929a371965f85e7923c0b956e3750c4fbf6bdd304f2f4b04dc"
+    },
+    {
+      "id": "item_2",
+      "command": "/bin/zsh -lc \"sed -n '1,260p' /Users/alessandrovadala/.codex/skills/r-statistical-analysis/references/output-contract.md\"",
+      "exit_code": 0,
+      "output_sha256": "a23b5c5bde4d63e99f2508f0ca81766f8abc955a6559d1e78dae2b5d4087e841"
+    },
+    {
+      "id": "item_3",
+      "command": "/bin/zsh -lc \"sed -n '1,260p' /Users/alessandrovadala/.codex/skills/r-statistical-analysis/references/statistical-checks.md\"",
+      "exit_code": 0,
+      "output_sha256": "89cfd9148bfa1ce53ae49b853ae431f76e5cbc4e82fd083054ea80cf740f428f"
+    },
+    {
+      "id": "item_4",
+      "command": "/bin/zsh -lc \"pwd && rg --files -g '\"'!*~'\"' -g '\"'!*.RData'\"' -g '\"'!*.rds'\"' | sed -n '1,120p' && Rscript --vanilla /Users/alessandrovadala/.codex/skills/r-statistical-analysis/scripts/inspect-environment.R\"",
+      "exit_code": 0,
+      "output_sha256": "ac821c9c6f5ac66df841c602b5cd81910adfe95b848391c190f6a15a881165e0"
+    },
+    {
+      "id": "item_5",
+      "command": "/bin/zsh -lc \"Rscript --vanilla -e 'd <- read.csv(\\\"observations.csv\\\", check.names=FALSE); cat(\\\"rows\\\", nrow(d), \\\"cols\\\", ncol(d), \\\"\\\\n\\\"); cat(\\\"names\\\", paste(names(d), collapse=\\\",\\\"), \\\"\\\\n\\\"); str(d); cat(\\\"missing\\\\n\\\"); print(colSums(is.na(d))); cat(\\\"outcome frequencies\\\\n\\\"); print(table(d\"'$outcome, useNA=\"ifany\")); cat(\"x summary'\"\\\\n\\\"); print(summary(d\"'$x)); cat(\"unique x\", length(unique(d$x)), \"'\"\\\\n\\\")'\"",
+      "exit_code": 0,
+      "output_sha256": "e529b1025d32f0a8791fce649a3e9f6ab38310d8f1877e45d08f13b344fb0c02"
+    },
+    {
+      "id": "item_6",
+      "command": "/bin/zsh -lc \"sed -n '1,320p' /Users/alessandrovadala/.codex/skills/r-statistical-analysis/scripts/run-analysis.R\"",
+      "exit_code": 0,
+      "output_sha256": "7d6b54ed11743f49f97aa58b971ac3da9d05d7e2fdd8aba32ddfb3bc53d8e32c"
+    },
+    {
+      "id": "item_9",
+      "command": "/bin/zsh -lc 'Rscript --vanilla /Users/alessandrovadala/.codex/skills/r-statistical-analysis/scripts/run-analysis.R analysis.R analysis-output observations.csv'",
+      "exit_code": 0,
+      "output_sha256": "a35173f3d1b2d6f4ba923f3cf551d952875be73c3b3d9dec418a944bb311c0ba"
+    },
+    {
+      "id": "item_10",
+      "command": "/bin/zsh -lc 'for f in analysis-output/status.dcf analysis-output/fit-status.csv analysis-output/conditions.csv analysis-output/estimates.csv analysis-output/diagnostics.csv analysis-output/summary.md analysis-output/manifest.csv; do echo \"FILE $f\"; sed -n '\"'1,160p' \\\"\"'$f\"; done'",
+      "exit_code": 0,
+      "output_sha256": "858d1cfe8d08c3a36299c134a3d6715973f6ab1c4faf8cd7fbc1d6d5fc2c0689"
+    }
+  ],
+  "messages": [
+    "I\u2019m using the R statistical-analysis skill because this request calls for a reproducible GLM analysis with diagnostics. I\u2019ll preserve the exact `maxit = 1` fit, capture its real warning and convergence flags, and keep all outputs in this workspace.",
+    "The dataset has 25 complete observations (12 outcomes of 0 and 13 of 1). I\u2019m now executing exactly one model fit with `glm.control(maxit = 1)`; any coefficient interval will be retained only as a diagnostic calculation from that nonconverged fit, not silently rehabilitated through a second fit or profiling run.",
+    "The exact requested model was run once with `glm.control(maxit = 1)`. No alternative iteration budget or replacement model was fitted.\n\nThe fit returned:\n\n- Warning: `glm.fit: algorithm did not converge`\n- `converged = FALSE`\n- Iterations: `1`\n- Analytic sample: 25 observations, with 12 zeros and 13 ones\n\nThe resulting nominal Wald quantities were:\n\n| Term | Coefficient | Nominal 95% interval |\n|---|---:|---:|\n| Intercept | 0.0973 | \u22120.8080 to 1.0025 |\n| x | 1.1673 | 0.6652 to 1.6695 |\n\nThese intervals should **not** be reported as trustworthy confidence intervals. They use the curvature after a single, explicitly nonconverged IRLS iteration. Moreover, the data are completely separated: every outcome 0 has `x \u2264 \u22120.25`, while every outcome 1 has `x \u2265 0`. Thus the ordinary finite logistic-regression MLE is not supported; the apparently finite coefficient, standard error, p-value, and interval are artifacts of stopping early rather than valid inference. They are retained as diagnostics and marked `withheld`.\n\nArtifacts:\n\n- [Executable analysis code](/private/tmp/relm-i1/native-client-02/fit_warning/analysis.R)\n- [Fit status and actual warning](/private/tmp/relm-i1/native-client-02/fit_warning/analysis-output/fit-status.csv)\n- [Captured conditions](/private/tmp/relm-i1/native-client-02/fit_warning/analysis-output/conditions.csv)\n- [Coefficients and withheld intervals](/private/tmp/relm-i1/native-client-02/fit_warning/analysis-output/estimates.csv)\n- [Diagnostics](/private/tmp/relm-i1/native-client-02/fit_warning/analysis-output/diagnostics.csv)\n- [Analysis summary](/private/tmp/relm-i1/native-client-02/fit_warning/analysis-output/summary.md)\n- [R session information](/private/tmp/relm-i1/native-client-02/fit_warning/analysis-output/session-info.txt)"
+  ],
+  "usage": {
+    "input_tokens": 179401,
+    "cached_input_tokens": 165120,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 4163,
+    "reasoning_output_tokens": 1010
+  },
+  "artifacts_sha256": {
+    "analysis-output/analysis.R": "f9f4d8ef4effd682e4e5325e1157f0984074981e086b77753f966cd915582503",
+    "analysis-output/conditions.csv": "475c463f2f3160ebd3e2bb9520bb6d05bde6c3056d35d8c6879de705a26faf00",
+    "analysis-output/diagnostics.csv": "e5f5cb18671370a73fd5ebc5f57147c846f1f2bb9dc0d9ae3e07aa7afff9804c",
+    "analysis-output/estimates.csv": "772be56d78a4f59925db00cfce7c643746f3cec72aa41cf74bfbc21bbe5f1809",
+    "analysis-output/fit-status.csv": "e15f64af9d8218cdcf2d156443808b945536949e6a20628180fbf62a4fa7295d",
+    "analysis-output/manifest.csv": "b24cf812a8cc78d65d2ec4e052266b890eafee6e79eee1d9e389dff67f646c94",
+    "analysis-output/session-info.txt": "1634047624e74537ce696c91e89221e71a6713dfb7b59ac323f232792b16a451",
+    "analysis-output/status.dcf": "a05ba27c06cae7bde1fd89fbb310b82812965e06e64244fb1ee497a8fd0a409e",
+    "analysis-output/summary.md": "f23306fac988d9466a76d326accbca4338150e2175078f7d8d232bbf24b6b9f5",
+    "analysis.R": "f9f4d8ef4effd682e4e5325e1157f0984074981e086b77753f966cd915582503",
+    "answer.md": "5075e5c4e2e12000b7e532bd472899c0731548e34b305ab6530ab27fe9ca26b6",
+    "observations.csv": "8e78c221cdf40c2ae1c36029fa26179706ce64584a219dd70790fa7dc3a05f4c",
+    "prompt.txt": "366aab0ccf85992d3cdc51fe0326bd6d36d6e2477438d04dfb458ff871438832"
+  },
+  "source_event_sha256": "acf6f0a2bfc87ecafda8b5f6ceaf682be0bfc96e009030b612eabad94d21d9e4",
+  "note": "Recorded observations only. Selection, correctness and interpretation require review."
+}
