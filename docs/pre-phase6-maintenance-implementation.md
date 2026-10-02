@@ -77,7 +77,14 @@ job ran or test passed in that rejected dispatch; the receipt is retained in
 `tests/sanitizers/evidence/dispatch-2026-10-02.json`. Ten sanitizer harness controls and fourteen reference manifest/handoff
 controls pass locally, along with workflow parsing/shell validation; no native
 Linux sanitizer or real vision result is inferred from them. Workflow definitions
-and model-free helper tests alone do not close these gates. Final compiler versions, hashes, commands and receipts will be
+and model-free helper tests alone do not close these gates. Linux run
+`37042396331` passed Valgrind but failed the sanitizer mixed-language preflight
+link before any instrumented product build/test: rustc passed `-nodefaultlibs`,
+leaving C++ ABI symbols in Clang's runtime unresolved. The isolated flags now
+explicitly link the existing `libstdc++`; compiler pins, sanitizer settings and
+all acceptance criteria are unchanged. Failed raw receipts are retained under
+`tests/sanitizers/evidence/linux-37042396331`. The scoped retry skips the already
+passing Valgrind job; scheduled runs still execute both. Final compiler versions, hashes, commands and receipts will be
 recorded after execution.
 
 ## Verification boundary

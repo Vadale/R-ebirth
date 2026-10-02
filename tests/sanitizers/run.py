@@ -18,7 +18,9 @@ NATIVE_FLAGS = ["-fsanitize=address,undefined", "-fno-sanitize-recover=all",
                 "-fno-omit-frame-pointer", "-O1", "-g"]
 RUST_FLAGS = ["-Zsanitizer=address", "-Zexternal-clangrt", "-Cforce-frame-pointers=yes",
               "-Cdebuginfo=2", "-Clinker=clang++-19",
-              "-Clink-arg=-fsanitize=address,undefined"]
+              "-Clink-arg=-fsanitize=address,undefined", "-Clink-arg=-lstdc++"]
+# rustc passes -nodefaultlibs: clang++ alone does not link the C++ ABI required
+# by the sanitizer runtime's dynamic-type checks. Keep that linkage explicit.
 # All selected functions are unconditional; model cases use the committed fixture.
 # No model-gated/vision test is selected. Source guards below fail on skip/return
 # additions; libtest JSON must independently report exactly one executed success.

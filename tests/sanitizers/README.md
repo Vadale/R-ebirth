@@ -10,6 +10,8 @@ The toolchain is Rust `nightly-2025-02-01` (LLVM 19) plus Ubuntu 24.04's pinned
 upgrade. Preflight checks the actual compilers before the expensive engine build.
 Rust's `-Zexternal-clangrt` selects Clang's runtime for all three languages;
 `-Zbuild-std` instruments the standard library as well as Rust dependencies.
+The link explicitly includes `libstdc++`: rustc uses `-nodefaultlibs`, which
+otherwise prevents clang++ from supplying the C++ ABI used by runtime type checks.
 An explicit target leaves host build scripts/procedural macros uninstrumented,
 as recommended by the [Rust sanitizer documentation](https://doc.rust-lang.org/unstable-book/compiler-flags/sanitizer.html#working-with-other-languages).
 C/C++ uses `-fsanitize=address,undefined` and `-fno-sanitize-recover=all`;
@@ -69,6 +71,8 @@ The workflow retains logs and partial receipts even on failure. `SUCCESS.txt`
 exists only after every required test passes. A source edit or workflow file is
 not a successful Linux acceptance run; first dispatch and final ordinary CI are
 still required before claiming delivery.
+The optional manual `sanitizers_only` input skips the unchanged Valgrind job for
+a scoped sanitizer-harness correction. Scheduled runs still execute both jobs.
 
 Coverage is the native CPU paths actually exercised. This is neither a
 ThreadSanitizer result nor Metal/CUDA, vision, R/SEXP marshalling, or universal

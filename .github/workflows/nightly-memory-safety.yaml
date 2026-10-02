@@ -9,7 +9,12 @@
 on:
   schedule:
     - cron: '0 3 * * *' # 03:00 UTC nightly (staggered before nightly-model-tolerance)
-  workflow_dispatch: {} # manual trigger (founder / test-engineer, on demand)
+  workflow_dispatch:
+    inputs:
+      sanitizers_only:
+        description: Run only the sanitizer job after an isolated harness correction
+        type: boolean
+        default: false
 
 name: nightly-memory-safety.yaml
 
@@ -21,6 +26,7 @@ concurrency:
 
 jobs:
   valgrind-intervention:
+    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.sanitizers_only }}
     runs-on: ubuntu-24.04
     name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
     timeout-minutes: 90
