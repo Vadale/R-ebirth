@@ -108,6 +108,11 @@ python3 tests/sanitizers/run.py --evidence "$RUNNER_TEMP/sanitizer-evidence" \
   --target "$RUNNER_TEMP/relm-sanitizer-target"
 ```
 
+Test output filenames percent-encode Rust module separators and other reserved
+characters. Test IDs and exact libtest filters are unchanged; each executed-test
+receipt includes its output filenames and digests. This avoids GitHub artifact
+filename rejection without changing execution or acceptance criteria.
+
 The workflow retains logs and partial receipts even on failure. `SUCCESS.txt`
 exists only after every required test passes. A source edit or workflow file is
 not a successful Linux acceptance run; first dispatch and final ordinary CI are

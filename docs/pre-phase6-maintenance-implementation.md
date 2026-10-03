@@ -257,3 +257,25 @@ establish real-model acceptance. The source manifest has no drift. The duplicate
 in the lossless receipts at `tests/sanitizers/evidence/d040-macos-2026-10-03`.
 The exact local callback runner snapshot is retained before the subsequent
 optional Linux symbolizer parameter; the local default behavior is unchanged.
+
+### Sanitizer execution passed; artifact upload failed — 2026-10-03
+
+Linux run `37115868876` at `226bb50` passed the mandatory seven callback runtime
+controls, compiled instrumentation/runtime auditing and the full native test
+step. Its job log contains all 15 distinct expected `SANITIZER_EXECUTED` markers.
+The workflow nevertheless failed: `upload-artifact` rejects `:` in filenames,
+and module-qualified Rust test names produced log paths containing `::`.
+The artifacts API reports zero artifacts. This is not a new numerical/sanitizer
+finding, but full acceptance remains incomplete without the raw per-test/object
+receipts. The original run remains failed; its available log, annotations, job
+status and artifact inventory are retained in
+`tests/sanitizers/evidence/linux-37115868876`.
+
+The correction percent-encodes test IDs only in output filenames; exact libtest
+arguments, names, assertions, bounds, flags and product code are unchanged.
+Receipts now name their stdout/stderr files explicitly as well as hashing them.
+Two portable-name/collision regressions pass alongside the sixteen existing
+harness controls. Because the completed hosted runner and unuploaded files are
+unavailable, one scoped sanitizer rerun is needed to retain the full evidence.
+The existing D-040 vision run remains valid for unchanged product/vision inputs
+and is neither cancelled nor duplicated; its exact source must be retained.

@@ -10,6 +10,7 @@ import shlex
 import shutil
 import subprocess
 import sys
+from urllib.parse import quote
 
 TOOLCHAIN = "nightly-2025-02-01"
 TARGET = "x86_64-unknown-linux-gnu"
@@ -59,6 +60,13 @@ def require(condition, message):
 
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def test_log_label(name):
+    # Rust module separators are valid test IDs but upload-artifact rejects ':'
+    # in filenames. Percent encoding preserves distinct IDs without changing
+    # the exact libtest filter or the identity recorded in the receipt.
+    return "test-" + quote(name, safe="")
 
 
 def check_fault(status, output, marker):
@@ -323,7 +331,7 @@ class Run:
             check_runtime_symbols(symbols)
             self.command(["ldd", binary], f"binary-{name}-linkage")
             for test in CASES[name]:
-                label = f"test-{test}"
+                label = test_log_label(test)
                 _, output, errors = self.command([binary, "--exact", test, "--test-threads=1",
                     "--format=json", "-Zunstable-options", "--nocapture"], label, timeout=180)
                 check_test_events(output, test)
@@ -331,6 +339,7 @@ class Run:
                 if name in WORK_MARKERS:
                     require(WORK_MARKERS[name] in errors, f"missing forward-pass marker: {name}")
                 receipts.append({"binary": name, "binary_sha256": digest(binary), "test": test,
+                                 "stdout_file": f"{label}.out", "stderr_file": f"{label}.err",
                                  "status": "executed_ok", "stdout_sha256": digest(self.evidence / f"{label}.out"),
                                  "stderr_sha256": digest(self.evidence / f"{label}.err")})
                 (self.evidence / "executed-tests.json").write_text(json.dumps(receipts, indent=2) + "\n")

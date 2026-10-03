@@ -1,0 +1,55 @@
+{
+  "run_id": 37115868876,
+  "head_sha": "226bb50f8f922816190ad50bbadc706756e24878",
+  "workflow_status": "failed",
+  "native_step_status": "success",
+  "observed_test_markers": [
+    "synthetic_spill::over_budget_spills_and_the_file_equals_the_in_memory_capture",
+    "synthetic_spill::an_existing_spill_file_is_rejected_without_truncation_or_cleanup",
+    "synthetic_spill::spill_creation_rejects_symlinks_and_preserves_their_targets",
+    "rebirth_llm::async_job::tests::async_cancel_busy_and_shutdown_return_ownership",
+    "rebirth_llm::async_job::tests::async_worker_panic_and_error_release_the_domain",
+    "rebirth_llm::async_job::tests::async_synthetic_failure_returns_original_context_and_shared_parent",
+    "rebirth_llm::async_job::tests::async_cancel_real_prefill_sample_and_prompt_boundaries_recover",
+    "rebirth_llm::async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer",
+    "rebirth_llm::async_job::tests::stream_shutdown_and_failures_after_backpressure_release_ownership",
+    "synthetic_generate::greedy_generation_matches_numpy_golden",
+    "synthetic_generate::sampling_is_deterministic_under_a_fixed_seed",
+    "synthetic_trace::engine_activations_match_numpy_oracle_within_tolerance",
+    "async_synthetic::async_synthetic_owned_handoff_preserves_golden_and_sampling",
+    "synthetic_embed::engine_embeddings_match_numpy_oracle_within_tolerance",
+    "synthetic_intervene::engine_interventions_match_numpy_oracle_and_are_reversible"
+  ],
+  "callback_runtime_marker": "passed",
+  "artifact_count": 0,
+  "acceptance_status": "incomplete_missing_raw_artifacts",
+  "reason": "Artifact upload rejected colons from Rust module separators in test log filenames. Native build/audits and all 15 test execution markers succeeded, but per-test/object/raw receipts were not uploaded and cannot be independently verified from the artifacts.",
+  "correction": "Percent-encode test IDs only in log labels; preserve exact test arguments/IDs and include explicit output filenames in receipts. Existing runner is gone, so one corrected scoped rerun is required to retain evidence.",
+  "files": {
+    "sanitizer-37115868876.log.gz": {
+      "raw_sha256": "40f33d29ca22317868cdec47a2ca94f712ecc9a43c6fce865d3e9e85ca6835b2",
+      "raw_bytes": 119629,
+      "archive_sha256": "6643e8878de58b3bd37170a01a0b3d3b5dfff03134f65e63e153baee1104d50d"
+    },
+    "sanitizer-37115868876-jobs.json.gz": {
+      "raw_sha256": "de386fa8f095e76a989165fa64a21311a39fd0b47ad79f971c7fa8496638b662",
+      "raw_bytes": 2932,
+      "archive_sha256": "319d7bdf5f8e8ada43a5d9be882d8991f5f165a7baba7a68c754e018bc9680ad"
+    },
+    "sanitizer-37115868876-annotations.json.gz": {
+      "raw_sha256": "f05d8556359372126a21bdc12e00355f0da50b24cabc0b6e8a284aa700b85442",
+      "raw_bytes": 927,
+      "archive_sha256": "af9fe59b1a58088d16fefb837767f98afed8f326467f29c712ece7164ff0b2a9"
+    },
+    "sanitizer-37115868876-artifacts.json.gz": {
+      "raw_sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c",
+      "raw_bytes": 32,
+      "archive_sha256": "e42c79294dbbc6a5ff415a3d77760a0a3242b5521791b894cac886b710080792"
+    },
+    "d040-upload-controls.log.gz": {
+      "raw_sha256": "8b22256599732f7f7d18a76f303fddd0f4dc9ac3e9985c3757a25200009d5d1f",
+      "raw_bytes": 2475,
+      "archive_sha256": "0ff75ea1ae9641fcda392f950c0ab818168c69a71c74bbf8177d80ad5ec5e17f"
+    }
+  }
+}

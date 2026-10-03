@@ -2,8 +2,9 @@
 import json
 from pathlib import Path
 import unittest
+from urllib.parse import unquote
 
-from run import CASES, build_artifacts, check_fault, check_runtime_symbols, check_test_events, check_unconditional_source
+from run import CASES, build_artifacts, check_fault, check_runtime_symbols, check_test_events, check_unconditional_source, test_log_label
 
 
 def events(name="actual_test", outcome="ok", passed=1, ignored=0):
@@ -16,6 +17,24 @@ def events(name="actual_test", outcome="ok", passed=1, ignored=0):
 
 
 class HarnessControls(unittest.TestCase):
+    def test_selected_log_paths_are_portable_and_preserve_test_ids(self):
+        names = [name for cases in CASES.values() for name in cases]
+        labels = [test_log_label(name) for name in names]
+        self.assertEqual(len(labels), len(set(labels)))
+        for name, label in zip(names, labels):
+            with self.subTest(name=name):
+                self.assertNotRegex(label + ".out", r'["<>:|*?\\/\r\n]')
+                self.assertEqual(unquote(label.removeprefix("test-")), name)
+        original = "async_job::tests::async_cancel_busy_and_shutdown_return_ownership"
+        self.assertIn(original, names)
+        self.assertNotIn(":", test_log_label(original))
+
+    def test_log_encoding_does_not_merge_escaped_or_flat_names(self):
+        names = ["a::b", "a__b", "a%3A%3Ab", "a/b", "a\\b", "a\nb", "a?b"]
+        labels = [test_log_label(name) for name in names]
+        self.assertEqual(len(labels), len(set(labels)))
+        self.assertEqual([unquote(label[5:]) for label in labels], names)
+
     @staticmethod
     def build_events():
         return [json.dumps({"reason": "compiler-artifact", "target": {"name": name},
