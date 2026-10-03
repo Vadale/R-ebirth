@@ -1,0 +1,44 @@
+D-039 — Defined size-only graph arithmetic (approved 2026-10-03)
+Upstream: b10828 / 3ad1ba7336986d98592d3e28cafd1a406715351f
+Scope: ggml_graph_nbytes only. Replace undefined null-pointer offset arithmetic
+with the identical ordered integer alignment and byte-size additions. Leave
+real-buffer pointer advancement, numerical operations and graph layouts unchanged.
+Finding: Linux UBSan run37045430641, null+96 in incr_ptr_aligned during sizing.
+No sanitizer suppression, dependency, upstream bump or tolerance change.
+Regression: tests/sanitizers/graph_size*; D-015 hash/reverse-coherence applies.
+Original approved proposal SHA256:
+ea9cfc8855e64c6e91b3e5be9b70d4dbb09c01e26c26d3943664013048072beb
+
+--- a/ggml/src/ggml.c
++++ b/ggml/src/ggml.c
+@@ -7371,19 +7371,18 @@
+ 
+ static size_t ggml_graph_nbytes(size_t size, bool grads) {
+     size_t hash_size = ggml_hash_size(size * 2);
+-    void * p = 0;
+-    incr_ptr_aligned(&p, sizeof(struct ggml_cgraph), 1);
+-    incr_ptr_aligned(&p, size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // nodes
+-    incr_ptr_aligned(&p, size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // leafs
+-    incr_ptr_aligned(&p, hash_size * sizeof(int32_t), sizeof(int32_t)); // use_counts
+-    incr_ptr_aligned(&p, hash_size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // hash keys
++    // Size-only calculation: there is no backing allocation for pointer arithmetic.
++    size_t nbytes = sizeof(struct ggml_cgraph);
++    nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + size * sizeof(struct ggml_tensor *); // nodes
++    nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + size * sizeof(struct ggml_tensor *); // leafs
++    nbytes = GGML_PAD(nbytes, sizeof(int32_t)) + hash_size * sizeof(int32_t); // use_counts
++    nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + hash_size * sizeof(struct ggml_tensor *); // hash keys
+     if (grads) {
+-        incr_ptr_aligned(&p, hash_size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // grads
+-        incr_ptr_aligned(&p, hash_size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // grad_accs
+-    }
+-    incr_ptr_aligned(&p, ggml_bitset_size(hash_size) * sizeof(ggml_bitset_t), sizeof(ggml_bitset_t));
+-
+-    size_t nbytes = (size_t) p;
++        nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + hash_size * sizeof(struct ggml_tensor *); // grads
++        nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + hash_size * sizeof(struct ggml_tensor *); // grad_accs
++    }
++    nbytes = GGML_PAD(nbytes, sizeof(ggml_bitset_t)) + ggml_bitset_size(hash_size) * sizeof(ggml_bitset_t);
++
+     return nbytes;
+ }
+ 

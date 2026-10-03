@@ -1,0 +1,80 @@
+[
+  {
+    "name": "compiler-version",
+    "command": [
+      "clang",
+      "--version"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "null-offset-compile",
+    "command": [
+      "clang",
+      "-std=c11",
+      "-O1",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-unused-function",
+      "-fsanitize=address,undefined",
+      "-fno-sanitize-recover=all",
+      "-fno-omit-frame-pointer",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/src",
+      "/private/tmp/relm-maintenance/ggml-size-diagnosis/null-offset.c",
+      "-o",
+      "/private/tmp/relm-maintenance/ggml-size-diagnosis/null-offset"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "layout-check-compile",
+    "command": [
+      "clang",
+      "-std=c11",
+      "-O1",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-unused-function",
+      "-fsanitize=address,undefined",
+      "-fno-sanitize-recover=all",
+      "-fno-omit-frame-pointer",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/src",
+      "/private/tmp/relm-maintenance/ggml-size-diagnosis/layout-check.c",
+      "-o",
+      "/private/tmp/relm-maintenance/ggml-size-diagnosis/layout-check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "null-offset-run",
+    "command": [
+      "/private/tmp/relm-maintenance/ggml-size-diagnosis/null-offset"
+    ],
+    "exit_code": 1
+  },
+  {
+    "name": "layout-check-run",
+    "command": [
+      "/private/tmp/relm-maintenance/ggml-size-diagnosis/layout-check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "patch-check",
+    "command": [
+      "git",
+      "-C",
+      "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+      "apply",
+      "--check",
+      "/private/tmp/relm-maintenance/ggml-size-proposal.patch"
+    ],
+    "exit_code": 0
+  }
+]

@@ -1205,6 +1205,28 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-039 — Defined graph-storage size arithmetic (APPROVED)
+
+- **Date:** proposed 2026-10-02; approved 2026-10-03. The founder replied
+  "Ok vai" to the concrete D-039 approval request and linked exact patch.
+  This approves the one-function correction and D-015 patch bookkeeping;
+  it does not authorize a version upgrade or other vendor changes.
+- **Evidence:** Linux sanitizer run `37045430641` at `cb607eb` passed compiled
+  instrumentation and stopped in upstream `ggml_graph_nbytes`: nonzero pointer
+  arithmetic starting at null. No product sanitizer test completed successfully.
+- **Decision:** replace only the size-calculation pointer arithmetic
+  with aligned integer offsets. Leave real allocated-buffer pointer advancement,
+  the b10828 pin, API, dependencies and numerical/sanitizer criteria unchanged.
+- **Application:** use D-015's committed source plus annotated
+  diff and post-patch digest; reverse application must restore the unchanged
+  pre-patch tree. This does not authorize other vendor changes or suppressions.
+- **Contract and acceptance:** [bounded proposal](docs/ggml-graph-sizing-proposal.md).
+  The exact candidate and retained Mac ASan/UBSan probes are linked there:
+  the original error is reproduced and 68 proposed-layout cases pass.
+  These bounded probes are not full engine acceptance; the unchanged gates remain.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

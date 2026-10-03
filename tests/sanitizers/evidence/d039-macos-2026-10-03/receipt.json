@@ -1,0 +1,157 @@
+{
+  "status": "passed",
+  "source_scope": "Applied D-039 ggml.c and current local package; final remote CI/sanitizer/vision pending",
+  "r_cases": 118,
+  "r_counts": {
+    "passed": 1915.0,
+    "failed": 0.0,
+    "error": 0,
+    "warning": 0.0,
+    "skipped": 25
+  },
+  "engine_passed": 142,
+  "ffi_passed": 7,
+  "graph_layout_cases": 68,
+  "warnings": [
+    "linker ignores duplicate -lc++",
+    "testthat was built under R4.5.2; local R4.5.1"
+  ],
+  "files": {
+    "source-manifest.json.gz": {
+      "raw_sha256": "29f3d74743d87c0a7a4e897ed8d3fb1b0456a5e66867dc4e515ac9bc56594eec",
+      "archive_sha256": "4e3ea5c791b5c6ad7971213007c44a33d0f6ffa600740e091a1f06f5a66aac27",
+      "raw_bytes": 74569
+    },
+    "format.log.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "raw_bytes": 0
+    },
+    "clippy.log.gz": {
+      "raw_sha256": "beb87ad5e7958822efda095fc55edee5addd067cd1a559a027d74f5a050c5edf",
+      "archive_sha256": "d0abd7868ea5090107b667c17e92545b07af81ebc4fc0ac99dbcabb8d3419b23",
+      "raw_bytes": 1815
+    },
+    "r-final-counts.csv.gz": {
+      "raw_sha256": "aebc852357b5840438694f26411bb3eabc8d02be26345ce790cd9c3f5f3b5e67",
+      "archive_sha256": "cb9bfe72d34e260a7699ddf2c36d7a6d9b555058fdd4a7b58528340e78d4701f",
+      "raw_bytes": 19413
+    },
+    "ffi.log.gz": {
+      "raw_sha256": "3a905ea50e50064253489b7d2afc4691db193d057eea8ef45befe0dba0266107",
+      "archive_sha256": "1937fecf14a2adbd5aeff824636a3bef68aecac5e2190a41e0e41d690381aa9a",
+      "raw_bytes": 1327
+    },
+    "r-final.rds.gz": {
+      "raw_sha256": "cfa517101fc197e51626bf3f4d5b71783b33f51cd022736b1817a77e39c67455",
+      "archive_sha256": "9e76904e66a0762b92c930208ddc1b59e0130137d590d01308d2b1dd33089247",
+      "raw_bytes": 418540
+    },
+    "r-session.txt.gz": {
+      "raw_sha256": "b953a2ce5e7da32203bb70dcb32cea8a59bc0a91af080080f0992b8b9c93f0fe",
+      "archive_sha256": "ba9f16a11dbfb135111e082ba3deb78e85246809e3a5b98ce79eaadcd00699e9",
+      "raw_bytes": 1000
+    },
+    "r-tests.log.gz": {
+      "raw_sha256": "491408d2f12564182dae53c6a4180297019e948c34a001e37ea1c6a276f5d424",
+      "archive_sha256": "97c9e4a75f45a724349e952f0c38d8a4ebf5a0ebf84acd86ccad558731a24439",
+      "raw_bytes": 9340
+    },
+    "engine.log.gz": {
+      "raw_sha256": "19dbe51c6e0ae6ceb09a8a4973fed33a54f74fd78829032a775e476eb9379a45",
+      "archive_sha256": "701354c378683d369b3e46d4e87dcb53a09150e45d740322fd549e8a01cb3451",
+      "raw_bytes": 15102
+    },
+    "install.log.gz": {
+      "raw_sha256": "2ec4f43e73d0d5542395f109df34fbc686382b125148c814959ba312dfb0a108",
+      "archive_sha256": "dee76da5d470aa8f4145b14a8a87f99fc649b37d4a08897e3d0d301f653b6917",
+      "raw_bytes": 11220
+    },
+    "status.json.gz": {
+      "raw_sha256": "282fd7b0c18771a01834a0ee36d18344b242543389a7f3fe864c371d761212ff",
+      "archive_sha256": "155ace057506a084092e02d38ae0725cbceaef4826503fb1e37762765b0336bf",
+      "raw_bytes": 2444
+    },
+    "format-ffi.log.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "raw_bytes": 0
+    },
+    "graph-compile.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "raw_bytes": 0
+    },
+    "graph-result.json.gz": {
+      "raw_sha256": "abbbb619d28c602b15708b790a109613b5e0099d09e50b0a0f2292abbf2ae30f",
+      "archive_sha256": "ae71871d7bf6794db8eb7e51f0c80619437948cdf7d97e97fe1c43d1c2bfbf4e",
+      "raw_bytes": 3146
+    },
+    "graph-source-extract.h.gz": {
+      "raw_sha256": "b254d32d9e031f6900c20c5d5fa96ad64d17b73ed48bb99f5685c82f9b056fc6",
+      "archive_sha256": "2794c2d2d457044f0927c007c22025f5c9778817b587721628d19a150bf87751",
+      "raw_bytes": 2067
+    },
+    "graph-compile.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "raw_bytes": 0
+    },
+    "graph-original-arithmetic.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "raw_bytes": 0
+    },
+    "graph-graph_size.c.gz": {
+      "raw_sha256": "5a7c73e48a26bbc41cb405568a604b00f90bb2b10670d7001ea07a6c1cf48f75",
+      "archive_sha256": "4577fe062f4e12bbbbaf533a8a0d2d0edbeaad905ac8278e0557e5f3503c0dba",
+      "raw_bytes": 3152
+    },
+    "graph-compiler.out.gz": {
+      "raw_sha256": "d23e1e266991777af51323c8a611147c28082ac12f936caa38bc345779f78483",
+      "archive_sha256": "e019b307937daa4c2f1958239456ed205702250e32a5b92b4a7947a646d591f2",
+      "raw_bytes": 201
+    },
+    "graph-layout.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "raw_bytes": 0
+    },
+    "graph-layout.out.gz": {
+      "raw_sha256": "69335b4874f8b47c72c5aa9779a5f2972e0a113a520d45b675741d5f4a4c9285",
+      "archive_sha256": "c47060cd343fdf32f6a4dc62fb7f6f700a421cc20c468387e35998c4a47c012c",
+      "raw_bytes": 2040
+    },
+    "graph-ggml-impl.h.gz": {
+      "raw_sha256": "2ed56e264202906d107e26d08eabb242d3107b026ebfb78096fa1e5f94bdbbb8",
+      "archive_sha256": "aff4c7e1e3ace1ef7e41ffbbc815010912e26a7c9a950dc8cdf5c765da601ef6",
+      "raw_bytes": 25604
+    },
+    "graph-compiler.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+      "raw_bytes": 0
+    },
+    "graph-original-arithmetic.err.gz": {
+      "raw_sha256": "11ada2cc3cb3b60367b09658a81dc2d79bddf240aaa6b3dcdfcbbb82a808b694",
+      "archive_sha256": "c2f6a79650dd6c5760c1d624e9e777d3b0f3a2af3c57280927705478eeea68d6",
+      "raw_bytes": 766
+    },
+    "graph-gguf.h.gz": {
+      "raw_sha256": "e56714aab702e5ce62ee587a409643c08f7e93e8fbb77f48ef7cc85075f96fa4",
+      "archive_sha256": "4a59b460375154f45aacd7b6dad2084d242427b8598bb58c649c2a7389933084",
+      "raw_bytes": 11355
+    },
+    "graph-ggml.h.gz": {
+      "raw_sha256": "34192eac913444df9dc1d23025a618448cdee1ee7d78597af4979d8edc77b695",
+      "archive_sha256": "ea46fdcebd50585cd41e4c015993d7f9456f0d24dfaff53286397da28e576eaa",
+      "raw_bytes": 113310
+    },
+    "r-d039.R": {
+      "sha256": "5ddd8a4342788d6c517ab65f6996b7490bb20b49424c9560c1bf1717f483d686"
+    },
+    "verify-d039.py": {
+      "sha256": "9796df9a0e16c37ebfb3e23eacdcec6551c9c83fd4c0c7ec426a7f1e07bbbf88"
+    }
+  }
+}

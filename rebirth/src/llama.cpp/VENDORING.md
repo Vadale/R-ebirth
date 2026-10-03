@@ -17,7 +17,7 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz` |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
 | Pruned tree SHA256 (pre-patch) | `fd1b8327ef675dc91de4b9fde547d8afb7d4c6b2aa63a8f989e421cf59edd7ac` |
-| Pruned tree SHA256 (post-patch) | `978b070a9520cd6dfdf6fe15719854dc0ff4b3a68c679102b18d696a335d74ad` |
+| Pruned tree SHA256 (post-patch) | `68a7959e27e6e115fdac028aa65c097ce00cf32cc07116a9280ce563c6c78ceb` |
 
 D-032 advances b9726 to b10828 (commit
 `3ad1ba7336986d98592d3e28cafd1a406715351f`) for native Spark 2.5 support.
@@ -67,8 +67,13 @@ as-is, which is CRAN/`R CMD INSTALL`-robust and needs no diff-applier dependency
 | Patch | Files / hunks | Why | ADR |
 |---|---|---|---|
 | `0001-rebirth-wp5-ablation-intervene.diff` | 7 files, 14 hunks | `llm_ablate()`: a sibling `llama_adapter_intervene` applied inside `build_cvec` **after** the control vector (`cur * mask + add`, forcing masked neurons to `value`). No-op (no graph node) when no ablation is registered, so the un-intervened forward pass is byte-identical to the unpatched build. | D-012 / D-016 |
+| `0003-ggml-graph-size-offsets.diff` | `ggml/src/ggml.c`, one function | Defined integer arithmetic for graph-storage sizing; real-buffer advancement and numerical operations unchanged. | D-039 |
 
-The remaining patch touches engine sources only; all CMake inputs are pristine upstream.
+The patches touch engine sources only; all CMake inputs are pristine upstream.
+D-039 changes only the post-patch digest; the b10828 upstream and pre-patch
+identities above are unchanged. It does not add general overflow handling for
+arbitrary graph sizes. Its source-derived layout and native gates are separate
+from the historical b10828 numerical acceptance below.
 
 WP4 (activation observation) added **zero** patches (the eval-callback tap is
 zero-patch, D-012); WP5's ablation hook above is the project's first vendored

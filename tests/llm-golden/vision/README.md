@@ -287,6 +287,18 @@ These controls run before native compilation in the ordinary Rust PR job and
 before model work in the nightly. The final acceptance still requires the actual
 encoder comparison and retained digest receipts on both supported runners.
 
+The R suite installs the exact checked-out candidate into a fresh job library
+before testing. A separate `Rscript --vanilla` must load that installation and
+record its resolved package path and DLL SHA256. The existing `vision|async`
+suite then uses testthat's installed-package context and that library first;
+its lifecycle children inherit the same library paths. `pkgload::load_all()`
+alone cannot make an uninstalled package available to those fresh children.
+Run `37042401022` at `1e2b4ab` exposed that missing installation on both runners
+before any encoder reference was produced or compared. This workflow correction
+does not change tests, limits or numerical criteria, and does not establish a
+passing retry. Source/job context, installation and R suite logs, plus retained
+child `_problems` scripts/logs, are uploaded even when the R stage fails.
+
 A digest binds bytes. This mechanism is not a signature, an independent
 scientific oracle or proof that references transfer bit-for-bit across machines.
 It preserves the D-026 same-machine scope and the existing ATOL `1e-3` criterion.

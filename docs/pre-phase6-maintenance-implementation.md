@@ -95,9 +95,42 @@ complete unique set of seven test binaries, and still rejects malformed or
 unrecognized output. Replaying the retained real log passes; twelve harness
 controls include missing, failed, duplicate and script-prefixed fake completion
 cases. Raw evidence is under `tests/sanitizers/evidence/linux-37043713389`.
-No instrumented product test has yet been accepted; a successful build alone
-is not sanitizer acceptance. Final compiler versions, hashes, commands and receipts will be
-recorded after execution.
+No instrumented product test was accepted in that run; a successful build alone
+is not sanitizer acceptance.
+
+Run `37045430641` passed preflight and the compiled-instrumentation audit of 269
+C/C++ objects plus the `rebirth_llm`, Arrow and Rust standard-library archives,
+including the patched `build_cvec` machine code. The first product test then
+failed UBSan in upstream `ggml.c:7368`: `incr_ptr_aligned` applies an offset of
+96 bytes to a null pointer while `ggml_graph_nbytes` calculates storage size.
+This is observed undefined pointer arithmetic, not evidence of a null dereference
+or allocation leak. Zero product tests completed successfully. The actual finding
+and audit receipts are retained in `tests/sanitizers/evidence/linux-37045430641`.
+The founder approved the exact one-function [D-039 correction](ggml-graph-sizing-proposal.md)
+on 2026-10-03; it is applied and recorded as patch0003 under D-015. No suppression
+or tolerance change has been made. A standalone Mac
+ASan/UBSan reduction reproduces the original error; the candidate passes 68
+layout cases and a dry-run patch check. These are diagnostic controls, not the
+uncompleted Linux product gate. Proposal sources, commands and lossless results
+are retained in `tests/sanitizers/proposals/ggml-graph-size`. The applied source
+passes a new portable source-derived 68-case check; the original null arithmetic
+must still be rejected as a negative control. G4 and reverse-patch coherence pass
+with unchanged upstream/pre-patch identities. The post-patch SHA256 is
+`68a7959e27e6e115fdac028aa65c097ce00cf32cc07116a9280ce563c6c78ceb`.
+
+The Mac and Linux legs of vision run `37042401022` failed before producing the
+reference or executing its comparator. The parent R process used `load_all`, but
+async lifecycle children could not load an installed `relm` package. The workflow
+now installs the checkout in a fresh job-local library before the unchanged
+suite. A separate Rscript must confirm the installed package and DLL path and
+record the DLL digest. Early source, installation and child-process diagnostics
+are retained even when the R stage fails. YAML, seven shell scripts, two embedded
+Python blocks and two R blocks pass structural/syntax checks. No corrected remote
+execution is claimed; batch its retry with the final approved source. The full failure
+logs and job metadata are retained in
+`tests/llm-golden/vision/evidence/maintenance-37042401022`. No successful numerical
+comparison or reference artifact is inferred from this run. Final compiler
+versions, hashes, commands and receipts will be recorded after execution.
 
 ## Verification boundary
 
@@ -130,3 +163,17 @@ pipeline remain separately scoped in `macos-2026-10-02`.
 
 Required remote results must pass before this work is accepted and integrated.
 No release, Phase-6 API or marketplace publication is part of this work package.
+
+### Applied D-039 local validation — 2026-10-03
+
+The final modified size function passed fmt/clippy, all 142 default engine test
+outcomes (one calibration remains ignored), seven FFI tests, fresh isolated R
+installation and 118 focused R cases with 1,915 passing expectations, zero
+failures/errors/test warnings and 25 explicit model skips. The source manifest
+has no drift. R tests cover generation, trace/spill, async and streaming at the
+new package path. Linker duplicate-library and testthat patch-version warnings
+remain explicit. This stage did not repeat the broader model matrix or scoped
+package archive check; all four ordinary R CI legs still gate the final source.
+Receipts and lossless logs are in `tests/sanitizers/evidence/d039-macos-2026-10-03`.
+The older Valgrind result remains scoped to its original source; the final
+ASan/UBSan execution and both current-source vision comparisons are pending.

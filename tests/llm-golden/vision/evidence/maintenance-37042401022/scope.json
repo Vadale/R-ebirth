@@ -1,0 +1,19 @@
+{
+  "run": 37042401022,
+  "source": "1e2b4ab6f6f37a379956b41c7b40ebc501a54ba7",
+  "status": "failed_both_runners_before_reference_production",
+  "failure": "async lifecycle subprocesses could not load relm; parent load_all did not install package for child processes",
+  "reference_artifacts_produced": false,
+  "numerical_comparison_completed": false,
+  "correction_pending": "Install exact package candidate into job library before unchanged R tests; retain early diagnostics on failure.",
+  "raw_artifacts": {
+    "failed.log.gz": {
+      "archive_sha256": "ad1cc98a8a6eefff37c87b810bd7acffe6394ff7b1fe2cbc368468e69117cac2",
+      "raw_sha256": "739e8f91e001e17eedb4568cdf4b813af114bbb6812819bea62cb05b269f1f72"
+    },
+    "jobs.json.gz": {
+      "archive_sha256": "a43a4964fe309dfe47bd9442769cc8bf620b3b5345dfb0744499b9643ec1f15a",
+      "raw_sha256": "e32e4c17998daba9c2299ec08f6030c3a486be941bc6a02cc89bee34b8c689fd"
+    }
+  }
+}

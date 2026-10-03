@@ -1,5 +1,12 @@
 # relm (development)
 
+## Native graph storage
+
+* Graph-storage sizing now uses integer offsets instead of arithmetic on a null
+  pointer, correcting an upstream undefined-behavior finding. The embedded
+  b10828 version, allocated graph layout and numerical operations are unchanged.
+  Source-derived layout regressions retain active ASan/UBSan controls.
+
 ## Managed trace storage
 
 * On macOS/Linux, managed spill directories hold a native lifetime lease from

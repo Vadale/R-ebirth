@@ -37,8 +37,9 @@
 #                                        gap is not constant across two runners
 #                                        carrying the same ubuntu-24.04 label.
 #   So relm's IMAGE ENCODER contributes exactly zero divergence on the machines
-#   tested — and only that: the encoder path carries none of relm's patch (0001
-#   is llama-side), so 0.0 is expected there and blind to build_cvec. What gates
+#   tested. Patch0001 is llama-side, so the comparison is blind to build_cvec.
+#   D-039's patch0003 now changes shared graph-storage sizing, preserving layout;
+#   its final-source encoder comparison must be measured, not inferred. What gates
 #   Linux vision is the byte-exact T1 text golden + token-ids pin below, not this
 #   leg. See D-026 fourth addendum point 1 before citing this comparison.
 #   A reference from elsewhere measures the runner. Rebuilding the pinned upstream
@@ -98,12 +99,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 tests/llm-golden/vision/tools/test_reference_manifest.py
           # Independent job state is established before production. A rerun at
           # the same source/run/platform must not accept a prior job's manifest.
           python3 - <<'PY'
-          import os, secrets
+          import hashlib, json, os, pathlib, secrets, subprocess
           root = os.environ["RUNNER_TEMP"]
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          context = {key: os.environ.get(key, "") for key in (
+              "GITHUB_SHA", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB",
+              "GITHUB_WORKFLOW_SHA", "RUNNER_NAME", "RUNNER_OS", "RUNNER_ARCH")}
+          context["checkout_sha"] = source
+          context["source_tree"] = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          context["workflow_sha256"] = hashlib.sha256(pathlib.Path(
+              ".github/workflows/nightly-vision-golden.yaml").read_bytes()).hexdigest()
+          pathlib.Path(root, "vision-job-context.json").write_text(
+              json.dumps(context, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          assert source == os.environ["GITHUB_SHA"], "checkout must match the exact candidate"
           values = {
               "RELM_VISION_JOB_NONCE": secrets.token_hex(32),
               "RELM_VISION_ENCODER_REFERENCE": root + "/upstream-here.txt",
@@ -112,11 +124,14 @@ jobs:
               "RELM_VISION_PRODUCER_BINARY": root + "/dump-encode",
               "RELM_VISION_BUILD_DIR": root + "/pristine/build",
               "RELM_VISION_BUILD_INFO": root + "/reference-build.json",
+              "RELM_VISION_R_LIBRARY": root + "/relm-vision-library",
           }
           with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
               for key, value in values.items():
                   stream.write(key + "=" + value + "\n")
           PY
+          python3 tests/llm-golden/vision/tools/test_reference_manifest.py \
+            2>&1 | tee "$RUNNER_TEMP/vision-manifest-controls.log"
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -129,6 +144,33 @@ jobs:
         with:
           extra-packages: any::devtools
           working-directory: rebirth
+
+      - name: Install the exact candidate and verify a fresh Rscript can load it
+        working-directory: rebirth
+        shell: bash
+        run: |
+          set -euo pipefail
+          # A new job library prevents an older relm install from satisfying the
+          # child-process lifecycle tests. load_all alone cannot serve children.
+          mkdir "$RELM_VISION_R_LIBRARY"
+          R CMD INSTALL --library="$RELM_VISION_R_LIBRARY" . \
+            2>&1 | tee "$RUNNER_TEMP/vision-r-install.log"
+          Rscript --vanilla - <<'RS' 2>&1 | tee "$RUNNER_TEMP/vision-r-installed-child.log"
+          candidate_library <- normalizePath(Sys.getenv("RELM_VISION_R_LIBRARY"), mustWork = TRUE)
+          .libPaths(c(candidate_library, .libPaths()))
+          library(relm)
+          installed <- normalizePath(find.package("relm"), mustWork = TRUE)
+          expected <- normalizePath(file.path(candidate_library, "relm"), mustWork = TRUE)
+          dll <- normalizePath(getLoadedDLLs()[["relm"]][["path"]], mustWork = TRUE)
+          stopifnot(
+            identical(installed, expected),
+            startsWith(dll, paste0(expected, "/libs/")),
+            identical(as.character(packageVersion("relm")), read.dcf("DESCRIPTION")[[1L, "Version"]]))
+          print(sessionInfo())
+          print(.libPaths())
+          cat(sprintf("VISION_INSTALLED_CHILD_OK source=%s package=%s dll_sha256=%s\n",
+            Sys.getenv("GITHUB_SHA"), installed, unname(tools::sha256sum(dll))))
+          RS
 
       - name: Download + verify the pinned VLM + mmproj (fail-closed)
         shell: bash
@@ -152,16 +194,21 @@ jobs:
           echo "RELM_TEST_MODEL_VLM=$RUNNER_TEMP/Qwen2-VL-2B-Instruct-Q4_K_M.gguf" >> "$GITHUB_ENV"
           echo "RELM_TEST_MMPROJ_VLM=$RUNNER_TEMP/mmproj-Qwen2-VL-2B-Instruct-f16.gguf" >> "$GITHUB_ENV"
 
-      - name: Build relm and run the [MODEL] vision suite (R side)
+      - name: Run the installed candidate's [MODEL] vision suite (R side)
         working-directory: rebirth
         shell: bash
         run: |
+          set -euo pipefail
           # A quoted heredoc, NOT Rscript -e '...': inside a single-quoted
           # shell argument any apostrophe -- in a test name, in a comment --
           # silently ends the string and the step dies on a shell syntax error.
           # <<'RS' passes every byte through verbatim, so the class is gone.
-          Rscript - <<'RS'
-          suppressMessages(pkgload::load_all(".", quiet = TRUE))
+          Rscript --vanilla - <<'RS' 2>&1 | tee "$RUNNER_TEMP/vision-r-tests.log"
+          candidate_library <- normalizePath(Sys.getenv("RELM_VISION_R_LIBRARY"), mustWork = TRUE)
+          .libPaths(c(candidate_library, .libPaths()))
+          library(relm)
+          stopifnot(identical(normalizePath(find.package("relm")),
+            normalizePath(file.path(candidate_library, "relm"))))
           mp <- Sys.getenv("RELM_TEST_MODEL_VLM"); pp <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
           stopifnot(nzchar(mp), file.exists(mp), nzchar(pp), file.exists(pp))
           # Fail LOUDLY if the verified files are not the expected pair, so the
@@ -174,7 +221,8 @@ jobs:
           close(m)
           library(testthat)
           res <- test_dir("tests/testthat",
-            filter = "vision|async", reporter = "summary", stop_on_failure = TRUE
+            filter = "vision|async", reporter = "summary", stop_on_failure = TRUE,
+            package = "relm", load_package = "installed"
           )
           df <- as.data.frame(res)
           # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
@@ -307,13 +355,15 @@ jobs:
           # cannot satisfy the same-runner gate.
           must_have_run "VISION_REFERENCE_COMPARISON_PASSED sha256=" "the verified same-runner reference"
 
-      - name: Retain reference provenance and comparison receipts
+      - name: Retain R diagnostics, source provenance and comparison receipts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vision-reference-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: warn
           path: |
+            ${{ runner.temp }}/vision-job-context.json
+            ${{ runner.temp }}/vision-*.log
             ${{ runner.temp }}/upstream-here.txt
             ${{ runner.temp }}/upstream-here.manifest.json
             ${{ runner.temp }}/reference-build.json
@@ -322,3 +372,5 @@ jobs:
             ${{ runner.temp }}/vision-test-artifacts.jsonl
             rebirth/src/rust/vlm-tests.log
             rebirth/src/rust/async-vlm-tests.log
+            rebirth/tests/testthat/_problems/**
+            rebirth/_problems/**

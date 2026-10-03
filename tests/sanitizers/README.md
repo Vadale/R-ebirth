@@ -1,5 +1,24 @@
 # Scoped native sanitizer acceptance (D-019)
 
+## Graph storage sizing regression (D-039)
+
+`python3 tests/sanitizers/graph_size.py --cc clang --evidence /new/output/path`
+extracts the actual checkout's sizing, pointer helper and hash selector, with
+the actual ggml type headers. It compiles no full engine and downloads no model.
+An independent remainder-based alignment oracle and an exactly sized allocated
+buffer verify 68 size/gradient combinations, every field offset/alignment and
+endpoint writes. A negative invocation must reproduce the original null-plus-96
+UBSan error, proving that the check is active. Missing/duplicate cases, diagnostics,
+source drift and pre-existing evidence directories fail closed.
+
+The ordinary Rust workflow runs this on Linux and the native arm64 Mac host;
+the scoped nightly also runs it with pinned `clang-19`. Commands, current source
+hashes, compiler identity, extracted code and result hashes are retained. This
+does not certify arbitrary-size overflow handling or replace the full 15-test
+native sanitizer gate. Original proposal snapshots remain historical evidence.
+
+## Full native gate
+
 `nightly-memory-safety.yaml` retains Valgrind and adds an independent Linux CPU
 ASan/UBSan job. This harness is never imported by the package. Its controls and
 selected tests are download-free (the committed synthetic GGUF only).

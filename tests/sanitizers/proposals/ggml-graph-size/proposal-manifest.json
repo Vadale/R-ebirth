@@ -1,0 +1,13 @@
+{
+  "source_file": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/src/ggml.c",
+  "source_sha256": "683cbf1340ae08791d720045d1bc8b416b5cfa8de37484f878c03cf02de304b7",
+  "proposed_source_sha256": "0a4c36c14a1ba15559d6a21f570bfabb478eb05058c45c97a84ce7108f3c6841",
+  "proposal_patch_sha256": "ea9cfc8855e64c6e91b3e5be9b70d4dbb09c01e26c26d3943664013048072beb",
+  "changed_function": "ggml_graph_nbytes",
+  "unchanged_functions": [
+    "incr_ptr_aligned",
+    "ggml_new_graph_custom",
+    "ggml_graph_overhead_custom",
+    "ggml_hash_size"
+  ]
+}
