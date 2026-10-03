@@ -247,6 +247,35 @@ def library_artifact(output):
     return archives[0]
 
 
+def rust_archive_artifacts(outputs):
+    # Cargo may compile a dependency differently for libtest and the production
+    # library. Bind the audit to every declared artifact in those actual builds,
+    # rather than assuming one filename glob across the shared target directory.
+    required = ("rebirth_llm", "arrow_array", "std")
+    archives = {crate: {} for crate in required}
+    for stage, output in outputs.items():
+        seen = set()
+        for event in cargo_build_events(output):
+            crate = event.get("target", {}).get("name")
+            if event.get("reason") != "compiler-artifact" or crate not in archives:
+                continue
+            if event.get("profile", {}).get("test") is True:
+                continue
+            require(crate not in seen, f"duplicate {crate} library artifact in {stage}")
+            seen.add(crate)
+            require(event.get("profile", {}).get("test") is False
+                    and event.get("executable") is None
+                    and event["target"].get("kind") == (["rlib"] if crate == "std" else ["lib"]),
+                    f"invalid production library artifact for {crate} in {stage}")
+            paths = [Path(name) for name in event.get("filenames", []) if name.endswith(".rlib")]
+            require(len(paths) == 1 and paths[0].is_absolute()
+                    and re.fullmatch(r"lib" + crate + r"(?:-[0-9a-f]+)?\.rlib", paths[0].name),
+                    f"missing or ambiguous declared Rust archive for {crate} in {stage}")
+            archives[crate].setdefault(paths[0], []).append(stage)
+    require(all(archives.values()), "missing required declared Rust archive")
+    return archives
+
+
 class Run:
     def __init__(self, root, evidence, target, selection="full"):
         self.root, self.evidence, self.target = root, evidence, target
@@ -374,9 +403,11 @@ class Run:
     def build(self):
         _, output, _ = self.command(build_command(self.cases), "build", timeout=4200)
         artifacts = build_artifacts(output, self.cases)
+        build_outputs = {"build": output}
         library = None
         if self.selection == "live-only":
             _, output, _ = self.command(library_build_command(), "build-library", timeout=1200)
+            build_outputs["build-library"] = output
             library = library_artifact(output)
             require(library.is_file(), "reported production library is absent")
             (self.evidence / "library-artifact.json").write_text(json.dumps(
@@ -387,22 +418,27 @@ class Run:
         if library is not None:
             build_log += "\n" + (self.evidence / "build-library.err").read_text()
         rust_objects = []
-        for crate in ("rebirth_llm", "arrow_array", "std"):
+        declared = rust_archive_artifacts(build_outputs)
+        for crate, archives in declared.items():
             lines = [line for line in build_log.splitlines()
                      if re.search(r"--crate-name " + crate + r"\s", line)
                      and "--target x86_64-unknown-linux-gnu" in line]
             require(lines and all("-Zsanitizer=address" in line and "-Zexternal-clangrt" in line
                                   for line in lines), f"missing ASan rustc command for {crate}")
-            archives = list((self.target / TARGET / "debug/deps").glob(f"lib{crate}-*.rlib"))
-            require(len(archives) == 1, f"missing or ambiguous compiled Rust archive: {crate}")
-            if crate == "rebirth_llm" and library is not None:
-                require(digest(archives[0]) == digest(library),
-                        "production library differs from the audited Rust archive")
-            _, symbols, _ = self.command(["llvm-nm-19", "--undefined-only", archives[0]],
-                                         f"rust-object-{crate}")
-            require("__asan_" in symbols, f"compiled Rust archive lacks ASan references: {crate}")
-            rust_objects.append({"crate": crate, "archive": str(archives[0]),
-                                 "sha256": digest(archives[0]), "asan": True})
+            for index, (archive, stages) in enumerate(archives.items()):
+                debug = self.target / TARGET / "debug"
+                require(archive.parent in (debug, debug / "deps") and archive.is_file(),
+                        f"declared Rust archive is missing or outside target: {archive}")
+                if crate == "rebirth_llm" and library is not None:
+                    require(digest(archive) == digest(library),
+                            "production library differs from the audited Rust archive")
+                label = f"rust-object-{crate}" + (f"-{index}" if len(archives) > 1 else "")
+                _, symbols, _ = self.command(["llvm-nm-19", "--undefined-only", archive], label)
+                require("__asan_" in symbols,
+                        f"compiled Rust archive lacks ASan references: {archive}")
+                rust_objects.append({"crate": crate, "archive": str(archive),
+                                     "sha256": digest(archive), "asan": True,
+                                     "cargo_stages": stages, "symbols_file": label + ".out"})
         (self.evidence / "rust-objects.json").write_text(json.dumps(rust_objects, indent=2) + "\n")
         return artifacts
 

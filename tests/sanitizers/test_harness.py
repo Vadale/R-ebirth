@@ -11,7 +11,7 @@ from run import (CASES, CAPTURED_WORK_MARKERS, LEGACY_CASES, LIVE_CASES, Run,
                  build_artifacts, build_command, check_fault, check_runtime_symbols,
                  check_test_events, check_unconditional_source, selected_cases,
                  test_command, test_log_label, test_source, library_artifact,
-                 library_build_command)
+                 library_build_command, rust_archive_artifacts)
 
 
 def events(name="actual_test", outcome="ok", passed=1, ignored=0):
@@ -93,6 +93,56 @@ class HarnessControls(unittest.TestCase):
                     '[rebirth-llm 0.0.0] ' + output):
             with self.subTest(output=bad), self.assertRaises((RuntimeError, ValueError)):
                 library_artifact(bad)
+
+    @staticmethod
+    def archive_events(arrow="aa", include_library=True):
+        crates = ["std", "arrow_array"] + (["rebirth_llm"] if include_library else [])
+        rows = [{"reason": "compiler-artifact", "target": {"name": crate, "kind": ["rlib"] if crate == "std" else ["lib"]},
+                 "profile": {"test": False}, "executable": None,
+                 "filenames": [f"/tmp/lib{crate}-{arrow if crate == 'arrow_array' else 'bb'}.rlib"]}
+                for crate in crates]
+        return rows + [{"reason": "build-finished", "success": True}]
+
+    def test_both_actual_build_variants_are_audited_without_arbitrary_selection(self):
+        outputs = {"build": self.archive_events(include_library=False),
+                   "build-library": self.archive_events(arrow="cc")}
+        archives = rust_archive_artifacts({s: "\n".join(map(json.dumps, rows))
+                                          for s, rows in outputs.items()})
+        self.assertEqual(set(archives), {"std", "arrow_array", "rebirth_llm"})
+        self.assertEqual(archives["arrow_array"], {Path("/tmp/libarrow_array-aa.rlib"): ["build"],
+                                                  Path("/tmp/libarrow_array-cc.rlib"): ["build-library"]})
+        self.assertEqual(archives["std"], {Path("/tmp/libstd-bb.rlib"): ["build", "build-library"]})
+        self.assertEqual(sum(map(len, archives.values())), 4)
+
+    def test_duplicate_or_missing_archive_within_a_build_is_rejected(self):
+        rows = self.archive_events()
+        for bad in (rows + [rows[0]], rows[1:], rows[:-1], rows + [rows[-1]]):
+            with self.subTest(events=bad), self.assertRaises(RuntimeError):
+                rust_archive_artifacts({"build": "\n".join(map(json.dumps, bad))})
+
+    def test_archive_identity_requires_declared_absolute_rlib(self):
+        for change in ({"filenames": ["/tmp/notstd.rlib"]}, {"filenames": ["libstd-aa.rlib"]},
+                       {"filenames": ["/tmp/libstd-aa.rlib", "/tmp/libstd-bb.rlib"]},
+                       {"filenames": ["/tmp/libstd-aa.rmeta"]}, {"executable": "/tmp/a"},
+                       {"profile": {"test": True}}, {"profile": {}},
+                       {"target": {"name": "std", "kind": ["bin"]}}):
+            rows = self.archive_events()
+            rows[0].update(change)
+            with self.subTest(change=change), self.assertRaises(RuntimeError):
+                rust_archive_artifacts({"build": "\n".join(map(json.dumps, rows))})
+
+    def test_retained_real_cargo_shapes_cover_full_and_live_builds(self):
+        fixture = Path(__file__).parent / "fixtures/cargo-archives"
+        full = rust_archive_artifacts({"build": (fixture / "full-build.jsonl").read_text()})
+        self.assertEqual(sum(map(len, full.values())), 3)
+        live_test = (fixture / "live-test-build.jsonl").read_text()
+        live_library = (fixture / "live-library-build.jsonl").read_text()
+        live = rust_archive_artifacts({"build": live_test, "build-library": live_library})
+        self.assertEqual(sum(map(len, live.values())), 4)
+        self.assertEqual(len(live["arrow_array"]), 2)
+        self.assertEqual(library_artifact(live_library), next(iter(live["rebirth_llm"])))
+        with self.assertRaisesRegex(RuntimeError, "missing required declared Rust archive"):
+            rust_archive_artifacts({"build": live_test})
 
     def test_selected_log_paths_are_portable_and_preserve_test_ids(self):
         names = [name for cases in CASES.values() for name in cases]

@@ -174,7 +174,17 @@ coefficient updates. The ordinary native and R boundary checks remain separate.
 rlib when no integration target consumes the crate. The live-only path therefore
 also builds the production library with the same target, flags and rebuilt std,
 reusing native objects. Its successful non-test Cargo artifact must match the
-unique `rebirth_llm` archive used by the unchanged ASan symbol audit. This adds
+declared `rebirth_llm` archive used by the ASan symbol audit. This adds
 no unrelated product execution and never substitutes an executable for an
 archive. Both compile logs and the bound library digest are retained. The
 initial missing-archive failure is recorded in the F6 implementation report.
+
+Cargo may declare distinct Arrow archives for the libtest and production-library
+builds. The archive audit binds to every required non-test Cargo artifact from
+both successful stages, rather than choosing a filename glob. Missing or duplicate
+records within a stage fail; all distinct declared variants must exist inside
+the instrumented target and contain ASan references. Receipts bind each archive
+to its Cargo stages, SHA256 and exact symbol-output file. Captured full/live
+Cargo regressions live in `fixtures/cargo-archives` with original run and raw-log
+hashes. The same three crates remain mandatory; the number of distinct audited
+archives reflects their declared build variants.

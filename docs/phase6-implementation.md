@@ -338,3 +338,35 @@ retain their earlier execution. One corrected remote run is necessary because
 the original hosted target is gone; no test has been silently rerun until green.
 All709 downloaded files are inventoried; raw text receipts are losslessly
 committed, while probe binaries remain locally retained with size/digest records.
+
+## Cargo dependency variants in the scoped sanitizer build
+
+Run37140337349 atd99679c passed the production-library binding and its ASan
+archive inspection, then failed because the shared target contained two
+`arrow_array` archives. The original uniqueness-by-glob assumption did not
+account for Cargo's separate libtest and production-library dependency variants.
+Both successful Cargo transcripts declare their respective Arrow archive, and
+each `rebirth_llm` compiler command references the corresponding dependency.
+The run still completed zero product tests; all714 artifacts and2333 source
+hashes are retained/verified with that exact source. Ordinary Rust37140294367
+passed all five jobs, independently of this sanitizer failure.
+
+The correction selects **every** required non-test archive declared by the actual
+successful Cargo stages. It rejects missing, malformed or duplicate artifacts
+within a stage, validates the declared paths inside the instrumented target,
+and audits each distinct archive with the existing compile-flag and ASan-symbol
+checks. Identical paths shared across stages are recorded once with both stage
+identities. It does not pick the first filesystem match or drop a dependency.
+The live-only transcript has four archives across the same three audited crates;
+the previously accepted full transcript has three. Per-archive receipts now name
+the symbol-output file and contributing Cargo stages.
+
+Thirty targeted Python controls pass. Complete actual stdout from the accepted
+full run37117122286 and failed live run37140337349 validates both build shapes;
+the earlier missing-library run37139351757 remains rejected. Exact selected
+Cargo lines are committed as provenance-bound regression fixtures. This replay
+also caught the standard library's actual `kind=["rlib"]` before dispatch; the
+initial mock-only prototype used `lib` and was corrected. These are parser/audit
+controls, not native product execution. No runtime, flags, numerical bounds,
+selected product test IDs or dependencies changed. Corrected remote acceptance
+is still required; the existing R candidate continues without duplication.
