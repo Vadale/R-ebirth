@@ -290,3 +290,51 @@ that total-process RSS equals the ledger. Raw sampling times are retained.
   original-adapter restoration on all exit paths, with native reference checks.
 - Final relevant CI and integration. Prior WP9/WP10/I1/maintenance acceptance
   is retained with its original source scope, not repeatedly executed here.
+
+## Current-stable compiler compatibility
+
+Initial PR59 head6bb861e failed ordinary Rust run37139324339 in Linux clippy:
+remote stable Rust1.99 deprecates `AtomicU64::fetch_update`, while local1.96
+accepted it. Four other Rust checks passed; the failing job did not reach its
+product tests. Both complete available log forms are retained. This is a
+compiler compatibility failure, not evidence of lost state or a numerical error.
+
+The narrow correction uses a checked `compare_exchange_weak` loop with the same
+relaxed ordering and exhausted `u64::MAX` rejection. It supports the older pinned
+sanitizer compiler without suppressing warnings or adopting the newer renamed
+method. Sequence/exhaustion and contended uniqueness have dedicated regressions,
+followed by the two affected acknowledgement cases. All four passed in
+`atomic-compatibility-20261003-191220`, alongside format, clippy and no-spill
+compilation, without warnings. Every source hash matched the frozen manifest.
+The Linux sanitizer run at6bb861e also failed before any product execution,
+as detailed below. Its preparatory receipts retain that original source. Final ordinary
+checks must validate the corrected allocation helper at the final head. R/FFI,
+capture, allocation formulas, numerical operations and acceptance bounds are
+unchanged; accepted model/resource/RStudio receipts retain their original bytes.
+
+## Live-only sanitizer library artifact correction
+
+Sanitizer37139351757 at6bb861e completed its instrumented Cargo build and wrote
+269 native-object audit records, then failed the Rust archive audit before any
+of the15 selected product tests. The new unit-test-only selection emits a
+libtest executable; unlike a build with integration targets, it does not also
+produce the production `rebirth_llm` rlib expected by the existing audit. Actual
+Cargo JSON and rustc arguments establish this artifact mismatch. The run is
+FAILED with zero completed product tests, not accepted native memory evidence.
+
+The scoped harness now explicitly builds the production library in the same
+instrumented target after the live-only test build. This reuses native objects
+and dependencies, adds no unrelated product test, and retains the three-archive
+ASan audit. A successful non-test Cargo library artifact must identify one rlib,
+whose bytes must match the unique archive inspected by llvm-nm. Missing,
+duplicate, malformed, spoofed and libtest-only receipts fail closed. Full
+selection keeps its existing build shape; compiler pins, flags, controls,
+15 live test IDs and bounds are unchanged.
+
+All26 targeted Python harness cases pass, including four new regressions, and
+the actual retained failing Cargo output is correctly identified as libtest
+rather than a production archive. The four unchanged callback-harness controls
+retain their earlier execution. One corrected remote run is necessary because
+the original hosted target is gone; no test has been silently rerun until green.
+All709 downloaded files are inventoried; raw text receipts are losslessly
+committed, while probe binaries remain locally retained with size/digest records.

@@ -114,6 +114,14 @@ def build_command(cases):
     return command
 
 
+def library_build_command():
+    # Unit-test-only cargo test emits a libtest executable, not the production
+    # rlib required by the compiled Rust archive audit. Reuse the same target,
+    # flags and native objects; do not build or execute unrelated test targets.
+    return ["cargo", "build", "--locked", "-p", "rebirth-llm", "--target", TARGET,
+            "-Zbuild-std", "--lib", "--message-format=json", "-vv"]
+
+
 def test_command(binary, name):
     return [binary, "--exact", name, "--test-threads=1", "--format=json", "-Zunstable-options",
             "--show-output" if name in CAPTURED_WORK_MARKERS else "--nocapture"]
@@ -188,14 +196,13 @@ def check_unconditional_source(source, name):
             f"selected test contains a possible early-return/model skip: {name}")
 
 
-def build_artifacts(output, cases=None):
+def cargo_build_events(output):
     """Separate Cargo JSON from the build-script lines emitted by -vv.
 
     Keep those lines in the raw receipt. They are never compiler-artifact events,
     even when the build script prints JSON-looking text after its Cargo prefix.
     """
-    cases = CASES if cases is None else cases
-    artifacts, finished = {}, []
+    events, finished = [], []
     for line in output.splitlines():
         if not line.strip():
             continue
@@ -203,17 +210,41 @@ def build_artifacts(output, cases=None):
             continue
         event = json.loads(line)  # malformed/unrecognized output still fails
         require(isinstance(event, dict), "Cargo event must be a JSON object")
+        events.append(event)
         if event.get("reason") == "build-finished":
             finished.append(event.get("success"))
+    require(finished == [True], "missing, failed or duplicate Cargo build-finished event")
+    return events
+
+
+def build_artifacts(output, cases=None):
+    cases = CASES if cases is None else cases
+    artifacts = {}
+    for event in cargo_build_events(output):
         if event.get("reason") == "compiler-artifact" and event.get("executable"):
             name = event["target"]["name"]
             if name in CASES and event["profile"]["test"]:
                 require(name in cases, f"unselected test binary was built: {name}")
                 require(name not in artifacts, f"duplicate artifact {name}")
                 artifacts[name] = Path(event["executable"])
-    require(finished == [True], "missing, failed or duplicate Cargo build-finished event")
     require(set(artifacts) == set(cases), "missing selected test binary")
     return artifacts
+
+
+def library_artifact(output):
+    matches = [event for event in cargo_build_events(output)
+               if event.get("reason") == "compiler-artifact"
+               and event.get("target", {}).get("name") == "rebirth_llm"]
+    require(len(matches) == 1, "missing or duplicate production library artifact")
+    event = matches[0]
+    require(event.get("profile", {}).get("test") is False
+            and event.get("executable") is None
+            and event["target"].get("kind") == ["lib"],
+            "expected a production library, not a libtest executable")
+    archives = [Path(name) for name in event.get("filenames", []) if name.endswith(".rlib")]
+    require(len(archives) == 1 and archives[0].name.startswith("librebirth_llm"),
+            "missing or ambiguous production rlib filename")
+    return archives[0]
 
 
 class Run:
@@ -343,9 +374,18 @@ class Run:
     def build(self):
         _, output, _ = self.command(build_command(self.cases), "build", timeout=4200)
         artifacts = build_artifacts(output, self.cases)
+        library = None
+        if self.selection == "live-only":
+            _, output, _ = self.command(library_build_command(), "build-library", timeout=1200)
+            library = library_artifact(output)
+            require(library.is_file(), "reported production library is absent")
+            (self.evidence / "library-artifact.json").write_text(json.dumps(
+                {"archive": str(library), "sha256": digest(library)}, indent=2) + "\n")
         self.audit_objects()
         # Evidence that Rust itself, dependencies and std were recompiled with ASan.
         build_log = (self.evidence / "build.err").read_text()
+        if library is not None:
+            build_log += "\n" + (self.evidence / "build-library.err").read_text()
         rust_objects = []
         for crate in ("rebirth_llm", "arrow_array", "std"):
             lines = [line for line in build_log.splitlines()
@@ -355,6 +395,9 @@ class Run:
                                   for line in lines), f"missing ASan rustc command for {crate}")
             archives = list((self.target / TARGET / "debug/deps").glob(f"lib{crate}-*.rlib"))
             require(len(archives) == 1, f"missing or ambiguous compiled Rust archive: {crate}")
+            if crate == "rebirth_llm" and library is not None:
+                require(digest(archives[0]) == digest(library),
+                        "production library differs from the audited Rust archive")
             _, symbols, _ = self.command(["llvm-nm-19", "--undefined-only", archives[0]],
                                          f"rust-object-{crate}")
             require("__asan_" in symbols, f"compiled Rust archive lacks ASan references: {crate}")

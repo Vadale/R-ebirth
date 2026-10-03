@@ -167,3 +167,14 @@ Coverage is the native CPU paths actually exercised. This is neither a
 ThreadSanitizer result nor Metal/CUDA, vision, R/SEXP marshalling, or universal
 Rust UB coverage. It does not execute R callbacks/close semantics or F6b dynamic
 coefficient updates. The ordinary native and R boundary checks remain separate.
+
+### Live-only production archive
+
+`cargo test --lib --no-run` emits the unit-test executable without a production
+rlib when no integration target consumes the crate. The live-only path therefore
+also builds the production library with the same target, flags and rebuilt std,
+reusing native objects. Its successful non-test Cargo artifact must match the
+unique `rebirth_llm` archive used by the unchanged ASan symbol audit. This adds
+no unrelated product execution and never substitutes an executable for an
+archive. Both compile logs and the bound library digest are retained. The
+initial missing-archive failure is recorded in the F6 implementation report.

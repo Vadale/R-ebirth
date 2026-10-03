@@ -10,7 +10,8 @@ from urllib.parse import unquote
 from run import (CASES, CAPTURED_WORK_MARKERS, LEGACY_CASES, LIVE_CASES, Run,
                  build_artifacts, build_command, check_fault, check_runtime_symbols,
                  check_test_events, check_unconditional_source, selected_cases,
-                 test_command, test_log_label, test_source)
+                 test_command, test_log_label, test_source, library_artifact,
+                 library_build_command)
 
 
 def events(name="actual_test", outcome="ok", passed=1, ignored=0):
@@ -51,6 +52,47 @@ class HarnessControls(unittest.TestCase):
                          "tests/synthetic_trace.rs")
         with self.assertRaises(RuntimeError):
             test_source("rebirth_llm", "unknown::tests::fake")
+
+    def test_production_library_build_keeps_target_std_and_no_extra_tests(self):
+        command = library_build_command()
+        self.assertEqual(command[:2], ["cargo", "build"])
+        for flag in ("--locked", "--lib", "-Zbuild-std", "--message-format=json", "-vv"):
+            self.assertIn(flag, command)
+        self.assertEqual(command[command.index("--target") + 1], "x86_64-unknown-linux-gnu")
+        self.assertNotIn("--test", command)
+
+    @staticmethod
+    def library_events():
+        return [{"reason": "compiler-artifact", "target": {"name": "rebirth_llm", "kind": ["lib"]},
+                 "profile": {"test": False}, "executable": None,
+                 "filenames": ["/tmp/librebirth_llm.rlib"]},
+                {"reason": "build-finished", "success": True}]
+
+    def test_production_library_requires_actual_archive_and_success(self):
+        rows = self.library_events()
+        self.assertEqual(library_artifact("\n".join(map(json.dumps, rows))),
+                         Path("/tmp/librebirth_llm.rlib"))
+        for bad in (rows[:-1], rows[1:], rows + [rows[0]], rows + [rows[1]],
+                    [rows[0], {"reason": "build-finished", "success": False}]):
+            with self.subTest(events=bad), self.assertRaises(RuntimeError):
+                library_artifact("\n".join(map(json.dumps, bad)))
+
+    def test_libtest_event_cannot_substitute_for_production_archive(self):
+        for change in ({"profile": {"test": True}}, {"executable": "/tmp/libtest"},
+                       {"filenames": []}, {"filenames": ["/tmp/librebirth_llm.rmeta"]},
+                       {"filenames": ["/tmp/librebirth_llm-a.rlib", "/tmp/librebirth_llm-b.rlib"]},
+                       {"target": {"name": "rebirth_llm", "kind": ["bin"]}}):
+            rows = self.library_events()
+            rows[0].update(change)
+            with self.subTest(change=change), self.assertRaises(RuntimeError):
+                library_artifact("\n".join(map(json.dumps, rows)))
+
+    def test_library_receipt_rejects_spoofed_or_malformed_output(self):
+        output = "\n".join(map(json.dumps, self.library_events()))
+        for bad in ("junk\n" + output, '{malformed\n' + output,
+                    '[rebirth-llm 0.0.0] ' + output):
+            with self.subTest(output=bad), self.assertRaises((RuntimeError, ValueError)):
+                library_artifact(bad)
 
     def test_selected_log_paths_are_portable_and_preserve_test_ids(self):
         names = [name for cases in CASES.values() for name in cases]

@@ -1,0 +1,14 @@
+{
+  "run": 37139324339,
+  "head": "6bb861e9a1aa64d35123a310bf65efd29ba167a9",
+  "conclusion": "failure",
+  "job": "cargo fmt / clippy / test",
+  "step": "cargo clippy (R-free engine crate; deny warnings)",
+  "remote_rustc": "1.99.0 (b940084d7 2026-09-28)",
+  "local_rustc": "1.96.0 (ac68faa20 2026-05-25)",
+  "error": "AtomicU64::fetch_update is deprecated in the remote toolchain; -D warnings rejects it.",
+  "product_tests_in_failed_job": "not executed after clippy failure",
+  "other_rust_jobs": "four passed: cross engine link, golden self-check, vendor coherence, supply chain",
+  "correction": "Use checked compare_exchange_weak loop with the same relaxed ordering and exhausted MAX marker; no newer try_update requirement, compiler pin change, or warning suppression.",
+  "validation": "All four targeted tests, formatting, clippy and no-spill compilation passed without warnings in atomic-compatibility-20261003-191220; all source hashes verified."
+}

@@ -203,6 +203,20 @@ struct State {
     live: Option<LiveSlot>,
 }
 static NEXT_JOB_ID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
+// Keep the checked atomic increment compatible with both the current stable
+// compiler and the pinned sanitizer toolchain. MAX remains the exhausted marker.
+fn allocate_job_id(counter: &std::sync::atomic::AtomicU64) -> u64 {
+    let mut current = counter.load(Ordering::Relaxed);
+    loop {
+        let Some(next) = current.checked_add(1) else {
+            return u64::MAX;
+        };
+        match counter.compare_exchange_weak(current, next, Ordering::Relaxed, Ordering::Relaxed) {
+            Ok(previous) => return previous,
+            Err(observed) => current = observed,
+        }
+    }
+}
 struct Control {
     id: u64,
     #[cfg(feature = "spill")]
@@ -238,9 +252,7 @@ pub(crate) fn live_control_bytes() -> usize {
 impl Control {
     fn new(request: &AsyncRequest) -> Self {
         Self {
-            id: NEXT_JOB_ID
-                .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| n.checked_add(1))
-                .unwrap_or(u64::MAX),
+            id: allocate_job_id(&NEXT_JOB_ID),
             #[cfg(feature = "spill")]
             live_cancel: Arc::new(crate::live_spill::LiveCancel::default()),
             #[cfg(test)]
@@ -1137,6 +1149,43 @@ fn run_fixture(request: &AsyncRequest, fixture: Fixture) -> Result<Vec<Generatio
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn job_id_allocation_preserves_sequence_and_exhaustion() {
+        let counter = std::sync::atomic::AtomicU64::new(1);
+        assert_eq!(allocate_job_id(&counter), 1);
+        assert_eq!(allocate_job_id(&counter), 2);
+        counter.store(u64::MAX - 1, Ordering::Relaxed);
+        assert_eq!(allocate_job_id(&counter), u64::MAX - 1);
+        assert_eq!(allocate_job_id(&counter), u64::MAX);
+        assert_eq!(allocate_job_id(&counter), u64::MAX);
+        assert_eq!(counter.load(Ordering::Relaxed), u64::MAX);
+    }
+
+    #[test]
+    fn job_id_allocation_is_unique_under_contention() {
+        let counter = Arc::new(std::sync::atomic::AtomicU64::new(1));
+        let barrier = Arc::new(std::sync::Barrier::new(8));
+        let workers: Vec<_> = (0..8)
+            .map(|_| {
+                let counter = Arc::clone(&counter);
+                let barrier = Arc::clone(&barrier);
+                thread::spawn(move || {
+                    barrier.wait();
+                    (0..64)
+                        .map(|_| allocate_job_id(&counter))
+                        .collect::<Vec<_>>()
+                })
+            })
+            .collect();
+        let mut ids: Vec<_> = workers
+            .into_iter()
+            .flat_map(|worker| worker.join().unwrap())
+            .collect();
+        ids.sort_unstable();
+        assert_eq!(ids, (1..=512).collect::<Vec<_>>());
+        assert_eq!(counter.load(Ordering::Relaxed), 513);
+    }
+
     fn request() -> AsyncRequest {
         AsyncRequest {
             prompts: vec!["fixture".into()],
