@@ -1,0 +1,15 @@
+{
+  "status": "failed_before_product_tests",
+  "head": "d99679cbccc370ccb468372ad28d1ce79aa4b83c",
+  "run": 37140337349,
+  "actual_product_tests_completed": 0,
+  "source_hashes_verified_at_head": 2333,
+  "downloaded_files": 714,
+  "downloaded_bytes": 29980596,
+  "raw_text_files_retained": 701,
+  "all_raw_artifacts": "/private/tmp/relm-f6/sanitizer-37140337349; binary probe/object files stay local, with committed digest/size inventory.",
+  "failure": "Archive audit assumed a unique arrow_array rlib across the shared target, but Cargo declared distinct libtest and production-library variants. The production rebirth_llm archive audit already passed.",
+  "evidence": "Actual Cargo JSON declares arrow_array-ddce452179945022 for libtest and arrow_array-209bce9836fc681e for production library; both rebirth_llm compiler commands refer to their corresponding dependency. No product test had started.",
+  "correction": "Bind audit to every non-test archive declared in both successful Cargo stages, reject missing/duplicate/incorrect artifacts within each stage, inspect all variants with existing sanitizer flag/symbol gates. No arbitrary first-file selection, changed flags or reduced test list.",
+  "validation": "30 targeted Python controls pass and complete real Cargo stdout replays accept three archives in legacy full mode and four (two Arrow) in live-only. Initial missing production archive remains rejected. Runtime execution remains pending."
+}

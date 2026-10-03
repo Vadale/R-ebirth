@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "package_source_manifest": "6f9940c2858c9d93f7cbfd9656ad80324ecf58e95300f1d4ddcf063d23b40a34",
+  "runs": 16,
+  "warmups": 4,
+  "measured_runs": 12,
+  "tokens_per_run": 128,
+  "cpu_ordinary_seconds": 1.06,
+  "cpu_live_seconds": 1.446,
+  "cpu_bound_seconds": 2.87,
+  "metal_ordinary_seconds": 1.629,
+  "metal_live_seconds": 2.702,
+  "metal_bound_seconds": 3.7235,
+  "max_materialized_state_bytes": 44392,
+  "state_bound_bytes": 62920,
+  "live_transient_bound_bytes": 71831288,
+  "scope": "Public R async acknowledgement and token delivery; one residual layer/top20/no spill. Callback includes object.size and scalar receipts (1-11 ms aggregate per128 states), not a literally empty callback. Backend is the validated handle metadata; package suppresses engine INFO logs, so actual MTL device/offload receipts remain from separately scoped native feasibility. No RSS or all-layer/spill throughput in this run.",
+  "raw_sha256": {
+    "public-latency.R": "eb81dfaa1c171b33a16ff4845a7b0ef74510e6bcc4bc0977a80a88d220183643",
+    "public-latency-receipts.rds": "33471d2439935983990e923176552121b59f599f1e05c139a8fe05bf4230a465",
+    "source-manifest.json": "6f9940c2858c9d93f7cbfd9656ad80324ecf58e95300f1d4ddcf063d23b40a34",
+    "public-latency-metal.csv": "24df0054af2179fbb7a127dfb1db32f570a37a23eb46bc6c4da5d95a5ae8d153",
+    "public-latency-cpu.csv": "32259c49a86b7b0d7ad107d6029db8dcb8130becbcf64c3e30ab9de82f60c210",
+    "verify-public-latency.py": "8fed5609aa2eee6a2256cc360ad04bf9cb6d3f0b73b880e0c0097d913963a78d",
+    "public-latency.log": "d2816aeb3d7bc185842a8f15994aee69e823daa66505028dfd156d6593221b69",
+    "verified-receipts.csv": "8704faa946365c6ce870c990312f66a01351dc38b3e92ce1552ced4629f31fb4",
+    "installed-manifest.json": "cc6e955ad36c7b659053845f40315a4483c764164012b2bf8bde7c52de24ddaa",
+    "status.json": "9c07a6b095a33245e34545a4a139336b5548c2ca2c86274e2d18debe9de624b0"
+  }
+}

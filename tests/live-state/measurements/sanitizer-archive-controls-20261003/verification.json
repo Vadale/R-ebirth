@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "targeted_cases": 30,
+  "new_cases": 4,
+  "complete_raw_cargo_replays": [
+    37117122286,
+    37140337349,
+    37139351757
+  ],
+  "local_prototype_correction": "Initial complete-log replay rejected std kind rlib; corrected to the actual pinned Cargo artifact kind before remote dispatch. Dedicated retained-Cargo fixture regression added. Earlier29mock controls alone did not catch that mismatch.",
+  "scope": "Only Python artifact selection and exact retained Cargo-output validation. No new local native/model run or claim of actual sanitizer product acceptance.",
+  "sources": {
+    "tests/sanitizers/run.py": "f38b90512d785edc0e6f703ade91cb170c1b73f78e945a699151e077e804d963",
+    "tests/sanitizers/test_harness.py": "0d99266c4c097d1c21111e4354e061bae0ff482baf1f96e289b8861961bd5a97"
+  }
+}

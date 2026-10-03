@@ -1,0 +1,49 @@
+{
+  "overall_status": "failed",
+  "source_manifest_sha256": "f5bc0a950ad9a6d806d43b9840d6571b824b00dbe8a2a006c2b5402b890061f3",
+  "synthetic": {
+    "passed": 4,
+    "ignored_explicit_model_benchmark": 1,
+    "activation_values": 3840,
+    "max_activation_delta": 0.003446403599630443,
+    "max_logit_delta": 0.004172326391873593
+  },
+  "debug_benchmarks": {
+    "cpu": {
+      "active_limit_seconds": 16.8570995,
+      "active_median": 19.76040225,
+      "active_pass": false,
+      "backend": "cpu",
+      "baseline_median": 10.384733,
+      "dormant_median": 10.414478,
+      "dormant_pass": true,
+      "dormant_ratio": 1.0028643008924736,
+      "source": "f5bc0a950ad9a6d806d43b9840d6571b824b00dbe8a2a006c2b5402b890061f3"
+    },
+    "metal": {
+      "active_limit_seconds": 17.304340437500002,
+      "active_median": 20.246057792,
+      "active_pass": false,
+      "backend": "metal",
+      "baseline_median": 10.682893625,
+      "dormant_median": 10.708622709,
+      "dormant_pass": true,
+      "dormant_ratio": 1.0024084377232578,
+      "source": "f5bc0a950ad9a6d806d43b9840d6571b824b00dbe8a2a006c2b5402b890061f3"
+    }
+  },
+  "provenance": {
+    "whole_manifest_drift": [
+      "tests/llm-golden/live-state/incremental_reference.py",
+      "tests/llm-golden/live-state/reference_dynamic_state.py"
+    ],
+    "explanation": "Two unused F6b draft producers were moved to the f6b subtree. Neither is an F6a reference dependency. Every other captured source hash, including all six native inputs and F6a goldens, is unchanged. This scoped verification does not relabel the failed whole-manifest gate."
+  },
+  "limits": [
+    "Debug cargo-test profile, not production release profile.",
+    "Backend names are requested labels; original receipt lacks actual device/offload evidence.",
+    "Active native observer excludes R transfer, acknowledgements and disk spill.",
+    "Both active performance gates failed without relaxed bounds.",
+    "No public F6 API or F6b runtime acceptance."
+  ]
+}

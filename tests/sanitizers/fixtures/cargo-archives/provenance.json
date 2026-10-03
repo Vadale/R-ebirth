@@ -1,0 +1,23 @@
+{
+  "full-build.jsonl": {
+    "run": 37117122286,
+    "raw_file": "build.out",
+    "raw_sha256": "2612520e4e1ff409110b479c16eb2697993c43770f03af3b62cdd4088fa2d7c2",
+    "fixture_sha256": "2c3181a791b910fd328f26dd833b66e29a7b072c30935355f407240f1ec69301",
+    "selection": "Exact original JSON lines for three audited crates and build-finished; other events are omitted, not modified."
+  },
+  "live-test-build.jsonl": {
+    "run": 37140337349,
+    "raw_file": "build.out",
+    "raw_sha256": "96f32c5ae9dfc9fbf6200848a94ef32cc816fd2e7b465f26631f5a0ef82e1734",
+    "fixture_sha256": "6407cf4bfff4e62d7c3c81550baa4c69b785c4752ed48d19718783bfd87cb06a",
+    "selection": "Exact original JSON lines for three audited crates and build-finished; other events are omitted, not modified."
+  },
+  "live-library-build.jsonl": {
+    "run": 37140337349,
+    "raw_file": "build-library.out",
+    "raw_sha256": "d274b751ebbdf195ab71534ea8c54f1c22fd3f56dfe226744941975d9e3c7ffb",
+    "fixture_sha256": "8fd397fda314194e10942656a35010c7ebc937d5261cf296d08e66360bb770af",
+    "selection": "Exact original JSON lines for three audited crates and build-finished; other events are omitted, not modified."
+  }
+}

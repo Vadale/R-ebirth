@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "source_manifest_sha256": "c30d3bc32a3d138e39c16a940d792306a9edc1a2a7d8cb5b25bd909edbfa0ec2",
+  "source_drift": [],
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "medians": {
+    "callback_free": 1.192104958,
+    "dormant": 1.249553334,
+    "active_residual_top20": 1.332110666
+  },
+  "dormant_ratio": 1.0481907030202957,
+  "gate": {
+    "active_limit_seconds": 3.068157437,
+    "active_median": 1.332110666,
+    "active_pass": true,
+    "backend": "metal",
+    "baseline_median": 1.192104958,
+    "dormant_median": 1.249553334,
+    "dormant_pass": true,
+    "dormant_ratio": 1.0481907030202957,
+    "source": "c30d3bc32a3d138e39c16a940d792306a9edc1a2a7d8cb5b25bd909edbfa0ec2"
+  },
+  "scope": "Metal-only native hook feasibility; CPU/numerical results retain source0582ac26. No full R/ack/spill acceptance."
+}

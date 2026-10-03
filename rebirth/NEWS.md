@@ -1,5 +1,20 @@
 # relm (development)
 
+## Live state observation (F6a)
+
+* `llm_generate(async = TRUE, on_state = ...)` observes the raw distribution and
+  selected activations that produced each sampled token. Plain state/logit
+  tables and `relm_trace` chunks distinguish generated positions from model
+  context source positions. The callback returns NULL and can cancel before
+  another token is sampled; this is an observation/control mechanism, not a
+  validated detector or safety guarantee.
+* One state waits for acknowledgement, with existing token events ordered
+  around that boundary. Explicit materialized/native/serialized limits,
+  completed Arrow streams and managed leases bound retained transport.
+  Callbacks run on R's thread; model/KV storage and user-retained objects are
+  outside the transport estimate. No dependency or exported function is added.
+
+
 ## Native graph storage
 
 * Graph-storage sizing now uses integer offsets instead of arithmetic on a null

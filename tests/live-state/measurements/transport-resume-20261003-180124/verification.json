@@ -1,0 +1,132 @@
+{
+  "result": "passed",
+  "source_manifest_sha256": "05df6c9f584177040150cb4c118eee8c4eedc5b83e9637e9985aed9d473e2c3f",
+  "all_source_hashes_match": true,
+  "changed_from_failed_parent": [
+    "rebirth/src/rust/rebirth-llm/src/async_job.rs"
+  ],
+  "unchanged_source_snapshot": "../transport-20261003-175131/source",
+  "counts": {
+    "live_targeted": 4,
+    "ordinary_async_outcomes": 21,
+    "ordinary_async_actual_cases": 20,
+    "optional_vlm_early_returns": 1,
+    "ffi": 7
+  },
+  "scope": "No cached-model calls. Prior17passing live gates retain their parent source; initial overall failure retained.",
+  "reports": {
+    "async-boundaries": {
+      "result_lines": [
+        "test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 114 filtered out; finished in 0.11s"
+      ],
+      "skips": [
+        "test async_job::tests::async_vlm_cancel_and_drop_at_native_boundaries ... SKIP async_vlm_cancel_and_drop_at_native_boundaries: cached VLM/projector unset"
+      ],
+      "warnings": []
+    },
+    "clippy": {
+      "result_lines": [],
+      "skips": [],
+      "warnings": []
+    },
+    "ffi": {
+      "result_lines": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
+      ],
+      "skips": [],
+      "warnings": []
+    },
+    "format-ffi-include": {
+      "result_lines": [],
+      "skips": [],
+      "warnings": []
+    },
+    "format": {
+      "result_lines": [],
+      "skips": [],
+      "warnings": []
+    },
+    "live-ack-boundaries": {
+      "result_lines": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 133 filtered out; finished in 0.00s"
+      ],
+      "skips": [],
+      "warnings": []
+    },
+    "live-order-recovery": {
+      "result_lines": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 134 filtered out; finished in 0.07s"
+      ],
+      "skips": [],
+      "warnings": []
+    },
+    "live-publication-signal": {
+      "result_lines": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 134 filtered out; finished in 0.00s"
+      ],
+      "skips": [],
+      "warnings": []
+    },
+    "no-spill-check": {
+      "result_lines": [],
+      "skips": [],
+      "warnings": []
+    }
+  },
+  "files": {
+    "async-boundaries.log": {
+      "sha256": "02f0bcd7153b646838d25c18a92808fc1b14a9a8ff606789c89a8deaa99ee673",
+      "bytes": 2076
+    },
+    "clippy.log": {
+      "sha256": "ba63ca9e4a3655b02aac6ecc5cb11f5da4cee0906994dba214c5571fb5835131",
+      "bytes": 282
+    },
+    "ffi.log": {
+      "sha256": "2f8835d27aa8189a94bd4ba1bf0a87dec98fdaf5fca323a2848578051ae01b21",
+      "bytes": 1652
+    },
+    "format-ffi-include.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "format.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "live-ack-boundaries.log": {
+      "sha256": "e54ca0068cded5d4310cb36097acfebb397b153ab2e73baf1cc42d361a599e0a",
+      "bytes": 436
+    },
+    "live-order-recovery.log": {
+      "sha256": "38038300e55066dd093af879c256eb2e84f85760ff61d2c820a1e38f7a2d0781",
+      "bytes": 464
+    },
+    "live-publication-signal.log": {
+      "sha256": "aba4e519568c2af2793ce06e5cdba9881f7674fbcf4e9df5376f3e30f88e19fb",
+      "bytes": 345
+    },
+    "no-spill-check.log": {
+      "sha256": "4e0b6ed276c20f3541e24003745427355afd0d8e7f8627c7e44b03434daa5029",
+      "bytes": 282
+    },
+    "source-manifest.json": {
+      "sha256": "05df6c9f584177040150cb4c118eee8c4eedc5b83e9637e9985aed9d473e2c3f",
+      "bytes": 79496
+    },
+    "status.json": {
+      "sha256": "bcabd28823400b87df4edfd544bf807e8ae646dc5cd8dfa72b833aa0d1a7722b",
+      "bytes": 4098
+    },
+    "verify-transport-resume.py": {
+      "sha256": "ed7a2df966129b1ad1d6fee0267b3281dd283f9555a8af9d7326e600402a4890",
+      "bytes": 5501
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/async_job.rs": {
+      "sha256": "9bfecee72451d77345ec8e3d332275804bd937fa2324fd14b525d6be9f1d22d5",
+      "bytes": 89046
+    }
+  }
+}

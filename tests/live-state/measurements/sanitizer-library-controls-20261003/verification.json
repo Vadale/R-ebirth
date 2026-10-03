@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "targeted_harness_cases": 26,
+  "new_cases": 4,
+  "scope": "Model-free command/JSON controls and actual failed Cargo-output replay; no local Linux native sanitizer claim. Existing four callback-harness controls are unchanged, not repeated here.",
+  "actual_failed_output_replay": "One expected live libtest artifact accepted; same output rejected as production rlib.",
+  "files": {
+    "tests/sanitizers/run.py": "98b84b9d1e0501bc876f9944247acbdd3d13c90898b228a7810e7ca274ad05ac",
+    "tests/sanitizers/test_harness.py": "c110af47cd06dee75103acc8f37267d7a5c5b13a88a9e442908b494f833775ca"
+  }
+}

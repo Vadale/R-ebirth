@@ -27,6 +27,12 @@ rebirth_stream_regular_file <- function(path) .Call(wrap__rebirth_stream_regular
 
 rebirth_async_submit <- function(ptr, prompts, chat, max_tokens, temperature, top_p, seed, stop, images_flat, images_lens, image_max_bytes, schema, stream) .Call(wrap__rebirth_async_submit, ptr, prompts, chat, max_tokens, temperature, top_p, seed, stop, images_flat, images_lens, image_max_bytes, schema, stream)
 
+rebirth_live_submit <- function(ptr, prompts, chat, max_tokens, temperature, top_p, seed, stop, images_flat, images_lens, image_max_bytes, schema, stream, live) .Call(wrap__rebirth_live_submit, ptr, prompts, chat, max_tokens, temperature, top_p, seed, stop, images_flat, images_lens, image_max_bytes, schema, stream, live)
+
+rebirth_live_preflight <- function(ptr, config, max_tokens) .Call(wrap__rebirth_live_preflight, ptr, config, max_tokens)
+
+rebirth_async_state_ack <- function(ptr, job_id, state_id) .Call(wrap__rebirth_async_state_ack, ptr, job_id, state_id)
+
 rebirth_async_poll <- function(ptr, job_id) .Call(wrap__rebirth_async_poll, ptr, job_id)
 
 rebirth_async_ack <- function(ptr, job_id) .Call(wrap__rebirth_async_ack, ptr, job_id)

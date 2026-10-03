@@ -33,6 +33,7 @@ use rebirth_llm::{
 
 // R-main-thread handle registry and async boundary (D-037).
 include!("async_boundary.rs");
+include!("live_boundary.rs");
 
 // --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
 
@@ -1163,6 +1164,9 @@ extendr_api::extendr_module! {
     fn rebirth_async_ready;
     fn rebirth_stream_regular_file;
     fn rebirth_async_submit;
+    fn rebirth_live_submit;
+    fn rebirth_live_preflight;
+    fn rebirth_async_state_ack;
     fn rebirth_async_poll;
     fn rebirth_async_ack;
     fn rebirth_async_discard;

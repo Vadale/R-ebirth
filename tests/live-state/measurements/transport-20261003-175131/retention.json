@@ -1,0 +1,234 @@
+{
+  "result": "failed",
+  "scope": "fmt/clippy passed; no-spill compile passed with unused payload warning;17 live tests passed,1 failed token-order fixture,1 ignored benchmark; remaining stages unexecuted",
+  "files": {
+    "clippy.log": {
+      "sha256": "0c92b879ca543a662a565915aca60a4c18f01c5226e8d09c071086152b5decf6",
+      "bytes": 282
+    },
+    "format-ffi-include.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "format.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "live-native.log": {
+      "sha256": "3160a15262460153725a7d8298887ed44ee47e244e752ec3b5d242432cb1b5f7",
+      "bytes": 2613
+    },
+    "no-spill-check.log": {
+      "sha256": "06953cc0d8b7cb47ec1b1fe549d5f48c9640ad8c485fdde003040d8f28d069ca",
+      "bytes": 728
+    },
+    "source-manifest.json": {
+      "sha256": "edbb426b524b1cbeac943078890f7606f13890774c070faabfafe24aeab45f0f",
+      "bytes": 79496
+    },
+    "status.json": {
+      "sha256": "b5874e31ebdb98cbcff246ecee544528f51332537038e77506dcd6c67625f788",
+      "bytes": 2834
+    },
+    "verify-transport.py": {
+      "sha256": "a38d234d3f2be16d22c346f9206e5065abeef8de66ced6506daf98f1ef6e0b86",
+      "bytes": 4607
+    },
+    "source/rebirth/R/async.R": {
+      "sha256": "e97ecbc7063a56b0dd82d1eef474055185d1324d10fc03270e123270807e052c",
+      "bytes": 18399
+    },
+    "source/rebirth/R/conditions.R": {
+      "sha256": "3e0ec83f0887b1d1836303c184e198b77b16160d8830869c7c580aa2a3dba1d5",
+      "bytes": 6380
+    },
+    "source/rebirth/R/download.R": {
+      "sha256": "f810564a986141398c6d79d086067cb33ab7e25050294195b2ae6267e1e6a6a1",
+      "bytes": 14531
+    },
+    "source/rebirth/R/embed.R": {
+      "sha256": "db389e4074a3fad61b7a6f60f1cb756a6d36ef772441a1685ad1d11104056ccf",
+      "bytes": 7770
+    },
+    "source/rebirth/R/extendr-wrappers.R": {
+      "sha256": "5d90fd16afaaf7587242d42c964b9871bdb4b6ca536478985c74df5e33a85af1",
+      "bytes": 4097
+    },
+    "source/rebirth/R/generate.R": {
+      "sha256": "48fad828138415308a4951f3800e85072a57c0a5382a17fa89c58ba6f39725d4",
+      "bytes": 29216
+    },
+    "source/rebirth/R/images.R": {
+      "sha256": "6ded9de5bed4cf82053d279e50e8dca24a4860e37d5ef2dec4cda0bafec26c42",
+      "bytes": 7191
+    },
+    "source/rebirth/R/intervene.R": {
+      "sha256": "10a1865e4a0a3d5828d2e73ecb26cc7a50103684614bbc9cad6fc88ad007c1b8",
+      "bytes": 17072
+    },
+    "source/rebirth/R/live-state.R": {
+      "sha256": "d24130aa42ed98b8bc0de8f0388756e37a31472cebfaa02ab6d7ad46504413b9",
+      "bytes": 17148
+    },
+    "source/rebirth/R/llm.R": {
+      "sha256": "51e35af7ae640560d03257e5861d4dd9bc81769f098715accd74930bdc5e835a",
+      "bytes": 16993
+    },
+    "source/rebirth/R/logits.R": {
+      "sha256": "024c72e00cf99193ad22c6084cf3ec9ac308a0a98aafe1bd4b8f80ca596991da",
+      "bytes": 3791
+    },
+    "source/rebirth/R/probe-fit.R": {
+      "sha256": "abad2cf24c6719d970fd1b667a76086c027e1c475fdc394b0f8d0b53119eadbb",
+      "bytes": 17676
+    },
+    "source/rebirth/R/probe-methods.R": {
+      "sha256": "505a31a93ab3c481d4317e4f69e763c4a1d541fe2bf808a446379cca9808492d",
+      "bytes": 5869
+    },
+    "source/rebirth/R/probe-trace.R": {
+      "sha256": "bbc5c18f3b3866aaa90ca185f4e752287fd007040e65fef39c0e2b705878bd23",
+      "bytes": 8799
+    },
+    "source/rebirth/R/probe.R": {
+      "sha256": "afe94b4a7fa7d5a19d24a032038b9950d06b803cc41f768a29fd0882330eaf6c",
+      "bytes": 11527
+    },
+    "source/rebirth/R/stream.R": {
+      "sha256": "af32cdb91676e31dba3fc673fa21fbb9e334f9026cf22ff1a9c8c0ddafd88048",
+      "bytes": 9136
+    },
+    "source/rebirth/R/tokens.R": {
+      "sha256": "a55c8094a4f62a1400029c3b9e8a25fd583bdad5d35471c72edc4e8834a49375",
+      "bytes": 4024
+    },
+    "source/rebirth/R/trace-spill.R": {
+      "sha256": "5fcf23e12e5da740625799e019f88ce2aefefc6407587e383bbc5a4631e785c9",
+      "bytes": 11192
+    },
+    "source/rebirth/R/trace.R": {
+      "sha256": "6ca59872e8158ae2743698bbb6a02545de1180f78387e97c9def1c352b6e8ddd",
+      "bytes": 29722
+    },
+    "source/rebirth/R/zzz.R": {
+      "sha256": "efe3dde24ebb1446bc9511027490b85775d072691f64e29dfa9d4aa9dbcea639",
+      "bytes": 5198
+    },
+    "source/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs": {
+      "sha256": "682f6ae3eea1a9f15b60cc04602c30a74e11effaae047460d8fbae9d0d8733ff",
+      "bytes": 27787
+    },
+    "source/rebirth/src/rust/rebirth-ffi/src/lib.rs": {
+      "sha256": "b5f33735d18bc53197fbd1fd71a6fb2bb740aefdf7b489012670daaa6b8ffaf3",
+      "bytes": 53264
+    },
+    "source/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs": {
+      "sha256": "7bbead21c83abb8d9044baecb9ab87affb13eedfda0c5d40fc884428f9b9febe",
+      "bytes": 10602
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/async_job.rs": {
+      "sha256": "8939106b9ba969563cb0bb2f369291fb25eabb0d53e4159c50885863e9d7eb27",
+      "bytes": 85219
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/domain.rs": {
+      "sha256": "936032a45c32fa72cd72e55bfe1a5137dd8cc1466463be3eb20ce42187c68804",
+      "bytes": 7586
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/embed.rs": {
+      "sha256": "1683824937a7e6d3869aff3818ffbab13e60c7ed682bbd981ad39bc68f3d47d1",
+      "bytes": 17062
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/engine.rs": {
+      "sha256": "8b61f59d0d5d86f0d0c0f261c228394805c294d09d9fe038974067838fb852fe",
+      "bytes": 46001
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/error.rs": {
+      "sha256": "afaaf4876aecc3ad369639acb28ac17083a53b9a943fd4a89cf1b717f577658f",
+      "bytes": 14334
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/ffi.rs": {
+      "sha256": "bdbbff40a35d0de7f876522e9032b079dc2fc426bca2b9f034426259ea04e672",
+      "bytes": 39142
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/generate.rs": {
+      "sha256": "2f6e99fc3854cb6428ca6c98b6b4ca354f1461d498a0aa40ef17010042a38278",
+      "bytes": 101787
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/intervene.rs": {
+      "sha256": "802bd12c1f1f8e5a864f705abe11fbd10ab0ae96b3934f7940fcc6c6629f3d90",
+      "bytes": 18375
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/lib.rs": {
+      "sha256": "6b481c6f61f2bbc0cf411bbecbd15230c9e7d0007fbfbfd04eef7c70a6f16033",
+      "bytes": 7021
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/live_capture.rs": {
+      "sha256": "07483255480f84fcd934dfdc9d0a85507c6a592e9195021891e22866a602ee38",
+      "bytes": 54220
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/live_spill.rs": {
+      "sha256": "6bbcc41f79a5ad947068c342a0be0a1a93d489042e7f7ff6ec661945f8b7cc0b",
+      "bytes": 38048
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/live_state.rs": {
+      "sha256": "5b437144a0f7095f63374fa98eea308296f7e10674ff1d1cd28925ced9595a51",
+      "bytes": 21248
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/probe.rs": {
+      "sha256": "53e52027f3e67e61eac1c0f7b7e03dcd916ceb60bf02d27366c49514061d8642",
+      "bytes": 22129
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/schema.rs": {
+      "sha256": "2a7548e59f8a3e9fd37c889ba19a22d9f9d53ae1eb568fa02c4ec400c96f07d6",
+      "bytes": 47605
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/spill.rs": {
+      "sha256": "350b9079b306b3e2d38546cb8df3021b0d434f254609965ab50c600341c3320e",
+      "bytes": 18243
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/spill_lease.rs": {
+      "sha256": "158d9acb7909dc7ae394f0647dc63673ccfb2a210b1375f252561b084f711448",
+      "bytes": 6171
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/structured.rs": {
+      "sha256": "40d7b11edcba8ca2b502e5c58e7c2720376452d0ff87fcc556a0057b4c7ef1a4",
+      "bytes": 9716
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/text_stream.rs": {
+      "sha256": "10a2394d10a35d7e071068720137c7a71befa85df6b4acf2b13063ea61a58741",
+      "bytes": 9514
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/text_stream/tests.rs": {
+      "sha256": "88f6317cb31756d6f4633159c5a8e97ea7195310bd15bc4ad9167b10559a7c67",
+      "bytes": 15534
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/trace.rs": {
+      "sha256": "62453bbdd5908718d1e15fa87e91e2f852c31b4813844533a40773d26aa78731",
+      "bytes": 55452
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/vision.rs": {
+      "sha256": "eace8e4fd2cf89cc1c55373e534ee3dfa3805051a72fd35029df873fec223118",
+      "bytes": 66194
+    },
+    "source/rebirth/tests/testthat/test-llm-live-admission.R": {
+      "sha256": "7ee4bdfcbef91b736863016e0fa6b8696b54aa14523a689096c9cbba98f2e29a",
+      "bytes": 8615
+    },
+    "source/rebirth/tests/testthat/test-llm-live-helpers.R": {
+      "sha256": "764a65066e260b794852cb1c3e00ef070d76f9fe913ebdb8dff16900067c347a",
+      "bytes": 8313
+    },
+    "source/rebirth/tests/testthat/test-llm-live-memory.R": {
+      "sha256": "97b8c8bd5b9f398e4069f21f30b9e3de7b1695e30a32c9e5ea8730332b104ea5",
+      "bytes": 5957
+    },
+    "source/rebirth/tests/testthat/test-llm-live-model.R": {
+      "sha256": "e1a9c6c314de218cfc0eded4cc72b57c332274dc80e869fb8d2767262de51333",
+      "bytes": 16188
+    },
+    "source/rebirth/tests/testthat/test-llm-live-spill.R": {
+      "sha256": "f497beea276b892370b409bb11c9339e42a42d25733d360ea06e2e4160fc09af",
+      "bytes": 5722
+    }
+  }
+}

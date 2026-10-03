@@ -25,7 +25,7 @@ RUST_FLAGS = ["-Zsanitizer=address", "-Zexternal-clangrt", "-Cforce-frame-pointe
 # All selected functions are unconditional; model cases use the committed fixture.
 # No model-gated/vision test is selected. Source guards below fail on skip/return
 # additions; libtest JSON must independently report exactly one executed success.
-CASES = {
+LEGACY_CASES = {
     "synthetic_intervene": ["engine_interventions_match_numpy_oracle_and_are_reversible"],
     "synthetic_trace": ["engine_activations_match_numpy_oracle_within_tolerance"],
     "synthetic_spill": ["over_budget_spills_and_the_file_equals_the_in_memory_capture",
@@ -44,10 +44,41 @@ CASES = {
         "async_job::tests::stream_shutdown_and_failures_after_backpressure_release_ownership",
     ],
 }
+LIVE_CASES = {
+    "rebirth_llm": [
+        "async_job::tests::live_state_order_and_correlated_acknowledgement",
+        "async_job::tests::live_state_cancel_and_discard_wake_without_current_token",
+        "async_job::tests::live_publication_signal_is_not_a_wait_wakeup",
+        "async_job::tests::live_async_synthetic_memory_and_spill_preserve_token_order",
+        "live_capture::tests::same_context_toggle_and_worker_move_preserve_generation",
+        "live_capture::tests::observer_failure_detaches_capture",
+        "live_capture::tests::capture_filters_and_context_full_boundary",
+        "live_capture::tests::source_rows_and_logits_match_independent_prefix_goldens",
+        "live_capture::tests::allocation_formula_covers_tiny_and_wide_capture_capacities",
+        "live_spill::tests::live_spill_completed_fragments_and_delivery_ownership",
+        "live_spill::tests::live_spill_writer_failure_and_cancel_remove_unpublished_files",
+        "live_spill::tests::live_spill_padding_boundary_preserves_per_file_and_call_bounds",
+        "live_spill::tests::live_spill_shorter_label_body_fits_reserved_workspace",
+        "live_spill::tests::live_spill_long_label_uses_one_row_above_internal_target",
+        "live_spill::tests::live_spill_full_queue_cancel_wakes_producer",
+    ],
+}
+CASES = {binary: names + LIVE_CASES.get(binary, []) for binary, names in LEGACY_CASES.items()}
+UNIT_TEST_SOURCES = {
+    "async_job": "src/async_job.rs",
+    "live_capture": "src/live_capture.rs",
+    "live_spill": "src/live_spill.rs",
+}
 WORK_MARKERS = {
     "synthetic_intervene": "intervene engine-vs-oracle max",
     "synthetic_trace": "engine-vs-oracle activations max",
     "synthetic_embed": "engine-vs-oracle embeddings max",
+}
+# This existing test prints to stdout. Let libtest encode its captured output in
+# the named success event; arbitrary non-JSON stdout must still fail closed.
+CAPTURED_WORK_MARKERS = {
+    "live_capture::tests::source_rows_and_logits_match_independent_prefix_goldens":
+        "F6_GOLDEN activation_values=3840 ",
 }
 FINDING = re.compile(r"ERROR: (?:AddressSanitizer|LeakSanitizer)|"
                      r"SUMMARY: (?:AddressSanitizer|UndefinedBehaviorSanitizer)|runtime error:")
@@ -56,6 +87,44 @@ FINDING = re.compile(r"ERROR: (?:AddressSanitizer|LeakSanitizer)|"
 def require(condition, message):
     if not condition:
         raise RuntimeError(message)
+
+
+def selected_cases(selection="full"):
+    require(selection in ("full", "live-only"), f"unknown sanitizer selection: {selection}")
+    cases = CASES if selection == "full" else LIVE_CASES
+    return {binary: list(names) for binary, names in cases.items()}
+
+
+def test_source(binary, name):
+    require(binary in CASES and name in CASES[binary], f"unselected test source: {binary}::{name}")
+    if binary == "rebirth_llm":
+        parts = name.split("::")
+        require(len(parts) == 3 and parts[1] == "tests" and parts[0] in UNIT_TEST_SOURCES,
+                f"unknown unit test module: {name}")
+        return UNIT_TEST_SOURCES[parts[0]]
+    return f"tests/{binary}.rs"
+
+
+def build_command(cases):
+    command = ["cargo", "test", "--locked", "-p", "rebirth-llm", "--target", TARGET,
+               "-Zbuild-std", "--no-run", "--lib", "--message-format=json", "-vv"]
+    for name in cases:
+        if name != "rebirth_llm":
+            command += ["--test", name]
+    return command
+
+
+def library_build_command():
+    # Unit-test-only cargo test emits a libtest executable, not the production
+    # rlib required by the compiled Rust archive audit. Reuse the same target,
+    # flags and native objects; do not build or execute unrelated test targets.
+    return ["cargo", "build", "--locked", "-p", "rebirth-llm", "--target", TARGET,
+            "-Zbuild-std", "--lib", "--message-format=json", "-vv"]
+
+
+def test_command(binary, name):
+    return [binary, "--exact", name, "--test-threads=1", "--format=json", "-Zunstable-options",
+            "--show-output" if name in CAPTURED_WORK_MARKERS else "--nocapture"]
 
 
 def digest(path):
@@ -82,6 +151,10 @@ def check_runtime_symbols(output):
 
 def check_test_events(output, name):
     events = [json.loads(line) for line in output.splitlines() if line.strip()]
+    require(all(isinstance(item, dict) for item in events), "libtest event must be a JSON object")
+    require([(item.get("type"), item.get("event")) for item in events] ==
+            [("suite", "started"), ("test", "started"), ("test", "ok"), ("suite", "ok")],
+            "expected exactly ordered libtest suite/test success events")
     tests = [(item.get("name"), item.get("event")) for item in events
              if item.get("type") == "test"]
     require(tests == [(name, "started"), (name, "ok")],
@@ -91,27 +164,45 @@ def check_test_events(output, name):
             and suites[0].get("test_count") == 1 and suites[1].get("event") == "ok"
             and suites[1].get("passed") == 1 and suites[1].get("failed") == 0
             and suites[1].get("ignored") == 0, f"not exactly one passing test: {name}")
+    if name in CAPTURED_WORK_MARKERS:
+        successes = [item for item in events if item.get("type") == "test"
+                     and item.get("name") == name and item.get("event") == "ok"]
+        captured = successes[0].get("stdout")
+        require(isinstance(captured, str) and CAPTURED_WORK_MARKERS[name] in captured,
+                f"missing captured forward-pass marker: {name}")
 
 
 def check_unconditional_source(source, name):
-    # Selected bodies are the source between successive test attributes. This is
-    # a conservative skip guard, not a Rust parser or proof of arbitrary control flow.
+    # The selected tests use rustfmt's same-indent closing brace. Stop there,
+    # before following helpers: their returns must not contaminate this guard.
+    # This is conservative source-format checking, not a Rust parser/control-flow proof.
     short = name.split("::")[-1]
-    parts = re.split(r"#\[test\]", source)
-    bodies = [part for part in parts[1:] if re.match(r"\s*fn " + re.escape(short) + r"\(", part)]
-    require(len(bodies) == 1, f"missing unconditional #[test] function: {name}")
-    body = re.sub(r"//[^\n]*", "", bodies[0])
+    matches = list(re.finditer(r"(?m)^(?P<indent>[ \t]*)#\[test\][ \t]*\n"
+                              r"(?P=indent)fn " + re.escape(short) + r"\(\)[ \t]*\{", source))
+    require(len(matches) == 1, f"missing unconditional #[test] function: {name}")
+    match = matches[0]
+    tail = source[match.end():]
+    first_line = tail.split("\n", 1)[0]
+    if first_line.strip():
+        require("\n" not in tail and first_line.rstrip().endswith("}"),
+                f"selected test requires a separate closing-brace line: {name}")
+        body = first_line.rstrip()[:-1]
+    else:
+        close = re.search(r"(?m)^" + re.escape(match["indent"]) + r"\}[ \t]*$", tail)
+        require(close is not None, f"missing selected test closing brace: {name}")
+        body = tail[:close.start()]
+    body = re.sub(r"//[^\n]*", "", body)
     require(not re.search(r"\breturn\b|#\[ignore|\b(?:option_env!|env::var)|\b(?:SKIP|skip!)", body),
             f"selected test contains a possible early-return/model skip: {name}")
 
 
-def build_artifacts(output):
+def cargo_build_events(output):
     """Separate Cargo JSON from the build-script lines emitted by -vv.
 
     Keep those lines in the raw receipt. They are never compiler-artifact events,
     even when the build script prints JSON-looking text after its Cargo prefix.
     """
-    artifacts, finished = {}, []
+    events, finished = [], []
     for line in output.splitlines():
         if not line.strip():
             continue
@@ -119,21 +210,76 @@ def build_artifacts(output):
             continue
         event = json.loads(line)  # malformed/unrecognized output still fails
         require(isinstance(event, dict), "Cargo event must be a JSON object")
+        events.append(event)
         if event.get("reason") == "build-finished":
             finished.append(event.get("success"))
+    require(finished == [True], "missing, failed or duplicate Cargo build-finished event")
+    return events
+
+
+def build_artifacts(output, cases=None):
+    cases = CASES if cases is None else cases
+    artifacts = {}
+    for event in cargo_build_events(output):
         if event.get("reason") == "compiler-artifact" and event.get("executable"):
             name = event["target"]["name"]
             if name in CASES and event["profile"]["test"]:
+                require(name in cases, f"unselected test binary was built: {name}")
                 require(name not in artifacts, f"duplicate artifact {name}")
                 artifacts[name] = Path(event["executable"])
-    require(finished == [True], "missing, failed or duplicate Cargo build-finished event")
-    require(set(artifacts) == set(CASES), "missing selected test binary")
+    require(set(artifacts) == set(cases), "missing selected test binary")
     return artifacts
 
 
+def library_artifact(output):
+    matches = [event for event in cargo_build_events(output)
+               if event.get("reason") == "compiler-artifact"
+               and event.get("target", {}).get("name") == "rebirth_llm"]
+    require(len(matches) == 1, "missing or duplicate production library artifact")
+    event = matches[0]
+    require(event.get("profile", {}).get("test") is False
+            and event.get("executable") is None
+            and event["target"].get("kind") == ["lib"],
+            "expected a production library, not a libtest executable")
+    archives = [Path(name) for name in event.get("filenames", []) if name.endswith(".rlib")]
+    require(len(archives) == 1 and archives[0].name.startswith("librebirth_llm"),
+            "missing or ambiguous production rlib filename")
+    return archives[0]
+
+
+def rust_archive_artifacts(outputs):
+    # Cargo may compile a dependency differently for libtest and the production
+    # library. Bind the audit to every declared artifact in those actual builds,
+    # rather than assuming one filename glob across the shared target directory.
+    required = ("rebirth_llm", "arrow_array", "std")
+    archives = {crate: {} for crate in required}
+    for stage, output in outputs.items():
+        seen = set()
+        for event in cargo_build_events(output):
+            crate = event.get("target", {}).get("name")
+            if event.get("reason") != "compiler-artifact" or crate not in archives:
+                continue
+            if event.get("profile", {}).get("test") is True:
+                continue
+            require(crate not in seen, f"duplicate {crate} library artifact in {stage}")
+            seen.add(crate)
+            require(event.get("profile", {}).get("test") is False
+                    and event.get("executable") is None
+                    and event["target"].get("kind") == (["rlib"] if crate == "std" else ["lib"]),
+                    f"invalid production library artifact for {crate} in {stage}")
+            paths = [Path(name) for name in event.get("filenames", []) if name.endswith(".rlib")]
+            require(len(paths) == 1 and paths[0].is_absolute()
+                    and re.fullmatch(r"lib" + crate + r"(?:-[0-9a-f]+)?\.rlib", paths[0].name),
+                    f"missing or ambiguous declared Rust archive for {crate} in {stage}")
+            archives[crate].setdefault(paths[0], []).append(stage)
+    require(all(archives.values()), "missing required declared Rust archive")
+    return archives
+
+
 class Run:
-    def __init__(self, root, evidence, target):
+    def __init__(self, root, evidence, target, selection="full"):
         self.root, self.evidence, self.target = root, evidence, target
+        self.selection, self.cases = selection, selected_cases(selection)
         self.workspace = root / "rebirth/src/rust"
         self.env = dict(os.environ)
         for key in list(self.env):
@@ -193,6 +339,7 @@ class Run:
         source = {name: digest(self.root / name) for name in files.split("\0")
                   if name and (self.root / name).is_file()}
         manifest = {"source_commit": head.strip(), "tracked_file_sha256": source,
+                    "selection": self.selection, "selected_tests": self.cases,
                     "flags": {key: self.env[key] for key in ("CARGO_TARGET_DIR", "CARGO_INCREMENTAL",
                         "CARGO_BUILD_JOBS", "CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS",
                         "RELM_NATIVE_SANITIZERS", "ASAN_OPTIONS", "UBSAN_OPTIONS", "CCACHE_DISABLE",
@@ -205,10 +352,9 @@ class Run:
         require(any("asan" in path.name for path in runtimes), "missing Clang ASan runtime")
         (self.evidence / "runtime-digests.json").write_text(json.dumps(
             {str(path): digest(path) for path in runtimes if path.is_file()}, indent=2) + "\n")
-        for binary, names in CASES.items():
-            relative = "src/async_job.rs" if binary == "rebirth_llm" else f"tests/{binary}.rs"
-            source = (self.workspace / "rebirth-llm" / relative).read_text()
+        for binary, names in self.cases.items():
             for name in names:
+                source = (self.workspace / "rebirth-llm" / test_source(binary, name)).read_text()
                 check_unconditional_source(source, name)
         self.probes()
 
@@ -255,30 +401,44 @@ class Run:
         print("Sanitizer runtime, fault and uninstrumented controls passed", flush=True)
 
     def build(self):
-        command = ["cargo", "test", "--locked", "-p", "rebirth-llm", "--target", TARGET,
-                   "-Zbuild-std", "--no-run", "--lib", "--message-format=json", "-vv"]
-        for name in CASES:
-            if name != "rebirth_llm":
-                command += ["--test", name]
-        _, output, _ = self.command(command, "build", timeout=4200)
-        artifacts = build_artifacts(output)
+        _, output, _ = self.command(build_command(self.cases), "build", timeout=4200)
+        artifacts = build_artifacts(output, self.cases)
+        build_outputs = {"build": output}
+        library = None
+        if self.selection == "live-only":
+            _, output, _ = self.command(library_build_command(), "build-library", timeout=1200)
+            build_outputs["build-library"] = output
+            library = library_artifact(output)
+            require(library.is_file(), "reported production library is absent")
+            (self.evidence / "library-artifact.json").write_text(json.dumps(
+                {"archive": str(library), "sha256": digest(library)}, indent=2) + "\n")
         self.audit_objects()
         # Evidence that Rust itself, dependencies and std were recompiled with ASan.
         build_log = (self.evidence / "build.err").read_text()
+        if library is not None:
+            build_log += "\n" + (self.evidence / "build-library.err").read_text()
         rust_objects = []
-        for crate in ("rebirth_llm", "arrow_array", "std"):
+        declared = rust_archive_artifacts(build_outputs)
+        for crate, archives in declared.items():
             lines = [line for line in build_log.splitlines()
                      if re.search(r"--crate-name " + crate + r"\s", line)
                      and "--target x86_64-unknown-linux-gnu" in line]
             require(lines and all("-Zsanitizer=address" in line and "-Zexternal-clangrt" in line
                                   for line in lines), f"missing ASan rustc command for {crate}")
-            archives = list((self.target / TARGET / "debug/deps").glob(f"lib{crate}-*.rlib"))
-            require(len(archives) == 1, f"missing or ambiguous compiled Rust archive: {crate}")
-            _, symbols, _ = self.command(["llvm-nm-19", "--undefined-only", archives[0]],
-                                         f"rust-object-{crate}")
-            require("__asan_" in symbols, f"compiled Rust archive lacks ASan references: {crate}")
-            rust_objects.append({"crate": crate, "archive": str(archives[0]),
-                                 "sha256": digest(archives[0]), "asan": True})
+            for index, (archive, stages) in enumerate(archives.items()):
+                debug = self.target / TARGET / "debug"
+                require(archive.parent in (debug, debug / "deps") and archive.is_file(),
+                        f"declared Rust archive is missing or outside target: {archive}")
+                if crate == "rebirth_llm" and library is not None:
+                    require(digest(archive) == digest(library),
+                            "production library differs from the audited Rust archive")
+                label = f"rust-object-{crate}" + (f"-{index}" if len(archives) > 1 else "")
+                _, symbols, _ = self.command(["llvm-nm-19", "--undefined-only", archive], label)
+                require("__asan_" in symbols,
+                        f"compiled Rust archive lacks ASan references: {archive}")
+                rust_objects.append({"crate": crate, "archive": str(archive),
+                                     "sha256": digest(archive), "asan": True,
+                                     "cargo_stages": stages, "symbols_file": label + ".out"})
         (self.evidence / "rust-objects.json").write_text(json.dumps(rust_objects, indent=2) + "\n")
         return artifacts
 
@@ -325,28 +485,32 @@ class Run:
         (self.evidence / "native-objects.json").write_text(json.dumps(records, indent=2) + "\n")
 
     def execute(self, artifacts):
+        require(set(artifacts) == set(self.cases), "unselected or missing execution binary")
         receipts = []
         for name, binary in artifacts.items():
             _, symbols, _ = self.command(["llvm-nm-19", "--defined-only", binary], f"binary-{name}-symbols")
             check_runtime_symbols(symbols)
             self.command(["ldd", binary], f"binary-{name}-linkage")
-            for test in CASES[name]:
+            for test in self.cases[name]:
                 label = test_log_label(test)
-                _, output, errors = self.command([binary, "--exact", test, "--test-threads=1",
-                    "--format=json", "-Zunstable-options", "--nocapture"], label, timeout=180)
+                _, output, errors = self.command(test_command(binary, test), label, timeout=180)
                 check_test_events(output, test)
                 require(not FINDING.search(output + errors), f"sanitizer finding in {test}")
                 if name in WORK_MARKERS:
                     require(WORK_MARKERS[name] in errors, f"missing forward-pass marker: {name}")
-                receipts.append({"binary": name, "binary_sha256": digest(binary), "test": test,
+                receipts.append({"selection": self.selection, "binary": name,
+                                 "binary_sha256": digest(binary), "test": test,
+                                 "source_file": test_source(name, test),
+                                 "source_sha256": digest(self.workspace / "rebirth-llm" / test_source(name, test)),
                                  "stdout_file": f"{label}.out", "stderr_file": f"{label}.err",
                                  "status": "executed_ok", "stdout_sha256": digest(self.evidence / f"{label}.out"),
                                  "stderr_sha256": digest(self.evidence / f"{label}.err")})
                 (self.evidence / "executed-tests.json").write_text(json.dumps(receipts, indent=2) + "\n")
                 print(f"SANITIZER_EXECUTED {name}::{test}", flush=True)
-        require(len(receipts) == sum(map(len, CASES.values())), "incomplete sanitizer coverage")
+        require(len(receipts) == sum(map(len, self.cases.values())), "incomplete sanitizer coverage")
         (self.evidence / "SUCCESS.txt").write_text(
-            f"{len(receipts)} required native CPU tests executed with ASan (Rust/C/C++) and UBSan (C/C++).\n"
+            f"Selection: {self.selection}. {len(receipts)} required native CPU tests executed "
+            "with ASan (Rust/C/C++) and UBSan (C/C++).\n"
             "No R/SEXP, vision, GPU, ThreadSanitizer or universal Rust UB claim.\n")
 
 
@@ -354,12 +518,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence", type=Path, required=True)
     parser.add_argument("--target", type=Path, required=True)
+    parser.add_argument("--selection", choices=("full", "live-only"), default="full",
+                        help="full suite (default) or only the new F6a live-state cases")
     args = parser.parse_args()
     args.evidence.mkdir(parents=True, exist_ok=True)
     # A manual rerun into a retained evidence directory must never leave an old
     # success receipt visible when this invocation fails its isolation checks.
     (args.evidence / "SUCCESS.txt").unlink(missing_ok=True)
-    runner = Run(Path(__file__).resolve().parents[2], args.evidence.resolve(), args.target.resolve())
+    runner = Run(Path(__file__).resolve().parents[2], args.evidence.resolve(), args.target.resolve(),
+                 args.selection)
     try:
         runner.preflight()
         artifacts = runner.build()

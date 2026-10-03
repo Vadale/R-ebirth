@@ -96,7 +96,7 @@ fn refcount() -> std::sync::MutexGuard<'static, usize> {
 /// A quiet log filter: forward only ERROR-level engine messages to stderr, drop
 /// the INFO/WARN chatter. Keeps normal loads and the corrupt-file error path
 /// from flooding the R console.
-extern "C" fn quiet_log(level: c_int, text: *const c_char, _user_data: *mut c_void) {
+pub(crate) extern "C" fn quiet_log(level: c_int, text: *const c_char, _user_data: *mut c_void) {
     const GGML_LOG_LEVEL_ERROR: c_int = 4;
     if level == GGML_LOG_LEVEL_ERROR && !text.is_null() {
         // SAFETY: `text` is a non-null, NUL-terminated engine string.
@@ -154,6 +154,7 @@ impl Drop for Backend {
 pub struct Model {
     ptr: NonNull<ffi::llama_model>,
     resolved_backend: BackendKind,
+    max_token_piece_bytes: u64,
     /// The sentinel-probe verdict cache (D-021), shared through every `Arc<Model>`
     /// clone so a derived handle inherits it: the intervention mechanism is proven
     /// on this model's weights once per (mechanism, layer), then reused. `Mutex`
@@ -283,6 +284,8 @@ pub struct Context {
     context_length: u32,
     gpu_layers: i32,
     mmap: bool,
+    // Box address survives worker handoffs; Drop frees native context first.
+    live_capture: Box<crate::live_capture::LiveDispatcher>,
 }
 
 // SAFETY: moving exclusive ownership is allowed only under the execution
@@ -396,7 +399,7 @@ impl Drop for EmbeddingContext {
 /// (`cb_eval`/`cb_eval_user_data`), so the forward pass can be observed. Like
 /// [`EmbeddingContext`] it is never stored in the `Arc`-shared handle — it lives
 /// and dies inside one guarded operation, needing no Send/Sync assertion. The generation context
-/// never gets a callback, so tap-off overhead is structurally zero. The methods
+/// owns its separate dormant dispatcher for live observation. The methods
 /// live in `trace.rs` next to the `CaptureState` the callback drives.
 pub(crate) struct TraceContext {
     ptr: NonNull<ffi::llama_context>,
@@ -443,6 +446,8 @@ pub struct ModelMetadata {
     pub backend: String,
     pub size_bytes: u64,
     pub vocab_size: i32,
+    /// Cached checked UTF-8 display bound; requires no live vocabulary access.
+    pub max_token_piece_bytes: u64,
     pub description: String,
     pub gpu_layers: i32,
     pub mmap: bool,
@@ -450,6 +455,10 @@ pub struct ModelMetadata {
 
 impl LoadedModel {
     /// Snapshot every metadata value the R layer stores in the handle.
+    pub(crate) fn max_token_piece_bytes(&self) -> u64 {
+        self.ctx.model.max_token_piece_bytes
+    }
+
     pub fn metadata(&self) -> ModelMetadata {
         let _native = NativeGuard::acquire("metadata");
         let model = &self.ctx.model;
@@ -475,6 +484,7 @@ impl LoadedModel {
             backend: model.resolved_backend.as_str().to_string(),
             size_bytes,
             vocab_size: model.vocab_size(),
+            max_token_piece_bytes: model.max_token_piece_bytes,
             description: model.description(),
             gpu_layers: self.ctx.gpu_layers,
             mmap: self.ctx.mmap,
@@ -491,6 +501,10 @@ impl LoadedModel {
     pub(crate) fn ctx_ptr(&self) -> *mut ffi::llama_context {
         assert_current();
         self.ctx.ptr.as_ptr()
+    }
+
+    pub(crate) fn live_capture(&self) -> &crate::live_capture::LiveDispatcher {
+        &self.ctx.live_capture
     }
 
     /// The model's vocabulary (owned by the model; valid for its whole lifetime).
@@ -720,6 +734,8 @@ impl LoadedModel {
         // mirrors `load()`'s generation context (only `n_ctx` is set).
         let mut cparams = unsafe { ffi::llama_context_default_params() };
         cparams.n_ctx = self.ctx.context_length;
+        let mut live_capture = Box::new(crate::live_capture::LiveDispatcher::default());
+        live_capture.install(&mut cparams);
 
         let ctx = OwnedContext::create(&model, cparams, || RebirthError::Intervention {
             reason: "Could not create a context for the intervened model. There may \
@@ -739,6 +755,7 @@ impl LoadedModel {
                 context_length,
                 gpu_layers: self.ctx.gpu_layers,
                 mmap: self.ctx.mmap,
+                live_capture,
             },
         })
     }
@@ -761,7 +778,7 @@ pub struct LoadRequest {
 /// Load a GGUF model into an owned `LoadedModel`, or return a classed error.
 pub fn load(req: LoadRequest) -> Result<LoadedModel, RebirthError> {
     let _native = NativeGuard::try_acquire("load")?;
-    load_impl(req, None)
+    load_impl(req, None, None, true)
 }
 
 /// Like [`load`], but forces the context's `n_batch` — the maximum number of
@@ -777,10 +794,26 @@ pub fn load_with_batch(
     n_batch: Option<u32>,
 ) -> Result<LoadedModel, RebirthError> {
     let _native = NativeGuard::try_acquire("load_with_batch")?;
-    load_impl(req, n_batch)
+    load_impl(req, n_batch, None, true)
 }
 
-fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, RebirthError> {
+#[cfg(test)]
+pub(crate) fn load_for_live_feasibility(
+    req: LoadRequest,
+    n_batch: Option<u32>,
+    n_ubatch: Option<u32>,
+    callback: bool,
+) -> Result<LoadedModel, RebirthError> {
+    let _native = NativeGuard::try_acquire("live feasibility load")?;
+    load_impl(req, n_batch, n_ubatch, callback)
+}
+
+fn load_impl(
+    req: LoadRequest,
+    n_batch: Option<u32>,
+    n_ubatch: Option<u32>,
+    callback: bool,
+) -> Result<LoadedModel, RebirthError> {
     // Acquire the backend up front so the ggml device registry is populated
     // before any capability query, and so it lives for the whole load. On an
     // early return the guard drops and (if last) tears the backend down again.
@@ -853,11 +886,35 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
     let mut model = Model {
         ptr: model_ptr,
         resolved_backend: req.backend,
+        max_token_piece_bytes: 0,
         probe_cache: Mutex::new(ProbeCache::default()),
         vision: None,
         _offload_devices: offload_devices,
         _backend: backend,
     };
+
+    // Cache an admission bound without retaining vocabulary strings. A byte
+    // may expand to three UTF-8 replacement bytes in the display representation.
+    // Only lengths are queried, under load's existing execution permit.
+    // SAFETY: the owning model keeps its vocabulary live; null/zero requests size only.
+    unsafe {
+        let vocab = ffi::llama_model_get_vocab(model.ptr.as_ptr());
+        if !vocab.is_null() && ffi::llama_vocab_type(vocab) != 0 {
+            let count = ffi::llama_vocab_n_tokens(vocab);
+            for id in 0..count {
+                let size = ffi::llama_token_to_piece(vocab, id, std::ptr::null_mut(), 0, 0, true);
+                let raw = size.checked_abs().ok_or_else(|| RebirthError::ModelLoad {
+                    failing_check: "token_piece_size".into(),
+                })? as u64;
+                model.max_token_piece_bytes =
+                    model
+                        .max_token_piece_bytes
+                        .max(raw.checked_mul(3).ok_or_else(|| RebirthError::ModelLoad {
+                            failing_check: "token_piece_size".into(),
+                        })?);
+            }
+        }
+    }
 
     // `llm(projector=)`: bind the vision encoder to the loaded model (WP-V2,
     // D-026). `use_gpu` follows the handle backend; a failure (bad mmproj,
@@ -881,6 +938,14 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
         cparams.n_batch = nb;
     }
 
+    if let Some(nb) = n_ubatch {
+        cparams.n_ubatch = nb;
+    }
+    let mut live_capture = Box::new(crate::live_capture::LiveDispatcher::default());
+    if callback {
+        live_capture.install(&mut cparams);
+    }
+
     // On failure the `Arc<Model>` drops after the guard, freeing the model and
     // backend; the guard owns the context until it moves into `Context` below.
     let ctx = OwnedContext::create(&model, cparams, || RebirthError::ModelLoad {
@@ -898,6 +963,7 @@ fn load_impl(req: LoadRequest, n_batch: Option<u32>) -> Result<LoadedModel, Rebi
             context_length,
             gpu_layers: resolved_gpu_layers,
             mmap: req.mmap,
+            live_capture,
         },
     })
 }

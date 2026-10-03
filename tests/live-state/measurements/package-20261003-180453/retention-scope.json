@@ -1,0 +1,13 @@
+{
+  "retained_in_repository": [
+    "check logs and example outputs",
+    "live results and harness",
+    "exact source manifest and selected R/native/FFI/test snapshots",
+    "installed package hashes",
+    "package tarball SHA256 in verification.json"
+  ],
+  "not_copied_to_repository": [
+    "redundant R CMD check 00_pkg_src tree, including unchanged vendor/fixtures; originals remain in local scratch"
+  ],
+  "scope": "All recorded failures, check diagnostics and executed results are retained; source copies are scoped to the changed package boundaries."
+}

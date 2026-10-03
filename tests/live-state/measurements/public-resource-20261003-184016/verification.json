@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "scope": "Harness admission, before generation",
+  "diagnosis": "The resource harness requested attn_out on Qwen2; that component is not observable for this architecture. Classed relm_error_trace rejected admission as designed. No latency/resource acceptance from this attempt.",
+  "correction": "Measure all-layer residual capture in memory and spill, which is the public performance scope; independent synthetic three-component semantics remain separately accepted. No product, limits or deadline changes."
+}
