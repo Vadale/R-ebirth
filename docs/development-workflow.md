@@ -48,3 +48,32 @@ Claude workflow without changing API/dependency approval or correctness rules.
 An internal role need not be a new conversation or process. No new dependency,
 product export, weakened assertion or disabled CI job is authorized by this
 efficiency amendment.
+
+## CI scope refinement (2026-10-03)
+
+Keep all nine ordinary check names and their existing event triggers. For a
+verified change limited to the explicit external-documentation allowlist in
+`tests/ci/change_scope.py`, the four R jobs and two native build jobs report
+package/native execution as **not applicable**, with the compared commits.
+They do not present unexecuted tests as passing tests. Golden/contract, vendor
+coherence and supply-chain jobs still execute. This classification does not
+certify an older runtime or repair a failed baseline.
+
+Any package, test, fixture, workflow, classifier or unrecognized path requires
+full ordinary CI. Package documentation is not external documentation. Missing
+history, unexpected PR merge parents, malformed metadata, renames involving a
+non-allowlisted path and ambiguous paths also require full checks. Do not add
+paths to the allowlist to make a failing candidate green.
+
+The vision nightly runs short installed-package lifecycle checks **before**
+downloading the models. Its model stage selects vision tests, including the
+separately named async/VLM test; generic async coverage remains in ordinary R
+CI. Required actual-model gates reject missing, duplicate or skipped results,
+even when a skipped case already recorded passing expectations. Preserve each
+phase's timings, skips and failures before deciding success. Native vision
+boundaries, model pins and same-runner numerical comparisons remain unchanged.
+
+Use those timings to identify the next real bottleneck. Do not promise a new
+wall-clock duration from a reduced test selection alone. A new runner does not
+invalidate unchanged numerical evidence, but its prior source remains explicit;
+changed runtime or reference inputs still require the affected acceptance.
