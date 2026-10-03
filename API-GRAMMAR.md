@@ -94,7 +94,7 @@ Print: one screen — file, architecture, parameters, quantization, layers × hi
 ### `llm_tokens(m, x, decode = FALSE)` — Phase 1
 `decode = FALSE`: `x` is character (vectorized) → **named integer vector** per prompt (names = token pieces); for `length(x) > 1`, a list of such vectors. `decode = TRUE`: `x` is an integer vector of token ids → single character string. UTF-8 correct (Italian text in the test suite). Errors: `relm_error_tokenize`.
 
-### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL, images = NULL, schema = NULL, async = FALSE, on_progress = NULL, on_token = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
+### `llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL, images = NULL, schema = NULL, async = FALSE, on_progress = NULL, on_token = NULL, on_state = NULL, layers = integer(), components = "residual", top = 20L, spill = TRUE, spill_dir = NULL)` — Phase 1 · `images` approved 2026-07-14 (Phase 11, D-026)
 Vectorized over `prompt`; returns a character vector of the same length (names preserved). `chat = TRUE` applies the model's chat template (Gemma + Qwen verified); `chat = FALSE` = raw completion. `seed = NULL` draws and *records* a seed; the used seed is attached as `attr(result, "seed")` (reproducibility is always recoverable). `stop` = character vector of stop sequences. Active interventions on `m` apply. `images = NULL` (default) = text-only, unchanged. Otherwise a **list parallel to `prompt`**: `images[[i]]` is a character vector of image **file paths** for prompt `i` (`character(0)` for none); a bare character vector is treated as `list(images)` and requires `length(prompt) == 1` (else recycled with a warning if lengths differ — the `llm_trace(positions=)` recycling contract). Each prompt's images are inserted **before** its text (interleaved-marker control is a reserved later capability); one output per prompt (the `prompt_id` mapping is unchanged). Requires a handle loaded with `projector=`. Errors: `relm_error_generation`, `relm_error_context_overflow` (combined text+image tokens exceed `context_length` — message says by how much), `relm_error_image` (decode/parse failure, unsupported/oversized image, images on a non-vision handle), `relm_error_argument` (bad `images` type/length).
 
 With `schema` supplied, text generation follows the approved D-030 bounded JSON
@@ -309,3 +309,45 @@ Approved narrow exception to global rule 9: an explicitly supplied
 `llm_generate(on_token = con)` file connection receives output. relm neither
 chooses a path nor opens/closes that connection. This exception, the schemas and lifecycle amendment are binding.
 Implementation and acceptance are in progress.
+
+
+## 11. Live state observation — `[approved: D-041, 2026-10-03]`
+
+The founder approved F6a with "ok. continua con F6a e F6b" after the concrete
+proposal and approval question. Append `on_state = NULL, layers = integer(),
+components = "residual", top = 20L, spill = TRUE, spill_dir = NULL` to
+`llm_generate()`, retaining all earlier positional arguments and defaults.
+The exact F6a contract in [Phase 6 sections 3–5](docs/phase6-live-introspection-plan.md)
+is binding, including state/source positions, errors, resource limits and spill
+side effects. No new export name or R/Rust dependency is approved or needed.
+F6a is implemented with local acceptance recorded in the implementation report;
+remote acceptance remains pending. Approval itself is not a numerical result.
+
+A non-NULL on_state function requires async mode, one text prompt, no schema or
+image input, and at most1024 requested tokens. Default layers capture no
+activations; NULL explicitly selects all blocks. At least logits or activations
+must be requested. The callback receives exactly `step`, `logits`, `trace`:
+base-R tables and an existing bounded/spill-aware relm_trace. Indices are1-based;
+source_pos=P+k-1 identifies the forward pass that selected generated token k,
+not an invented activation for an undecoded token. Raw logits/full-vocabulary
+softmax precede sampling. State delivery excludes EOG but includes non-EOG tokens
+participating in a later removed stop suffix.
+
+One outstanding state is acknowledged before token/text delivery for k and its
+next decode. R callbacks run only on R's main thread, outside native locks.
+F6a callback replies must be NULL. Calling llm_cancel inside on_state requests
+existing classed cancellation, not successful partial text. Existing on_token,
+CSV, final promise/seed and busy/ownership rules remain intact. Delivered spill
+proxies retain managed ownership; incomplete files are never published.
+
+F6b continuation is authorized as the next increment under the same explicit
+instruction. Its exact reply/audit amendment is finalized in
+[Phase 6 section 6](docs/phase6-live-introspection-plan.md): NULL or exactly
+`list(steer = data.frame(intervention, coef))`, addressing only existing steer
+entries, atomically updating finite representable coefficients for the next
+decode. Partial replies preserve other coefficients. Three integer audit columns
+in step and a worker-produced steering attribute record actual applied state.
+Original adapters are restored before model ownership returns, on every exit.
+This preserves immutable R handles and the observation boundary. No new export,
+dependency, direction, ablation or replay of historical KV is added. F6b is not
+claimed implemented or covered by F6a acceptance alone.

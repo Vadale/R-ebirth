@@ -78,6 +78,7 @@ pub struct AsyncRequest {
     pub images: Option<Vec<Vec<String>>>,
     pub image_max_bytes: u64,
     pub stream: bool,
+    pub live: Option<crate::LiveRequest>,
     // Numeric synthetic fixtures use the production worker/control path without
     // claiming tokenizer coverage. This seam does not exist in shipped builds.
     #[cfg(test)]
@@ -89,6 +90,14 @@ impl AsyncRequest {
             argument: argument.into(),
             reason: reason.into(),
         };
+        if self.live.is_some()
+            && (self.prompts.len() != 1
+                || self.params.max_tokens > crate::LIVE_MAX_STATES
+                || self.images.is_some()
+                || self.schema.is_some())
+        {
+            return Err(invalid("on_state", "live observation requires one text prompt, no images/schema and at most 1024 tokens"));
+        }
         if self.prompts.is_empty() || self.prompts.len() > ASYNC_MAX_PROMPTS {
             return Err(invalid("prompt", "async requires 1..128 prompts"));
         }
@@ -118,7 +127,15 @@ impl AsyncRequest {
             .iter()
             .chain(&self.params.stop)
             .chain(self.images.iter().flatten().flatten());
-        let bytes = strings.try_fold(0usize, |sum, text| sum.checked_add(text.len()));
+        let bytes = strings
+            .try_fold(0usize, |sum, text| sum.checked_add(text.len()))
+            .and_then(|n| {
+                self.live.as_ref().map_or(Some(n), |live| {
+                    [&live.spill_dir, &live.trace_id, &live.model, &live.spec_key]
+                        .into_iter()
+                        .try_fold(n, |n, text| n.checked_add(text.capacity()))
+                })
+            });
         if bytes.is_none_or(|bytes| bytes > ASYNC_MAX_ARGUMENT_BYTES) {
             return Err(invalid("prompt", "async copied text exceeds 16 MiB"));
         }
@@ -126,6 +143,7 @@ impl AsyncRequest {
             .prompts
             .len()
             .checked_add(self.params.stop.len())
+            .and_then(|n| n.checked_add(if self.live.is_some() { 4 } else { 0 }))
             .and_then(|n| n.checked_add(usize::from(self.schema.is_some())))
             .and_then(|n| {
                 self.images
@@ -158,14 +176,37 @@ pub struct ProgressSnapshot {
     pub max_tokens: usize,
     pub phase: &'static str,
 }
+struct LiveSlot {
+    pending: Option<crate::LiveState>,
+    outstanding: Option<usize>,
+    drained: bool,
+    next_id: usize,
+    discarded: bool,
+}
+impl LiveSlot {
+    fn new() -> Self {
+        Self {
+            pending: None,
+            outstanding: None,
+            drained: false,
+            next_id: 1,
+            discarded: false,
+        }
+    }
+}
 struct State {
     progress: ProgressSnapshot,
     terminal: bool,
     cancellation_accepted: bool,
     committed_output: usize,
     stream: Option<StreamQueue>,
+    live: Option<LiveSlot>,
 }
+static NEXT_JOB_ID: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(1);
 struct Control {
+    id: u64,
+    #[cfg(feature = "spill")]
+    live_cancel: Arc<crate::live_spill::LiveCancel>,
     cancel: AtomicBool,
     seed: u64,
     state: Mutex<State>,
@@ -177,14 +218,37 @@ struct Control {
     test_pause: Mutex<Option<TestPause>>,
     #[cfg(test)]
     queue_waiter: Mutex<Option<std::sync::mpsc::Sender<()>>>,
+    #[cfg(test)]
+    live_published: Mutex<Option<std::sync::mpsc::Sender<(u64, usize)>>>,
+}
+/// Compiled object storage used by the live preflight ledger. Arc strong/weak
+/// counters are explicit; StreamQueue payload capacity is in WP10's ledger.
+pub(crate) fn live_control_bytes() -> usize {
+    let bytes = std::mem::size_of::<Control>()
+        + std::mem::size_of::<AsyncJob>()
+        + 2 * std::mem::size_of::<usize>();
+    // Control::new owns this Arc even when the live state stays in memory.
+    // Charge its heap pointee and strong/weak counters on both delivery paths.
+    #[cfg(feature = "spill")]
+    let bytes = bytes
+        + std::mem::size_of::<crate::live_spill::LiveCancel>()
+        + 2 * std::mem::size_of::<usize>();
+    bytes
 }
 impl Control {
     fn new(request: &AsyncRequest) -> Self {
         Self {
+            id: NEXT_JOB_ID
+                .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |n| n.checked_add(1))
+                .unwrap_or(u64::MAX),
+            #[cfg(feature = "spill")]
+            live_cancel: Arc::new(crate::live_spill::LiveCancel::default()),
             #[cfg(test)]
             test_pause: Mutex::new(TEST_PAUSE.with(|slot| slot.borrow_mut().take())),
             #[cfg(test)]
             queue_waiter: Mutex::new(TEST_QUEUE_WAITER.with(|slot| slot.borrow_mut().take())),
+            #[cfg(test)]
+            live_published: Mutex::new(TEST_LIVE_PUBLISHED.with(|slot| slot.borrow_mut().take())),
             cancel: AtomicBool::new(false),
             seed: request.params.seed,
             space: Condvar::new(),
@@ -204,6 +268,7 @@ impl Control {
                 cancellation_accepted: false,
                 committed_output: 0,
                 stream: request.stream.then(StreamQueue::new),
+                live: request.live.as_ref().map(|_| LiveSlot::new()),
             }),
         }
     }
@@ -299,6 +364,65 @@ impl Control {
         });
         Ok(())
     }
+    fn publish_live(&self, mut payload: crate::LiveState) -> Result<(), RebirthError> {
+        let mut state = self.lock();
+        if state.cancellation_accepted {
+            return Err(self.cancelled(&state));
+        }
+        let live = state.live.as_mut().ok_or_else(|| RebirthError::Internal {
+            context: "live state without live control".into(),
+        })?;
+        if live.discarded || live.outstanding.is_some() || payload.state_id != live.next_id {
+            return Err(RebirthError::Internal {
+                context: "live state protocol sequence violation".into(),
+            });
+        }
+        payload.job_id = self.id;
+        payload.elapsed = self.started.elapsed().as_secs_f64();
+        live.outstanding = Some(payload.state_id);
+        live.drained = false;
+        live.next_id = live
+            .next_id
+            .checked_add(1)
+            .ok_or_else(|| RebirthError::Internal {
+                context: "live state sequence overflow".into(),
+            })?;
+        live.pending = Some(payload);
+        // This test seam denotes publication, not a condition-variable wake.
+        // It fires once with the exact identity, before entering the ack loop.
+        #[cfg(test)]
+        if let Some(observer) = self.live_published.lock().unwrap().as_ref() {
+            observer
+                .send((self.id, live.outstanding.unwrap()))
+                .expect("live publication observer");
+        }
+        loop {
+            if state.cancellation_accepted
+                || state.terminal
+                || state.live.as_ref().is_some_and(|live| live.discarded)
+            {
+                // Move cleanup outside the control mutex: poll/cancel never
+                // waits for filesystem metadata/unlink on this worker.
+                let error = self.cancelled(&state);
+                let abandoned = state.live.as_mut().and_then(|live| live.pending.take());
+                drop(state);
+                drop(abandoned);
+                return Err(error);
+            }
+            if state
+                .live
+                .as_ref()
+                .is_some_and(|live| live.outstanding.is_none())
+            {
+                return Ok(());
+            }
+            #[cfg(test)]
+            if let Some(waiter) = self.queue_waiter.lock().unwrap().take() {
+                waiter.send(()).expect("live wait observer");
+            }
+            state = self.space.wait(state).unwrap_or_else(|e| e.into_inner());
+        }
+    }
     fn publish(&self, result: &mut Result<Vec<Generation>, RebirthError>, panicked: bool) {
         let mut state = self.lock();
         if state.cancellation_accepted && !panicked {
@@ -311,13 +435,20 @@ impl Control {
         }
         // A failed native outcome never starts any more consumers. Terminal
         // publication, cancellation and the producer predicate share this lock.
+        let mut abandoned = None;
         if result.is_err() {
+            if let Some(live) = state.live.as_mut() {
+                abandoned = live.pending.take();
+                live.discarded = true;
+            }
             if let Some(stream) = state.stream.as_mut() {
                 stream.discard();
             }
         }
         state.terminal = true;
         self.space.notify_all();
+        drop(state);
+        drop(abandoned);
     }
 }
 #[cfg(test)]
@@ -339,6 +470,7 @@ struct TestPause {
 thread_local! {
     static TEST_PAUSE: RefCell<Option<TestPause>> = const { RefCell::new(None) };
     static TEST_QUEUE_WAITER: RefCell<Option<std::sync::mpsc::Sender<()>>> = const { RefCell::new(None) };
+    static TEST_LIVE_PUBLISHED: RefCell<Option<std::sync::mpsc::Sender<(u64, usize)>>> = const { RefCell::new(None) };
 }
 #[cfg(test)]
 pub(crate) fn test_checkpoint(stage: TestStage) {
@@ -394,12 +526,32 @@ pub fn restore_async_panic_hook() {
         std::panic::set_hook(previous);
     }
 }
+#[cfg(feature = "spill")]
+pub(crate) fn catch_background<T>(f: impl FnOnce() -> T) -> std::thread::Result<T> {
+    CAUGHT_WORKER.with(|flag| flag.set(true));
+    let result = catch_unwind(AssertUnwindSafe(f));
+    CAUGHT_WORKER.with(|flag| flag.set(false));
+    result
+}
 fn with_control<T>(f: impl FnOnce(Option<&Control>) -> T) -> T {
     CONTROL.with(|slot| f(slot.borrow().as_deref()))
 }
 /// Shared text/vision ingest and sampler checkpoints are no-ops synchronously.
 pub(crate) fn checkpoint() -> Result<(), RebirthError> {
     with_control(|control| control.map_or(Ok(()), Control::checkpoint))
+}
+pub(crate) fn publish_live(payload: crate::LiveState) -> Result<(), RebirthError> {
+    with_control(|control| {
+        control
+            .ok_or_else(|| RebirthError::Internal {
+                context: "live generation requires the async worker".into(),
+            })?
+            .publish_live(payload)
+    })
+}
+#[cfg(feature = "spill")]
+pub(crate) fn live_cancel() -> Option<Arc<crate::live_spill::LiveCancel>> {
+    with_control(|control| control.map(|c| c.live_cancel.clone()))
 }
 pub(crate) fn streaming() -> bool {
     with_control(|control| control.is_some_and(|control| control.streaming))
@@ -596,7 +748,7 @@ impl AsyncJob {
     fn spawn(
         model: Option<LoadedModel>,
         request: AsyncRequest,
-        permit: ExecutionPermit,
+        mut permit: ExecutionPermit,
         fixture: Option<Fixture>,
     ) -> Result<Self, AsyncStartFailure> {
         if let Err(error) = request.validate() {
@@ -620,8 +772,30 @@ impl AsyncJob {
                 },
             });
         }
+        if let (Some(model_ref), Some(live)) = (model.as_ref(), request.live.as_ref()) {
+            let checked = {
+                let _bound = permit.enter();
+                live.preflight(&model_ref.metadata(), request.params.max_tokens)
+            };
+            if let Err(error) = checked {
+                return Err(AsyncStartFailure {
+                    model,
+                    permit,
+                    error,
+                });
+            }
+        }
         install_panic_filter();
         let control = Arc::new(Control::new(&request));
+        if control.id == u64::MAX {
+            return Err(AsyncStartFailure {
+                model,
+                permit,
+                error: RebirthError::Internal {
+                    context: "async job identity exhausted".into(),
+                },
+            });
+        }
         let worker_control = control.clone();
         // std::thread drops its closure on OS startup failure. Retain payload in
         // this one slot so that failure returns model + reservation intact.
@@ -702,6 +876,8 @@ impl AsyncJob {
         }
         state.cancellation_accepted = true;
         self.control.cancel.store(true, Ordering::Release);
+        #[cfg(feature = "spill")]
+        self.control.live_cancel.cancel();
         self.control.space.notify_all();
         true
     }
@@ -715,8 +891,66 @@ impl AsyncJob {
         if !state.terminal {
             state.cancellation_accepted = true;
             self.control.cancel.store(true, Ordering::Release);
+            #[cfg(feature = "spill")]
+            self.control.live_cancel.cancel();
+        }
+        if let Some(live) = state.live.as_mut() {
+            live.discarded = true;
         }
         self.control.space.notify_all();
+    }
+    pub fn id(&self) -> u64 {
+        self.control.id
+    }
+    pub fn has_live(&self) -> bool {
+        self.control.lock().live.is_some()
+    }
+    /// Transfer at most one state only after older token events were drained.
+    /// Outer None means contention; inner None means no deliverable state.
+    pub fn drain_state(&self) -> Option<Option<crate::LiveState>> {
+        let mut state = self.control.state.try_lock().ok()?;
+        if state.cancellation_accepted
+            || state.live.as_ref().is_some_and(|live| live.discarded)
+            || state.stream.as_ref().is_some_and(|q| !q.rows.is_empty())
+        {
+            return Some(None);
+        }
+        let Some(live) = state.live.as_mut() else {
+            return Some(None);
+        };
+        let payload = live.pending.take();
+        if payload.is_some() {
+            live.drained = true;
+        }
+        #[cfg(feature = "spill")]
+        let mut payload = payload;
+        #[cfg(feature = "spill")]
+        if let Some(payload) = payload.as_mut() {
+            if let crate::LiveTrace::Spilled(report) = &mut payload.trace {
+                report.delivered();
+            }
+        }
+        Some(payload)
+    }
+    pub fn ack_state(&self, job_id: u64, state_id: usize) -> Result<(), RebirthError> {
+        let mut state = self.control.lock();
+        let live = state.live.as_mut().ok_or_else(|| RebirthError::Internal {
+            context: "state acknowledgement on non-live job".into(),
+        })?;
+        if job_id != self.control.id || !live.drained || live.outstanding != Some(state_id) {
+            return Err(RebirthError::Internal {
+                context: "stale, duplicate or wrong-job state acknowledgement".into(),
+            });
+        }
+        // A matching acknowledgement remains valid after callback cancellation;
+        // cancellation wins the producer predicate before token/text publication.
+        live.outstanding = None;
+        live.drained = false;
+        self.control.space.notify_all();
+        Ok(())
+    }
+    pub fn discard_state(&self) {
+        self.discard_stream();
     }
     /// A bounded drain; None means contention and the next R timer retries.
     /// The bool reports whether all queued rows were transferred in this batch.
@@ -801,7 +1035,11 @@ fn run_request(
         let mut output = Vec::with_capacity(prompts.len());
         for (i, tokens) in prompts.iter().enumerate() {
             prompt_started(i + 1)?;
-            let generated = model.generate(tokens, &request.params)?;
+            let generated = if let Some(live) = &request.live {
+                model.generate_live_tokens(tokens, &request.params, live)?
+            } else {
+                model.generate(tokens, &request.params)?
+            };
             prompt_completed(generated.text.len())?;
             stream_prompt_end(generated.stop_reason.as_str())?;
             output.push(generated);
@@ -819,7 +1057,9 @@ fn run_request(
     let mut output = Vec::with_capacity(request.prompts.len());
     for (i, prompt) in request.prompts.iter().enumerate() {
         prompt_started(i + 1)?;
-        let generation = if let Some(images) = &request.images {
+        let generation = if let Some(live) = &request.live {
+            model.generate_live_prompt(prompt, request.chat, &request.params, live)?
+        } else if let Some(images) = &request.images {
             model.generate_prompt_with_images(
                 prompt,
                 request.chat,
@@ -912,6 +1152,7 @@ mod tests {
             images: None,
             image_max_bytes: 1,
             stream: false,
+            live: None,
             numeric_prompts: None,
         }
     }
@@ -939,6 +1180,177 @@ mod tests {
             worker: None,
         }
     }
+    fn live_control() -> Arc<Control> {
+        let mut req = request();
+        req.stream = true;
+        req.live = Some(crate::live_state::tests::request());
+        Arc::new(Control::new(&req))
+    }
+    fn live_payload(id: usize) -> crate::LiveState {
+        crate::LiveState {
+            job_id: 0,
+            state_id: id,
+            token_id: 24,
+            context_pos: 2,
+            source_pos: 1,
+            prompt_token_count: 2,
+            elapsed: 0.0,
+            logits: vec![],
+            trace: crate::LiveTrace::Memory(vec![]),
+        }
+    }
+    // Draining older events wakes the waiting producer. Observe its next wait
+    // entry before testing the nonblocking state drain, so mutex contention is
+    // not mistaken for a missing state. No sleep or retry weakens the assertions.
+    fn drain_before_live_state(job: &AsyncJob) -> (Vec<StreamEvent>, bool) {
+        let (tx, rx) = std::sync::mpsc::channel();
+        *job.control.queue_waiter.lock().unwrap() = Some(tx);
+        let batch = job.drain_stream().unwrap();
+        rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        drop(job.control.lock());
+        batch
+    }
+    #[test]
+    #[cfg(feature = "spill")]
+    fn live_control_allocations_cover_memory_and_spill_cancellation() {
+        for spill in [false, true] {
+            let mut req = request();
+            let mut live = crate::live_state::tests::request();
+            live.spill = spill;
+            req.live = Some(live);
+            let control = Arc::new(Control::new(&req));
+            let actual = std::mem::size_of_val(control.as_ref())
+                + std::mem::size_of::<AsyncJob>()
+                + std::mem::size_of_val(control.live_cancel.as_ref())
+                + 4 * std::mem::size_of::<usize>();
+            assert_eq!(live_control_bytes(), actual);
+        }
+    }
+    #[test]
+    fn live_state_order_and_correlated_acknowledgement() {
+        use std::sync::mpsc;
+        let control = live_control();
+        let job = control_job(control.clone());
+        enqueue_token(&control).unwrap(); // previously published token event
+        let (tx, rx) = mpsc::channel();
+        *control.live_published.lock().unwrap() = Some(tx);
+        let worker_control = control.clone();
+        let producer = std::thread::spawn(move || {
+            worker_control.publish_live(live_payload(1))?;
+            enqueue_token(&worker_control)
+        });
+        assert_eq!(
+            rx.recv_timeout(Duration::from_secs(5)).unwrap(),
+            (job.id(), 1)
+        );
+        drop(job.control.lock());
+        assert!(job.drain_state().unwrap().is_none());
+        assert_eq!(drain_before_live_state(&job).0.len(), 1);
+        let state = job.drain_state().unwrap().unwrap();
+        assert_eq!(state.job_id, job.id());
+        assert_eq!(state.state_id, 1);
+        assert!(job.drain_state().unwrap().is_none());
+        assert!(job.ack_state(job.id() + 1, 1).is_err());
+        assert!(job.ack_state(job.id(), 2).is_err());
+        assert!(job.drain_stream().unwrap().0.is_empty());
+        job.ack_state(job.id(), 1).unwrap();
+        producer.join().unwrap().unwrap();
+        assert!(job.ack_state(job.id(), 1).is_err());
+        assert_eq!(job.drain_stream().unwrap().0.len(), 1);
+    }
+    #[test]
+    fn live_state_cancel_and_discard_wake_without_current_token() {
+        use std::sync::mpsc;
+        for delivered in [false, true] {
+            for discard in [false, true] {
+                let control = live_control();
+                let job = control_job(control.clone());
+                let (tx, rx) = mpsc::channel();
+                *control.live_published.lock().unwrap() = Some(tx);
+                let producer = std::thread::spawn(move || {
+                    control.publish_live(live_payload(1))?;
+                    enqueue_token(&control)
+                });
+                assert_eq!(
+                    rx.recv_timeout(Duration::from_secs(5)).unwrap(),
+                    (job.id(), 1)
+                );
+                drop(job.control.lock());
+                if delivered {
+                    assert!(job.drain_state().unwrap().is_some());
+                }
+                if discard {
+                    job.discard_state();
+                } else {
+                    assert!(job.cancel());
+                }
+                // Cancellation inside on_state can be followed by a valid NULL ack.
+                if delivered {
+                    job.ack_state(job.id(), 1).unwrap();
+                }
+                assert!(matches!(
+                    producer.join().unwrap(),
+                    Err(RebirthError::Cancelled { .. })
+                ));
+                assert!(job.drain_state().unwrap().is_none());
+                assert!(job.drain_stream().unwrap().0.is_empty());
+                assert!(job.control.lock().live.as_ref().unwrap().pending.is_none());
+            }
+        }
+    }
+
+    #[test]
+    fn live_publication_signal_is_not_a_wait_wakeup() {
+        use std::sync::mpsc;
+        let control = live_control();
+        let job = control_job(control.clone());
+        let (published_tx, published_rx) = mpsc::channel();
+        *control.live_published.lock().unwrap() = Some(published_tx);
+        let (waiting_tx, waiting_rx) = mpsc::channel();
+        *control.queue_waiter.lock().unwrap() = Some(waiting_tx);
+        let producer = std::thread::spawn(move || {
+            control.publish_live(live_payload(1))?;
+            enqueue_token(&control)?;
+            control.publish_live(live_payload(2))?;
+            enqueue_token(&control)
+        });
+        assert_eq!(
+            published_rx.recv_timeout(Duration::from_secs(5)).unwrap(),
+            (job.id(), 1)
+        );
+        waiting_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        drop(job.control.lock());
+        // Force the exact former race: install a new wait observer before ack,
+        // then let drain_stream notify the previous state's waiting producer.
+        let (rewait_tx, rewait_rx) = mpsc::channel();
+        *job.control.queue_waiter.lock().unwrap() = Some(rewait_tx);
+        assert!(job.drain_stream().unwrap().0.is_empty());
+        rewait_rx.recv_timeout(Duration::from_secs(5)).unwrap();
+        drop(job.control.lock());
+        assert!(matches!(
+            published_rx.try_recv(),
+            Err(mpsc::TryRecvError::Empty)
+        ));
+        let first = job.drain_state().unwrap().unwrap();
+        assert_eq!(first.state_id, 1);
+        job.ack_state(first.job_id, first.state_id).unwrap();
+        assert_eq!(
+            published_rx.recv_timeout(Duration::from_secs(5)).unwrap(),
+            (job.id(), 2)
+        );
+        drop(job.control.lock());
+        assert_eq!(drain_before_live_state(&job).0.len(), 1);
+        let second = job.drain_state().unwrap().unwrap();
+        assert_eq!(second.state_id, 2);
+        job.ack_state(second.job_id, second.state_id).unwrap();
+        producer.join().unwrap().unwrap();
+        assert_eq!(job.drain_stream().unwrap().0.len(), 1);
+        assert!(matches!(
+            published_rx.try_recv(),
+            Err(mpsc::TryRecvError::Empty)
+        ));
+    }
+
     // Rust PR CI, download-free. Caps cover actual allocated text and descriptor
     // slots, independent row/byte saturation, and lossless FIFO drains.
     #[test]
@@ -1227,6 +1639,106 @@ mod tests {
             );
         }
     }
+    #[test]
+    fn live_async_synthetic_memory_and_spill_preserve_token_order() {
+        use std::sync::mpsc;
+        let path = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../../tests/llm-golden/synthetic/synthetic-llama-2l.gguf");
+        let mut model = crate::load_with_batch(
+            crate::LoadRequest {
+                path,
+                context_length: 768,
+                gpu_layers: None,
+                backend: crate::BackendKind::Cpu,
+                mmap: true,
+                projector: None,
+            },
+            Some(4),
+        )
+        .unwrap();
+        let modes = if cfg!(feature = "spill") {
+            vec![false, true]
+        } else {
+            vec![false]
+        };
+        for spill in modes {
+            let input = vec![1, 7];
+            let mut req = request();
+            req.params.max_tokens = 4;
+            req.stream = true;
+            req.numeric_prompts = Some(vec![input.clone()]);
+            let expected = model.generate(&input, &req.params).unwrap();
+            let mut live = crate::live_state::tests::request();
+            live.spill = spill;
+            live.trace_id = format!("async-live-{}-{}", std::process::id(), spill);
+            let dir = std::env::temp_dir().join(&live.trace_id);
+            live.spill_dir = dir.to_string_lossy().into_owned();
+            if spill {
+                live.budget_bytes = 10_000;
+            }
+            req.live = Some(live);
+            let (tx, rx) = mpsc::channel();
+            TEST_LIVE_PUBLISHED.with(|slot| *slot.borrow_mut() = Some(tx));
+            let mut job = AsyncJob::start(
+                model,
+                req,
+                ExecutionPermit::try_acquire("live synthetic transport").unwrap(),
+            )
+            .unwrap_or_else(|_| panic!("live synthetic starts"));
+            let mut delivered = Vec::new();
+            #[cfg_attr(not(feature = "spill"), allow(unused_mut))]
+            let mut paths = Vec::<String>::new();
+            for (index, &token) in expected.tokens.iter().enumerate() {
+                assert_eq!(
+                    rx.recv_timeout(Duration::from_secs(10)).unwrap(),
+                    (job.id(), index + 1)
+                );
+                drop(job.control.lock());
+                let (events, empty) = drain_before_live_state(&job);
+                assert!(empty);
+                delivered.extend(events.iter().filter_map(|e| e.token_id).map(|id| id - 1));
+                assert_eq!(delivered, expected.tokens[..index]);
+                let state = job.drain_state().unwrap().unwrap();
+                assert_eq!(state.state_id, index + 1);
+                assert_eq!(state.token_id, token);
+                assert_eq!(state.source_pos as usize, input.len() + index - 1);
+                assert_eq!(state.context_pos, state.source_pos + 1);
+                assert_eq!(state.logits.len(), 5);
+                match state.trace {
+                    crate::LiveTrace::Memory(rows) => {
+                        assert!(!spill);
+                        assert_eq!(rows.len(), 6);
+                        assert!(rows
+                            .iter()
+                            .all(|r| r.values.len() == 32 && r.token_pos == state.source_pos));
+                    }
+                    #[cfg(feature = "spill")]
+                    crate::LiveTrace::Spilled(report) => {
+                        assert!(spill);
+                        assert_eq!(report.report.n_rows, 192);
+                        paths.push(report.report.path.clone());
+                    }
+                }
+                job.ack_state(state.job_id, state.state_id).unwrap();
+            }
+            let mut completion = job.worker.take().unwrap().join().unwrap();
+            let (events, empty) = job.drain_stream().unwrap();
+            assert!(empty);
+            delivered.extend(events.iter().filter_map(|e| e.token_id).map(|id| id - 1));
+            assert_eq!(delivered, expected.tokens);
+            assert_eq!(completion.result.as_ref().unwrap()[0], expected);
+            model = completion.model.take().unwrap();
+            drop(completion);
+            for path in paths {
+                assert!(std::path::Path::new(&path).exists());
+                std::fs::remove_file(path).unwrap();
+            }
+            if spill {
+                std::fs::remove_dir(dir).unwrap();
+            }
+        }
+    }
+
     // Rust PR CI: seeded sync/async stream parity on the in-repo numeric GGUF,
     // including the last sampled token before context exhaustion.
     #[test]
@@ -1655,6 +2167,7 @@ mod tests {
                     images: Some(vec![images.clone()]),
                     image_max_bytes,
                     stream: false,
+                    live: None,
                     numeric_prompts: None,
                 };
                 let (entered, observed) = mpsc::channel();

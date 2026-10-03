@@ -38,11 +38,11 @@ async_package_version <- function(package) {
 }
 
 async_validate_inputs <- function(prompt, stop, schema, images, max_tokens,
-                                  temperature, seed) {
+                                  temperature, seed, live_strings = character()) {
   # The literal text-byte cap does not bound millions of empty strings. Bound
   # retained vector/string descriptors separately before encoding/path copies.
   strings <- length(prompt) + length(names(prompt)) + length(stop) +
-    length(schema) + sum(lengths(images))
+    length(schema) + sum(lengths(images)) + length(live_strings)
   descriptor_bytes <- strings * relm_async_string_descriptor_bytes +
     length(prompt) * relm_async_image_row_bytes
   if (descriptor_bytes > relm_async_max_descriptor_bytes) {
@@ -79,7 +79,7 @@ async_validate_inputs <- function(prompt, stop, schema, images, max_tokens,
     used
   }
   arguments <- list(prompt = prompt, names = names(prompt), stop = stop,
-    schema = schema)
+    schema = schema, on_state = live_strings)
   check <- function(arguments, images) {
     used <- 0
     for (argument in names(arguments)) {
@@ -135,7 +135,7 @@ async_payload_condition <- function(payload) {
 
 async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
                            seed, stop, images, image_max_bytes, schema,
-                           on_progress, stream = NULL) {
+                           on_progress, stream = NULL, live = NULL) {
   job <- new.env(parent = emptyenv())
   job$model <- m
   job$names <- names(prompt)
@@ -147,6 +147,10 @@ async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
   job$settled <- FALSE
   job$id <- NULL
   job$stream <- stream
+  job$live <- live
+  job$live_state_id <- 0L
+  job$live_elapsed <- 0
+  job$live_prompt_count <- NULL
   job$structured <- !is.null(schema)
   job$prompts_total <- length(prompt)
   job$stream_event_id <- 0L
@@ -160,11 +164,14 @@ async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
   })
   # No callback has run yet. Submit only fully owned native inputs; keep names,
   # the submitting handle and all promise closures rooted on the R side.
-  payload <- tryCatch(rebirth_async_submit(m$ptr, unname(prompt), chat,
-    max_tokens, temperature, top_p, seed, stop,
+  submit_args <- list(m$ptr, unname(prompt), chat, max_tokens, temperature,
+    top_p, seed, stop,
     if (is.null(images)) character() else as.character(unlist(images, use.names = FALSE)),
     if (is.null(images)) rep.int(0L, length(prompt)) else as.integer(lengths(images)),
-    image_max_bytes, schema, !is.null(stream)), error = identity, interrupt = identity)
+    image_max_bytes, schema, !is.null(stream))
+  submit <- if (is.null(live)) rebirth_async_submit else rebirth_live_submit
+  if (!is.null(live)) submit_args <- c(submit_args, list(live$native_config))
+  payload <- tryCatch(do.call(submit, submit_args), error = identity, interrupt = identity)
   if (inherits(payload, "condition")) {
     async_transport_failure(job, payload)
     return(promise)
@@ -185,7 +192,8 @@ async_schedule <- function(job) {
   tryCatch({
     job$timer <- later::later(function() {
       tryCatch(async_poll(job), error = function(error) async_transport_failure(job, error))
-    }, delay = relm_async_poll_interval, loop = later::global_loop())
+    }, delay = if (is.null(job$live)) relm_async_poll_interval else relm_live_poll_interval,
+      loop = later::global_loop())
   }, error = function(error) async_transport_failure(job, error))
   invisible(NULL)
 }
@@ -235,7 +243,7 @@ async_consumer_failure <- function(job, error, terminal = FALSE) {
   # No join here: wake/discard and keep scheduled nonblocking polls until native
   # ownership is returned. Bypass the public check if a callback closed m.
   if (!terminal && !is.null(job$id)) {
-    if (is.null(job$stream)) rebirth_async_cancel(job$model$ptr) else
+    if (is.null(job$stream) && is.null(job$live)) rebirth_async_cancel(job$model$ptr) else
       relm_check(rebirth_async_discard(job$model$ptr, job$id))
   }
   invisible(NULL)
@@ -280,6 +288,11 @@ async_poll <- function(job) {
       }
     }
   }
+  if (!is.null(job$live) && payload$state %in% c("running", "draining")) {
+    # stream_deliver above handles all earlier events before the one live state.
+    # A recursive later pump sees job$polling and cannot re-enter this callback.
+    live_deliver(job, payload$live_state)
+  }
   terminal <- payload$state %in% c("completed", "failed", "cancelled")
   if (!terminal) {
     if (is.null(job$stream) || !job$model$state$closed) async_progress(job, payload$progress)
@@ -318,7 +331,7 @@ async_settle <- function(job, value = NULL, error = NULL) {
   if (identical(.relm_async$job, job)) .relm_async$job <- NULL
   # Remove roots before invoking promise continuations; callbacks can create a
   # subsequent job after native terminal collection without losing its roots.
-  job$timer <- job$callback <- job$model <- job$resolve <- job$reject <- job$stream <- NULL
+  job$timer <- job$callback <- job$model <- job$resolve <- job$reject <- job$stream <- job$live <- NULL
   job$last_progress <- job$callback_error <- job$names <- NULL
   if (is.null(error)) resolve(value) else reject(error)
   invisible(NULL)

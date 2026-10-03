@@ -127,6 +127,50 @@
 #' batches are outside relm's memory estimate. `on_token = NULL` retains the
 #' ordinary async behavior without a stream queue.
 #'
+#' @section Live state observation:
+#' `on_state = function(state) ...` observes each sampled non-EOG token on the
+#' same generation context. It requires `async = TRUE`, one text prompt,
+#' `max_tokens <= 1024`, no images and no schema. The named list contains `step`,
+#' `logits` and `trace`; return `invisible(NULL)` to continue. Call [llm_cancel()]
+#' from the callback to stop before another token is sampled. Cancellation still
+#' rejects the promise, and callbacks can block R while they run.
+#'
+#' `step` is one plain data-frame row: integer `state_id`, `prompt_id`,
+#' `token_pos`, `token_id`, `context_pos`, `source_pos`, character `source`, and
+#' double `elapsed`. Let P be the actual templated prompt token count and k the
+#' generated position. The sampled token belongs at `context_pos = P + k`;
+#' the forward pass selecting it came from `source_pos = P + k - 1`.
+#' `source` is `"prompt"` for the first state and `"generated"` thereafter.
+#' Positions and vocabulary IDs are 1-based. A last sampled token may remain
+#' undecoded at a context/stop boundary; the state describes its valid source.
+#'
+#' `logits` has [llm_logits()]'s six columns, raw logits and full-vocabulary
+#' softmax probabilities before temperature/top-p sampling. `top = 0` disables
+#' this table. `trace` is a bounded `relm_trace` for one source position, with
+#' `position_space = "model_context"`, `prompt_token_count` and `state_id`
+#' attributes. Its token positions identify the source, not the sampled token.
+#' `layers = integer()` captures no activations; `NULL` explicitly selects all
+#' blocks. Selected residuals include interventions already applied to the handle.
+#'
+#' One state waits for acknowledgement. All earlier token events are delivered
+#' before `on_state`; the current token/text events and the next decode follow
+#' the callback. No state is emitted for EOG. Removed stop-suffix tokens still
+#' have states. Inside the callback the handle remains busy; other native model
+#' operations are unavailable, while pure R calculations and lazy trace reads
+#' remain possible. A 5 ms polling target replaces the ordinary 50 ms target
+#' only for live calls; delivery depends on R's event loop.
+#'
+#' State materialization is bounded by the smaller of `relm.trace_budget` and
+#' 32 MiB, including metadata and conversion accounting. Oversized activations
+#' spill to completed Arrow files when `spill = TRUE`; otherwise admission
+#' raises `relm_error_oom`. A single activation vector is limited to 1 MiB f32,
+#' capture/writer transport to 8 MiB plus accounted scratch, and conservative
+#' whole-call spill output to 2 GiB / 1024 files. Bounds do not cover model/KV
+#' memory, allocator overhead or objects retained/copied by user code. Managed
+#' files survive job/model closure until session cleanup; custom directories
+#' remain caller-managed. Callback failures retain their original condition
+#' in `relm_error_callback`, with `callback = "on_state"`.
+#'
 #' @section Structured output:
 #' Supply `schema` as JSON text to constrain text generation to a bounded subset
 #' of JSON Schema 2020-12. The root must be a non-nullable object with explicit
@@ -224,6 +268,16 @@
 #' @param on_token `NULL`, a function accepting one event data frame, or an
 #'   already-open writable binary base `file()` connection. Requires
 #'   `async = TRUE`; see *Token streaming*.
+#' @param on_state `NULL` or a function receiving one live state; requires
+#'   background text-only generation. Return NULL; see *Live state observation*.
+#' @param layers Live capture block indices: integer() for logits only, NULL for
+#'   all blocks, or unique valid 1-based indices.
+#' @param components Live capture components, using [llm_trace()]'s meanings.
+#' @param top Number of raw logit summaries per live state, from 0 through
+#'   min(128, vocabulary size).
+#' @param spill Whether over-budget live activations may spill to Arrow files.
+#' @param spill_dir NULL for managed session storage, or a custom directory.
+#'   Capture arguments require a non-NULL `on_state`.
 #' @return A character vector the same length as `prompt` (names preserved), each
 #'   element the generated continuation. The seed used is attached as
 #'   `attr(result, "seed")`. With `async = TRUE`, a promise resolving to that vector.
@@ -257,7 +311,9 @@
 llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
                          top_p = 0.95, seed = NULL, chat = TRUE, stop = NULL,
                          images = NULL, schema = NULL, async = FALSE,
-                         on_progress = NULL, on_token = NULL) {
+                         on_progress = NULL, on_token = NULL, on_state = NULL,
+                         layers = integer(), components = "residual", top = 20L,
+                         spill = TRUE, spill_dir = NULL) {
   if (!inherits(m, "llm")) {
     abort_argument("m", "`m` must be an `llm` handle returned by llm().")
   }
@@ -374,6 +430,8 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   if (!is.null(schema) && has_images) {
     abort_argument("images", "Image-bearing requests cannot be combined with `schema`.")
   }
+  live <- live_validate_arguments(m, prompt, max_tokens, async, on_state,
+    layers, components, top, spill, spill_dir, schema, has_images)
   check_prompt_markers(prompt, image_sets, arg_name = "prompt")
   max_bytes <- if (has_images) image_max_bytes() else relm_image_max_bytes_default
   if (async) {
@@ -390,6 +448,14 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
     # Admission precedes the omitted-seed draw. This reaches no model pointer
     # and performs no inference; the native submit repeats the admission check.
     relm_check(rebirth_async_ready(m$ptr))
+    live <- live_prepare(live, m, prompt, max_tokens)
+    if (!is.null(live)) {
+      # Live metadata shares the ordinary aggregate text/descriptor limits.
+      # Count the normalized config before drawing an omitted seed; native
+      # submission repeats this complete check before owning string copies.
+      async_validate_inputs(prompt, stop_seqs, schema, image_sets,
+        max_tokens, temperature, seed, live_config_strings(live$native_config))
+    }
   }
 
   if (is.null(seed)) {
@@ -412,7 +478,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
   if (async) {
     return(async_generate(m, prompt, chat, as.integer(max_tokens),
       as.double(temperature), as.double(top_p), seed_val, stop_seqs,
-      image_sets, max_bytes, schema, on_progress, stream))
+      image_sets, max_bytes, schema, on_progress, stream, live))
   }
 
   out <- if (!is.null(schema)) {

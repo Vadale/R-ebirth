@@ -289,6 +289,10 @@ extern "C" {
     /// Total element count of the tensor (ggml.h L736); for a captured hidden-state
     /// tensor this is `n_tokens * n_embd`.
     pub fn ggml_nelements(t: *const ggml_tensor) -> i64;
+    /// Product of dimensions above the contiguous neuron dimension.
+    pub fn ggml_nrows(t: *const ggml_tensor) -> i64;
+    /// Whether row offsets can be computed without private tensor layout access.
+    pub fn ggml_is_contiguous(t: *const ggml_tensor) -> bool;
     /// Total byte size of the tensor's storage (ggml.h L738); `nelements * 4` for
     /// the F32 hidden states the tap reads.
     pub fn ggml_nbytes(t: *const ggml_tensor) -> usize;

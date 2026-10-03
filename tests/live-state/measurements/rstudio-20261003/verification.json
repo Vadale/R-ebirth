@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "r_pid": 98030,
+  "r_version": "4.5.1",
+  "rstudio_version": "2025.9.1.401",
+  "source_manifest": "6f9940c2858c9d93f7cbfd9656ad80324ecf58e95300f1d4ddcf063d23b40a34",
+  "foreground_generation_seconds": 6.911,
+  "submission_seconds": 0.097,
+  "first_state_seconds": 0.196,
+  "states": 118,
+  "tokens_delivered": 117,
+  "heartbeats": 119,
+  "probe": {
+    "value": 2,
+    "elapsed_seconds": 0,
+    "clock_resolution_note": "Below R elapsed-clock resolution; not literally zero latency.",
+    "native_worker_active": true,
+    "states_delivered": 117
+  },
+  "cancellation": {
+    "reason": "requested",
+    "generated_tokens": 118,
+    "state_id": 118
+  },
+  "max_delivered_object_bytes": 43000,
+  "rolling_score_capacity": 64,
+  "workspace": "Fresh session restored after test. Founder subsequently authorized closing redundant RStudio windows; original globals/RNG were backed up and verified, then restored in the single remaining session. User workspace files are local only and deliberately excluded from repository evidence.",
+  "editor_documents": "No editor documents changed",
+  "scope": "Live neuron observation and requested cancellation, not detector validity or successful partial-text recovery."
+}

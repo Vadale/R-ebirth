@@ -1,0 +1,24 @@
+{
+  "overall_status": "failed",
+  "source_manifest_sha256": "0582ac26f694b1e02717215740ed9d734160797302786aab0040205ef2f428e9",
+  "independent_source_drift": [],
+  "top_k_parity_tests": 3,
+  "synthetic_tests": 5,
+  "cpu": {
+    "active_limit_seconds": 3.3154754990000006,
+    "active_median": 1.418246417,
+    "active_pass": true,
+    "backend": "cpu",
+    "baseline_median": 1.356983666,
+    "dormant_median": 1.35696725,
+    "dormant_pass": true,
+    "dormant_ratio": 0.999987902580988,
+    "source": "0582ac26f694b1e02717215740ed9d734160797302786aab0040205ef2f428e9"
+  },
+  "metal": {
+    "status": "preflight_failed_before_measurement",
+    "cause": "Test parser expected Metal name prefix; pinned upstream actually reports MTL0. Actual log retains 25/25 layers offloaded and a 300.25MiB MTL0 compute buffer.",
+    "performance_measured": false
+  },
+  "scope": "CPU native observer only, no R transport/ack/spill; full F6a acceptance pending."
+}

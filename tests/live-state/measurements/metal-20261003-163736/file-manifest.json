@@ -1,0 +1,72 @@
+{
+  "benchmark-metal.json": {
+    "raw_sha256": "154c5be4d920373f4a9a2a3ef9a50694b520900155630c4c98d1a8bd97891a36",
+    "raw_bytes": 110936,
+    "gzip_sha256": "6c7803b67d71d3f8c71c89774492d5e5b5c7d19a8c3c7927709c3dc201eb6893"
+  },
+  "benchmark-metal.log": {
+    "raw_sha256": "a3748fa04893c8735310bad50a009f77d7c656e1bac45071e1fb8591dfa7cacb",
+    "raw_bytes": 108207,
+    "gzip_sha256": "ab39ff264c9162f71d0b413eb9439af9fc901a17baf81fef8caf468fb3051813"
+  },
+  "clippy.log": {
+    "raw_sha256": "01eb9270b32967f956a4542e627abbd06f9fd07de1747d4e2ac9f3db1d088204",
+    "raw_bytes": 177,
+    "gzip_sha256": "1bc9a6bcbf2a101d0bcce1cfa1e090516680c34ecea71ab70a58c2c5faf13e7f"
+  },
+  "format.log": {
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw_bytes": 0,
+    "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+  },
+  "metal-receipt-regression.log": {
+    "raw_sha256": "244cc3c4a50767c5eb99cd50ee41583e082da448ee10c66b688f0e8015c96f7c",
+    "raw_bytes": 458,
+    "gzip_sha256": "258be8328449303eecd487f6d681bc9e87e05b8341ff40ea82047084d63f74af"
+  },
+  "source-manifest.json": {
+    "raw_sha256": "c30d3bc32a3d138e39c16a940d792306a9edc1a2a7d8cb5b25bd909edbfa0ec2",
+    "raw_bytes": 68944,
+    "gzip_sha256": "27b43b36e49d1a4e033f189ac093285bf3c90454027323b5b32b03700601c042"
+  },
+  "status.json": {
+    "raw_sha256": "2e5c5e6ec835a553193e7b57c352edc805a3b7bdbc9812681ae63f1383a9b8f1",
+    "raw_bytes": 2251,
+    "gzip_sha256": "0ff7397ed802ac8425993499722335d55eb561ebf86bb87d017592e65936ae22"
+  },
+  "verify-feasibility.py": {
+    "raw_sha256": "25c06e7903155709388d86bbc1f49cb22530f345279a044e823b8429eb22558b",
+    "raw_bytes": 6911,
+    "gzip_sha256": "c439616478fc4ca93b51a2f627e7980c3be9b16d9f1957d5c03aaf0c285db904"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/engine.rs": {
+    "raw_sha256": "3ff559a40bf3ebd396a9a805c57efcc9b50cea4ed1b37da64e2b6483e7af00d5",
+    "raw_bytes": 44475,
+    "gzip_sha256": "0d918c96ed0f1de4f40aab8f5e4e655304bf9363685e4a82303bc7bd3bd449c7"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/ffi.rs": {
+    "raw_sha256": "bdbbff40a35d0de7f876522e9032b079dc2fc426bca2b9f034426259ea04e672",
+    "raw_bytes": 39142,
+    "gzip_sha256": "f5423db5ae64f247ee9c6195e5f3e4d8274cedca18779d57c824441725def9eb"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/generate.rs": {
+    "raw_sha256": "039eb9cd089cf77fa8808b6203b5b48826e0eba24d8bb0a89ed392bdbc7304f0",
+    "raw_bytes": 100261,
+    "gzip_sha256": "79a67313a0235f6a079d584d749db2a61e2583e3c80654d3423380d16dcdcefe"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/lib.rs": {
+    "raw_sha256": "288e661d111e06a29405dfd2eb7994a63645a065f44d18efd520ab56f59d1a24",
+    "raw_bytes": 6600,
+    "gzip_sha256": "2d3a7c8bd6b0eef89dfdbd553affdf5c64857e7574866775abb487be4182aa0e"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/trace.rs": {
+    "raw_sha256": "62453bbdd5908718d1e15fa87e91e2f852c31b4813844533a40773d26aa78731",
+    "raw_bytes": 55452,
+    "gzip_sha256": "2355e589ad91695439cf433d3fba7b4de392c71c36044c81ee1cb15c9dc77f41"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/live_capture.rs": {
+    "raw_sha256": "ff6cbe0203021cc6b8c97800944012e5db45ffd8bf3fd4037e407105bc49d902",
+    "raw_bytes": 49237,
+    "gzip_sha256": "05f08851eef8fb1a69691f8396306865fca70c983d987ffbb97d8137275a8230"
+  }
+}

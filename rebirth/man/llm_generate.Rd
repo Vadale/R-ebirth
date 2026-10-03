@@ -17,7 +17,13 @@ llm_generate(
   schema = NULL,
   async = FALSE,
   on_progress = NULL,
-  on_token = NULL
+  on_token = NULL,
+  on_state = NULL,
+  layers = integer(),
+  components = "residual",
+  top = 20L,
+  spill = TRUE,
+  spill_dir = NULL
 )
 }
 \arguments{
@@ -66,6 +72,22 @@ Requires \code{async = TRUE}; see \emph{Background generation}.}
 \item{on_token}{\code{NULL}, a function accepting one event data frame, or an
 already-open writable binary base \code{file()} connection. Requires
 \code{async = TRUE}; see \emph{Token streaming}.}
+
+\item{on_state}{\code{NULL} or a function receiving one live state; requires
+background text-only generation. Return NULL; see \emph{Live state observation}.}
+
+\item{layers}{Live capture block indices: integer() for logits only, NULL for
+all blocks, or unique valid 1-based indices.}
+
+\item{components}{Live capture components, using \code{\link[=llm_trace]{llm_trace()}}'s meanings.}
+
+\item{top}{Number of raw logit summaries per live state, from 0 through
+min(128, vocabulary size).}
+
+\item{spill}{Whether over-budget live activations may spill to Arrow files.}
+
+\item{spill_dir}{NULL for managed session storage, or a custom directory.
+Capture arguments require a non-NULL \code{on_state}.}
 }
 \value{
 A character vector the same length as \code{prompt} (names preserved), each
@@ -202,6 +224,52 @@ synchronously on R and can block it. Batch boundaries and elapsed times vary
 across runs. Consumer side effects remain on failure, and caller-retained
 batches are outside relm's memory estimate. \code{on_token = NULL} retains the
 ordinary async behavior without a stream queue.
+}
+
+\section{Live state observation}{
+
+\code{on_state = function(state) ...} observes each sampled non-EOG token on the
+same generation context. It requires \code{async = TRUE}, one text prompt,
+\code{max_tokens <= 1024}, no images and no schema. The named list contains \code{step},
+\code{logits} and \code{trace}; return \code{invisible(NULL)} to continue. Call \code{\link[=llm_cancel]{llm_cancel()}}
+from the callback to stop before another token is sampled. Cancellation still
+rejects the promise, and callbacks can block R while they run.
+
+\code{step} is one plain data-frame row: integer \code{state_id}, \code{prompt_id},
+\code{token_pos}, \code{token_id}, \code{context_pos}, \code{source_pos}, character \code{source}, and
+double \code{elapsed}. Let P be the actual templated prompt token count and k the
+generated position. The sampled token belongs at \code{context_pos = P + k};
+the forward pass selecting it came from \code{source_pos = P + k - 1}.
+\code{source} is \code{"prompt"} for the first state and \code{"generated"} thereafter.
+Positions and vocabulary IDs are 1-based. A last sampled token may remain
+undecoded at a context/stop boundary; the state describes its valid source.
+
+\code{logits} has \code{\link[=llm_logits]{llm_logits()}}'s six columns, raw logits and full-vocabulary
+softmax probabilities before temperature/top-p sampling. \code{top = 0} disables
+this table. \code{trace} is a bounded \code{relm_trace} for one source position, with
+\code{position_space = "model_context"}, \code{prompt_token_count} and \code{state_id}
+attributes. Its token positions identify the source, not the sampled token.
+\code{layers = integer()} captures no activations; \code{NULL} explicitly selects all
+blocks. Selected residuals include interventions already applied to the handle.
+
+One state waits for acknowledgement. All earlier token events are delivered
+before \code{on_state}; the current token/text events and the next decode follow
+the callback. No state is emitted for EOG. Removed stop-suffix tokens still
+have states. Inside the callback the handle remains busy; other native model
+operations are unavailable, while pure R calculations and lazy trace reads
+remain possible. A 5 ms polling target replaces the ordinary 50 ms target
+only for live calls; delivery depends on R's event loop.
+
+State materialization is bounded by the smaller of \code{relm.trace_budget} and
+32 MiB, including metadata and conversion accounting. Oversized activations
+spill to completed Arrow files when \code{spill = TRUE}; otherwise admission
+raises \code{relm_error_oom}. A single activation vector is limited to 1 MiB f32,
+capture/writer transport to 8 MiB plus accounted scratch, and conservative
+whole-call spill output to 2 GiB / 1024 files. Bounds do not cover model/KV
+memory, allocator overhead or objects retained/copied by user code. Managed
+files survive job/model closure until session cleanup; custom directories
+remain caller-managed. Callback failures retain their original condition
+in \code{relm_error_callback}, with \code{callback = "on_state"}.
 }
 
 \section{Structured output}{

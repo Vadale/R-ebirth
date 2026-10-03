@@ -14,7 +14,7 @@ source drift and pre-existing evidence directories fail closed.
 The ordinary Rust workflow runs this on Linux and the native arm64 Mac host;
 the scoped nightly also runs it with pinned `clang-19`. Commands, current source
 hashes, compiler identity, extracted code and result hashes are retained. This
-does not certify arbitrary-size overflow handling or replace the full 15-test
+does not certify arbitrary-size overflow handling or replace the selected
 native sanitizer gate. Original proposal snapshots remain historical evidence.
 
 ## CPU callback signatures (D-040)
@@ -31,8 +31,8 @@ never accepted; it can still exercise type and forwarding contracts.
 The Linux nightly uses pinned `clang-19` / `clang++-19`, explicit
 `llvm-symbolizer-19` and `--require-runtime`. Missing instrumentation or any
 surviving original call fails before the expensive product build. No native
-numerical kernel is replaced by this stub control; the full fifteen product
-cases below remain mandatory. Four source-mutation controls run with the existing
+numerical kernel is replaced by this stub control; every product case in the
+chosen selection below remains mandatory. Four source-mutation controls run with the existing
 harness tests. Sources, commands, compiler/symbol receipts and failures are kept
 under the nightly artifact's `cpu-callbacks` directory.
 
@@ -83,16 +83,38 @@ test binary must define the ASan and UBSan runtime symbols; runtime archive hash
 and `ldd` output record static-runtime/dynamic-system-library linkage. Compiler
 commands, source/fixture hashes and binary hashes are preserved with the results.
 
-The allowlist in `run.py` executes 15 exact tests: intervention/reversibility,
+The default `full` allowlist in `run.py` executes 30 exact tests. The original
+15 cover intervention/reversibility,
 trace, spill/readback and spill-path preservation, generation/sampling, embedding,
 async native handoff, cancellation/recovery/destruction and stream backpressure
-ownership. Each invocation must yield exactly one named libtest start and success,
+ownership. The additional 15 F6a cases cover:
+
+- Four async cases: state/token order and correlated acknowledgements,
+  cancellation/discard while awaiting acknowledgement, publication versus wait
+  notifications, and synthetic generation through memory and spill transport.
+- Five capture cases: context reuse and worker transfer, observer failure cleanup,
+  capture filters and context exhaustion, independent prefix activation/logit
+  goldens including long prefill, and tiny/wide allocation bounds.
+- Six spill cases: completed versus delivered ownership, writer failure and
+  cancellation cleanup, IPC padding and cumulative file bounds, shorter-label
+  workspace bounds, long-label single rows, and full-queue cancellation wakeup.
+
+Each invocation must yield exactly one named libtest start and success,
 zero failures and zero ignored tests. Empty/wrong filters fail. Existing numerical
-forward-pass markers must also appear. All selected functions are unconditional;
+forward-pass markers must also appear. The live prefix golden uses libtest
+`--show-output`: its marker must occur in the named successful test event's
+`stdout` field. No arbitrary non-JSON output is discarded or accepted. Other
+cases retain `--nocapture` and their existing marker checks.
+All selected functions are unconditional;
 a conservative source guard rejects explicit early returns, environment model
-gates and skip macros. It is not a general Rust control-flow verifier. The actual
+gates and skip macros. Unit sources resolve by module (`async_job`,
+`live_capture`, `live_spill`); the guard stops at the selected function's
+same-indent closing brace, before subsequent helpers. This formatting guard is
+not a general Rust parser or control-flow verifier. The actual
 assertions in these tests remain the execution proof. Vision/model-gated tests are
 excluded explicitly, including from successful coverage claims.
+The spill feature remains enabled by the crate's default features. No
+`--no-default-features` override or feature-gated allocation test is selected.
 
 Run the fast adversarial harness checks without building the engine:
 
@@ -108,18 +130,40 @@ python3 tests/sanitizers/run.py --evidence "$RUNNER_TEMP/sanitizer-evidence" \
   --target "$RUNNER_TEMP/relm-sanitizer-target"
 ```
 
+For the scoped F6a.2 acceptance, manually dispatch the workflow with
+`sanitizer_selection: live-only`, or on the pinned Linux host use:
+
+```sh
+python3 tests/sanitizers/run.py --selection live-only \
+  --evidence "$RUNNER_TEMP/live-sanitizer-evidence" \
+  --target "$RUNNER_TEMP/relm-live-sanitizer-target"
+```
+
+This selects exactly the 15 new live cases in the `rebirth_llm` unit binary;
+none of the original 15 product cases executes, and no old integration test
+binary is requested. The workflow also skips the unchanged Valgrind job. All
+Python controls, graph-sizing and callback controls, mixed-language fault probes,
+fresh instrumented compilation, object audits and binary/runtime checks remain
+mandatory. A scheduled run, omitted CLI selection or default manual dispatch
+uses `full`; the optional existing `sanitizers_only` input still skips Valgrind
+without narrowing the sanitizer allowlist.
+
 Test output filenames percent-encode Rust module separators and other reserved
 characters. Test IDs and exact libtest filters are unchanged; each executed-test
-receipt includes its output filenames and digests. This avoids GitHub artifact
+receipt includes its output filenames and digests, source module/digest and
+selection. `provenance.json` also records the selection and complete exact test
+allowlist; `SUCCESS.txt` names the selection and count. This avoids GitHub artifact
 filename rejection without changing execution or acceptance criteria.
 
 The workflow retains logs and partial receipts even on failure. `SUCCESS.txt`
 exists only after every required test passes. A source edit or workflow file is
-not a successful Linux acceptance run; first dispatch and final ordinary CI are
-still required before claiming delivery.
-The optional manual `sanitizers_only` input skips the unchanged Valgrind job for
-a scoped sanitizer-harness correction. Scheduled runs still execute both jobs.
+not a successful Linux acceptance run. The new F6a.2 selection has only
+model-free Python harness control coverage at preparation time; its instrumented
+Linux execution is still pending. Historical acceptance of the original 15
+cases does not establish acceptance for these new paths. Scheduled runs still
+execute both jobs.
 
 Coverage is the native CPU paths actually exercised. This is neither a
 ThreadSanitizer result nor Metal/CUDA, vision, R/SEXP marshalling, or universal
-Rust UB coverage. The ordinary native and R boundary checks remain separate.
+Rust UB coverage. It does not execute R callbacks/close semantics or F6b dynamic
+coefficient updates. The ordinary native and R boundary checks remain separate.

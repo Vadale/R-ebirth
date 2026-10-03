@@ -1,0 +1,4 @@
+llama_prepare_model_devices: using device MTL0 (Apple M4) (unknown id) - 12123 MiB free
+load_tensors: offloaded 25/25 layers to GPU
+sched_reserve:       MTL0 compute buffer size =   300.25 MiB
+sched_reserve:        CPU compute buffer size =     4.51 MiB
