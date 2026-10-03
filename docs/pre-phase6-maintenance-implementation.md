@@ -279,3 +279,44 @@ harness controls. Because the completed hosted runner and unuploaded files are
 unavailable, one scoped sanitizer rerun is needed to retain the full evidence.
 The existing D-040 vision run remains valid for unchanged product/vision inputs
 and is neither cancelled nor duplicated; its exact source must be retained.
+
+
+## Final-source CI and the remaining Mac lifecycle diagnostic
+
+All nine ordinary checks passed at `6af009e` (R `37117066125`, Rust
+`37117066095`). Sanitizer `37117122286` also passed: independently verified raw
+stdout/stderr hashes and exact JSON results for all 15 selected product tests,
+seven original-callback rejections plus corrected forwarding, 68 layout cases,
+four mixed-language fault controls and compiled instrumentation receipts. Full
+object/archive/test executable bytes are not uploaded; their digests remain
+runtime receipts, while downloaded symbol output, flags and test bytes were
+independently checked. This remains scoped Linux CPU coverage. The successful
+run and PR retain the final receipts without triggering receipt-only CI loops.
+
+Vision `37115873337` at product source `226bb50` **failed overall**. Linux passed
+all actual gates: 98,304 finite reference values, maximum absolute difference
+0.0, matching consumed/success SHA256, job nonce/context and installed-package
+identity. Its independent collector and lossless evidence are retained in
+`tests/llm-golden/vision/evidence/maintenance-37115873337`. These product/vision
+inputs are unchanged at `6af009e`; source labels are not rewritten.
+
+Mac failed in the existing synthetic async lifecycle child before reference
+production/comparison. The first CPU setup took 26.598 seconds within its separate
+90-second allowance. Explicit close/GC assertions succeeded with one active job
+and three deferred handles; `drain(result)` then exceeded its unchanged 10-second
+settlement bound. The old log cannot distinguish an unfinished native worker
+from delayed R terminal/observer delivery. The underlying cause is **unproven**;
+there is no numerical vision mismatch or claim of a GitHub outage.
+
+The follow-up changes only test diagnostics and workflow selection. It records
+native counters, parent/observer states, timing transitions and queued callbacks
+without an extra drain after the deadline. Fixture steps, setup/lifecycle/drain
+bounds and assertions remain unchanged. Two focused local cases/six expectations
+passed using the existing installed D040 library, including a forced zero-timeout
+control proving that diagnostics do not deliver the pending callback. The remote
+Mac case is still unaccepted; diagnostic logging is not a product correction.
+
+Manual vision dispatch now permits selecting one platform, while scheduled/default
+runs still select both. Retry only Mac with these diagnostics; Linux vision and
+sanitizer acceptance remain at their recorded parent sources and are not repeated.
+A successful diagnostic retry alone would not explain or fix the historical cause.

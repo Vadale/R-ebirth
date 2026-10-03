@@ -59,7 +59,13 @@
 on:
   schedule:
     - cron: '0 5 * * *' # 05:00 UTC, nightly (offset from the 0.5B tolerance run)
-  workflow_dispatch: {} # manual trigger (founder, on demand)
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Scope an affected-runner retry; scheduled runs always use both platforms'
+        type: choice
+        default: all
+        options: [all, macos-15, ubuntu-24.04]
 
 name: nightly-vision-golden.yaml
 
@@ -74,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
+        os: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.platform == 'macos-15' && '["macos-15"]' || github.event_name == 'workflow_dispatch' && inputs.platform == 'ubuntu-24.04' && '["ubuntu-24.04"]' || '["ubuntu-24.04", "macos-15"]') }}
     runs-on: ${{ matrix.os }}
     name: nightly vision golden (${{ matrix.os }})
     timeout-minutes: 120
