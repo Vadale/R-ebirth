@@ -1,0 +1,11 @@
+case,state_id,token_pos,token_id,context_pos,source_pos,source,source_token_id,prompt_token_count
+dynamic_steer,1,1,43,3,2,prompt,8,2
+dynamic_steer,2,2,23,4,3,generated,43,2
+dynamic_steer,3,3,20,5,4,generated,23,2
+dynamic_steer,4,4,42,6,5,generated,20,2
+dynamic_steer,5,5,43,7,6,generated,42,2
+dynamic_both,1,1,43,3,2,prompt,8,2
+dynamic_both,2,2,23,4,3,generated,43,2
+dynamic_both,3,3,20,5,4,generated,23,2
+dynamic_both,4,4,42,6,5,generated,20,2
+dynamic_both,5,5,42,7,6,generated,42,2
