@@ -1,0 +1,50 @@
+    Checking once_cell v1.21.4
+   Compiling syn v2.0.118
+   Compiling extendr-ffi v0.9.0
+   Compiling paste v1.0.15
+   Compiling lazy_static v1.5.0
+   Compiling extendr-api v0.9.0
+   Compiling zerocopy-derive v0.8.52
+   Compiling readonly v0.2.13
+   Compiling extendr-macros v0.9.0
+    Checking zerocopy v0.8.52
+    Checking half v2.7.1
+    Checking ahash v0.8.12
+    Checking arrow-buffer v59.0.0
+    Checking arrow-data v59.0.0
+    Checking arrow-array v59.0.0
+    Checking arrow-select v59.0.0
+    Checking arrow-ipc v59.0.0
+    Checking rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+error: the `Err`-variant returned from this function is very large
+   --> rebirth-llm/src/async_job.rs:784:10
+    |
+784 |     ) -> Result<Self, AsyncStartFailure> {
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the `Err`-variant is at least 160 bytes
+    |
+    = help: try reducing the size of `async_job::AsyncStartFailure`, for example by boxing large elements or replacing it with `Box<async_job::AsyncStartFailure>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#result_large_err
+    = note: `-D clippy::result-large-err` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::result_large_err)]`
+
+error: the `Err`-variant returned from this function is very large
+   --> rebirth-llm/src/async_job.rs:793:10
+    |
+793 |     ) -> Result<Self, AsyncStartFailure> {
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the `Err`-variant is at least 160 bytes
+    |
+    = help: try reducing the size of `async_job::AsyncStartFailure`, for example by boxing large elements or replacing it with `Box<async_job::AsyncStartFailure>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#result_large_err
+
+error: the `Err`-variant returned from this function is very large
+   --> rebirth-llm/src/async_job.rs:810:10
+    |
+810 |     ) -> Result<Self, AsyncStartFailure> {
+    |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ the `Err`-variant is at least 160 bytes
+    |
+    = help: try reducing the size of `async_job::AsyncStartFailure`, for example by boxing large elements or replacing it with `Box<async_job::AsyncStartFailure>`
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#result_large_err
+
+error: could not compile `rebirth-llm` (lib) due to 3 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `rebirth-llm` (lib test) due to 3 previous errors

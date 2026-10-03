@@ -63,12 +63,33 @@ LIVE_CASES = {
         "live_spill::tests::live_spill_full_queue_cancel_wakes_producer",
     ],
 }
-CASES = {binary: names + LIVE_CASES.get(binary, []) for binary, names in LEGACY_CASES.items()}
+STEERING_CASES = {
+    "rebirth_llm": [
+        "async_job::tests::f6b_history_preserving_updates_match_independent_goldens",
+        "async_job::tests::f6b_partial_identical_and_terminal_replies_preserve_revision",
+        "async_job::tests::f6b_invalid_reply_after_update_restores_original_adapter",
+        "async_job::tests::f6b_cancel_and_close_after_update_restore_original_adapter",
+        "async_job::tests::f6b_setter_reset_and_panic_failures_have_explicit_ownership",
+        "async_job::tests::f6b_zero_initial_coefficient_is_probed_before_activation",
+        "async_job::tests::f6b_original_direction_mismatch_fails_before_publication",
+        "live_steering::tests::f6b_rebuild_preserves_original_order_and_f64_products",
+        "live_steering::tests::f6b_rebuild_rejects_scalar_product_and_sum_overflow",
+        "live_state::tests::f6b_shape_preflight_matches_owned_request_and_full_memory_ledger",
+    ],
+}
+CASES = {binary: names + LIVE_CASES.get(binary, []) + STEERING_CASES.get(binary, [])
+         for binary, names in LEGACY_CASES.items()}
+SCOPED_SELECTIONS = ("live-only", "steering-only")
 UNIT_TEST_SOURCES = {
     "async_job": "src/async_job.rs",
     "live_capture": "src/live_capture.rs",
     "live_spill": "src/live_spill.rs",
+    "live_steering": "src/live_steering.rs",
+    "live_state": "src/live_state.rs",
 }
+INCLUDED_TEST_SOURCES = {name: "src/live_steering_tests.rs"
+                         for name in STEERING_CASES["rebirth_llm"]
+                         if name.startswith("async_job::tests::")}
 WORK_MARKERS = {
     "synthetic_intervene": "intervene engine-vs-oracle max",
     "synthetic_trace": "engine-vs-oracle activations max",
@@ -79,6 +100,8 @@ WORK_MARKERS = {
 CAPTURED_WORK_MARKERS = {
     "live_capture::tests::source_rows_and_logits_match_independent_prefix_goldens":
         "F6_GOLDEN activation_values=3840 ",
+    "async_job::tests::f6b_history_preserving_updates_match_independent_goldens":
+        "F6B_GOLDEN compared_values=3360 ",
 }
 FINDING = re.compile(r"ERROR: (?:AddressSanitizer|LeakSanitizer)|"
                      r"SUMMARY: (?:AddressSanitizer|UndefinedBehaviorSanitizer)|runtime error:")
@@ -90,13 +113,18 @@ def require(condition, message):
 
 
 def selected_cases(selection="full"):
-    require(selection in ("full", "live-only"), f"unknown sanitizer selection: {selection}")
-    cases = CASES if selection == "full" else LIVE_CASES
+    selections = {"full": CASES, "live-only": LIVE_CASES, "steering-only": STEERING_CASES}
+    require(selection in selections, f"unknown sanitizer selection: {selection}")
+    cases = selections[selection]
     return {binary: list(names) for binary, names in cases.items()}
 
 
 def test_source(binary, name):
     require(binary in CASES and name in CASES[binary], f"unselected test source: {binary}::{name}")
+    # These functions are included inside async_job::tests, so their Rust test
+    # namespace differs from the file that contains the actual guarded body.
+    if binary == "rebirth_llm" and name in INCLUDED_TEST_SOURCES:
+        return INCLUDED_TEST_SOURCES[name]
     if binary == "rebirth_llm":
         parts = name.split("::")
         require(len(parts) == 3 and parts[1] == "tests" and parts[0] in UNIT_TEST_SOURCES,
@@ -405,7 +433,7 @@ class Run:
         artifacts = build_artifacts(output, self.cases)
         build_outputs = {"build": output}
         library = None
-        if self.selection == "live-only":
+        if self.selection in SCOPED_SELECTIONS:
             _, output, _ = self.command(library_build_command(), "build-library", timeout=1200)
             build_outputs["build-library"] = output
             library = library_artifact(output)
@@ -518,8 +546,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence", type=Path, required=True)
     parser.add_argument("--target", type=Path, required=True)
-    parser.add_argument("--selection", choices=("full", "live-only"), default="full",
-                        help="full suite (default) or only the new F6a live-state cases")
+    parser.add_argument("--selection", choices=("full", *SCOPED_SELECTIONS), default="full",
+                        help="full suite (default), F6a live-state cases, or F6b steering cases")
     args = parser.parse_args()
     args.evidence.mkdir(parents=True, exist_ok=True)
     # A manual rerun into a retained evidence directory must never leave an old

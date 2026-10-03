@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from urllib.parse import unquote
 
-from run import (CASES, CAPTURED_WORK_MARKERS, LEGACY_CASES, LIVE_CASES, Run,
+from run import (CASES, CAPTURED_WORK_MARKERS, LEGACY_CASES, LIVE_CASES, STEERING_CASES, Run,
                  build_artifacts, build_command, check_fault, check_runtime_symbols,
                  check_test_events, check_unconditional_source, selected_cases,
                  test_command, test_log_label, test_source, library_artifact,
@@ -24,14 +24,17 @@ def events(name="actual_test", outcome="ok", passed=1, ignored=0):
 
 
 class HarnessControls(unittest.TestCase):
-    def test_full_default_preserves_legacy_and_adds_only_live_cases(self):
+    def test_full_default_preserves_legacy_live_and_steering_selections(self):
         flatten = lambda cases: {(binary, name) for binary, names in cases.items() for name in names}
-        legacy, live = flatten(LEGACY_CASES), flatten(LIVE_CASES)
+        legacy, live, steering = flatten(LEGACY_CASES), flatten(LIVE_CASES), flatten(STEERING_CASES)
         self.assertEqual(len(legacy), 15)
         self.assertEqual(len(live), 15)
         self.assertFalse(legacy & live)
-        self.assertEqual(flatten(selected_cases()), legacy | live)
+        self.assertEqual(len(steering), 10)
+        self.assertFalse((legacy | live) & steering)
+        self.assertEqual(flatten(selected_cases()), legacy | live | steering)
         self.assertEqual(flatten(selected_cases("live-only")), live)
+        self.assertEqual(flatten(selected_cases("steering-only")), steering)
         with self.assertRaisesRegex(RuntimeError, "unknown sanitizer selection"):
             selected_cases("typo")
 
@@ -52,6 +55,77 @@ class HarnessControls(unittest.TestCase):
                          "tests/synthetic_trace.rs")
         with self.assertRaises(RuntimeError):
             test_source("rebirth_llm", "unknown::tests::fake")
+
+    def test_steering_source_guard_uses_included_file_and_rejects_wrong_module_body(self):
+        root = Path(__file__).resolve().parents[2] / "rebirth/src/rust/rebirth-llm"
+        for name in STEERING_CASES["rebirth_llm"]:
+            with self.subTest(test=name):
+                module = name.split("::")[0]
+                expected = "src/live_steering_tests.rs" if module == "async_job" else f"src/{module}.rs"
+                self.assertEqual(test_source("rebirth_llm", name), expected)
+                source = (root / test_source("rebirth_llm", name)).read_text()
+                check_unconditional_source(source, name)
+                with self.assertRaisesRegex(RuntimeError, "missing unconditional"):
+                    check_unconditional_source((root / "src/async_job.rs").read_text(), name)
+                short = name.split("::")[-1]
+                changed = source.replace(f"fn {short}() {{", f"fn {short}() {{\n    return;")
+                self.assertNotEqual(changed, source)
+                with self.assertRaisesRegex(RuntimeError, "possible early-return"):
+                    check_unconditional_source(changed, name)
+
+    def test_both_scoped_routes_build_production_archive_before_object_audit(self):
+        class ReachedAudit(Exception):
+            pass
+
+        root = Path(__file__).resolve().parents[2]
+        for selection in ("full", "live-only", "steering-only"):
+            with self.subTest(selection=selection), tempfile.TemporaryDirectory() as directory:
+                evidence = Path(directory)
+                library = evidence / "librebirth_llm.rlib"
+                library.write_bytes(b"not a real archive; routing control only")
+                run = Run(root, evidence, evidence / "unused-target", selection)
+                calls = []
+
+                def command(argv, label, **kwargs):
+                    calls.append((label, argv))
+                    if label == "build":
+                        rows = [{"reason": "compiler-artifact", "target": {"name": name},
+                                 "profile": {"test": True}, "executable": "/tmp/" + name}
+                                for name in run.cases]
+                        rows.append({"reason": "build-finished", "success": True})
+                    else:
+                        self.assertEqual(label, "build-library")
+                        rows = self.library_events()
+                        rows[0]["filenames"] = [str(library)]
+                    return 0, "\n".join(map(json.dumps, rows)), ""
+
+                def audit():
+                    raise ReachedAudit()
+
+                run.command, run.audit_objects = command, audit
+                with self.assertRaises(ReachedAudit):
+                    run.build()
+                labels = [label for label, _ in calls]
+                self.assertEqual(labels, ["build"] if selection == "full" else ["build", "build-library"])
+                if selection != "full":
+                    self.assertNotIn("--test", calls[0][1])
+                    self.assertEqual(calls[1][1], library_build_command())
+                    receipt = json.loads((evidence / "library-artifact.json").read_text())
+                    self.assertEqual(receipt["archive"], str(library))
+                    self.assertRegex(receipt["sha256"], r"^[0-9a-f]{64}$")
+
+    def test_steering_golden_requires_its_own_captured_work_marker(self):
+        name = STEERING_CASES["rebirth_llm"][0]
+        marker = "F6B_GOLDEN compared_values=3360 "
+        self.assertEqual(CAPTURED_WORK_MARKERS[name], marker)
+        self.assertIn("--show-output", test_command("/tmp/binary", name))
+        rows = [json.loads(line) for line in events(name).splitlines()]
+        rows[2]["stdout"] = marker + "max_activation_delta=0 max_logit_delta=0\n"
+        check_test_events("\n".join(map(json.dumps, rows)), name)
+        for wrong in ("F6_GOLDEN activation_values=3840 ", "F6B_GOLDEN compared_values=0 ", ""):
+            rows[2]["stdout"] = wrong
+            with self.subTest(marker=wrong), self.assertRaisesRegex(RuntimeError, "missing captured"):
+                check_test_events("\n".join(map(json.dumps, rows)), name)
 
     def test_production_library_build_keeps_target_std_and_no_extra_tests(self):
         command = library_build_command()

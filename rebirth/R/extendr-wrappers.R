@@ -31,7 +31,7 @@ rebirth_live_submit <- function(ptr, prompts, chat, max_tokens, temperature, top
 
 rebirth_live_preflight <- function(ptr, config, max_tokens) .Call(wrap__rebirth_live_preflight, ptr, config, max_tokens)
 
-rebirth_async_state_ack <- function(ptr, job_id, state_id) .Call(wrap__rebirth_async_state_ack, ptr, job_id, state_id)
+rebirth_async_state_ack <- function(ptr, job_id, state_id, updates) .Call(wrap__rebirth_async_state_ack, ptr, job_id, state_id, updates)
 
 rebirth_async_poll <- function(ptr, job_id) .Call(wrap__rebirth_async_poll, ptr, job_id)
 

@@ -430,6 +430,8 @@ impl Drop for TraceContext {
 /// was the last handle) the backend.
 pub struct LoadedModel {
     ctx: Context,
+    pub(crate) steering_baseline: Option<crate::live_steering::SteeringBaseline>,
+    pub(crate) steering_restore_failed: std::cell::Cell<bool>,
 }
 
 /// A flat snapshot of the metadata the `llm` S3 object needs (`API-GRAMMAR.md`
@@ -749,6 +751,8 @@ impl LoadedModel {
         let context_length = unsafe { ffi::llama_n_ctx(ctx.as_ptr()) };
 
         Ok(LoadedModel {
+            steering_baseline: None,
+            steering_restore_failed: std::cell::Cell::new(false),
             ctx: Context {
                 ptr: ctx.into_raw(),
                 model,
@@ -887,7 +891,10 @@ fn load_impl(
         ptr: model_ptr,
         resolved_backend: req.backend,
         max_token_piece_bytes: 0,
-        probe_cache: Mutex::new(ProbeCache::default()),
+        // SAFETY: freshly loaded non-null model; scalar metadata query.
+        probe_cache: Mutex::new(ProbeCache::new(
+            unsafe { ffi::llama_model_n_layer(model_ptr.as_ptr()) }.max(0) as usize,
+        )),
         vision: None,
         _offload_devices: offload_devices,
         _backend: backend,
@@ -957,6 +964,8 @@ fn load_impl(
     let context_length = unsafe { ffi::llama_n_ctx(ctx.as_ptr()) };
 
     Ok(LoadedModel {
+        steering_baseline: None,
+        steering_restore_failed: std::cell::Cell::new(false),
         ctx: Context {
             ptr: ctx.into_raw(),
             model,

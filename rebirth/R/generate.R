@@ -136,8 +136,10 @@
 #' rejects the promise, and callbacks can block R while they run.
 #'
 #' `step` is one plain data-frame row: integer `state_id`, `prompt_id`,
-#' `token_pos`, `token_id`, `context_pos`, `source_pos`, character `source`, and
-#' double `elapsed`. Let P be the actual templated prompt token count and k the
+#' `token_pos`, `token_id`, `context_pos`, `source_pos`, character `source`,
+#' double `elapsed`, followed by integer `steering_revision`,
+#' `applied_after_state` and `effective_source_pos`. Let P be the actual
+#' templated prompt token count and k the
 #' generated position. The sampled token belongs at `context_pos = P + k`;
 #' the forward pass selecting it came from `source_pos = P + k - 1`.
 #' `source` is `"prompt"` for the first state and `"generated"` thereafter.
@@ -151,6 +153,32 @@
 #' attributes. Its token positions identify the source, not the sampled token.
 #' `layers = integer()` captures no activations; `NULL` explicitly selects all
 #' blocks. Selected residuals include interventions already applied to the handle.
+#'
+#' A callback may instead return exactly
+#' `list(steer = data.frame(intervention = 1L, coef = 0))` to change coefficients
+#' of existing steering entries. Indices address `m$interventions` (including
+#' intervening ablation entries); only steering entries may be updated. Partial
+#' replies retain other coefficients; an empty table or unchanged values do not
+#' advance the revision. Replies are validated atomically, including finite
+#' float32-range coefficients and finite summed layer vectors. Invalid replies
+#' reject with `relm_error_callback`, `callback = "on_state"`,
+#' `reason = "state_reply"`, preserving the original condition as `parent`.
+#'
+#' A changed reply to state k affects the decode of token k and sampling of
+#' token k+1, never the already sampled token k or historical KV entries.
+#' `attr(state, "steering")` is a worker-produced data frame with integer
+#' `intervention`, integer `layer` and double `coef`, sorted by original index.
+#' Its coefficients and the three audit columns describe the adapters actually
+#' used for the reported state. Baseline audit values are 0, 0 and 1. A change
+#' from state k advances the revision and becomes effective at source position
+#' P+k; a terminal reply has no promised later-state receipt. Zero removes that
+#' entry's contribution. Ablation still follows steering.
+#'
+#' The original adapters are restored before model ownership returns, including
+#' cancellation and failure. The R handle and other handles are unchanged; a
+#' subsequent fresh generation uses the original coefficients. Changing back
+#' during a running generation does not undo its earlier effects on KV history.
+#' Direction, layer and ablation changes are unavailable in this reply protocol.
 #'
 #' One state waits for acknowledgement. All earlier token events are delivered
 #' before `on_state`; the current token/text events and the next decode follow
@@ -269,7 +297,8 @@
 #'   already-open writable binary base `file()` connection. Requires
 #'   `async = TRUE`; see *Token streaming*.
 #' @param on_state `NULL` or a function receiving one live state; requires
-#'   background text-only generation. Return NULL; see *Live state observation*.
+#'   background text-only generation. Return NULL to continue or a coefficient
+#'   reply for existing steering entries; see *Live state observation*.
 #' @param layers Live capture block indices: integer() for logits only, NULL for
 #'   all blocks, or unique valid 1-based indices.
 #' @param components Live capture components, using [llm_trace()]'s meanings.

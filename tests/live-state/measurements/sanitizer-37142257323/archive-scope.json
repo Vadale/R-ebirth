@@ -1,0 +1,22 @@
+{
+  "raw_text_files": 742,
+  "binary_files_local_only": [
+    "controls/c_probe-instrumented.o",
+    "controls/c_probe-plain.o",
+    "controls/cpp_probe-instrumented.o",
+    "controls/cpp_probe-plain.o",
+    "controls/probe-instrumented",
+    "controls/probe-plain",
+    "cpu-callbacks/plain-check",
+    "cpu-callbacks/plain-main.o",
+    "cpu-callbacks/plain-stubs.o",
+    "cpu-callbacks/sanitized-check",
+    "cpu-callbacks/sanitized-main.o",
+    "cpu-callbacks/sanitized-stubs.o",
+    "graph-size-layout/graph-size",
+    "source-files.out"
+  ],
+  "archive_sha256": "f2294dcea0bed9443721f00e327db90852266ea8241e02f7010c5f015bf2f860",
+  "archive_bytes": 4327203,
+  "scope": "Raw UTF-8 receipts are losslessly archived. Probe binary bytes remain in the once-downloaded scratch folder, with full inventory hashes. Native object/archive/test executable bytes were not uploaded by the workflow; their digests remain runtime receipts."
+}

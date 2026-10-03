@@ -1,0 +1,2048 @@
+diff --git a/.github/workflows/nightly-memory-safety.yaml b/.github/workflows/nightly-memory-safety.yaml
+index 3d5422d..82c2cc7 100644
+--- a/.github/workflows/nightly-memory-safety.yaml
++++ b/.github/workflows/nightly-memory-safety.yaml
+@@ -16,11 +16,12 @@ on:
+         type: boolean
+         default: false
+       sanitizer_selection:
+-        description: Full sanitizer suite or only the new F6a live-state cases (also skips Valgrind)
++        description: Full suite, F6a live state, or F6b steering (scoped choices skip Valgrind)
+         type: choice
+         options:
+           - full
+           - live-only
++          - steering-only
+         default: full
+ 
+ name: nightly-memory-safety.yaml
+@@ -33,7 +34,7 @@ concurrency:
+ 
+ jobs:
+   valgrind-intervention:
+-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only') }}
++    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only') }}
+     runs-on: ubuntu-24.04
+     name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
+     timeout-minutes: 90
+diff --git a/API-GRAMMAR.md b/API-GRAMMAR.md
+index fc3cd81..df047e2 100644
+--- a/API-GRAMMAR.md
++++ b/API-GRAMMAR.md
+@@ -320,8 +320,9 @@ components = "residual", top = 20L, spill = TRUE, spill_dir = NULL` to
+ The exact F6a contract in [Phase 6 sections 3–5](docs/phase6-live-introspection-plan.md)
+ is binding, including state/source positions, errors, resource limits and spill
+ side effects. No new export name or R/Rust dependency is approved or needed.
+-F6a is implemented with local acceptance recorded in the implementation report;
+-remote acceptance remains pending. Approval itself is not a numerical result.
++F6a acceptance passed at6877c4d, including all nine ordinary checks and the
++independently verified scoped Linux sanitizer. F6b implementation is in progress;
++approval itself is not a numerical result.
+ 
+ A non-NULL on_state function requires async mode, one text prompt, no schema or
+ image input, and at most1024 requested tokens. Default layers capture no
+@@ -335,7 +336,8 @@ participating in a later removed stop suffix.
+ 
+ One outstanding state is acknowledged before token/text delivery for k and its
+ next decode. R callbacks run only on R's main thread, outside native locks.
+-F6a callback replies must be NULL. Calling llm_cancel inside on_state requests
++The accepted F6a increment used NULL-only replies; the F6b amendment below
++extends that response without changing ordering. Calling llm_cancel inside on_state requests
+ existing classed cancellation, not successful partial text. Existing on_token,
+ CSV, final promise/seed and busy/ownership rules remain intact. Delivered spill
+ proxies retain managed ownership; incomplete files are never published.
+diff --git a/docs/phase6-implementation.md b/docs/phase6-implementation.md
+index 98690d4..e6405ea 100644
+--- a/docs/phase6-implementation.md
++++ b/docs/phase6-implementation.md
+@@ -1,8 +1,9 @@
+ # Phase 6 implementation and validation
+ 
+ Status: in progress, 2026-10-03. F6a and F6b are authorized under D-041.
+-F6a is implemented and local acceptance passes; focused Linux sanitizer and
+-ordinary CI acceptance remain pending. F6b runtime is not implemented. The binding
++F6a acceptance is complete at6877c4d: local functional/resource/foreground gates,
++all nine ordinary checks and independently verified scoped Linux sanitizer.
++F6b runtime/R/FFI implementation is in progress and is not yet tested. The binding
+ contract is `phase6-live-introspection-plan.md`; F6b coefficient replies and
+ audit fields are finalized there before implementation. No new dependency,
+ vendor modification, model download or numerical tolerance is introduced.
+@@ -284,8 +285,6 @@ that total-process RSS equals the ledger. Raw sampling times are retained.
+ 
+ ## Remaining gates
+ 
+-- Actual focused Linux sanitizer execution for the15 new live cases, preserving
+-  instrumentation/negative controls and independently verifying raw receipts.
+ - F6b coefficient changes, revision/source audit, zero removal, history and
+   original-adapter restoration on all exit paths, with native reference checks.
+ - Final relevant CI and integration. Prior WP9/WP10/I1/maintenance acceptance
+@@ -370,3 +369,37 @@ initial mock-only prototype used `lib` and was corrected. These are parser/audit
+ controls, not native product execution. No runtime, flags, numerical bounds,
+ selected product test IDs or dependencies changed. Corrected remote acceptance
+ is still required; the existing R candidate continues without duplication.
++
++## F6a remote acceptance completed
++
++At exact source6877c4d, R37142228825 and Rust37142228867 passed all nine individual
++required checks. Sanitizer37142257323 passed all15 selected native live cases.
++Independent verification checked exact libtest names/results and downloaded
++stdout/stderr hashes, the3840value numerical-work receipt, production library
++binding and both declared Cargo/Arrow variants. All4Rust archives across3crates,
++269native compile/symbol receipts, build_cvec instrumentation,7callback runtime
++controls,68layout cases,4mixed faults and plain-control rejection were verified.
++All34 remote harness controls passed and2346source hashes matched.
++
++The once-downloaded inventory contains756files/45592746bytes, manifest
++3468f429ad1007cce3fe74fe6c732b7e99f6f014e9d8f0ac87a4f80c888b7b80.
++The742UTF-8 receipts are losslessly archived in measurements/sanitizer-37142257323;
++14probe binaries remain locally retained with size/hash inventory. Full native
++object/archive/test executable bytes were not uploaded by the workflow: their
++hashes remain runtime receipts while actual symbols, flags and test bytes were
++independently checked. Scope is exercised Linux CPU paths, not R/SEXP, GPU,
++vision, TSan or a universal absence-of-UB claim. All earlier failures remain
++failed. Collector-only assumptions about the production Arrow rmeta and local
++crate path were corrected before verification; no remote retry was needed.
++
++## F6b implementation boundary
++
++The authorized next increment adds exact coefficient replies for existing
++steering entries, actual worker revision/source metadata, atomic sum validation,
++zero-removal and original-adapter restoration. Original directions are copied
++once into shared immutable native slices. The existing three-layer independent
++reference is unchanged; its history-preserving path distinguishes a live update
++from prefix replay or ignoring zero. Existing F6a evidence retains its original
++source. New native/R tests, updated allocation twins and focused update-latency/
++foreground scripts are prepared, not yet executed. No dependency, vendor,
++public export name or numerical tolerance changes.
+diff --git a/docs/phase6-live-introspection-plan.md b/docs/phase6-live-introspection-plan.md
+index b2119f1..92dbc1a 100644
+--- a/docs/phase6-live-introspection-plan.md
++++ b/docs/phase6-live-introspection-plan.md
+@@ -1,7 +1,7 @@
+ # Phase 6 — Live introspection and steering contract
+ 
+-Date: 2026-10-03. Status: **F6a APPROVED under D-041; implemented with local acceptance passed,
+-remote acceptance pending.** The founder replied "ok. continua con F6a e F6b" to the
++Date: 2026-10-03. Status: **F6a APPROVED under D-041 and acceptance complete at6877c4d. F6b is authorized
++and its implementation is in progress; acceptance remains pending.** The founder replied "ok. continua con F6a e F6b" to the
+ concrete proposal. F6a's contract below is now binding in API-GRAMMAR section11.
+ Continuation into F6b is authorized; section6 finalizes its reply/audit protocol
+ before that increment's implementation. No dependency or acceptance result is
+diff --git a/docs/phase6-memory-contract.md b/docs/phase6-memory-contract.md
+index 54d7dea..20139c3 100644
+--- a/docs/phase6-memory-contract.md
++++ b/docs/phase6-memory-contract.md
+@@ -1,8 +1,10 @@
+ # Phase 6 allocation contract
+ 
+ Frozen design, 2026-10-03, under D-041 and the approved limits in
+-`phase6-live-introspection-plan.md` §5. Implementation and resource acceptance
+-are pending. This is an allocation ledger, not a total process-RSS guarantee.
++`phase6-live-introspection-plan.md` §5. F6a implementation and resource acceptance
++passed with the sources recorded in the implementation report. F6b's additional
++steering ledger is being implemented and is not yet accepted. This is an
++allocation ledger, not a total process-RSS guarantee.
+ 
+ ## State admission
+ 
+@@ -21,7 +23,7 @@ on this profile; unsupported profiles fail admission.
+ 
+ `F` is measured from complete empty state prototypes containing actual model
+ path, named prompt and attributes, plus empty interning and configuration
+-skeletons. The larger materialized/spill prototype includes maximum-width
++skeletons and the admitted original steering audit. The larger materialized/spill prototype includes maximum-width
+ coordinate/path/spec fields. F6b adds its step/audit/reply skeletons. Shared
+ objects may be counted more than once deliberately.
+ 
+@@ -58,7 +60,7 @@ assembly/attribute copies. The independent R interning payload is
+ `4*g(4*N)+g(8*N)+3*g(4*V)+g(8*C)+g(8)+ch(B)+sum(ch(component_bytes))`.
+ Assembly adds `2*r(4*N)+2*r(8*N)` for expanded label indices/pointer columns.
+ 
+-Native conversion arrays contribute `24*N+12*V+44*K` on the memory path
++Native conversion arrays contribute `24*N+12*V+44*K+16*S` on the memory path
+ (`N=V=0` for spilled conversion), plus explicit interning allocations.
+ Raw logits and unchanged sampler arrays contribute `20*vocabulary_size`.
+ Top-k rank/tuple/result capacities, decoded strings, and the temporary raw/display
+@@ -76,11 +78,30 @@ overlap in the accounting. Model weights, KV/backend memory, allocator overhead,
+ thread stacks and caller-retained/copied objects remain outside this envelope.
+ The requested lazy output slice/matrix is reported separately from transport.
+ 
+-F6b additionally counts immutable f64 directions (`8*H*S`), original and
+-candidate dense f32 layer buffers (`8*H*D`), one scaled vector (`4*H`), command,
+-coefficient and audit arrays (`52*S`), and compiled direction descriptors.
+-The R direction copy and normalized reply/index work are separate; none is
+-needed for F6a's NULL-only replies.
++For F6b let `D` be the total model layer count. With at least one existing steer,
++the additional component is independently calculated in R and Rust as:
++
++```
++F6b_owned_reply = 8*H*S + 8*H*D + 4*H + 52*S
++                 + steering_descriptor_bytes
++                 + r(8*H*S)
++                 + 2*F + 2*g(4*S) + 2*g(8*S) + 3*r(4*S) + r(8*S)
++```
++
++It is zero when `S=0`. The first terms cover immutable native f64 directions,
++original/candidate dense f32 buffers, one scaled vector, command/current and
++candidate coefficients/audit/probe-index arrays. Compiled descriptor sizes are
++reported separately and include owned vector headers and the FFI pending count.
++The R direction copy and reply/index work are separate from the two integer and
++one double FFI audit arrays (`16*S` above). These terms conservatively count
++overlapping retained audits and normalization temporaries. R caches the original
++audit at admission; state validation does not scan all interventions. Reply row
++count is checked against S before vectorized validation or normalization, so
++ablation entries cannot enlarge its workspace. Before copying any
++direction into Rust, shape admission checks `H*S` and the existing 8 MiB owned
++transport limit. Each admitted direction is copied directly into shared immutable
++storage; request clones do not duplicate it. Candidate adapter buffers remain in
++the full transient ledger even when their maximum lifetimes do not overlap.
+ 
+ ## Arrow and files
+ 
+diff --git a/rebirth/NEWS.md b/rebirth/NEWS.md
+index b9aaac7..d17a0ec 100644
+--- a/rebirth/NEWS.md
++++ b/rebirth/NEWS.md
+@@ -1,11 +1,12 @@
+ # relm (development)
+ 
+-## Live state observation (F6a)
++## Live state observation and coefficient steering (F6a/F6b)
+ 
+ * `llm_generate(async = TRUE, on_state = ...)` observes the raw distribution and
+   selected activations that produced each sampled token. Plain state/logit
+   tables and `relm_trace` chunks distinguish generated positions from model
+-  context source positions. The callback returns NULL and can cancel before
++  context source positions. The callback can continue with NULL or update coefficients of existing steering
++  entries, and can cancel before
+   another token is sampled; this is an observation/control mechanism, not a
+   validated detector or safety guarantee.
+ * One state waits for acknowledgement, with existing token events ordered
+@@ -15,6 +16,13 @@
+   outside the transport estimate. No dependency or exported function is added.
+ 
+ 
++* Coefficient replies are partial and atomic, affect only the next decode and
++  preserve prior KV history. Worker-produced coefficient/revision/source metadata
++  identifies what was applied; zero clears an entry's contribution. Original
++  adapters are restored on completion, cancellation and failure, preserving
++  immutable R handles. Live direction/layer/ablation changes are excluded.
++
++
+ ## Native graph storage
+ 
+ * Graph-storage sizing now uses integer offsets instead of arithmetic on a null
+diff --git a/rebirth/R/async.R b/rebirth/R/async.R
+index 0ab08fa..3f434f9 100644
+--- a/rebirth/R/async.R
++++ b/rebirth/R/async.R
+@@ -151,6 +151,8 @@ async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
+   job$live_state_id <- 0L
+   job$live_elapsed <- 0
+   job$live_prompt_count <- NULL
++  job$live_audit <- NULL
++  job$live_cancel_requested <- FALSE
+   job$structured <- !is.null(schema)
+   job$prompts_total <- length(prompt)
+   job$stream_event_id <- 0L
+@@ -313,6 +315,13 @@ async_poll <- function(job) {
+   } else {
+     error <- if (!is.null(job$callback_error)) job$callback_error else
+       async_payload_condition(payload$error)
++    if (!is.null(job$live) && is.null(job$callback_error) &&
++      identical(error$argument, "on_state_reply")) {
++      error <- async_condition("relm_error_callback",
++        "The live state reply was rejected; no generation result was returned.",
++        list(callback = "on_state", reason = "state_reply", parent = error,
++          job_id = job$id, state_id = job$live_state_id, prompt_id = 1L))
++    }
+     async_settle(job, error = error)
+   }
+   invisible(NULL)
+@@ -332,7 +341,7 @@ async_settle <- function(job, value = NULL, error = NULL) {
+   # Remove roots before invoking promise continuations; callbacks can create a
+   # subsequent job after native terminal collection without losing its roots.
+   job$timer <- job$callback <- job$model <- job$resolve <- job$reject <- job$stream <- job$live <- NULL
+-  job$last_progress <- job$callback_error <- job$names <- NULL
++  job$last_progress <- job$callback_error <- job$names <- job$live_audit <- NULL
+   if (is.null(error)) resolve(value) else reject(error)
+   invisible(NULL)
+ }
+@@ -414,5 +423,8 @@ llm_cancel <- function(m) {
+   }
+   ensure_open(m)
+   payload <- relm_check(rebirth_async_cancel(m$ptr))
++  job <- .relm_async$job
++  if (isTRUE(payload$cancelled) && !is.null(job) && !is.null(job$live) &&
++    identical(job$model$state, m$state)) job$live_cancel_requested <- TRUE
+   invisible(isTRUE(payload$cancelled))
+ }
+diff --git a/rebirth/R/generate.R b/rebirth/R/generate.R
+index d070b27..68a5ecf 100644
+--- a/rebirth/R/generate.R
++++ b/rebirth/R/generate.R
+@@ -136,8 +136,10 @@
+ #' rejects the promise, and callbacks can block R while they run.
+ #'
+ #' `step` is one plain data-frame row: integer `state_id`, `prompt_id`,
+-#' `token_pos`, `token_id`, `context_pos`, `source_pos`, character `source`, and
+-#' double `elapsed`. Let P be the actual templated prompt token count and k the
++#' `token_pos`, `token_id`, `context_pos`, `source_pos`, character `source`,
++#' double `elapsed`, followed by integer `steering_revision`,
++#' `applied_after_state` and `effective_source_pos`. Let P be the actual
++#' templated prompt token count and k the
+ #' generated position. The sampled token belongs at `context_pos = P + k`;
+ #' the forward pass selecting it came from `source_pos = P + k - 1`.
+ #' `source` is `"prompt"` for the first state and `"generated"` thereafter.
+@@ -152,6 +154,32 @@
+ #' `layers = integer()` captures no activations; `NULL` explicitly selects all
+ #' blocks. Selected residuals include interventions already applied to the handle.
+ #'
++#' A callback may instead return exactly
++#' `list(steer = data.frame(intervention = 1L, coef = 0))` to change coefficients
++#' of existing steering entries. Indices address `m$interventions` (including
++#' intervening ablation entries); only steering entries may be updated. Partial
++#' replies retain other coefficients; an empty table or unchanged values do not
++#' advance the revision. Replies are validated atomically, including finite
++#' float32-range coefficients and finite summed layer vectors. Invalid replies
++#' reject with `relm_error_callback`, `callback = "on_state"`,
++#' `reason = "state_reply"`, preserving the original condition as `parent`.
++#'
++#' A changed reply to state k affects the decode of token k and sampling of
++#' token k+1, never the already sampled token k or historical KV entries.
++#' `attr(state, "steering")` is a worker-produced data frame with integer
++#' `intervention`, integer `layer` and double `coef`, sorted by original index.
++#' Its coefficients and the three audit columns describe the adapters actually
++#' used for the reported state. Baseline audit values are 0, 0 and 1. A change
++#' from state k advances the revision and becomes effective at source position
++#' P+k; a terminal reply has no promised later-state receipt. Zero removes that
++#' entry's contribution. Ablation still follows steering.
++#'
++#' The original adapters are restored before model ownership returns, including
++#' cancellation and failure. The R handle and other handles are unchanged; a
++#' subsequent fresh generation uses the original coefficients. Changing back
++#' during a running generation does not undo its earlier effects on KV history.
++#' Direction, layer and ablation changes are unavailable in this reply protocol.
++#'
+ #' One state waits for acknowledgement. All earlier token events are delivered
+ #' before `on_state`; the current token/text events and the next decode follow
+ #' the callback. No state is emitted for EOG. Removed stop-suffix tokens still
+diff --git a/rebirth/R/live-state.R b/rebirth/R/live-state.R
+index e23e82e..efb9b09 100644
+--- a/rebirth/R/live-state.R
++++ b/rebirth/R/live-state.R
+@@ -72,20 +72,49 @@ live_empty_logits <- function() {
+ live_empty_step <- function() {
+   data.frame(state_id = 0L, prompt_id = 1L, token_pos = 0L, token_id = 0L,
+     context_pos = 0L, source_pos = 0L, source = "generated", elapsed = 0,
++    steering_revision = 0L, applied_after_state = 0L, effective_source_pos = 1L,
+     stringsAsFactors = FALSE)
+ }
+ 
+-live_reply <- function(reply) {
+-  if (!is.null(reply)) abort_argument("on_state",
+-    "The live observation callback must return NULL (use invisible(NULL)).")
+-  invisible(NULL)
++live_steering_table <- function(interventions) {
++  index <- which(vapply(interventions, function(x) identical(x$kind, "steer"), logical(1)))
++  data.frame(intervention = as.integer(index),
++    layer = vapply(interventions[index], function(x) as.integer(x$layer), integer(1)),
++    coef = vapply(interventions[index], function(x) as.double(x$coef), numeric(1)))
++}
++
++live_reply <- function(reply, interventions = list(),
++                       steering = live_steering_table(interventions)) {
++  if (is.null(reply)) return(NULL)
++  fail <- function() abort_argument("on_state",
++    "Return NULL or list(steer = data.frame(intervention, coef)) with unique existing steer indices and finite f32-range coefficients.")
++  if (!is.list(reply) || is.object(reply) || !identical(names(reply), "steer")) fail()
++  update <- reply$steer
++  if (!identical(class(update), "data.frame") ||
++    !identical(names(update), c("intervention", "coef"))) fail()
++  ids <- update$intervention
++  coef <- update$coef
++  # Bound every validation/normalization temporary before vectorized work.
++  # The prepared job supplies its admitted original audit; ablation entries
++  # never enlarge the coefficient-command workspace.
++  if (length(ids) != length(coef) || length(ids) != nrow(update) ||
++    length(ids) > nrow(steering)) fail()
++  plain_numeric <- function(x) is.numeric(x) && !is.complex(x) &&
++    !is.object(x) && is.null(dim(x)) && !anyNA(x) && all(is.finite(x))
++  if (!plain_numeric(ids) || !plain_numeric(coef) ||
++    any(ids != floor(ids) | ids < 1 | ids > .Machine$integer.max) ||
++    anyDuplicated(ids) || any(abs(coef) > 3.4028234663852886e38)) fail()
++  if (!length(ids)) return(NULL)
++  ids <- as.integer(ids)
++  if (any(!ids %in% steering$intervention)) fail()
++  data.frame(intervention = ids, coef = as.double(coef))
+ }
+ 
+ live_payload_state <- function(job, payload) {
+   step <- payload$step
+   columns <- names(live_empty_step())
+   good <- is.data.frame(step) && identical(names(step), columns) && nrow(step) == 1L &&
+-    all(vapply(step[seq_len(6L)], is.integer, logical(1))) &&
++    all(vapply(step[c(seq_len(6L), 9L:11L)], is.integer, logical(1))) &&
+     is.character(step$source) && is.double(step$elapsed) && !anyNA(step) &&
+     is.finite(step$elapsed) && step$elapsed >= job$live_elapsed &&
+     step$state_id == job$live_state_id + 1L && step$prompt_id == 1L &&
+@@ -96,6 +125,32 @@ live_payload_state <- function(job, payload) {
+   good <- good && is.integer(p) && length(p) == 1L && !is.na(p) && p >= 1L &&
+     step$source_pos == p + step$state_id - 1L &&
+     (is.null(job$live_prompt_count) || identical(p, job$live_prompt_count))
++  steering <- payload$steering
++  original <- job$live$original_steering
++  good <- good && identical(class(steering), "data.frame") &&
++    identical(names(steering), c("intervention", "layer", "coef")) &&
++    is.integer(steering$intervention) && is.integer(steering$layer) &&
++    is.double(steering$coef) && !anyNA(steering) && all(is.finite(steering$coef)) &&
++    identical(steering$intervention, original$intervention) &&
++    identical(steering$layer, original$layer)
++  if (isTRUE(good) && step$state_id == 1L) {
++    good <- identical(step$steering_revision, 0L) &&
++      identical(step$applied_after_state, 0L) && identical(step$effective_source_pos, 1L) &&
++      identical(steering$coef, original$coef)
++  } else if (isTRUE(good)) {
++    previous <- job$live_audit
++    good <- !is.null(previous) &&
++      step$steering_revision %in% c(previous$revision, previous$revision + 1L)
++    if (isTRUE(good) && step$steering_revision == previous$revision) {
++      good <- identical(step$applied_after_state, previous$after) &&
++        identical(step$effective_source_pos, previous$position) &&
++        identical(steering, previous$steering)
++    } else if (isTRUE(good)) {
++      good <- step$applied_after_state == step$state_id - 1L &&
++        step$effective_source_pos == step$source_pos &&
++        !identical(steering$coef, previous$steering$coef)
++    }
++  }
+   if (!isTRUE(good)) relm_abort("relm_error_internal",
+     "The live state violates its sequence or source-position contract.",
+     list(reason = "live_protocol", job_id = job$id))
+@@ -112,6 +167,7 @@ live_payload_state <- function(job, payload) {
+     attr(trace, "live_batch_bytes") <- payload$trace$batch_bytes
+   }
+   result <- list(step = step, logits = payload$logits, trace = trace)
++  attr(result, "steering") <- steering
+   if (!is.null(job$live$estimate)) {
+     bound <- if (isTRUE(attr(trace, "spilled"))) job$live$estimate$logits_bytes else
+       job$live$estimate$materialized_bytes
+@@ -124,6 +180,8 @@ live_payload_state <- function(job, payload) {
+   job$live_state_id <- step$state_id
+   job$live_elapsed <- step$elapsed
+   job$live_prompt_count <- p
++  job$live_audit <- list(revision = step$steering_revision,
++    after = step$applied_after_state, position = step$effective_source_pos, steering = steering)
+   result
+ }
+ 
+@@ -140,17 +198,27 @@ live_deliver <- function(job, payload) {
+   reply <- tryCatch(job$live$callback(state), error = function(e) {
+     fail(e); NULL
+   }, interrupt = function(e) { fail(e); NULL })
+-  if (!is.null(job$callback_error) || job$model$state$closed) return(invisible(NULL))
+-  valid <- tryCatch({ live_reply(reply); TRUE }, error = function(e) {
++  if (!is.null(job$callback_error) || job$model$state$closed ||
++    isTRUE(job$live_cancel_requested)) return(invisible(NULL))
++  command <- NULL
++  valid <- tryCatch({
++    command <- live_reply(reply, steering = job$live$original_steering)
++    TRUE
++  }, error = function(e) {
+     fail(e, "state_reply"); FALSE
+   })
+-  if (valid) relm_check(rebirth_async_state_ack(job$model$ptr, job$id, state$step$state_id))
++  if (valid) tryCatch(
++    relm_check(rebirth_async_state_ack(job$model$ptr, job$id, state$step$state_id, command)),
++    error = function(e) {
++      if (identical(e$argument, "on_state_reply")) fail(e, "state_reply") else stop(e)
++    })
+   invisible(NULL)
+ }
+ 
+ # Measure fixed headers and actual retained metadata before the seed draw. The
+ # numeric/string payload growth is counted separately by the twin native bound.
+-live_fixed_bytes <- function(config, m, prompt) {
++live_fixed_bytes <- function(config, m, prompt,
++                             original_steering = live_steering_table(m$interventions)) {
+   integer_profile <- vapply(c(0L, 1L, 3L, 5L, 9L, 17L),
+     function(n) as.numeric(object.size(integer(n))), numeric(1))
+   if (.Machine$sizeof.pointer != 8L ||
+@@ -182,7 +250,9 @@ live_fixed_bytes <- function(config, m, prompt) {
+   attr(spilled, "live_source_pos") <- 2147483647L
+   attr(spilled, "live_batch_rows") <- relm_live_batch_rows
+   attr(spilled, "live_batch_bytes") <- 0
+-  empty <- function(trace) list(step = live_empty_step(), logits = live_empty_logits(), trace = trace)
++  empty <- function(trace) structure(
++    list(step = live_empty_step(), logits = live_empty_logits(), trace = trace),
++    steering = live_steering_table(list()))
+   # Include the empty interning payload and submission descriptors, even though
+   # not every skeleton coexists. Variable row codes are in the separate formula.
+   interned <- list(ok = TRUE, spilled = FALSE, positions_recycled = FALSE,
+@@ -191,7 +261,8 @@ live_fixed_bytes <- function(config, m, prompt) {
+     component_codes = integer(), token_levels = character(), token_codes = integer(),
+     row_nneuron = integer())
+   max(as.numeric(object.size(empty(memory))), as.numeric(object.size(empty(spilled)))) +
+-    as.numeric(object.size(interned)) + as.numeric(object.size(config))
++    as.numeric(object.size(interned)) + as.numeric(object.size(config)) +
++    as.numeric(object.size(original_steering))
+ }
+ 
+ live_config_strings <- function(config) {
+@@ -213,6 +284,12 @@ live_prepare <- function(live, m, prompt, max_tokens) {
+     r_fixed_bytes = 0, spill = live$spill, spill_dir = dir, trace_id = id,
+     model = m$path, spec_key = paste0("live-v1|",
+       trace_spec_key(m, prompt, live$layers, "last", live$components)))
++  steering <- live_steering_table(m$interventions)
++  config$steering <- lapply(steering$intervention, function(index) {
++    iv <- m$interventions[[index]]
++    list(intervention = index, layer = as.integer(iv$layer), coef = as.double(iv$coef),
++      direction = as.double(iv$direction))
++  })
+   for (name in c("spill_dir", "trace_id", "model", "spec_key")) {
+     text <- config[[name]]
+     if (Encoding(text) == "bytes" || !validUTF8(enc2utf8(text))) {
+@@ -224,10 +301,10 @@ live_prepare <- function(live, m, prompt, max_tokens) {
+   # caller then checks its aggregate with all ordinary normalized arguments.
+   async_validate_inputs(character(), character(), NULL, NULL,
+     max_tokens, 0, 0, live_config_strings(config))
+-  config$r_fixed_bytes <- live_fixed_bytes(config, m, prompt)
++  config$r_fixed_bytes <- live_fixed_bytes(config, m, prompt, steering)
+   estimate <- relm_check(rebirth_live_preflight(m$ptr, config, as.integer(max_tokens)))
+   twin <- live_memory_bound(m$hidden_size, live$layers, live$components,
+-    live$top, estimate$max_piece_bytes, config$r_fixed_bytes)
++    live$top, estimate$max_piece_bytes, config$r_fixed_bytes, nrow(steering))
+   if (!identical(as.double(estimate$materialized_bytes), as.double(twin$materialized_bytes)) ||
+     !identical(as.double(estimate$logits_bytes), as.double(twin$logits_bytes))) {
+     relm_abort("relm_error_internal", "R and native live allocation estimates differ.",
+@@ -235,6 +312,7 @@ live_prepare <- function(live, m, prompt, max_tokens) {
+   }
+   live$peak_bound <- live_transport_peak_bound(estimate, config, m, max_tokens, prompt)
+   live$native_config <- config
++  live$original_steering <- steering
+   live$estimate <- estimate
+   live$prompt <- prompt
+   live
+@@ -285,7 +363,7 @@ live_transport_peak_bound <- function(estimate, config, m, max_tokens, prompt) {
+   fields <- c("materialized_bytes", "logits_bytes", "transient_bytes",
+     "native_fixed_bytes", "ffi_intern_bytes", "native_logits_bytes",
+     "capture_writer_bytes", "wp10_peak_bytes", "r_payload_bytes",
+-    "r_assembly_bytes", "max_piece_bytes")
++    "r_assembly_bytes", "max_piece_bytes", "steering_bytes", "steering_descriptor_bytes")
+   good <- all(vapply(fields, function(name) {
+     value <- estimate[[name]]
+     is.numeric(value) && !is.complex(value) && length(value) == 1L &&
+@@ -304,11 +382,18 @@ live_transport_peak_bound <- function(estimate, config, m, max_tokens, prompt) {
+     chars(estimate$max_piece_bytes) + sum(chars(nchar(config$components, type = "bytes")))
+   assembly <- if (estimate$spilled) 0 else 2 * live_r_vector_bytes(4 * n) + 2 * live_r_vector_bytes(8 * n)
+   wp10 <- stream_transport_peak_bound()$total_bytes
++  s <- length(config$steering)
++  h <- m$hidden_size
++  steering <- if (s == 0L) 0 else 8 * h * s + 8 * h * m$layers + 4 * h + 52 * s +
++    estimate$steering_descriptor_bytes + live_r_vector_bytes(8 * h * s) +
++    2 * config$r_fixed_bytes + 2 * g(4 * s) + 2 * g(8 * s) +
++    3 * live_r_vector_bytes(4 * s) + live_r_vector_bytes(8 * s)
++  if (!is.finite(steering) || steering >= 2^53 || steering != estimate$steering_bytes) fail()
+   r_mode <- if (estimate$spilled) estimate$logits_bytes else estimate$materialized_bytes
+   components <- c(r_state_copies = 2 * r_mode, r_payload = r_payload,
+-    r_assembly = assembly, ffi_native = 24 * n + 12 * vectors + 44 * config$top + estimate$ffi_intern_bytes,
++    r_assembly = assembly, ffi_native = 24 * n + 12 * vectors + 44 * config$top + 16 * s + estimate$ffi_intern_bytes,
+     native_logits = estimate$native_logits_bytes, capture_writer = estimate$capture_writer_bytes,
+-    native_fixed = estimate$native_fixed_bytes, wp10 = wp10)
++    native_fixed = estimate$native_fixed_bytes, steering = steering, wp10 = wp10)
+   total <- sum(components)
+   if (!is.finite(total) || total >= 2^53 ||
+     total != estimate$transient_bytes || r_payload != estimate$r_payload_bytes ||
+diff --git a/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs
+index 8edc60b..90cd447 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs
+@@ -31,7 +31,7 @@ struct ActiveJob {
+     completion: Option<AsyncCompletion>,
+     streaming: bool,
+     live: bool,
+-    live_pending: Option<(u64, usize)>,
++    live_pending: Option<(u64, usize, usize)>,
+     discarded: bool,
+     seed: u64,
+ }
+@@ -372,7 +372,11 @@ fn async_submit(
+         }
+         let compiled = schema_text.map(CompiledSchema::compile).transpose()?;
+         let image_sets = split_image_sets(owned_strings(&images_flat), images_lens, prompts.len())?;
+-        let live = parse_live_request(&live)?;
++        let live = if live.is_null() {
++            None
++        } else {
++            handle.run(|model| parse_live_request(&live, &model.metadata(), max_tokens as usize))?
++        };
+         let is_live = live.is_some();
+         let request = AsyncRequest {
+             prompts: owned_strings(&prompts),
+@@ -516,7 +520,7 @@ fn finish_active(
+     let mut completion = active.completion.take().expect("collected completion");
+     {
+         let _bound = completion.permit.enter();
+-        if completion.panicked {
++        if completion.panicked || completion.model_invalidated {
+             handle.state.closed.set(true);
+         }
+         if handle.is_closed() {
+@@ -621,7 +625,8 @@ fn rebirth_async_poll(ptr: Robj, job_id: &str) -> Robj {
+                     None
+                 };
+                 if let Some(state) = live_state.as_ref() {
+-                    active.live_pending = Some((state.job_id, state.state_id));
++                    active.live_pending =
++                        Some((state.job_id, state.state_id, state.steering.len()));
+                 }
+                 Ok((
+                     None,
+diff --git a/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs
+index 29e8853..c00615f 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs
+@@ -1,6 +1,6 @@
+ // D-041: R-only admission/conversion and identity-correlated acknowledgement.
+ // The worker's owned LiveState never contains an R object or callback.
+-use rebirth_llm::{LiveRequest, LiveState, LiveTrace};
++use rebirth_llm::{LiveCoefficient, LiveRequest, LiveState, LiveSteer, LiveTrace, ModelMetadata};
+ 
+ fn live_protocol(reason: &str) -> RebirthError {
+     RebirthError::Internal {
+@@ -36,7 +36,12 @@ fn live_state_payload(state: LiveState) -> Result<Robj, RebirthError> {
+             context_pos = from_engine_index(state.context_pos),
+             source_pos = from_engine_index(state.source_pos),
+             source = if state_id == 1 { "prompt" } else { "generated" },
+-            elapsed = state.elapsed
++            elapsed = state.elapsed,
++            steering_revision = i32::try_from(state.steering_revision)
++                .map_err(|_| live_protocol("steering revision overflow"))?,
++            applied_after_state = i32::try_from(state.applied_after_state)
++                .map_err(|_| live_protocol("applied state overflow"))?,
++            effective_source_pos = from_engine_index(state.effective_source_pos)
+         )
+         .into(),
+         1,
+@@ -86,29 +91,50 @@ fn live_state_payload(state: LiveState) -> Result<Robj, RebirthError> {
+             List::from_pairs(pairs).into()
+         }
+     };
++    let steering = live_data_frame(
++        list!(
++            intervention = state
++                .steering
++                .iter()
++                .map(|r| from_engine_index(r.intervention))
++                .collect::<Vec<_>>(),
++            layer = state
++                .steering
++                .iter()
++                .map(|r| from_engine_index(r.layer))
++                .collect::<Vec<_>>(),
++            coef = state.steering.iter().map(|r| r.coef).collect::<Vec<_>>()
++        )
++        .into(),
++        state.steering.len(),
++    )?;
+     Ok(list!(
+         step = step,
+         logits = logits,
+         trace = trace,
+-        prompt_token_count = prompt_count
++        prompt_token_count = prompt_count,
++        steering = steering
+     )
+     .into())
+ }
+ 
+ #[extendr]
+-fn rebirth_async_state_ack(ptr: Robj, job_id: &str, state_id: i32) -> Robj {
++fn rebirth_async_state_ack(ptr: Robj, job_id: &str, state_id: i32, updates: Robj) -> Robj {
+     resolve(catch_unwind(AssertUnwindSafe(|| {
+         let handle = checked_handle(&ptr)?;
+         ACTIVE_JOB.with(|slot| {
+             let mut slot = slot.borrow_mut();
+             let active = active_for(&mut slot, handle, job_id)?;
+-            let (native_id, pending_id) = active
++            let (native_id, pending_id, steer_count) = active
+                 .live_pending
+                 .ok_or_else(|| live_protocol("no delivered state awaiting acknowledgement"))?;
+             if state_id < 1 || state_id as usize != pending_id {
+                 return Err(live_protocol("stale or wrong state acknowledgement"));
+             }
+-            active.job.ack_state(native_id, pending_id)?;
++            let command = parse_live_reply(&updates, steer_count)?;
++            active
++                .job
++                .ack_state_with_reply(native_id, pending_id, command)?;
+             active.live_pending = None;
+             Ok::<_, RebirthError>(())
+         })?;
+@@ -116,6 +142,46 @@ fn rebirth_async_state_ack(ptr: Robj, job_id: &str, state_id: i32) -> Robj {
+     })))
+ }
+ 
++fn parse_live_reply(
++    value: &Robj,
++    steer_count: usize,
++) -> Result<Vec<LiveCoefficient>, RebirthError> {
++    let invalid = || async_argument("on_state_reply", "invalid coefficient reply");
++    if value.is_null() {
++        return Ok(Vec::new());
++    }
++    let list = value.as_list().ok_or_else(invalid)?;
++    if list.len() != 2
++        || list.names().map(|n| n.collect::<Vec<_>>()) != Some(vec!["intervention", "coef"])
++    {
++        return Err(invalid());
++    }
++    let indices = list.elt(0).map_err(|_| invalid())?;
++    let coefficients = list.elt(1).map_err(|_| invalid())?;
++    let ids = indices.as_integer_slice().ok_or_else(invalid)?;
++    let coefs = coefficients.as_real_slice().ok_or_else(invalid)?;
++    if ids.len() != coefs.len()
++        || ids.len() > steer_count
++        || ids
++            .iter()
++            .enumerate()
++            .any(|(i, &id)| id < 1 || ids[..i].contains(&id))
++        || coefs
++            .iter()
++            .any(|x| !x.is_finite() || x.abs() > f32::MAX as f64)
++    {
++        return Err(invalid());
++    }
++    let mut command = Vec::with_capacity(ids.len());
++    for (&id, &coef) in ids.iter().zip(coefs) {
++        command.push(LiveCoefficient {
++            intervention: (id - 1) as u32,
++            coef,
++        });
++    }
++    Ok(command)
++}
++
+ // Inspect borrowed R strings before building any owned live metadata. The
+ // caller includes these four descriptors in the shared ordinary request cap.
+ fn inspect_live_strings(value: &Robj, total: &mut usize) -> Result<usize, RebirthError> {
+@@ -138,7 +204,11 @@ fn inspect_live_strings(value: &Robj, total: &mut usize) -> Result<usize, Rebirt
+     Ok(4)
+ }
+ 
+-fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError> {
++fn parse_live_request(
++    value: &Robj,
++    metadata: &ModelMetadata,
++    max_tokens: usize,
++) -> Result<Option<LiveRequest>, RebirthError> {
+     if value.is_null() {
+         return Ok(None);
+     }
+@@ -157,6 +227,7 @@ fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError>
+         "trace_id",
+         "model",
+         "spec_key",
++        "steering",
+     ];
+     let names: Vec<_> = list.iter().map(|(name, _)| name.to_string()).collect();
+     if names.len() != expected.len()
+@@ -229,7 +300,7 @@ fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError>
+     let spill = spill_value
+         .as_bool()
+         .ok_or_else(|| async_argument("spill", "expected nonmissing logical"))?;
+-    Ok(Some(LiveRequest {
++    let mut request = LiveRequest {
+         layers,
+         components,
+         top: integer("top")? as usize,
+@@ -240,18 +311,84 @@ fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError>
+         trace_id: text("trace_id")?,
+         model: text("model")?,
+         spec_key: text("spec_key")?,
+-    }))
++        steering: Vec::new(),
++    };
++    let steering_value = field("steering")?;
++    let steering = steering_value
++        .as_list()
++        .ok_or_else(|| async_argument("on_state", "expected steering entries"))?;
++    let values = steering
++        .len()
++        .checked_mul(metadata.hidden_size.max(0) as usize)
++        .ok_or_else(|| async_argument("on_state", "steering shape overflow"))?;
++    request.preflight_with_steering_shape(metadata, max_tokens, steering.len(), values)?;
++    // Validate every borrowed R vector before allocating any immutable direction copy.
++    let entry = |value: &Robj| -> Result<(u32, u32, f64, Robj), RebirthError> {
++        let invalid = || async_argument("on_state", "invalid original steering entry");
++        let row = value.as_list().ok_or_else(invalid)?;
++        let names: Vec<_> = row.iter().map(|(n, _)| n).collect();
++        if names != ["intervention", "layer", "coef", "direction"] {
++            return Err(invalid());
++        }
++        let get = |i| row.elt(i).map_err(|_| invalid());
++        let index_value = get(0)?;
++        let layer_value = get(1)?;
++        let coef_value = get(2)?;
++        let index = index_value.as_integer().ok_or_else(invalid)?;
++        let layer = layer_value.as_integer().ok_or_else(invalid)?;
++        let coef = coef_value.as_real().ok_or_else(invalid)?;
++        let direction = get(3)?;
++        let numbers = direction.as_real_slice().ok_or_else(invalid)?;
++        if index_value.len() != 1
++            || layer_value.len() != 1
++            || coef_value.len() != 1
++            || index < 1
++            || layer < 1
++            || layer > metadata.layers
++            || !coef.is_finite()
++            || numbers.len() != metadata.hidden_size as usize
++            || numbers.iter().any(|x| !x.is_finite())
++        {
++            return Err(invalid());
++        }
++        Ok(((index - 1) as u32, (layer - 1) as u32, coef, direction))
++    };
++    let mut previous = None;
++    for (_, value) in steering.iter() {
++        let (index, _, _, _) = entry(&value)?;
++        if previous.is_some_and(|p| index <= p) {
++            return Err(async_argument("on_state", "steering indices must increase"));
++        }
++        previous = Some(index);
++    }
++    request.steering = Vec::with_capacity(steering.len());
++    for (_, value) in steering.iter() {
++        let (intervention, layer, coef, direction) = entry(&value)?;
++        request.steering.push(LiveSteer {
++            intervention,
++            layer,
++            coef,
++            direction: std::sync::Arc::<[f64]>::from(
++                direction
++                    .as_real_slice()
++                    .ok_or_else(|| live_protocol("validated direction disappeared"))?,
++            ),
++        });
++    }
++    request.preflight(metadata, max_tokens)?;
++    Ok(Some(request))
+ }
+ 
+ #[extendr]
+ fn rebirth_live_preflight(ptr: Robj, config: Robj, max_tokens: i32) -> Robj {
+     with_model(&ptr, |model| {
+-        let request = parse_live_request(&config)?
+-            .ok_or_else(|| async_argument("on_state", "missing live configuration"))?;
+         if max_tokens < 1 {
+             return Err(async_argument("max_tokens", "expected positive count"));
+         }
+-        let estimate = request.preflight(&model.metadata(), max_tokens as usize)?;
++        let metadata = model.metadata();
++        let request = parse_live_request(&config, &metadata, max_tokens as usize)?
++            .ok_or_else(|| async_argument("on_state", "missing live configuration"))?;
++        let estimate = request.preflight(&metadata, max_tokens as usize)?;
+         Ok(list!(
+             ok = true,
+             materialized_bytes = estimate.materialized_bytes as f64,
+@@ -275,7 +412,9 @@ fn rebirth_live_preflight(ptr: Robj, config: Robj, max_tokens: i32) -> Robj {
+             r_assembly_bytes = estimate.r_assembly_bytes as f64,
+             native_logits_bytes = estimate.native_logits_bytes as f64,
+             capture_writer_bytes = estimate.capture_writer_bytes as f64,
+-            wp10_peak_bytes = estimate.wp10_peak_bytes as f64
++            wp10_peak_bytes = estimate.wp10_peak_bytes as f64,
++            steering_bytes = estimate.steering_bytes as f64,
++            steering_descriptor_bytes = estimate.steering_descriptor_bytes as f64
+         )
+         .into())
+     })
+diff --git a/rebirth/src/rust/rebirth-llm/src/async_job.rs b/rebirth/src/rust/rebirth-llm/src/async_job.rs
+index bb23ef7..89d7022 100644
+--- a/rebirth/src/rust/rebirth-llm/src/async_job.rs
++++ b/rebirth/src/rust/rebirth-llm/src/async_job.rs
+@@ -182,15 +182,19 @@ struct LiveSlot {
+     drained: bool,
+     next_id: usize,
+     discarded: bool,
++    reply: Option<crate::LiveReply>,
++    steer_count: usize,
+ }
+ impl LiveSlot {
+-    fn new() -> Self {
++    fn new(steer_count: usize) -> Self {
+         Self {
+             pending: None,
+             outstanding: None,
+             drained: false,
+             next_id: 1,
+             discarded: false,
++            reply: None,
++            steer_count,
+         }
+     }
+ }
+@@ -234,6 +238,8 @@ struct Control {
+     queue_waiter: Mutex<Option<std::sync::mpsc::Sender<()>>>,
+     #[cfg(test)]
+     live_published: Mutex<Option<std::sync::mpsc::Sender<(u64, usize)>>>,
++    #[cfg(test)]
++    steering_fault: std::sync::atomic::AtomicU8,
+ }
+ /// Compiled object storage used by the live preflight ledger. Arc strong/weak
+ /// counters are explicit; StreamQueue payload capacity is in WP10's ledger.
+@@ -261,6 +267,8 @@ impl Control {
+             queue_waiter: Mutex::new(TEST_QUEUE_WAITER.with(|slot| slot.borrow_mut().take())),
+             #[cfg(test)]
+             live_published: Mutex::new(TEST_LIVE_PUBLISHED.with(|slot| slot.borrow_mut().take())),
++            #[cfg(test)]
++            steering_fault: std::sync::atomic::AtomicU8::new(0),
+             cancel: AtomicBool::new(false),
+             seed: request.params.seed,
+             space: Condvar::new(),
+@@ -280,7 +288,10 @@ impl Control {
+                 cancellation_accepted: false,
+                 committed_output: 0,
+                 stream: request.stream.then(StreamQueue::new),
+-                live: request.live.as_ref().map(|_| LiveSlot::new()),
++                live: request
++                    .live
++                    .as_ref()
++                    .map(|live| LiveSlot::new(live.steering.len())),
+             }),
+         }
+     }
+@@ -376,7 +387,10 @@ impl Control {
+         });
+         Ok(())
+     }
+-    fn publish_live(&self, mut payload: crate::LiveState) -> Result<(), RebirthError> {
++    fn publish_live(
++        &self,
++        mut payload: crate::LiveState,
++    ) -> Result<crate::LiveReply, RebirthError> {
+         let mut state = self.lock();
+         if state.cancellation_accepted {
+             return Err(self.cancelled(&state));
+@@ -417,8 +431,10 @@ impl Control {
+                 // waits for filesystem metadata/unlink on this worker.
+                 let error = self.cancelled(&state);
+                 let abandoned = state.live.as_mut().and_then(|live| live.pending.take());
++                let reply = state.live.as_mut().and_then(|live| live.reply.take());
+                 drop(state);
+                 drop(abandoned);
++                drop(reply);
+                 return Err(error);
+             }
+             if state
+@@ -426,7 +442,11 @@ impl Control {
+                 .as_ref()
+                 .is_some_and(|live| live.outstanding.is_none())
+             {
+-                return Ok(());
++                return Ok(state
++                    .live
++                    .as_mut()
++                    .and_then(|live| live.reply.take())
++                    .unwrap_or_default());
+             }
+             #[cfg(test)]
+             if let Some(waiter) = self.queue_waiter.lock().unwrap().take() {
+@@ -451,6 +471,7 @@ impl Control {
+         if result.is_err() {
+             if let Some(live) = state.live.as_mut() {
+                 abandoned = live.pending.take();
++                live.reply.take();
+                 live.discarded = true;
+             }
+             if let Some(stream) = state.stream.as_mut() {
+@@ -552,7 +573,7 @@ fn with_control<T>(f: impl FnOnce(Option<&Control>) -> T) -> T {
+ pub(crate) fn checkpoint() -> Result<(), RebirthError> {
+     with_control(|control| control.map_or(Ok(()), Control::checkpoint))
+ }
+-pub(crate) fn publish_live(payload: crate::LiveState) -> Result<(), RebirthError> {
++pub(crate) fn publish_live(payload: crate::LiveState) -> Result<crate::LiveReply, RebirthError> {
+     with_control(|control| {
+         control
+             .ok_or_else(|| RebirthError::Internal {
+@@ -561,6 +582,29 @@ pub(crate) fn publish_live(payload: crate::LiveState) -> Result<(), RebirthError
+             .publish_live(payload)
+     })
+ }
++#[cfg(test)]
++pub(crate) fn live_steering_fault() -> u8 {
++    with_control(|control| {
++        control.map_or(0, |control| control.steering_fault.load(Ordering::Acquire))
++    })
++}
++/// Linearize a validated worker command with cancellation acceptance. No R
++/// callback or decode runs under this mutex; only the synchronous adapter setter.
++pub(crate) fn apply_live_command(
++    apply: impl FnOnce() -> Result<(), RebirthError>,
++) -> Result<(), RebirthError> {
++    with_control(|control| {
++        if let Some(control) = control {
++            let state = control.lock();
++            if state.cancellation_accepted || state.terminal {
++                return Err(control.cancelled(&state));
++            }
++            apply()
++        } else {
++            apply()
++        }
++    })
++}
+ #[cfg(feature = "spill")]
+ pub(crate) fn live_cancel() -> Option<Arc<crate::live_spill::LiveCancel>> {
+     with_control(|control| control.map(|c| c.live_cancel.clone()))
+@@ -688,6 +732,7 @@ pub struct AsyncCompletion {
+     pub result: Result<Vec<Generation>, RebirthError>,
+     pub permit: ExecutionPermit,
+     pub panicked: bool,
++    pub model_invalidated: bool,
+ }
+ impl Drop for AsyncCompletion {
+     fn drop(&mut self) {
+@@ -850,7 +895,12 @@ impl AsyncJob {
+                         })
+                     }
+                 };
+-                worker_control.publish(&mut result, panicked);
++                let model_invalidated=model.as_ref().is_some_and(|model|model.steering_restore_failed.get());
++                if model_invalidated {
++                    model.take();
++                    result=Err(RebirthError::Intervention {reason:"Restoring the original steering adapter failed; the affected handle was closed.".into()});
++                }
++                worker_control.publish(&mut result, panicked || model_invalidated);
+                 CONTROL.with(|slot| slot.borrow_mut().take());
+                 CAUGHT_WORKER.with(|flag| flag.set(false));
+                 drop(bound);
+@@ -859,6 +909,7 @@ impl AsyncJob {
+                     result,
+                     permit,
+                     panicked,
++                    model_invalidated,
+                 }
+             }) {
+             Ok(worker) => Ok(Self {
+@@ -945,7 +996,16 @@ impl AsyncJob {
+         Some(payload)
+     }
+     pub fn ack_state(&self, job_id: u64, state_id: usize) -> Result<(), RebirthError> {
++        self.ack_state_with_reply(job_id, state_id, Vec::new())
++    }
++    pub fn ack_state_with_reply(
++        &self,
++        job_id: u64,
++        state_id: usize,
++        reply: crate::LiveReply,
++    ) -> Result<(), RebirthError> {
+         let mut state = self.control.lock();
++        let cancelled = state.cancellation_accepted;
+         let live = state.live.as_mut().ok_or_else(|| RebirthError::Internal {
+             context: "state acknowledgement on non-live job".into(),
+         })?;
+@@ -956,6 +1016,14 @@ impl AsyncJob {
+         }
+         // A matching acknowledgement remains valid after callback cancellation;
+         // cancellation wins the producer predicate before token/text publication.
++        if !cancelled {
++            if reply.len() > live.steer_count || reply.capacity() > live.steer_count {
++                return Err(crate::live_steering::reply_error(
++                    "Reply allocation exceeds the admitted steering entry count.",
++                ));
++            }
++            live.reply = Some(reply);
++        }
+         live.outstanding = None;
+         live.drained = false;
+         self.control.space.notify_all();
+@@ -1186,6 +1254,8 @@ mod tests {
+         assert_eq!(counter.load(Ordering::Relaxed), 513);
+     }
+ 
++    include!("live_steering_tests.rs");
++
+     fn request() -> AsyncRequest {
+         AsyncRequest {
+             prompts: vec!["fixture".into()],
+@@ -1245,6 +1315,10 @@ mod tests {
+             prompt_token_count: 2,
+             elapsed: 0.0,
+             logits: vec![],
++            steering_revision: 0,
++            applied_after_state: 0,
++            effective_source_pos: 0,
++            steering: vec![],
+             trace: crate::LiveTrace::Memory(vec![]),
+         }
+     }
+diff --git a/rebirth/src/rust/rebirth-llm/src/engine.rs b/rebirth/src/rust/rebirth-llm/src/engine.rs
+index cbc1975..8c0be74 100644
+--- a/rebirth/src/rust/rebirth-llm/src/engine.rs
++++ b/rebirth/src/rust/rebirth-llm/src/engine.rs
+@@ -430,6 +430,8 @@ impl Drop for TraceContext {
+ /// was the last handle) the backend.
+ pub struct LoadedModel {
+     ctx: Context,
++    pub(crate) steering_baseline: Option<crate::live_steering::SteeringBaseline>,
++    pub(crate) steering_restore_failed: std::cell::Cell<bool>,
+ }
+ 
+ /// A flat snapshot of the metadata the `llm` S3 object needs (`API-GRAMMAR.md`
+@@ -749,6 +751,8 @@ impl LoadedModel {
+         let context_length = unsafe { ffi::llama_n_ctx(ctx.as_ptr()) };
+ 
+         Ok(LoadedModel {
++            steering_baseline: None,
++            steering_restore_failed: std::cell::Cell::new(false),
+             ctx: Context {
+                 ptr: ctx.into_raw(),
+                 model,
+@@ -957,6 +961,8 @@ fn load_impl(
+     let context_length = unsafe { ffi::llama_n_ctx(ctx.as_ptr()) };
+ 
+     Ok(LoadedModel {
++        steering_baseline: None,
++        steering_restore_failed: std::cell::Cell::new(false),
+         ctx: Context {
+             ptr: ctx.into_raw(),
+             model,
+diff --git a/rebirth/src/rust/rebirth-llm/src/intervene.rs b/rebirth/src/rust/rebirth-llm/src/intervene.rs
+index 5789579..281bd7d 100644
+--- a/rebirth/src/rust/rebirth-llm/src/intervene.rs
++++ b/rebirth/src/rust/rebirth-llm/src/intervene.rs
+@@ -155,34 +155,7 @@ impl InterventionSpec {
+     ) -> Result<(), RebirthError> {
+         let n_embd = self.n_embd;
+         if let (Some(steer), Some((il_start, il_end))) = (&self.steer, self.steer_il_range) {
+-            // The native cvec buffer has no layer-0 row: pass a view starting at
+-            // engine layer 1 (`&steer[n_embd..]`, length `n_embd*(n_layer-1)`), so
+-            // engine layer `il` lands at the native offset `n_embd*(il-1)`. For a
+-            // 1-layer model this view is empty (steering is then a no-op).
+-            let native = &steer[n_embd.min(steer.len())..];
+-            // SAFETY: `ctx_ptr` is a live context on this (R main) thread. `native`
+-            // is a Rust-owned f32 slice that outlives this synchronous call; the
+-            // engine copies the data before returning. The `(ptr, len)` pair is
+-            // exactly the "from layer 1" cvec buffer the engine expects.
+-            let status = unsafe {
+-                ffi::llama_set_adapter_cvec(
+-                    ctx_ptr,
+-                    native.as_ptr(),
+-                    native.len(),
+-                    n_embd as i32,
+-                    il_start,
+-                    il_end,
+-                )
+-            };
+-            if status != 0 {
+-                return Err(RebirthError::Intervention {
+-                    reason: format!(
+-                        "The engine rejected the steering vector (control-vector \
+-                         setter returned {status}); its width must equal the model's \
+-                         hidden size ({n_embd})."
+-                    ),
+-                });
+-            }
++            apply_steering_buffer(ctx_ptr, n_embd, steer, (il_start, il_end))?;
+         }
+ 
+         if let (Some(mask), Some(add), Some((il_start, il_end))) =
+@@ -224,6 +197,33 @@ impl InterventionSpec {
+     }
+ }
+ 
++/// Reapply all steering rows, including zeros that clear previous contributions.
++/// Ablation is a separate installed adapter and remains after steering in graph order.
++pub(crate) fn apply_steering_buffer(
++    ctx: *mut ffi::llama_context,
++    width: usize,
++    values: &[f32],
++    range: (i32, i32),
++) -> Result<(), RebirthError> {
++    let native = &values[width.min(values.len())..];
++    // SAFETY: the execution permit owns this live context; the full owned F32
++    // array lives throughout the synchronous setter, which copies every row.
++    let status = unsafe {
++        ffi::llama_set_adapter_cvec(
++            ctx,
++            native.as_ptr(),
++            native.len(),
++            width as i32,
++            range.0,
++            range.1,
++        )
++    };
++    if status != 0 {
++        return Err(RebirthError::Intervention {reason:format!("The engine rejected the steering adapter (setter status {status}, hidden width {width}).")});
++    }
++    Ok(())
++}
++
+ /// Widen an inclusive range to include `il` (or start it at `il`).
+ fn widen(range: Option<(i32, i32)>, il: i32) -> (i32, i32) {
+     match range {
+@@ -268,8 +268,16 @@ impl LoadedModel {
+         // (D-021), replacing the hard arch gate. Refuses before any handle is built.
+         self.verify_interventions_effective(spec)?;
+ 
+-        let derived = self.clone_with_fresh_context()?;
++        let mut derived = self.clone_with_fresh_context()?;
+         spec.apply_to_context(derived.ctx_ptr())?;
++        derived.steering_baseline =
++            spec.steer
++                .as_ref()
++                .zip(spec.steer_il_range)
++                .map(|(values, range)| crate::live_steering::SteeringBaseline {
++                    values: values.clone(),
++                    range,
++                });
+         Ok(derived)
+     }
+ }
+diff --git a/rebirth/src/rust/rebirth-llm/src/lib.rs b/rebirth/src/rust/rebirth-llm/src/lib.rs
+index a1db350..b8b7e3b 100644
+--- a/rebirth/src/rust/rebirth-llm/src/lib.rs
++++ b/rebirth/src/rust/rebirth-llm/src/lib.rs
+@@ -32,6 +32,7 @@ mod live_capture;
+ #[cfg(feature = "spill")]
+ mod live_spill;
+ mod live_state;
++mod live_steering;
+ mod probe;
+ mod schema;
+ #[cfg(feature = "spill")]
+@@ -68,6 +69,7 @@ pub use live_state::{
+     LIVE_MAX_STATES, LIVE_SPILL_BYTES, LIVE_TRANSPORT_BYTES, LIVE_VECTOR_BYTES,
+     LIVE_VECTOR_HEADER_BYTES,
+ };
++pub use live_steering::{LiveCoefficient, LiveReply, LiveSteer, LiveSteeringRow};
+ pub use schema::CompiledSchema;
+ pub use spill_lease::{cleanup_managed_spill, prepare_managed_spill, sweep_managed_spill};
+ pub use structured::{
+diff --git a/rebirth/src/rust/rebirth-llm/src/live_capture.rs b/rebirth/src/rust/rebirth-llm/src/live_capture.rs
+index dffcc7b..7477899 100644
+--- a/rebirth/src/rust/rebirth-llm/src/live_capture.rs
++++ b/rebirth/src/rust/rebirth-llm/src/live_capture.rs
+@@ -513,6 +513,7 @@ impl crate::LoadedModel {
+         request: &LiveRequest,
+     ) -> Result<crate::Generation, RebirthError> {
+         let estimate = request.preflight(&self.metadata(), params.max_tokens)?;
++        let mut steering = crate::live_steering::LiveSteering::prepare(self, &request.steering)?;
+         let _session = self.live_capture().activate_inner(
+             self,
+             prompt.len(),
+@@ -544,7 +545,9 @@ impl crate::LoadedModel {
+                     });
+                 }
+                 let trace = snapshot.trace.unwrap_or(LiveTrace::Memory(snapshot.rows));
+-                crate::async_job::publish_live(crate::LiveState {
++                let state_id = snapshot.state_id;
++                let effective_source = snapshot.context_pos;
++                let reply = crate::async_job::publish_live(crate::LiveState {
+                     job_id: 0,
+                     state_id: snapshot.state_id,
+                     token_id: snapshot.token_id,
+@@ -553,8 +556,13 @@ impl crate::LoadedModel {
+                     prompt_token_count: snapshot.prompt_count,
+                     elapsed: 0.0,
+                     logits: summary,
++                    steering_revision: steering.revision,
++                    applied_after_state: steering.applied_after,
++                    effective_source_pos: steering.effective_source,
++                    steering: steering.audit(),
+                     trace,
+-                })
++                })?;
++                steering.apply_reply(reply, state_id, effective_source)
+             }),
+         )
+     }
+diff --git a/rebirth/src/rust/rebirth-llm/src/live_state.rs b/rebirth/src/rust/rebirth-llm/src/live_state.rs
+index db33d8c..2c4f4dd 100644
+--- a/rebirth/src/rust/rebirth-llm/src/live_state.rs
++++ b/rebirth/src/rust/rebirth-llm/src/live_state.rs
+@@ -24,10 +24,13 @@ pub struct LiveRequest {
+     pub trace_id: String,
+     pub model: String,
+     pub spec_key: String,
++    pub steering: Vec<crate::LiveSteer>,
+ }
+ 
+ #[derive(Debug, Clone)]
+ pub struct LiveEstimate {
++    pub steering_bytes: u64,
++    pub steering_descriptor_bytes: u64,
+     pub native_fixed_bytes: u64,
+     pub ffi_intern_bytes: u64,
+     pub schema_frame_bytes: u64,
+@@ -80,6 +83,10 @@ pub struct LiveState {
+     pub source_pos: u32,
+     pub prompt_token_count: usize,
+     pub elapsed: f64,
++    pub steering_revision: usize,
++    pub applied_after_state: usize,
++    pub effective_source_pos: u32,
++    pub steering: Vec<crate::LiveSteeringRow>,
+     pub logits: Vec<TokenLogit>,
+     pub trace: LiveTrace,
+ }
+@@ -128,6 +135,29 @@ impl LiveRequest {
+         &self,
+         metadata: &ModelMetadata,
+         max_tokens: usize,
++    ) -> Result<LiveEstimate, RebirthError> {
++        let direction_values = self
++            .steering
++            .iter()
++            .try_fold(0_u64, |n, entry| add(n, entry.direction.len() as u64))?;
++        let estimate = self.preflight_with_steering_shape(
++            metadata,
++            max_tokens,
++            self.steering.len(),
++            direction_values,
++        )?;
++        crate::live_steering::validate_entries(&self.steering, metadata)?;
++        Ok(estimate)
++    }
++
++    /// Metadata-only sizing before the FFI copies original direction slices.
++    /// The complete preflight rechecks actual entry lengths, order and values.
++    pub fn preflight_with_steering_shape(
++        &self,
++        metadata: &ModelMetadata,
++        max_tokens: usize,
++        steer_count: usize,
++        direction_values: u64,
+     ) -> Result<LiveEstimate, RebirthError> {
+         if max_tokens == 0
+             || max_tokens > LIVE_MAX_STATES
+@@ -191,7 +221,9 @@ impl LiveRequest {
+             .checked_mul(self.components.len())
+             .ok_or_else(overflow)?;
+         let n = mul(h, vectors as u64)?;
+-        if h == 0 || (!self.layers.is_empty() && mul(h, 4)? > LIVE_VECTOR_BYTES) {
++        if h == 0
++            || ((!self.layers.is_empty() || steer_count > 0) && mul(h, 4)? > LIVE_VECTOR_BYTES)
++        {
+             return Err(RebirthError::Oom {
+                 estimate_bytes: mul(h, 4)?,
+                 budget_bytes: LIVE_VECTOR_BYTES,
+@@ -199,6 +231,60 @@ impl LiveRequest {
+                     .into(),
+             });
+         }
++        let steer_count = steer_count as u64;
++        if direction_values != mul(h, steer_count)? {
++            return Err(invalid(
++                "Live steering direction lengths do not match the model width and entry count.",
++            ));
++        }
++        let descriptor_count = (self.steering.capacity() as u64).max(steer_count);
++        let steering_descriptor_bytes = if steer_count == 0 {
++            0
++        } else {
++            sum(&[
++                mul(
++                    descriptor_count,
++                    crate::LiveSteer::descriptor_bytes() as u64,
++                )?,
++                crate::live_steering::session_bytes() as u64,
++                std::mem::size_of::<Option<crate::live_steering::SteeringBaseline>>() as u64,
++                3 * std::mem::size_of::<Vec<u8>>() as u64,
++                std::mem::size_of::<usize>() as u64,
++            ])?
++        };
++        let steering_transport_bytes = if steer_count == 0 {
++            0
++        } else {
++            sum(&[
++                mul(8, direction_values)?,
++                mul(52, steer_count)?,
++                steering_descriptor_bytes,
++            ])?
++        };
++        let audit = if steer_count == 0 {
++            0
++        } else {
++            sum(&[
++                mul(2, grow(mul(4, steer_count)?)?)?,
++                grow(mul(8, steer_count)?)?,
++                8,
++            ])?
++        };
++        let steering_bytes = if steer_count == 0 {
++            0
++        } else {
++            sum(&[
++                steering_transport_bytes,
++                mul(8, mul(h, metadata.layers.max(0) as u64)?)?,
++                mul(4, h)?,
++                live_r_vector_bytes(mul(8, direction_values)?)?,
++                mul(2, self.r_fixed_bytes)?,
++                mul(2, grow(mul(4, steer_count)?)?)?,
++                mul(2, grow(mul(8, steer_count)?)?)?,
++                mul(3, live_r_vector_bytes(mul(4, steer_count)?)?)?,
++                live_r_vector_bytes(mul(8, steer_count)?)?,
++            ])?
++        };
+         let b = metadata.max_token_piece_bytes;
+         let k = self.top as u64;
+         let c = self.components.len() as u64;
+@@ -227,7 +313,7 @@ impl LiveRequest {
+                 8,
+             ])?
+         };
+-        let logits_bytes = add(self.r_fixed_bytes, logits)?;
++        let logits_bytes = sum(&[self.r_fixed_bytes, logits, audit])?;
+         let materialized_bytes = add(logits_bytes, trace)?;
+         let strings = sum(&[
+             self.spill_dir.capacity() as u64,
+@@ -264,7 +350,19 @@ impl LiveRequest {
+             capture_selectors,
+             mul(add(vectors as u64, 1)?, b)?,
+         ])?;
+-        let native_capture_bytes = add(capture_memory, native_fixed_bytes)?;
++        if add(steering_transport_bytes, native_fixed_bytes)? > LIVE_TRANSPORT_BYTES
++            && steer_count > 0
++        {
++            return Err(RebirthError::Oom {
++                estimate_bytes: add(steering_transport_bytes, native_fixed_bytes)?,
++                budget_bytes: LIVE_TRANSPORT_BYTES,
++                suggestion:
++                    "Reduce the number of original steering entries to fit live owned transport."
++                        .into(),
++            });
++        }
++        let native_capture_bytes =
++            sum(&[capture_memory, native_fixed_bytes, steering_transport_bytes])?;
+         let spilled = vectors > 0
+             && (materialized_bytes > self.budget_bytes
+                 || native_capture_bytes > LIVE_TRANSPORT_BYTES);
+@@ -346,7 +444,12 @@ impl LiveRequest {
+                 4,
+             ])?;
+         }
+-        let capture_control_bytes = sum(&[capture_selectors, native_fixed_bytes, b])?;
++        let capture_control_bytes = sum(&[
++            capture_selectors,
++            native_fixed_bytes,
++            b,
++            steering_transport_bytes,
++        ])?;
+         let one_row = sum(&[mul(h, 4)?, b, std::mem::size_of::<CaptureRow>() as u64])?;
+         // The queue descriptor reserve and all retained selectors/control are
+         // inside the8MiB cap; producer and consumer rows are separate scratch.
+@@ -412,6 +515,7 @@ impl LiveRequest {
+             mul(24, transport_n)?,
+             mul(12, transport_v)?,
+             mul(44, k)?,
++            mul(16, steer_count)?,
+             ffi_intern_bytes,
+         ])?;
+         let native_logits_bytes = sum(&[
+@@ -450,8 +554,11 @@ impl LiveRequest {
+             capture_writer_bytes,
+             native_fixed_bytes,
+             wp10_peak_bytes,
++            steering_bytes,
+         ])?;
+         Ok(LiveEstimate {
++            steering_bytes,
++            steering_descriptor_bytes,
+             native_fixed_bytes,
+             ffi_intern_bytes,
+             schema_frame_bytes,
+@@ -522,6 +629,7 @@ pub(crate) mod tests {
+             trace_id: "live-bound-test".into(),
+             model: "synthetic".into(),
+             spec_key: "live-v1-test".into(),
++            steering: vec![],
+         }
+     }
+     #[test]
+@@ -577,6 +685,70 @@ pub(crate) mod tests {
+         huge.architecture = "unknown".into();
+         assert!(empty.preflight(&huge, 4).is_ok());
+     }
++    #[test]
++    fn f6b_shape_preflight_matches_owned_request_and_full_memory_ledger() {
++        let mut req = request();
++        let mut meta = metadata();
++        meta.layers = 3;
++        let base = req.preflight(&meta, 4).unwrap();
++        let shape = req.preflight_with_steering_shape(&meta, 4, 2, 64).unwrap();
++        req.steering = vec![
++            crate::LiveSteer {
++                intervention: 0,
++                layer: 1,
++                coef: 1.0,
++                direction: std::sync::Arc::from([1.0; 32]),
++            },
++            crate::LiveSteer {
++                intervention: 3,
++                layer: 2,
++                coef: 0.0,
++                direction: std::sync::Arc::from([0.5; 32]),
++            },
++        ];
++        let owned = req.preflight(&meta, 4).unwrap();
++        assert_eq!(shape.steering_bytes, owned.steering_bytes);
++        assert_eq!(shape.native_capture_bytes, owned.native_capture_bytes);
++        assert_eq!(shape.transient_bytes, owned.transient_bytes);
++        let s = 2;
++        let h = 32;
++        let d = 3;
++        let g = |n| live_r_vector_bytes(n).unwrap() - 48;
++        let v = |n| live_r_vector_bytes(n).unwrap();
++        assert_eq!(
++            owned.steering_bytes,
++            8 * h * s
++                + 8 * h * d
++                + 4 * h
++                + 52 * s
++                + owned.steering_descriptor_bytes
++                + v(8 * h * s)
++                + 2 * req.r_fixed_bytes
++                + 2 * g(4 * s)
++                + 2 * g(8 * s)
++                + 3 * v(4 * s)
++                + v(8 * s)
++        );
++        let audit = 2 * g(4 * s) + g(8 * s) + 8;
++        assert_eq!(owned.materialized_bytes - base.materialized_bytes, audit);
++        assert_eq!(owned.logits_bytes - base.logits_bytes, audit);
++        assert_eq!(
++            owned.transient_bytes - base.transient_bytes,
++            3 * audit + 16 * s + owned.steering_bytes
++        );
++        assert!(req.preflight_with_steering_shape(&meta, 4, 2, 63).is_err());
++        assert!(req
++            .preflight_with_steering_shape(&meta, 4, usize::MAX, u64::MAX)
++            .is_err());
++        // Borrowed sizing refuses the copies before any original-direction Arc is made.
++        let count = (LIVE_TRANSPORT_BYTES / (8 * h)) as usize;
++        assert!(req
++            .preflight_with_steering_shape(&meta, 4, count, count as u64 * h)
++            .is_err());
++        req.steering[1].intervention = 0;
++        assert!(req.preflight(&meta, 4).is_err());
++    }
++
+     #[cfg(feature = "spill")]
+     #[test]
+     fn live_spill_admission_uses_proxy_and_component_fragments() {
+diff --git a/rebirth/src/rust/rebirth-llm/src/probe.rs b/rebirth/src/rust/rebirth-llm/src/probe.rs
+index 739934d..86549ed 100644
+--- a/rebirth/src/rust/rebirth-llm/src/probe.rs
++++ b/rebirth/src/rust/rebirth-llm/src/probe.rs
+@@ -255,6 +255,22 @@ impl LoadedModel {
+         Ok(())
+     }
+ 
++    /// Live commands can activate an originally-zero coefficient. Probe every
++    /// requested nonzero direction's layer before prefill, using the same cache.
++    pub(crate) fn verify_steering_layers(&self, layers: &[u32]) -> Result<(), RebirthError> {
++        let (todo, _) = self.lock_probe_cache().todo(layers, &[]);
++        if !todo.is_empty() {
++            self.run_intervention_probe(&todo, &[])?;
++            self.lock_probe_cache().mark(&todo, &[]);
++        }
++        Ok(())
++    }
++
++    #[cfg(test)]
++    pub(crate) fn steering_layer_was_probed(&self, layer: u32) -> bool {
++        self.lock_probe_cache().steer_ok.contains(&layer)
++    }
++
+     /// Lock the shared probe cache (poison-tolerant: a panic elsewhere must not turn
+     /// every later lock into a panic, which in a `Drop` would abort the process).
+     fn lock_probe_cache(&self) -> std::sync::MutexGuard<'_, ProbeCache> {
+diff --git a/rebirth/tests/testthat/test-llm-live-helpers.R b/rebirth/tests/testthat/test-llm-live-helpers.R
+index 654443e..c3a212d 100644
+--- a/rebirth/tests/testthat/test-llm-live-helpers.R
++++ b/rebirth/tests/testthat/test-llm-live-helpers.R
+@@ -4,7 +4,9 @@
+ live_test_payload <- function() {
+   list(step = data.frame(state_id = 1L, prompt_id = 1L, token_pos = 1L,
+     token_id = 4L, context_pos = 4L, source_pos = 3L, source = "prompt",
+-    elapsed = 0.25, stringsAsFactors = FALSE), prompt_token_count = 3L,
++    elapsed = 0.25, steering_revision = 0L, applied_after_state = 0L,
++    effective_source_pos = 1L, stringsAsFactors = FALSE), prompt_token_count = 3L,
++    steering = data.frame(intervention = integer(), layer = integer(), coef = double()),
+     logits = data.frame(prompt_id = 1L, rank = 1L, token_id = 4L, token = "x",
+       logit = 1.25, prob = 0.2, stringsAsFactors = FALSE),
+     trace = list(spilled = FALSE, prompt_id = integer(), token_pos = integer(),
+@@ -18,7 +20,8 @@ live_test_job <- function(callback = function(state) invisible(NULL)) {
+   job$id <- "live-job-fixture"
+   job$model <- stub_llm()
+   job$live <- list(prompt = c(input = "abc"), callback = callback,
+-    layers = integer(), components = "residual", top = 1L)
++    layers = integer(), components = "residual", top = 1L,
++    original_steering = data.frame(intervention = integer(), layer = integer(), coef = double()))
+   job$live_state_id <- 0L
+   job$live_elapsed <- 0
+   job$live_prompt_count <- NULL
+@@ -46,9 +49,10 @@ test_that("empty live payload tables preserve their declared base-R schemas", {
+   step <- relm:::live_empty_step()
+   expect_identical(class(step), "data.frame")
+   expect_identical(names(step), c("state_id", "prompt_id", "token_pos", "token_id",
+-    "context_pos", "source_pos", "source", "elapsed"))
++    "context_pos", "source_pos", "source", "elapsed",
++    "steering_revision", "applied_after_state", "effective_source_pos"))
+   expect_identical(unname(vapply(step, typeof, character(1))),
+-    c(rep("integer", 6), "character", "double"))
++    c(rep("integer", 6), "character", "double", rep("integer", 3)))
+ })
+ 
+ test_that("live payload source coordinates are checked before sequence advances", {
+@@ -106,7 +110,7 @@ test_that("live payload source coordinates are checked before sequence advances"
+ 
+ test_that("live callbacks acknowledge only after successful NULL completion", {
+   order <- character()
+-  local_mocked_bindings(rebirth_async_state_ack = function(ptr, job_id, state_id) {
++  local_mocked_bindings(rebirth_async_state_ack = function(ptr, job_id, state_id, updates) {
+     expect_identical(job_id, "live-job-fixture")
+     expect_identical(state_id, 1L)
+     order <<- c(order, "ack")
+@@ -123,6 +127,74 @@ test_that("live callbacks acknowledge only after successful NULL completion", {
+   expect_null(job$callback_error)
+ })
+ 
++test_that("live worker steering audits reject inconsistent revisions before advancing", {
++  prepare <- function() {
++    job <- live_test_job()
++    job$model$interventions <- list(list(kind = "steer", layer = 2L, coef = 0,
++      direction = c(0.25, -0.25)))
++    payload <- live_test_payload()
++    payload$steering <- data.frame(intervention = 1L, layer = 2L, coef = 0)
++    job$live$original_steering <- payload$steering
++    first <- relm:::live_payload_state(job, payload)
++    expect_identical(attr(first, "steering"), payload$steering)
++    list(job = job, payload = payload)
++  }
++  initial <- prepare()
++  changed <- initial$payload
++  changed$step$state_id <- changed$step$token_pos <- 2L
++  changed$step$source_pos <- 4L
++  changed$step$context_pos <- 5L
++  changed$step$source <- "generated"
++  changed$step$elapsed <- 0.5
++  changed$step$steering_revision <- 1L
++  changed$step$applied_after_state <- 1L
++  changed$step$effective_source_pos <- 4L
++  changed$steering$coef <- 0.5
++  changes <- list(
++    function(x) { x$step$steering_revision <- 0L; x },
++    function(x) { x$step$steering_revision <- 2L; x },
++    function(x) { x$step$applied_after_state <- 0L; x },
++    function(x) { x$step$effective_source_pos <- 3L; x },
++    function(x) { x$steering$coef <- 0; x },
++    function(x) { x$steering$coef <- Inf; x },
++    function(x) { x$steering$intervention <- 2L; x },
++    function(x) { x$steering$layer <- 3L; x })
++  for (change in changes) {
++    fresh <- prepare()
++    expect_error(relm:::live_payload_state(fresh$job, change(changed)),
++      class = "relm_error_internal")
++    expect_identical(fresh$job$live_state_id, 1L)
++    expect_identical(fresh$job$live_audit$revision, 0L)
++  }
++  expect_no_error(relm:::live_payload_state(initial$job, changed))
++  unchanged <- changed
++  unchanged$step$state_id <- unchanged$step$token_pos <- 3L
++  unchanged$step$source_pos <- 5L
++  unchanged$step$context_pos <- 6L
++  unchanged$step$elapsed <- 0.75
++  expect_no_error(relm:::live_payload_state(initial$job, unchanged))
++  expect_identical(initial$job$live_audit$after, 1L)
++  expect_identical(initial$job$live_audit$position, 4L)
++})
++
++test_that("live delivery uses its admitted audit and bounds reply rows by steer count", {
++  cached <- data.frame(intervention = 1001L, layer = 2L, coef = 0)
++  reply <- list(steer = data.frame(intervention = 1001L, coef = 0.5))
++  expect_identical(relm:::live_reply(reply,
++    interventions = stop("original metadata must remain unforced"), steering = cached),
++    reply$steer)
++  oversized <- list(steer = data.frame(intervention = c(1001L, 1002L), coef = c(0.5, 0)))
++  expect_error(relm:::live_reply(oversized,
++    interventions = stop("original metadata must remain unforced"), steering = cached),
++    class = "relm_error_argument")
++  job <- live_test_job()
++  # An ablation-only model must not cause an all-intervention scan per state.
++  job$model$interventions <- rep(list(list(kind = "ablate")), 1000L)
++  local_mocked_bindings(live_steering_table = function(...) stop("unexpected rescan"),
++    .package = "relm")
++  expect_no_error(relm:::live_payload_state(job, live_test_payload()))
++})
++
+ test_that("live callback and reply failures preserve class and original parent", {
+   acknowledgements <- 0L
+   local_mocked_bindings(rebirth_async_state_ack = function(...) {
+diff --git a/rebirth/tests/testthat/test-llm-live-memory.R b/rebirth/tests/testthat/test-llm-live-memory.R
+index fa20054..a12e0ca 100644
+--- a/rebirth/tests/testthat/test-llm-live-memory.R
++++ b/rebirth/tests/testthat/test-llm-live-memory.R
+@@ -32,24 +32,31 @@ live_memory_test_state <- function(hidden, layers, components, top, piece_bytes,
+     class = c("relm_trace", "data.frame"), model = m$path, prompts = prompt,
+     spilled = FALSE, position_space = "model_context", prompt_token_count = 3L,
+     state_id = 1L)
+-  list(step = data.frame(state_id = 1L, prompt_id = 1L, token_pos = 1L,
+-    token_id = 4L, context_pos = 4L, source_pos = 3L, source = "prompt", elapsed = 0.5),
++  state <- list(step = data.frame(state_id = 1L, prompt_id = 1L, token_pos = 1L,
++    token_id = 4L, context_pos = 4L, source_pos = 3L, source = "prompt", elapsed = 0.5,
++    steering_revision = 0L, applied_after_state = 0L, effective_source_pos = 1L),
+     logits = data.frame(prompt_id = rep.int(1L, top), rank = seq_len(top),
+       token_id = seq_len(top), token = pieces, logit = rep.int(0.125, top),
+       prob = rep.int(0.001, top), stringsAsFactors = FALSE), trace = trace)
++  attr(state, "steering") <- relm:::live_steering_table(m$interventions)
++  state
+ }
+ 
+ test_that("live materialized bound covers actual small large and string-heavy states", {
+   specs <- list(
+-    list(hidden = 1L, layers = 1L, components = "residual", top = 1L, piece = 1L),
++    list(hidden = 1L, layers = 1L, components = "residual", top = 1L, piece = 1L,
++      steers = 0L),
+     list(hidden = 32L, layers = 1:2, components = c("attn_out", "mlp_out", "residual"),
+-      top = 5L, piece = 8L),
+-    list(hidden = 896L, layers = integer(), components = "residual", top = 128L, piece = 256L),
++      top = 5L, piece = 8L, steers = 1L),
++    list(hidden = 896L, layers = integer(), components = "residual", top = 128L,
++      piece = 256L, steers = 17L),
+     list(hidden = 4096L, layers = 1:4, components = c("attn_out", "mlp_out", "residual"),
+-      top = 128L, piece = 256L))
++      top = 128L, piece = 256L, steers = 64L))
+   for (spec in specs) {
+     m <- stub_llm()
+     m$hidden_size <- spec$hidden
++    m$interventions <- lapply(seq_len(spec$steers), function(i) list(kind = "steer",
++      layer = 1L, coef = i / 64, direction = rep.int(0.25, spec$hidden)))
+     prompt <- c(input = "Measured memory fixture")
+     config <- list(layers = spec$layers, components = spec$components, top = as.double(spec$top),
+       budget_bytes = 32 * 1024^2, r_fixed_bytes = 0, spill = TRUE,
+@@ -57,7 +64,7 @@ test_that("live materialized bound covers actual small large and string-heavy st
+       spec_key = "live-materialized-memory-spec")
+     fixed <- relm:::live_fixed_bytes(config, m, prompt)
+     bound <- relm:::live_memory_bound(spec$hidden, spec$layers, spec$components,
+-      spec$top, spec$piece, fixed)
++      spec$top, spec$piece, fixed, steers = spec$steers)
+     state <- live_memory_test_state(spec$hidden, spec$layers, spec$components,
+       spec$top, spec$piece, m, prompt)
+     expect_lte(as.numeric(object.size(state)), bound$materialized_bytes)
+diff --git a/rebirth/tests/testthat/test-llm-live-model.R b/rebirth/tests/testthat/test-llm-live-model.R
+index 8642316..66aa3f7 100644
+--- a/rebirth/tests/testthat/test-llm-live-model.R
++++ b/rebirth/tests/testthat/test-llm-live-model.R
+@@ -14,9 +14,10 @@ live_model_schema <- function(state, prompt_count, state_id, layers, width, top)
+   step <- state$step
+   expect_identical(class(step), "data.frame")
+   expect_identical(names(step), c("state_id", "prompt_id", "token_pos", "token_id",
+-    "context_pos", "source_pos", "source", "elapsed"))
++    "context_pos", "source_pos", "source", "elapsed",
++    "steering_revision", "applied_after_state", "effective_source_pos"))
+   expect_identical(unname(vapply(step, typeof, character(1))),
+-    c(rep("integer", 6), "character", "double"))
++    c(rep("integer", 6), "character", "double", rep("integer", 3)))
+   expect_identical(nrow(step), 1L)
+   expect_identical(step$state_id, as.integer(state_id))
+   expect_identical(step$prompt_id, 1L)
+diff --git a/tests/sanitizers/README.md b/tests/sanitizers/README.md
+index b3cfc1d..bd3b8ae 100644
+--- a/tests/sanitizers/README.md
++++ b/tests/sanitizers/README.md
+@@ -83,7 +83,7 @@ test binary must define the ASan and UBSan runtime symbols; runtime archive hash
+ and `ldd` output record static-runtime/dynamic-system-library linkage. Compiler
+ commands, source/fixture hashes and binary hashes are preserved with the results.
+ 
+-The default `full` allowlist in `run.py` executes 30 exact tests. The original
++The default `full` allowlist in `run.py` executes 40 exact tests. The original
+ 15 cover intervention/reversibility,
+ trace, spill/readback and spill-path preservation, generation/sampling, embedding,
+ async native handoff, cancellation/recovery/destruction and stream backpressure
+@@ -99,16 +99,28 @@ ownership. The additional 15 F6a cases cover:
+   cancellation cleanup, IPC padding and cumulative file bounds, shorter-label
+   workspace bounds, long-label single rows, and full-queue cancellation wakeup.
+ 
++The 10 F6b cases add the independent three-layer, history-preserving coefficient
++oracle; partial/unchanged/terminal replies; adapter restoration after invalid
++replies, cancellation and close; explicit setter/reset/panic ownership; probing
++an initially zero coefficient; original-direction mismatch rejection; original
++order and f64-product rebuilding; scalar/product/sum overflow; and owned-request
++shape versus full memory-ledger agreement. The exact IDs are in
++`STEERING_CASES`. Seven live worker tests use the committed three-layer fixture;
++three rebuild/preflight cases require no model. Existing two-layer F6a fixtures
++and the accepted 15-case `live-only` selection remain unchanged.
++
+ Each invocation must yield exactly one named libtest start and success,
+ zero failures and zero ignored tests. Empty/wrong filters fail. Existing numerical
+-forward-pass markers must also appear. The live prefix golden uses libtest
++forward-pass markers must also appear. The live prefix and F6b history goldens use libtest
+ `--show-output`: its marker must occur in the named successful test event's
+ `stdout` field. No arbitrary non-JSON output is discarded or accepted. Other
+ cases retain `--nocapture` and their existing marker checks.
+ All selected functions are unconditional;
+ a conservative source guard rejects explicit early returns, environment model
+-gates and skip macros. Unit sources resolve by module (`async_job`,
+-`live_capture`, `live_spill`); the guard stops at the selected function's
++gates and skip macros. Unit sources resolve by module or an explicit included
++source mapping: the F6b worker cases have `async_job::tests` IDs but their bodies
++reside in `src/live_steering_tests.rs`. Other F6b bodies reside in
++`src/live_steering.rs` and `src/live_state.rs`. The guard stops at the selected function's
+ same-indent closing brace, before subsequent helpers. This formatting guard is
+ not a general Rust parser or control-flow verifier. The actual
+ assertions in these tests remain the execution proof. Vision/model-gated tests are
+@@ -148,6 +160,19 @@ mandatory. A scheduled run, omitted CLI selection or default manual dispatch
+ uses `full`; the optional existing `sanitizers_only` input still skips Valgrind
+ without narrowing the sanitizer allowlist.
+ 
++For F6b alone, manually choose `sanitizer_selection: steering-only`, or run:
++
++```sh
++python3 tests/sanitizers/run.py --selection steering-only \
++  --evidence "$RUNNER_TEMP/steering-sanitizer-evidence" \
++  --target "$RUNNER_TEMP/relm-steering-sanitizer-target"
++```
++
++This executes exactly the 10 F6b tests, none of the prior 30 product cases, and
++skips Valgrind in the workflow. Like `live-only`, it still requires every
++instrumentation/control/object-audit stage, including the production library
++build below. The default and scheduled selection remains `full`.
++
+ Test output filenames percent-encode Rust module separators and other reserved
+ characters. Test IDs and exact libtest filters are unchanged; each executed-test
+ receipt includes its output filenames and digests, source module/digest and
+@@ -157,21 +182,23 @@ filename rejection without changing execution or acceptance criteria.
+ 
+ The workflow retains logs and partial receipts even on failure. `SUCCESS.txt`
+ exists only after every required test passes. A source edit or workflow file is
+-not a successful Linux acceptance run. The new F6a.2 selection has only
+-model-free Python harness control coverage at preparation time; its instrumented
+-Linux execution is still pending. Historical acceptance of the original 15
+-cases does not establish acceptance for these new paths. Scheduled runs still
++not a successful Linux acceptance run. The new F6b selection has only model-free
++Python harness control coverage at preparation time; its instrumented Linux
++execution is pending. Retained F6a.2 and earlier sanitizer acceptance does not
++establish acceptance for the new F6b paths. Scheduled runs still
+ execute both jobs.
+ 
+ Coverage is the native CPU paths actually exercised. This is neither a
+ ThreadSanitizer result nor Metal/CUDA, vision, R/SEXP marshalling, or universal
+-Rust UB coverage. It does not execute R callbacks/close semantics or F6b dynamic
+-coefficient updates. The ordinary native and R boundary checks remain separate.
++Rust UB coverage. It does not execute R callbacks/close semantics or certify
++steering across untested model architectures. The ordinary native and R boundary
++checks remain separate.
+ 
+-### Live-only production archive
++### Scoped production archive
+ 
+ `cargo test --lib --no-run` emits the unit-test executable without a production
+-rlib when no integration target consumes the crate. The live-only path therefore
++rlib when no integration target consumes the crate. Both `live-only` and
++`steering-only` therefore
+ also builds the production library with the same target, flags and rebuilt std,
+ reusing native objects. Its successful non-test Cargo artifact must match the
+ declared `rebirth_llm` archive used by the ASan symbol audit. This adds
+diff --git a/tests/sanitizers/run.py b/tests/sanitizers/run.py
+index 360767a..8794b5c 100644
+--- a/tests/sanitizers/run.py
++++ b/tests/sanitizers/run.py
+@@ -63,12 +63,33 @@ LIVE_CASES = {
+         "live_spill::tests::live_spill_full_queue_cancel_wakes_producer",
+     ],
+ }
+-CASES = {binary: names + LIVE_CASES.get(binary, []) for binary, names in LEGACY_CASES.items()}
++STEERING_CASES = {
++    "rebirth_llm": [
++        "async_job::tests::f6b_history_preserving_updates_match_independent_goldens",
++        "async_job::tests::f6b_partial_identical_and_terminal_replies_preserve_revision",
++        "async_job::tests::f6b_invalid_reply_after_update_restores_original_adapter",
++        "async_job::tests::f6b_cancel_and_close_after_update_restore_original_adapter",
++        "async_job::tests::f6b_setter_reset_and_panic_failures_have_explicit_ownership",
++        "async_job::tests::f6b_zero_initial_coefficient_is_probed_before_activation",
++        "async_job::tests::f6b_original_direction_mismatch_fails_before_publication",
++        "live_steering::tests::f6b_rebuild_preserves_original_order_and_f64_products",
++        "live_steering::tests::f6b_rebuild_rejects_scalar_product_and_sum_overflow",
++        "live_state::tests::f6b_shape_preflight_matches_owned_request_and_full_memory_ledger",
++    ],
++}
++CASES = {binary: names + LIVE_CASES.get(binary, []) + STEERING_CASES.get(binary, [])
++         for binary, names in LEGACY_CASES.items()}
++SCOPED_SELECTIONS = ("live-only", "steering-only")
+ UNIT_TEST_SOURCES = {
+     "async_job": "src/async_job.rs",
+     "live_capture": "src/live_capture.rs",
+     "live_spill": "src/live_spill.rs",
++    "live_steering": "src/live_steering.rs",
++    "live_state": "src/live_state.rs",
+ }
++INCLUDED_TEST_SOURCES = {name: "src/live_steering_tests.rs"
++                         for name in STEERING_CASES["rebirth_llm"]
++                         if name.startswith("async_job::tests::")}
+ WORK_MARKERS = {
+     "synthetic_intervene": "intervene engine-vs-oracle max",
+     "synthetic_trace": "engine-vs-oracle activations max",
+@@ -79,6 +100,8 @@ WORK_MARKERS = {
+ CAPTURED_WORK_MARKERS = {
+     "live_capture::tests::source_rows_and_logits_match_independent_prefix_goldens":
+         "F6_GOLDEN activation_values=3840 ",
++    "async_job::tests::f6b_history_preserving_updates_match_independent_goldens":
++        "F6B_GOLDEN compared_values=3360 ",
+ }
+ FINDING = re.compile(r"ERROR: (?:AddressSanitizer|LeakSanitizer)|"
+                      r"SUMMARY: (?:AddressSanitizer|UndefinedBehaviorSanitizer)|runtime error:")
+@@ -90,13 +113,18 @@ def require(condition, message):
+ 
+ 
+ def selected_cases(selection="full"):
+-    require(selection in ("full", "live-only"), f"unknown sanitizer selection: {selection}")
+-    cases = CASES if selection == "full" else LIVE_CASES
++    selections = {"full": CASES, "live-only": LIVE_CASES, "steering-only": STEERING_CASES}
++    require(selection in selections, f"unknown sanitizer selection: {selection}")
++    cases = selections[selection]
+     return {binary: list(names) for binary, names in cases.items()}
+ 
+ 
+ def test_source(binary, name):
+     require(binary in CASES and name in CASES[binary], f"unselected test source: {binary}::{name}")
++    # These functions are included inside async_job::tests, so their Rust test
++    # namespace differs from the file that contains the actual guarded body.
++    if binary == "rebirth_llm" and name in INCLUDED_TEST_SOURCES:
++        return INCLUDED_TEST_SOURCES[name]
+     if binary == "rebirth_llm":
+         parts = name.split("::")
+         require(len(parts) == 3 and parts[1] == "tests" and parts[0] in UNIT_TEST_SOURCES,
+@@ -405,7 +433,7 @@ class Run:
+         artifacts = build_artifacts(output, self.cases)
+         build_outputs = {"build": output}
+         library = None
+-        if self.selection == "live-only":
++        if self.selection in SCOPED_SELECTIONS:
+             _, output, _ = self.command(library_build_command(), "build-library", timeout=1200)
+             build_outputs["build-library"] = output
+             library = library_artifact(output)
+@@ -518,8 +546,8 @@ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument("--evidence", type=Path, required=True)
+     parser.add_argument("--target", type=Path, required=True)
+-    parser.add_argument("--selection", choices=("full", "live-only"), default="full",
+-                        help="full suite (default) or only the new F6a live-state cases")
++    parser.add_argument("--selection", choices=("full", *SCOPED_SELECTIONS), default="full",
++                        help="full suite (default), F6a live-state cases, or F6b steering cases")
+     args = parser.parse_args()
+     args.evidence.mkdir(parents=True, exist_ok=True)
+     # A manual rerun into a retained evidence directory must never leave an old
+diff --git a/tests/sanitizers/test_harness.py b/tests/sanitizers/test_harness.py
+index e3de24f..973394f 100644
+--- a/tests/sanitizers/test_harness.py
++++ b/tests/sanitizers/test_harness.py
+@@ -7,7 +7,7 @@ import tempfile
+ import unittest
+ from urllib.parse import unquote
+ 
+-from run import (CASES, CAPTURED_WORK_MARKERS, LEGACY_CASES, LIVE_CASES, Run,
++from run import (CASES, CAPTURED_WORK_MARKERS, LEGACY_CASES, LIVE_CASES, STEERING_CASES, Run,
+                  build_artifacts, build_command, check_fault, check_runtime_symbols,
+                  check_test_events, check_unconditional_source, selected_cases,
+                  test_command, test_log_label, test_source, library_artifact,
+@@ -24,14 +24,17 @@ def events(name="actual_test", outcome="ok", passed=1, ignored=0):
+ 
+ 
+ class HarnessControls(unittest.TestCase):
+-    def test_full_default_preserves_legacy_and_adds_only_live_cases(self):
++    def test_full_default_preserves_legacy_live_and_steering_selections(self):
+         flatten = lambda cases: {(binary, name) for binary, names in cases.items() for name in names}
+-        legacy, live = flatten(LEGACY_CASES), flatten(LIVE_CASES)
++        legacy, live, steering = flatten(LEGACY_CASES), flatten(LIVE_CASES), flatten(STEERING_CASES)
+         self.assertEqual(len(legacy), 15)
+         self.assertEqual(len(live), 15)
+         self.assertFalse(legacy & live)
+-        self.assertEqual(flatten(selected_cases()), legacy | live)
++        self.assertEqual(len(steering), 10)
++        self.assertFalse((legacy | live) & steering)
++        self.assertEqual(flatten(selected_cases()), legacy | live | steering)
+         self.assertEqual(flatten(selected_cases("live-only")), live)
++        self.assertEqual(flatten(selected_cases("steering-only")), steering)
+         with self.assertRaisesRegex(RuntimeError, "unknown sanitizer selection"):
+             selected_cases("typo")
+ 
+@@ -53,6 +56,77 @@ class HarnessControls(unittest.TestCase):
+         with self.assertRaises(RuntimeError):
+             test_source("rebirth_llm", "unknown::tests::fake")
+ 
++    def test_steering_source_guard_uses_included_file_and_rejects_wrong_module_body(self):
++        root = Path(__file__).resolve().parents[2] / "rebirth/src/rust/rebirth-llm"
++        for name in STEERING_CASES["rebirth_llm"]:
++            with self.subTest(test=name):
++                module = name.split("::")[0]
++                expected = "src/live_steering_tests.rs" if module == "async_job" else f"src/{module}.rs"
++                self.assertEqual(test_source("rebirth_llm", name), expected)
++                source = (root / test_source("rebirth_llm", name)).read_text()
++                check_unconditional_source(source, name)
++                with self.assertRaisesRegex(RuntimeError, "missing unconditional"):
++                    check_unconditional_source((root / "src/async_job.rs").read_text(), name)
++                short = name.split("::")[-1]
++                changed = source.replace(f"fn {short}() {{", f"fn {short}() {{\n    return;")
++                self.assertNotEqual(changed, source)
++                with self.assertRaisesRegex(RuntimeError, "possible early-return"):
++                    check_unconditional_source(changed, name)
++
++    def test_both_scoped_routes_build_production_archive_before_object_audit(self):
++        class ReachedAudit(Exception):
++            pass
++
++        root = Path(__file__).resolve().parents[2]
++        for selection in ("full", "live-only", "steering-only"):
++            with self.subTest(selection=selection), tempfile.TemporaryDirectory() as directory:
++                evidence = Path(directory)
++                library = evidence / "librebirth_llm.rlib"
++                library.write_bytes(b"not a real archive; routing control only")
++                run = Run(root, evidence, evidence / "unused-target", selection)
++                calls = []
++
++                def command(argv, label, **kwargs):
++                    calls.append((label, argv))
++                    if label == "build":
++                        rows = [{"reason": "compiler-artifact", "target": {"name": name},
++                                 "profile": {"test": True}, "executable": "/tmp/" + name}
++                                for name in run.cases]
++                        rows.append({"reason": "build-finished", "success": True})
++                    else:
++                        self.assertEqual(label, "build-library")
++                        rows = self.library_events()
++                        rows[0]["filenames"] = [str(library)]
++                    return 0, "\n".join(map(json.dumps, rows)), ""
++
++                def audit():
++                    raise ReachedAudit()
++
++                run.command, run.audit_objects = command, audit
++                with self.assertRaises(ReachedAudit):
++                    run.build()
++                labels = [label for label, _ in calls]
++                self.assertEqual(labels, ["build"] if selection == "full" else ["build", "build-library"])
++                if selection != "full":
++                    self.assertNotIn("--test", calls[0][1])
++                    self.assertEqual(calls[1][1], library_build_command())
++                    receipt = json.loads((evidence / "library-artifact.json").read_text())
++                    self.assertEqual(receipt["archive"], str(library))
++                    self.assertRegex(receipt["sha256"], r"^[0-9a-f]{64}$")
++
++    def test_steering_golden_requires_its_own_captured_work_marker(self):
++        name = STEERING_CASES["rebirth_llm"][0]
++        marker = "F6B_GOLDEN compared_values=3360 "
++        self.assertEqual(CAPTURED_WORK_MARKERS[name], marker)
++        self.assertIn("--show-output", test_command("/tmp/binary", name))
++        rows = [json.loads(line) for line in events(name).splitlines()]
++        rows[2]["stdout"] = marker + "max_activation_delta=0 max_logit_delta=0\n"
++        check_test_events("\n".join(map(json.dumps, rows)), name)
++        for wrong in ("F6_GOLDEN activation_values=3840 ", "F6B_GOLDEN compared_values=0 ", ""):
++            rows[2]["stdout"] = wrong
++            with self.subTest(marker=wrong), self.assertRaisesRegex(RuntimeError, "missing captured"):
++                check_test_events("\n".join(map(json.dumps, rows)), name)
++
+     def test_production_library_build_keeps_target_std_and_no_extra_tests(self):
+         command = library_build_command()
+         self.assertEqual(command[:2], ["cargo", "build"])

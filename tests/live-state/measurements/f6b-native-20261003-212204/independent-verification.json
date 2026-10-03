@@ -1,0 +1,39 @@
+{
+  "status": "verified",
+  "source_files": 666,
+  "source_drift": [],
+  "tests": {
+    "f6b-native": {
+      "passed": 10,
+      "log_sha256": "cc3450656b0f25ee65acb21874bfbc7ccde1bac50422bf672d132fbba9cef4f9"
+    },
+    "live-ack-boundaries": {
+      "passed": 2,
+      "log_sha256": "43b27d47c3fa22b5a98f5e016a9712b66561fd41c215fa0a5ca08f9ab5e16099"
+    },
+    "probe-cache": {
+      "passed": 1,
+      "log_sha256": "623736ab2dc62952d03fd7af8ac86a21b493f91c6cb646c1a5c36238bf979ef0"
+    },
+    "control-allocation": {
+      "passed": 1,
+      "log_sha256": "51ca3174b8fc5c57e4cccf428491fe889bcec82cff56001bc7be1431197b92de"
+    },
+    "startup-ownership": {
+      "passed": 1,
+      "log_sha256": "d02e973b8478f998cc024445c92456a643e59eefb8d185b70fecdd3ee20ec7b1"
+    },
+    "existing-intervention-oracle": {
+      "passed": 1,
+      "log_sha256": "cc0dafbe49dc23bdc598c7b2e8ebae801e0b8dba9614a5b4bac60efe2044d858"
+    },
+    "ffi": {
+      "passed": 7,
+      "log_sha256": "cf32b714c47d1372b38263010f2398024e649070758c9954692dde1a32c4a5f5"
+    }
+  },
+  "markers": [
+    "test async_job::tests::f6b_history_preserving_updates_match_independent_goldens ... F6B_GOLDEN compared_values=3360 max_activation_delta=0.003543657 max_logit_delta=0.001738192"
+  ],
+  "diagnostic_lines": {}
+}

@@ -1,0 +1,34 @@
+{
+  "candidate.patch": {
+    "bytes": 99967,
+    "sha256": "8f948781d7cf43cf3b8069e4676b2b1f52f9a0989f5e4fea69621dafed65d5d0"
+  },
+  "changed-source.tar.gz": {
+    "bytes": 115410,
+    "sha256": "ecb9ad1a611d690a8ee8c1c30f63b589e73a5ddf4687ed10dbd1d6d783a5014b"
+  },
+  "clippy.log": {
+    "bytes": 2615,
+    "sha256": "096e2a7d5be8f942a10bcce7ee6580c25505a860e627c5baf4ab605e5e02e92a"
+  },
+  "diagnosis.md": {
+    "bytes": 885,
+    "sha256": "c8ad3a1b9c4092fc2b8d9ce23cbc1a80da60b27a664db677d73c33bce73f22f9"
+  },
+  "format.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source-manifest.json": {
+    "bytes": 81000,
+    "sha256": "a5eb343eaf506c148b559f6d2a4b0f5ac1c81547c8480eb253c6fb2401854788"
+  },
+  "status.json": {
+    "bytes": 1622,
+    "sha256": "77dba2981d7f659a16f29e27a367d8c36cd0d092e169f61268356821c1ac58d0"
+  },
+  "verify-native.py": {
+    "bytes": 5360,
+    "sha256": "76282eaa892daa87721d482a3043da096f4e0a3eb5cc35f4c81557bae1d7962e"
+  }
+}

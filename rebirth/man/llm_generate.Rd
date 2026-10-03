@@ -74,7 +74,8 @@ already-open writable binary base \code{file()} connection. Requires
 \code{async = TRUE}; see \emph{Token streaming}.}
 
 \item{on_state}{\code{NULL} or a function receiving one live state; requires
-background text-only generation. Return NULL; see \emph{Live state observation}.}
+background text-only generation. Return NULL to continue or a coefficient
+reply for existing steering entries; see \emph{Live state observation}.}
 
 \item{layers}{Live capture block indices: integer() for logits only, NULL for
 all blocks, or unique valid 1-based indices.}
@@ -236,8 +237,10 @@ from the callback to stop before another token is sampled. Cancellation still
 rejects the promise, and callbacks can block R while they run.
 
 \code{step} is one plain data-frame row: integer \code{state_id}, \code{prompt_id},
-\code{token_pos}, \code{token_id}, \code{context_pos}, \code{source_pos}, character \code{source}, and
-double \code{elapsed}. Let P be the actual templated prompt token count and k the
+\code{token_pos}, \code{token_id}, \code{context_pos}, \code{source_pos}, character \code{source},
+double \code{elapsed}, followed by integer \code{steering_revision},
+\code{applied_after_state} and \code{effective_source_pos}. Let P be the actual
+templated prompt token count and k the
 generated position. The sampled token belongs at \code{context_pos = P + k};
 the forward pass selecting it came from \code{source_pos = P + k - 1}.
 \code{source} is \code{"prompt"} for the first state and \code{"generated"} thereafter.
@@ -251,6 +254,32 @@ this table. \code{trace} is a bounded \code{relm_trace} for one source position,
 attributes. Its token positions identify the source, not the sampled token.
 \code{layers = integer()} captures no activations; \code{NULL} explicitly selects all
 blocks. Selected residuals include interventions already applied to the handle.
+
+A callback may instead return exactly
+\code{list(steer = data.frame(intervention = 1L, coef = 0))} to change coefficients
+of existing steering entries. Indices address \code{m$interventions} (including
+intervening ablation entries); only steering entries may be updated. Partial
+replies retain other coefficients; an empty table or unchanged values do not
+advance the revision. Replies are validated atomically, including finite
+float32-range coefficients and finite summed layer vectors. Invalid replies
+reject with \code{relm_error_callback}, \code{callback = "on_state"},
+\code{reason = "state_reply"}, preserving the original condition as \code{parent}.
+
+A changed reply to state k affects the decode of token k and sampling of
+token k+1, never the already sampled token k or historical KV entries.
+\code{attr(state, "steering")} is a worker-produced data frame with integer
+\code{intervention}, integer \code{layer} and double \code{coef}, sorted by original index.
+Its coefficients and the three audit columns describe the adapters actually
+used for the reported state. Baseline audit values are 0, 0 and 1. A change
+from state k advances the revision and becomes effective at source position
+P+k; a terminal reply has no promised later-state receipt. Zero removes that
+entry's contribution. Ablation still follows steering.
+
+The original adapters are restored before model ownership returns, including
+cancellation and failure. The R handle and other handles are unchanged; a
+subsequent fresh generation uses the original coefficients. Changing back
+during a running generation does not undo its earlier effects on KV history.
+Direction, layer and ablation changes are unavailable in this reply protocol.
 
 One state waits for acknowledgement. All earlier token events are delivered
 before \code{on_state}; the current token/text events and the next decode follow

@@ -1,8 +1,11 @@
 # Phase 6 implementation and validation
 
 Status: in progress, 2026-10-03. F6a and F6b are authorized under D-041.
-F6a is implemented and local acceptance passes; focused Linux sanitizer and
-ordinary CI acceptance remain pending. F6b runtime is not implemented. The binding
+F6a acceptance is complete at6877c4d: local functional/resource/foreground gates,
+all nine ordinary checks and independently verified scoped Linux sanitizer.
+F6b runtime/R/FFI implementation and focused native/installed-R acceptance are
+complete; public update measurements also pass. Interactive steering and remote
+gates remain pending. The binding
 contract is `phase6-live-introspection-plan.md`; F6b coefficient replies and
 audit fields are finalized there before implementation. No new dependency,
 vendor modification, model download or numerical tolerance is introduced.
@@ -284,10 +287,8 @@ that total-process RSS equals the ledger. Raw sampling times are retained.
 
 ## Remaining gates
 
-- Actual focused Linux sanitizer execution for the15 new live cases, preserving
-  instrumentation/negative controls and independently verifying raw receipts.
-- F6b coefficient changes, revision/source audit, zero removal, history and
-  original-adapter restoration on all exit paths, with native reference checks.
+- The focused foreground F6b steering demonstration. Native/R history, reply,
+  zero/reset and public update measurements below have passed.
 - Final relevant CI and integration. Prior WP9/WP10/I1/maintenance acceptance
   is retained with its original source scope, not repeatedly executed here.
 
@@ -370,3 +371,142 @@ initial mock-only prototype used `lib` and was corrected. These are parser/audit
 controls, not native product execution. No runtime, flags, numerical bounds,
 selected product test IDs or dependencies changed. Corrected remote acceptance
 is still required; the existing R candidate continues without duplication.
+
+## F6a remote acceptance completed
+
+At exact source6877c4d, R37142228825 and Rust37142228867 passed all nine individual
+required checks. Sanitizer37142257323 passed all15 selected native live cases.
+Independent verification checked exact libtest names/results and downloaded
+stdout/stderr hashes, the3840value numerical-work receipt, production library
+binding and both declared Cargo/Arrow variants. All4Rust archives across3crates,
+269native compile/symbol receipts, build_cvec instrumentation,7callback runtime
+controls,68layout cases,4mixed faults and plain-control rejection were verified.
+All34 remote harness controls passed and2346source hashes matched.
+
+The once-downloaded inventory contains756files/45592746bytes, manifest
+3468f429ad1007cce3fe74fe6c732b7e99f6f014e9d8f0ac87a4f80c888b7b80.
+The742UTF-8 receipts are losslessly archived in measurements/sanitizer-37142257323;
+14probe binaries remain locally retained with size/hash inventory. Full native
+object/archive/test executable bytes were not uploaded by the workflow: their
+hashes remain runtime receipts while actual symbols, flags and test bytes were
+independently checked. Scope is exercised Linux CPU paths, not R/SEXP, GPU,
+vision, TSan or a universal absence-of-UB claim. All earlier failures remain
+failed. Collector-only assumptions about the production Arrow rmeta and local
+crate path were corrected before verification; no remote retry was needed.
+
+## F6b implementation boundary
+
+The authorized next increment adds exact coefficient replies for existing
+steering entries, actual worker revision/source metadata, atomic sum validation,
+zero-removal and original-adapter restoration. Original directions are copied
+once into shared immutable native slices. The existing three-layer independent
+reference is unchanged; its history-preserving path distinguishes a live update
+from prefix replay or ignoring zero. Existing F6a evidence retains its original
+source. New native/R tests, updated allocation twins and focused update-latency/
+foreground scripts are prepared, not yet executed. No dependency, vendor,
+public export name or numerical tolerance changes.
+
+
+F6b's focused review identified a material R workspace issue before verification:
+scanning all original interventions on every state, and normalizing reply rows
+before bounding their count, could allocate in proportion to ablations rather
+than the admitted steering count. The implementation now caches the original
+steering audit at admission using two scalar walks (without an all-intervention
+logical vector), charges its measured size, and checks reply column
+lengths and row count before vector operations. Per-state checks and reply index
+membership use the cache. The new regression proves no original-metadata scan
+is needed during delivery and refuses excess rows. This is a predictive-bound
+correction, not a claim based only on measured process RSS.
+
+The native F6b pipeline is running against frozen source; no F6b tests have yet
+been accepted. Ten new cases cover independent KV history, partial/no-op/terminal
+updates, zero removal, validation, cancellation/close, setter/restoration/panic
+ownership and the allocation ledger. The focused sanitizer route selects these
+ten cases and preserves the accepted fifteen-case live route; full selection
+now contains forty. Thirty-three Python harness controls pass, including the
+production archive path for both scoped modes. No native sanitizer execution
+for F6b has occurred yet.
+
+
+The first F6b verification stopped at clippy before any product test because
+`AsyncStartFailure` had grown to160bytes. Its source snapshot and logs are
+retained in `measurements/f6b-native-20261003-210135`. The correction boxes this
+failure payload, preserving model/permit/error ownership and charging its
+compiled heap size. The review also identified uncharged initial-zero sentinel
+probe buffers. A bounded scalar probe now compares the same checked neuron and
+unchanged sentinel tolerance on sequential fresh contexts; a fixed Boolean
+cache and a separately named native/R peak component account for its storage.
+The corrected affected-only native verification is running; neither source
+inspection nor formula agreement is claimed as execution acceptance.
+
+
+The second native attempt passed formatting but failed compilation before tests
+on three integration mismatches: an old synthetic completion fixture omitted
+`model_invalidated`, an included FFI source duplicated the parent metadata
+import, and the steering-shape count had `usize` rather than `u64`. The parent
+corrected the fixture/import and added a checked conversion. Receipts remain in
+`measurements/f6b-native-20261003-211726`; no run is relabeled as functional
+acceptance. The single review's two memory findings are now corrected in source
+and its targeted closure is recorded in the same review report.
+
+
+## F6b native acceptance
+
+Corrected native run `native-20261003-212204` passed format/clippy/no-spill and
+all23 selected native/FFI outcomes, with no warnings, ignored tests or skips.
+The ten new cases include the independent3,360value historical-KV comparison
+(maximum activation difference0.003543657, logit difference0.001738192, unchanged
+bounds), atomic reply/zero/audit behavior and error/cancel/close/reset ownership.
+The other thirteen outcomes cover affected acknowledgements, probe cache,
+allocation/startup ownership, the existing intervention oracle and FFI.
+All666 source hashes matched the frozen manifest. Raw logs, source snapshot and
+independent verification are retained in `measurements/f6b-native-20261003-212204`.
+This closes the native execution gates for the review corrections; installed R,
+public update latency, foreground demonstration and scoped Linux sanitizer
+acceptance were still pending at that native milestone; installed results follow.
+
+## F6b installed R acceptance and fixture recovery
+
+A fresh F6b installation and regenerated wrappers/manuals passed. The initial
+nineteen-case run executed three cached-Qwen model cases and failed one case:
+an exact ablation-scalar assertion compared a named matrix element (`1.30`) with
+an unnamed number. Its original callback error obscured the parent assertion.
+One unchanged targeted reproduction retained the parent condition and confirmed
+the value was exactly0.125; no runtime/numerical failure was established.
+The fixture now checks the source-position row label separately and compares the
+unnamed value with identical(), without relaxing a numeric bound. It also reports
+the callback parent in the outer assertion. Source/binary product code is unchanged.
+
+The affected-only recovery passed111expectations and completed the previously
+unexecuted source build and scoped package check. Combining the eighteen original
+successful cases with the corrected case yields19cases/551expectations, including
+three actual cached-Qwen cases, with no test skips or warnings. The source
+manifests differ only in that test file. The same fresh installation is retained;
+no passed model case or native acceptance was repeated. Scoped check has zero
+errors and two deliberately omitted-rendered-vignette warnings; full CI remains
+required. External duplicate-lc++ and testthat patch-version warnings remain in
+raw logs. Failure, diagnostic and recovery receipts are in the corresponding
+`measurements/f6b-package-20261003-212652` and
+`measurements/f6b-package-resume-20261003-213806` directories.
+
+## F6b public update measurements
+
+Sixteen fresh-installed-package runs delivered2,048states across requested CPU
+and Metal backends: one warm-up pair and three balanced measured pairs per
+backend, each run128states. Changed and identical coefficient replies both
+satisfied worker audit/source-position ordering, bounded delivered objects,
+unchanged metadata and seeded adapter reset. An independent receipt pass checked
+every state, coefficient/revision sequence, interval and saved summary against
+raw RDS data, without another model execution. All665 frozen source hashes match.
+
+Median callback-exit-to-next-state intervals were11ms unchanged/11ms changing
+on CPU, and19ms/22ms for the Metal handle. These combine validation, acknowledgement,
+setting/reservation, decode, publication and R polling. They are not isolated
+setter cost, a new threshold or fresh proof of GPU offload. Earlier actual Metal
+backend feasibility retains its separate source scope. Receipts are in
+`measurements/f6b-latency-20261003-213919`.
+
+The focused foreground steering test remains unexecuted: computer use observed
+the Mac locked on2026-10-03 and the founder has been asked to unlock it. Prior F6a
+foreground evidence is retained but does not substitute for coefficient changes.
+The draft PR can run the new remote gates while this human prerequisite is pending.

@@ -32,6 +32,7 @@ mod live_capture;
 #[cfg(feature = "spill")]
 mod live_spill;
 mod live_state;
+mod live_steering;
 mod probe;
 mod schema;
 #[cfg(feature = "spill")]
@@ -68,6 +69,7 @@ pub use live_state::{
     LIVE_MAX_STATES, LIVE_SPILL_BYTES, LIVE_TRANSPORT_BYTES, LIVE_VECTOR_BYTES,
     LIVE_VECTOR_HEADER_BYTES,
 };
+pub use live_steering::{LiveCoefficient, LiveReply, LiveSteer, LiveSteeringRow};
 pub use schema::CompiledSchema;
 pub use spill_lease::{cleanup_managed_spill, prepare_managed_spill, sweep_managed_spill};
 pub use structured::{

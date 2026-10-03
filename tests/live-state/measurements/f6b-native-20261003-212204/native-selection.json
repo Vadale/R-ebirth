@@ -1,0 +1,125 @@
+[
+  {
+    "name": "f6b-native",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--lib",
+      "f6b_",
+      "--",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "count": 10,
+    "markers": [
+      "F6B_GOLDEN compared_values=3360"
+    ]
+  },
+  {
+    "name": "live-ack-boundaries",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--lib",
+      "async_job::tests::live_state_",
+      "--",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "count": 2
+  },
+  {
+    "name": "probe-cache",
+    "count": 1,
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--lib",
+      "probe::tests::probe_cache_reports_only_unproven_layers_and_records_passes",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  {
+    "name": "control-allocation",
+    "count": 1,
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--lib",
+      "async_job::tests::live_control_allocations_cover_memory_and_spill_cancellation",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  {
+    "name": "startup-ownership",
+    "count": 1,
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--lib",
+      "async_job::tests::async_start_failure_returns_reservation",
+      "--",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ]
+  },
+  {
+    "name": "existing-intervention-oracle",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--test",
+      "synthetic_intervene",
+      "--",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "count": 1
+  },
+  {
+    "name": "ffi",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-ffi",
+      "--lib",
+      "--",
+      "--test-threads=1"
+    ],
+    "count": 7
+  }
+]

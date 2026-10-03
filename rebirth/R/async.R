@@ -151,6 +151,8 @@ async_generate <- function(m, prompt, chat, max_tokens, temperature, top_p,
   job$live_state_id <- 0L
   job$live_elapsed <- 0
   job$live_prompt_count <- NULL
+  job$live_audit <- NULL
+  job$live_cancel_requested <- FALSE
   job$structured <- !is.null(schema)
   job$prompts_total <- length(prompt)
   job$stream_event_id <- 0L
@@ -313,6 +315,13 @@ async_poll <- function(job) {
   } else {
     error <- if (!is.null(job$callback_error)) job$callback_error else
       async_payload_condition(payload$error)
+    if (!is.null(job$live) && is.null(job$callback_error) &&
+      identical(error$argument, "on_state_reply")) {
+      error <- async_condition("relm_error_callback",
+        "The live state reply was rejected; no generation result was returned.",
+        list(callback = "on_state", reason = "state_reply", parent = error,
+          job_id = job$id, state_id = job$live_state_id, prompt_id = 1L))
+    }
     async_settle(job, error = error)
   }
   invisible(NULL)
@@ -332,7 +341,7 @@ async_settle <- function(job, value = NULL, error = NULL) {
   # Remove roots before invoking promise continuations; callbacks can create a
   # subsequent job after native terminal collection without losing its roots.
   job$timer <- job$callback <- job$model <- job$resolve <- job$reject <- job$stream <- job$live <- NULL
-  job$last_progress <- job$callback_error <- job$names <- NULL
+  job$last_progress <- job$callback_error <- job$names <- job$live_audit <- NULL
   if (is.null(error)) resolve(value) else reject(error)
   invisible(NULL)
 }
@@ -414,5 +423,8 @@ llm_cancel <- function(m) {
   }
   ensure_open(m)
   payload <- relm_check(rebirth_async_cancel(m$ptr))
+  job <- .relm_async$job
+  if (isTRUE(payload$cancelled) && !is.null(job) && !is.null(job$live) &&
+    identical(job$model$state, m$state)) job$live_cancel_requested <- TRUE
   invisible(isTRUE(payload$cancelled))
 }

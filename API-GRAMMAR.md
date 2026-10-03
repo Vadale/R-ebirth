@@ -320,8 +320,9 @@ components = "residual", top = 20L, spill = TRUE, spill_dir = NULL` to
 The exact F6a contract in [Phase 6 sections 3–5](docs/phase6-live-introspection-plan.md)
 is binding, including state/source positions, errors, resource limits and spill
 side effects. No new export name or R/Rust dependency is approved or needed.
-F6a is implemented with local acceptance recorded in the implementation report;
-remote acceptance remains pending. Approval itself is not a numerical result.
+F6a acceptance passed at6877c4d, including all nine ordinary checks and the
+independently verified scoped Linux sanitizer. F6b is implemented with focused native/installed-R/public-update evidence;
+interactive and remote gates remain pending. Approval itself is not a numerical result.
 
 A non-NULL on_state function requires async mode, one text prompt, no schema or
 image input, and at most1024 requested tokens. Default layers capture no
@@ -335,7 +336,8 @@ participating in a later removed stop suffix.
 
 One outstanding state is acknowledged before token/text delivery for k and its
 next decode. R callbacks run only on R's main thread, outside native locks.
-F6a callback replies must be NULL. Calling llm_cancel inside on_state requests
+The accepted F6a increment used NULL-only replies; the F6b amendment below
+extends that response without changing ordering. Calling llm_cancel inside on_state requests
 existing classed cancellation, not successful partial text. Existing on_token,
 CSV, final promise/seed and busy/ownership rules remain intact. Delivered spill
 proxies retain managed ownership; incomplete files are never published.
@@ -349,5 +351,4 @@ decode. Partial replies preserve other coefficients. Three integer audit columns
 in step and a worker-produced steering attribute record actual applied state.
 Original adapters are restored before model ownership returns, on every exit.
 This preserves immutable R handles and the observation boundary. No new export,
-dependency, direction, ablation or replay of historical KV is added. F6b is not
-claimed implemented or covered by F6a acceptance alone.
+dependency, direction, ablation or replay of historical KV is added. F6b acceptance is tracked separately and is not inferred from F6a evidence.

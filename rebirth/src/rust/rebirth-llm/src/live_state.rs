@@ -24,10 +24,15 @@ pub struct LiveRequest {
     pub trace_id: String,
     pub model: String,
     pub spec_key: String,
+    pub steering: Vec<crate::LiveSteer>,
 }
 
 #[derive(Debug, Clone)]
 pub struct LiveEstimate {
+    pub steering_probe_bytes: u64,
+    pub steering_probe_fixed_bytes: u64,
+    pub steering_bytes: u64,
+    pub steering_descriptor_bytes: u64,
     pub native_fixed_bytes: u64,
     pub ffi_intern_bytes: u64,
     pub schema_frame_bytes: u64,
@@ -80,6 +85,10 @@ pub struct LiveState {
     pub source_pos: u32,
     pub prompt_token_count: usize,
     pub elapsed: f64,
+    pub steering_revision: usize,
+    pub applied_after_state: usize,
+    pub effective_source_pos: u32,
+    pub steering: Vec<crate::LiveSteeringRow>,
     pub logits: Vec<TokenLogit>,
     pub trace: LiveTrace,
 }
@@ -128,6 +137,29 @@ impl LiveRequest {
         &self,
         metadata: &ModelMetadata,
         max_tokens: usize,
+    ) -> Result<LiveEstimate, RebirthError> {
+        let direction_values = self
+            .steering
+            .iter()
+            .try_fold(0_u64, |n, entry| add(n, entry.direction.len() as u64))?;
+        let estimate = self.preflight_with_steering_shape(
+            metadata,
+            max_tokens,
+            self.steering.len(),
+            direction_values,
+        )?;
+        crate::live_steering::validate_entries(&self.steering, metadata)?;
+        Ok(estimate)
+    }
+
+    /// Metadata-only sizing before the FFI copies original direction slices.
+    /// The complete preflight rechecks actual entry lengths, order and values.
+    pub fn preflight_with_steering_shape(
+        &self,
+        metadata: &ModelMetadata,
+        max_tokens: usize,
+        steer_count: usize,
+        direction_values: u64,
     ) -> Result<LiveEstimate, RebirthError> {
         if max_tokens == 0
             || max_tokens > LIVE_MAX_STATES
@@ -191,7 +223,9 @@ impl LiveRequest {
             .checked_mul(self.components.len())
             .ok_or_else(overflow)?;
         let n = mul(h, vectors as u64)?;
-        if h == 0 || (!self.layers.is_empty() && mul(h, 4)? > LIVE_VECTOR_BYTES) {
+        if h == 0
+            || ((!self.layers.is_empty() || steer_count > 0) && mul(h, 4)? > LIVE_VECTOR_BYTES)
+        {
             return Err(RebirthError::Oom {
                 estimate_bytes: mul(h, 4)?,
                 budget_bytes: LIVE_VECTOR_BYTES,
@@ -199,6 +233,78 @@ impl LiveRequest {
                     .into(),
             });
         }
+        let steer_count = steer_count as u64;
+        if direction_values != mul(h, steer_count)? {
+            return Err(invalid(
+                "Live steering direction lengths do not match the model width and entry count.",
+            ));
+        }
+        let descriptor_count = (self.steering.capacity() as u64).max(steer_count);
+        let steering_descriptor_bytes = if steer_count == 0 {
+            0
+        } else {
+            sum(&[
+                mul(
+                    descriptor_count,
+                    crate::LiveSteer::descriptor_bytes() as u64,
+                )?,
+                crate::live_steering::session_bytes() as u64,
+                std::mem::size_of::<Option<crate::live_steering::SteeringBaseline>>() as u64,
+                3 * std::mem::size_of::<Vec<u8>>() as u64,
+                std::mem::size_of::<usize>() as u64,
+            ])?
+        };
+        let steering_transport_bytes = if steer_count == 0 {
+            0
+        } else {
+            sum(&[
+                mul(8, direction_values)?,
+                mul(52, steer_count)?,
+                steering_descriptor_bytes,
+            ])?
+        };
+        let audit = if steer_count == 0 {
+            0
+        } else {
+            sum(&[
+                mul(2, grow(mul(4, steer_count)?)?)?,
+                grow(mul(8, steer_count)?)?,
+                8,
+            ])?
+        };
+        let steering_bytes = if steer_count == 0 {
+            0
+        } else {
+            sum(&[
+                steering_transport_bytes,
+                mul(8, mul(h, metadata.layers.max(0) as u64)?)?,
+                mul(4, h)?,
+                live_r_vector_bytes(mul(8, direction_values)?)?,
+                mul(2, self.r_fixed_bytes)?,
+                mul(2, grow(mul(4, steer_count)?)?)?,
+                mul(2, grow(mul(8, steer_count)?)?)?,
+                mul(3, live_r_vector_bytes(mul(4, steer_count)?)?)?,
+                live_r_vector_bytes(mul(8, steer_count)?)?,
+            ])?
+        };
+        let steering_probe_fixed_bytes = if steer_count == 0 {
+            0
+        } else {
+            crate::probe::live_probe_fixed_bytes() as u64
+        };
+        let steering_probe_bytes = if steer_count == 0 {
+            0
+        } else {
+            sum(&[
+                mul(4, mul(h, metadata.layers.max(0) as u64)?)?,
+                mul(4, h)?,
+                mul(
+                    metadata.layers.max(0) as u64,
+                    std::mem::size_of::<bool>() as u64,
+                )?,
+                steering_probe_fixed_bytes,
+            ])?
+        };
         let b = metadata.max_token_piece_bytes;
         let k = self.top as u64;
         let c = self.components.len() as u64;
@@ -227,7 +333,7 @@ impl LiveRequest {
                 8,
             ])?
         };
-        let logits_bytes = add(self.r_fixed_bytes, logits)?;
+        let logits_bytes = sum(&[self.r_fixed_bytes, logits, audit])?;
         let materialized_bytes = add(logits_bytes, trace)?;
         let strings = sum(&[
             self.spill_dir.capacity() as u64,
@@ -264,7 +370,19 @@ impl LiveRequest {
             capture_selectors,
             mul(add(vectors as u64, 1)?, b)?,
         ])?;
-        let native_capture_bytes = add(capture_memory, native_fixed_bytes)?;
+        if add(steering_transport_bytes, native_fixed_bytes)? > LIVE_TRANSPORT_BYTES
+            && steer_count > 0
+        {
+            return Err(RebirthError::Oom {
+                estimate_bytes: add(steering_transport_bytes, native_fixed_bytes)?,
+                budget_bytes: LIVE_TRANSPORT_BYTES,
+                suggestion:
+                    "Reduce the number of original steering entries to fit live owned transport."
+                        .into(),
+            });
+        }
+        let native_capture_bytes =
+            sum(&[capture_memory, native_fixed_bytes, steering_transport_bytes])?;
         let spilled = vectors > 0
             && (materialized_bytes > self.budget_bytes
                 || native_capture_bytes > LIVE_TRANSPORT_BYTES);
@@ -346,7 +464,12 @@ impl LiveRequest {
                 4,
             ])?;
         }
-        let capture_control_bytes = sum(&[capture_selectors, native_fixed_bytes, b])?;
+        let capture_control_bytes = sum(&[
+            capture_selectors,
+            native_fixed_bytes,
+            b,
+            steering_transport_bytes,
+        ])?;
         let one_row = sum(&[mul(h, 4)?, b, std::mem::size_of::<CaptureRow>() as u64])?;
         // The queue descriptor reserve and all retained selectors/control are
         // inside the8MiB cap; producer and consumer rows are separate scratch.
@@ -412,6 +535,7 @@ impl LiveRequest {
             mul(24, transport_n)?,
             mul(12, transport_v)?,
             mul(44, k)?,
+            mul(16, steer_count)?,
             ffi_intern_bytes,
         ])?;
         let native_logits_bytes = sum(&[
@@ -450,8 +574,14 @@ impl LiveRequest {
             capture_writer_bytes,
             native_fixed_bytes,
             wp10_peak_bytes,
+            steering_bytes,
+            steering_probe_bytes,
         ])?;
         Ok(LiveEstimate {
+            steering_probe_bytes,
+            steering_probe_fixed_bytes,
+            steering_bytes,
+            steering_descriptor_bytes,
             native_fixed_bytes,
             ffi_intern_bytes,
             schema_frame_bytes,
@@ -522,6 +652,7 @@ pub(crate) mod tests {
             trace_id: "live-bound-test".into(),
             model: "synthetic".into(),
             spec_key: "live-v1-test".into(),
+            steering: vec![],
         }
     }
     #[test]
@@ -577,6 +708,80 @@ pub(crate) mod tests {
         huge.architecture = "unknown".into();
         assert!(empty.preflight(&huge, 4).is_ok());
     }
+    #[test]
+    fn f6b_shape_preflight_matches_owned_request_and_full_memory_ledger() {
+        let mut req = request();
+        let mut meta = metadata();
+        meta.layers = 3;
+        let base = req.preflight(&meta, 4).unwrap();
+        let shape = req.preflight_with_steering_shape(&meta, 4, 2, 64).unwrap();
+        req.steering = vec![
+            crate::LiveSteer {
+                intervention: 0,
+                layer: 1,
+                coef: 1.0,
+                direction: std::sync::Arc::from([1.0; 32]),
+            },
+            crate::LiveSteer {
+                intervention: 3,
+                layer: 2,
+                coef: 0.0,
+                direction: std::sync::Arc::from([0.5; 32]),
+            },
+        ];
+        let owned = req.preflight(&meta, 4).unwrap();
+        assert_eq!(shape.steering_bytes, owned.steering_bytes);
+        assert_eq!(shape.steering_probe_bytes, owned.steering_probe_bytes);
+        assert_eq!(
+            owned.steering_probe_fixed_bytes,
+            crate::probe::live_probe_fixed_bytes() as u64
+        );
+        assert_eq!(
+            owned.steering_probe_bytes,
+            4 * 32 * 3 + 4 * 32 + 3 + owned.steering_probe_fixed_bytes
+        );
+        assert_eq!(base.steering_probe_bytes, 0);
+        assert_eq!(shape.native_capture_bytes, owned.native_capture_bytes);
+        assert_eq!(shape.transient_bytes, owned.transient_bytes);
+        let s = 2;
+        let h = 32;
+        let d = 3;
+        let g = |n| live_r_vector_bytes(n).unwrap() - 48;
+        let v = |n| live_r_vector_bytes(n).unwrap();
+        assert_eq!(
+            owned.steering_bytes,
+            8 * h * s
+                + 8 * h * d
+                + 4 * h
+                + 52 * s
+                + owned.steering_descriptor_bytes
+                + v(8 * h * s)
+                + 2 * req.r_fixed_bytes
+                + 2 * g(4 * s)
+                + 2 * g(8 * s)
+                + 3 * v(4 * s)
+                + v(8 * s)
+        );
+        let audit = 2 * g(4 * s) + g(8 * s) + 8;
+        assert_eq!(owned.materialized_bytes - base.materialized_bytes, audit);
+        assert_eq!(owned.logits_bytes - base.logits_bytes, audit);
+        assert_eq!(
+            owned.transient_bytes - base.transient_bytes,
+            3 * audit + 16 * s + owned.steering_bytes + owned.steering_probe_bytes
+        );
+        assert!(req.preflight_with_steering_shape(&meta, 4, 2, 63).is_err());
+        assert!(req
+            .preflight_with_steering_shape(&meta, 4, usize::MAX, u64::MAX)
+            .is_err());
+        // Borrowed sizing refuses the copies before any original-direction Arc is made.
+        let count = (LIVE_TRANSPORT_BYTES / (8 * h)) as usize;
+        assert!(req
+            .preflight_with_steering_shape(&meta, 4, count, count as u64 * h)
+            .is_err());
+        req.steering[1].intervention = 0;
+        assert!(req.preflight(&meta, 4).is_err());
+    }
+
     #[cfg(feature = "spill")]
     #[test]
     fn live_spill_admission_uses_proxy_and_component_fragments() {

@@ -1,11 +1,12 @@
 # relm (development)
 
-## Live state observation (F6a)
+## Live state observation and coefficient steering (F6a/F6b)
 
 * `llm_generate(async = TRUE, on_state = ...)` observes the raw distribution and
   selected activations that produced each sampled token. Plain state/logit
   tables and `relm_trace` chunks distinguish generated positions from model
-  context source positions. The callback returns NULL and can cancel before
+  context source positions. The callback can continue with NULL or update coefficients of existing steering
+  entries, and can cancel before
   another token is sampled; this is an observation/control mechanism, not a
   validated detector or safety guarantee.
 * One state waits for acknowledgement, with existing token events ordered
@@ -13,6 +14,13 @@
   completed Arrow streams and managed leases bound retained transport.
   Callbacks run on R's thread; model/KV storage and user-retained objects are
   outside the transport estimate. No dependency or exported function is added.
+
+
+* Coefficient replies are partial and atomic, affect only the next decode and
+  preserve prior KV history. Worker-produced coefficient/revision/source metadata
+  identifies what was applied; zero clears an entry's contribution. Original
+  adapters are restored on completion, cancellation and failure, preserving
+  immutable R handles. Live direction/layer/ablation changes are excluded.
 
 
 ## Native graph storage

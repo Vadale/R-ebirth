@@ -513,6 +513,7 @@ impl crate::LoadedModel {
         request: &LiveRequest,
     ) -> Result<crate::Generation, RebirthError> {
         let estimate = request.preflight(&self.metadata(), params.max_tokens)?;
+        let mut steering = crate::live_steering::LiveSteering::prepare(self, &request.steering)?;
         let _session = self.live_capture().activate_inner(
             self,
             prompt.len(),
@@ -544,7 +545,9 @@ impl crate::LoadedModel {
                     });
                 }
                 let trace = snapshot.trace.unwrap_or(LiveTrace::Memory(snapshot.rows));
-                crate::async_job::publish_live(crate::LiveState {
+                let state_id = snapshot.state_id;
+                let effective_source = snapshot.context_pos;
+                let reply = crate::async_job::publish_live(crate::LiveState {
                     job_id: 0,
                     state_id: snapshot.state_id,
                     token_id: snapshot.token_id,
@@ -553,8 +556,13 @@ impl crate::LoadedModel {
                     prompt_token_count: snapshot.prompt_count,
                     elapsed: 0.0,
                     logits: summary,
+                    steering_revision: steering.revision,
+                    applied_after_state: steering.applied_after,
+                    effective_source_pos: steering.effective_source,
+                    steering: steering.audit(),
                     trace,
-                })
+                })?;
+                steering.apply_reply(reply, state_id, effective_source)
             }),
         )
     }

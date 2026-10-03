@@ -155,34 +155,7 @@ impl InterventionSpec {
     ) -> Result<(), RebirthError> {
         let n_embd = self.n_embd;
         if let (Some(steer), Some((il_start, il_end))) = (&self.steer, self.steer_il_range) {
-            // The native cvec buffer has no layer-0 row: pass a view starting at
-            // engine layer 1 (`&steer[n_embd..]`, length `n_embd*(n_layer-1)`), so
-            // engine layer `il` lands at the native offset `n_embd*(il-1)`. For a
-            // 1-layer model this view is empty (steering is then a no-op).
-            let native = &steer[n_embd.min(steer.len())..];
-            // SAFETY: `ctx_ptr` is a live context on this (R main) thread. `native`
-            // is a Rust-owned f32 slice that outlives this synchronous call; the
-            // engine copies the data before returning. The `(ptr, len)` pair is
-            // exactly the "from layer 1" cvec buffer the engine expects.
-            let status = unsafe {
-                ffi::llama_set_adapter_cvec(
-                    ctx_ptr,
-                    native.as_ptr(),
-                    native.len(),
-                    n_embd as i32,
-                    il_start,
-                    il_end,
-                )
-            };
-            if status != 0 {
-                return Err(RebirthError::Intervention {
-                    reason: format!(
-                        "The engine rejected the steering vector (control-vector \
-                         setter returned {status}); its width must equal the model's \
-                         hidden size ({n_embd})."
-                    ),
-                });
-            }
+            apply_steering_buffer(ctx_ptr, n_embd, steer, (il_start, il_end))?;
         }
 
         if let (Some(mask), Some(add), Some((il_start, il_end))) =
@@ -222,6 +195,33 @@ impl InterventionSpec {
 
         Ok(())
     }
+}
+
+/// Reapply all steering rows, including zeros that clear previous contributions.
+/// Ablation is a separate installed adapter and remains after steering in graph order.
+pub(crate) fn apply_steering_buffer(
+    ctx: *mut ffi::llama_context,
+    width: usize,
+    values: &[f32],
+    range: (i32, i32),
+) -> Result<(), RebirthError> {
+    let native = &values[width.min(values.len())..];
+    // SAFETY: the execution permit owns this live context; the full owned F32
+    // array lives throughout the synchronous setter, which copies every row.
+    let status = unsafe {
+        ffi::llama_set_adapter_cvec(
+            ctx,
+            native.as_ptr(),
+            native.len(),
+            width as i32,
+            range.0,
+            range.1,
+        )
+    };
+    if status != 0 {
+        return Err(RebirthError::Intervention {reason:format!("The engine rejected the steering adapter (setter status {status}, hidden width {width}).")});
+    }
+    Ok(())
 }
 
 /// Widen an inclusive range to include `il` (or start it at `il`).
@@ -268,8 +268,16 @@ impl LoadedModel {
         // (D-021), replacing the hard arch gate. Refuses before any handle is built.
         self.verify_interventions_effective(spec)?;
 
-        let derived = self.clone_with_fresh_context()?;
+        let mut derived = self.clone_with_fresh_context()?;
         spec.apply_to_context(derived.ctx_ptr())?;
+        derived.steering_baseline =
+            spec.steer
+                .as_ref()
+                .zip(spec.steer_il_range)
+                .map(|(values, range)| crate::live_steering::SteeringBaseline {
+                    values: values.clone(),
+                    range,
+                });
         Ok(derived)
     }
 }

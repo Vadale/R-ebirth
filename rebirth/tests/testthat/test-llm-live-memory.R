@@ -32,24 +32,31 @@ live_memory_test_state <- function(hidden, layers, components, top, piece_bytes,
     class = c("relm_trace", "data.frame"), model = m$path, prompts = prompt,
     spilled = FALSE, position_space = "model_context", prompt_token_count = 3L,
     state_id = 1L)
-  list(step = data.frame(state_id = 1L, prompt_id = 1L, token_pos = 1L,
-    token_id = 4L, context_pos = 4L, source_pos = 3L, source = "prompt", elapsed = 0.5),
+  state <- list(step = data.frame(state_id = 1L, prompt_id = 1L, token_pos = 1L,
+    token_id = 4L, context_pos = 4L, source_pos = 3L, source = "prompt", elapsed = 0.5,
+    steering_revision = 0L, applied_after_state = 0L, effective_source_pos = 1L),
     logits = data.frame(prompt_id = rep.int(1L, top), rank = seq_len(top),
       token_id = seq_len(top), token = pieces, logit = rep.int(0.125, top),
       prob = rep.int(0.001, top), stringsAsFactors = FALSE), trace = trace)
+  attr(state, "steering") <- relm:::live_steering_table(m$interventions)
+  state
 }
 
 test_that("live materialized bound covers actual small large and string-heavy states", {
   specs <- list(
-    list(hidden = 1L, layers = 1L, components = "residual", top = 1L, piece = 1L),
+    list(hidden = 1L, layers = 1L, components = "residual", top = 1L, piece = 1L,
+      steers = 0L),
     list(hidden = 32L, layers = 1:2, components = c("attn_out", "mlp_out", "residual"),
-      top = 5L, piece = 8L),
-    list(hidden = 896L, layers = integer(), components = "residual", top = 128L, piece = 256L),
+      top = 5L, piece = 8L, steers = 1L),
+    list(hidden = 896L, layers = integer(), components = "residual", top = 128L,
+      piece = 256L, steers = 17L),
     list(hidden = 4096L, layers = 1:4, components = c("attn_out", "mlp_out", "residual"),
-      top = 128L, piece = 256L))
+      top = 128L, piece = 256L, steers = 64L))
   for (spec in specs) {
     m <- stub_llm()
     m$hidden_size <- spec$hidden
+    m$interventions <- lapply(seq_len(spec$steers), function(i) list(kind = "steer",
+      layer = 1L, coef = i / 64, direction = rep.int(0.25, spec$hidden)))
     prompt <- c(input = "Measured memory fixture")
     config <- list(layers = spec$layers, components = spec$components, top = as.double(spec$top),
       budget_bytes = 32 * 1024^2, r_fixed_bytes = 0, spill = TRUE,
@@ -57,7 +64,7 @@ test_that("live materialized bound covers actual small large and string-heavy st
       spec_key = "live-materialized-memory-spec")
     fixed <- relm:::live_fixed_bytes(config, m, prompt)
     bound <- relm:::live_memory_bound(spec$hidden, spec$layers, spec$components,
-      spec$top, spec$piece, fixed)
+      spec$top, spec$piece, fixed, steers = spec$steers)
     state <- live_memory_test_state(spec$hidden, spec$layers, spec$components,
       spec$top, spec$piece, m, prompt)
     expect_lte(as.numeric(object.size(state)), bound$materialized_bytes)

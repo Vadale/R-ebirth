@@ -182,15 +182,19 @@ struct LiveSlot {
     drained: bool,
     next_id: usize,
     discarded: bool,
+    reply: Option<crate::LiveReply>,
+    steer_count: usize,
 }
 impl LiveSlot {
-    fn new() -> Self {
+    fn new(steer_count: usize) -> Self {
         Self {
             pending: None,
             outstanding: None,
             drained: false,
             next_id: 1,
             discarded: false,
+            reply: None,
+            steer_count,
         }
     }
 }
@@ -234,12 +238,17 @@ struct Control {
     queue_waiter: Mutex<Option<std::sync::mpsc::Sender<()>>>,
     #[cfg(test)]
     live_published: Mutex<Option<std::sync::mpsc::Sender<(u64, usize)>>>,
+    #[cfg(test)]
+    steering_fault: std::sync::atomic::AtomicU8,
 }
 /// Compiled object storage used by the live preflight ledger. Arc strong/weak
 /// counters are explicit; StreamQueue payload capacity is in WP10's ledger.
+/// The boxed startup failure is charged even though it cannot coexist with a
+/// successfully running worker, preserving a conservative failure-path bound.
 pub(crate) fn live_control_bytes() -> usize {
     let bytes = std::mem::size_of::<Control>()
         + std::mem::size_of::<AsyncJob>()
+        + std::mem::size_of::<AsyncStartFailure>()
         + 2 * std::mem::size_of::<usize>();
     // Control::new owns this Arc even when the live state stays in memory.
     // Charge its heap pointee and strong/weak counters on both delivery paths.
@@ -261,6 +270,8 @@ impl Control {
             queue_waiter: Mutex::new(TEST_QUEUE_WAITER.with(|slot| slot.borrow_mut().take())),
             #[cfg(test)]
             live_published: Mutex::new(TEST_LIVE_PUBLISHED.with(|slot| slot.borrow_mut().take())),
+            #[cfg(test)]
+            steering_fault: std::sync::atomic::AtomicU8::new(0),
             cancel: AtomicBool::new(false),
             seed: request.params.seed,
             space: Condvar::new(),
@@ -280,7 +291,10 @@ impl Control {
                 cancellation_accepted: false,
                 committed_output: 0,
                 stream: request.stream.then(StreamQueue::new),
-                live: request.live.as_ref().map(|_| LiveSlot::new()),
+                live: request
+                    .live
+                    .as_ref()
+                    .map(|live| LiveSlot::new(live.steering.len())),
             }),
         }
     }
@@ -376,7 +390,10 @@ impl Control {
         });
         Ok(())
     }
-    fn publish_live(&self, mut payload: crate::LiveState) -> Result<(), RebirthError> {
+    fn publish_live(
+        &self,
+        mut payload: crate::LiveState,
+    ) -> Result<crate::LiveReply, RebirthError> {
         let mut state = self.lock();
         if state.cancellation_accepted {
             return Err(self.cancelled(&state));
@@ -417,8 +434,10 @@ impl Control {
                 // waits for filesystem metadata/unlink on this worker.
                 let error = self.cancelled(&state);
                 let abandoned = state.live.as_mut().and_then(|live| live.pending.take());
+                let reply = state.live.as_mut().and_then(|live| live.reply.take());
                 drop(state);
                 drop(abandoned);
+                drop(reply);
                 return Err(error);
             }
             if state
@@ -426,7 +445,11 @@ impl Control {
                 .as_ref()
                 .is_some_and(|live| live.outstanding.is_none())
             {
-                return Ok(());
+                return Ok(state
+                    .live
+                    .as_mut()
+                    .and_then(|live| live.reply.take())
+                    .unwrap_or_default());
             }
             #[cfg(test)]
             if let Some(waiter) = self.queue_waiter.lock().unwrap().take() {
@@ -451,6 +474,7 @@ impl Control {
         if result.is_err() {
             if let Some(live) = state.live.as_mut() {
                 abandoned = live.pending.take();
+                live.reply.take();
                 live.discarded = true;
             }
             if let Some(stream) = state.stream.as_mut() {
@@ -552,13 +576,36 @@ fn with_control<T>(f: impl FnOnce(Option<&Control>) -> T) -> T {
 pub(crate) fn checkpoint() -> Result<(), RebirthError> {
     with_control(|control| control.map_or(Ok(()), Control::checkpoint))
 }
-pub(crate) fn publish_live(payload: crate::LiveState) -> Result<(), RebirthError> {
+pub(crate) fn publish_live(payload: crate::LiveState) -> Result<crate::LiveReply, RebirthError> {
     with_control(|control| {
         control
             .ok_or_else(|| RebirthError::Internal {
                 context: "live generation requires the async worker".into(),
             })?
             .publish_live(payload)
+    })
+}
+#[cfg(test)]
+pub(crate) fn live_steering_fault() -> u8 {
+    with_control(|control| {
+        control.map_or(0, |control| control.steering_fault.load(Ordering::Acquire))
+    })
+}
+/// Linearize a validated worker command with cancellation acceptance. No R
+/// callback or decode runs under this mutex; only the synchronous adapter setter.
+pub(crate) fn apply_live_command(
+    apply: impl FnOnce() -> Result<(), RebirthError>,
+) -> Result<(), RebirthError> {
+    with_control(|control| {
+        if let Some(control) = control {
+            let state = control.lock();
+            if state.cancellation_accepted || state.terminal {
+                return Err(control.cancelled(&state));
+            }
+            apply()
+        } else {
+            apply()
+        }
     })
 }
 #[cfg(feature = "spill")]
@@ -688,6 +735,7 @@ pub struct AsyncCompletion {
     pub result: Result<Vec<Generation>, RebirthError>,
     pub permit: ExecutionPermit,
     pub panicked: bool,
+    pub model_invalidated: bool,
 }
 impl Drop for AsyncCompletion {
     fn drop(&mut self) {
@@ -736,7 +784,7 @@ impl AsyncJob {
         model: LoadedModel,
         request: AsyncRequest,
         permit: ExecutionPermit,
-    ) -> Result<Self, AsyncStartFailure> {
+    ) -> Result<Self, Box<AsyncStartFailure>> {
         Self::spawn(Some(model), request, permit, None)
     }
     pub fn start_fixture(
@@ -745,7 +793,7 @@ impl AsyncJob {
         mode: AsyncFixtureMode,
         steps: u32,
         delay_ms: u64,
-    ) -> Result<Self, AsyncStartFailure> {
+    ) -> Result<Self, Box<AsyncStartFailure>> {
         Self::spawn(
             None,
             request,
@@ -762,13 +810,13 @@ impl AsyncJob {
         request: AsyncRequest,
         mut permit: ExecutionPermit,
         fixture: Option<Fixture>,
-    ) -> Result<Self, AsyncStartFailure> {
+    ) -> Result<Self, Box<AsyncStartFailure>> {
         if let Err(error) = request.validate() {
-            return Err(AsyncStartFailure {
+            return Err(Box::new(AsyncStartFailure {
                 model,
                 permit,
                 error,
-            });
+            }));
         }
         if fixture
             .as_ref()
@@ -776,13 +824,13 @@ impl AsyncJob {
         {
             // Deterministic stand-in for OS thread startup rejection; ownership
             // returns through the exact production failure object.
-            return Err(AsyncStartFailure {
+            return Err(Box::new(AsyncStartFailure {
                 model,
                 permit,
                 error: RebirthError::Generation {
                     reason: "async_start".into(),
                 },
-            });
+            }));
         }
         if let (Some(model_ref), Some(live)) = (model.as_ref(), request.live.as_ref()) {
             let checked = {
@@ -790,23 +838,23 @@ impl AsyncJob {
                 live.preflight(&model_ref.metadata(), request.params.max_tokens)
             };
             if let Err(error) = checked {
-                return Err(AsyncStartFailure {
+                return Err(Box::new(AsyncStartFailure {
                     model,
                     permit,
                     error,
-                });
+                }));
             }
         }
         install_panic_filter();
         let control = Arc::new(Control::new(&request));
         if control.id == u64::MAX {
-            return Err(AsyncStartFailure {
+            return Err(Box::new(AsyncStartFailure {
                 model,
                 permit,
                 error: RebirthError::Internal {
                     context: "async job identity exhausted".into(),
                 },
-            });
+            }));
         }
         let worker_control = control.clone();
         // std::thread drops its closure on OS startup failure. Retain payload in
@@ -850,7 +898,12 @@ impl AsyncJob {
                         })
                     }
                 };
-                worker_control.publish(&mut result, panicked);
+                let model_invalidated=model.as_ref().is_some_and(|model|model.steering_restore_failed.get());
+                if model_invalidated {
+                    model.take();
+                    result=Err(RebirthError::Intervention {reason:"Restoring the original steering adapter failed; the affected handle was closed.".into()});
+                }
+                worker_control.publish(&mut result, panicked || model_invalidated);
                 CONTROL.with(|slot| slot.borrow_mut().take());
                 CAUGHT_WORKER.with(|flag| flag.set(false));
                 drop(bound);
@@ -859,6 +912,7 @@ impl AsyncJob {
                     result,
                     permit,
                     panicked,
+                    model_invalidated,
                 }
             }) {
             Ok(worker) => Ok(Self {
@@ -871,13 +925,13 @@ impl AsyncJob {
                     .unwrap_or_else(|e| e.into_inner())
                     .take()
                     .expect("startup failure retains payload");
-                Err(AsyncStartFailure {
+                Err(Box::new(AsyncStartFailure {
                     model,
                     permit,
                     error: RebirthError::Generation {
                         reason: "async_start".into(),
                     },
-                })
+                }))
             }
         }
     }
@@ -945,7 +999,16 @@ impl AsyncJob {
         Some(payload)
     }
     pub fn ack_state(&self, job_id: u64, state_id: usize) -> Result<(), RebirthError> {
+        self.ack_state_with_reply(job_id, state_id, Vec::new())
+    }
+    pub fn ack_state_with_reply(
+        &self,
+        job_id: u64,
+        state_id: usize,
+        reply: crate::LiveReply,
+    ) -> Result<(), RebirthError> {
         let mut state = self.control.lock();
+        let cancelled = state.cancellation_accepted;
         let live = state.live.as_mut().ok_or_else(|| RebirthError::Internal {
             context: "state acknowledgement on non-live job".into(),
         })?;
@@ -956,6 +1019,14 @@ impl AsyncJob {
         }
         // A matching acknowledgement remains valid after callback cancellation;
         // cancellation wins the producer predicate before token/text publication.
+        if !cancelled {
+            if reply.len() > live.steer_count || reply.capacity() > live.steer_count {
+                return Err(crate::live_steering::reply_error(
+                    "Reply allocation exceeds the admitted steering entry count.",
+                ));
+            }
+            live.reply = Some(reply);
+        }
         live.outstanding = None;
         live.drained = false;
         self.control.space.notify_all();
@@ -1186,6 +1257,8 @@ mod tests {
         assert_eq!(counter.load(Ordering::Relaxed), 513);
     }
 
+    include!("live_steering_tests.rs");
+
     fn request() -> AsyncRequest {
         AsyncRequest {
             prompts: vec!["fixture".into()],
@@ -1245,6 +1318,10 @@ mod tests {
             prompt_token_count: 2,
             elapsed: 0.0,
             logits: vec![],
+            steering_revision: 0,
+            applied_after_state: 0,
+            effective_source_pos: 0,
+            steering: vec![],
             trace: crate::LiveTrace::Memory(vec![]),
         }
     }
@@ -1270,6 +1347,7 @@ mod tests {
             let control = Arc::new(Control::new(&req));
             let actual = std::mem::size_of_val(control.as_ref())
                 + std::mem::size_of::<AsyncJob>()
+                + std::mem::size_of::<AsyncStartFailure>()
                 + std::mem::size_of_val(control.live_cancel.as_ref())
                 + 4 * std::mem::size_of::<usize>();
             assert_eq!(live_control_bytes(), actual);

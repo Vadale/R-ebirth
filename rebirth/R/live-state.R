@@ -72,20 +72,71 @@ live_empty_logits <- function() {
 live_empty_step <- function() {
   data.frame(state_id = 0L, prompt_id = 1L, token_pos = 0L, token_id = 0L,
     context_pos = 0L, source_pos = 0L, source = "generated", elapsed = 0,
+    steering_revision = 0L, applied_after_state = 0L, effective_source_pos = 1L,
     stringsAsFactors = FALSE)
 }
 
-live_reply <- function(reply) {
-  if (!is.null(reply)) abort_argument("on_state",
-    "The live observation callback must return NULL (use invisible(NULL)).")
-  invisible(NULL)
+live_steering_table <- function(interventions) {
+  # Two scalar walks avoid an all-intervention logical/index allocation when
+  # ablations outnumber the admitted steering rows (including S = 0).
+  size <- length(interventions)
+  i <- 1
+  count <- 0L
+  while (i <= size) {
+    if (identical(interventions[[i]]$kind, "steer")) {
+      if (i > .Machine$integer.max) abort_argument("on_state",
+        "Original steering indices exceed the supported integer range.")
+      count <- count + 1L
+    }
+    i <- i + 1
+  }
+  index <- integer(count)
+  i <- 1
+  at <- 0L
+  while (i <= size) {
+    if (identical(interventions[[i]]$kind, "steer")) {
+      at <- at + 1L
+      index[[at]] <- as.integer(i)
+    }
+    i <- i + 1
+  }
+  data.frame(intervention = index,
+    layer = vapply(interventions[index], function(x) as.integer(x$layer), integer(1)),
+    coef = vapply(interventions[index], function(x) as.double(x$coef), numeric(1)))
+}
+
+live_reply <- function(reply, interventions = list(),
+                       steering = live_steering_table(interventions)) {
+  if (is.null(reply)) return(NULL)
+  fail <- function() abort_argument("on_state",
+    "Return NULL or list(steer = data.frame(intervention, coef)) with unique existing steer indices and finite f32-range coefficients.")
+  if (!is.list(reply) || is.object(reply) || !identical(names(reply), "steer")) fail()
+  update <- reply$steer
+  if (!identical(class(update), "data.frame") ||
+    !identical(names(update), c("intervention", "coef"))) fail()
+  ids <- update$intervention
+  coef <- update$coef
+  # Bound every validation/normalization temporary before vectorized work.
+  # The prepared job supplies its admitted original audit; ablation entries
+  # never enlarge the coefficient-command workspace.
+  if (length(ids) != length(coef) || length(ids) != nrow(update) ||
+    length(ids) > nrow(steering)) fail()
+  plain_numeric <- function(x) is.numeric(x) && !is.complex(x) &&
+    !is.object(x) && is.null(dim(x)) && !anyNA(x) && all(is.finite(x))
+  if (!plain_numeric(ids) || !plain_numeric(coef) ||
+    any(ids != floor(ids) | ids < 1 | ids > .Machine$integer.max) ||
+    anyDuplicated(ids) || any(abs(coef) > 3.4028234663852886e38)) fail()
+  if (!length(ids)) return(NULL)
+  ids <- as.integer(ids)
+  if (any(!ids %in% steering$intervention)) fail()
+  data.frame(intervention = ids, coef = as.double(coef))
 }
 
 live_payload_state <- function(job, payload) {
   step <- payload$step
   columns <- names(live_empty_step())
   good <- is.data.frame(step) && identical(names(step), columns) && nrow(step) == 1L &&
-    all(vapply(step[seq_len(6L)], is.integer, logical(1))) &&
+    all(vapply(step[c(seq_len(6L), 9L:11L)], is.integer, logical(1))) &&
     is.character(step$source) && is.double(step$elapsed) && !anyNA(step) &&
     is.finite(step$elapsed) && step$elapsed >= job$live_elapsed &&
     step$state_id == job$live_state_id + 1L && step$prompt_id == 1L &&
@@ -96,6 +147,32 @@ live_payload_state <- function(job, payload) {
   good <- good && is.integer(p) && length(p) == 1L && !is.na(p) && p >= 1L &&
     step$source_pos == p + step$state_id - 1L &&
     (is.null(job$live_prompt_count) || identical(p, job$live_prompt_count))
+  steering <- payload$steering
+  original <- job$live$original_steering
+  good <- good && identical(class(steering), "data.frame") &&
+    identical(names(steering), c("intervention", "layer", "coef")) &&
+    is.integer(steering$intervention) && is.integer(steering$layer) &&
+    is.double(steering$coef) && !anyNA(steering) && all(is.finite(steering$coef)) &&
+    identical(steering$intervention, original$intervention) &&
+    identical(steering$layer, original$layer)
+  if (isTRUE(good) && step$state_id == 1L) {
+    good <- identical(step$steering_revision, 0L) &&
+      identical(step$applied_after_state, 0L) && identical(step$effective_source_pos, 1L) &&
+      identical(steering$coef, original$coef)
+  } else if (isTRUE(good)) {
+    previous <- job$live_audit
+    good <- !is.null(previous) &&
+      step$steering_revision %in% c(previous$revision, previous$revision + 1L)
+    if (isTRUE(good) && step$steering_revision == previous$revision) {
+      good <- identical(step$applied_after_state, previous$after) &&
+        identical(step$effective_source_pos, previous$position) &&
+        identical(steering, previous$steering)
+    } else if (isTRUE(good)) {
+      good <- step$applied_after_state == step$state_id - 1L &&
+        step$effective_source_pos == step$source_pos &&
+        !identical(steering$coef, previous$steering$coef)
+    }
+  }
   if (!isTRUE(good)) relm_abort("relm_error_internal",
     "The live state violates its sequence or source-position contract.",
     list(reason = "live_protocol", job_id = job$id))
@@ -112,6 +189,7 @@ live_payload_state <- function(job, payload) {
     attr(trace, "live_batch_bytes") <- payload$trace$batch_bytes
   }
   result <- list(step = step, logits = payload$logits, trace = trace)
+  attr(result, "steering") <- steering
   if (!is.null(job$live$estimate)) {
     bound <- if (isTRUE(attr(trace, "spilled"))) job$live$estimate$logits_bytes else
       job$live$estimate$materialized_bytes
@@ -124,6 +202,8 @@ live_payload_state <- function(job, payload) {
   job$live_state_id <- step$state_id
   job$live_elapsed <- step$elapsed
   job$live_prompt_count <- p
+  job$live_audit <- list(revision = step$steering_revision,
+    after = step$applied_after_state, position = step$effective_source_pos, steering = steering)
   result
 }
 
@@ -140,17 +220,27 @@ live_deliver <- function(job, payload) {
   reply <- tryCatch(job$live$callback(state), error = function(e) {
     fail(e); NULL
   }, interrupt = function(e) { fail(e); NULL })
-  if (!is.null(job$callback_error) || job$model$state$closed) return(invisible(NULL))
-  valid <- tryCatch({ live_reply(reply); TRUE }, error = function(e) {
+  if (!is.null(job$callback_error) || job$model$state$closed ||
+    isTRUE(job$live_cancel_requested)) return(invisible(NULL))
+  command <- NULL
+  valid <- tryCatch({
+    command <- live_reply(reply, steering = job$live$original_steering)
+    TRUE
+  }, error = function(e) {
     fail(e, "state_reply"); FALSE
   })
-  if (valid) relm_check(rebirth_async_state_ack(job$model$ptr, job$id, state$step$state_id))
+  if (valid) tryCatch(
+    relm_check(rebirth_async_state_ack(job$model$ptr, job$id, state$step$state_id, command)),
+    error = function(e) {
+      if (identical(e$argument, "on_state_reply")) fail(e, "state_reply") else stop(e)
+    })
   invisible(NULL)
 }
 
 # Measure fixed headers and actual retained metadata before the seed draw. The
 # numeric/string payload growth is counted separately by the twin native bound.
-live_fixed_bytes <- function(config, m, prompt) {
+live_fixed_bytes <- function(config, m, prompt,
+                             original_steering = live_steering_table(m$interventions)) {
   integer_profile <- vapply(c(0L, 1L, 3L, 5L, 9L, 17L),
     function(n) as.numeric(object.size(integer(n))), numeric(1))
   if (.Machine$sizeof.pointer != 8L ||
@@ -182,7 +272,9 @@ live_fixed_bytes <- function(config, m, prompt) {
   attr(spilled, "live_source_pos") <- 2147483647L
   attr(spilled, "live_batch_rows") <- relm_live_batch_rows
   attr(spilled, "live_batch_bytes") <- 0
-  empty <- function(trace) list(step = live_empty_step(), logits = live_empty_logits(), trace = trace)
+  empty <- function(trace) structure(
+    list(step = live_empty_step(), logits = live_empty_logits(), trace = trace),
+    steering = live_steering_table(list()))
   # Include the empty interning payload and submission descriptors, even though
   # not every skeleton coexists. Variable row codes are in the separate formula.
   interned <- list(ok = TRUE, spilled = FALSE, positions_recycled = FALSE,
@@ -191,7 +283,8 @@ live_fixed_bytes <- function(config, m, prompt) {
     component_codes = integer(), token_levels = character(), token_codes = integer(),
     row_nneuron = integer())
   max(as.numeric(object.size(empty(memory))), as.numeric(object.size(empty(spilled)))) +
-    as.numeric(object.size(interned)) + as.numeric(object.size(config))
+    as.numeric(object.size(interned)) + as.numeric(object.size(config)) +
+    as.numeric(object.size(original_steering))
 }
 
 live_config_strings <- function(config) {
@@ -213,6 +306,12 @@ live_prepare <- function(live, m, prompt, max_tokens) {
     r_fixed_bytes = 0, spill = live$spill, spill_dir = dir, trace_id = id,
     model = m$path, spec_key = paste0("live-v1|",
       trace_spec_key(m, prompt, live$layers, "last", live$components)))
+  steering <- live_steering_table(m$interventions)
+  config$steering <- lapply(steering$intervention, function(index) {
+    iv <- m$interventions[[index]]
+    list(intervention = index, layer = as.integer(iv$layer), coef = as.double(iv$coef),
+      direction = as.double(iv$direction))
+  })
   for (name in c("spill_dir", "trace_id", "model", "spec_key")) {
     text <- config[[name]]
     if (Encoding(text) == "bytes" || !validUTF8(enc2utf8(text))) {
@@ -224,10 +323,10 @@ live_prepare <- function(live, m, prompt, max_tokens) {
   # caller then checks its aggregate with all ordinary normalized arguments.
   async_validate_inputs(character(), character(), NULL, NULL,
     max_tokens, 0, 0, live_config_strings(config))
-  config$r_fixed_bytes <- live_fixed_bytes(config, m, prompt)
+  config$r_fixed_bytes <- live_fixed_bytes(config, m, prompt, steering)
   estimate <- relm_check(rebirth_live_preflight(m$ptr, config, as.integer(max_tokens)))
   twin <- live_memory_bound(m$hidden_size, live$layers, live$components,
-    live$top, estimate$max_piece_bytes, config$r_fixed_bytes)
+    live$top, estimate$max_piece_bytes, config$r_fixed_bytes, nrow(steering))
   if (!identical(as.double(estimate$materialized_bytes), as.double(twin$materialized_bytes)) ||
     !identical(as.double(estimate$logits_bytes), as.double(twin$logits_bytes))) {
     relm_abort("relm_error_internal", "R and native live allocation estimates differ.",
@@ -235,6 +334,7 @@ live_prepare <- function(live, m, prompt, max_tokens) {
   }
   live$peak_bound <- live_transport_peak_bound(estimate, config, m, max_tokens, prompt)
   live$native_config <- config
+  live$original_steering <- steering
   live$estimate <- estimate
   live$prompt <- prompt
   live
@@ -285,7 +385,8 @@ live_transport_peak_bound <- function(estimate, config, m, max_tokens, prompt) {
   fields <- c("materialized_bytes", "logits_bytes", "transient_bytes",
     "native_fixed_bytes", "ffi_intern_bytes", "native_logits_bytes",
     "capture_writer_bytes", "wp10_peak_bytes", "r_payload_bytes",
-    "r_assembly_bytes", "max_piece_bytes")
+    "r_assembly_bytes", "max_piece_bytes", "steering_bytes", "steering_descriptor_bytes",
+    "steering_probe_bytes", "steering_probe_fixed_bytes")
   good <- all(vapply(fields, function(name) {
     value <- estimate[[name]]
     is.numeric(value) && !is.complex(value) && length(value) == 1L &&
@@ -304,11 +405,22 @@ live_transport_peak_bound <- function(estimate, config, m, max_tokens, prompt) {
     chars(estimate$max_piece_bytes) + sum(chars(nchar(config$components, type = "bytes")))
   assembly <- if (estimate$spilled) 0 else 2 * live_r_vector_bytes(4 * n) + 2 * live_r_vector_bytes(8 * n)
   wp10 <- stream_transport_peak_bound()$total_bytes
+  s <- length(config$steering)
+  h <- m$hidden_size
+  steering <- if (s == 0L) 0 else 8 * h * s + 8 * h * m$layers + 4 * h + 52 * s +
+    estimate$steering_descriptor_bytes + live_r_vector_bytes(8 * h * s) +
+    2 * config$r_fixed_bytes + 2 * g(4 * s) + 2 * g(8 * s) +
+    3 * live_r_vector_bytes(4 * s) + live_r_vector_bytes(8 * s)
+  if (!is.finite(steering) || steering >= 2^53 || steering != estimate$steering_bytes) fail()
+  probe <- if (s == 0L) 0 else 4 * h * m$layers + 4 * h + m$layers +
+    estimate$steering_probe_fixed_bytes
+  if (!is.finite(probe) || probe >= 2^53 || probe != estimate$steering_probe_bytes) fail()
   r_mode <- if (estimate$spilled) estimate$logits_bytes else estimate$materialized_bytes
   components <- c(r_state_copies = 2 * r_mode, r_payload = r_payload,
-    r_assembly = assembly, ffi_native = 24 * n + 12 * vectors + 44 * config$top + estimate$ffi_intern_bytes,
+    r_assembly = assembly, ffi_native = 24 * n + 12 * vectors + 44 * config$top + 16 * s + estimate$ffi_intern_bytes,
     native_logits = estimate$native_logits_bytes, capture_writer = estimate$capture_writer_bytes,
-    native_fixed = estimate$native_fixed_bytes, wp10 = wp10)
+    native_fixed = estimate$native_fixed_bytes, steering = steering,
+    steering_probe = probe, wp10 = wp10)
   total <- sum(components)
   if (!is.finite(total) || total >= 2^53 ||
     total != estimate$transient_bytes || r_payload != estimate$r_payload_bytes ||

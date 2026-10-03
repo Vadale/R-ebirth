@@ -4,7 +4,9 @@
 live_test_payload <- function() {
   list(step = data.frame(state_id = 1L, prompt_id = 1L, token_pos = 1L,
     token_id = 4L, context_pos = 4L, source_pos = 3L, source = "prompt",
-    elapsed = 0.25, stringsAsFactors = FALSE), prompt_token_count = 3L,
+    elapsed = 0.25, steering_revision = 0L, applied_after_state = 0L,
+    effective_source_pos = 1L, stringsAsFactors = FALSE), prompt_token_count = 3L,
+    steering = data.frame(intervention = integer(), layer = integer(), coef = double()),
     logits = data.frame(prompt_id = 1L, rank = 1L, token_id = 4L, token = "x",
       logit = 1.25, prob = 0.2, stringsAsFactors = FALSE),
     trace = list(spilled = FALSE, prompt_id = integer(), token_pos = integer(),
@@ -18,7 +20,8 @@ live_test_job <- function(callback = function(state) invisible(NULL)) {
   job$id <- "live-job-fixture"
   job$model <- stub_llm()
   job$live <- list(prompt = c(input = "abc"), callback = callback,
-    layers = integer(), components = "residual", top = 1L)
+    layers = integer(), components = "residual", top = 1L,
+    original_steering = data.frame(intervention = integer(), layer = integer(), coef = double()))
   job$live_state_id <- 0L
   job$live_elapsed <- 0
   job$live_prompt_count <- NULL
@@ -46,9 +49,10 @@ test_that("empty live payload tables preserve their declared base-R schemas", {
   step <- relm:::live_empty_step()
   expect_identical(class(step), "data.frame")
   expect_identical(names(step), c("state_id", "prompt_id", "token_pos", "token_id",
-    "context_pos", "source_pos", "source", "elapsed"))
+    "context_pos", "source_pos", "source", "elapsed",
+    "steering_revision", "applied_after_state", "effective_source_pos"))
   expect_identical(unname(vapply(step, typeof, character(1))),
-    c(rep("integer", 6), "character", "double"))
+    c(rep("integer", 6), "character", "double", rep("integer", 3)))
 })
 
 test_that("live payload source coordinates are checked before sequence advances", {
@@ -106,7 +110,7 @@ test_that("live payload source coordinates are checked before sequence advances"
 
 test_that("live callbacks acknowledge only after successful NULL completion", {
   order <- character()
-  local_mocked_bindings(rebirth_async_state_ack = function(ptr, job_id, state_id) {
+  local_mocked_bindings(rebirth_async_state_ack = function(ptr, job_id, state_id, updates) {
     expect_identical(job_id, "live-job-fixture")
     expect_identical(state_id, 1L)
     order <<- c(order, "ack")
@@ -121,6 +125,78 @@ test_that("live callbacks acknowledge only after successful NULL completion", {
   relm:::live_deliver(job, live_test_payload())
   expect_identical(order, c("callback", "ack"))
   expect_null(job$callback_error)
+})
+
+test_that("live worker steering audits reject inconsistent revisions before advancing", {
+  prepare <- function() {
+    job <- live_test_job()
+    job$model$interventions <- list(list(kind = "steer", layer = 2L, coef = 0,
+      direction = c(0.25, -0.25)))
+    payload <- live_test_payload()
+    payload$steering <- data.frame(intervention = 1L, layer = 2L, coef = 0)
+    job$live$original_steering <- payload$steering
+    first <- relm:::live_payload_state(job, payload)
+    expect_identical(attr(first, "steering"), payload$steering)
+    list(job = job, payload = payload)
+  }
+  initial <- prepare()
+  changed <- initial$payload
+  changed$step$state_id <- changed$step$token_pos <- 2L
+  changed$step$source_pos <- 4L
+  changed$step$context_pos <- 5L
+  changed$step$source <- "generated"
+  changed$step$elapsed <- 0.5
+  changed$step$steering_revision <- 1L
+  changed$step$applied_after_state <- 1L
+  changed$step$effective_source_pos <- 4L
+  changed$steering$coef <- 0.5
+  changes <- list(
+    function(x) { x$step$steering_revision <- 0L; x },
+    function(x) { x$step$steering_revision <- 2L; x },
+    function(x) { x$step$applied_after_state <- 0L; x },
+    function(x) { x$step$effective_source_pos <- 3L; x },
+    function(x) { x$steering$coef <- 0; x },
+    function(x) { x$steering$coef <- Inf; x },
+    function(x) { x$steering$intervention <- 2L; x },
+    function(x) { x$steering$layer <- 3L; x })
+  for (change in changes) {
+    fresh <- prepare()
+    expect_error(relm:::live_payload_state(fresh$job, change(changed)),
+      class = "relm_error_internal")
+    expect_identical(fresh$job$live_state_id, 1L)
+    expect_identical(fresh$job$live_audit$revision, 0L)
+  }
+  expect_no_error(relm:::live_payload_state(initial$job, changed))
+  unchanged <- changed
+  unchanged$step$state_id <- unchanged$step$token_pos <- 3L
+  unchanged$step$source_pos <- 5L
+  unchanged$step$context_pos <- 6L
+  unchanged$step$elapsed <- 0.75
+  expect_no_error(relm:::live_payload_state(initial$job, unchanged))
+  expect_identical(initial$job$live_audit$after, 1L)
+  expect_identical(initial$job$live_audit$position, 4L)
+})
+
+test_that("live delivery uses its admitted audit and bounds reply rows by steer count", {
+  metadata <- c(rep(list(list(kind = "ablate")), 1000L),
+    list(list(kind = "steer", layer = 2L, coef = 0)))
+  cached <- data.frame(intervention = 1001L, layer = 2L, coef = 0)
+  expect_identical(relm:::live_steering_table(metadata), cached)
+  expect_identical(nrow(relm:::live_steering_table(metadata[-1001L])), 0L)
+  reply <- list(steer = data.frame(intervention = 1001L, coef = 0.5))
+  expect_identical(relm:::live_reply(reply,
+    interventions = stop("original metadata must remain unforced"), steering = cached),
+    reply$steer)
+  oversized <- list(steer = data.frame(intervention = c(1001L, 1002L), coef = c(0.5, 0)))
+  expect_error(relm:::live_reply(oversized,
+    interventions = stop("original metadata must remain unforced"), steering = cached),
+    class = "relm_error_argument")
+  job <- live_test_job()
+  # An ablation-only model must not cause an all-intervention scan per state.
+  job$model$interventions <- rep(list(list(kind = "ablate")), 1000L)
+  local_mocked_bindings(live_steering_table = function(...) stop("unexpected rescan"),
+    .package = "relm")
+  expect_no_error(relm:::live_payload_state(job, live_test_payload()))
 })
 
 test_that("live callback and reply failures preserve class and original parent", {

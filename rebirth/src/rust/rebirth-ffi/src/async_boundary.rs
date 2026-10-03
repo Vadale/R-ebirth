@@ -31,7 +31,7 @@ struct ActiveJob {
     completion: Option<AsyncCompletion>,
     streaming: bool,
     live: bool,
-    live_pending: Option<(u64, usize)>,
+    live_pending: Option<(u64, usize, usize)>,
     discarded: bool,
     seed: u64,
 }
@@ -372,7 +372,11 @@ fn async_submit(
         }
         let compiled = schema_text.map(CompiledSchema::compile).transpose()?;
         let image_sets = split_image_sets(owned_strings(&images_flat), images_lens, prompts.len())?;
-        let live = parse_live_request(&live)?;
+        let live = if live.is_null() {
+            None
+        } else {
+            handle.run(|model| parse_live_request(&live, &model.metadata(), max_tokens as usize))?
+        };
         let is_live = live.is_some();
         let request = AsyncRequest {
             prompts: owned_strings(&prompts),
@@ -516,7 +520,7 @@ fn finish_active(
     let mut completion = active.completion.take().expect("collected completion");
     {
         let _bound = completion.permit.enter();
-        if completion.panicked {
+        if completion.panicked || completion.model_invalidated {
             handle.state.closed.set(true);
         }
         if handle.is_closed() {
@@ -621,7 +625,8 @@ fn rebirth_async_poll(ptr: Robj, job_id: &str) -> Robj {
                     None
                 };
                 if let Some(state) = live_state.as_ref() {
-                    active.live_pending = Some((state.job_id, state.state_id));
+                    active.live_pending =
+                        Some((state.job_id, state.state_id, state.steering.len()));
                 }
                 Ok((
                     None,

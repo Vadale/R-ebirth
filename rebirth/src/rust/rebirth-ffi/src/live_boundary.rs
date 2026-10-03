@@ -1,6 +1,6 @@
 // D-041: R-only admission/conversion and identity-correlated acknowledgement.
 // The worker's owned LiveState never contains an R object or callback.
-use rebirth_llm::{LiveRequest, LiveState, LiveTrace};
+use rebirth_llm::{LiveCoefficient, LiveRequest, LiveState, LiveSteer, LiveTrace};
 
 fn live_protocol(reason: &str) -> RebirthError {
     RebirthError::Internal {
@@ -36,7 +36,12 @@ fn live_state_payload(state: LiveState) -> Result<Robj, RebirthError> {
             context_pos = from_engine_index(state.context_pos),
             source_pos = from_engine_index(state.source_pos),
             source = if state_id == 1 { "prompt" } else { "generated" },
-            elapsed = state.elapsed
+            elapsed = state.elapsed,
+            steering_revision = i32::try_from(state.steering_revision)
+                .map_err(|_| live_protocol("steering revision overflow"))?,
+            applied_after_state = i32::try_from(state.applied_after_state)
+                .map_err(|_| live_protocol("applied state overflow"))?,
+            effective_source_pos = from_engine_index(state.effective_source_pos)
         )
         .into(),
         1,
@@ -86,34 +91,95 @@ fn live_state_payload(state: LiveState) -> Result<Robj, RebirthError> {
             List::from_pairs(pairs).into()
         }
     };
+    let steering = live_data_frame(
+        list!(
+            intervention = state
+                .steering
+                .iter()
+                .map(|r| from_engine_index(r.intervention))
+                .collect::<Vec<_>>(),
+            layer = state
+                .steering
+                .iter()
+                .map(|r| from_engine_index(r.layer))
+                .collect::<Vec<_>>(),
+            coef = state.steering.iter().map(|r| r.coef).collect::<Vec<_>>()
+        )
+        .into(),
+        state.steering.len(),
+    )?;
     Ok(list!(
         step = step,
         logits = logits,
         trace = trace,
-        prompt_token_count = prompt_count
+        prompt_token_count = prompt_count,
+        steering = steering
     )
     .into())
 }
 
 #[extendr]
-fn rebirth_async_state_ack(ptr: Robj, job_id: &str, state_id: i32) -> Robj {
+fn rebirth_async_state_ack(ptr: Robj, job_id: &str, state_id: i32, updates: Robj) -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(|| {
         let handle = checked_handle(&ptr)?;
         ACTIVE_JOB.with(|slot| {
             let mut slot = slot.borrow_mut();
             let active = active_for(&mut slot, handle, job_id)?;
-            let (native_id, pending_id) = active
+            let (native_id, pending_id, steer_count) = active
                 .live_pending
                 .ok_or_else(|| live_protocol("no delivered state awaiting acknowledgement"))?;
             if state_id < 1 || state_id as usize != pending_id {
                 return Err(live_protocol("stale or wrong state acknowledgement"));
             }
-            active.job.ack_state(native_id, pending_id)?;
+            let command = parse_live_reply(&updates, steer_count)?;
+            active
+                .job
+                .ack_state_with_reply(native_id, pending_id, command)?;
             active.live_pending = None;
             Ok::<_, RebirthError>(())
         })?;
         Ok(async_ok())
     })))
+}
+
+fn parse_live_reply(
+    value: &Robj,
+    steer_count: usize,
+) -> Result<Vec<LiveCoefficient>, RebirthError> {
+    let invalid = || async_argument("on_state_reply", "invalid coefficient reply");
+    if value.is_null() {
+        return Ok(Vec::new());
+    }
+    let list = value.as_list().ok_or_else(invalid)?;
+    if list.len() != 2
+        || list.names().map(|n| n.collect::<Vec<_>>()) != Some(vec!["intervention", "coef"])
+    {
+        return Err(invalid());
+    }
+    let indices = list.elt(0).map_err(|_| invalid())?;
+    let coefficients = list.elt(1).map_err(|_| invalid())?;
+    let ids = indices.as_integer_slice().ok_or_else(invalid)?;
+    let coefs = coefficients.as_real_slice().ok_or_else(invalid)?;
+    if ids.len() != coefs.len()
+        || ids.len() > steer_count
+        || ids
+            .iter()
+            .enumerate()
+            .any(|(i, &id)| id < 1 || ids[..i].contains(&id))
+        || coefs
+            .iter()
+            .any(|x| !x.is_finite() || x.abs() > f32::MAX as f64)
+    {
+        return Err(invalid());
+    }
+    let mut command = Vec::with_capacity(ids.len());
+    for (&id, &coef) in ids.iter().zip(coefs) {
+        command.push(LiveCoefficient {
+            intervention: (id - 1) as u32,
+            coef,
+        });
+    }
+    Ok(command)
 }
 
 // Inspect borrowed R strings before building any owned live metadata. The
@@ -138,7 +204,11 @@ fn inspect_live_strings(value: &Robj, total: &mut usize) -> Result<usize, Rebirt
     Ok(4)
 }
 
-fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError> {
+fn parse_live_request(
+    value: &Robj,
+    metadata: &ModelMetadata,
+    max_tokens: usize,
+) -> Result<Option<LiveRequest>, RebirthError> {
     if value.is_null() {
         return Ok(None);
     }
@@ -157,6 +227,7 @@ fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError>
         "trace_id",
         "model",
         "spec_key",
+        "steering",
     ];
     let names: Vec<_> = list.iter().map(|(name, _)| name.to_string()).collect();
     if names.len() != expected.len()
@@ -229,7 +300,7 @@ fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError>
     let spill = spill_value
         .as_bool()
         .ok_or_else(|| async_argument("spill", "expected nonmissing logical"))?;
-    Ok(Some(LiveRequest {
+    let mut request = LiveRequest {
         layers,
         components,
         top: integer("top")? as usize,
@@ -240,18 +311,86 @@ fn parse_live_request(value: &Robj) -> Result<Option<LiveRequest>, RebirthError>
         trace_id: text("trace_id")?,
         model: text("model")?,
         spec_key: text("spec_key")?,
-    }))
+        steering: Vec::new(),
+    };
+    let steering_value = field("steering")?;
+    let steering = steering_value
+        .as_list()
+        .ok_or_else(|| async_argument("on_state", "expected steering entries"))?;
+    let values = steering
+        .len()
+        .checked_mul(metadata.hidden_size.max(0) as usize)
+        .ok_or_else(|| async_argument("on_state", "steering shape overflow"))?;
+    let values = u64::try_from(values)
+        .map_err(|_| async_argument("on_state", "steering shape exceeds exact byte range"))?;
+    request.preflight_with_steering_shape(metadata, max_tokens, steering.len(), values)?;
+    // Validate every borrowed R vector before allocating any immutable direction copy.
+    let entry = |value: &Robj| -> Result<(u32, u32, f64, Robj), RebirthError> {
+        let invalid = || async_argument("on_state", "invalid original steering entry");
+        let row = value.as_list().ok_or_else(invalid)?;
+        let names: Vec<_> = row.iter().map(|(n, _)| n).collect();
+        if names != ["intervention", "layer", "coef", "direction"] {
+            return Err(invalid());
+        }
+        let get = |i| row.elt(i).map_err(|_| invalid());
+        let index_value = get(0)?;
+        let layer_value = get(1)?;
+        let coef_value = get(2)?;
+        let index = index_value.as_integer().ok_or_else(invalid)?;
+        let layer = layer_value.as_integer().ok_or_else(invalid)?;
+        let coef = coef_value.as_real().ok_or_else(invalid)?;
+        let direction = get(3)?;
+        let numbers = direction.as_real_slice().ok_or_else(invalid)?;
+        if index_value.len() != 1
+            || layer_value.len() != 1
+            || coef_value.len() != 1
+            || index < 1
+            || layer < 1
+            || layer > metadata.layers
+            || !coef.is_finite()
+            || numbers.len() != metadata.hidden_size as usize
+            || numbers.iter().any(|x| !x.is_finite())
+        {
+            return Err(invalid());
+        }
+        Ok(((index - 1) as u32, (layer - 1) as u32, coef, direction))
+    };
+    let mut previous = None;
+    for (_, value) in steering.iter() {
+        let (index, _, _, _) = entry(&value)?;
+        if previous.is_some_and(|p| index <= p) {
+            return Err(async_argument("on_state", "steering indices must increase"));
+        }
+        previous = Some(index);
+    }
+    request.steering = Vec::with_capacity(steering.len());
+    for (_, value) in steering.iter() {
+        let (intervention, layer, coef, direction) = entry(&value)?;
+        request.steering.push(LiveSteer {
+            intervention,
+            layer,
+            coef,
+            direction: std::sync::Arc::<[f64]>::from(
+                direction
+                    .as_real_slice()
+                    .ok_or_else(|| live_protocol("validated direction disappeared"))?,
+            ),
+        });
+    }
+    request.preflight(metadata, max_tokens)?;
+    Ok(Some(request))
 }
 
 #[extendr]
 fn rebirth_live_preflight(ptr: Robj, config: Robj, max_tokens: i32) -> Robj {
     with_model(&ptr, |model| {
-        let request = parse_live_request(&config)?
-            .ok_or_else(|| async_argument("on_state", "missing live configuration"))?;
         if max_tokens < 1 {
             return Err(async_argument("max_tokens", "expected positive count"));
         }
-        let estimate = request.preflight(&model.metadata(), max_tokens as usize)?;
+        let metadata = model.metadata();
+        let request = parse_live_request(&config, &metadata, max_tokens as usize)?
+            .ok_or_else(|| async_argument("on_state", "missing live configuration"))?;
+        let estimate = request.preflight(&metadata, max_tokens as usize)?;
         Ok(list!(
             ok = true,
             materialized_bytes = estimate.materialized_bytes as f64,
@@ -275,7 +414,11 @@ fn rebirth_live_preflight(ptr: Robj, config: Robj, max_tokens: i32) -> Robj {
             r_assembly_bytes = estimate.r_assembly_bytes as f64,
             native_logits_bytes = estimate.native_logits_bytes as f64,
             capture_writer_bytes = estimate.capture_writer_bytes as f64,
-            wp10_peak_bytes = estimate.wp10_peak_bytes as f64
+            wp10_peak_bytes = estimate.wp10_peak_bytes as f64,
+            steering_bytes = estimate.steering_bytes as f64,
+            steering_descriptor_bytes = estimate.steering_descriptor_bytes as f64,
+            steering_probe_bytes = estimate.steering_probe_bytes as f64,
+            steering_probe_fixed_bytes = estimate.steering_probe_fixed_bytes as f64
         )
         .into())
     })

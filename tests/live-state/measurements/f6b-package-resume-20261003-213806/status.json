@@ -1,0 +1,61 @@
+{
+  "status": "passed",
+  "pid": 24457,
+  "directory": "/private/tmp/relm-f6b/package-resume-20261003-213806",
+  "started_at": 1791056286.343827,
+  "stages": [
+    {
+      "name": "live-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6b/corrected-case.R"
+      ],
+      "status": "passed",
+      "started_at": 1791056286.636401,
+      "pid": 24461,
+      "exit_code": 0,
+      "finished_at": 1791056287.613051
+    },
+    {
+      "name": "source-build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "--no-manual",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "started_at": 1791056287.613873,
+      "pid": 24470,
+      "exit_code": 0,
+      "finished_at": 1791056289.82689
+    },
+    {
+      "name": "scoped-package-check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--no-install",
+        "--no-tests",
+        "--no-vignettes",
+        "--no-manual",
+        "--library=/private/tmp/relm-f6b/library",
+        "/private/tmp/relm-f6b/package-resume-20261003-213806/relm_0.3.0.tar.gz"
+      ],
+      "status": "passed",
+      "started_at": 1791056289.82747,
+      "pid": 24504,
+      "exit_code": 0,
+      "finished_at": 1791056294.6878002
+    }
+  ],
+  "source_manifest_sha256": "566d883a48d35b54faf3abbf24154c79a987947439121dc2c229cb8208cc4642",
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "stage": "scoped-package-check",
+  "source_drift": [],
+  "finished_at": 1791056294.710895
+}

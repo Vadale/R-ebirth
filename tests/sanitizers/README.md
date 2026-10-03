@@ -83,7 +83,7 @@ test binary must define the ASan and UBSan runtime symbols; runtime archive hash
 and `ldd` output record static-runtime/dynamic-system-library linkage. Compiler
 commands, source/fixture hashes and binary hashes are preserved with the results.
 
-The default `full` allowlist in `run.py` executes 30 exact tests. The original
+The default `full` allowlist in `run.py` executes 40 exact tests. The original
 15 cover intervention/reversibility,
 trace, spill/readback and spill-path preservation, generation/sampling, embedding,
 async native handoff, cancellation/recovery/destruction and stream backpressure
@@ -99,16 +99,28 @@ ownership. The additional 15 F6a cases cover:
   cancellation cleanup, IPC padding and cumulative file bounds, shorter-label
   workspace bounds, long-label single rows, and full-queue cancellation wakeup.
 
+The 10 F6b cases add the independent three-layer, history-preserving coefficient
+oracle; partial/unchanged/terminal replies; adapter restoration after invalid
+replies, cancellation and close; explicit setter/reset/panic ownership; probing
+an initially zero coefficient; original-direction mismatch rejection; original
+order and f64-product rebuilding; scalar/product/sum overflow; and owned-request
+shape versus full memory-ledger agreement. The exact IDs are in
+`STEERING_CASES`. Seven live worker tests use the committed three-layer fixture;
+three rebuild/preflight cases require no model. Existing two-layer F6a fixtures
+and the accepted 15-case `live-only` selection remain unchanged.
+
 Each invocation must yield exactly one named libtest start and success,
 zero failures and zero ignored tests. Empty/wrong filters fail. Existing numerical
-forward-pass markers must also appear. The live prefix golden uses libtest
+forward-pass markers must also appear. The live prefix and F6b history goldens use libtest
 `--show-output`: its marker must occur in the named successful test event's
 `stdout` field. No arbitrary non-JSON output is discarded or accepted. Other
 cases retain `--nocapture` and their existing marker checks.
 All selected functions are unconditional;
 a conservative source guard rejects explicit early returns, environment model
-gates and skip macros. Unit sources resolve by module (`async_job`,
-`live_capture`, `live_spill`); the guard stops at the selected function's
+gates and skip macros. Unit sources resolve by module or an explicit included
+source mapping: the F6b worker cases have `async_job::tests` IDs but their bodies
+reside in `src/live_steering_tests.rs`. Other F6b bodies reside in
+`src/live_steering.rs` and `src/live_state.rs`. The guard stops at the selected function's
 same-indent closing brace, before subsequent helpers. This formatting guard is
 not a general Rust parser or control-flow verifier. The actual
 assertions in these tests remain the execution proof. Vision/model-gated tests are
@@ -148,6 +160,19 @@ mandatory. A scheduled run, omitted CLI selection or default manual dispatch
 uses `full`; the optional existing `sanitizers_only` input still skips Valgrind
 without narrowing the sanitizer allowlist.
 
+For F6b alone, manually choose `sanitizer_selection: steering-only`, or run:
+
+```sh
+python3 tests/sanitizers/run.py --selection steering-only \
+  --evidence "$RUNNER_TEMP/steering-sanitizer-evidence" \
+  --target "$RUNNER_TEMP/relm-steering-sanitizer-target"
+```
+
+This executes exactly the 10 F6b tests, none of the prior 30 product cases, and
+skips Valgrind in the workflow. Like `live-only`, it still requires every
+instrumentation/control/object-audit stage, including the production library
+build below. The default and scheduled selection remains `full`.
+
 Test output filenames percent-encode Rust module separators and other reserved
 characters. Test IDs and exact libtest filters are unchanged; each executed-test
 receipt includes its output filenames and digests, source module/digest and
@@ -157,21 +182,23 @@ filename rejection without changing execution or acceptance criteria.
 
 The workflow retains logs and partial receipts even on failure. `SUCCESS.txt`
 exists only after every required test passes. A source edit or workflow file is
-not a successful Linux acceptance run. The new F6a.2 selection has only
-model-free Python harness control coverage at preparation time; its instrumented
-Linux execution is still pending. Historical acceptance of the original 15
-cases does not establish acceptance for these new paths. Scheduled runs still
+not a successful Linux acceptance run. The new F6b selection has only model-free
+Python harness control coverage at preparation time; its instrumented Linux
+execution is pending. Retained F6a.2 and earlier sanitizer acceptance does not
+establish acceptance for the new F6b paths. Scheduled runs still
 execute both jobs.
 
 Coverage is the native CPU paths actually exercised. This is neither a
 ThreadSanitizer result nor Metal/CUDA, vision, R/SEXP marshalling, or universal
-Rust UB coverage. It does not execute R callbacks/close semantics or F6b dynamic
-coefficient updates. The ordinary native and R boundary checks remain separate.
+Rust UB coverage. It does not execute R callbacks/close semantics or certify
+steering across untested model architectures. The ordinary native and R boundary
+checks remain separate.
 
-### Live-only production archive
+### Scoped production archive
 
 `cargo test --lib --no-run` emits the unit-test executable without a production
-rlib when no integration target consumes the crate. The live-only path therefore
+rlib when no integration target consumes the crate. Both `live-only` and
+`steering-only` therefore
 also builds the production library with the same target, flags and rebuilt std,
 reusing native objects. Its successful non-test Cargo artifact must match the
 declared `rebirth_llm` archive used by the ASan symbol audit. This adds

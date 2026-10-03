@@ -1,8 +1,11 @@
 # Phase 6 allocation contract
 
 Frozen design, 2026-10-03, under D-041 and the approved limits in
-`phase6-live-introspection-plan.md` §5. Implementation and resource acceptance
-are pending. This is an allocation ledger, not a total process-RSS guarantee.
+`phase6-live-introspection-plan.md` §5. F6a implementation and resource acceptance
+passed with the sources recorded in the implementation report. F6b's additional
+steering ledger passes the focused native capacity and installed-R twin/object
+controls recorded in the implementation report; remote acceptance is pending. This is an
+allocation ledger, not a total process-RSS guarantee.
 
 ## State admission
 
@@ -21,7 +24,7 @@ on this profile; unsupported profiles fail admission.
 
 `F` is measured from complete empty state prototypes containing actual model
 path, named prompt and attributes, plus empty interning and configuration
-skeletons. The larger materialized/spill prototype includes maximum-width
+skeletons and the admitted original steering audit. The larger materialized/spill prototype includes maximum-width
 coordinate/path/spec fields. F6b adds its step/audit/reply skeletons. Shared
 objects may be counted more than once deliberately.
 
@@ -50,6 +53,7 @@ even where their maximum lifetimes need not overlap:
 ```
 T = 2*R_mode + R_payload + R_assembly + FFI_native + Logits_native
     + Capture_writer_native + Fixed_native + WP10_peak + F6b_owned_reply
+    + F6b_initial_probe
 ```
 
 `R_mode` is the materialized or proxy bound. Two copies cover delivery and
@@ -58,7 +62,7 @@ assembly/attribute copies. The independent R interning payload is
 `4*g(4*N)+g(8*N)+3*g(4*V)+g(8*C)+g(8)+ch(B)+sum(ch(component_bytes))`.
 Assembly adds `2*r(4*N)+2*r(8*N)` for expanded label indices/pointer columns.
 
-Native conversion arrays contribute `24*N+12*V+44*K` on the memory path
+Native conversion arrays contribute `24*N+12*V+44*K+16*S` on the memory path
 (`N=V=0` for spilled conversion), plus explicit interning allocations.
 Raw logits and unchanged sampler arrays contribute `20*vocabulary_size`.
 Top-k rank/tuple/result capacities, decoded strings, and the temporary raw/display
@@ -76,11 +80,45 @@ overlap in the accounting. Model weights, KV/backend memory, allocator overhead,
 thread stacks and caller-retained/copied objects remain outside this envelope.
 The requested lazy output slice/matrix is reported separately from transport.
 
-F6b additionally counts immutable f64 directions (`8*H*S`), original and
-candidate dense f32 layer buffers (`8*H*D`), one scaled vector (`4*H`), command,
-coefficient and audit arrays (`52*S`), and compiled direction descriptors.
-The R direction copy and normalized reply/index work are separate; none is
-needed for F6a's NULL-only replies.
+For F6b let `D` be the total model layer count. With at least one existing steer,
+the additional component is independently calculated in R and Rust as:
+
+```
+F6b_owned_reply = 8*H*S + 8*H*D + 4*H + 52*S
+                 + steering_descriptor_bytes
+                 + r(8*H*S)
+                 + 2*F + 2*g(4*S) + 2*g(8*S) + 3*r(4*S) + r(8*S)
+```
+
+It is zero when `S=0`. The first terms cover immutable native f64 directions,
+original/candidate dense f32 buffers, one scaled vector, command/current and
+candidate coefficients/audit/probe-index arrays. Compiled descriptor sizes are
+reported separately and include owned vector headers and the FFI pending count.
+The R direction copy and reply/index work are separate from the two integer and
+one double FFI audit arrays (`16*S` above). These terms conservatively count
+overlapping retained audits and normalization temporaries. R caches the original
+audit at admission with two scalar walks, avoiding an all-intervention logical
+index temporary; state validation does not scan all interventions. Reply row
+count is checked against S before vectorized validation or normalization, so
+ablation entries cannot enlarge its workspace. Before copying any
+direction into Rust, shape admission checks `H*S` and the existing 8 MiB owned
+transport limit. Each admitted direction is copied directly into shared immutable
+storage; request clones do not duplicate it. Candidate adapter buffers remain in
+the full transient ledger even when their maximum lifetimes do not overlap.
+
+An initially-zero coefficient may activate a direction whose layer has not yet
+passed the existing effectiveness sentinel. For `S>0`, admission separately
+charges `F6b_initial_probe = 4*H*D + 4*H + D + steering_probe_fixed_bytes`;
+it is zero otherwise. The native probe captures only the existing sentinel's
+checked scalar neuron, sequentially comparing a fresh base and steered context
+for each uncached layer before the generation prefill. Constants and numerical
+tolerances are unchanged. A fixed layer-sized Boolean cache avoids tree-node
+allocations for steering. Compiled fixed fields account for capture, adapter,
+vector, cache, context and single-token batch descriptors/backing arrays. R
+independently recomputes the dense sentinel/vector/cache terms. Backend/KV
+storage retains the exclusions stated above; relm-owned probe buffers do not.
+The native fixed ledger also charges the boxed start-failure payload, including
+the model/permit ownership needed to return a failed submission safely.
 
 ## Arrow and files
 

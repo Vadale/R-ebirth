@@ -14,9 +14,10 @@ live_model_schema <- function(state, prompt_count, state_id, layers, width, top)
   step <- state$step
   expect_identical(class(step), "data.frame")
   expect_identical(names(step), c("state_id", "prompt_id", "token_pos", "token_id",
-    "context_pos", "source_pos", "source", "elapsed"))
+    "context_pos", "source_pos", "source", "elapsed",
+    "steering_revision", "applied_after_state", "effective_source_pos"))
   expect_identical(unname(vapply(step, typeof, character(1))),
-    c(rep("integer", 6), "character", "double"))
+    c(rep("integer", 6), "character", "double", rep("integer", 3)))
   expect_identical(nrow(step), 1L)
   expect_identical(step$state_id, as.integer(state_id))
   expect_identical(step$prompt_id, 1L)

@@ -1,0 +1,9 @@
+{
+  "status": "diagnosed",
+  "pid": 24403,
+  "directory": "/private/tmp/relm-f6b/diagnostic-20261003-213646",
+  "stage": "single-failed-case-diagnostic",
+  "started_at": 1791056206.547531,
+  "exit_code": 0,
+  "finished_at": 1791056207.442438
+}

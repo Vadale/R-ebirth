@@ -1,0 +1,55 @@
+    Checking rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Checking rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+error[E0063]: missing field `model_invalidated` in initializer of `rebirth_llm::AsyncCompletion`
+  --> rebirth-llm/tests/async_synthetic.rs:60:33
+   |
+60 |             let mut completed = AsyncCompletion {
+   |                                 ^^^^^^^^^^^^^^^ missing `model_invalidated`
+
+For more information about this error, try `rustc --explain E0063`.
+error: could not compile `rebirth-llm` (test "async_synthetic") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error[E0252]: the name `ModelMetadata` is defined multiple times
+  --> rebirth-ffi/src/live_boundary.rs:3:82
+   |
+ 3 | use rebirth_llm::{LiveCoefficient, LiveRequest, LiveState, LiveSteer, LiveTrace, ModelMetadata};
+   |                                                                                  ^^^^^^^^^^^^^ `ModelMetadata` reimported here
+   |
+  ::: rebirth-ffi/src/lib.rs:29:49
+   |
+29 |     InterventionSpec, LoadRequest, LoadedModel, ModelMetadata, Pooling, Positions, RebirthError,
+   |                                                 ------------- previous import of the type `ModelMetadata` here
+   |
+   = note: `ModelMetadata` must be defined only once in the type namespace of this module
+
+error: unused import: `ModelMetadata`
+ --> rebirth-ffi/src/live_boundary.rs:3:82
+  |
+3 | use rebirth_llm::{LiveCoefficient, LiveRequest, LiveState, LiveSteer, LiveTrace, ModelMetadata};
+  |                                                                                  ^^^^^^^^^^^^^
+  |
+  = note: `-D unused-imports` implied by `-D warnings`
+  = help: to override `-D warnings` add `#[allow(unused_imports)]`
+
+error[E0308]: mismatched types
+   --> rebirth-ffi/src/live_boundary.rs:324:81
+    |
+324 |     request.preflight_with_steering_shape(metadata, max_tokens, steering.len(), values)?;
+    |             -----------------------------                                       ^^^^^^ expected `u64`, found `usize`
+    |             |
+    |             arguments to this method are incorrect
+    |
+note: method defined here
+   --> rebirth-llm/src/live_state.rs:157:12
+    |
+157 |     pub fn preflight_with_steering_shape(
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+help: you can convert a `usize` to a `u64` and panic if the converted value doesn't fit
+    |
+324 |     request.preflight_with_steering_shape(metadata, max_tokens, steering.len(), values.try_into().unwrap())?;
+    |                                                                                       ++++++++++++++++++++
+
+Some errors have detailed explanations: E0252, E0308.
+For more information about an error, try `rustc --explain E0252`.
+error: could not compile `rebirth-ffi` (lib) due to 3 previous errors
+error: could not compile `rebirth-ffi` (lib test) due to 3 previous errors

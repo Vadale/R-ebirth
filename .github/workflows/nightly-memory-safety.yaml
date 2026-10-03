@@ -16,11 +16,12 @@ on:
         type: boolean
         default: false
       sanitizer_selection:
-        description: Full sanitizer suite or only the new F6a live-state cases (also skips Valgrind)
+        description: Full suite, F6a live state, or F6b steering (scoped choices skip Valgrind)
         type: choice
         options:
           - full
           - live-only
+          - steering-only
         default: full
 
 name: nightly-memory-safety.yaml
@@ -33,7 +34,7 @@ concurrency:
 
 jobs:
   valgrind-intervention:
-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only') }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only') }}
     runs-on: ubuntu-24.04
     name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
     timeout-minutes: 90

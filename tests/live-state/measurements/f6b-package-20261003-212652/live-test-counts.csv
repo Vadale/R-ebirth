@@ -1,0 +1,20 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-llm-live-helpers.R","llm-live-helpers","empty live payload tables preserve their declared base-R schemas",14,0,FALSE,FALSE,0,0.042,0.004,0.046,14
+"test-llm-live-helpers.R","llm-live-helpers","live payload source coordinates are checked before sequence advances",52,0,FALSE,FALSE,0,0.048,0.009,0.057,52
+"test-llm-live-helpers.R","llm-live-helpers","live callbacks acknowledge only after successful NULL completion",6,0,FALSE,FALSE,0,0.00700000000000001,0.001,0.00800000000000001,6
+"test-llm-live-helpers.R","llm-live-helpers","live worker steering audits reject inconsistent revisions before advancing",37,0,FALSE,FALSE,0,0.041,0.006,0.046,37
+"test-llm-live-helpers.R","llm-live-helpers","live delivery uses its admitted audit and bounds reply rows by steer count",5,0,FALSE,FALSE,0,0.006,0,0.00700000000000001,5
+"test-llm-live-helpers.R","llm-live-helpers","live callback and reply failures preserve class and original parent",11,0,FALSE,FALSE,0,0.00900000000000001,0.002,0.011,11
+"test-llm-live-helpers.R","llm-live-helpers","live fixed allocation bound covers empty states and carried prompt text",5,0,FALSE,FALSE,0,0.005,0,0.005,5
+"test-llm-live-memory.R","llm-live-memory","live vector allocation covers the independently pinned R64 pools",13,0,FALSE,FALSE,0,0.018,0,0.018,13
+"test-llm-live-memory.R","llm-live-memory","live materialized bound covers actual small large and string-heavy states",16,0,FALSE,FALSE,0,0.02,0.001,0.021,16
+"test-llm-live-memory.R","llm-live-memory","live allocation rejects fractional nonfinite and overflowing dimensions",27,0,FALSE,FALSE,0,0.073,0.004,0.084,27
+"test-llm-live-memory.R","llm-live-memory","native memory disagreement is rejected during live preparation",6,0,FALSE,FALSE,0,0.03,0.003,0.041,6
+"test-llm-live-steering.R","llm-live-steering","live steering replies normalize partial updates without mutating specifications",7,0,FALSE,FALSE,0,0.006,0.001,0.00700000000000001,7
+"test-llm-live-steering.R","llm-live-steering","live steering replies reject every extra or malformed shape",14,0,FALSE,FALSE,0,0.022,0.000999999999999994,0.023,14
+"test-llm-live-steering.R","llm-live-steering","live steering indices address unique existing steering entries only",15,0,FALSE,FALSE,0,0.024,0,0.025,15
+"test-llm-live-steering.R","llm-live-steering","live steering coefficients reject nonfinite and unrepresentable scalars",16,0,FALSE,FALSE,0,0.022,0.001,0.0239999999999999,16
+"test-llm-live-steering.R","llm-live-steering","live steering delivery validates the entire reply before acknowledgement",12,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.011,12
+"test-llm-live-steering.R","llm-live-steering","[MODEL] live steering audits partial zero and unchanged updates with ablation",21,3,FALSE,FALSE,0,1.057,0.138,1.033,18
+"test-llm-live-steering.R","llm-live-steering","[MODEL] live steering restores adapters after cancel callback and reply failures",143,0,FALSE,FALSE,0,2.132,0.102,1.025,143
+"test-llm-live-steering.R","llm-live-steering","[MODEL] close after an applied live update discards the outstanding reply",41,0,FALSE,FALSE,0,0.852,0.068,0.5,41

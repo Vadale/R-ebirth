@@ -1,0 +1,55 @@
+{
+  "status": "passed",
+  "pid": 24741,
+  "directory": "/private/tmp/relm-f6b/latency-20261003-213919",
+  "started_at": 1791056359.168952,
+  "stages": [
+    {
+      "name": "public-update-latency",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6b/public-update-latency.R"
+      ],
+      "status": "passed",
+      "started_at": 1791056359.47156,
+      "pid": 24745,
+      "exit_code": 0,
+      "finished_at": 1791056396.763715
+    }
+  ],
+  "source_manifest_sha256": "566d883a48d35b54faf3abbf24154c79a987947439121dc2c229cb8208cc4642",
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "installed_files": {
+    "relm/LICENSE": "e8ff2c38f03997229ffd06b2336239d747c3fab84daaeefabc666ddb55f350e7",
+    "relm/NEWS.md": "1e8d13da568f7fa0bf26e93333d5fd1727d4807ddca7268c55ab3985644e6c0b",
+    "relm/NAMESPACE": "39f3a198d0ebb5e5be28bc862f5b624231f498659ffe58338c36835237256c60",
+    "relm/THIRD-PARTY-NOTICES": "d656cfd75387a530124bd2518181a2d774ad0bed604321a2b6df1a51ad99fd83",
+    "relm/DESCRIPTION": "97823c4229bca4689630d85e9ec977fc1472b352f95f5ede3849f912574c5bd4",
+    "relm/INDEX": "47bdd08f048e4ad7b8c295cdfe3146f1a17af60b0c0a591939a48adac9e46628",
+    "relm/models.csv": "2954109563760e21806b7eb148af926fdefe11b99e5d8e773125bc58a493e178",
+    "relm/extdata/abstracts-sample.csv": "cf9baef3fb9425f87a5379209dccb4a8121439db8a764c7698acd0db2c75b2e4",
+    "relm/R/relm": "570ca456b280cdeb201ef5ebdf22dc8f80092e2c0c68e33c7f73340e420f3759",
+    "relm/R/relm.rdb": "6a3f822eb2d78da751f563a687131d357c922d0d264bd625109adecf4740e4d1",
+    "relm/R/relm.rdx": "0dfd09ec64bc93bf1ab6231306ee4032c8e6b7dfe4ad26672c928e3d85672068",
+    "relm/Meta/links.rds": "b319455f68c83d7f95d80a67bc92c8d7c0a1a5baf8001a4f70bbd6b448713bd6",
+    "relm/Meta/features.rds": "b93acb524dc15de6489965f64f7b2f78fb786471c4b44abbed873873df97ce3d",
+    "relm/Meta/nsInfo.rds": "ca725776054d84786389e4b246c9fd857ab36a33a16797a6092f8408da669ae8",
+    "relm/Meta/package.rds": "50fa29a5943dd37e4ad029a14a23ecacf45154140cbc9bea11b86cca0549d138",
+    "relm/Meta/hsearch.rds": "e2ba39e34cedc4d0418660b39f045f615dc6b75c037b0d5ec1b278364ae4eede",
+    "relm/Meta/Rd.rds": "130c5d6948043eb8b41ed08f4ee5b02dd202627cd8129035392c9a9be74e7c21",
+    "relm/html/R.css": "52144cf4c349f7f2cf131342f81bbc43c6514ba2274556815df88918fdeb189b",
+    "relm/html/00Index.html": "a0822028b06c092e854e5c3376ef8d4916ff5de4464beff8822f032d7254adf6",
+    "relm/libs/relm.so": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "relm/help/AnIndex": "2ad1e842ced186d3ec31f720c753966aaf261e80abf37fb7f59329dcad24220b",
+    "relm/help/aliases.rds": "4c7538cac9283edbbed47ade510d6841437726b650efcd394fd4273027cd055c",
+    "relm/help/relm.rdb": "80f1e38e71d85508f42f3e1d618a245aa4a5f617c2bf19c38d2491c5230d2dfb",
+    "relm/help/relm.rdx": "738e7d7986849c0c0cf3d505a594686fba2cdbf0fb5d64dc11e601c42c8f63ee",
+    "relm/help/paths.rds": "76104ea45a3ccf65e6f7a3b2c615875d9ad0d5ce1807f963a94c3266906c2b62",
+    "relm/help/figures/topic-map.png": "928b943a96f636ec95d3052d097b5dd246cdf07de723314661235e1953592a87",
+    "relm/help/figures/anatomy-lab.png": "cf9c1ca28cf3093dab251c3b9282362b756800b0ecde1a4d8c9c1ce6edd8a8a0"
+  },
+  "stage": "public-update-latency",
+  "source_drift": [],
+  "finished_at": 1791056396.866876
+}

@@ -1,7 +1,8 @@
 # Phase 6 — Live introspection and steering contract
 
-Date: 2026-10-03. Status: **F6a APPROVED under D-041; implemented with local acceptance passed,
-remote acceptance pending.** The founder replied "ok. continua con F6a e F6b" to the
+Date: 2026-10-03. Status: **F6a APPROVED under D-041 and acceptance complete at6877c4d. F6b is authorized
+and implemented; native/installed-R/public-update gates pass, with interactive
+and remote acceptance pending.** The founder replied "ok. continua con F6a e F6b" to the
 concrete proposal. F6a's contract below is now binding in API-GRAMMAR section11.
 Continuation into F6b is authorized; section6 finalizes its reply/audit protocol
 before that increment's implementation. No dependency or acceptance result is
