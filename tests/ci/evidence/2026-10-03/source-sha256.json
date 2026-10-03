@@ -1,0 +1,12 @@
+{
+  ".github/workflows/R-CMD-check.yaml": "01fdc82905efb87a8973324c0bb1a83215400682e6e4fee87edde2b57dbfb23d",
+  ".github/workflows/rust.yaml": "8bd323563b95b9892c61c6e74f8e250a5194b7ab3330529b8a02368e685d68a0",
+  ".github/workflows/nightly-vision-golden.yaml": "1be26e7ad9be6ad9941199eea8347583f4338c782cf767a3d7d37ed71aa539c3",
+  "tests/ci/change_scope.py": "9a8d29dba4c2a16a74168529b24b24fb5b36c93aaf1b7432eec086fd054309b8",
+  "tests/ci/test_change_scope.py": "97a4f9b062d4f44a50306906f43f604e9b083ed936655fba1cb245347b20b5c3",
+  "tests/ci/run-vision.R": "29e8b10a7d6453db9eb4f5fd38642f6708feb9293eaf14ac815e60d2608960d0",
+  "tests/ci/test-vision-runner.R": "6706b5714a281e45eda6237d8ba7910a969b5841a53859a4a7db9719ae1e40f2",
+  "rebirth/tests/testthat/helper-async.R": "2f97b35d83f0a9468f8db932f97bcd700c1a717ab11b0d6c0d7c39f313edc5fd",
+  "rebirth/tests/testthat/test-llm-async.R": "1afe59be7df10a7d74caed166e3b5dd95f922d24a9296bdcc6bf9cbbd8e7039e",
+  "rebirth/tests/testthat/test-llm-vision-async.R": "6fbc292b0279ef7638db9d24c760dff8f4c3fc9dad396403f0e62efe832f8ac5"
+}

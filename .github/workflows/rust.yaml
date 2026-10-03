@@ -47,17 +47,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      # Required job names remain present for documentation-only changes. Missing
+      # or ambiguous history selects full verification; this is not a test pass.
+      - name: Classify changed files (fail closed)
+        id: scope
+        working-directory: .
+        run: python3 tests/ci/change_scope.py
 
       - name: Vision reference manifest corruption controls (no model or native build)
+        if: steps.scope.outputs.full_checks != 'false'
         working-directory: .
         run: python3 tests/llm-golden/vision/tools/test_reference_manifest.py
 
       - name: Graph sizing regression from current source (ASan/UBSan)
+        if: steps.scope.outputs.full_checks != 'false'
         working-directory: .
         run: python3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"
 
       - name: Retain graph sizing regression evidence
-        if: always()
+        if: always() && steps.scope.outputs.full_checks != 'false'
         uses: actions/upload-artifact@v7
         with:
           name: graph-size-linux-${{ github.run_id }}-${{ github.run_attempt }}
@@ -65,6 +76,7 @@ jobs:
           if-no-files-found: warn
 
       - uses: dtolnay/rust-toolchain@stable
+        if: steps.scope.outputs.full_checks != 'false'
         with:
           components: rustfmt, clippy
 
@@ -73,6 +85,7 @@ jobs:
       # route rustc and the engine's cmake build through sccache; the GHA backend
       # stores the cache. The dominant CI cost is recompiling llama.cpp each run.
       - name: sccache (compiler cache)
+        if: steps.scope.outputs.full_checks != 'false'
         uses: mozilla-actions/sccache-action@v0.0.10
 
       # rebirth-ffi is the extendr boundary crate: building it requires R (the
@@ -82,6 +95,7 @@ jobs:
       # compiled and validated by the R-CMD-check workflow (which sets up R);
       # that workflow also lints the boundary crate with R available.
       - name: cargo fmt --check (whole workspace)
+        if: steps.scope.outputs.full_checks != 'false'
         run: |
           cargo fmt --all --check
           # include! keeps extendr registration in one module; rustfmt does not
@@ -89,6 +103,7 @@ jobs:
           rustfmt --check --edition 2021 rebirth-ffi/src/async_boundary.rs
 
       - name: cargo clippy (R-free engine crate; deny warnings)
+        if: steps.scope.outputs.full_checks != 'false'
         run: cargo clippy --locked -p rebirth-llm --all-targets -- -D warnings
 
       # Includes the exact-value engine-vs-oracle logit check (WP2 Step 1,
@@ -96,13 +111,16 @@ jobs:
       # the committed synthetic GGUF must match the numpy oracle golden within
       # the documented F32-vs-F64 tolerance. Download-free, synthetic-only.
       - name: cargo test (R-free engine crate)
+        if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked -p rebirth-llm
 
       # Ownership assertions must remain active in optimized builds (D-037).
       - name: async ownership and cancellation (release profile)
+        if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked --release -p rebirth-llm --lib async
 
       - name: async synthetic handoff golden (release profile)
+        if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked --release -p rebirth-llm --test async_synthetic
 
       # The no-spill configuration (--no-default-features drops the `spill` feature
@@ -111,6 +129,7 @@ jobs:
       # otherwise rot. Build + test (not just check) -- the spill-only tests are
       # #![cfg(feature = "spill")]-gated, so they compile out here.
       - name: cargo test (R-free engine crate, no-spill config)
+        if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked -p rebirth-llm --no-default-features
 
   # Harness B, part (b): the numpy reference oracle must be deterministic and
@@ -124,6 +143,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: CI change routing controls (no dependencies or models)
+        run: python3 tests/ci/test_change_scope.py
 
       - uses: actions/setup-python@v7
         with:
@@ -211,17 +233,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      # Required job names remain present for documentation-only changes. Missing
+      # or ambiguous history selects full verification; this is not a test pass.
+      - name: Classify changed files (fail closed)
+        id: scope
+        working-directory: .
+        run: python3 tests/ci/change_scope.py
 
       - uses: dtolnay/rust-toolchain@stable
+        if: steps.scope.outputs.full_checks != 'false'
         with:
           targets: x86_64-apple-darwin
 
       - name: Graph sizing regression on the native Mac host (ASan/UBSan)
+        if: steps.scope.outputs.full_checks != 'false'
         working-directory: .
         run: python3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"
 
       - name: Retain native Mac graph sizing evidence
-        if: always()
+        if: always() && steps.scope.outputs.full_checks != 'false'
         uses: actions/upload-artifact@v7
         with:
           name: graph-size-macos-${{ github.run_id }}-${{ github.run_attempt }}
@@ -229,7 +262,9 @@ jobs:
           if-no-files-found: warn
 
       - name: sccache (compiler cache)
+        if: steps.scope.outputs.full_checks != 'false'
         uses: mozilla-actions/sccache-action@v0.0.10
 
       - name: cargo test --no-run for x86_64-apple-darwin (link is the gate)
+        if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked -p rebirth-llm --no-run --target x86_64-apple-darwin

@@ -2,96 +2,6 @@
 # matrix leg. The native fixture exercises scheduling, not LLM text quality.
 # Real generation parity below is explicitly [MODEL]-gated.
 
-async_test_handle <- function(mode = "success", steps = 20L, delay_ms = 10L) {
-  m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()),
-    "<async-controlled-fixture>")
-  relm:::relm_check(relm:::rebirth_async_test_config(m$ptr, mode, steps, delay_ms))
-  m
-}
-
-async_test_observe <- function(promise, diagnostic = FALSE) {
-  result <- new.env(parent = emptyenv())
-  result$done <- FALSE
-  result$value <- NULL
-  result$error <- NULL
-  result$settlements <- 0L
-  observer <- promises::then(promise, onFulfilled = function(value) {
-    result$value <- value
-    result$settlements <- result$settlements + 1L
-    result$done <- TRUE
-    NULL
-  }, onRejected = function(error) {
-    result$error <- error
-    result$settlements <- result$settlements + 1L
-    result$done <- TRUE
-    NULL
-  })
-  if (diagnostic) result$observer <- observer
-  result
-}
-
-async_test_wait <- function(result, timeout = 10, promise = NULL) {
-  started <- proc.time()
-  wall_started <- Sys.time()
-  deadline <- unname(started[["elapsed"]]) + timeout
-  # A collected native result can still have an undelivered promise continuation.
-  # Record the boundary without pumping extra callbacks or extending the gate.
-  samples <- transitions <- list()
-  last_state <- NULL
-  polls <- 0L
-  max_poll_seconds <- 0
-  while (!result$done && unname(proc.time()[["elapsed"]]) < deadline) {
-    before <- proc.time()[["elapsed"]]
-    later::run_now(0.05, loop = later::global_loop())
-    if (!is.null(promise)) {
-      timing <- proc.time() - started
-      poll_seconds <- proc.time()[["elapsed"]] - before
-      polls <- polls + 1L
-      max_poll_seconds <- max(max_poll_seconds, poll_seconds)
-      state <- list(job_present = !is.null(relm:::.relm_async$job),
-        promise = attr(promise, "promise_impl")$status(), observed = result$done)
-      sample <- c(list(elapsed = unname(timing[["elapsed"]]),
-        cpu = unname(timing[["user.self"]] + timing[["sys.self"]]),
-        poll_seconds = unname(poll_seconds)), state)
-      samples <- tail(c(samples, list(sample)), 8L)
-      if (!identical(state, last_state)) transitions <- c(transitions, list(sample))
-      last_state <- state
-    }
-  }
-  if (!is.null(promise)) {
-    # Read-only internal diagnostics for the pinned later/promises versions.
-    # A missing diagnostic interface is recorded, not made into another failure.
-    queue <- tryCatch(lapply(getFromNamespace("list_queue", "later")(
-      later::global_loop()), function(x) x[c("id", "when")]), error = conditionMessage)
-    receipt <- list(timeout = timeout, elapsed = unname(proc.time()[["elapsed"]] -
-      started[["elapsed"]]), wall_seconds = as.numeric(difftime(Sys.time(),
-      wall_started, units = "secs")), polls = polls, max_poll_seconds = max_poll_seconds,
-      current_loop = later::current_loop()$id, global_loop = later::global_loop()$id,
-      transitions = transitions, last_polls = samples, queue_at_boundary = queue,
-      native = relm:::rebirth_async_test_stats(), observer_done = result$done,
-      R = R.version.string, later = as.character(packageVersion("later")),
-      promises = as.character(packageVersion("promises")),
-      testthat = as.character(packageVersion("testthat")),
-      parent_status = attr(promise, "promise_impl")$status(),
-      observer_status = if (is.null(result$observer)) NULL else
-        attr(result$observer, "promise_impl")$status())
-    dir.create("_diagnostics", showWarnings = FALSE)
-    dput(receipt, file = "_diagnostics/async-responsiveness.txt")
-    cat("ASYNC_RESPONSIVENESS_DIAGNOSTIC\n")
-    dput(receipt)
-  }
-  diagnostic <- "async promise did not settle before test timeout"
-  if (!result$done) {
-    # Distinguish a still-running worker from a terminal result whose R callback
-    # was not delivered. Read-only counters do not collect or cancel the job.
-    counters <- relm:::rebirth_async_test_stats()
-    diagnostic <- paste(diagnostic,
-      paste(capture.output(str(counters)), collapse = "\n"), sep = "\n")
-  }
-  expect_true(result$done, info = diagnostic)
-  invisible(result)
-}
-
 test_that("async dependencies are present on required R CI legs", {
   expect_true(requireNamespace("later", quietly = TRUE))
   expect_true(requireNamespace("promises", quietly = TRUE))
@@ -490,20 +400,4 @@ test_that("[MODEL] async preserves interventions and cancellation recovery", {
   if (accepted) expect_s3_class(cancelled$error, "relm_error_cancelled")
   recovered <- llm_generate(changed, prompt, max_tokens = 8, temperature = 0, seed = 7)
   expect_identical(recovered, expected)
-})
-
-test_that("[MODEL] async vision matches the existing image generation path", {
-  path <- path.expand(Sys.getenv("RELM_TEST_MODEL_VLM"))
-  projector <- path.expand(Sys.getenv("RELM_TEST_MMPROJ_VLM"))
-  skip_if_not(nzchar(path) && file.exists(path) && nzchar(projector) && file.exists(projector),
-    "RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required")
-  m <- llm(path, projector = projector)
-  on.exit(close(m), add = TRUE)
-  images <- vision_fixture("red-square.png")
-  expected <- llm_generate(m, "What color is shown?", images = images,
-    max_tokens = 8, temperature = 0, seed = 11)
-  result <- async_test_observe(llm_generate(m, "What color is shown?", images = images,
-    max_tokens = 8, temperature = 0, seed = 11, async = TRUE))
-  async_test_wait(result, timeout = 120)
-  expect_identical(result$value, expected)
 })

@@ -1,0 +1,10 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-llm-async-lifecycle.R","llm-async-lifecycle","close and forced GC during a native job are safe in a fresh process",3,0,FALSE,FALSE,0,0.012,0.005,0.258,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","pending job roots survive dropped model and promise references",3,0,FALSE,FALSE,0,0.029,0.005,0.922,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","normal failures cancel and panic release native ownership in subprocesses",3,0,FALSE,FALSE,0,0.00599999999999998,0.004,0.362,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","namespace shutdown joins work and retains the DLL for live finalizers",3,0,FALSE,FALSE,0,0.005,0.004,0.191,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","real synthetic models defer close and GC while a fixture owns native execution",3,0,FALSE,FALSE,0,0.005,0.004,1.768,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","lifecycle diagnostics do not deliver callbacks after the drain deadline",3,0,FALSE,FALSE,0,0.003,0.003,0.171,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","[MODEL] derived Qwen ownership survives parent sibling and unrelated close or GC",1,0,TRUE,FALSE,0,0,0.001,0.00099999999999989,0
+"test-llm-async-lifecycle.R","llm-async-lifecycle","foreign external pointers fail safely before an extendr downcast",3,0,FALSE,FALSE,0,0.002,0.003,0.168,3
+"test-llm-async-lifecycle.R","llm-async-lifecycle","session exit joins an active job without an event-loop drain",3,0,FALSE,FALSE,0,0.003,0.003,0.17,3
