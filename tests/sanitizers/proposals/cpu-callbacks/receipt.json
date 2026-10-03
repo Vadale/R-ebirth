@@ -1,0 +1,111 @@
+{
+  "proposal_status": "not_applied",
+  "type_assignment_check": "all seven original casts rejected; seven corrected assignments accepted",
+  "forwarding_contracts": 7,
+  "forwarding_scope": "typed stub targets, no numerical kernel acceptance",
+  "runtime_reproducer_status": "failed_to_reproduce_on_this_Mac",
+  "runtime_original_exit_code": 0,
+  "runtime_original_output": "ORIGINAL_TYPE_MISMATCH_SURVIVED",
+  "runtime_type_check_hook_found_in_main_object": false,
+  "Linux_finding": "actual instrumented run37086505519 fails on F32 dot callback mismatch",
+  "files": {
+    "compile-main.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "link.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "adapters.h": {
+      "sha256": "c19fb20609e0d8884d4a106ed1a9f6263b45eaee1f5d600c977e87faf69602da"
+    },
+    "adapters.out.gz": {
+      "raw_sha256": "6b6e2d60f8195d8dc843b9b7cb2bf13742fab3f530deee24fcb600ea376a2826",
+      "archive_sha256": "960d8c209ec8cd566e7361bc80166fa5f059dae5312f3c08eaabf3600ea9d808"
+    },
+    "original.out.gz": {
+      "raw_sha256": "36fb7bac1f07bbe35fd60c369354481ac6bfad4e3faac3de024ebbbcf332a62f",
+      "archive_sha256": "e15fa2f8454644ee1c3e60f95fa086dbdf07fe1d2799195dbaff0e62813f1518"
+    },
+    "stubs.cpp": {
+      "sha256": "3482f15ee588e99a642adb386f65f1235009d89cb7c53d10e9531aa6042cec7c"
+    },
+    "original-assignments.err.gz": {
+      "raw_sha256": "4edf08bb88c9e148ff4e978bdccf150b528072e836cc70e434cfc1e5da85e2da",
+      "archive_sha256": "215320808168eb5342c061f6e642265856af8f22deceff90583bbff171951b48"
+    },
+    "shared.h": {
+      "sha256": "2237a4f36a52fc257f1aebd224362291bfed2cc09206944ffaa95b2aa178722c"
+    },
+    "corrected-assignments.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "original-assignments.c": {
+      "sha256": "0610bdf55c51d0c8be971f3a524c39c7f34890f5d54c71d205649cd7d273a00d"
+    },
+    "candidate.patch": {
+      "sha256": "77db30621368302672f5ab1a3b06a1dc3f9b0b058f3beea3cc1a2b3a250a3db2"
+    },
+    "scope.json": {
+      "sha256": "a689c451d1509a4daaedbfffe6f3f9900f1eb1f1809d01bb141fb66a0e977df3"
+    },
+    "type-checks.json": {
+      "sha256": "e63fac9e5e85084cb79420736a2860b5862ff223ef9ea48696df11cbe613029e"
+    },
+    "corrected-assignments.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "original.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "original-assignments.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "link.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "compile-main.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "adapters.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "commands.json": {
+      "sha256": "a14b5d3259e70a7a7ef7d2a21e16a8f6829008fb39d36c0b6a5eafd3aab3c782"
+    },
+    "compile-stubs.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "main.c": {
+      "sha256": "be27700e9da3fe5daecebf7ee2eff232ce70916a9818fb3669f2e5af5ecb1791"
+    },
+    "compiler.out.gz": {
+      "raw_sha256": "d23e1e266991777af51323c8a611147c28082ac12f936caa38bc345779f78483",
+      "archive_sha256": "e019b307937daa4c2f1958239456ed205702250e32a5b92b4a7947a646d591f2"
+    },
+    "corrected-assignments.c": {
+      "sha256": "c60ee114522e301e06b6a6bcc5303d45d605f5ea2e9cbaf6b51f398e530d7fda"
+    },
+    "compiler.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "main-symbols.txt.gz": {
+      "raw_sha256": "7a86a96bcd13f1ae74b98e7dca546b66e913703e3dc30d215c541e052d8aa7fb",
+      "archive_sha256": "d2f9fe2f765716d5d076177098f8b94106fdf407dc853a4cff6bc7c0e2c70863"
+    },
+    "compile-stubs.err.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    }
+  }
+}

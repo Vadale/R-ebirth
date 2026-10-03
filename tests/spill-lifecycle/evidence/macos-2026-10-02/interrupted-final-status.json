@@ -1,0 +1,69 @@
+{
+  "status": "interrupted",
+  "pid": 91104,
+  "directory": "/private/tmp/relm-maintenance/final-package-20261002-191429",
+  "started_at": 1790961269.765989,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1790961269.797097,
+      "exit_code": 0,
+      "finished_at": 1790961269.9261959
+    },
+    {
+      "name": "format-ffi",
+      "command": [
+        "rustfmt",
+        "--check",
+        "--edition",
+        "2021",
+        "rebirth-ffi/src/async_boundary.rs"
+      ],
+      "status": "passed",
+      "started_at": 1790961269.926694,
+      "exit_code": 0,
+      "finished_at": 1790961269.967008
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1790961269.9674728,
+      "exit_code": 0,
+      "finished_at": 1790961317.058202
+    },
+    {
+      "name": "engine",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm"
+      ],
+      "status": "interrupted",
+      "started_at": 1790961317.05867
+    }
+  ],
+  "stage": "engine",
+  "reason": "Focused review found a descriptor exception-safety defect before final acceptance; stopped before further work.",
+  "finished_at": 1790961350.247535
+}

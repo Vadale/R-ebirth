@@ -1,0 +1,16 @@
+{
+  "scope": "One integrated independent A/B/C review, then narrow follow-up for its A findings. No material B/C finding.",
+  "findings": [
+    {
+      "issue": "Managed writer reopened pathname after lease check",
+      "resolution": "Exclusive descriptor-relative open under registry lock; replacement regression passes"
+    },
+    {
+      "issue": "Descriptor lifetime across throwing identity traversal",
+      "resolution": "RAII for new file and root traversal, release only on success"
+    }
+  ],
+  "final_followup": "approved",
+  "reviewed_native_sha256": "fc95db27e3069e5c7f28386bb05ee945c56e1ab48bcb192c4a6c280bb476285e",
+  "limits": "Review is not runtime acceptance; final same-account rmdir race remains outside account-adversary protection claim."
+}

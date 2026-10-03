@@ -35,7 +35,9 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=native/grammar.cpp");
     println!("cargo:rerun-if-changed=native/abi.cpp");
+    println!("cargo:rerun-if-changed=native/spill_lease.cpp");
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+    println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
     println!(
         "cargo:rerun-if-changed={}",
         llama_src.join("CMakeLists.txt").display()
@@ -49,6 +51,18 @@ fn main() {
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
     let metal = target_os == "macos" && target_arch == "aarch64";
     let cuda = env::var_os("CARGO_FEATURE_CUDA").is_some();
+    // Dedicated nightly only. Ordinary package/native builds retain their flags.
+    let sanitizers = match env::var("RELM_NATIVE_SANITIZERS") {
+        Err(env::VarError::NotPresent) => false,
+        Ok(value) if value == "address,undefined" => {
+            assert!(
+                target_os == "linux" && target_arch == "x86_64" && !cuda,
+                "RELM_NATIVE_SANITIZERS requires the Linux x86_64 CPU nightly"
+            );
+            true
+        }
+        other => panic!("unsupported RELM_NATIVE_SANITIZERS: {other:?}"),
+    };
 
     // Cap cmake parallelism (the crate derives --parallel from NUM_JOBS): keeps
     // memory in check on the 16 GB primary machine and stays CRAN-friendly
@@ -119,6 +133,9 @@ fn main() {
         }
     }
 
+    if sanitizers {
+        configure_sanitizers(&mut cfg);
+    }
     let dst = cfg.build();
 
     // Separate relm-owned exception boundary, built with the existing CMake
@@ -141,6 +158,9 @@ fn main() {
         if target_arch == "x86_64" {
             bridge.define("CMAKE_OSX_ARCHITECTURES", "x86_64");
         }
+    }
+    if sanitizers {
+        configure_sanitizers(&mut bridge);
     }
     let bridge_dst = bridge.build();
 
@@ -195,6 +215,31 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", native_dir.display());
 
     emit_link_flags(&lib_stems, &target_os, metal);
+}
+
+/// Both CMake invocations must use the same compiler/runtime as instrumented
+/// Rust. The nightly checks the commands, resulting objects and linked runtime;
+/// setting this opt-in alone is not evidence of successful instrumentation.
+fn configure_sanitizers(config: &mut cmake::Config) {
+    config
+        .define("CMAKE_BUILD_TYPE", "RelWithDebInfo")
+        .define("CMAKE_C_COMPILER", "clang-19")
+        .define("CMAKE_CXX_COMPILER", "clang++-19")
+        .define("CMAKE_C_COMPILER_LAUNCHER", "")
+        .define("CMAKE_CXX_COMPILER_LAUNCHER", "")
+        .define("GGML_CCACHE", "OFF")
+        .define("GGML_NATIVE", "OFF")
+        .define("CMAKE_EXPORT_COMPILE_COMMANDS", "ON")
+        .define("CMAKE_VERBOSE_MAKEFILE", "ON")
+        .define("CMAKE_C_FLAGS_RELWITHDEBINFO", "-O1 -g")
+        .define("CMAKE_CXX_FLAGS_RELWITHDEBINFO", "-O1 -g");
+    for flag in [
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+    ] {
+        config.cflag(flag).cxxflag(flag);
+    }
 }
 
 /// Emit the `cargo:rustc-link-lib` flags for the cargo-driven link (tests + the

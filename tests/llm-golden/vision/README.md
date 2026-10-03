@@ -6,6 +6,13 @@ on the same runner for the encoder comparison; it retains the byte-exact text
 and token-id pins. `tools/dump-encode.c` follows b10828's helper-options and
 text-length ABI. See `docs/spark-native-validation.md` for fresh bump results.
 
+**Maintenance C handoff:** the mandatory nightly now verifies a job-local
+SHA256 manifest and pipes the verified reference snapshot to the exact encoder
+test over stdin. See "Content-bound same-runner handoff" below. Local model-free
+corruption controls are implemented; actual final-source macOS/Linux nightly
+execution remains a required acceptance gate, not established by this workflow
+change alone.
+
 The **same-implementation leg** for T1 (`llm(projector=)` + `llm_generate(images=)`,
 D-026 point 6): the reference is the **unpatched upstream `llama-mtmd-cli` at the
 pinned tag b9726**, built CPU-only, run greedy on the committed test image. The
@@ -39,6 +46,10 @@ goldens/encode-red-square-f32.txt  the BINDING embd-ATOL leg's reference: the
 tools/dump-encode.c                the reference harness that produced it —
                                    upstream C API only, built against the
                                    pristine tarball, never the vendored tree
+tools/reference_manifest.py       stdlib SHA256 producer/consumer and verified
+                                   snapshot handoff for the mandatory nightly
+tools/test_reference_manifest.py  model-free corruption and handoff controls,
+                                   run in the ordinary Rust PR job
 ```
 
 ## The reference run (exact reproduction)
@@ -209,9 +220,10 @@ across ISAs — and by different amounts on different runners of the same label
 (the nightly's larger `8.71` is an *inference*, not an isolation: that run
 compared relm-x86 against this arm reference, conflating ISA and
 implementation — D-026 fourth addendum point 2). So the nightly rebuilds the
-pristine b9726 tarball on its own runner,
-produces the reference *there*, and points `RELM_VISION_ENCODER_REFERENCE` at
-it. The gate then stays **exact everywhere**, with no tolerance to tune:
+pristine current b10828 tarball on its own runner, produces the reference
+*there*, and verifies its content-bound handoff before comparison. The historical
+b9726 reproduction below remains unchanged. The gate then stays **exact
+everywhere**, with no tolerance to tune:
 
 ```
 relm vs upstream, SAME machine  ->  max |d| = 0.0   (M4 and x86_64 alike)
@@ -219,7 +231,77 @@ relm vs upstream, SAME machine  ->  max |d| = 0.0   (M4 and x86_64 alike)
 
 This committed file remains the fast path on the recording machine — no
 12-minute pristine build for a local check — and the honest, loud failure
-anywhere else.
+anywhere else. Such a local path is explicitly labelled as having no verified-job
+manifest receipt; the mandatory nightly cannot fall back to it.
+
+## Content-bound same-runner handoff (maintenance C)
+
+The nightly creates a fresh 256-bit nonce with Python `secrets` **before** the
+pristine producer runs. The nonce stays in independent GitHub job environment
+state; it is not recovered from the manifest. The current source SHA, run ID,
+attempt, job/workflow identities, runner name/OS/architecture and host platform
+are derived independently again at consumption. A prior attempt at the same
+SHA/run/platform cannot supply a valid replacement reference.
+
+`reference_manifest.py create` records the reference's SHA256, exact byte length
+and dimensions alongside SHA256/byte identities for the upstream archive, pinned
+model/projector/image, producer C source/executable, manifest helper, Rust
+comparator source, CMake cache, recorded build commands/tool versions and every
+shared library beside the pristine producer. The model, projector, archive and
+image are also checked against independent known pins. The producer executes
+the same recorded configure/compiler command arrays; the complete CMake cache
+records resolved configuration, including CPU-related options. No vendor bytes,
+numerical tolerance or committed golden are changed.
+
+`reference_manifest.py compare` reconstructs this evidence from current job
+state and actual files, and validates the reference bytes against it. It reads
+the reference exactly once into immutable Python `bytes`, checks the hash and
+shape, then sends **that same snapshot** to the exact built encoder Rust test
+binary over stdin. The comparator never reopens a reference path in mandatory
+mode. A file replacement after verification therefore cannot substitute the
+consumed values. Python's standard-library `hashlib` provides SHA256; no Rust
+cryptographic implementation or new core dependency is introduced.
+
+After the unchanged ATOL assertion passes, the exact Rust test emits
+`VISION_REFERENCE_CONSUMED` with the checked snapshot digest, length and shape.
+The Python parent requires that exact marker and a successful child exit before
+printing `VISION_REFERENCE_COMPARISON_PASSED` with the same digest plus nonce,
+source/run/attempt/job. Missing evidence, a skipped test or a caller's filename
+echo cannot produce that final receipt. The workflow retains the reference,
+manifest, build metadata/cache and logs even on failure. Historical local path
+comparisons remain explicit and do not emit this verified-job success receipt.
+
+Fast controls (Python standard library only; no model or engine build):
+
+```sh
+python3 tests/llm-golden/vision/tools/test_reference_manifest.py
+```
+
+They cover a matching manifest and independently hashing child, changed bytes
+at the same path, stale dimensions/header/input/build identities, missing
+manifest, wrong source/run/job/runner/nonce, prior-attempt evidence at the same
+SHA/platform, path replacement after verification, snapshot substitution and
+missing/wrong success markers. Rejection cases assert that no numerical success
+receipt is produced; handoff failures must occur before the child starts.
+These controls run before native compilation in the ordinary Rust PR job and
+before model work in the nightly. The final acceptance still requires the actual
+encoder comparison and retained digest receipts on both supported runners.
+
+The R suite installs the exact checked-out candidate into a fresh job library
+before testing. A separate `Rscript --vanilla` must load that installation and
+record its resolved package path and DLL SHA256. The existing `vision|async`
+suite then uses testthat's installed-package context and that library first;
+its lifecycle children inherit the same library paths. `pkgload::load_all()`
+alone cannot make an uninstalled package available to those fresh children.
+Run `37042401022` at `1e2b4ab` exposed that missing installation on both runners
+before any encoder reference was produced or compared. This workflow correction
+does not change tests, limits or numerical criteria, and does not establish a
+passing retry. Source/job context, installation and R suite logs, plus retained
+child `_problems` scripts/logs, are uploaded even when the R stage fails.
+
+A digest binds bytes. This mechanism is not a signature, an independent
+scientific oracle or proof that references transfer bit-for-bit across machines.
+It preserves the D-026 same-machine scope and the existing ATOL `1e-3` criterion.
 
 Reproduction, exactly as run on 2026-07-15 (macOS 26.5.2 arm64,
 Apple clang 21.0.0; `$REF` = the pristine b9726 tree extracted from the

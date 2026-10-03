@@ -48,6 +48,22 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Vision reference manifest corruption controls (no model or native build)
+        working-directory: .
+        run: python3 tests/llm-golden/vision/tools/test_reference_manifest.py
+
+      - name: Graph sizing regression from current source (ASan/UBSan)
+        working-directory: .
+        run: python3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"
+
+      - name: Retain graph sizing regression evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: graph-size-linux-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/graph-size-layout
+          if-no-files-found: warn
+
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
@@ -199,6 +215,18 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-apple-darwin
+
+      - name: Graph sizing regression on the native Mac host (ASan/UBSan)
+        working-directory: .
+        run: python3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"
+
+      - name: Retain native Mac graph sizing evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: graph-size-macos-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/graph-size-layout
+          if-no-files-found: warn
 
       - name: sccache (compiler cache)
         uses: mozilla-actions/sccache-action@v0.0.10

@@ -1,0 +1,10 @@
+{
+  "head": "060e5a83e1add8b749eda8ab05b62b8e9017c2c4",
+  "workflow": "nightly-memory-safety.yaml",
+  "status": "dispatch_rejected",
+  "http_status": 422,
+  "error": "Line143/144: Unrecognized named-value runner in job-level env expressions runner.temp",
+  "executed_native_jobs": false,
+  "vision_dispatch_executed": false,
+  "correction": "Initialize paths from shell RUNNER_TEMP in the first step and persist them using GITHUB_ENV; no compiler/runtime/test scope change."
+}

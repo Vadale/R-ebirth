@@ -7371,19 +7371,18 @@ static void * incr_ptr_aligned(void ** p, size_t size, size_t align) {
 
 static size_t ggml_graph_nbytes(size_t size, bool grads) {
     size_t hash_size = ggml_hash_size(size * 2);
-    void * p = 0;
-    incr_ptr_aligned(&p, sizeof(struct ggml_cgraph), 1);
-    incr_ptr_aligned(&p, size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // nodes
-    incr_ptr_aligned(&p, size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // leafs
-    incr_ptr_aligned(&p, hash_size * sizeof(int32_t), sizeof(int32_t)); // use_counts
-    incr_ptr_aligned(&p, hash_size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // hash keys
+    // Size-only calculation: there is no backing allocation for pointer arithmetic.
+    size_t nbytes = sizeof(struct ggml_cgraph);
+    nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + size * sizeof(struct ggml_tensor *); // nodes
+    nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + size * sizeof(struct ggml_tensor *); // leafs
+    nbytes = GGML_PAD(nbytes, sizeof(int32_t)) + hash_size * sizeof(int32_t); // use_counts
+    nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + hash_size * sizeof(struct ggml_tensor *); // hash keys
     if (grads) {
-        incr_ptr_aligned(&p, hash_size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // grads
-        incr_ptr_aligned(&p, hash_size * sizeof(struct ggml_tensor *), sizeof(struct ggml_tensor *)); // grad_accs
+        nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + hash_size * sizeof(struct ggml_tensor *); // grads
+        nbytes = GGML_PAD(nbytes, sizeof(struct ggml_tensor *)) + hash_size * sizeof(struct ggml_tensor *); // grad_accs
     }
-    incr_ptr_aligned(&p, ggml_bitset_size(hash_size) * sizeof(ggml_bitset_t), sizeof(ggml_bitset_t));
+    nbytes = GGML_PAD(nbytes, sizeof(ggml_bitset_t)) + ggml_bitset_size(hash_size) * sizeof(ggml_bitset_t);
 
-    size_t nbytes = (size_t) p;
     return nbytes;
 }
 

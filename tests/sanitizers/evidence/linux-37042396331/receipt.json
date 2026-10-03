@@ -1,0 +1,59 @@
+{
+  "run": 37042396331,
+  "source": "1e2b4ab6f6f37a379956b41c7b40ebc501a54ba7",
+  "sanitizer_status": "failed_preflight_link",
+  "product_sanitizer_build_or_test_executed": false,
+  "valgrind_job": "success",
+  "cause": "rustc passes -nodefaultlibs; explicit C++ ABI library missing for Clang sanitizer runtime, yielding unresolved std::type_info, __class_type_info and __dynamic_cast symbols.",
+  "correction": "Explicit -Clink-arg=-lstdc++ in isolated sanitizer flags; pinned compilers and all gates unchanged.",
+  "raw_artifacts": {
+    "FAILURE.txt.gz": {
+      "raw_sha256": "2d8d764da29dd13f438c3f894611cadcc230aafe664479efe9a6c81243deef74",
+      "gzip_sha256": "ef6cb8a0a690109252129c198f747975a24ec5271538c7c40d0d9a821afe7760"
+    },
+    "harness.log.gz": {
+      "raw_sha256": "198874718b49b3c5baa56e2b0efbfc30e70ac87541636e2556eb27b5cc7c0ac5",
+      "gzip_sha256": "ffc6b6770128886fc6c2471cf4fb0bd650b0d5794dcc0f05fb4e3f494479beff"
+    },
+    "commands.jsonl.gz": {
+      "raw_sha256": "dc0df9bf192e864d4649a495304bd0739ea5125b67f1f343a93b7f838a09085b",
+      "gzip_sha256": "b72f8a0a25e699661fd3101a60ebe70bd66ea32b46879b3f97f6b6cedda1dc13"
+    },
+    "provenance.json.gz": {
+      "raw_sha256": "25c3771244973ca2b77b5eee4c84995aa03c0caa15849abc1747f10829084ff6",
+      "gzip_sha256": "eb0323d735a59f120b58af47a55b1cb5b7a5e991c7959283f365f01b321d3de8"
+    },
+    "rust-version.out.gz": {
+      "raw_sha256": "4d7f6fc0d45ae3c9c66c44b021a140326a942389ad33d2e57b0af8c4f51d70ac",
+      "gzip_sha256": "9c88c624336a1a43938ae3e7bbee22cbb024237005479f67fc863184b41511c8"
+    },
+    "clang-19-version.out.gz": {
+      "raw_sha256": "b3cb03f0f6691a660981461c40489b0ad377a7563bb813e8ed4c5f1ad0302179",
+      "gzip_sha256": "1cca184f39cb92f0f3876db6fa39c4b71202df1356cbf762af0b5c10236aa4c2"
+    },
+    "clang++-19-version.out.gz": {
+      "raw_sha256": "b3cb03f0f6691a660981461c40489b0ad377a7563bb813e8ed4c5f1ad0302179",
+      "gzip_sha256": "1cca184f39cb92f0f3876db6fa39c4b71202df1356cbf762af0b5c10236aa4c2"
+    },
+    "packages.out.gz": {
+      "raw_sha256": "e9e26ae029109c935062d17fdf1d323a2dceef5d5633cbaf7fe0984b6d221ee9",
+      "gzip_sha256": "9653492b67384d79eef8a230b03e1b091731148f8b4f1c864201b9783e915aad"
+    },
+    "link-probe-instrumented.err.gz": {
+      "raw_sha256": "297e02a1f213c2c3553a889f3e97f7601d1947898133d97cc1e7a4486d45030c",
+      "gzip_sha256": "fb712906a0697593c17de53d1fc6b00cf7e44372266151301726c64017df0acd"
+    },
+    "link-probe-instrumented.out.gz": {
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    "harness-controls.log.gz": {
+      "raw_sha256": "f303cd95438243b08994fca784a1fce5ea64fca29aa3128e76aa9bd19e3a9be4",
+      "gzip_sha256": "4857b96ebd9ec261f7e034cd2c2beb4ed438e684acecedbabe14a829165df091"
+    },
+    "runtime-digests.json.gz": {
+      "raw_sha256": "edaf21b2054b9745f0f2ebc7b7e32a524e0beff02facd02c5f26e74dd34d8316",
+      "gzip_sha256": "109040484e3381af4a8f9167b65590adba68bf4c2e5ed255ff6189f96a3474a8"
+    }
+  }
+}

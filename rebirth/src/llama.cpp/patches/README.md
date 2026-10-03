@@ -21,7 +21,10 @@ git apply -R patches/<name>.diff   # revert to pristine upstream
 |---|---|---|
 | `0001-rebirth-wp5-ablation-intervene.diff` | 7 files, 14 hunks — `llama_adapter_intervene` at `build_cvec` for `llm_ablate()` | D-012 / D-016 |
 
-Every hunk also carries an inline `rebirth WP5` code comment
+| `0003-ggml-graph-size-offsets.diff` | One graph-storage sizing function | D-039 |
+| `0004-cpu-callback-signatures.diff` | Seven CPU callback adapters and assignments | D-040 |
+
+Every WP5 hunk also carries an inline `rebirth WP5` code comment
 stating why it exists. The un-intervened forward pass is byte-identical to the
 unpatched build: the `intervene->apply_to` no-op emits no graph node. The
 existing synthetic goldens must pass unchanged on every bump. Patch 0002 is

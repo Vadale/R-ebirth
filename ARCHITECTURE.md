@@ -83,6 +83,18 @@ request-state isolation after errors as well as successful calls.
 
 **Ablation (implemented, D-016):** a minimal `build_cvec` patch applies ablation after steering. A runtime sentinel checks intervention capability (D-021); an architecture name alone does not establish support. Observation remains unpatched through the eval callback (D-012).
 
+**Graph storage (D-039):** a separate one-function ggml patch replaces undefined
+null-pointer offset arithmetic with integer size/alignment calculations. It
+preserves the allocated layout and changes no numerical operation. The vendor
+digest/reverse-patch gates bind it; source-derived ASan/UBSan layout controls and
+the full native/vision checks validate its scope separately from the tap patch.
+
+**CPU callbacks (D-040):** seven exact-signature adapters connect generic CPU
+trait callbacks to the existing typed dot/conversion functions. They forward
+unchanged arguments without altering numerical kernels. A source-derived
+C/C++ forwarding control and mandatory Linux function-type negative controls
+precede the full native sanitizer gate.
+
 **Patch budget rule:** whatever the spike finds, the vendored diff stays as small as upstream allows, lives in `rebirth/src/llama.cpp/patches/`, and every hunk is annotated with why it exists — this is what keeps the `vendor-bump` skill routine (risk #1 in the roadmap).
 
 **Capture spec → memory estimate (D-017, supersedes the f32 basis):** the budget is measured against the **peak resident cost of the materialized R `data.frame` the caller receives**, not the engine's f32 host buffers. `bytes ≈ n_prompts × n_positions × n_layers × n_components × hidden_size × 4 × K`, where the f32 term (`… × 4`) is the engine activation size and `K` (`TRACE_MATERIALIZED_EXPANSION`, pinned to **11** in both `R/trace.R` and `rebirth-llm/src/trace.rs`, each side unit-tested) is the long-format expansion factor: each captured value becomes one 40-byte row (four i32 columns + one f64 `value` + two character-pointer columns), i.e. 10× the f32 bytes asymptotically; **11** upper-bounds this for every trace a *real* model can materialize (`hidden_size ≥ 896` → ≤ 10.65×) and for all budget-relevant large captures (ratio → 10.0×). (A tiny trace amortizes R's fixed per-vector overhead poorly — a sub-600-row capture on the `hidden=32` synthetic test model reaches ~27.75×, but is < ~22 KB and never approaches any budget.) Computed *before* running; drives the predictive OOM check and the spill decision (§6) symmetrically on both sides. An `object.size(result) ≤ K × f32_bytes` test pins `K` so it cannot silently drift. *Why the change:* the f32 basis under-counted the real object ~10× (transient peak ~30× before the FFI de-dup), so an "in-budget" capture could still OOM the 16 GB session (audit finding H-1). The estimate and the filter suggestion appear verbatim in `relm_error_oom`.
@@ -90,7 +102,7 @@ request-state isolation after errors as well as successful calls.
 ## 6. Spill design
 
 - **Format:** Arrow IPC streams (D-013), supported by nanoarrow. The seven columns correspond to `relm_trace`; on disk indices are 0-based, `value` is float32, and text is plain UTF-8. The R reader converts indices to 1-based and values to double. A bounded channel feeds the writer thread during capture.
-- **Location:** a managed session directory under `tools::R_user_dir("relm", "cache")/spill/`, or the caller's `spill_dir`. Filenames carry a per-trace nonce and the writer creates files exclusively, refusing existing paths. Only managed directories receive exit cleanup and the existing seven-day age-based sweep; custom directories remain caller-managed.
+- **Location:** a managed session directory under `tools::R_user_dir("relm", "cache")/spill/`, or the caller's `spill_dir`. Filenames carry a per-trace nonce and the writer creates files exclusively, refusing existing paths. Managed paths are registered lazily; the first actual spill acquires a native lifetime lease retained through lazy reads and cleanup. On macOS/Linux, crash reclamation requires seven-day age, a valid marker, unchanged no-follow path identities and an exclusively acquired lease. Legacy/ambiguous directories are retained; custom directories remain caller-managed. See the pending maintenance implementation report for acceptance status.
 - **R side:** a spilled `relm_trace` is a zero-row data.frame proxy with file paths in attributes. `as.matrix()` scans stream batches and retains the requested (layer, component) slice. Ordinary data.frame operations act on the empty proxy. Print/summary use capture metadata without materializing the file.
 - **Budget:** default in-memory threshold = `min(2 GB, 20% of system RAM)` of the **materialized `data.frame`** (D-017; ~180 MB of f32 activations resident), overridable via `options(relm.trace_budget = <bytes>)`. Above it, `spill = TRUE` streams to disk; `spill = FALSE` raises the predictive `relm_error_oom`.
 - **Integrity:** stream schema metadata records format version, a per-trace nonce, model path, and capture-spec key. The reader checks format, trace identity, spec, and schema before consuming batches and maps corruption to `relm_error_trace`. This is staleness/schema detection, not a cryptographic digest of the model or activation payload.

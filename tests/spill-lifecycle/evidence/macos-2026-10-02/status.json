@@ -1,0 +1,89 @@
+{
+  "status": "passed",
+  "pid": 74956,
+  "directory": "/private/tmp/relm-maintenance/lease-package-20261002-185824",
+  "started_at": 1790960304.783988,
+  "stages": [
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1790960304.8169951,
+      "exit_code": 0,
+      "finished_at": 1790960352.103343
+    },
+    {
+      "name": "synthetic-spill",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--test",
+        "synthetic_spill",
+        "--",
+        "--nocapture"
+      ],
+      "status": "passed",
+      "started_at": 1790960352.103751,
+      "exit_code": 0,
+      "finished_at": 1790960411.845228
+    },
+    {
+      "name": "ffi",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi"
+      ],
+      "status": "passed",
+      "started_at": 1790960411.845723,
+      "exit_code": 0,
+      "finished_at": 1790960458.42314
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-multiarch",
+        "--library=/private/tmp/relm-maintenance/library",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "started_at": 1790960458.4236631,
+      "exit_code": 0,
+      "finished_at": 1790960531.042428
+    },
+    {
+      "name": "r-spill",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance/r-spill.R"
+      ],
+      "status": "passed",
+      "started_at": 1790960531.042859,
+      "exit_code": 0,
+      "finished_at": 1790960532.2825441
+    }
+  ],
+  "stage": "r-spill",
+  "finished_at": 1790960532.2829802
+}

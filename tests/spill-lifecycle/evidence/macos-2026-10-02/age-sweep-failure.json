@@ -1,0 +1,8 @@
+{
+  "child_alive_during_sweep": true,
+  "sweep_exit": 0,
+  "directory_exists": "FALSE",
+  "stderr": "",
+  "source": "b79f1a7",
+  "expected_defect_reproduced": true
+}

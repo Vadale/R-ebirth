@@ -1,0 +1,116 @@
+{
+  "workflow_conclusion": "failure",
+  "run_id": 37115873337,
+  "source_sha": "226bb50f8f922816190ad50bbadc706756e24878",
+  "status": "verified_at_recorded_source",
+  "runners": [
+    {
+      "os": "Linux",
+      "arch": "X64",
+      "source_sha": "226bb50f8f922816190ad50bbadc706756e24878",
+      "reference": {
+        "bytes": 1523979,
+        "dimensions": [
+          64,
+          1536
+        ],
+        "sha256": "677772c777e3eed15d146c6162b7748c6b66aff2cfdd85aedb2426c3c883c4b8"
+      },
+      "max_abs_difference": 0.0,
+      "job_nonce": "199365e168e9638d8738f0653501f9b68d82dd0d40e9ea27700b29eef1e48508",
+      "files": {
+        "_temp--upstream-here.manifest.json.gz": {
+          "raw_sha256": "5294be5ad61cd0b4b6a399a4a72633d0f39a3d51a349d7d799e79eff30528a2a",
+          "raw_bytes": 6341,
+          "archive_sha256": "e4f64a4cd740b7cc09ac65c3103d7095709905b9d367c1294388483959703b80"
+        },
+        "_temp--vision-r-tests.log.gz": {
+          "raw_sha256": "eb67c0a0e18c8f3955490b8afc261b1f909f8352017638a73e5abf600c0da4ef",
+          "raw_bytes": 7714,
+          "archive_sha256": "3dbeba1c870463a93742f7a77936b0480671b0e6e110c126558aa03b34ecdc9c"
+        },
+        "_temp--vision-manifest-controls.log.gz": {
+          "raw_sha256": "d0c21e9435bf52df0893e6c1742bde312c2085d3bebcdc9e6928d29b6032d9eb",
+          "raw_bytes": 2269,
+          "archive_sha256": "c3635fbe4da56414efb74edf5abca5f9851c45bf19eed9e82250631c4b27578d"
+        },
+        "_temp--reference-producer-build.log.gz": {
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_bytes": 0,
+          "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+        },
+        "_temp--vision-test-artifacts.jsonl.gz": {
+          "raw_sha256": "181b2a85547a70d02088f24d5b65dc21f283f4acecacf7f807b9d3bbf4da1fe8",
+          "raw_bytes": 53521,
+          "archive_sha256": "f912a68560bd32bfc17d65fe82090ef9b0c1a8f8a45d413dc2aaf1fe1c7706e2"
+        },
+        "_temp--reference-manifest.log.gz": {
+          "raw_sha256": "573eac118569445fc9ec7c7b43bd09822a5cf970484e6bbbf76114e01367dcc0",
+          "raw_bytes": 106,
+          "archive_sha256": "3bf7e3c2ec28c294d81892ac6360e3fd530622ce33b20caff8ea02dad0ecf064"
+        },
+        "_temp--reference-configure.log.gz": {
+          "raw_sha256": "821cd9b72e593a2d33811513ab39eb441a98057530de18e1e332175a3a97ae51",
+          "raw_bytes": 1458,
+          "archive_sha256": "d9844b6ccbf5ec3c8e0887fd318e634ac6f80632f411c0d6da400f3cb7636e53"
+        },
+        "_temp--reference-build.log.gz": {
+          "raw_sha256": "e5f704411064e4d8fa41c5d6a0e56483c49c60be8bcf6fd224a2ecc0939f6274",
+          "raw_bytes": 20624,
+          "archive_sha256": "7a1f29bf877b36b3669b41c637e3653cc58bb43adbb7453fab42277f345d6e0a"
+        },
+        "_temp--reference-producer.log.gz": {
+          "raw_sha256": "002343a412e686b9cb0ef0a3468ac9fe9069965f7d6b08442fdb9fa50a1f3e5a",
+          "raw_bytes": 137493,
+          "archive_sha256": "043b14ceb785e4b3ef348bc4992162cf1715ba007bb3483ca54de5b77c7c8521"
+        },
+        "_temp--vision-job-context.json.gz": {
+          "raw_sha256": "06f4835cee8bb183410342acc7c08e44e41815430927b2ed4eb2a5395841a1e7",
+          "raw_bytes": 534,
+          "archive_sha256": "328460c385d7869ecc5a8cfb27c47a8ab5ec9b783fa34d965e92616e389a1e9c"
+        },
+        "_temp--upstream-here.txt.gz": {
+          "raw_sha256": "677772c777e3eed15d146c6162b7748c6b66aff2cfdd85aedb2426c3c883c4b8",
+          "raw_bytes": 1523979,
+          "archive_sha256": "ac24e4084b8356756a51fa660e88bb3b91c8f0dbedcf81247c75d64cbe9a86d2"
+        },
+        "_temp--vision-r-installed-child.log.gz": {
+          "raw_sha256": "ef59a306e45a274499ae89a4031d2c6f7c125602d419f6bfa5663e798a780d72",
+          "raw_bytes": 1259,
+          "archive_sha256": "60e274d404e6983150d6e52902c8f1b6c93fcb64bd6072fa1846b1da31bf257d"
+        },
+        "_temp--vision-r-install.log.gz": {
+          "raw_sha256": "d9c110d79d4dec3f34a648f691f5fcad844e684d39b646a7dc32ed83cfada9dd",
+          "raw_bytes": 10914,
+          "archive_sha256": "daa6ba3d961e6f99b0d70f9c4851a3556542c70ecc86a1054b3c323b8d5a9feb"
+        },
+        "_temp--reference-build.json.gz": {
+          "raw_sha256": "9ec4f41e730e6c77b5c359b0a116490b10f0bea99a45bb2e83a0ebf8a7102e31",
+          "raw_bytes": 1741,
+          "archive_sha256": "0085f186a8deb89dd911ded6bdd17caa2fdff56c7a184950c6495c5646d0fa24"
+        },
+        "_temp--pristine--build--CMakeCache.txt.gz": {
+          "raw_sha256": "e32b93bedc7a0e889fd6084090d966436c763884afda303f6c29e8e1061f2d78",
+          "raw_bytes": 29243,
+          "archive_sha256": "3ffc5c9e10ac00befba7b53235750d8f87af0063bafb242a272a1e1ce498670a"
+        },
+        "R-ebirth--R-ebirth--rebirth--src--rust--vlm-tests.log.gz": {
+          "raw_sha256": "9844f6ff903f2c30bd67d8040c2d8013aa0d31393a5d74b444d8544c0c88b355",
+          "raw_bytes": 2166,
+          "archive_sha256": "4ea6bca6521ba3074e337acd1f5126ded4203b27e36f54baca903d846221038a"
+        },
+        "R-ebirth--R-ebirth--rebirth--src--rust--async-vlm-tests.log.gz": {
+          "raw_sha256": "150d3e45abfbe71f63da960c0b4ccef567c393131750a07bb2a5786c99e2cd93",
+          "raw_bytes": 6482,
+          "archive_sha256": "1b5c817185be6967a65a669589c29a651e48db4f938d5405aeb3e246fe5e0043"
+        }
+      }
+    }
+  ],
+  "limitations": "Producer/model/shared-library bytes not in downloaded artifact are represented by runtime-verified manifest identities, not independently rehashed locally. Each reference is runner-specific. Linux-only acceptance at D040 source226bb50; Mac failed the synthetic async lifecycle drain before numerical comparison. Final6af009e ordinary checks are separate evidence.",
+  "failed_macos": {
+    "stage": "installed R async lifecycle suite",
+    "detail": "10s drain deadline; final worker/promise counters unavailable; no same-runner reference or numerical comparison executed",
+    "evidence_source": "226bb50f8f922816190ad50bbadc706756e24878"
+  }
+}

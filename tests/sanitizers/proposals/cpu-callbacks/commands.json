@@ -1,0 +1,87 @@
+[
+  {
+    "name": "compiler",
+    "command": [
+      "clang",
+      "--version"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "compile-main",
+    "command": [
+      "clang",
+      "-std=c11",
+      "-O1",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-fsanitize=address,undefined,function",
+      "-fno-sanitize-recover=all",
+      "-fno-omit-frame-pointer",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+      "-c",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/main.c",
+      "-o",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/main.o"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "compile-stubs",
+    "command": [
+      "clang++",
+      "-std=c++17",
+      "-O1",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-fsanitize=address,undefined,function",
+      "-fno-sanitize-recover=all",
+      "-fno-omit-frame-pointer",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+      "-c",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/stubs.cpp",
+      "-o",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/stubs.o"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "link",
+    "command": [
+      "clang++",
+      "-O1",
+      "-g",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-fsanitize=address,undefined,function",
+      "-fno-sanitize-recover=all",
+      "-fno-omit-frame-pointer",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/main.o",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/stubs.o",
+      "-o",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/check"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "original",
+    "command": [
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/check",
+      "--original"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "adapters",
+    "command": [
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/check"
+    ],
+    "exit_code": 0
+  }
+]

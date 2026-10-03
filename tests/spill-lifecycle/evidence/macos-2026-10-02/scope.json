@@ -1,0 +1,18 @@
+{
+  "scope": "Initial A installed runtime. Later iterator-RAII, descriptor-relative writer and exception-safe descriptor corrections separately passed standalone native controls; final installed acceptance pending.",
+  "install_log_sha256": "53f2bbad0abe008e4b4f3e0e98d8ac11e14c1324d6855a6a103b803b9ca8d15c",
+  "install_warning": "ld: warning: ignoring duplicate libraries: -lc++",
+  "r_cases": 14,
+  "r_expectations": 100,
+  "r_skips": 0,
+  "native_spill_cases": 6,
+  "ffi_cases": 7,
+  "native_adversarial_cases": 12,
+  "final_native_adversarial_cases": 14,
+  "final_native_source_sha256": {
+    "rebirth/src/rust/rebirth-llm/native/spill_lease.cpp": "fc95db27e3069e5c7f28386bb05ee945c56e1ab48bcb192c4a6c280bb476285e",
+    "rebirth/src/rust/rebirth-llm/src/spill_lease.rs": "158d9acb7909dc7ae394f0647dc63673ccfb2a210b1375f252561b084f711448",
+    "rebirth/src/rust/rebirth-llm/src/spill.rs": "350b9079b306b3e2d38546cb8df3021b0d434f254609965ab50c600341c3320e",
+    "tests/spill-lifecycle/test-native.py": "341e6af96fbbee96c902c35c1949a4e516be15d36e84c81c4adb4564b22cd0b3"
+  }
+}

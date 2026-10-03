@@ -1,0 +1,47 @@
+{
+  "vision-37115873337--vision-reference-macos-15-37115873337-1--_temp--vision-r-tests.log.gz": {
+    "raw_bytes": 15804,
+    "raw_sha256": "2439531f9c696a24ff7375e37344b4cb04d5edb5739b710da6d97b6a570a8569",
+    "archive_sha256": "6b8c7b8dc14fa7eb4cecc163e6c88482bac1d507ad989fcb683392bcba23103a"
+  },
+  "vision-37115873337--vision-reference-macos-15-37115873337-1--_temp--vision-manifest-controls.log.gz": {
+    "raw_bytes": 2269,
+    "raw_sha256": "fea919d0b25a6570e22dfc27127b10daed9facd282281a2e24c341e6ad6e0edc",
+    "archive_sha256": "e1347bbac96bc12d790cc98cf99916775fc863a2b6af714ec71850fdc23729d6"
+  },
+  "vision-37115873337--vision-reference-macos-15-37115873337-1--_temp--vision-job-context.json.gz": {
+    "raw_bytes": 536,
+    "raw_sha256": "05e864ec741129839fcdbf8114f09d6a7805884d831c171700a31bb80051fa1f",
+    "archive_sha256": "c7a244778fec5acd2ce2ef8f8c94897d5482cfb40a0101a91a918b83a91390b4"
+  },
+  "vision-37115873337--vision-reference-macos-15-37115873337-1--_temp--vision-r-installed-child.log.gz": {
+    "raw_bytes": 1154,
+    "raw_sha256": "ab353d4cebf60b5ff80b6a13015e441975b856aff243d71cc3d81f7dc7c5c768",
+    "archive_sha256": "acf5cade1cac4b6b23b71489d4094767640409a65a33005df407830313d26371"
+  },
+  "vision-37115873337--vision-reference-macos-15-37115873337-1--_temp--vision-r-install.log.gz": {
+    "raw_bytes": 11958,
+    "raw_sha256": "2f5f63226ac55a565d20cdc6299f945f510a38dddba8d1f0a4f116790987438f",
+    "archive_sha256": "69bf71197277c0f3f101b539e10c3c9d7492911d48ed646bd5cbe399e414d40e"
+  },
+  "vision-37115873337--vision-reference-macos-15-37115873337-1--R-ebirth--R-ebirth--rebirth--tests--testthat--_problems--file87d7782a30.log.gz": {
+    "raw_bytes": 3437,
+    "raw_sha256": "4f0734ddff3ff67d87863c740daeabc132f66942dbe3c5467c38dfb446c2f403",
+    "archive_sha256": "0e3374cbb4ff1c8a1043dd8bdc7ef662a578c74552c32654dd059c6aa0436aea"
+  },
+  "vision-37115873337--vision-reference-macos-15-37115873337-1--R-ebirth--R-ebirth--rebirth--tests--testthat--_problems--file87d746340222.R.gz": {
+    "raw_bytes": 6395,
+    "raw_sha256": "c2436f1c7d6e4e453596825afc33256238ac5cca9e3e71237f1c1433b8e7ac3e",
+    "archive_sha256": "273fdff84ddb44cb01477bf21ef3470036c71dcec996ace0fd7ab90ce6788caf"
+  },
+  "vision-37115873337.log.gz": {
+    "raw_bytes": 6499656,
+    "raw_sha256": "ff927b77113cc01e730213bbda3b9a7fc5fd2c705e43d4c1227c8b4288bd3989",
+    "archive_sha256": "5b6d785364fc74240bfc55b9e2b68e727e07566819cccb255794834254701d25"
+  },
+  "vision-37115873337-jobs.json.gz": {
+    "raw_bytes": 6643,
+    "raw_sha256": "7ae8a52678cdf449b86d9512ad47f70dd5b872ae8ca6499e6e7c55ebf476c083",
+    "archive_sha256": "73b30fff20e4b1df538569bdd58bb6c976217df1fd89f292b1e9f0bf47b5ad7c"
+  }
+}

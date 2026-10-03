@@ -1,0 +1,34 @@
+[
+  {
+    "name": "original",
+    "command": [
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wcast-function-type-strict",
+      "-fsyntax-only",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/original-assignments.c"
+    ],
+    "exit_code": 1,
+    "diagnostics": 7
+  },
+  {
+    "name": "corrected",
+    "command": [
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wcast-function-type-strict",
+      "-fsyntax-only",
+      "-I/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+      "/private/tmp/relm-maintenance/cpu-callback-proposal/corrected-assignments.c"
+    ],
+    "exit_code": 0,
+    "diagnostics": 0
+  }
+]

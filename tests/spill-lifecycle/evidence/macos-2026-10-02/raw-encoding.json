@@ -1,0 +1,37 @@
+{
+  "r-spill.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "458fcdb80ed09d69ab9b1e70a295a3cd0fc516e432b9d6d9be798f181bb506f3",
+    "raw_bytes": 475
+  },
+  "synthetic-spill.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "d27aa22f7c0fcbb8ed5aa3286080d6a099c653445c9c2a1061558d65bf4e8441",
+    "raw_bytes": 1795
+  },
+  "native-lease-final.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "b310d662c5c1af5503428c1177379a0b6da8363420fe730027a10af2aa234abd",
+    "raw_bytes": 1395
+  },
+  "ffi.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "8ee76e5ef6bded06e03f7a2092765468071e6aa964ffb960e817c2476998b6b6",
+    "raw_bytes": 1652
+  },
+  "native-lease.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "16f708d0a3c553e9a035fc46fb29b922c4d2c95c1a92dcd0442b617b4627026a",
+    "raw_bytes": 1167
+  },
+  "r-session.txt.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "50784adfb453572a01ce2935074315610103660a7482396f3ec8b274aa66e08d",
+    "raw_bytes": 887
+  },
+  "native-lease-anchored.log.gz": {
+    "encoding": "gzip",
+    "raw_sha256": "5192e6a45ee4c2a3d66a8b4b1c6356989e94d9173e26835e020e2469a5e9e81e",
+    "raw_bytes": 1395
+  }
+}

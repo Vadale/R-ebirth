@@ -37,8 +37,9 @@
 #                                        gap is not constant across two runners
 #                                        carrying the same ubuntu-24.04 label.
 #   So relm's IMAGE ENCODER contributes exactly zero divergence on the machines
-#   tested — and only that: the encoder path carries none of relm's patch (0001
-#   is llama-side), so 0.0 is expected there and blind to build_cvec. What gates
+#   tested. Patch0001 is llama-side, so the comparison is blind to build_cvec.
+#   D-039's patch0003 now changes shared graph-storage sizing, preserving layout;
+#   its final-source encoder comparison must be measured, not inferred. What gates
 #   Linux vision is the byte-exact T1 text golden + token-ids pin below, not this
 #   leg. See D-026 fourth addendum point 1 before citing this comparison.
 #   A reference from elsewhere measures the runner. Rebuilding the pinned upstream
@@ -58,7 +59,13 @@
 on:
   schedule:
     - cron: '0 5 * * *' # 05:00 UTC, nightly (offset from the 0.5B tolerance run)
-  workflow_dispatch: {} # manual trigger (founder, on demand)
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Scope an affected-runner retry; scheduled runs always use both platforms'
+        type: choice
+        default: all
+        options: [all, macos-15, ubuntu-24.04]
 
 name: nightly-vision-golden.yaml
 
@@ -73,7 +80,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
+        os: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.platform == 'macos-15' && '["macos-15"]' || github.event_name == 'workflow_dispatch' && inputs.platform == 'ubuntu-24.04' && '["ubuntu-24.04"]' || '["ubuntu-24.04", "macos-15"]') }}
     runs-on: ${{ matrix.os }}
     name: nightly vision golden (${{ matrix.os }})
     timeout-minutes: 120
@@ -85,6 +92,7 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
       TARBALL_URL: https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz
       TARBALL_SHA256: da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247
+      RELM_VISION_UPSTREAM_TAG: b10828
       MODEL_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/Qwen2-VL-2B-Instruct-Q4_K_M.gguf
       MODEL_SHA256: 5745685d2e607a82a0696c1118e56a2a1ae0901da450fd9cd4f161c6b62867d7
       MMPROJ_URL: https://huggingface.co/ggml-org/Qwen2-VL-2B-Instruct-GGUF/resolve/bb307c036e8a1ed7b663bbd0c35b41c4c9294cfd/mmproj-Qwen2-VL-2B-Instruct-f16.gguf
@@ -92,6 +100,44 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Establish fresh job identity and check reference corruption controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Independent job state is established before production. A rerun at
+          # the same source/run/platform must not accept a prior job's manifest.
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, secrets, subprocess
+          root = os.environ["RUNNER_TEMP"]
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          context = {key: os.environ.get(key, "") for key in (
+              "GITHUB_SHA", "GITHUB_RUN_ID", "GITHUB_RUN_ATTEMPT", "GITHUB_JOB",
+              "GITHUB_WORKFLOW_SHA", "RUNNER_NAME", "RUNNER_OS", "RUNNER_ARCH")}
+          context["checkout_sha"] = source
+          context["source_tree"] = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True).strip()
+          context["workflow_sha256"] = hashlib.sha256(pathlib.Path(
+              ".github/workflows/nightly-vision-golden.yaml").read_bytes()).hexdigest()
+          pathlib.Path(root, "vision-job-context.json").write_text(
+              json.dumps(context, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          assert source == os.environ["GITHUB_SHA"], "checkout must match the exact candidate"
+          values = {
+              "RELM_VISION_JOB_NONCE": secrets.token_hex(32),
+              "RELM_VISION_ENCODER_REFERENCE": root + "/upstream-here.txt",
+              "RELM_VISION_REFERENCE_MANIFEST": root + "/upstream-here.manifest.json",
+              "RELM_VISION_UPSTREAM_ARCHIVE": root + "/llama.tar.gz",
+              "RELM_VISION_PRODUCER_BINARY": root + "/dump-encode",
+              "RELM_VISION_BUILD_DIR": root + "/pristine/build",
+              "RELM_VISION_BUILD_INFO": root + "/reference-build.json",
+              "RELM_VISION_R_LIBRARY": root + "/relm-vision-library",
+          }
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              for key, value in values.items():
+                  stream.write(key + "=" + value + "\n")
+          PY
+          python3 tests/llm-golden/vision/tools/test_reference_manifest.py \
+            2>&1 | tee "$RUNNER_TEMP/vision-manifest-controls.log"
 
       - uses: dtolnay/rust-toolchain@stable
 
@@ -104,6 +150,33 @@ jobs:
         with:
           extra-packages: any::devtools
           working-directory: rebirth
+
+      - name: Install the exact candidate and verify a fresh Rscript can load it
+        working-directory: rebirth
+        shell: bash
+        run: |
+          set -euo pipefail
+          # A new job library prevents an older relm install from satisfying the
+          # child-process lifecycle tests. load_all alone cannot serve children.
+          mkdir "$RELM_VISION_R_LIBRARY"
+          R CMD INSTALL --library="$RELM_VISION_R_LIBRARY" . \
+            2>&1 | tee "$RUNNER_TEMP/vision-r-install.log"
+          Rscript --vanilla - <<'RS' 2>&1 | tee "$RUNNER_TEMP/vision-r-installed-child.log"
+          candidate_library <- normalizePath(Sys.getenv("RELM_VISION_R_LIBRARY"), mustWork = TRUE)
+          .libPaths(c(candidate_library, .libPaths()))
+          library(relm)
+          installed <- normalizePath(find.package("relm"), mustWork = TRUE)
+          expected <- normalizePath(file.path(candidate_library, "relm"), mustWork = TRUE)
+          dll <- normalizePath(getLoadedDLLs()[["relm"]][["path"]], mustWork = TRUE)
+          stopifnot(
+            identical(installed, expected),
+            startsWith(dll, paste0(expected, "/libs/")),
+            identical(as.character(packageVersion("relm")), read.dcf("DESCRIPTION")[[1L, "Version"]]))
+          print(sessionInfo())
+          print(.libPaths())
+          cat(sprintf("VISION_INSTALLED_CHILD_OK source=%s package=%s dll_sha256=%s\n",
+            Sys.getenv("GITHUB_SHA"), installed, unname(tools::sha256sum(dll))))
+          RS
 
       - name: Download + verify the pinned VLM + mmproj (fail-closed)
         shell: bash
@@ -127,16 +200,21 @@ jobs:
           echo "RELM_TEST_MODEL_VLM=$RUNNER_TEMP/Qwen2-VL-2B-Instruct-Q4_K_M.gguf" >> "$GITHUB_ENV"
           echo "RELM_TEST_MMPROJ_VLM=$RUNNER_TEMP/mmproj-Qwen2-VL-2B-Instruct-f16.gguf" >> "$GITHUB_ENV"
 
-      - name: Build relm and run the [MODEL] vision suite (R side)
+      - name: Run the installed candidate's [MODEL] vision suite (R side)
         working-directory: rebirth
         shell: bash
         run: |
+          set -euo pipefail
           # A quoted heredoc, NOT Rscript -e '...': inside a single-quoted
           # shell argument any apostrophe -- in a test name, in a comment --
           # silently ends the string and the step dies on a shell syntax error.
           # <<'RS' passes every byte through verbatim, so the class is gone.
-          Rscript - <<'RS'
-          suppressMessages(pkgload::load_all(".", quiet = TRUE))
+          Rscript --vanilla - <<'RS' 2>&1 | tee "$RUNNER_TEMP/vision-r-tests.log"
+          candidate_library <- normalizePath(Sys.getenv("RELM_VISION_R_LIBRARY"), mustWork = TRUE)
+          .libPaths(c(candidate_library, .libPaths()))
+          library(relm)
+          stopifnot(identical(normalizePath(find.package("relm")),
+            normalizePath(file.path(candidate_library, "relm"))))
           mp <- Sys.getenv("RELM_TEST_MODEL_VLM"); pp <- Sys.getenv("RELM_TEST_MMPROJ_VLM")
           stopifnot(nzchar(mp), file.exists(mp), nzchar(pp), file.exists(pp))
           # Fail LOUDLY if the verified files are not the expected pair, so the
@@ -149,7 +227,8 @@ jobs:
           close(m)
           library(testthat)
           res <- test_dir("tests/testthat",
-            filter = "vision|async", reporter = "summary", stop_on_failure = TRUE
+            filter = "vision|async", reporter = "summary", stop_on_failure = TRUE,
+            package = "relm", load_package = "installed"
           )
           df <- as.data.frame(res)
           # Must-have-RUN assertions. stop_on_failure catches a FAILING test,
@@ -203,22 +282,41 @@ jobs:
           # CPU-only encoder reference with the same backend flags as relm.
           # b10828 supports this library-only build without a local patch;
           # the encoder oracle does not need common or CLI executables.
-          cmake -B build -DCMAKE_BUILD_TYPE=Release \
+          REF="$RUNNER_TEMP/pristine"
+          configure=(cmake -B build -DCMAKE_BUILD_TYPE=Release \
                 -DGGML_METAL=OFF -DGGML_BLAS=OFF -DGGML_OPENMP=OFF \
                 -DLLAMA_BUILD_TOOLS=OFF -DLLAMA_BUILD_COMMON=OFF \
                 -DLLAMA_BUILD_MTMD=ON -DMTMD_VIDEO=OFF \
                 -DLLAMA_BUILD_TESTS=OFF -DLLAMA_BUILD_EXAMPLES=OFF \
-                -DLLAMA_BUILD_SERVER=OFF -DLLAMA_CURL=OFF > /dev/null
-          cmake --build build --target mtmd -j 4 > /dev/null
-          cd "$GITHUB_WORKSPACE"
-          REF="$RUNNER_TEMP/pristine"
-          cc -O2 -o "$RUNNER_TEMP/dump-encode" tests/llm-golden/vision/tools/dump-encode.c \
+                -DLLAMA_BUILD_SERVER=OFF -DLLAMA_CURL=OFF)
+          producer=(cc -O2 -o "$RUNNER_TEMP/dump-encode" "$GITHUB_WORKSPACE/tests/llm-golden/vision/tools/dump-encode.c" \
              -I"$REF/include" -I"$REF/ggml/include" -I"$REF/tools/mtmd" \
-             -L"$REF/build/bin" -lmtmd -lllama -lggml -Wl,-rpath,"$REF/build/bin"
+             -L"$REF/build/bin" -lmtmd -lllama -lggml -Wl,-rpath,"$REF/build/bin")
+          # Record the actual command arrays before executing them. CMakeCache
+          # and all linked shared libraries are also hashed by the manifest.
+          python3 - "$RELM_VISION_BUILD_INFO" "${configure[@]}" --producer-command "${producer[@]}" <<'PY'
+          import json, os, subprocess, sys
+          split = sys.argv.index("--producer-command")
+          build = {
+              "upstream_tag": os.environ["RELM_VISION_UPSTREAM_TAG"],
+              "configure": sys.argv[2:split], "producer_compile": sys.argv[split + 1:],
+              "working_directory": os.getcwd(),
+              "build_command": ["cmake", "--build", "build", "--target", "mtmd", "-j", "4"],
+          }
+          for key, command in [("cc", "cc"), ("cxx", "c++"), ("cmake", "cmake")]:
+              build[key] = subprocess.check_output([command, "--version"], text=True)
+          with open(sys.argv[1], "x", encoding="utf-8") as stream:
+              json.dump(build, stream, indent=2, sort_keys=True)
+              stream.write("\n")
+          PY
+          "${configure[@]}" 2>&1 | tee "$RUNNER_TEMP/reference-configure.log"
+          cmake --build build --target mtmd -j 4 2>&1 | tee "$RUNNER_TEMP/reference-build.log"
+          "${producer[@]}" 2>&1 | tee "$RUNNER_TEMP/reference-producer-build.log"
           "$RUNNER_TEMP/dump-encode" "$RELM_TEST_MODEL_VLM" "$RELM_TEST_MMPROJ_VLM" \
-             tests/vision/red-square.png "$RUNNER_TEMP/upstream-here.txt"
-          echo "RELM_VISION_ENCODER_REFERENCE=$RUNNER_TEMP/upstream-here.txt" >> "$GITHUB_ENV"
-          echo "this machine's upstream reference: $(head -1 "$RUNNER_TEMP/upstream-here.txt")"
+             "$GITHUB_WORKSPACE/tests/vision/red-square.png" "$RELM_VISION_ENCODER_REFERENCE" \
+             2>&1 | tee "$RUNNER_TEMP/reference-producer.log"
+          python3 "$GITHUB_WORKSPACE/tests/llm-golden/vision/tools/reference_manifest.py" create \
+             2>&1 | tee "$RUNNER_TEMP/reference-manifest.log"
 
       - name: Async vision cancellation and shared-projector lifetime
         working-directory: rebirth/src/rust
@@ -235,13 +333,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          # Fail loudly rather than silently falling back to the committed
-          # (M4-recorded) reference, which cannot pass here.
-          if [ ! -s "${RELM_VISION_ENCODER_REFERENCE:-}" ]; then
-            echo "::error::the pristine reference for this machine is missing; refusing to compare against another machine's"
-            exit 1
-          fi
-          cargo test -p rebirth-llm --release --test vlm_golden --test vlm_embed -- --nocapture 2>&1 | tee vlm-tests.log
+          # Build first, then pipe the verified in-memory snapshot directly to
+          # the one exact encoder test binary. Cargo never handles its stdin.
+          cargo test --locked -p rebirth-llm --release --test vlm_golden --test vlm_embed \
+            --no-run --message-format=json > "$RUNNER_TEMP/vision-test-artifacts.jsonl"
+          python3 "$GITHUB_WORKSPACE/tests/llm-golden/vision/tools/reference_manifest.py" compare \
+            --cargo-artifacts "$RUNNER_TEMP/vision-test-artifacts.jsonl" 2>&1 | tee vlm-tests.log
+          cargo test --locked -p rebirth-llm --release --test vlm_golden \
+            greedy_generation_reproduces_the_committed_token_ids -- --exact --nocapture 2>&1 | tee -a vlm-tests.log
+          cargo test --locked -p rebirth-llm --release --test vlm_embed -- --nocapture 2>&1 | tee -a vlm-tests.log
           # Must-have-RUN assertions, same reason as the R side: every skip path
           # in these tests returns early and still reports "ok", so the exit code
           # alone cannot tell a real gate from a silent skip. Each gate prints a
@@ -256,8 +356,27 @@ jobs:
           }
           must_have_run "embd-ATOL leg: max" "the BINDING embd-ATOL golden leg"
           must_have_run "T1 token-ids pin:" "the T1 token-ids pin"
-          # The leg names the reference it compared against; require it to be
-          # THIS machine's pristine build. Without this, a lost env var would
-          # silently fall back to the committed M4 reference and turn the gate
-          # back into the cross-machine comparison that started all of this.
-          must_have_run "vs $RUNNER_TEMP/upstream-here.txt" "the same-machine reference"
+          # This receipt is emitted only after manifest verification and the
+          # exact comparator's digest-bearing success marker. Filename echoes
+          # cannot satisfy the same-runner gate.
+          must_have_run "VISION_REFERENCE_COMPARISON_PASSED sha256=" "the verified same-runner reference"
+
+      - name: Retain R diagnostics, source provenance and comparison receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vision-reference-${{ matrix.os }}-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/vision-job-context.json
+            ${{ runner.temp }}/vision-*.log
+            ${{ runner.temp }}/upstream-here.txt
+            ${{ runner.temp }}/upstream-here.manifest.json
+            ${{ runner.temp }}/reference-build.json
+            ${{ runner.temp }}/reference-*.log
+            ${{ runner.temp }}/pristine/build/CMakeCache.txt
+            ${{ runner.temp }}/vision-test-artifacts.jsonl
+            rebirth/src/rust/vlm-tests.log
+            rebirth/src/rust/async-vlm-tests.log
+            rebirth/tests/testthat/_problems/**
+            rebirth/_problems/**

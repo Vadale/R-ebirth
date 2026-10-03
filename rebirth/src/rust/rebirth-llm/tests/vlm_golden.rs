@@ -2,7 +2,8 @@
 //!
 //! 1. The BINDING embd-ATOL leg (D-026 first addendum): the raw image-encoder
 //!    output for the committed red-square image matches the UNPATCHED upstream
-//!    b9726 reference (produced by tools/dump-encode.c) within ATOL 1e-3 on CPU
+//!    reference (historical b9726 or nightly b10828, from tools/dump-encode.c)
+//!    within ATOL 1e-3 on CPU
 //!    — against a reference from THIS machine; see "WHICH REFERENCE" below.
 //! 2. The T1 token-ids pin: greedy generation on the golden image + prompt
 //!    reproduces the committed engine token ids byte-for-byte (an
@@ -41,11 +42,12 @@
 //! supports shipping vision cross-ISA is the byte-exact T1 text golden and the
 //! token-ids pin below, not this leg.
 //!
-//! `RELM_VISION_ENCODER_REFERENCE` overrides the reference path; the nightly
-//! points it at a pristine b9726 build made on the runner. Unset, the leg uses
-//! the committed golden — correct on the machine that recorded it (the founder's
-//! Mac, where the BINDING leg of the first addendum passes bit-exact) and a
-//! loud, honest failure anywhere else.
+//! The mandatory nightly receives a SHA256-verified immutable reference snapshot
+//! on stdin from tools/reference_manifest.py (pristine b10828 on this runner).
+//! The helper checks independent job nonce/attempt/source and all input/build
+//! hashes before spawning this exact test. No reference path is reread here.
+//! Local model-gated runs may still use RELM_VISION_ENCODER_REFERENCE or the
+//! historical committed reference, explicitly without a verified-job receipt.
 
 use std::path::PathBuf;
 
@@ -94,38 +96,116 @@ fn load_vlm_cpu() -> Option<rebirth_llm::LoadedModel> {
     )
 }
 
-#[test]
-fn encoder_output_matches_the_unpatched_reference_within_atol() {
-    let Some(model) = load_vlm_cpu() else {
-        eprintln!("SKIP encoder_output_matches: RELM_TEST_MODEL_VLM/MMPROJ unset");
-        return;
-    };
-    // The nightly points this at a pristine build of the current pinned tag, so
-    // the comparison is same-machine and stays exact there too; unset, the leg
-    // uses the committed golden (correct on the machine that recorded it).
-    let golden = match std::env::var("RELM_VISION_ENCODER_REFERENCE") {
-        Ok(p) => PathBuf::from(p),
-        Err(_) => goldens_dir().join("encode-red-square-f32.txt"),
-    };
+struct EncoderReference {
+    text: String,
+    label: String,
+    // Supplied only by the Python verifier which hashed the exact stdin bytes;
+    // Rust does not implement cryptography or echo an operator's file digest.
+    verified: Option<(String, usize, usize, usize)>,
+}
+
+fn encoder_reference(required: bool) -> Option<EncoderReference> {
+    if std::env::var("RELM_VISION_REFERENCE_STDIN").as_deref() == Ok("1") {
+        use std::io::Read;
+        let digest =
+            std::env::var("RELM_VISION_REFERENCE_SHA256").expect("verified snapshot SHA256");
+        assert!(
+            digest.len() == 64
+                && digest
+                    .bytes()
+                    .all(|b| b.is_ascii_digit() || (b'a'..=b'f').contains(&b)),
+            "verified snapshot SHA256 must be canonical hexadecimal"
+        );
+        let integer = |key| {
+            std::env::var(key)
+                .expect("verified snapshot metadata")
+                .parse::<usize>()
+                .expect("positive snapshot metadata integer")
+        };
+        let size = integer("RELM_VISION_REFERENCE_BYTES");
+        let tokens = integer("RELM_VISION_REFERENCE_TOKENS");
+        let embedding = integer("RELM_VISION_REFERENCE_EMBEDDING");
+        assert!(size > 0 && tokens > 0 && embedding > 0);
+        let mut snapshot = Vec::new();
+        std::io::stdin()
+            .take(size.checked_add(1).expect("snapshot size overflow") as u64)
+            .read_to_end(&mut snapshot)
+            .expect("read verified reference snapshot");
+        assert_eq!(
+            snapshot.len(),
+            size,
+            "stdin snapshot length must match verified bytes"
+        );
+        return Some(EncoderReference {
+            text: String::from_utf8(snapshot).expect("reference snapshot UTF-8"),
+            label: format!("verified stdin SHA256 {digest}"),
+            verified: Some((digest, size, tokens, embedding)),
+        });
+    }
+    assert!(
+        !required,
+        "mandatory nightly reference requires the manifest verifier and stdin snapshot"
+    );
+    let golden = std::env::var("RELM_VISION_ENCODER_REFERENCE")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| goldens_dir().join("encode-red-square-f32.txt"));
     if !golden.exists() {
         eprintln!(
-            "SKIP encoder_output_matches: reference not present at {} (repo layout only)",
+            "SKIP encoder_output_matches: local reference absent at {}",
             golden.display()
         );
+        return None;
+    }
+    eprintln!(
+        "LOCAL encoder reference: no verified-job manifest receipt ({})",
+        golden.display()
+    );
+    Some(EncoderReference {
+        text: std::fs::read_to_string(&golden).expect("read local encoder reference"),
+        label: golden.display().to_string(),
+        verified: None,
+    })
+}
+
+#[test]
+fn encoder_output_matches_the_unpatched_reference_within_atol() {
+    let required = std::env::var("RELM_REQUIRE_VISION_REFERENCE").as_deref() == Ok("1");
+    if vlm_paths().is_none() {
+        assert!(
+            !required,
+            "mandatory encoder comparison is missing its verified model/projector"
+        );
+        eprintln!("SKIP encoder_output_matches: RELM_TEST_MODEL_VLM/MMPROJ unset");
         return;
     }
-
-    let text = std::fs::read_to_string(&golden).expect("read encoder reference");
-    let mut lines = text.lines();
+    // Validate/read the handoff before loading a model or doing numerical work.
+    let Some(evidence) = encoder_reference(required) else {
+        return;
+    };
+    let mut lines = evidence.text.lines();
     let header = lines.next().expect("golden header");
     let mut dims = header
         .split_whitespace()
         .map(|s| s.parse::<usize>().unwrap());
     let (ref_tokens, ref_embd) = (dims.next().unwrap(), dims.next().unwrap());
+    assert!(dims.next().is_none(), "exactly two reference dimensions");
     let reference: Vec<f32> = lines
         .map(|l| l.parse::<f32>().expect("float line"))
         .collect();
     assert_eq!(reference.len(), ref_tokens * ref_embd, "golden shape");
+    assert!(
+        reference.iter().all(|value| value.is_finite()),
+        "finite reference values"
+    );
+    if let Some((_, _, tokens, embedding)) = &evidence.verified {
+        assert_eq!(
+            (ref_tokens, ref_embd),
+            (*tokens, *embedding),
+            "verified snapshot dimensions"
+        );
+    }
+
+    let model = load_vlm_cpu().expect("VLM paths checked before reference handoff");
 
     let (values, n_tokens, n_embd) = model
         .image_encoder_output(&red_square(), 64 * 1024 * 1024)
@@ -172,15 +252,20 @@ fn encoder_output_matches_the_unpatched_reference_within_atol() {
         "encoder value {worst} diverges: engine {} vs reference {} (|Δ| = {max_abs} > {ATOL}). \
          If this machine did not produce the reference, that is the bug -- floats differ \
          between machines by far more than {ATOL} (measured: up to 8.7 across x86/arm), so \
-         point RELM_VISION_ENCODER_REFERENCE at a pristine b9726 build made HERE.",
+         produce and verify the current pristine reference on this runner.",
         values[worst],
         reference[worst]
     );
     eprintln!(
         "embd-ATOL leg: max |Δ| = {max_abs:.3e} over {} values (atol {ATOL:.0e}) vs {}",
         values.len(),
-        golden.display()
+        evidence.label
     );
+    if let Some((digest, size, tokens, embedding)) = evidence.verified {
+        // The Python wrapper requires this exact marker after the numerical
+        // assertion and includes this checked digest in its final receipt.
+        eprintln!("VISION_REFERENCE_CONSUMED sha256={digest} bytes={size} tokens={tokens} embedding={embedding}");
+    }
 }
 
 #[test]

@@ -32,6 +32,7 @@ mod probe;
 mod schema;
 #[cfg(feature = "spill")]
 mod spill;
+mod spill_lease;
 mod structured;
 mod text_stream;
 mod trace;
@@ -56,6 +57,7 @@ pub use generate::{
 };
 pub use intervene::InterventionSpec;
 pub use schema::CompiledSchema;
+pub use spill_lease::{cleanup_managed_spill, prepare_managed_spill, sweep_managed_spill};
 pub use structured::{
     STRUCTURED_MAX_OUTPUT_BYTES, STRUCTURED_MAX_PROMPTS, STRUCTURED_MAX_PROMPT_BYTES,
     STRUCTURED_MAX_SCHEMA_BYTES, STRUCTURED_MAX_TOKENS, STRUCTURED_MAX_TOTAL_OUTPUT_BYTES,

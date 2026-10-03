@@ -111,30 +111,36 @@ impl SpillSink {
     /// session spill directory) is created here, so it exists only once a trace
     /// actually spills — an in-memory trace leaves no directory behind.
     pub fn new(meta: SpillMeta) -> Result<SpillSink, RebirthError> {
-        if let Some(parent) = std::path::Path::new(&meta.path).parent() {
-            std::fs::create_dir_all(parent).map_err(|e| RebirthError::Trace {
-                reason: format!(
-                    "Could not create the spill directory '{}' ({e}). Check the cache \
+        let managed_file =
+            crate::spill_lease::open_managed_spill(std::path::Path::new(&meta.path))?;
+        let file = if let Some(file) = managed_file {
+            file
+        } else {
+            if let Some(parent) = std::path::Path::new(&meta.path).parent() {
+                std::fs::create_dir_all(parent).map_err(|e| RebirthError::Trace {
+                    reason: format!(
+                        "Could not create the spill directory '{}' ({e}). Check the cache \
                      location is writable, or pass spill = FALSE to keep the trace in memory.",
-                    parent.display()
-                ),
-            })?;
-        }
-        // Never truncate another trace or follow a pre-existing symlink. The R
-        // nonce avoids ordinary collisions; exclusive creation also closes the
-        // check/open race for direct callers and shared custom directories.
-        let file = OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&meta.path)
-            .map_err(|e| RebirthError::Trace {
-                reason: format!(
-                    "Could not create a new spill file '{}' ({e}). \
+                        parent.display()
+                    ),
+                })?;
+            }
+            // Never truncate another trace or follow a pre-existing symlink. The R
+            // nonce avoids ordinary collisions; exclusive creation also closes the
+            // check/open race for direct callers and shared custom directories.
+            OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&meta.path)
+                .map_err(|e| RebirthError::Trace {
+                    reason: format!(
+                        "Could not create a new spill file '{}' ({e}). \
                      Existing files are never overwritten. Check the spill directory \
                      is writable, or pass a different spill_dir.",
-                    meta.path
-                ),
-            })?;
+                        meta.path
+                    ),
+                })?
+        };
         let (sender, receiver) = sync_channel::<CaptureRow>(CHANNEL_BOUND);
         let handle = std::thread::Builder::new()
             .name("relm-spill".to_string())

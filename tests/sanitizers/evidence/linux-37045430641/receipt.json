@@ -1,0 +1,72 @@
+{
+  "run": 37045430641,
+  "source": "cb607eb40b83ef14343ebaa1056b9a4b7b84adb4",
+  "status": "failed_ubsan_product_execution",
+  "preflight": "all safe/fault/no-op controls passed",
+  "native_object_audit_count": 269,
+  "rust_audited_crates": [
+    "rebirth_llm",
+    "arrow_array",
+    "std"
+  ],
+  "patched_build_cvec_instrumentation": "passed",
+  "executed_test": "async_synthetic_owned_handoff_preserves_golden_and_sampling",
+  "product_tests_completed_successfully": 0,
+  "finding": "ggml.c:7368: applying non-zero offset96 to null pointer in incr_ptr_aligned, used by ggml_graph_nbytes",
+  "classification": "Observed undefined pointer arithmetic during graph storage sizing; no null dereference or allocation leak inferred.",
+  "action": "Preserve failed result; no sanitizer suppression or gate relaxation. Prepare narrowly scoped source correction for founder approval before vendor mutation.",
+  "raw_artifacts": {
+    "FAILURE.txt.gz": {
+      "raw_sha256": "608c3159eb6cde87cfb49e995b0a7ec3a07a0bfbc6b90cf40fe21a972aeaf98f",
+      "gzip_sha256": "ed39c230a5bef4197d98eedf241dd8d52a9402801daa19c464c92f638ec55537"
+    },
+    "harness.log.gz": {
+      "raw_sha256": "24ce90b72ccc9edde46222bf38c950ed45ee214e148c07a9fbf336ab1334a31b",
+      "gzip_sha256": "c8937182d9ce86edd8598714a91e8d074c4f0e6b2b2c7d66f0f43165f5e303d1"
+    },
+    "commands.jsonl.gz": {
+      "raw_sha256": "eb1a65880ba443f829483f8ed1054a35f381b75473b20a60f1e5808df36364d9",
+      "gzip_sha256": "463151385014ece430b755e229e85b6e68585c31768e68f58ab7287ad765dd6b"
+    },
+    "provenance.json.gz": {
+      "raw_sha256": "f27711d7e4dcd8d9fe37b3eef9560d84c8b66d28fe1be06fb8bafcc3dc3a11ea",
+      "gzip_sha256": "b3d45b3eb372ba782e51feeb576f2adba77987c8b77ec690ca6a3e6eb34a267b"
+    },
+    "native-objects.json.gz": {
+      "raw_sha256": "c141078ac196d8987a66799460e082f6e74f61ea35a5a8031eb21fbd52934bb7",
+      "gzip_sha256": "b15cde2bd328754f9bb8c16f4755f6a09ce25130f7d9656ce6c98937b21f157d"
+    },
+    "rust-objects.json.gz": {
+      "raw_sha256": "8c8e5fb35926c187a295e0ceee7e2b4a5a885bc572bd5c8bc05fce39da96510d",
+      "gzip_sha256": "aad7ffd0cee2d912a3c7884100b84d8af89bff61943f4c3730f2dc5839d470e1"
+    },
+    "runtime-digests.json.gz": {
+      "raw_sha256": "edaf21b2054b9745f0f2ebc7b7e32a524e0beff02facd02c5f26e74dd34d8316",
+      "gzip_sha256": "109040484e3381af4a8f9167b65590adba68bf4c2e5ed255ff6189f96a3474a8"
+    },
+    "harness-controls.log.gz": {
+      "raw_sha256": "2ba57eb7f6614a02ae3cd0b4a08e76090df2ebc07a34c16069d77e061a833bc1",
+      "gzip_sha256": "6e0e9b9bcf22a8aaa879102d37fe208d0c5f09731d28664409c2d65ecdf248ac"
+    },
+    "test-async_synthetic_owned_handoff_preserves_golden_and_sampling.out.gz": {
+      "raw_sha256": "547a03281c67fd14979d9c79cae7968a0fa8fc499cf8b0d0d613014f90560dc0",
+      "gzip_sha256": "b3b14ba09ec3d831fe50f769eca11fbf5b3e0d9f884d3313392c7168ece12b68"
+    },
+    "test-async_synthetic_owned_handoff_preserves_golden_and_sampling.err.gz": {
+      "raw_sha256": "2a369186f190e5078eb8cba26a4cc62c6633a6afe24aee98b3c323e0cbaa4320",
+      "gzip_sha256": "9d45b9a8916f017ee07d14649796b61a84776c5cc72ac76c156cce50ad55884c"
+    },
+    "uninstrumented-control.txt.gz": {
+      "raw_sha256": "0808834b7e01a2c731c562cca60d8c17c69b9ac3d1327ca8093e791bf865e464",
+      "gzip_sha256": "a5f5fd1528e059cf45be00a2eba8c37515fb4493d8890250942ae4fdb2d2328e"
+    },
+    "runtime-linkage-probe.out.gz": {
+      "raw_sha256": "2363992ad02cfd879342581fd275e2f9f60e7b7c19bbc0b2cf28bb9c4af70009",
+      "gzip_sha256": "21281d0bd9bc1bc1f884e88b0155c864012605509e0fcd5ef9250047656db32d"
+    },
+    "binary-async_synthetic-linkage.out.gz": {
+      "raw_sha256": "a85d611903e7b79cb4449a0a75af14113eea0098b1a010a858e5b274d555aa8e",
+      "gzip_sha256": "22be42c4615db353382905fc9d1534d331667b2117c3658309c13bde6ec12d6a"
+    }
+  }
+}
