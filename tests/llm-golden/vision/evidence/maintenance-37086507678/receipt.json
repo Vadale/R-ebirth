@@ -1,0 +1,212 @@
+{
+  "run_id": 37086507678,
+  "source_sha": "e280868e3cae25f244a988b08990c673af8be586",
+  "status": "verified_at_recorded_source",
+  "runners": [
+    {
+      "os": "macOS",
+      "arch": "ARM64",
+      "source_sha": "e280868e3cae25f244a988b08990c673af8be586",
+      "reference": {
+        "bytes": 1523873,
+        "dimensions": [
+          64,
+          1536
+        ],
+        "sha256": "50275814cee1643370ade15ed48130d568bf4684b4d31c1ce601cc70b9e13566"
+      },
+      "max_abs_difference": 0.0,
+      "job_nonce": "917abcebceb9ec66078615bf7dcf62a4d5c2d2613216d075a6df5af33f723497",
+      "files": {
+        "_temp--upstream-here.manifest.json.gz": {
+          "raw_sha256": "ac3fa5c5cb8b4c9922e585b20e7671715cae499f0eaf8c1c82ef32b8d6e905c7",
+          "raw_bytes": 6354,
+          "archive_sha256": "17c0d62ed000c76285c155d1cbabce967fec87064e9288751a917d68168a8764"
+        },
+        "_temp--vision-r-tests.log.gz": {
+          "raw_sha256": "98179246ee8e02e38aecdd96bc70034c8296815279bdde7555b10804000e4c33",
+          "raw_bytes": 7797,
+          "archive_sha256": "bbd06f63713979505738ada2dada52579ec785ef17f18db2604d6765a73b384b"
+        },
+        "_temp--vision-manifest-controls.log.gz": {
+          "raw_sha256": "986b827cf4b90d9feecc52836a7441b90ea4b5185d23b8c813b605954fcd8d18",
+          "raw_bytes": 2269,
+          "archive_sha256": "b496a62fc77677793bb3c291e4f1fcd7b679429d3da720a2c71a512072a6cd06"
+        },
+        "_temp--reference-producer-build.log.gz": {
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_bytes": 0,
+          "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+        },
+        "_temp--vision-test-artifacts.jsonl.gz": {
+          "raw_sha256": "17c15f82cd8e60fbecd6f45522e0e4fc1467cb772e94259c73e23c2688cc4040",
+          "raw_bytes": 54996,
+          "archive_sha256": "5afcb06f2ce8da9fed5d8b95ef041abfdebc66f0475cb57a627052228dfa71c8"
+        },
+        "_temp--reference-manifest.log.gz": {
+          "raw_sha256": "b9f3343eeeb6b4df09653ac2c43eb76fb5723e139bcf57a276f23197b5dcbf6f",
+          "raw_bytes": 106,
+          "archive_sha256": "75749da0c8162bd24534ed705177eb165118c6a1702642b056d5ed187f016fa6"
+        },
+        "_temp--reference-configure.log.gz": {
+          "raw_sha256": "c11e4b36d7511d006b9e71f7273ad154673636d47cbf64834bea3799cb9e7b2e",
+          "raw_bytes": 3327,
+          "archive_sha256": "bf4599e80ece03940e6c5412b752b879fb3f187a77aa1f36cd1fd871700001b2"
+        },
+        "_temp--reference-build.log.gz": {
+          "raw_sha256": "cf0e7006f670cbc7cd7ea2f04d39826052f4202dcd6c4db2939afddc2e1ced5f",
+          "raw_bytes": 20639,
+          "archive_sha256": "bf21be00aedac7d5bd4486e30aae47c4b4b15b95b687377ed1ad3a89b43289a4"
+        },
+        "_temp--reference-producer.log.gz": {
+          "raw_sha256": "8bbe2a80aff1776e45b617912a6c9e1c4488eee849ae0049193900fa5a2bdcaf",
+          "raw_bytes": 139154,
+          "archive_sha256": "d9616751340a0f103185f3941eebcf0fb8791ec9dd764f13cbf593b37d1a9f8d"
+        },
+        "_temp--vision-job-context.json.gz": {
+          "raw_sha256": "f4da9c602057f7bf9fc4415b2253e49b9fbc41c8922355e8d41c56e4569fa2a6",
+          "raw_bytes": 536,
+          "archive_sha256": "5ad5f384deedaff2a79d4475a2c8767f4787a97073b20cbe8687c0a822899cfd"
+        },
+        "_temp--upstream-here.txt.gz": {
+          "raw_sha256": "50275814cee1643370ade15ed48130d568bf4684b4d31c1ce601cc70b9e13566",
+          "raw_bytes": 1523873,
+          "archive_sha256": "228049389e07575565bb164fe9f68b144fd024f2842dc7d1a629dd9b33790fbd"
+        },
+        "_temp--vision-r-installed-child.log.gz": {
+          "raw_sha256": "3b93638859053711cf33b3f34ade65fa33679b62c614eeb377bebfec4145d344",
+          "raw_bytes": 1154,
+          "archive_sha256": "3b56402d1c72b10bc038944b01c59fd75525e969cef52700fda9f44336369d6f"
+        },
+        "_temp--vision-r-install.log.gz": {
+          "raw_sha256": "57fb12c182f381a79454b2e8136af85a793a2de2f1426df7d5b82a0d36212a78",
+          "raw_bytes": 11958,
+          "archive_sha256": "bfda41b9f970e89bdd200401af6cf08e1824a470304cff5138a122abb3438855"
+        },
+        "_temp--reference-build.json.gz": {
+          "raw_sha256": "f817d62fb8c4e21e3b50586f9cda04c80e439ed47f3471dc329d5a634687ca77",
+          "raw_bytes": 1667,
+          "archive_sha256": "157bfba979c7fe9fa9e77db552787ae543fe621d3b04a025943613e12c2ae7d6"
+        },
+        "_temp--pristine--build--CMakeCache.txt.gz": {
+          "raw_sha256": "12a18579f00f60d9c14d4342578d4ff31f664019e7d6f605990d8ea146731d03",
+          "raw_bytes": 30488,
+          "archive_sha256": "65568eaeb3db1edfba38427f1cdffa9942c86a62a7e7f93ce2c9471366cacfd1"
+        },
+        "R-ebirth--R-ebirth--rebirth--src--rust--vlm-tests.log.gz": {
+          "raw_sha256": "87f386108694f645fbc1f1141f30c38dfad237fc6410bdbaa5da46f6c63f1332",
+          "raw_bytes": 2168,
+          "archive_sha256": "ab3b1fa25bdc6e3c29b16240ba81e5a6e69374a3aa1d1eb3e01b4647805a5ff9"
+        },
+        "R-ebirth--R-ebirth--rebirth--src--rust--async-vlm-tests.log.gz": {
+          "raw_sha256": "d30079d4abe9219db6a5d3eb36a72b4fcdb2506f0bd611d9031ea29a112954f2",
+          "raw_bytes": 6590,
+          "archive_sha256": "bea81662a06810fd08f044f984b8d70595f704573ca24c07c16bf35f39eb8ad1"
+        }
+      }
+    },
+    {
+      "os": "Linux",
+      "arch": "X64",
+      "source_sha": "e280868e3cae25f244a988b08990c673af8be586",
+      "reference": {
+        "bytes": 1523979,
+        "dimensions": [
+          64,
+          1536
+        ],
+        "sha256": "677772c777e3eed15d146c6162b7748c6b66aff2cfdd85aedb2426c3c883c4b8"
+      },
+      "max_abs_difference": 0.0,
+      "job_nonce": "f8a512dcec4d2493c1fc62deb2d0063d5a65d62acf0ea1d9f23ac52c91656d31",
+      "files": {
+        "_temp--upstream-here.manifest.json.gz": {
+          "raw_sha256": "af7fef6826eb21ff7d025ab0a2d87e71ff32c401231a121bdf36bd867cb514aa",
+          "raw_bytes": 6341,
+          "archive_sha256": "98e9b4592745865e0929dc42859df23f0128c503df3305dabc818070a4e08ff1"
+        },
+        "_temp--vision-r-tests.log.gz": {
+          "raw_sha256": "5c56dc6af77fccd9919ba26be17ab39e4c04db2ebac3ac73e6a3a896125c7aae",
+          "raw_bytes": 7717,
+          "archive_sha256": "db89cfc6d6a17c5baa1745d1dd0b0236acd65a38fd7388c773e5a3933b033861"
+        },
+        "_temp--vision-manifest-controls.log.gz": {
+          "raw_sha256": "cf8f8a8a6ed58ba8c8571015fbcc93f7684de927b2e70015f9dff8ab13875962",
+          "raw_bytes": 2269,
+          "archive_sha256": "4600ffdfe77f22561da4ae5e556a54e24dc8fb866e0ee4a4acd55a0f7cc8664c"
+        },
+        "_temp--reference-producer-build.log.gz": {
+          "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "raw_bytes": 0,
+          "archive_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+        },
+        "_temp--vision-test-artifacts.jsonl.gz": {
+          "raw_sha256": "fb81ff032fcdd59b95e22b2fbad943a9a374477c1ad1189d532ae763e50d9573",
+          "raw_bytes": 53521,
+          "archive_sha256": "3e559a3e8f9e074dffc0c8870402abf8c308805b3db4900cbfc33243aae4d156"
+        },
+        "_temp--reference-manifest.log.gz": {
+          "raw_sha256": "573eac118569445fc9ec7c7b43bd09822a5cf970484e6bbbf76114e01367dcc0",
+          "raw_bytes": 106,
+          "archive_sha256": "3bf7e3c2ec28c294d81892ac6360e3fd530622ce33b20caff8ea02dad0ecf064"
+        },
+        "_temp--reference-configure.log.gz": {
+          "raw_sha256": "821cd9b72e593a2d33811513ab39eb441a98057530de18e1e332175a3a97ae51",
+          "raw_bytes": 1458,
+          "archive_sha256": "d9844b6ccbf5ec3c8e0887fd318e634ac6f80632f411c0d6da400f3cb7636e53"
+        },
+        "_temp--reference-build.log.gz": {
+          "raw_sha256": "89bc8663fab77fc5c57566710dc45ace7521d735bc1b90ba0a655fb76ee32d7d",
+          "raw_bytes": 20624,
+          "archive_sha256": "e63199d7c8c1411151fbf0e904d4415f00d6010c2609a32f353a1e54088770c7"
+        },
+        "_temp--reference-producer.log.gz": {
+          "raw_sha256": "002343a412e686b9cb0ef0a3468ac9fe9069965f7d6b08442fdb9fa50a1f3e5a",
+          "raw_bytes": 137493,
+          "archive_sha256": "043b14ceb785e4b3ef348bc4992162cf1715ba007bb3483ca54de5b77c7c8521"
+        },
+        "_temp--vision-job-context.json.gz": {
+          "raw_sha256": "306ad77d8d54157633b0dbb8072e30ab4620affe47be76fcfbef9a0ef717d657",
+          "raw_bytes": 534,
+          "archive_sha256": "ab1c25c5a2ec6de5f0df965b67da84e9a0028d93e41102f8fc2700ab4950c314"
+        },
+        "_temp--upstream-here.txt.gz": {
+          "raw_sha256": "677772c777e3eed15d146c6162b7748c6b66aff2cfdd85aedb2426c3c883c4b8",
+          "raw_bytes": 1523979,
+          "archive_sha256": "ac24e4084b8356756a51fa660e88bb3b91c8f0dbedcf81247c75d64cbe9a86d2"
+        },
+        "_temp--vision-r-installed-child.log.gz": {
+          "raw_sha256": "0b58981e885d39fe9089e9066c3ac9a98b6d89b47fb1a5e5e5a4ef3fff8924fb",
+          "raw_bytes": 1259,
+          "archive_sha256": "4f05c84f6883a1ae7c85b21dbc1436145dcb570336d78b694df567f81464efa4"
+        },
+        "_temp--vision-r-install.log.gz": {
+          "raw_sha256": "384bf38818fb8ed57b9a267561fa2c2ade1e3b522860efc1357a81390c917dd1",
+          "raw_bytes": 10914,
+          "archive_sha256": "489b4cc909b83526f5cd51ede0c379941a5ea971d94e2a7c45e42fb1ed75cd99"
+        },
+        "_temp--reference-build.json.gz": {
+          "raw_sha256": "9ec4f41e730e6c77b5c359b0a116490b10f0bea99a45bb2e83a0ebf8a7102e31",
+          "raw_bytes": 1741,
+          "archive_sha256": "0085f186a8deb89dd911ded6bdd17caa2fdff56c7a184950c6495c5646d0fa24"
+        },
+        "_temp--pristine--build--CMakeCache.txt.gz": {
+          "raw_sha256": "e32b93bedc7a0e889fd6084090d966436c763884afda303f6c29e8e1061f2d78",
+          "raw_bytes": 29243,
+          "archive_sha256": "3ffc5c9e10ac00befba7b53235750d8f87af0063bafb242a272a1e1ce498670a"
+        },
+        "R-ebirth--R-ebirth--rebirth--src--rust--vlm-tests.log.gz": {
+          "raw_sha256": "bf26525965de9dbe99c637505b92020b48e524d120fa23de1d55ff6b94edd214",
+          "raw_bytes": 2165,
+          "archive_sha256": "e2d07a2d7f5fb47fd2d6336efcf56154a3a4fcc31b232755fbdef567a9201c7d"
+        },
+        "R-ebirth--R-ebirth--rebirth--src--rust--async-vlm-tests.log.gz": {
+          "raw_sha256": "6763f031aa1daa42a03bb627f23f66f314e7352fae130fe2379a13a013aa8e93",
+          "raw_bytes": 6469,
+          "archive_sha256": "bab4cae355d3f25dc6aba2095d1a50babeddd3128fe39fdc284d2550e13eff6b"
+        }
+      }
+    }
+  ],
+  "limitations": "Producer/model/shared-library bytes not in downloaded artifact are represented by runtime-verified manifest identities, not independently rehashed locally. Each reference is runner-specific. Future D040 source is not covered by relabelling this result."
+}

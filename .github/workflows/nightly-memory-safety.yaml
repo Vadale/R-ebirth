@@ -186,6 +186,13 @@ jobs:
           python3 tests/sanitizers/graph_size.py --cc clang-19 \
             --evidence "$SANITIZER_EVIDENCE/graph-size-layout"
 
+      - name: CPU callback signatures and runtime rejection controls
+        run: |
+          set -euo pipefail
+          python3 tests/sanitizers/cpu_callbacks.py --cc clang-19 --cxx clang++-19 \
+            --symbolizer llvm-symbolizer-19 --require-runtime \
+            --evidence "$SANITIZER_EVIDENCE/cpu-callbacks"
+
       # No cache action. The harness requires a nonexistent target, disables
       # compiler caches, controls the environment, and proves instrumentation
       # before accepting the exact allowlist of real executed tests.

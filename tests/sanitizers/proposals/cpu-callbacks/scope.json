@@ -1,0 +1,16 @@
+{
+  "status": "proposal_not_applied",
+  "source": "rebirth/src/llama.cpp/ggml/src/ggml-cpu/ggml-cpu.c",
+  "source_sha256": "839197aab9a2fb3c509221699e2810a4c4f3f3043416f55e653c380a46ed74cf",
+  "proposal_sha256": "77db30621368302672f5ab1a3b06a1dc3f9b0b058f3beea3cc1a2b3a250a3db2",
+  "replacements": {
+    "(ggml_vec_dot_t) ggml_vec_dot_f32": "ggml_vec_dot_f32_adapter",
+    "(ggml_vec_dot_t) ggml_vec_dot_f16": "ggml_vec_dot_f16_adapter",
+    "(ggml_vec_dot_t) ggml_vec_dot_bf16": "ggml_vec_dot_bf16_adapter",
+    "(ggml_from_float_t) ggml_cpu_fp32_to_fp32": "ggml_cpu_fp32_to_fp32_adapter",
+    "(ggml_from_float_t) ggml_cpu_fp32_to_fp16": "ggml_cpu_fp32_to_fp16_adapter",
+    "(ggml_from_float_t) ggml_cpu_fp32_to_bf16": "ggml_cpu_fp32_to_bf16_adapter",
+    "(ggml_from_float_t) ggml_cpu_fp32_to_i32": "ggml_cpu_fp32_to_i32_adapter"
+  },
+  "limitations": "Seven forwarding contracts use typed stub targets, not actual numerical kernels or a complete engine; observed Linux finding is F32 dot only."
+}

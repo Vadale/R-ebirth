@@ -1227,6 +1227,26 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-040 — Exact CPU trait callback signatures (APPROVED)
+
+- **Date:** 2026-10-03. **Status:** approved. The founder replied "si si correggi"
+  after the concrete D-040 scope and separate vendor-approval requirement.
+- **Evidence:** Linux run37086505519 fails on an incompatible F32 dot callback
+  call. The D-039 standalone gate and compiled instrumentation audit pass, but
+  zero full product tests complete. Source/type auditing identifies seven
+  casted callbacks in that CPU table; only F32 dot has a runtime finding.
+- **Decision:** seven static exact-signature adapters for dot
+  F32/F16/BF16 and F32 conversion to F32/F16/BF16/I32, forwarding to unchanged
+  typed implementations. No kernel, dependency, API, version or tolerance change.
+- **Application:** separate patch0004 plus D-015
+  post-patch/reverse-coherence records. D-039 remains unchanged.
+- **Contract:** [bounded proposal](docs/cpu-callback-signatures-proposal.md).
+  Seven local forwarding/type checks pass; the local runtime reproducer fails
+  to detect the original call, so pinned Linux positive/negative controls remain
+  mandatory before full acceptance. No suppression or other vendor edit allowed.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

@@ -17,6 +17,25 @@ hashes, compiler identity, extracted code and result hashes are retained. This
 does not certify arbitrary-size overflow handling or replace the full 15-test
 native sanitizer gate. Original proposal snapshots remain historical evidence.
 
+## CPU callback signatures (D-040)
+
+`python3 tests/sanitizers/cpu_callbacks.py --evidence /new/output/path` extracts
+all seven actual-source adapters, verifies direct trait assignments and checks
+forwarded pointers, counts, strides and writes against typed C++ stubs. Strict
+compiler checks reject each original cast and accept the current assignments.
+Uninstrumented negative controls must actually execute. The sanitized original
+calls must fail with the expected function-type diagnostic when instrumentation
+exists. macOS without that compiler hook records runtime coverage as unavailable,
+never accepted; it can still exercise type and forwarding contracts.
+
+The Linux nightly uses pinned `clang-19` / `clang++-19`, explicit
+`llvm-symbolizer-19` and `--require-runtime`. Missing instrumentation or any
+surviving original call fails before the expensive product build. No native
+numerical kernel is replaced by this stub control; the full fifteen product
+cases below remain mandatory. Four source-mutation controls run with the existing
+harness tests. Sources, commands, compiler/symbol receipts and failures are kept
+under the nightly artifact's `cpu-callbacks` directory.
+
 ## Full native gate
 
 `nightly-memory-safety.yaml` retains Valgrind and adds an independent Linux CPU

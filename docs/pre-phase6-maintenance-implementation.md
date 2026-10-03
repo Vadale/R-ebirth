@@ -3,7 +3,7 @@
 Date: 2026-10-02. Status: implementation, review and local acceptance complete;
 remote acceptance and integration pending. Contract: [reviewed maintenance plan](pre-phase6-maintenance-plan.md),
 authorized by the founder after review. No new public API, package dependency,
-vendor pin/patch or numerical threshold.
+vendor pin or numerical threshold; the separately approved D-039 and D-040 patches are documented below.
 
 ## Managed spill lifetime
 
@@ -69,8 +69,8 @@ This is not protection against an adversary controlling the user's account.
 
 The separate implementation blocks add the planned Linux instrumentation
 controls/job and a verified snapshot handoff for the vision reference. Actual
-Linux sanitizer execution and final-source Mac/Linux vision comparisons are
-pending. The first dispatch at `060e5a8` was rejected before execution: GitHub
+Linux sanitizer acceptance remains open; both Mac/Linux vision comparisons are
+now verified at `e280868` (see the final verification section below). The first dispatch at `060e5a8` was rejected before execution: GitHub
 does not expose the `runner` expression context in job-level `env`. The workflow
 now initializes those paths from shell `RUNNER_TEMP` in its first step. No native
 job ran or test passed in that rejected dispatch; the receipt is retained in
@@ -176,4 +176,84 @@ remain explicit. This stage did not repeat the broader model matrix or scoped
 package archive check; all four ordinary R CI legs still gate the final source.
 Receipts and lossless logs are in `tests/sanitizers/evidence/d039-macos-2026-10-03`.
 The older Valgrind result remains scoped to its original source; the final
-ASan/UBSan execution and both current-source vision comparisons are pending.
+ASan/UBSan acceptance remains open. Both vision comparisons and all nine ordinary
+checks subsequently passed at `e280868`, as recorded below.
+
+### Second Linux finding — 2026-10-03
+
+Run `37086505519` at `e280868` passed the new 68-case graph-size control and
+compiled-instrumentation audit, then failed during the first selected embedding
+test: the generic CPU function pointer calls `ggml_vec_dot_f32` with an
+incompatible function type. No product test completed. The prior graph-sizing
+finding is not being relabelled; this is a distinct callback-boundary finding.
+Raw logs and scope are in `tests/sanitizers/evidence/linux-37086505519`.
+
+[D-040](cpu-callback-signatures-proposal.md) specifies seven exact-signature
+adapters for the seven casted callbacks in that table. Only F32 dot has the
+observed runtime failure; the other six have source/compiler type evidence.
+Seven corrected assignments and stub-forwarding contracts pass locally. The
+local attempted runtime reproducer did not detect the original call, and that
+failed reproduction is preserved explicitly. Pinned Linux controls and full
+acceptance remain required. The founder approved D-040 on 2026-10-03 with
+"si si correggi" after the concrete proposal. The exact patch is applied as
+`0004-cpu-callback-signatures.diff`; D-039 is unchanged. No suppression, tolerance
+or numerical-kernel change.
+
+### Ordinary CI and vision verification — 2026-10-03
+
+All nine individual ordinary checks passed at exact source
+`e280868e3cae25f244a988b08990c673af8be586`:
+[R checks](https://github.com/Vadale/R-ebirth/actions/runs/37086508973) and
+[Rust checks](https://github.com/Vadale/R-ebirth/actions/runs/37086508968).
+The [vision run](https://github.com/Vadale/R-ebirth/actions/runs/37086507678)
+passed on both macOS arm64 and Linux x64. Independent collection verifies each
+reference's actual bytes, 64 by 1,536 finite values, exact source/workflow
+identities, distinct job nonces and matching consumed/success comparison digests.
+Both comparisons reported maximum absolute difference zero against their own
+same-runner reference. Native token/comparison and async VLM markers, fresh-child
+package/DLL identity and the installed R suite completed successfully.
+
+Lossless artifacts, raw/archive hashes, the independent collector and all nine
+check receipts are retained in
+`tests/llm-golden/vision/evidence/maintenance-37086507678`.
+Producer/model/shared-library bytes absent from the downloaded artifact retain
+runtime-verified manifest identities; they were not independently rehashed
+locally. Each reference remains runner-specific. These results do not certify a
+D-040 source or change the failed sanitizer result. That decision is now approved;
+the corrected source needs its own affected acceptance.
+
+### Applied D-040 and focused regression — 2026-10-03
+
+Seven exact-signature adapters and direct CPU trait assignments are applied from
+the approved candidate, SHA256
+`77db30621368302672f5ab1a3b06a1dc3f9b0b058f3beea3cc1a2b3a250a3db2`.
+No other vendor code changed. The new post-patch digest is
+`f131eca9a917a5c3bff5cfc4a80d4f88c24597747f9298a7e021cf7586955db7`;
+G4 and reverse application both pass with unchanged upstream/pre-patch identities.
+
+`tests/sanitizers/cpu_callbacks.py` extracts the live adapters and verifies their
+live trait assignments. Actual headers declare the C/C++ boundary. Seven strict
+original-cast rejections, corrected assignments and seven typed-stub forwarding
+contracts pass locally. The unchanged uninstrumented original calls execute;
+the Mac instrumented controls still have no function-type hook and are explicitly
+`unavailable_not_accepted`. This does not certify Linux or numerical kernels.
+Four source-mutation guards and twelve existing harness controls pass. The nightly
+runs the short control with pinned Clang19, an explicit symbolizer and mandatory
+runtime rejection for all seven original calls before any full instrumented build.
+The corrected source's numerical/FFI/fresh R installation checks passed locally;
+full Linux sanitizer and both vision gates remain required.
+
+A focused independent review of the D-040 patch, source-derived controls and
+workflow found no material blocker. It confirmed exact approved patch hunks,
+unchanged typed kernel calls and fail-closed mandatory Linux controls. It did
+not execute builds/models or replace the required operational acceptance.
+
+Final local D-040 validation passed fmt/clippy, 142 native outcomes (one ignored
+calibration), seven FFI tests and a fresh package installation. The focused R
+suite passed 1,957 expectations in 129 cases with zero failures/errors/test
+warnings and 30 explicit model skips. Native model-gated early returns do not
+establish real-model acceptance. The source manifest has no drift. The duplicate
+`-lc++` linker warning and testthat-built-under-R4.5.2/local-R4.5.1 warning remain
+in the lossless receipts at `tests/sanitizers/evidence/d040-macos-2026-10-03`.
+The exact local callback runner snapshot is retained before the subsequent
+optional Linux symbolizer parameter; the local default behavior is unchanged.

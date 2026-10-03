@@ -89,6 +89,12 @@ preserves the allocated layout and changes no numerical operation. The vendor
 digest/reverse-patch gates bind it; source-derived ASan/UBSan layout controls and
 the full native/vision checks validate its scope separately from the tap patch.
 
+**CPU callbacks (D-040):** seven exact-signature adapters connect generic CPU
+trait callbacks to the existing typed dot/conversion functions. They forward
+unchanged arguments without altering numerical kernels. A source-derived
+C/C++ forwarding control and mandatory Linux function-type negative controls
+precede the full native sanitizer gate.
+
 **Patch budget rule:** whatever the spike finds, the vendored diff stays as small as upstream allows, lives in `rebirth/src/llama.cpp/patches/`, and every hunk is annotated with why it exists — this is what keeps the `vendor-bump` skill routine (risk #1 in the roadmap).
 
 **Capture spec → memory estimate (D-017, supersedes the f32 basis):** the budget is measured against the **peak resident cost of the materialized R `data.frame` the caller receives**, not the engine's f32 host buffers. `bytes ≈ n_prompts × n_positions × n_layers × n_components × hidden_size × 4 × K`, where the f32 term (`… × 4`) is the engine activation size and `K` (`TRACE_MATERIALIZED_EXPANSION`, pinned to **11** in both `R/trace.R` and `rebirth-llm/src/trace.rs`, each side unit-tested) is the long-format expansion factor: each captured value becomes one 40-byte row (four i32 columns + one f64 `value` + two character-pointer columns), i.e. 10× the f32 bytes asymptotically; **11** upper-bounds this for every trace a *real* model can materialize (`hidden_size ≥ 896` → ≤ 10.65×) and for all budget-relevant large captures (ratio → 10.0×). (A tiny trace amortizes R's fixed per-vector overhead poorly — a sub-600-row capture on the `hidden=32` synthetic test model reaches ~27.75×, but is < ~22 KB and never approaches any budget.) Computed *before* running; drives the predictive OOM check and the spill decision (§6) symmetrically on both sides. An `object.size(result) ≤ K × f32_bytes` test pins `K` so it cannot silently drift. *Why the change:* the f32 basis under-counted the real object ~10× (transient peak ~30× before the FFI de-dup), so an "in-budget" capture could still OOM the 16 GB session (audit finding H-1). The estimate and the filter suggestion appear verbatim in `relm_error_oom`.

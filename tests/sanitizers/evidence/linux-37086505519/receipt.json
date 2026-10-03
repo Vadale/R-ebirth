@@ -1,0 +1,75 @@
+{
+  "run_id": 37086505519,
+  "head_sha": "e280868e3cae25f244a988b08990c673af8be586",
+  "status": "failed",
+  "product_tests_completed": 0,
+  "graph_size_layout_status": "passed",
+  "finding": "F32 dot kernel called through incompatible generic function pointer; remaining six CPU trait casts identified by source/type audit only",
+  "files": {
+    "FAILURE.txt.gz": {
+      "raw_sha256": "d3fe053de0ca35e1df44367a26dd5fa4143ac16635fe67a8deaf05813b9cd194",
+      "archive_sha256": "113b70352fd05c4d1b2f8bf52db7b36e3b786e2c006dc3776ba4f0001f3ac83e",
+      "raw_bytes": 222
+    },
+    "provenance.json.gz": {
+      "raw_sha256": "f3d648de674937a8d40fff890fd44b676d8c3a56a155db2c99ebe0b64e53709d",
+      "archive_sha256": "bfcd8a9dcab3054b10d29e2f83ca63c7af37ed63167d4a585f264f714f4a606d",
+      "raw_bytes": 242098
+    },
+    "commands.jsonl.gz": {
+      "raw_sha256": "e71318ebd38ec5a68934e17d49cbd9dd06e4aadab62bbc4680600f50a2ed866d",
+      "archive_sha256": "23560208abbf4a7a5987441cbd4c0effdd244bb8710cd56f6d0d91a1144954f8",
+      "raw_bytes": 110267
+    },
+    "harness.log.gz": {
+      "raw_sha256": "ec5f5506435923f0b1f87ca6f632c5e3109ded0a7c21eec111622839b954646e",
+      "archive_sha256": "63179a636898fdf5a62d15c26f613247c673103671881c0e96d65a9820d9929d",
+      "raw_bytes": 1938
+    },
+    "native-objects.json.gz": {
+      "raw_sha256": "93802919441096e86046ff67cb9d92ad87cc7614c95de697da4bf730972913af",
+      "archive_sha256": "5e3ce758b59e14ad3e2bc5a4d3bf1135deacf463c5a236cd1563aa5886a24760",
+      "raw_bytes": 111728
+    },
+    "rust-objects.json.gz": {
+      "raw_sha256": "8c8e5fb35926c187a295e0ceee7e2b4a5a885bc572bd5c8bc05fce39da96510d",
+      "archive_sha256": "aad7ffd0cee2d912a3c7884100b84d8af89bff61943f4c3730f2dc5839d470e1",
+      "raw_bytes": 806
+    },
+    "runtime-digests.json.gz": {
+      "raw_sha256": "edaf21b2054b9745f0f2ebc7b7e32a524e0beff02facd02c5f26e74dd34d8316",
+      "archive_sha256": "109040484e3381af4a8f9167b65590adba68bf4c2e5ed255ff6189f96a3474a8",
+      "raw_bytes": 6145
+    },
+    "harness-controls.log.gz": {
+      "raw_sha256": "5a3f1caf43122d5209475e2b114319ddcf1c722fa1cf2ac445b2c5c279b27d67",
+      "archive_sha256": "bd905199543fe7a5d75a04f4a4d10e49c9dcd9b7ee84775feb62fc87f19cf2de",
+      "raw_bytes": 1663
+    },
+    "test-engine_embeddings_match_numpy_oracle_within_tolerance.out.gz": {
+      "raw_sha256": "7a5d468e111e18a1d40e30081f954cb16ebe6ed137f56ef9c5500301b6252f36",
+      "archive_sha256": "0e8d8908419e229b11963d6d6f32746f76e0eb7b27b468f3e6dd520690bce430",
+      "raw_bytes": 161
+    },
+    "test-engine_embeddings_match_numpy_oracle_within_tolerance.err.gz": {
+      "raw_sha256": "c8795149bd5ef8b6ec316396c39d60567226e3462ce81372d313a46df76f675e",
+      "archive_sha256": "c1a09c27f10adff8645eb5cfd6e7a1db93b6e8f0834df08504e5ca8b14398630",
+      "raw_bytes": 1627
+    },
+    "graph-size-layout--result.json.gz": {
+      "raw_sha256": "c32d9e97c954dea675598341707eb008c0043a50e23f01174a9cac46454929d5",
+      "archive_sha256": "02bce3c30e0af528be148f6b6699c3fee67a1d5d8b045ff58b14674b3bd855a0",
+      "raw_bytes": 3207
+    },
+    "graph-size-layout--layout.out.gz": {
+      "raw_sha256": "69335b4874f8b47c72c5aa9779a5f2972e0a113a520d45b675741d5f4a4c9285",
+      "archive_sha256": "c47060cd343fdf32f6a4dc62fb7f6f700a421cc20c468387e35998c4a47c012c",
+      "raw_bytes": 2040
+    },
+    "graph-size-layout--original-arithmetic.err.gz": {
+      "raw_sha256": "016262c5ceea4316de09f7c2a7d1acbb9919cf74b1fe9c72ffce63f90888e193",
+      "archive_sha256": "b6e603a9bb044f421c7a79edff4b301c2aacbbfb280a50606d0b33ed87273e38",
+      "raw_bytes": 966
+    }
+  }
+}
