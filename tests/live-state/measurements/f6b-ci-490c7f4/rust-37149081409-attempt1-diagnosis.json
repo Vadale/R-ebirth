@@ -1,0 +1,11 @@
+{
+  "source": "490c7f41a417110d0109be01ce74d8e213e1ee46",
+  "run_id": 37149081409,
+  "attempt": 1,
+  "failed_job_id": 111278941309,
+  "failure": "sccache v0.18.0 Linux binary download HTTP500, three attempts; post-step no executable because setup failed",
+  "product_steps_executed": 0,
+  "passed_other_jobs": 4,
+  "action": "One justified job-only retry; no source/workflow/gate changes",
+  "limitation": "Evidence establishes download infrastructure failure, not a general GitHub outage."
+}

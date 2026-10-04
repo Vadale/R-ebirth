@@ -1,11 +1,13 @@
 # Phase 6 implementation and validation
 
-Status: in progress, 2026-10-03. F6a and F6b are authorized under D-041.
+Status: operational acceptance complete, 2026-10-04. F6a and F6b are authorized
+under D-041; final documentation-head CI and PR59 integration remain separate.
 F6a acceptance is complete at6877c4d: local functional/resource/foreground gates,
 all nine ordinary checks and independently verified scoped Linux sanitizer.
-F6b runtime/R/FFI implementation and focused native/installed-R acceptance are
-complete; public update measurements also pass. Interactive steering and remote
-gates remain pending. The binding
+F6b native/installed-R/public-update and foreground RStudio gates pass. All nine
+ordinary checks and independently verified scoped Linux sanitizer passed at
+`490c7f4`; the foreground run used that candidate's verified installed runtime.
+Final evidence/documentation changes do not relabel those executed sources. The binding
 contract is `phase6-live-introspection-plan.md`; F6b coefficient replies and
 audit fields are finalized there before implementation. No new dependency,
 vendor modification, model download or numerical tolerance is introduced.
@@ -396,14 +398,14 @@ crate path were corrected before verification; no remote retry was needed.
 
 ## F6b implementation boundary
 
-The authorized next increment adds exact coefficient replies for existing
+The authorized F6b increment adds exact coefficient replies for existing
 steering entries, actual worker revision/source metadata, atomic sum validation,
 zero-removal and original-adapter restoration. Original directions are copied
 once into shared immutable native slices. The existing three-layer independent
 reference is unchanged; its history-preserving path distinguishes a live update
 from prefix replay or ignoring zero. Existing F6a evidence retains its original
 source. New native/R tests, updated allocation twins and focused update-latency/
-foreground scripts are prepared, not yet executed. No dependency, vendor,
+foreground scripts were prepared before the execution records below. No dependency, vendor,
 public export name or numerical tolerance changes.
 
 
@@ -418,14 +420,14 @@ membership use the cache. The new regression proves no original-metadata scan
 is needed during delivery and refuses excess rows. This is a predictive-bound
 correction, not a claim based only on measured process RSS.
 
-The native F6b pipeline is running against frozen source; no F6b tests have yet
-been accepted. Ten new cases cover independent KV history, partial/no-op/terminal
+The initial native F6b pipeline used frozen source before any F6b execution was
+accepted. Ten new cases cover independent KV history, partial/no-op/terminal
 updates, zero removal, validation, cancellation/close, setter/restoration/panic
 ownership and the allocation ledger. The focused sanitizer route selects these
 ten cases and preserves the accepted fifteen-case live route; full selection
 now contains forty. Thirty-three Python harness controls pass, including the
-production archive path for both scoped modes. No native sanitizer execution
-for F6b has occurred yet.
+production archive path for both scoped modes. Native sanitizer execution
+followed later, as recorded below.
 
 
 The first F6b verification stopped at clippy before any product test because
@@ -436,8 +438,8 @@ compiled heap size. The review also identified uncharged initial-zero sentinel
 probe buffers. A bounded scalar probe now compares the same checked neuron and
 unchanged sentinel tolerance on sequential fresh contexts; a fixed Boolean
 cache and a separately named native/R peak component account for its storage.
-The corrected affected-only native verification is running; neither source
-inspection nor formula agreement is claimed as execution acceptance.
+The corrected affected-only native verification followed; neither source
+inspection nor formula agreement was treated as execution acceptance.
 
 
 The second native attempt passed formatting but failed compilation before tests
@@ -506,7 +508,65 @@ setter cost, a new threshold or fresh proof of GPU offload. Earlier actual Metal
 backend feasibility retains its separate source scope. Receipts are in
 `measurements/f6b-latency-20261003-213919`.
 
-The focused foreground steering test remains unexecuted: computer use observed
-the Mac locked on2026-10-03 and the founder has been asked to unlock it. Prior F6a
-foreground evidence is retained but does not substitute for coefficient changes.
-The draft PR can run the new remote gates while this human prerequisite is pending.
+## F6b remote acceptance at `490c7f4`
+
+All nine ordinary checks passed at the exact candidate
+`490c7f41a417110d0109be01ce74d8e213e1ee46`: four jobs in
+[R37149081421](https://github.com/Vadale/R-ebirth/actions/runs/37149081421) and
+five in [Rust37149081409](https://github.com/Vadale/R-ebirth/actions/runs/37149081409).
+The initial Rust Linux job failed before fmt/clippy/tests because the sccache
+binary download returned HTTP500 three times. Its other four jobs passed; one
+job-only retry succeeded at the unchanged head. The failed attempt, diagnosis
+and exact-head check verification are retained in
+`measurements/f6b-ci-490c7f4`. No product/workflow change or general outage claim
+follows from that infrastructure failure.
+
+[Steering-only sanitizer37149145363](https://github.com/Vadale/R-ebirth/actions/runs/37149145363)
+passed at the same head. Independent verification checked ten exact product
+libtest JSON successes and raw stdout/stderr hashes, including the3,360value
+history marker (maximum activation difference0.003543657, logit0.001758994,
+unchanged0.01bounds). It also checked the production-library binding, all four
+declared Rust archive variants across their Cargo stages,269native compile/symbol
+receipts, build_cvec instrumentation, seven callback runtime controls,68layout
+cases, four mixed-language faults and uninstrumented rejection. All37remote
+harness controls passed; all2,447source hashes matched the candidate.
+
+The once-downloaded inventory contains746files/45,790,743bytes, with manifest
+SHA256 `a289ede4851997182420fe6a1e88890b71cfc9db8161e9a75426a7d792e0adb9`.
+The732text receipts, verifier, result and complete inventory are retained in
+`measurements/f6b-sanitizer-37149145363`;14 non-UTF-8 files (probe artifacts
+and the NUL-delimited source listing) remain local with hashes recorded. Full native object/archive/test-binary bytes were not uploaded:
+their digests remain runtime receipts, while downloaded symbols, flags, source
+and per-test bytes were independently checked. Scope is exercised Linux CPU
+paths, not R/SEXP, GPU, vision, TSan or universal absence of undefined behavior.
+Accepted F6a sanitizer and earlier Valgrind evidence retain their own sources.
+
+## Actual foreground F6b steering, 2026-10-04
+
+After the founder unlocked the Mac, the real RStudio Console ran the steering
+demonstration in a restarted, fresh R session. The installed F6b package matched
+all27 recorded file hashes. A separate Console submission evaluated `1 + 1`
+while the native worker was active, with345states and21revisions already
+delivered. It returned2 below R's elapsed-clock resolution and the500ms gate;
+this is not a claim of zero physical latency. CUA observed the real Console,
+live neuron-score plot, successful completion and restoration markers.
+
+Generation lasted20.190s, submission13ms, and delivered346states/345tokens,
+21coefficient revisions and348heartbeats. Cancellation at state346 prevented
+token346 and any next state. The original-adapter seeded reset passed. The
+largest delivered object was44,664bytes within its66,488byte admitted bound.
+Independent receipt verification checked every source/revision/coefficient,
+cancellation, reset and object-bound record. An initial collector comparison
+coerced the heterogeneous CSV/RDS frames to character matrices; its formatting
+assumption was corrected to per-column numeric comparison before acceptance.
+Both collector sources are retained; no inference was repeated.
+
+The original user globals, RNG, library/search paths and relevant environment
+fields were restored and checked; editor documents were untouched. User
+workspace/session backups remain local and are excluded from committed evidence.
+Scripts, operational receipts and independent verification are in
+`measurements/rstudio-steering-2026-10-04`. The earlier locked-Mac observation
+remains historical; no UI input is pending. This completes F6b operational
+acceptance, with final documentation-head CI and PR59 integration still required.
+The deliverable is research instrumentation, not validated detection reliability
+or a safety guarantee.

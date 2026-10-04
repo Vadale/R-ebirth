@@ -1,0 +1,17 @@
+{
+  "status": "independently_verified",
+  "run_id": 37149145363,
+  "source_sha": "490c7f41a417110d0109be01ce74d8e213e1ee46",
+  "product_tests": 10,
+  "callback_runtime_controls": 7,
+  "graph_layout_cases": 68,
+  "mixed_fault_controls": 4,
+  "uninstrumented_control_rejected": true,
+  "native_objects": 269,
+  "rust_archives": 4,
+  "source_files_verified": 2447,
+  "raw_files": 746,
+  "raw_bytes": 45790743,
+  "file_manifest_sha256": "a289ede4851997182420fe6a1e88890b71cfc9db8161e9a75426a7d792e0adb9",
+  "scope": "Exercised Linux CPU native paths only; no R/SEXP, GPU, vision, TSan or universal UB claim. Native object/archive/test-binary bytes are absent from the artifact: their recorded digests remain runtime receipts, while downloaded symbol outputs, flags, source and per-test bytes were independently checked. Callback/graph probe binary bytes are present and rehashed. Old failed runs remain failed."
+}

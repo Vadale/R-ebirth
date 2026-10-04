@@ -1,0 +1,99 @@
+{
+  "status": "passed",
+  "source": "490c7f41a417110d0109be01ce74d8e213e1ee46",
+  "required_checks": 9,
+  "checks": [
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T20:08:21Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081421/job/111278941465",
+      "name": "macos-15 (R release, Rust stable)",
+      "startedAt": "2026-10-03T19:46:06Z",
+      "status": "COMPLETED",
+      "workflowName": "R-CMD-check.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T20:08:28Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081409/job/111282560007",
+      "name": "cargo fmt / clippy / test",
+      "startedAt": "2026-10-03T20:05:41Z",
+      "status": "COMPLETED",
+      "workflowName": "rust.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T20:00:35Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081421/job/111278941478",
+      "name": "ubuntu-24.04 (R release, Rust stable)",
+      "startedAt": "2026-10-03T19:46:01Z",
+      "status": "COMPLETED",
+      "workflowName": "R-CMD-check.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T20:09:27Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081421/job/111278941321",
+      "name": "macos-15 (R oldrel-1, Rust stable)",
+      "startedAt": "2026-10-03T19:46:06Z",
+      "status": "COMPLETED",
+      "workflowName": "R-CMD-check.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T20:05:49Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081421/job/111278941453",
+      "name": "ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",
+      "startedAt": "2026-10-03T19:46:01Z",
+      "status": "COMPLETED",
+      "workflowName": "R-CMD-check.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T19:46:17Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081409/job/111282560933",
+      "name": "harness B golden self-check",
+      "startedAt": "2026-10-03T19:46:00Z",
+      "status": "COMPLETED",
+      "workflowName": "rust.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T19:46:08Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081409/job/111282560544",
+      "name": "vendored tree integrity (G4 + patch coherence)",
+      "startedAt": "2026-10-03T19:46:01Z",
+      "status": "COMPLETED",
+      "workflowName": "rust.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T19:46:14Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081409/job/111282588896",
+      "name": "supply-chain (cargo-deny licenses/bans/sources)",
+      "startedAt": "2026-10-03T19:46:01Z",
+      "status": "COMPLETED",
+      "workflowName": "rust.yaml"
+    },
+    {
+      "__typename": "CheckRun",
+      "completedAt": "2026-10-03T19:47:06Z",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/Vadale/R-ebirth/actions/runs/37149081409/job/111282560439",
+      "name": "macOS x86_64 cross engine link",
+      "startedAt": "2026-10-03T19:46:04Z",
+      "status": "COMPLETED",
+      "workflowName": "rust.yaml"
+    }
+  ],
+  "foreground_F6b": "not_executed_Mac_unlock_pending",
+  "PR_state": "draft"
+}

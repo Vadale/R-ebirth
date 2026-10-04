@@ -321,8 +321,11 @@ The exact F6a contract in [Phase 6 sections 3–5](docs/phase6-live-introspectio
 is binding, including state/source positions, errors, resource limits and spill
 side effects. No new export name or R/Rust dependency is approved or needed.
 F6a acceptance passed at6877c4d, including all nine ordinary checks and the
-independently verified scoped Linux sanitizer. F6b is implemented with focused native/installed-R/public-update evidence;
-interactive and remote gates remain pending. Approval itself is not a numerical result.
+independently verified scoped Linux sanitizer. F6b operational acceptance includes
+focused native/installed-R/public-update evidence, all nine ordinary checks and
+scoped sanitizer at490c7f4, and actual foreground steering on2026-10-04. Final
+documentation-head CI and PR59 integration remain separate. Approval itself is
+not a numerical result.
 
 A non-NULL on_state function requires async mode, one text prompt, no schema or
 image input, and at most1024 requested tokens. Default layers capture no

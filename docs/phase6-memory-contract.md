@@ -4,7 +4,9 @@ Frozen design, 2026-10-03, under D-041 and the approved limits in
 `phase6-live-introspection-plan.md` §5. F6a implementation and resource acceptance
 passed with the sources recorded in the implementation report. F6b's additional
 steering ledger passes the focused native capacity and installed-R twin/object
-controls recorded in the implementation report; remote acceptance is pending. This is an
+controls recorded in the implementation report. Scoped Linux sanitizer at490c7f4
+and foreground RStudio delivery bounds also passed; their exact source and
+coverage limits are recorded separately. This is an
 allocation ledger, not a total process-RSS guarantee.
 
 ## State admission

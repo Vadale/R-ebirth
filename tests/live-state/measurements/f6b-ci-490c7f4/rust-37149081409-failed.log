@@ -1,0 +1,548 @@
+cargo fmt / clippy / test	UNKNOWN STEP	﻿2026-10-03T19:46:01.4362783Z Current runner version: '2.337.0'
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4399363Z ##[group]Runner Image Provisioner
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4400874Z Hosted Compute Agent
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4401904Z Version: 20260901.588
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4403019Z Commit: f88ec8081b781fac6c440065ac7ff9e710ce3d0b
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4404481Z Build Date: 2026-09-01T19:56:44Z
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4406004Z Worker ID: {917747b7-ca94-4111-85dc-7966ce9de5f1}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4407499Z Azure Region: eastus
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4408651Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4411372Z ##[group]Operating System
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4412526Z Ubuntu
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4413379Z 24.04.5
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4414439Z LTS
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4415658Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4416577Z ##[group]Runner Image
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4417735Z Image: ubuntu-24.04
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4418707Z Version: 20260927.320.1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4421114Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260927.320/images/ubuntu/Ubuntu2404-Readme.md
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4424021Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260927.320
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4426069Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4431534Z ##[group]GITHUB_TOKEN Permissions
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4435074Z Actions: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4436258Z ArtifactMetadata: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4437381Z Attestations: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4438517Z Checks: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4439469Z CodeQuality: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4440507Z Contents: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4441608Z Deployments: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4442669Z Discussions: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4443894Z Drives: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4445155Z Issues: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4446215Z Metadata: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4447271Z Models: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4448343Z Packages: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4449341Z Pages: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4450283Z PullRequests: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4451405Z RepositoryProjects: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4452570Z SecurityEvents: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4453588Z Statuses: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4455041Z VulnerabilityAlerts: read
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4456292Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4459363Z Secret source: Actions
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4460908Z Cache mode: write
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.4462137Z Prepare workflow directory
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.5079202Z Prepare all required actions
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.5155675Z Getting action download info
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.6959930Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.8171235Z Download action repository 'actions/upload-artifact@v7' (SHA:043fb46d1a93c77aae656e7c1c64a875d1fc6a0a)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:01.9310208Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:89b12181fb390509a0842a86cc55eeb8eb928c1d)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.0186492Z Download action repository 'mozilla-actions/sccache-action@v0.0.10' (SHA:9e7fa8a12102821edf02ca5dbea1acd0f89a2696)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.2693344Z Complete job name: cargo fmt / clippy / test
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3549886Z ##[group]Run actions/checkout@v7
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3550778Z with:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3551198Z   fetch-depth: 2
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3551652Z   repository: Vadale/R-ebirth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3555651Z   token: ***
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3556090Z   ssh-strict: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3556520Z   ssh-user: git
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3556950Z   persist-credentials: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3557438Z   clean: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3557865Z   sparse-checkout-cone-mode: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3558390Z   fetch-tags: false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3558833Z   show-progress: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3559265Z   lfs: false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3559660Z   submodules: false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3560103Z   set-safe-directory: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3560604Z   allow-unsafe-pr-checkout: false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3561384Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3561797Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3562267Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3562752Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3563282Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3564081Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.3564616Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4764297Z Syncing repository: Vadale/R-ebirth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4771620Z ##[group]Getting Git version info
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4772840Z Working directory is '/home/runner/work/R-ebirth/R-ebirth'
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4776872Z [command]/usr/bin/git version
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4897695Z git version 2.55.0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4922961Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4936295Z Temporarily overriding HOME='/home/runner/work/_temp/a3dc2970-93dc-4696-a91e-5ef82fecc2b1' before making global git config changes
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4938605Z Adding repository directory to the temporary git global config as a safe directory
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.4956575Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/R-ebirth/R-ebirth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5010195Z Deleting the contents of '/home/runner/work/R-ebirth/R-ebirth'
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5018870Z ##[group]Determining repository object format
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5026850Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5029167Z ##[group]Initializing the repository
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5030325Z [command]/usr/bin/git init /home/runner/work/R-ebirth/R-ebirth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5150843Z hint: Using 'master' as the name for the initial branch. This default branch name
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5153099Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5155094Z hint: to use in all of your new repositories, which will suppress this warning,
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5156697Z hint: call:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5157746Z hint:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5158848Z hint: 	git config --global init.defaultBranch <name>
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5160049Z hint:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5161141Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5162914Z hint: 'development'. The just-created branch can be renamed via this command:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5164428Z hint:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5165800Z hint: 	git branch -m <name>
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5166862Z hint:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5168456Z hint: Disable this message with "git config set advice.defaultBranchName false"
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5170415Z Initialized empty Git repository in /home/runner/work/R-ebirth/R-ebirth/.git/
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5173833Z [command]/usr/bin/git remote add origin https://github.com/Vadale/R-ebirth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5256347Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5257764Z ##[group]Disabling automatic garbage collection
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5258991Z [command]/usr/bin/git config --local gc.auto 0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5286511Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5287652Z ##[group]Setting up auth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5288655Z Removing SSH command configuration
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5293625Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5329690Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5713167Z Removing HTTP extra header
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5719926Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5760463Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5983147Z Removing includeIf entries pointing to credentials config files
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.5988921Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6026354Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6257246Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6299515Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path /home/runner/work/_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6432203Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6438830Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6443464Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6474492Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6476471Z ##[group]Fetching the repository
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:02.6483896Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin +2492a22ff5d5f38c617c2b35e70a96702e425552:refs/remotes/pull/59/merge
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0127951Z From https://github.com/Vadale/R-ebirth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0132202Z  * [new ref]         2492a22ff5d5f38c617c2b35e70a96702e425552 -> pull/59/merge
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0134636Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0135391Z ##[group]Determining the checkout info
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0136021Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0137630Z [command]/usr/bin/git sparse-checkout disable
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0192365Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0226212Z ##[group]Checking out the ref
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.0230254Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/59/merge
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2608247Z Note: switching to 'refs/remotes/pull/59/merge'.
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2608894Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2609386Z You are in 'detached HEAD' state. You can look around, make experimental
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2610361Z changes and commit them, and you can discard any commits you make in this
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2611245Z state without impacting any branches by switching back to a branch.
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2611780Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2612161Z If you want to create a new branch to retain commits you create, you may
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2613014Z do so (now or later) by using -c with the switch command. Example:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2613500Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2613725Z   git switch -c <new-branch-name>
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2614075Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2614292Z Or undo this operation with:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2614611Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2615069Z   git switch -
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2615381Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2615826Z Turn off this advice by setting config variable advice.detachedHead to false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2616419Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2617362Z HEAD is now at 2492a22 Merge 490c7f41a417110d0109be01ce74d8e213e1ee46 into 4505d1ccaccc65c7b2e3b43caed9d30847d87d0c
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2626337Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2676972Z [command]/usr/bin/git log -1 --format=%H
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2707149Z 2492a22ff5d5f38c617c2b35e70a96702e425552
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2924092Z ##[group]Run python3 tests/ci/change_scope.py
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.2924603Z ^[[36;1mpython3 tests/ci/change_scope.py^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3177720Z shell: /usr/bin/bash -e {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3178089Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3178361Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3178663Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3178978Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3179294Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3179644Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3179984Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.3906689Z {"base": "4505d1ccaccc65c7b2e3b43caed9d30847d87d0c", "full_checks": true, "head": "2492a22ff5d5f38c617c2b35e70a96702e425552", "paths": [".github/workflows/nightly-memory-safety.yaml", "API-GRAMMAR.md", "DECISIONS.md", "docs/phase6-implementation.md", "docs/phase6-live-introspection-plan.md", "docs/phase6-memory-contract.md", "rebirth/NEWS.md", "rebirth/R/async.R", "rebirth/R/extendr-wrappers.R", "rebirth/R/generate.R", "rebirth/R/live-state.R", "rebirth/R/trace-spill.R", "rebirth/R/trace.R", "rebirth/man/llm_generate.Rd", "rebirth/man/llm_trace.Rd", "rebirth/src/rust/rebirth-ffi/src/async_boundary.rs", "rebirth/src/rust/rebirth-ffi/src/lib.rs", "rebirth/src/rust/rebirth-ffi/src/live_boundary.rs", "rebirth/src/rust/rebirth-llm/src/async_job.rs", "rebirth/src/rust/rebirth-llm/src/engine.rs", "rebirth/src/rust/rebirth-llm/src/ffi.rs", "rebirth/src/rust/rebirth-llm/src/generate.rs", "rebirth/src/rust/rebirth-llm/src/intervene.rs", "rebirth/src/rust/rebirth-llm/src/lib.rs", "rebirth/src/rust/rebirth-llm/src/live_capture.rs", "rebirth/src/rust/rebirth-llm/src/live_spill.rs", "rebirth/src/rust/rebirth-llm/src/live_state.rs", "rebirth/src/rust/rebirth-llm/src/live_steering.rs", "rebirth/src/rust/rebirth-llm/src/live_steering_tests.rs", "rebirth/src/rust/rebirth-llm/src/probe.rs", "rebirth/src/rust/rebirth-llm/src/trace.rs", "rebirth/src/rust/rebirth-llm/tests/async_synthetic.rs", "rebirth/tests/testthat/test-llm-live-admission.R", "rebirth/tests/testthat/test-llm-live-helpers.R", "rebirth/tests/testthat/test-llm-live-memory.R", "rebirth/tests/testthat/test-llm-live-model.R", "rebirth/tests/testthat/test-llm-live-spill.R", "rebirth/tests/testthat/test-llm-live-steering.R", "tests/demos/demo-live-observation.R", "tests/live-state/fixtures/metal-backend-b10828.txt", "tests/live-state/measurements/atomic-compatibility-20261003-191220/async_job.rs.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/atomic-ids.log.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/clippy.log.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/format.log.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/live-ack-boundaries.log.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/no-spill-check.log.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/source-manifest.json.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/status.json.gz", "tests/live-state/measurements/atomic-compatibility-20261003-191220/verification.json", "tests/live-state/measurements/atomic-compatibility-20261003-191220/verify-atomic-compatibility.py.gz", "tests/live-state/measurements/ci-r-37139324404/r-37139324404-diagnosis.json.gz", "tests/live-state/measurements/ci-r-37139324404/r-37139324404-failed.log.gz", "tests/live-state/measurements/ci-r-37139324404/r-37139324404-jobs.json.gz", "tests/live-state/measurements/ci-rust-37139324339/diagnosis.json", "tests/live-state/measurements/ci-rust-37139324339/rust-37139324339-failed.log.gz", "tests/live-state/measurements/ci-rust-37139324339/rust-37139324339-job.log.gz", "tests/live-state/measurements/f6b-integrated-review-20261003/review.md", "tests/live-state/measurements/f6b-latency-20261003-213919/candidate.patch", "tests/live-state/measurements/f6b-latency-20261003-213919/independent-verification.json", "tests/live-state/measurements/f6b-latency-20261003-213919/preflight.rds", "tests/live-state/measurements/f6b-latency-20261003-213919/public-update-latency-cpu.csv", "tests/live-state/measurements/f6b-latency-20261003-213919/public-update-latency-metal.csv", "tests/live-state/measurements/f6b-latency-20261003-213919/public-update-latency-receipts.rds", "tests/live-state/measurements/f6b-latency-20261003-213919/public-update-latency.R", "tests/live-state/measurements/f6b-latency-20261003-213919/public-update-latency.log", "tests/live-state/measurements/f6b-latency-20261003-213919/scope.md", "tests/live-state/measurements/f6b-latency-20261003-213919/source-manifest.json", "tests/live-state/measurements/f6b-latency-20261003-213919/status.json", "tests/live-state/measurements/f6b-latency-20261003-213919/verify-latency-receipts.R", "tests/live-state/measurements/f6b-latency-20261003-213919/verify-latency.py", "tests/live-state/measurements/f6b-native-20261003-210135/candidate.patch", "tests/live-state/measurements/f6b-native-20261003-210135/changed-source.tar.gz", "tests/live-state/measurements/f6b-native-20261003-210135/clippy.log", "tests/live-state/measurements/f6b-native-20261003-210135/diagnosis.md", "tests/live-state/measurements/f6b-native-20261003-210135/format.log", "tests/live-state/measurements/f6b-native-20261003-210135/inventory.json", "tests/live-state/measurements/f6b-native-20261003-210135/source-manifest.json", "tests/live-state/measurements/f6b-native-20261003-210135/status.json", "tests/live-state/measurements/f6b-native-20261003-210135/verify-native.py", "tests/live-state/measurements/f6b-native-20261003-211726/candidate.patch", "tests/live-state/measurements/f6b-native-20261003-211726/changed-source.tar.gz", "tests/live-state/measurements/f6b-native-20261003-211726/clippy.log", "tests/live-state/measurements/f6b-native-20261003-211726/diagnosis.md", "tests/live-state/measurements/f6b-native-20261003-211726/format.log", "tests/live-state/measurements/f6b-native-20261003-211726/inventory.json", "tests/live-state/measurements/f6b-native-20261003-211726/source-manifest.json", "tests/live-state/measurements/f6b-native-20261003-211726/status.json", "tests/live-state/measurements/f6b-native-20261003-211726/verify-native.py", "tests/live-state/measurements/f6b-native-20261003-212204/candidate.patch", "tests/live-state/measurements/f6b-native-20261003-212204/changed-source.tar.gz", "tests/live-state/measurements/f6b-native-20261003-212204/clippy.log", "tests/live-state/measurements/f6b-native-20261003-212204/control-allocation.log", "tests/live-state/measurements/f6b-native-20261003-212204/existing-intervention-oracle.log", "tests/live-state/measurements/f6b-native-20261003-212204/f6b-native.log", "tests/live-state/measurements/f6b-native-20261003-212204/ffi.log", "tests/live-state/measurements/f6b-native-20261003-212204/format.log", "tests/live-state/measurements/f6b-native-20261003-212204/independent-verification.json", "tests/live-state/measurements/f6b-native-20261003-212204/inventory.json", "tests/live-state/measurements/f6b-native-20261003-212204/live-ack-boundaries.log", "tests/live-state/measurements/f6b-native-20261003-212204/native-selection.json", "tests/live-state/measurements/f6b-native-20261003-212204/no-spill-check.log", "tests/live-state/measurements/f6b-native-20261003-212204/probe-cache.log", "tests/live-state/measurements/f6b-native-20261003-212204/scope.md", "tests/live-state/measurements/f6b-native-20261003-212204/source-manifest.json", "tests/live-state/measurements/f6b-native-20261003-212204/startup-ownership.log", "tests/live-state/measurements/f6b-native-20261003-212204/status.json", "tests/live-state/measurements/f6b-native-20261003-212204/verify-native.py", "tests/live-state/measurements/f6b-package-20261003-212652/candidate.patch", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/callback-diagnostic.rds", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/counts.csv", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/diagnosis.md", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/diagnostic.log", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/result.rds", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/status.json", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/testdir/helper-async.R", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/testdir/helper-llm.R", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/testdir/helper-probe.R", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/testdir/helper-stream.R", "tests/live-state/measurements/f6b-package-20261003-212652/diagnostic/testdir/test-diagnostic.R", "tests/live-state/measurements/f6b-package-20261003-212652/document.log", "tests/live-state/measurements/f6b-package-20261003-212652/install.log", "tests/live-state/measurements/f6b-package-20261003-212652/live-test-counts.csv", "tests/live-state/measurements/f6b-package-20261003-212652/live-tests.R", "tests/live-state/measurements/f6b-package-20261003-212652/live-tests.log", "tests/live-state/measurements/f6b-package-20261003-212652/live-tests.rds", "tests/live-state/measurements/f6b-package-20261003-212652/scope.md", "tests/live-state/measurements/f6b-package-20261003-212652/source-manifest.json", "tests/live-state/measurements/f6b-package-20261003-212652/status.json", "tests/live-state/measurements/f6b-package-20261003-212652/test-llm-live-steering-before.R", "tests/live-state/measurements/f6b-package-20261003-212652/verify-package.py", "tests/live-state/measurements/f6b-package-resume-20261003-213806/00check.log", "tests/live-state/measurements/f6b-package-resume-20261003-213806/callback-diagnostic.rds", "tests/live-state/measurements/f6b-package-resume-20261003-213806/candidate.patch", "tests/live-state/measurements/f6b-package-resume-20261003-213806/corrected-case.R", "tests/live-state/measurements/f6b-package-resume-20261003-213806/counts.csv", "tests/live-state/measurements/f6b-package-resume-20261003-213806/independent-verification.json", "tests/live-state/measurements/f6b-package-resume-20261003-213806/installed-description.txt", "tests/live-state/measurements/f6b-package-resume-20261003-213806/live-tests.log", "tests/live-state/measurements/f6b-package-resume-20261003-213806/result.rds", "tests/live-state/measurements/f6b-package-resume-20261003-213806/resume-package.py", "tests/live-state/measurements/f6b-package-resume-20261003-213806/scope.md", "tests/live-state/measurements/f6b-package-resume-20261003-213806/scoped-package-check.log", "tests/live-state/measurements/f6b-package-resume-20261003-213806/source-build.log", "tests/live-state/measurements/f6b-package-resume-20261003-213806/source-manifest.json", "tests/live-state/measurements/f6b-package-resume-20261003-213806/status.json", "tests/live-state/measurements/feasibility-20261003-160105/benchmark-cpu.json.gz", "tests/live-state/measurements/feasibility-20261003-160105/benchmark-cpu.log.gz", "tests/live-state/measurements/feasibility-20261003-160105/benchmark-metal.json.gz", "tests/live-state/measurements/feasibility-20261003-160105/benchmark-metal.log.gz", "tests/live-state/measurements/feasibility-20261003-160105/clippy.log.gz", "tests/live-state/measurements/feasibility-20261003-160105/file-manifest.json", "tests/live-state/measurements/feasibility-20261003-160105/format.log.gz", "tests/live-state/measurements/feasibility-20261003-160105/source-manifest.json.gz", "tests/live-state/measurements/feasibility-20261003-160105/source/rebirth/src/rust/rebirth-llm/src/engine.rs.gz", "tests/live-state/measurements/feasibility-20261003-160105/source/rebirth/src/rust/rebirth-llm/src/ffi.rs.gz", "tests/live-state/measurements/feasibility-20261003-160105/source/rebirth/src/rust/rebirth-llm/src/generate.rs.gz", "tests/live-state/measurements/feasibility-20261003-160105/source/rebirth/src/rust/rebirth-llm/src/lib.rs.gz", "tests/live-state/measurements/feasibility-20261003-160105/source/rebirth/src/rust/rebirth-llm/src/live_capture.rs.gz", "tests/live-state/measurements/feasibility-20261003-160105/source/rebirth/src/rust/rebirth-llm/src/trace.rs.gz", "tests/live-state/measurements/feasibility-20261003-160105/status.json.gz", "tests/live-state/measurements/feasibility-20261003-160105/synthetic.log.gz", "tests/live-state/measurements/feasibility-20261003-160105/verification.json", "tests/live-state/measurements/feasibility-20261003-160105/verify-feasibility.py.gz", "tests/live-state/measurements/feasibility-20261003-162847/benchmark-cpu.json.gz", "tests/live-state/measurements/feasibility-20261003-162847/benchmark-cpu.log.gz", "tests/live-state/measurements/feasibility-20261003-162847/benchmark-metal.json.gz", "tests/live-state/measurements/feasibility-20261003-162847/benchmark-metal.log.gz", "tests/live-state/measurements/feasibility-20261003-162847/clippy.log.gz", "tests/live-state/measurements/feasibility-20261003-162847/file-manifest.json", "tests/live-state/measurements/feasibility-20261003-162847/format.log.gz", "tests/live-state/measurements/feasibility-20261003-162847/source-manifest.json.gz", "tests/live-state/measurements/feasibility-20261003-162847/source/rebirth/src/rust/rebirth-llm/src/engine.rs.gz", "tests/live-state/measurements/feasibility-20261003-162847/source/rebirth/src/rust/rebirth-llm/src/ffi.rs.gz", "tests/live-state/measurements/feasibility-20261003-162847/source/rebirth/src/rust/rebirth-llm/src/generate.rs.gz", "tests/live-state/measurements/feasibility-20261003-162847/source/rebirth/src/rust/rebirth-llm/src/lib.rs.gz", "tests/live-state/measurements/feasibility-20261003-162847/source/rebirth/src/rust/rebirth-llm/src/live_capture.rs.gz", "tests/live-state/measurements/feasibility-20261003-162847/source/rebirth/src/rust/rebirth-llm/src/trace.rs.gz", "tests/live-state/measurements/feasibility-20261003-162847/status.json.gz", "tests/live-state/measurements/feasibility-20261003-162847/synthetic.log.gz", "tests/live-state/measurements/feasibility-20261003-162847/top-k-parity.log.gz", "tests/live-state/measurements/feasibility-20261003-162847/verification.json", "tests/live-state/measurements/feasibility-20261003-162847/verify-feasibility.py.gz", "tests/live-state/measurements/integrated-review-20261003/review.md", "tests/live-state/measurements/metal-20261003-163736/benchmark-metal.json.gz", "tests/live-state/measurements/metal-20261003-163736/benchmark-metal.log.gz", "tests/live-state/measurements/metal-20261003-163736/clippy.log.gz", "tests/live-state/measurements/metal-20261003-163736/file-manifest.json", "tests/live-state/measurements/metal-20261003-163736/format.log.gz", "tests/live-state/measurements/metal-20261003-163736/metal-receipt-regression.log.gz", "tests/live-state/measurements/metal-20261003-163736/source-manifest.json.gz", "tests/live-state/measurements/metal-20261003-163736/source/rebirth/src/rust/rebirth-llm/src/engine.rs.gz", "tests/live-state/measurements/metal-20261003-163736/source/rebirth/src/rust/rebirth-llm/src/ffi.rs.gz", "tests/live-state/measurements/metal-20261003-163736/source/rebirth/src/rust/rebirth-llm/src/generate.rs.gz", "tests/live-state/measurements/metal-20261003-163736/source/rebirth/src/rust/rebirth-llm/src/lib.rs.gz", "tests/live-state/measurements/metal-20261003-163736/source/rebirth/src/rust/rebirth-llm/src/live_capture.rs.gz", "tests/live-state/measurements/metal-20261003-163736/source/rebirth/src/rust/rebirth-llm/src/trace.rs.gz", "tests/live-state/measurements/metal-20261003-163736/status.json.gz", "tests/live-state/measurements/metal-20261003-163736/verification.json", "tests/live-state/measurements/metal-20261003-163736/verify-feasibility.py.gz", "tests/live-state/measurements/package-20261003-180453/document.log.gz", "tests/live-state/measurements/package-20261003-180453/install.log.gz", "tests/live-state/measurements/package-20261003-180453/installed-manifest.json", "tests/live-state/measurements/package-20261003-180453/live-test-counts.csv.gz", "tests/live-state/measurements/package-20261003-180453/live-tests.R.gz", "tests/live-state/measurements/package-20261003-180453/live-tests.log.gz", "tests/live-state/measurements/package-20261003-180453/live-tests.rds.gz", "tests/live-state/measurements/package-20261003-180453/retention-scope.json", "tests/live-state/measurements/package-20261003-180453/scoped-package-check.log.gz", "tests/live-state/measurements/package-20261003-180453/source-build.log.gz", "tests/live-state/measurements/package-20261003-180453/source-manifest.json.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/async.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/conditions.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/download.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/embed.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/extendr-wrappers.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/generate.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/images.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/intervene.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/live-state.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/llm.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/logits.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/probe-fit.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/probe-methods.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/probe-trace.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/probe.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/stream.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/tokens.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/trace-spill.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/trace.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/R/zzz.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/man/llm_generate.Rd.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/man/llm_trace.Rd.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-ffi/src/lib.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/async_job.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/domain.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/embed.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/engine.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/error.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/ffi.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/generate.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/intervene.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/lib.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/live_capture.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/live_spill.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/live_state.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/probe.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/schema.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/spill.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/spill_lease.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/structured.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/text_stream.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/text_stream/tests.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/trace.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/src/rust/rebirth-llm/src/vision.rs.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/tests/testthat/test-llm-live-admission.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/tests/testthat/test-llm-live-helpers.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/tests/testthat/test-llm-live-memory.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/tests/testthat/test-llm-live-model.R.gz", "tests/live-state/measurements/package-20261003-180453/source/rebirth/tests/testthat/test-llm-live-spill.R.gz", "tests/live-state/measurements/package-20261003-180453/status.json.gz", "tests/live-state/measurements/package-20261003-180453/verification.json", "tests/live-state/measurements/package-20261003-180453/verify-package.py.gz", "tests/live-state/measurements/public-latency-20261003-181308/installed-manifest.json.gz", "tests/live-state/measurements/public-latency-20261003-181308/public-latency-cpu.csv.gz", "tests/live-state/measurements/public-latency-20261003-181308/public-latency-metal.csv.gz", "tests/live-state/measurements/public-latency-20261003-181308/public-latency-receipts.rds.gz", "tests/live-state/measurements/public-latency-20261003-181308/public-latency.R.gz", "tests/live-state/measurements/public-latency-20261003-181308/public-latency.log.gz", "tests/live-state/measurements/public-latency-20261003-181308/source-manifest.json.gz", "tests/live-state/measurements/public-latency-20261003-181308/status.json.gz", "tests/live-state/measurements/public-latency-20261003-181308/verification.json", "tests/live-state/measurements/public-latency-20261003-181308/verified-receipts.csv.gz", "tests/live-state/measurements/public-latency-20261003-181308/verify-public-latency.py.gz", "tests/live-state/measurements/public-resource-20261003-184016/installed-manifest.json.gz", "tests/live-state/measurements/public-resource-20261003-184016/public-resource.R.gz", "tests/live-state/measurements/public-resource-20261003-184016/public-resource.log.gz", "tests/live-state/measurements/public-resource-20261003-184016/rss.csv.gz", "tests/live-state/measurements/public-resource-20261003-184016/source-manifest.json.gz", "tests/live-state/measurements/public-resource-20261003-184016/status.json.gz", "tests/live-state/measurements/public-resource-20261003-184016/verification.json", "tests/live-state/measurements/public-resource-20261003-184016/verify-public-resource.py.gz", "tests/live-state/measurements/public-resource-20261003-184903/installed-manifest.json.gz", "tests/live-state/measurements/public-resource-20261003-184903/public-resource.R.gz", "tests/live-state/measurements/public-resource-20261003-184903/public-resource.log.gz", "tests/live-state/measurements/public-resource-20261003-184903/resource-receipts.rds.gz", "tests/live-state/measurements/public-resource-20261003-184903/rss.csv.gz", "tests/live-state/measurements/public-resource-20261003-184903/source-manifest.json.gz", "tests/live-state/measurements/public-resource-20261003-184903/spill-files.json.gz", "tests/live-state/measurements/public-resource-20261003-184903/status.json.gz", "tests/live-state/measurements/public-resource-20261003-184903/verification.json.gz", "tests/live-state/measurements/public-resource-20261003-184903/verified-receipts.csv.gz", "tests/live-state/measurements/public-resource-20261003-184903/verify-public-resource.py.gz", "tests/live-state/measurements/rstudio-20261003/acceptance.R.gz", "tests/live-state/measurements/rstudio-20261003/probe.R.gz", "tests/live-state/measurements/rstudio-20261003/restoration.json.gz", "tests/live-state/measurements/rstudio-20261003/restore.R.gz", "tests/live-state/measurements/rstudio-20261003/result.rds.gz", "tests/live-state/measurements/rstudio-20261003/states.csv.gz", "tests/live-state/measurements/rstudio-20261003/status.json.gz", "tests/live-state/measurements/rstudio-20261003/verification.json", "tests/live-state/measurements/sanitizer-37139351757/artifact-manifest.json", "tests/live-state/measurements/sanitizer-37139351757/diagnosis.json", "tests/live-state/measurements/sanitizer-37139351757/raw-text-receipts.tar.gz", "tests/live-state/measurements/sanitizer-37139351757/sanitizer-37139351757-job.log.gz", "tests/live-state/measurements/sanitizer-37139351757/sanitizer-37139351757-jobs.json.gz", "tests/live-state/measurements/sanitizer-37140337349/artifact-manifest.json", "tests/live-state/measurements/sanitizer-37140337349/diagnosis.json", "tests/live-state/measurements/sanitizer-37140337349/raw-text-receipts.tar.gz", "tests/live-state/measurements/sanitizer-37140337349/sanitizer-37140337349-failed.log.gz", "tests/live-state/measurements/sanitizer-37140337349/sanitizer-37140337349-jobs.json.gz", "tests/live-state/measurements/sanitizer-37142257323/archive-scope.json", "tests/live-state/measurements/sanitizer-37142257323/artifact-manifest.json", "tests/live-state/measurements/sanitizer-37142257323/jobs.json", "tests/live-state/measurements/sanitizer-37142257323/raw-text-receipts.tar.gz", "tests/live-state/measurements/sanitizer-37142257323/verification.json", "tests/live-state/measurements/sanitizer-37142257323/verify.py", "tests/live-state/measurements/sanitizer-archive-controls-20261003/sanitizer-archive-controls-corrected.log.gz", "tests/live-state/measurements/sanitizer-archive-controls-20261003/sanitizer-archive-controls.log.gz", "tests/live-state/measurements/sanitizer-archive-controls-20261003/sanitizer-archive-replay.json.gz", "tests/live-state/measurements/sanitizer-archive-controls-20261003/verification.json", "tests/live-state/measurements/sanitizer-library-controls-20261003/sanitizer-library-controls.log.gz", "tests/live-state/measurements/sanitizer-library-controls-20261003/verification.json", "tests/live-state/measurements/sanitizer-selection-20261003/compile.log.gz", "tests/live-state/measurements/sanitizer-selection-20261003/protocol.rs.gz", "tests/live-state/measurements/sanitizer-selection-20261003/stderr.log.gz", "tests/live-state/measurements/sanitizer-selection-20261003/stdout.jsonl.gz", "tests/live-state/measurements/transport-20261003-173544/clippy.log.gz", "tests/live-state/measurements/transport-20261003-173544/format-ffi-include.log.gz", "tests/live-state/measurements/transport-20261003-173544/format.log.gz", "tests/live-state/measurements/transport-20261003-173544/retention.json", "tests/live-state/measurements/transport-20261003-173544/source-manifest.json.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/async.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/conditions.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/download.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/embed.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/extendr-wrappers.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/generate.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/images.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/intervene.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/live-state.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/llm.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/logits.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/probe-fit.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/probe-methods.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/probe-trace.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/probe.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/stream.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/tokens.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/trace-spill.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/trace.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/R/zzz.R.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-ffi/src/lib.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/async_job.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/domain.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/embed.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/engine.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/error.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/ffi.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/generate.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/intervene.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/lib.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/live_capture.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/live_spill.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/live_state.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/probe.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/schema.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/spill.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/spill_lease.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/structured.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/text_stream.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/text_stream/tests.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/trace.rs.gz", "tests/live-state/measurements/transport-20261003-173544/source/rebirth/src/rust/rebirth-llm/src/vision.rs.gz", "tests/live-state/measurements/transport-20261003-173544/status.json.gz", "tests/live-state/measurements/transport-20261003-173544/verify-transport.py.gz", "tests/live-state/measurements/transport-20261003-175131/clippy.log.gz", "tests/live-state/measurements/transport-20261003-175131/format-ffi-include.log.gz", "tests/live-state/measurements/transport-20261003-175131/format.log.gz", "tests/live-state/measurements/transport-20261003-175131/live-native.log.gz", "tests/live-state/measurements/transport-20261003-175131/no-spill-check.log.gz", "tests/live-state/measurements/transport-20261003-175131/retention.json", "tests/live-state/measurements/transport-20261003-175131/source-manifest.json.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/async.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/conditions.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/download.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/embed.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/extendr-wrappers.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/generate.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/images.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/intervene.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/live-state.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/llm.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/logits.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/probe-fit.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/probe-methods.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/probe-trace.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/probe.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/stream.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/tokens.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/trace-spill.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/trace.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/R/zzz.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-ffi/src/lib.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/async_job.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/domain.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/embed.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/engine.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/error.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/ffi.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/generate.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/intervene.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/lib.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/live_capture.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/live_spill.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/live_state.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/probe.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/schema.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/spill.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/spill_lease.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/structured.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/text_stream.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/text_stream/tests.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/trace.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/src/rust/rebirth-llm/src/vision.rs.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/tests/testthat/test-llm-live-admission.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/tests/testthat/test-llm-live-helpers.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/tests/testthat/test-llm-live-memory.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/tests/testthat/test-llm-live-model.R.gz", "tests/live-state/measurements/transport-20261003-175131/source/rebirth/tests/testthat/test-llm-live-spill.R.gz", "tests/live-state/measurements/transport-20261003-175131/status.json.gz", "tests/live-state/measurements/transport-20261003-175131/verify-transport.py.gz", "tests/live-state/measurements/transport-resume-20261003-180124/async-boundaries.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/clippy.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/ffi.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/format-ffi-include.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/format.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/live-ack-boundaries.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/live-order-recovery.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/live-publication-signal.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/no-spill-check.log.gz", "tests/live-state/measurements/transport-resume-20261003-180124/source-manifest.json.gz", "tests/live-state/measurements/transport-resume-20261003-180124/source/rebirth/src/rust/rebirth-llm/src/async_job.rs.gz", "tests/live-state/measurements/transport-resume-20261003-180124/status.json.gz", "tests/live-state/measurements/transport-resume-20261003-180124/verification.json", "tests/live-state/measurements/transport-resume-20261003-180124/verify-transport-resume.py.gz", "tests/llm-golden/live-state/README.md", "tests/llm-golden/live-state/f6b/README.md", "tests/llm-golden/live-state/f6b/goldens/activations.csv", "tests/llm-golden/live-state/f6b/goldens/logits.csv", "tests/llm-golden/live-state/f6b/goldens/manifest.json", "tests/llm-golden/live-state/f6b/goldens/states.csv", "tests/llm-golden/live-state/f6b/goldens/top.csv", "tests/llm-golden/live-state/f6b/incremental_reference.py", "tests/llm-golden/live-state/f6b/reference_dynamic_state.py", "tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf", "tests/llm-golden/live-state/goldens/activations.csv", "tests/llm-golden/live-state/goldens/logits.csv", "tests/llm-golden/live-state/goldens/manifest.json", "tests/llm-golden/live-state/goldens/states.csv", "tests/llm-golden/live-state/goldens/top.csv", "tests/llm-golden/live-state/reference_live_state.py", "tests/sanitizers/README.md", "tests/sanitizers/fixtures/cargo-archives/full-build.jsonl", "tests/sanitizers/fixtures/cargo-archives/live-library-build.jsonl", "tests/sanitizers/fixtures/cargo-archives/live-test-build.jsonl", "tests/sanitizers/fixtures/cargo-archives/provenance.json", "tests/sanitizers/run.py", "tests/sanitizers/test_harness.py"], "reason": "Change outside the external documentation allowlist."}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4184039Z ##[group]Run python3 tests/llm-golden/vision/tools/test_reference_manifest.py
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4184899Z ^[[36;1mpython3 tests/llm-golden/vision/tools/test_reference_manifest.py^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4248363Z shell: /usr/bin/bash -e {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4248682Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4248922Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4249195Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4249479Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4249769Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4250089Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.4250398Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.5076556Z test_changed_header_even_with_updated_hash_is_rejected (__main__.ReferenceManifestTests.test_changed_header_even_with_updated_hash_is_rejected) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.5265334Z test_child_failure_cannot_be_success_even_with_a_marker (__main__.ReferenceManifestTests.test_child_failure_cannot_be_success_even_with_a_marker) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.5282267Z test_exact_test_binary_selection_rejects_missing_and_ambiguous_artifacts (__main__.ReferenceManifestTests.test_exact_test_binary_selection_rejects_missing_and_ambiguous_artifacts) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.9139286Z test_full_cli_uses_independent_environment_and_exact_stdin_handoff (__main__.ReferenceManifestTests.test_full_cli_uses_independent_environment_and_exact_stdin_handoff) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.9152267Z test_malformed_nonfinite_and_wrong_count_dumps_are_rejected (__main__.ReferenceManifestTests.test_malformed_nonfinite_and_wrong_count_dumps_are_rejected) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.9452033Z test_matching_manifest_sends_verified_bytes_and_binds_final_receipt (__main__.ReferenceManifestTests.test_matching_manifest_sends_verified_bytes_and_binds_final_receipt) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.9465888Z test_missing_manifest_is_rejected (__main__.ReferenceManifestTests.test_missing_manifest_is_rejected) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.9756726Z test_path_replacement_after_verification_cannot_change_consumed_snapshot (__main__.ReferenceManifestTests.test_path_replacement_after_verification_cannot_change_consumed_snapshot) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:04.9772946Z test_same_path_changed_bytes_are_rejected (__main__.ReferenceManifestTests.test_same_path_changed_bytes_are_rejected) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0125330Z test_skip_or_wrong_digest_marker_cannot_be_numerical_success (__main__.ReferenceManifestTests.test_skip_or_wrong_digest_marker_cannot_be_numerical_success) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0141805Z test_stale_dimensions_are_rejected (__main__.ReferenceManifestTests.test_stale_dimensions_are_rejected) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0196063Z test_stale_input_and_build_identities_are_rejected (__main__.ReferenceManifestTests.test_stale_input_and_build_identities_are_rejected) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0211931Z test_substituted_snapshot_is_rejected_before_child_start (__main__.ReferenceManifestTests.test_substituted_snapshot_is_rejected_before_child_start) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0251591Z test_wrong_run_nonce_source_runner_and_prior_attempt_are_rejected (__main__.ReferenceManifestTests.test_wrong_run_nonce_source_runner_and_prior_attempt_are_rejected) ... ok
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0252812Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0253081Z ----------------------------------------------------------------------
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0253800Z Ran 14 tests in 0.520s
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0254082Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0254265Z OK
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0379949Z ##[group]Run python3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0380842Z ^[[36;1mpython3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0443759Z shell: /usr/bin/bash -e {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0444062Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0444305Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0444574Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0445194Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0445502Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0445825Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:05.0446144Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:09.9906315Z GRAPH_SIZE_LAYOUT_PASSED cases=68 source=0a4c36c14a1ba15559d6a21f570bfabb478eb05058c45c97a84ce7108f3c6841
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0063704Z ##[group]Run actions/upload-artifact@v7
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0064036Z with:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0064258Z   name: graph-size-linux-37149081409-1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0064583Z   path: /home/runner/work/_temp/graph-size-layout
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0065201Z   if-no-files-found: warn
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0065446Z   compression-level: 6
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0065664Z   overwrite: false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0065880Z   include-hidden-files: false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0066113Z   archive: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0066310Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0066501Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0066715Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0066944Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0067178Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0067449Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.0067954Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.1557803Z With the provided path, there will be 15 files uploaded
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.1558917Z Artifact name is valid!
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.1559479Z Root directory input is valid!
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.3559133Z Uploading artifact: graph-size-linux-37149081409-1.zip
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.3633252Z Beginning upload of artifact content to blob storage
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.5296650Z Uploaded bytes 591982
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.5457475Z Finished uploading artifact content to blob storage!
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.5458605Z SHA256 digest of uploaded artifact is b24f3317ec6d59b46731e99909159fe0b304fe45d09b3e416fa4d76c55624df5
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.5459661Z Finalizing artifact upload
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.7751314Z Artifact graph-size-linux-37149081409-1 successfully finalized. Artifact ID 11282169123
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.7753021Z Artifact graph-size-linux-37149081409-1 has been successfully uploaded! Final size is 591982 bytes. Artifact ID is 11282169123
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.7757252Z Artifact download URL: https://github.com/Vadale/R-ebirth/actions/runs/37149081409/artifacts/11282169123
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8023192Z ##[group]Run dtolnay/rust-toolchain@stable
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8023546Z with:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8023757Z   components: rustfmt, clippy
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8024238Z   toolchain: stable
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8024444Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8024628Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8024847Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8025350Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8025605Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8025877Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8026134Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8090122Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8116441Z ##[group]Run if [[ -z $toolchain ]]; then
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8116786Z ^[[36;1mif [[ -z $toolchain ]]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8117301Z ^[[36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8117896Z ^[[36;1m  echo "'toolchain' is a required input" >&2^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8118201Z ^[[36;1m  exit 1^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8118546Z ^[[36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8118986Z ^[[36;1m  if [[ Linux == macOS ]]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8119519Z ^[[36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8120032Z ^[[36;1m  else^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8120433Z ^[[36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8120913Z ^[[36;1m  fi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8121224Z ^[[36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8121771Z ^[[36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8122273Z ^[[36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8122806Z ^[[36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8123312Z ^[[36;1melse^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8123564Z ^[[36;1m  echo "toolchain=$toolchain" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8123871Z ^[[36;1mfi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8190461Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8190811Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8191006Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8191235Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8191480Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8191722Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8191998Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8192260Z   toolchain: stable
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8192475Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8286874Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=19]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8297134Z ##[start-action display=Construct rustup command line;id=__dtolnay_rust-toolchain.flags]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8317654Z ##[group]Run echo "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8318323Z ^[[36;1mecho "targets=$(for t in ${targets//,/ }; do echo -n ' --target' $t; done)" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8318963Z ^[[36;1mecho "components=$(for c in ${components//,/ }; do echo -n ' --component' $c; done)" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8319454Z ^[[36;1mecho "downgrade=" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8377959Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8378310Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8378503Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8378732Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8378976Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8379232Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8379519Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8379969Z   targets: 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8380187Z   components: rustfmt, clippy
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8380430Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8476773Z ##[end-action id=__dtolnay_rust-toolchain.flags;outcome=success;conclusion=success;duration_ms=17]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8478867Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8497500Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8497988Z ^[[36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8562629Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8563027Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8563220Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8563469Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8563759Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8564003Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8564287Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8564556Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8652592Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=17]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8655012Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8673129Z ##[group]Run if ! command -v rustup &>/dev/null; then
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8673571Z ^[[36;1mif ! command -v rustup &>/dev/null; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8674328Z ^[[36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8675384Z ^[[36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8675677Z ^[[36;1mfi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8735718Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8736058Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8736252Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8736497Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8736738Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8736998Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8737273Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8737544Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8737790Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8824462Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=16]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8826896Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8833001Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8844010Z ##[start-action display=rustup toolchain install stable;id=__dtolnay_rust-toolchain.__run_4]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8862870Z ##[group]Run log=$(mktemp)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8863215Z ^[[36;1mlog=$(mktemp)^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8863550Z ^[[36;1mtrap 'rm -f "$log"' EXIT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8864077Z ^[[36;1mfor attempt in 1 2 3 4 5; do^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8865354Z ^[[36;1m  if rustup toolchain install stable --component rustfmt --component clippy --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8866162Z ^[[36;1m    break^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8866562Z ^[[36;1m  else^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8866859Z ^[[36;1m    status=$?^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8867155Z ^[[36;1m  fi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8867639Z ^[[36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8868327Z ^[[36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8868922Z ^[[36;1m    exit "$status"^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8869241Z ^[[36;1m  fi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8869755Z ^[[36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8870320Z ^[[36;1m  sleep 30^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8870633Z ^[[36;1mdone^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8931401Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8932141Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8932449Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8932753Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8933162Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8933500Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8933976Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8934352Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8951211Z   RUSTUP_PERMIT_COPY_RENAME: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:10.8951540Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.6631766Z info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.9410901Z info: latest update on 2026-10-01 for version 1.99.0 (b940084d7 2026-09-28)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.9539817Z info: removing previous version of component rustfmt
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.9592895Z info: removing previous version of component clippy
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.9604641Z info: removing previous version of component cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.9695544Z info: removing previous version of component rust-std
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.9783130Z info: removing previous version of component rustc
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:11.9901769Z info: downloading 5 components
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1398268Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1467830Z   stable-x86_64-unknown-linux-gnu updated - rustc 1.99.0 (b940084d7 2026-09-28) (from rustc 1.98.1 (48a229cea 2026-09-01))
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1468545Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1537914Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=9269]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1544380Z ##[start-action display=rustup default stable;id=__dtolnay_rust-toolchain.__run_5]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1563407Z ##[group]Run rustup default stable --force-non-host
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1563795Z ^[[36;1mrustup default stable --force-non-host^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1625859Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1626194Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1626383Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1626625Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1626867Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1627103Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1627371Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1627647Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1627888Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1747413Z info: using existing install for stable-x86_64-unknown-linux-gnu
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1755069Z info: default toolchain set to stable-x86_64-unknown-linux-gnu
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1755608Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1819454Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0 (b940084d7 2026-09-28)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1820035Z 
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1820896Z info: note that the toolchain 'stable-x86_64-unknown-linux-gnu' is currently in use (overridden by '/home/runner/work/R-ebirth/R-ebirth/rust-toolchain.toml')
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1836739Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=29]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1839323Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1858038Z ##[group]Run DATE=$(rustc +stable --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1858874Z ^[[36;1mDATE=$(rustc +stable --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1859514Z ^[[36;1mHASH=$(rustc +stable --version --verbose | sed -ne 's/^commit-hash: //p')^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1860019Z ^[[36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1921123Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1921465Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1921657Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1921881Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1922126Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1922368Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1922646Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1923091Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.1923341Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2249845Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=40]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2252337Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2270020Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2270413Z ^[[36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2270749Z ^[[36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2271029Z ^[[36;1mfi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2333840Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2334188Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2334386Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2334610Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2335170Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2335434Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2335719Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2335996Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2336241Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2418407Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=16]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2420511Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2436728Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2437106Z ^[[36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2437452Z ^[[36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2437746Z ^[[36;1mfi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2493259Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2493600Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2493798Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2494031Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2494284Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2494527Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2495151Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2495518Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2495770Z   CARGO_INCREMENTAL: 0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2495980Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2576835Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=15]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2579116Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2597246Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2597760Z ^[[36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2598475Z ^[[36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2599204Z ^[[36;1m  if rustc +stable --version --verbose | grep -q '^release: 1\.6[89]\.'; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2599936Z ^[[36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2600503Z ^[[36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2601010Z ^[[36;1m  elif rustc +stable --version --verbose | grep -q '^release: 1\.6[67]\.'; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2601581Z ^[[36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2602108Z ^[[36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2602457Z ^[[36;1m  fi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2602650Z ^[[36;1mfi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2659152Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2659490Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2659679Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2659899Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2660130Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2660375Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2660816Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2661088Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2661333Z   CARGO_INCREMENTAL: 0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2661550Z   CARGO_TERM_COLOR: always
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2661778Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2963518Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=38]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2966699Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2986244Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2987010Z ^[[36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2987639Z ^[[36;1mif rustc +stable --version --verbose | grep -q '^release: 1\.7[01]\.'; then^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2988128Z ^[[36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.2988443Z ^[[36;1mfi^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3051307Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3051652Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3051855Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3052075Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3052304Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3052538Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3052810Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3053074Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3053317Z   CARGO_INCREMENTAL: 0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3053528Z   CARGO_TERM_COLOR: always
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3053752Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3246477Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=27]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3250243Z ##[start-action display=rustc +stable --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3268528Z ##[group]Run rustc +stable --version --verbose
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3268894Z ^[[36;1mrustc +stable --version --verbose^[[0m
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3330798Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3331146Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3331340Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3331574Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3331810Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3332052Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3332327Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3332595Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3332847Z   CARGO_INCREMENTAL: 0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3333061Z   CARGO_TERM_COLOR: always
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3333280Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3509403Z rustc 1.99.0 (b940084d7 2026-09-28)
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3510158Z binary: rustc
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3510699Z commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3511084Z commit-date: 2026-09-28
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3511963Z host: x86_64-unknown-linux-gnu
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3512457Z release: 1.99.0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3512880Z LLVM version: 23.1.1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3528731Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=27]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3616095Z ##[group]Run mozilla-actions/sccache-action@v0.0.10
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3616442Z with:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3618913Z   token: ***
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3619139Z   disable_annotations: false
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3619378Z env:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3619569Z   RUST_TEST_THREADS: 1
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3619790Z   SCCACHE_GHA_ENABLED: true
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3620030Z   RUSTC_WRAPPER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3620273Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3620573Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3620844Z   CARGO_HOME: /home/runner/.cargo
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3621098Z   CARGO_INCREMENTAL: 0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3621316Z   CARGO_TERM_COLOR: always
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.3621538Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.6507208Z try to setup sccache version: v0.18.0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.6521440Z sccache download from url: https://github.com/mozilla/sccache/releases/download/v0.18.0/sccache-v0.18.0-x86_64-unknown-linux-musl.tar.gz
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.8264086Z Unexpected HTTP response: 500
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:20.8265008Z Waiting 20 seconds before trying again
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:40.8615637Z Unexpected HTTP response: 500
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:40.8616146Z Waiting 11 seconds before trying again
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:51.8900767Z ##[error]Error: Unexpected HTTP response: 500
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:51.8909746Z ##[error]Unexpected HTTP response: 500
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:51.9128988Z Post job cleanup.
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:51.9980041Z ##[group]Get human-readable stats
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.0035020Z ##[endgroup]
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.0038919Z ##[error]Error: Unable to locate executable file: undefined. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also check the file mode to verify the file is executable.
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.0045902Z ##[error]Unable to locate executable file: undefined. Please verify either the file path exists or the file can be found within a directory specified by the PATH environment variable. Also check the file mode to verify the file is executable.
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.0187648Z Post job cleanup.
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1156213Z [command]/usr/bin/git version
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1202706Z git version 2.55.0
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1242436Z Temporarily overriding HOME='/home/runner/work/_temp/11f8675b-4e7b-4141-a853-ea48d0a5e792' before making global git config changes
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1243971Z Adding repository directory to the temporary git global config as a safe directory
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1248346Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/R-ebirth/R-ebirth
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1284338Z Removing SSH command configuration
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1292120Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1331646Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1591320Z Removing HTTP extra header
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1598480Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1635554Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1892372Z Removing includeIf entries pointing to credentials config files
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1907326Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1941039Z includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1942033Z includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1943350Z includeif.gitdir:/github/workspace/.git.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1944285Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1951923Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1981418Z /home/runner/work/_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.1992819Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-aef9308a\-50bd\-4084\-afed\-cb9f7c6918aa\.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2041686Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2080760Z /home/runner/work/_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2092447Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-aef9308a\-50bd\-4084\-afed\-cb9f7c6918aa\.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2136330Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2162873Z /github/runner_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2170423Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-aef9308a\-50bd\-4084\-afed\-cb9f7c6918aa\.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2206186Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2233557Z /github/runner_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2239934Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-aef9308a\-50bd\-4084\-afed\-cb9f7c6918aa\.config
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2277916Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2503980Z Removing credentials config '/home/runner/work/_temp/git-credentials-aef9308a-50bd-4084-afed-cb9f7c6918aa.config'
+cargo fmt / clippy / test	UNKNOWN STEP	2026-10-03T19:46:52.2649381Z Cleaning up orphan processes
