@@ -63,6 +63,24 @@ dependency choices retain their existing approval gates.
 
 ---
 
+### 0.2 Visual analysis and directional steering sequence (D-042)
+
+After completed F6a/F6b, deliver F6c reusable graphics/intervention comparisons,
+then F6d construction/storage/held-out evaluation of steering directions, then
+F6e projection steering. These extend roadmap Phase 6 and precede Phase 7;
+later phase numbers and the v1.0 boundary remain unchanged. The founder approved
+this scope and ordering on 2026-10-04. Detailed plan:
+`docs/phase6-visual-steering-plan.md`.
+
+Direction building first uses the existing additive residual intervention.
+Projection editing is a distinct native operation, with exact tensor semantics,
+independent goldens and its own concrete contract before implementation. This
+amendment does not approve new public signatures, dependencies or vendor edits.
+Phase 8 remains hardware-deferred and Phase 9 remains the CRAN/docs/API-freeze
+stage. The existing service and graphical demos do not complete these new steps.
+
+---
+
 ## 1. R version support (replaces v0.1 "fork base")
 
 **Decision: develop and test primarily on R 4.6.1 "Happy Hop" (2026-06-24); declare `Depends: R (>= 4.5.0)`.**

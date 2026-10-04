@@ -1287,6 +1287,42 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-042 — Visual analysis and directional steering roadmap insertion
+
+- **Date/status:** 2026-10-04. APPROVED for scope and sequencing. After reporting
+  PR59 merged, the founder explicitly requested adding the discussed graphics,
+  direction-building and projection-steering work to the roadmap and locating
+  it among the remaining phases. This is planning authorization; implementation
+  and its concrete API/dependency/vendor choices are not approved by implication.
+- **Decision:** extend Phase 6 after completed F6a/F6b with **F6c reusable
+  graphics and intervention comparisons → F6d direction construction, storage
+  and held-out evaluation → F6e native projection steering**, all before Phase 7.
+  Preserve existing later phase numbers and their hardware/team boundaries.
+- **Deliverables:** block-level architecture/intervention map, paired
+  baseline/intervention/difference views and applied-coefficient timeline;
+  model-bound direction artifacts with reproducible construction and evaluation;
+  a separate projection operator with independently verified numerical semantics.
+  See `docs/phase6-visual-steering-plan.md` for scope and acceptance planning.
+- **Why:** existing plotting and vector analysis are concentrated in demos.
+  F6a/F6b now provide the observation and applied-intervention metadata needed
+  to expose them coherently to researchers. Contrast-derived directions first
+  reuse the existing additive mechanism; projection editing is a separate step.
+- **Semantic boundary:** relm currently adds `alpha * v` to the residual stream.
+  The DwarfStar reference modifies `h` by `-alpha * v * dot(v, h)` at FFN or
+  attention output. These are different operations and locations. Same-width
+  vector files are not automatically compatible, and live R replies cannot
+  retroactively edit the state that invoked them.
+- **Limits:** API-GRAMMAR, dependency and vendor-patch decisions remain concrete
+  implementation gates. No new export, dependency, backend, model download,
+  patch, numerical tolerance or completed acceptance is created here. Preserve
+  bounded capture/spill and causal-position semantics. No inferred causal
+  network edges, universal behavioral-control claim or safety guarantee.
+- **Alternatives rejected:** renumbering all later phases; hiding projection
+  semantics behind the existing additive coefficient; one inseparable graphics
+  and native-engine milestone; treating demo plots as a complete public UI.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

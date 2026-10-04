@@ -2,8 +2,12 @@
 
 Updated: 2026-10-04. Status: **F6a APPROVED under D-041 and accepted at6877c4d.
 F6b operational acceptance is complete: native, installed R, public updates,
-remote checks at490c7f4 and actual foreground RStudio steering. Final
-PR-head CI and PR59 integration remain separate.** The founder replied "ok. continua con F6a e F6b" to the
+remote checks at490c7f4 and actual foreground RStudio steering. All nine final
+checks passed atf37da77; PR59 is merged atcf4df63 with an identical tree and both
+post-merge workflows successful. F6a/F6b are complete.** D-042 schedules the
+next F6c/F6d/F6e increments before Phase 7 in
+`docs/phase6-visual-steering-plan.md`; they do not change this accepted contract.
+The founder replied "ok. continua con F6a e F6b" to the
 concrete proposal. F6a's contract below is now binding in API-GRAMMAR section11.
 Continuation into F6b is authorized; section6 finalizes its reply/audit protocol
 before that increment's implementation. No dependency or acceptance result is
