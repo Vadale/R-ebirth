@@ -1,0 +1,92 @@
+diff --git a/rebirth/src/rust/rebirth-llm/src/async_job.rs b/rebirth/src/rust/rebirth-llm/src/async_job.rs
+index 5dbbaf0..3720a4a 100644
+--- a/rebirth/src/rust/rebirth-llm/src/async_job.rs
++++ b/rebirth/src/rust/rebirth-llm/src/async_job.rs
+@@ -1527,6 +1527,62 @@ mod tests {
+             assert_eq!(empty, batch == 3);
+         }
+     }
++    // Match the public polling contract: None means mutex contention, not an
++    // empty queue. The caller shares this deadline with the producer watchdog.
++    fn drain_stream_before(
++        job: &AsyncJob,
++        deadline: Instant,
++        mut on_contention: impl FnMut(),
++    ) -> (Vec<StreamEvent>, bool) {
++        loop {
++            assert!(Instant::now() < deadline, "stream drain before deadline");
++            if let Some(batch) = job.drain_stream() {
++                return batch;
++            }
++            on_contention();
++            thread::yield_now();
++        }
++    }
++    // Rust PR CI (default and no-spill). Force contention rather than relying
++    // on the scheduler to expose the observer-before-unlock interval.
++    #[test]
++    fn stream_full_queue_drain_observes_nonblocking_contention() {
++        use std::sync::mpsc;
++        let control = stream_control();
++        enqueue_token(&control).unwrap();
++        let job = control_job(control.clone());
++        let held = control.lock();
++        let deadline = Instant::now() + Duration::from_secs(2);
++        let (contended, observed) = mpsc::channel();
++        let (done, finished) = mpsc::channel();
++        thread::scope(|scope| {
++            scope.spawn(|| {
++                let mut first_contention = Some(contended);
++                let batch = drain_stream_before(&job, deadline, || {
++                    if let Some(sender) = first_contention.take() {
++                        sender.send(()).unwrap();
++                    }
++                });
++                done.send(batch).unwrap();
++            });
++            observed
++                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
++                .expect("consumer observed the held predicate mutex");
++            assert!(matches!(
++                finished.try_recv(),
++                Err(mpsc::TryRecvError::Empty)
++            ));
++            assert_eq!(held.stream.as_ref().unwrap().rows.len(), 1);
++            drop(held);
++            let (rows, empty) = finished
++                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
++                .expect("consumer drains after predicate mutex release");
++            assert_eq!(rows.len(), 1);
++            assert_eq!(rows[0].event_id, 1);
++            assert!(empty);
++        });
++        assert!(job.stream_empty());
++    }
+     // Rust PR CI. Observer is triggered under the predicate mutex immediately
+     // before Condvar::wait; cancel/close/shutdown can never slip past that lock.
+     #[test]
+@@ -1564,17 +1620,22 @@ mod tests {
+                     .recv_timeout(Duration::from_secs(2))
+                     .expect("producer waits at limit");
+                 let job = control_job(control);
++                let deadline = Instant::now() + Duration::from_secs(2);
+                 match mode {
+                     0 => {
+                         assert!(job.cancel());
+                     }
+                     1 => job.discard_stream(),
+                     _ => {
+-                        job.drain_stream().unwrap();
++                        // The observer may arrive before Condvar::wait releases
++                        // the predicate mutex. A bounded retry is part of this
++                        // nonblocking drain's contract, not a producer failure.
++                        let (rows, _) = drain_stream_before(&job, deadline, || {});
++                        assert!(!rows.is_empty());
+                     }
+                 }
+                 let result = finished
+-                    .recv_timeout(Duration::from_secs(2))
++                    .recv_timeout(deadline.saturating_duration_since(Instant::now()))
+                     .expect("producer wakes");
+                 assert_eq!(result.is_ok(), mode == 2);
+                 producer.join().unwrap();

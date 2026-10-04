@@ -324,7 +324,7 @@ F6a acceptance passed at6877c4d, including all nine ordinary checks and the
 independently verified scoped Linux sanitizer. F6b operational acceptance includes
 focused native/installed-R/public-update evidence, all nine ordinary checks and
 scoped sanitizer at490c7f4, and actual foreground steering on2026-10-04. Final
-documentation-head CI and PR59 integration remain separate. Approval itself is
+PR-head CI and PR59 integration remain separate. Approval itself is
 not a numerical result.
 
 A non-NULL on_state function requires async mode, one text prompt, no schema or

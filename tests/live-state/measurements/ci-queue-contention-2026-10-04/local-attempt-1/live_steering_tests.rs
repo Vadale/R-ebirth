@@ -174,13 +174,11 @@ fn f6b_history_preserving_updates_match_independent_goldens() {
                     coef: [1.0, 0.0, -1.0, 1.0, 1.0][id - 1]
                 }]
             );
-            #[cfg(feature = "spill")]
             let rows = match &state.trace {
                 crate::LiveTrace::Memory(rows) => rows,
+                #[cfg(feature = "spill")]
                 crate::LiveTrace::Spilled(_) => panic!("memory fixture"),
             };
-            #[cfg(not(feature = "spill"))]
-            let crate::LiveTrace::Memory(rows) = &state.trace;
             assert_eq!(rows.len(), 9);
             for row in rows {
                 assert_eq!(row.token_pos, state.source_pos);

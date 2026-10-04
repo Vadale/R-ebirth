@@ -1,13 +1,13 @@
 # Phase 6 implementation and validation
 
 Status: operational acceptance complete, 2026-10-04. F6a and F6b are authorized
-under D-041; final documentation-head CI and PR59 integration remain separate.
+under D-041; final PR-head CI and PR59 integration remain separate.
 F6a acceptance is complete at6877c4d: local functional/resource/foreground gates,
 all nine ordinary checks and independently verified scoped Linux sanitizer.
 F6b native/installed-R/public-update and foreground RStudio gates pass. All nine
 ordinary checks and independently verified scoped Linux sanitizer passed at
 `490c7f4`; the foreground run used that candidate's verified installed runtime.
-Final evidence/documentation changes do not relabel those executed sources. The binding
+Later evidence/documentation and test-only corrections do not relabel those executed sources. The binding
 contract is `phase6-live-introspection-plan.md`; F6b coefficient replies and
 audit fields are finalized there before implementation. No new dependency,
 vendor modification, model download or numerical tolerance is introduced.
@@ -567,6 +567,49 @@ workspace/session backups remain local and are excluded from committed evidence.
 Scripts, operational receipts and independent verification are in
 `measurements/rstudio-steering-2026-10-04`. The earlier locked-Mac observation
 remains historical; no UI input is pending. This completes F6b operational
-acceptance, with final documentation-head CI and PR59 integration still required.
+acceptance, with final PR-head CI and PR59 integration still required.
 The deliverable is research instrumentation, not validated detection reliability
 or a safety guarantee.
+
+## Final-head CI: nonblocking drain fixture correction
+
+The documentation/evidence head `3635292` left runtime code unchanged. Its
+Rust run37187396532 passed four jobs and the engine job's format/clippy, default
+tests and optimized async steps, then failed the no-spill unit-test step:
+135passed, one failed and one ignored. The failure was
+`stream_full_queue_cancel_discard_and_drain_wake_producer`, unwrapping `None`
+from `drain_stream()` at the former async_job.rs line1573. This is a different
+failure from the earlier cache-download HTTP500.
+
+The fixture's channel observer is sent while the producer still holds the
+predicate mutex, immediately before `Condvar::wait` releases it. Receiving that
+signal does not establish mutex release. The documented nonblocking drain can
+return `None` for contention; the test's drain branch unwrapped it, whereas its
+cancel/discard branches acquire the mutex. The correction is confined to
+`cfg(test)`: honor the nonblocking result and share the existing two-second
+watchdog between drain acquisition and the producer's completion. No deadline
+is increased; row/byte capacity and cancellation/discard/wakeup assertions remain.
+A deterministic held-lock regression verifies that contention leaves the queued
+row intact and that the consumer drains it after release. No particular OS
+scheduling cause is inferred. Product runtime, installed binary, numerical
+inputs and accepted sanitizer/foreground evidence are unchanged.
+
+The first affected-only local attempt passed formatting and default clippy,
+then the additional no-spill clippy gate found an existing test-only match
+with one infallible variant. It stopped before executing any tests. That
+fixture now uses the same exhaustive match with spill enabled and an
+irrefutable `let` binding without spill; the selected rows and all assertions
+are unchanged. The diagnostic is not suppressed. Both the remote failure and
+this failed local attempt retain their source/logs in
+`measurements/ci-queue-contention-2026-10-04`.
+
+Corrected affected-only verification passed formatting, clippy with default and
+no-spill features, and both selected tests in default-debug, no-spill-debug and
+default-release: six positive outcomes, zero failures, ignored tests or warnings.
+Independent receipt checks verified each exact test name/count, both frozen
+source hashes and unchanged production bytes outside the test module. Logs,
+source and verification are retained under `local-corrected` and
+`verification.json` in the same evidence directory. Original failed attempts
+remain failed. Final PR-head ordinary CI remains required. No accepted model,
+installed-R, foreground, sanitizer or numerical suite was repeated for these
+fixture changes.

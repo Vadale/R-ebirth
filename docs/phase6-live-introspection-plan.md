@@ -3,7 +3,7 @@
 Updated: 2026-10-04. Status: **F6a APPROVED under D-041 and accepted at6877c4d.
 F6b operational acceptance is complete: native, installed R, public updates,
 remote checks at490c7f4 and actual foreground RStudio steering. Final
-documentation-head CI and PR59 integration remain separate.** The founder replied "ok. continua con F6a e F6b" to the
+PR-head CI and PR59 integration remain separate.** The founder replied "ok. continua con F6a e F6b" to the
 concrete proposal. F6a's contract below is now binding in API-GRAMMAR section11.
 Continuation into F6b is authorized; section6 finalizes its reply/audit protocol
 before that increment's implementation. No dependency or acceptance result is
