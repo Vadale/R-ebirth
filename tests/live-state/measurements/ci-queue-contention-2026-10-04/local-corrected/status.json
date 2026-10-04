@@ -1,0 +1,131 @@
+{
+  "status": "passed",
+  "pid": 42313,
+  "directory": "/private/tmp/relm-f6b/queue-wakeup-20261004-102644",
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791102404.959079,
+      "pid": 42315,
+      "exit_code": 0,
+      "finished_at": 1791102405.091917
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791102405.0923378,
+      "pid": 42318,
+      "exit_code": 0,
+      "finished_at": 1791102406.0966988
+    },
+    {
+      "name": "clippy-no-spill",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791102406.097118,
+      "pid": 42321,
+      "exit_code": 0,
+      "finished_at": 1791102406.9973319
+    },
+    {
+      "name": "default-debug",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "stream_full_queue"
+      ],
+      "status": "passed",
+      "started_at": 1791102406.997686,
+      "pid": 42328,
+      "exit_code": 0,
+      "finished_at": 1791102453.307528,
+      "verified_positive_test_count": 2
+    },
+    {
+      "name": "no-spill-debug",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "--no-default-features",
+        "stream_full_queue"
+      ],
+      "status": "passed",
+      "started_at": 1791102453.310154,
+      "pid": 45311,
+      "exit_code": 0,
+      "finished_at": 1791102497.8962638,
+      "verified_positive_test_count": 2
+    },
+    {
+      "name": "default-release",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "--release",
+        "stream_full_queue"
+      ],
+      "status": "passed",
+      "started_at": 1791102497.897061,
+      "pid": 48227,
+      "exit_code": 0,
+      "finished_at": 1791102569.79966,
+      "verified_positive_test_count": 2
+    }
+  ],
+  "started_at": 1791102404.9452329,
+  "source_sha256": {
+    "rebirth/src/rust/rebirth-llm/src/async_job.rs": "ad86cbe4da35024f1431c79f189df596ec27a5a67f7731eb342584d860e18c50",
+    "rebirth/src/rust/rebirth-llm/src/live_steering_tests.rs": "b9a7a07fa5cd08b10f68a4904d8c99797e50bc2595f78f735735ff78b81858b1"
+  },
+  "parent_failed_run": "queue-wakeup-20261004-101938",
+  "stage": "default-release",
+  "source_drift": false,
+  "verified_outcomes": 6,
+  "finished_at": 1791102569.8005388
+}

@@ -1,0 +1,214 @@
+{
+  "status": "passed",
+  "pid": 15003,
+  "directory": "/private/tmp/relm-f6b/native-20261003-212204",
+  "started_at": 1791055324.084566,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791055324.2018318,
+      "pid": 15009,
+      "exit_code": 0,
+      "finished_at": 1791055324.339871
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791055324.340328,
+      "pid": 15012,
+      "exit_code": 0,
+      "finished_at": 1791055324.7861261
+    },
+    {
+      "name": "no-spill-check",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--lib"
+      ],
+      "status": "passed",
+      "started_at": 1791055324.786536,
+      "pid": 15025,
+      "exit_code": 0,
+      "finished_at": 1791055325.176671
+    },
+    {
+      "name": "f6b-native",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "f6b_",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791055325.177184,
+      "pid": 15031,
+      "exit_code": 0,
+      "finished_at": 1791055327.8216488
+    },
+    {
+      "name": "live-ack-boundaries",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "async_job::tests::live_state_",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791055327.822297,
+      "pid": 15094,
+      "exit_code": 0,
+      "finished_at": 1791055327.907857
+    },
+    {
+      "name": "probe-cache",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "probe::tests::probe_cache_reports_only_unproven_layers_and_records_passes",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791055327.908302,
+      "pid": 15096,
+      "exit_code": 0,
+      "finished_at": 1791055327.956936
+    },
+    {
+      "name": "control-allocation",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "async_job::tests::live_control_allocations_cover_memory_and_spill_cancellation",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791055327.9572952,
+      "pid": 15098,
+      "exit_code": 0,
+      "finished_at": 1791055328.006031
+    },
+    {
+      "name": "startup-ownership",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "async_job::tests::async_start_failure_returns_reservation",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791055328.0064042,
+      "pid": 15100,
+      "exit_code": 0,
+      "finished_at": 1791055328.055187
+    },
+    {
+      "name": "existing-intervention-oracle",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--test",
+        "synthetic_intervene",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791055328.055551,
+      "pid": 15102,
+      "exit_code": 0,
+      "finished_at": 1791055329.833846
+    },
+    {
+      "name": "ffi",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791055329.834412,
+      "pid": 15117,
+      "exit_code": 0,
+      "finished_at": 1791055375.041064
+    }
+  ],
+  "source_manifest_sha256": "ad5e2a1b81e4f4adc62c1a78b01c68f7d49e1de2b61690014dcce258acdb9d47",
+  "stage": "ffi",
+  "source_drift": [],
+  "finished_at": 1791055375.108896
+}

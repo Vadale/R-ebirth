@@ -88,8 +88,9 @@ internal activations selected by the filters, returning a long-format
 \code{llm_trace()} is the anatomy lab's core tool: it observes the residual stream
 and the attention/MLP sub-layer outputs as the model processes text, so those
 activations can be analysed with ordinary R (PCA, per-layer probes, and so on).
-The tap adds no overhead to normal generation — it runs on a dedicated, transient
-context created only for the trace.
+Prompt tracing runs on a dedicated transient context. Live generation uses
+a separate dormant dispatcher on the generation context; selected live taps
+activate only when \code{llm_generate(on_state = ...)} is requested.
 
 The captured columns are exactly (in order): \code{prompt_id} (1-based index into
 \code{prompts}), \code{token_pos} (1-based position within that prompt), \code{token} (the token

@@ -1,0 +1,74 @@
+{
+  "candidate.patch": {
+    "bytes": 120162,
+    "sha256": "095efa88efe4b68afcbc0e4b92dfbe225d308afc6bf7b18e7664402f372a4d09"
+  },
+  "changed-source.tar.gz": {
+    "bytes": 118767,
+    "sha256": "e21073315fe7e729652255faf093252d9d4e9b450ab5729788d36ff910a24afe"
+  },
+  "clippy.log": {
+    "bytes": 282,
+    "sha256": "9a96ed213645de44e92dbfe7dea4376ef0c07dec9d7f056ee706af53baf1153a"
+  },
+  "control-allocation.log": {
+    "bytes": 361,
+    "sha256": "51ca3174b8fc5c57e4cccf428491fe889bcec82cff56001bc7be1431197b92de"
+  },
+  "existing-intervention-oracle.log": {
+    "bytes": 617,
+    "sha256": "cc0dafbe49dc23bdc598c7b2e8ebae801e0b8dba9614a5b4bac60efe2044d858"
+  },
+  "f6b-native.log": {
+    "bytes": 1359,
+    "sha256": "cc3450656b0f25ee65acb21874bfbc7ccde1bac50422bf672d132fbba9cef4f9"
+  },
+  "ffi.log": {
+    "bytes": 1327,
+    "sha256": "cf32b714c47d1372b38263010f2398024e649070758c9954692dde1a32c4a5f5"
+  },
+  "format.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "independent-verification.json": {
+    "bytes": 1286,
+    "sha256": "838961cc944e5a9397af642944364693c3cc15b5c7480990a2e829d9d24b40d4"
+  },
+  "live-ack-boundaries.log": {
+    "bytes": 436,
+    "sha256": "43b27d47c3fa22b5a98f5e016a9712b66561fd41c215fa0a5ca08f9ab5e16099"
+  },
+  "native-selection.json": {
+    "bytes": 2177,
+    "sha256": "b600db61b509e91200f3964d67df3eefdcf997a8a29f8134972835237ccd6862"
+  },
+  "no-spill-check.log": {
+    "bytes": 177,
+    "sha256": "18da9f8a117b31638fc22b46892d0afa27c3ab718fe516b18788f097e5820d65"
+  },
+  "probe-cache.log": {
+    "bytes": 356,
+    "sha256": "623736ab2dc62952d03fd7af8ac86a21b493f91c6cb646c1a5c36238bf979ef0"
+  },
+  "scope.md": {
+    "bytes": 1311,
+    "sha256": "de1247b4653e6c03d6f8ceab70e7b0754be54867806fbab4ec48a85fb18f640b"
+  },
+  "source-manifest.json": {
+    "bytes": 81000,
+    "sha256": "ad5e2a1b81e4f4adc62c1a78b01c68f7d49e1de2b61690014dcce258acdb9d47"
+  },
+  "startup-ownership.log": {
+    "bytes": 340,
+    "sha256": "d02e973b8478f998cc024445c92456a643e59eefb8d185b70fecdd3ee20ec7b1"
+  },
+  "status.json": {
+    "bytes": 4677,
+    "sha256": "35e364ff5ad5fc4742d83dc1fcf29c988bad1ae833e46c00a026600aa6e96844"
+  },
+  "verify-native.py": {
+    "bytes": 5360,
+    "sha256": "76282eaa892daa87721d482a3043da096f4e0a3eb5cc35f4c81557bae1d7962e"
+  }
+}

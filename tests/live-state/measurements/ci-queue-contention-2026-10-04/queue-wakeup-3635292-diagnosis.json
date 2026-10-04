@@ -1,0 +1,13 @@
+{
+  "source_head": "363529252e7d7b9d9e9cf1af39c2f1c77a9355ad",
+  "run": 37187396532,
+  "job": 111392157544,
+  "failed_step": "cargo test (R-free engine crate, no-spill config)",
+  "failed_test": "async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer",
+  "location": "async_job.rs:1573:44",
+  "observed": "Option::unwrap on None from nonblocking drain_stream; no-spill libtest had 135 passed, 1 failed, 1 ignored. Default and optimized preceding tests passed.",
+  "source_cause": "The test observer is sent under the state mutex immediately before Condvar::wait releases it. Receiving the observer does not establish mutex release. drain_stream uses try_lock and explicitly returns None on contention. The drain branch alone unwrapped this legal result; cancel/discard acquire the mutex themselves. No OS-specific scheduling cause is claimed.",
+  "correction": "cfg(test)-only bounded drain honors None with yield_now; shares the existing 2-second deadline with producer wake receipt, no longer timeout. Original row/byte capacity and cancel/discard/drain cases remain. A deterministic held-lock regression proves contention leaves the row intact and drains it after release.",
+  "scope": "No runtime, vendor, API, dependency, numeric, allocation limit or installed package change. Existing sanitizer/UI/model acceptance retains parent source; no rerun.",
+  "remaining": "Targeted local fmt/clippy and two exact tests under default-debug, no-spill-debug and default-release, then coherent test correction push and all9CI."
+}

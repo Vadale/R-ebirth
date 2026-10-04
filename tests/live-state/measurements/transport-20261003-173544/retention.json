@@ -1,0 +1,206 @@
+{
+  "result": "failed",
+  "scope": "format passed; clippy rejected two large enum variants before native/FFI tests",
+  "files": {
+    "status.json": {
+      "sha256": "b3730f2ec92c7ca4eff7d051d4b1f577ecdc8c194974d8d399199b19d986a42d",
+      "bytes": 2014
+    },
+    "source-manifest.json": {
+      "sha256": "bf970a6de4cf2e609834597a6b4485a433e67c12c80d3ba942b29587f9edd01e",
+      "bytes": 79496
+    },
+    "verify-transport.py": {
+      "sha256": "8db41f322edfcb14c25a7fb195581eb55d2dfc65fbcacb11463f5d765b580fa6",
+      "bytes": 4460
+    },
+    "format.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "format-ffi-include.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "clippy.log": {
+      "sha256": "556ccbd56340591019d1b80c4bcc686d1383eefc70f03d1c3433961841c153b2",
+      "bytes": 2633
+    },
+    "source/rebirth/R/async.R": {
+      "sha256": "f139bc5152a2cb788923429c830cdb495ec71e8a4e337b44821a0878afc2e711",
+      "bytes": 18323
+    },
+    "source/rebirth/R/conditions.R": {
+      "sha256": "3e0ec83f0887b1d1836303c184e198b77b16160d8830869c7c580aa2a3dba1d5",
+      "bytes": 6380
+    },
+    "source/rebirth/R/download.R": {
+      "sha256": "f810564a986141398c6d79d086067cb33ab7e25050294195b2ae6267e1e6a6a1",
+      "bytes": 14531
+    },
+    "source/rebirth/R/embed.R": {
+      "sha256": "db389e4074a3fad61b7a6f60f1cb756a6d36ef772441a1685ad1d11104056ccf",
+      "bytes": 7770
+    },
+    "source/rebirth/R/extendr-wrappers.R": {
+      "sha256": "5d90fd16afaaf7587242d42c964b9871bdb4b6ca536478985c74df5e33a85af1",
+      "bytes": 4097
+    },
+    "source/rebirth/R/generate.R": {
+      "sha256": "8be2c5bffb97f3da57aaf5621a7ebc68afd93245c12489e4bfa1df7cd2ee6c6d",
+      "bytes": 28810
+    },
+    "source/rebirth/R/images.R": {
+      "sha256": "6ded9de5bed4cf82053d279e50e8dca24a4860e37d5ef2dec4cda0bafec26c42",
+      "bytes": 7191
+    },
+    "source/rebirth/R/intervene.R": {
+      "sha256": "10a1865e4a0a3d5828d2e73ecb26cc7a50103684614bbc9cad6fc88ad007c1b8",
+      "bytes": 17072
+    },
+    "source/rebirth/R/live-state.R": {
+      "sha256": "f6d3be776ac1c62111e39af184cc5d09915e367162f410a7aca91e4a0108e943",
+      "bytes": 16459
+    },
+    "source/rebirth/R/llm.R": {
+      "sha256": "51e35af7ae640560d03257e5861d4dd9bc81769f098715accd74930bdc5e835a",
+      "bytes": 16993
+    },
+    "source/rebirth/R/logits.R": {
+      "sha256": "024c72e00cf99193ad22c6084cf3ec9ac308a0a98aafe1bd4b8f80ca596991da",
+      "bytes": 3791
+    },
+    "source/rebirth/R/probe-fit.R": {
+      "sha256": "abad2cf24c6719d970fd1b667a76086c027e1c475fdc394b0f8d0b53119eadbb",
+      "bytes": 17676
+    },
+    "source/rebirth/R/probe-methods.R": {
+      "sha256": "505a31a93ab3c481d4317e4f69e763c4a1d541fe2bf808a446379cca9808492d",
+      "bytes": 5869
+    },
+    "source/rebirth/R/probe-trace.R": {
+      "sha256": "bbc5c18f3b3866aaa90ca185f4e752287fd007040e65fef39c0e2b705878bd23",
+      "bytes": 8799
+    },
+    "source/rebirth/R/probe.R": {
+      "sha256": "afe94b4a7fa7d5a19d24a032038b9950d06b803cc41f768a29fd0882330eaf6c",
+      "bytes": 11527
+    },
+    "source/rebirth/R/stream.R": {
+      "sha256": "af32cdb91676e31dba3fc673fa21fbb9e334f9026cf22ff1a9c8c0ddafd88048",
+      "bytes": 9136
+    },
+    "source/rebirth/R/tokens.R": {
+      "sha256": "a55c8094a4f62a1400029c3b9e8a25fd583bdad5d35471c72edc4e8834a49375",
+      "bytes": 4024
+    },
+    "source/rebirth/R/trace-spill.R": {
+      "sha256": "5fcf23e12e5da740625799e019f88ce2aefefc6407587e383bbc5a4631e785c9",
+      "bytes": 11192
+    },
+    "source/rebirth/R/trace.R": {
+      "sha256": "6ca59872e8158ae2743698bbb6a02545de1180f78387e97c9def1c352b6e8ddd",
+      "bytes": 29722
+    },
+    "source/rebirth/R/zzz.R": {
+      "sha256": "efe3dde24ebb1446bc9511027490b85775d072691f64e29dfa9d4aa9dbcea639",
+      "bytes": 5198
+    },
+    "source/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs": {
+      "sha256": "7b2d4042cf96255173401448e299f252b487ebcd9d9db200c68db3dd72b27db1",
+      "bytes": 27663
+    },
+    "source/rebirth/src/rust/rebirth-ffi/src/lib.rs": {
+      "sha256": "b5f33735d18bc53197fbd1fd71a6fb2bb740aefdf7b489012670daaa6b8ffaf3",
+      "bytes": 53264
+    },
+    "source/rebirth/src/rust/rebirth-ffi/src/live_boundary.rs": {
+      "sha256": "c51ac7037196ff9c81cf7d8b3fa92800b15d566896b3849feddbcd2991e0731f",
+      "bytes": 9645
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/async_job.rs": {
+      "sha256": "5833daae5bcd9d32ae6c2fe281e53716fd692444ee03321677797817ed4ebc10",
+      "bytes": 84199
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/domain.rs": {
+      "sha256": "936032a45c32fa72cd72e55bfe1a5137dd8cc1466463be3eb20ce42187c68804",
+      "bytes": 7586
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/embed.rs": {
+      "sha256": "1683824937a7e6d3869aff3818ffbab13e60c7ed682bbd981ad39bc68f3d47d1",
+      "bytes": 17062
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/engine.rs": {
+      "sha256": "8b61f59d0d5d86f0d0c0f261c228394805c294d09d9fe038974067838fb852fe",
+      "bytes": 46001
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/error.rs": {
+      "sha256": "afaaf4876aecc3ad369639acb28ac17083a53b9a943fd4a89cf1b717f577658f",
+      "bytes": 14334
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/ffi.rs": {
+      "sha256": "bdbbff40a35d0de7f876522e9032b079dc2fc426bca2b9f034426259ea04e672",
+      "bytes": 39142
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/generate.rs": {
+      "sha256": "2f6e99fc3854cb6428ca6c98b6b4ca354f1461d498a0aa40ef17010042a38278",
+      "bytes": 101787
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/intervene.rs": {
+      "sha256": "802bd12c1f1f8e5a864f705abe11fbd10ab0ae96b3934f7940fcc6c6629f3d90",
+      "bytes": 18375
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/lib.rs": {
+      "sha256": "6b481c6f61f2bbc0cf411bbecbd15230c9e7d0007fbfbfd04eef7c70a6f16033",
+      "bytes": 7021
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/live_capture.rs": {
+      "sha256": "78a60b8662e5e5de83f5dd5d8ae27340d48ff5b29f8edfdcf82a291c285d1e33",
+      "bytes": 54165
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/live_spill.rs": {
+      "sha256": "5c01bdc9de0972839e543335518880a408cbca47ef739a2332aba419a21c48a2",
+      "bytes": 32037
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/live_state.rs": {
+      "sha256": "40420fedb5a65d7ff19c8f55ca281fe204c590011813ded8116651b92c1891f8",
+      "bytes": 21243
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/probe.rs": {
+      "sha256": "53e52027f3e67e61eac1c0f7b7e03dcd916ceb60bf02d27366c49514061d8642",
+      "bytes": 22129
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/schema.rs": {
+      "sha256": "2a7548e59f8a3e9fd37c889ba19a22d9f9d53ae1eb568fa02c4ec400c96f07d6",
+      "bytes": 47605
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/spill.rs": {
+      "sha256": "350b9079b306b3e2d38546cb8df3021b0d434f254609965ab50c600341c3320e",
+      "bytes": 18243
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/spill_lease.rs": {
+      "sha256": "158d9acb7909dc7ae394f0647dc63673ccfb2a210b1375f252561b084f711448",
+      "bytes": 6171
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/structured.rs": {
+      "sha256": "40d7b11edcba8ca2b502e5c58e7c2720376452d0ff87fcc556a0057b4c7ef1a4",
+      "bytes": 9716
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/text_stream.rs": {
+      "sha256": "10a2394d10a35d7e071068720137c7a71befa85df6b4acf2b13063ea61a58741",
+      "bytes": 9514
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/text_stream/tests.rs": {
+      "sha256": "88f6317cb31756d6f4633159c5a8e97ea7195310bd15bc4ad9167b10559a7c67",
+      "bytes": 15534
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/trace.rs": {
+      "sha256": "62453bbdd5908718d1e15fa87e91e2f852c31b4813844533a40773d26aa78731",
+      "bytes": 55452
+    },
+    "source/rebirth/src/rust/rebirth-llm/src/vision.rs": {
+      "sha256": "eace8e4fd2cf89cc1c55373e534ee3dfa3805051a72fd35029df873fec223118",
+      "bytes": 66194
+    }
+  }
+}

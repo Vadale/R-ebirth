@@ -1,0 +1,14 @@
+{
+  "run": 37139351757,
+  "head": "6bb861e9a1aa64d35123a310bf65efd29ba167a9",
+  "status": "failed_before_product_tests",
+  "downloaded_files": 709,
+  "downloaded_bytes": 28782481,
+  "retained_text_files": 696,
+  "all_original_artifacts": "Retained locally under /private/tmp/relm-f6/sanitizer-37139351757; binary probe/object files are represented by size/digest here, not recopied.",
+  "actual_product_tests_completed": 0,
+  "failure": "Missing compiled rebirth_llm production rlib in live-only selection. Cargo test --lib --no-run emits its libtest executable without a production rlib when no integration target consumes that library.",
+  "evidence": "Retained actual Cargo artifact has profile.test=true and an executable; rustc command includes --test, not --crate-type lib. Native object audit wrote269records; later Rust archive audit stopped before any product execution.",
+  "correction": "Build the production library explicitly in the same instrumented target after live-only libtest build, bind its successful Cargo artifact digest to the existing unique rebirth_llm archive audit; unchanged flags, selected tests and limits. Full selection remains unchanged.",
+  "local_validation": "26 targeted harness controls pass, including four new command/artifact negative controls. Actual retained build output is accepted only as libtest, rejected as production archive. Remote corrected execution pending."
+}

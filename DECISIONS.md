@@ -1247,6 +1247,46 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-041 — Bounded live state observation and steering continuation (APPROVED)
+
+- **Date:** 2026-10-03. The founder replied **"ok. continua con F6a e F6b"**
+  following the concrete F6a contract and explicit approval question. The F6a
+  question is resolved; do not ask for this approval again. Continuation into
+  F6b is also authorized, with its detailed protocol finalized before its code.
+- **Decision:** append on_state and its explicit capture/top/spill arguments to
+  llm_generate, without reinterpreting WP10 on_token. F6a observes the source
+  state that selects each token and can cancel at the one-state acknowledgement
+  boundary. All R callback work stays on R's main thread.
+- **Contract:** docs/phase6-live-introspection-plan.md sections3–5 and
+  API-GRAMMAR section11. One text prompt/max1024tokens, no schema/image capture,
+  raw top-logit summaries, explicit model-context positions, filtered relm_trace
+  chunks and completed managed spill files. Existing final promise/seed and
+  classed failure semantics remain. Approval is not implementation/acceptance.
+- **Resource/side effects:** one outstanding state; bounded materialization,
+  native capture transport and full-call spill as specified in the contract.
+  Freeze the complete transient-copy formula at the feasibility gate; model/KV
+  and user-retained chunks remain separately accounted. Extend existing
+  trace-spill side effects narrowly to live chunks; no implicit unbounded queue.
+- **Why:** provide useful R-native research instrumentation on the actual
+  generation context with an explicit causal boundary and predictable retention.
+- **Alternatives rejected:** overloading token batches with activations; a second
+  full model/KV cache; lost or coalesced state; calling R from the native worker;
+  treating a probe threshold as an established safety guarantee.
+- **Limits:** no new dependency, backend, vendor patch, version or numerical
+  tolerance is authorized. Dormant-hook CPU/Metal parity/lifetime/overhead and
+  independent incremental-prefix goldens precede the public implementation.
+  A material change in contract/dependency/vendor scope returns with evidence.
+  F6b adds coefficient updates for predeclared steering, then restores the
+  original handle; it does not add new live directions or undo prior KV history.
+- **F6b protocol finalized before implementation:** section6 of the contract
+  specifies partial atomic coefficient replies for existing steering entries,
+  actual worker revision/source-position metadata, explicit zero-removal and
+  restoration of the original adapters on every exit. This implements the
+  authorized continuation; it neither claims acceptance nor expands to new
+  directions, ablation changes, same-token resampling or historical KV replay.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:

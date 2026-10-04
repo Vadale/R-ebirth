@@ -1,0 +1,41 @@
+   Compiling cfg-if v1.0.4
+   Compiling core-foundation-sys v0.8.7
+   Compiling libm v0.2.16
+   Compiling libc v0.2.186
+   Compiling bytes v1.12.0
+   Compiling once_cell v1.21.4
+   Compiling arrow-schema v59.0.0
+   Compiling hashbrown v0.17.1
+   Compiling zerocopy v0.8.52
+   Compiling serde_core v1.0.228
+   Compiling bitflags v2.13.0
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling iana-time-zone v0.1.65
+   Compiling flatbuffers v25.12.19
+   Compiling itoa v1.0.18
+   Compiling ryu v1.0.23
+   Compiling getrandom v0.3.4
+   Compiling memchr v2.8.3
+   Compiling num-traits v0.2.19
+   Compiling num-integer v0.1.46
+   Compiling chrono v0.4.45
+   Compiling num-complex v0.4.6
+   Compiling num-bigint v0.4.8
+   Compiling serde_json v1.0.145
+   Compiling serde v1.0.228
+   Compiling half v2.7.1
+   Compiling ahash v0.8.12
+   Compiling arrow-buffer v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling arrow-array v59.0.0
+   Compiling arrow-select v59.0.0
+   Compiling arrow-ipc v59.0.0
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 45.72s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-0f0613474562baff)
+
+running 2 tests
+test async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer ... ok
+test async_job::tests::stream_full_queue_drain_observes_nonblocking_contention ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 146 filtered out; finished in 0.00s
+

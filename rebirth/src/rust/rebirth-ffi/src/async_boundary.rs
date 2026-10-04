@@ -30,6 +30,8 @@ struct ActiveJob {
     job: AsyncJob,
     completion: Option<AsyncCompletion>,
     streaming: bool,
+    live: bool,
+    live_pending: Option<(u64, usize, usize)>,
     discarded: bool,
     seed: u64,
 }
@@ -69,7 +71,7 @@ impl LlmHandle {
         ACTIVE_JOB.with(|slot| {
             if let Some(active) = slot.borrow_mut().as_mut() {
                 if owns(active, &self.state) {
-                    if active.streaming {
+                    if active.streaming || active.live {
                         active.discarded = true;
                         active.job.discard_stream();
                     } else {
@@ -230,6 +232,77 @@ fn rebirth_async_submit(
     schema: Robj,
     stream: bool,
 ) -> Robj {
+    async_submit(
+        ptr,
+        prompts,
+        chat,
+        max_tokens,
+        temperature,
+        top_p,
+        seed,
+        stop,
+        images_flat,
+        images_lens,
+        image_max_bytes,
+        schema,
+        stream,
+        ().into(),
+    )
+}
+
+#[extendr]
+#[allow(clippy::too_many_arguments)]
+fn rebirth_live_submit(
+    ptr: Robj,
+    prompts: Robj,
+    chat: bool,
+    max_tokens: i32,
+    temperature: f64,
+    top_p: f64,
+    seed: f64,
+    stop: Robj,
+    images_flat: Robj,
+    images_lens: Robj,
+    image_max_bytes: f64,
+    schema: Robj,
+    stream: bool,
+    live: Robj,
+) -> Robj {
+    async_submit(
+        ptr,
+        prompts,
+        chat,
+        max_tokens,
+        temperature,
+        top_p,
+        seed,
+        stop,
+        images_flat,
+        images_lens,
+        image_max_bytes,
+        schema,
+        stream,
+        live,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn async_submit(
+    ptr: Robj,
+    prompts: Robj,
+    chat: bool,
+    max_tokens: i32,
+    temperature: f64,
+    top_p: f64,
+    seed: f64,
+    stop: Robj,
+    images_flat: Robj,
+    images_lens: Robj,
+    image_max_bytes: f64,
+    schema: Robj,
+    stream: bool,
+    live: Robj,
+) -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(|| {
         let handle = checked_handle(&ptr)?;
         if handle.is_closed() {
@@ -276,6 +349,7 @@ fn rebirth_async_submit(
         inspect_strings(&prompts, "prompt", &mut total)?;
         inspect_strings(&stop, "stop", &mut total)?;
         inspect_strings(&images_flat, "images", &mut total)?;
+        let live_strings = inspect_live_strings(&live, &mut total)?;
         let images_lens = images_lens
             .as_integer_slice()
             .ok_or_else(|| async_argument("images", "expected integer image counts"))?;
@@ -288,6 +362,7 @@ fn rebirth_async_submit(
         let descriptors = prompts
             .len()
             .checked_add(stop.len())
+            .and_then(|n| n.checked_add(live_strings))
             .and_then(|n| n.checked_add(images_flat.len()))
             .and_then(|n| n.checked_add(usize::from(schema_text.is_some())))
             .and_then(|n| n.checked_mul(rebirth_llm::ASYNC_STRING_OVERHEAD))
@@ -297,6 +372,12 @@ fn rebirth_async_submit(
         }
         let compiled = schema_text.map(CompiledSchema::compile).transpose()?;
         let image_sets = split_image_sets(owned_strings(&images_flat), images_lens, prompts.len())?;
+        let live = if live.is_null() {
+            None
+        } else {
+            handle.run(|model| parse_live_request(&live, &model.metadata(), max_tokens as usize))?
+        };
+        let is_live = live.is_some();
         let request = AsyncRequest {
             prompts: owned_strings(&prompts),
             chat,
@@ -315,6 +396,7 @@ fn rebirth_async_submit(
             },
             image_max_bytes: checked_image_max_bytes(image_max_bytes)?,
             stream,
+            live,
         };
         request.validate()?;
         let id = job_nonce();
@@ -340,6 +422,8 @@ fn rebirth_async_submit(
                         job,
                         completion: None,
                         streaming: stream,
+                        live: is_live,
+                        live_pending: None,
                         discarded: false,
                         seed: seed as u64,
                     });
@@ -436,7 +520,7 @@ fn finish_active(
     let mut completion = active.completion.take().expect("collected completion");
     {
         let _bound = completion.permit.enter();
-        if completion.panicked {
+        if completion.panicked || completion.model_invalidated {
             handle.state.closed.set(true);
         }
         if handle.is_closed() {
@@ -447,7 +531,7 @@ fn finish_active(
         drain_deferred();
     }
     let mut outcome = std::mem::replace(&mut completion.result, Ok(Vec::new()));
-    if active.streaming && handle.is_closed() && outcome.is_ok() {
+    if (active.streaming || active.live) && handle.is_closed() && outcome.is_ok() {
         outcome = Err(RebirthError::Cancelled {
             reason: "stream_closed".into(),
             seed: active.seed,
@@ -493,8 +577,8 @@ fn finish_active(
 fn rebirth_async_poll(ptr: Robj, job_id: &str) -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(|| {
         let handle = checked_handle(&ptr)?;
-        let (finished, snapshot, rows, delivery_ready, native_complete) =
-            ACTIVE_JOB.with(|slot| {
+        let (finished, snapshot, rows, delivery_ready, native_complete, live_state) = ACTIVE_JOB
+            .with(|slot| {
                 let mut slot = slot.borrow_mut();
                 let active = active_for(&mut slot, handle, job_id)?;
                 if active.completion.is_none() {
@@ -511,7 +595,14 @@ fn rebirth_async_poll(ptr: Robj, job_id: &str) -> Robj {
                             .is_some_and(|done| done.result.is_err()))
                 {
                     active.job.discard_stream();
-                    return Ok::<_, RebirthError>((slot.take(), snapshot, Vec::new(), false, true));
+                    return Ok::<_, RebirthError>((
+                        slot.take(),
+                        snapshot,
+                        Vec::new(),
+                        false,
+                        true,
+                        None,
+                    ));
                 }
                 let (rows, empty) = if active.streaming {
                     active
@@ -521,12 +612,29 @@ fn rebirth_async_poll(ptr: Robj, job_id: &str) -> Robj {
                 } else {
                     (Vec::new(), true)
                 };
+                // Earlier token rows are converted/delivered before this state in R.
+                // Neither registry borrow nor native locks survive conversion/callback.
+                let live_state = if empty
+                    && active.live
+                    && active.live_pending.is_none()
+                    && !active.discarded
+                    && !handle.is_closed()
+                {
+                    active.job.drain_state().flatten()
+                } else {
+                    None
+                };
+                if let Some(state) = live_state.as_ref() {
+                    active.live_pending =
+                        Some((state.job_id, state.state_id, state.steering.len()));
+                }
                 Ok((
                     None,
                     snapshot,
                     rows,
                     native_complete && empty,
                     native_complete,
+                    live_state,
                 ))
             })?;
         if let Some(active) = finished {
@@ -542,6 +650,10 @@ fn rebirth_async_poll(ptr: Robj, job_id: &str) -> Robj {
             progress = progress_payload(snapshot),
             closed = handle.is_closed(),
             batch = stream_payload(rows)?,
+            live_state = live_state
+                .map(live_state_payload)
+                .transpose()?
+                .unwrap_or_else(|| ().into()),
             delivery_ready = delivery_ready
         )
         .into())
@@ -656,6 +768,7 @@ fn rebirth_async_test_handle() -> Robj {
             backend: "cpu".into(),
             size_bytes: 0,
             vocab_size: 1,
+            max_token_piece_bytes: 1,
             description: "R-free scheduler fixture; not an inference model".into(),
             gpu_layers: 0,
             mmap: false,

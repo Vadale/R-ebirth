@@ -168,7 +168,7 @@ pub struct CaptureRow {
 }
 
 /// Where captured rows go: an in-memory `Vec` (in budget) or the disk-spill sink
-/// (over budget with `spill = TRUE`). The callback pushes into it on the R thread;
+/// (over budget with `spill = TRUE`). The callback pushes into it on the decoding thread;
 /// the spill variant hands each row to the writer thread over its bounded channel.
 enum RowSink {
     Memory(Vec<CaptureRow>),
@@ -285,7 +285,7 @@ pub struct SpillPlan {
 ///   `ggml_add(attn_post_norm(attn), inpL)`, NOT the post-`Wo` output — matching it
 ///   would silently mislabel a different quantity (the exact D-014 failure). So
 ///   `attn_out` stays llama-only; every other arch → `None`.
-fn component_name(arch: &str, comp: Component) -> Option<&'static str> {
+pub(crate) fn component_name(arch: &str, comp: Component) -> Option<&'static str> {
     match comp {
         Component::Residual => match arch {
             "llama" | "qwen2" | "gemma3" | "qwen3" | "qwen35" | "gemma4" => Some("l_out"),
@@ -321,6 +321,35 @@ pub fn parse_tensor_name(name: &str) -> Option<(&str, u32)> {
     Some((base, il))
 }
 
+/// Validate the shared contiguous F32 activation-row layout without reading a
+/// private ggml struct. Dtype follows the named floating-point graph operations;
+/// byte width, neuron width and contiguity are checked before any copy.
+pub(crate) fn tensor_f32_rows(
+    t: *const ffi::ggml_tensor,
+    width: usize,
+) -> Result<usize, RebirthError> {
+    // SAFETY: callers supply a live tensor from the synchronous eval callback.
+    let (elements, rows, bytes, contiguous) = unsafe {
+        (
+            ffi::ggml_nelements(t),
+            ffi::ggml_nrows(t),
+            ffi::ggml_nbytes(t),
+            ffi::ggml_is_contiguous(t),
+        )
+    };
+    let count = usize::try_from(rows).ok();
+    let expected = count.and_then(|n| n.checked_mul(width));
+    if width == 0
+        || rows < 1
+        || !contiguous
+        || expected != usize::try_from(elements).ok()
+        || expected.and_then(|n| n.checked_mul(4)) != Some(bytes)
+    {
+        return Err(RebirthError::Trace { reason: "Activation tensor is not a contiguous float32 matrix with the expected hidden width.".into() });
+    }
+    Ok(rows as usize)
+}
+
 /// The requested components resolved to their engine tensor names for one model,
 /// plus the layer filter and row width — computed once per trace before decoding.
 #[derive(Clone)]
@@ -354,9 +383,9 @@ impl ResolvedSpec {
 }
 
 /// The state the eval-callback trampoline drives. Lives behind `cb_eval_user_data`
-/// and is touched ONLY on the R (decode) thread, synchronously inside `llama_decode`
-/// — so a single `&mut` through the raw pointer is sound (no background thread yet,
-/// WP4). Per-prompt fields are refreshed by [`CaptureState::begin_prompt`]; `rows`
+/// and is touched only by the thread calling `llama_decode`: the ggml scheduler
+/// invokes it synchronously after backend synchronization, not from CPU kernel
+/// workers. The execution domain gives this decode exclusive ownership. Per-prompt fields are refreshed by [`CaptureState::begin_prompt`]; `rows`
 /// accumulate across the batch.
 struct CaptureState {
     resolved: ResolvedSpec,
@@ -458,7 +487,10 @@ impl CaptureState {
         // SAFETY: `t` is the live, computed tensor; both are read-only queries.
         let nelements = unsafe { ffi::ggml_nelements(t) };
         let nbytes = unsafe { ffi::ggml_nbytes(t) };
-        if nelements as usize != expected_elems || nbytes != expected_elems * 4 {
+        if tensor_f32_rows(t, n_embd).ok() != Some(self.n_tokens)
+            || nelements as usize != expected_elems
+            || nbytes != expected_elems * 4
+        {
             self.error = Some(RebirthError::Trace {
                 reason: format!(
                     "Internal error tracing tensor '{name}': expected {expected_elems} float32 \
@@ -523,8 +555,8 @@ extern "C" fn trace_trampoline(
         return !ask; // defensive: no state -> observe nothing, keep computing
     }
     let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        // SAFETY: single-threaded (decode runs on the R thread; the callback fires
-        // synchronously inside it). `state` points at a live `CaptureState` owned by
+        // SAFETY: scheduler callbacks fire synchronously on the decoding thread,
+        // after backend synchronization (ggml-backend.cpp::compute_splits). `state` points at a live `CaptureState` owned by
         // the enclosing trace call for the whole decode, and no other reference to
         // it is active while the callback runs.
         let st = unsafe { &mut *state };

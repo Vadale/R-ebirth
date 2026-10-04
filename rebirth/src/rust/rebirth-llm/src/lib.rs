@@ -28,6 +28,11 @@ mod error;
 mod ffi;
 mod generate;
 mod intervene;
+mod live_capture;
+#[cfg(feature = "spill")]
+mod live_spill;
+mod live_state;
+mod live_steering;
 mod probe;
 mod schema;
 #[cfg(feature = "spill")]
@@ -56,6 +61,15 @@ pub use generate::{
     top_k_logits, ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason, TokenLogit,
 };
 pub use intervene::InterventionSpec;
+#[cfg(feature = "spill")]
+pub use live_state::LiveSpillReport;
+pub use live_state::{
+    live_r_vector_bytes, LiveEstimate, LiveRequest, LiveState, LiveTrace,
+    LIVE_ALLOCATION_ALIGNMENT, LIVE_BATCH_BYTES, LIVE_BATCH_ROWS, LIVE_MATERIALIZED_BYTES,
+    LIVE_MAX_STATES, LIVE_SPILL_BYTES, LIVE_TRANSPORT_BYTES, LIVE_VECTOR_BYTES,
+    LIVE_VECTOR_HEADER_BYTES,
+};
+pub use live_steering::{LiveCoefficient, LiveReply, LiveSteer, LiveSteeringRow};
 pub use schema::CompiledSchema;
 pub use spill_lease::{cleanup_managed_spill, prepare_managed_spill, sweep_managed_spill};
 pub use structured::{

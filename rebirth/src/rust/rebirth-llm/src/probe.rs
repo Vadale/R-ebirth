@@ -81,20 +81,28 @@ fn steer_shift_ok(base: f32, steered: f32, eps: f32) -> bool {
 /// (0-based) whose steering / ablation mechanism has already been proven to take
 /// effect, so a later derivation re-probes only newly-requested layers ("paid
 /// once", D-021). A failing probe never records anything, so a retry re-checks.
-#[derive(Default)]
 pub(crate) struct ProbeCache {
-    steer_ok: BTreeSet<u32>,
+    steer_ok: Box<[bool]>,
     ablate_ok: BTreeSet<u32>,
 }
 
 impl ProbeCache {
+    pub(crate) fn new(layers: usize) -> Self {
+        Self {
+            steer_ok: vec![false; layers].into_boxed_slice(),
+            ablate_ok: BTreeSet::new(),
+        }
+    }
+    fn steer_proven(&self, layer: u32) -> bool {
+        self.steer_ok.get(layer as usize).copied().unwrap_or(false)
+    }
     /// The requested layers not yet proven, split by mechanism.
     fn todo(&self, steer: &[u32], ablate: &[u32]) -> (Vec<u32>, Vec<u32>) {
         (
             steer
                 .iter()
                 .copied()
-                .filter(|l| !self.steer_ok.contains(l))
+                .filter(|l| !self.steer_proven(*l))
                 .collect(),
             ablate
                 .iter()
@@ -106,7 +114,9 @@ impl ProbeCache {
 
     /// Record layers as proven after a successful probe.
     fn mark(&mut self, steer: &[u32], ablate: &[u32]) {
-        self.steer_ok.extend(steer.iter().copied());
+        for &layer in steer {
+            self.steer_ok[layer as usize] = true;
+        }
         self.ablate_ok.extend(ablate.iter().copied());
     }
 }
@@ -226,6 +236,97 @@ extern "C" fn probe_trampoline(
     }
 }
 
+/// Live-only sentinel storage has no heap collections. The native tensor still
+/// must be the same complete f32 residual used by the ordinary D-021 probe.
+struct LiveProbeCapture {
+    layer: u32,
+    neuron: usize,
+    width: usize,
+    value: Option<f32>,
+    failed: bool,
+}
+impl LiveProbeCapture {
+    fn on_node(&mut self, tensor: *mut ffi::ggml_tensor, ask: bool) -> bool {
+        // SAFETY: scheduler-owned live tensor and NUL-terminated tensor name.
+        let name = unsafe { ffi::ggml_get_name(tensor) };
+        if name.is_null() {
+            return !ask;
+        }
+        // SAFETY: non-null name belongs to the tensor for this callback.
+        let name = unsafe { CStr::from_ptr(name) }.to_str().ok();
+        let wanted = name
+            .and_then(parse_tensor_name)
+            .is_some_and(|(base, layer)| base == RESIDUAL_NAME && layer == self.layer);
+        if ask {
+            return wanted;
+        }
+        if !wanted {
+            return true;
+        }
+        // SAFETY: read-only shape queries on the synchronized computed tensor.
+        if unsafe { ffi::ggml_nelements(tensor) } != self.width as i64
+            || unsafe { ffi::ggml_nbytes(tensor) } != self.width * std::mem::size_of::<f32>()
+        {
+            self.failed = true;
+            return false;
+        }
+        let mut value = 0.0f32;
+        // SAFETY: neuron is k_s within the validated row; copy exactly one f32
+        // from that coordinate after scheduler synchronization, as ordinary probe.
+        unsafe {
+            ffi::ggml_backend_tensor_get(
+                tensor,
+                std::ptr::from_mut(&mut value).cast::<c_void>(),
+                self.neuron * std::mem::size_of::<f32>(),
+                std::mem::size_of::<f32>(),
+            );
+        }
+        self.value = Some(value);
+        true
+    }
+}
+extern "C" fn live_probe_trampoline(
+    tensor: *mut ffi::ggml_tensor,
+    ask: bool,
+    data: *mut c_void,
+) -> bool {
+    let capture = data.cast::<LiveProbeCapture>();
+    if capture.is_null() {
+        return !ask;
+    }
+    // SAFETY: live_probe_scalar owns the stable capture until context destruction;
+    // this callback is its only accessor during synchronous decode.
+    match catch_unwind(AssertUnwindSafe(|| unsafe {
+        (*capture).on_node(tensor, ask)
+    })) {
+        Ok(keep) => keep,
+        Err(_) => {
+            // SAFETY: same valid exclusive callback pointer; never unwind over C.
+            unsafe {
+                (*capture).failed = true;
+            }
+            false
+        }
+    }
+}
+
+/// Exact compiled descriptors plus the two one-token batch allocations. The
+/// pinned llama_batch_init(n=1, embd=0, n_seq_max=1) owns four i32 elements, two
+/// sequence pointers (including its terminator), and one logits flag. Count both
+/// sequential calls conservatively; backend/context/KV allocations stay in the
+/// separately documented model envelope. No BTree node size is guessed here.
+pub(crate) fn live_probe_fixed_bytes() -> usize {
+    std::mem::size_of::<InterventionSpec>()
+        + std::mem::size_of::<Vec<f32>>()
+        + std::mem::size_of::<Box<[bool]>>()
+        + 2 * (std::mem::size_of::<LiveProbeCapture>()
+            + std::mem::size_of::<crate::engine::TraceContext>()
+            + std::mem::size_of::<crate::generate::Batch>()
+            + 4 * std::mem::size_of::<i32>()
+            + 2 * std::mem::size_of::<*mut i32>()
+            + std::mem::size_of::<i8>())
+}
+
 impl LoadedModel {
     /// Prove the derivation's steering / ablation take effect on THIS model at each
     /// requested layer (D-021), or return `relm_error_intervention` naming what
@@ -253,6 +354,85 @@ impl LoadedModel {
 
         self.lock_probe_cache().mark(&steer_todo, &ablate_todo);
         Ok(())
+    }
+
+    /// Live commands can activate an originally-zero coefficient. Probe every
+    /// requested nonzero direction's layer before prefill, using the same cache.
+    pub(crate) fn verify_steering_layers(&self, layers: &[u32]) -> Result<(), RebirthError> {
+        for &layer in layers {
+            if self.lock_probe_cache().steer_proven(layer) {
+                continue;
+            }
+            self.run_live_steering_probe(layer)?;
+            self.lock_probe_cache().mark(&[layer], &[]);
+        }
+        Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn steering_layer_was_probed(&self, layer: u32) -> bool {
+        self.lock_probe_cache().steer_proven(layer)
+    }
+    #[cfg(test)]
+    pub(crate) fn steering_probe_cache_bytes(&self) -> usize {
+        self.lock_probe_cache().steer_ok.len() * std::mem::size_of::<bool>()
+    }
+
+    /// The same D-021 sentinel arithmetic, retaining only the checked coordinate.
+    /// Each layer is proved on two fresh contexts before live prefill; generation
+    /// KV and adapters are untouched. Fixed scalar capture avoids full-row maps.
+    fn run_live_steering_probe(&self, layer: u32) -> Result<(), RebirthError> {
+        let width = self.hidden_size().max(0) as usize;
+        let depth = self.num_layers().max(0) as usize;
+        let neuron = usize::from(width > 1);
+        let base = self.live_probe_scalar(&InterventionSpec::new(width, depth), layer, neuron)?;
+        let mut spec = InterventionSpec::new(width, depth);
+        let mut vector = vec![0.0f32; width];
+        vector[neuron] = SENTINEL_STEER;
+        spec.add_steer(layer as usize, &vector);
+        let shifted = self.live_probe_scalar(&spec, layer, neuron)?;
+        if !steer_shift_ok(base, shifted, SENTINEL_STEER) {
+            return Err(self.probe_steer_failed(layer, shifted as f64 - base as f64));
+        }
+        Ok(())
+    }
+    fn live_probe_scalar(
+        &self,
+        spec: &InterventionSpec,
+        layer: u32,
+        neuron: usize,
+    ) -> Result<f32, RebirthError> {
+        // The address is stable until the context is dropped. It is borrowed
+        // exclusively by synchronous callbacks during decode, then read below.
+        let mut capture = LiveProbeCapture {
+            layer,
+            neuron,
+            width: self.hidden_size().max(0) as usize,
+            value: None,
+            failed: false,
+        };
+        let ctx = self
+            .create_trace_context(
+                self.context_length().clamp(1, PROBE_N_CTX),
+                live_probe_trampoline,
+                std::ptr::from_mut(&mut capture).cast::<c_void>(),
+            )
+            .map_err(|_| RebirthError::Intervention {
+                reason: "Could not allocate the context for the live steering sentinel probe."
+                    .into(),
+            })?;
+        spec.apply_to_context(ctx.as_ptr())?;
+        let result = ctx.decode_all(&[PROBE_TOKEN]);
+        drop(ctx); // scheduler and callback end before reading the capture
+        if capture.failed {
+            return Err(RebirthError::Intervention {
+                reason:
+                    "The live steering sentinel tensor had an invalid shape or its callback failed."
+                        .into(),
+            });
+        }
+        result?;
+        capture.value.ok_or_else(|| self.probe_no_residual(layer))
     }
 
     /// Lock the shared probe cache (poison-tolerant: a panic elsewhere must not turn
@@ -470,7 +650,7 @@ mod tests {
 
     #[test]
     fn probe_cache_reports_only_unproven_layers_and_records_passes() {
-        let mut cache = ProbeCache::default();
+        let mut cache = ProbeCache::new(8);
         // Nothing proven yet: every requested layer is to-do.
         let (steer, ablate) = cache.todo(&[2, 5], &[0, 3]);
         assert_eq!(steer, vec![2, 5]);

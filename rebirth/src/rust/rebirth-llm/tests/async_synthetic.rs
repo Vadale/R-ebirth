@@ -61,6 +61,7 @@ fn async_synthetic_owned_handoff_preserves_golden_and_sampling() {
                 model: Some(model),
                 permit,
                 panicked: false,
+                model_invalidated: false,
                 result: Err(RebirthError::Internal {
                     context: "test unfinished".into(),
                 }),

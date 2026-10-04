@@ -1,0 +1,10 @@
+{
+  "status": "failed_before_tests",
+  "passed": [
+    "format",
+    "clippy-default"
+  ],
+  "failed": "clippy-no-spill --all-targets -D warnings",
+  "cause": "An existing memory-only fixture match has exactly one variant when spill is disabled; the additional local no-spill clippy gate rejects infallible_destructuring_match at live_steering_tests.rs177. No test executed.",
+  "correction": "Feature-gated exhaustive match for spill and direct irrefutable let for no-spill; same rows binding, no suppression or assertion/numerical change."
+}

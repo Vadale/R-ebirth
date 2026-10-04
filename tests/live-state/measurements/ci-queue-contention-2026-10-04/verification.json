@@ -1,0 +1,51 @@
+{
+  "status": "independently_verified",
+  "source_base": "363529252e7d7b9d9e9cf1af39c2f1c77a9355ad",
+  "positive_test_outcomes": 6,
+  "ignored": 0,
+  "warnings": 0,
+  "model_runs": 0,
+  "source_hashes": {
+    "rebirth/src/rust/rebirth-llm/src/async_job.rs": "ad86cbe4da35024f1431c79f189df596ec27a5a67f7731eb342584d860e18c50",
+    "rebirth/src/rust/rebirth-llm/src/live_steering_tests.rs": "b9a7a07fa5cd08b10f68a4904d8c99797e50bc2595f78f735735ff78b81858b1"
+  },
+  "stages": [
+    {
+      "stage": "format",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests": 0,
+      "warnings": 0
+    },
+    {
+      "stage": "clippy",
+      "sha256": "458a38b6e030dadc39f2dfa0ead541eaefc069cfc6df1674ae159323bc4c6e6a",
+      "tests": 0,
+      "warnings": 0
+    },
+    {
+      "stage": "clippy-no-spill",
+      "sha256": "2d193dbc6d0393b160b6a602cee70dac7a2ed7dfac4b2d7024f25c07c3588798",
+      "tests": 0,
+      "warnings": 0
+    },
+    {
+      "stage": "default-debug",
+      "sha256": "4482bbdb899bf5aca5c035ece0565e10cd3712305b7f8dc22cf35956295f4b82",
+      "tests": 2,
+      "warnings": 0
+    },
+    {
+      "stage": "no-spill-debug",
+      "sha256": "c4299764660bd4d0fb2d9029a8ab1df67bb4f9ec6f5ec3b87871b63f17ecd4f1",
+      "tests": 2,
+      "warnings": 0
+    },
+    {
+      "stage": "default-release",
+      "sha256": "b9793212dc2d1affcd708f9f484c191d3efd01bd2451a47a9ef411d1867f9a07",
+      "tests": 2,
+      "warnings": 0
+    }
+  ],
+  "scope": "Only test-only queue synchronization and feature-specific destructuring changed; original deadlines and assertions retained. Accepted native/model/RStudio/sanitizer scopes are not repeated or relabelled."
+}

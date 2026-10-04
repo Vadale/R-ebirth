@@ -1,0 +1,87 @@
+{
+  "benchmark-cpu.json": {
+    "raw_sha256": "0a895efb01697f461538b12eeda746e49e2797fa68205a5433547441f2170a3c",
+    "raw_bytes": 129312,
+    "gzip_sha256": "80743dccd5f57e3d059e387b973a8ceff8842b0ef32112070f885b9e324487ca"
+  },
+  "benchmark-cpu.log": {
+    "raw_sha256": "68b0be0de3af6c71ef6a55c5ca73958049641fbc3e1edd851a73e4dc95491b4c",
+    "raw_bytes": 128063,
+    "gzip_sha256": "f80256e8ca29226dc801bd66c7bb0cabc9de5b048f3031958abae9456a81fa07"
+  },
+  "benchmark-metal.json": {
+    "raw_sha256": "c265a2fafaf63c17e18e02c68ed1dae53ecebe034c20a23647df6cc012882cc9",
+    "raw_bytes": 60,
+    "gzip_sha256": "4d3cd7bfbd1826c033f6ef856dea6d59c990dacdcf09193a5dd21623c8670241"
+  },
+  "benchmark-metal.log": {
+    "raw_sha256": "d8b184f314b6727af5cf7c3acdeaa361fc692d2b84985b044d44d0b013efd608",
+    "raw_bytes": 48532,
+    "gzip_sha256": "77871ecf49cff4eaec72c16dfec4d1a82edc65188451a2eec59e423d34651cdb"
+  },
+  "clippy.log": {
+    "raw_sha256": "35e57c82526a49177216c2c969409126f220100a0788669fc9135f765dc1a7bb",
+    "raw_bytes": 177,
+    "gzip_sha256": "bfd82f90ca795078abfdb99927bb233b9a2a4416b2c0dd4250820d7842d156fe"
+  },
+  "format.log": {
+    "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "raw_bytes": 0,
+    "gzip_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+  },
+  "source-manifest.json": {
+    "raw_sha256": "0582ac26f694b1e02717215740ed9d734160797302786aab0040205ef2f428e9",
+    "raw_bytes": 68820,
+    "gzip_sha256": "ca4d4ca908022c1602ea5b24e66ba614c8b2b962c4191b097902e9b8aee77c3d"
+  },
+  "status.json": {
+    "raw_sha256": "d14fa6f847029e306a94c660bd35b36fbfe3968b9ca08fb8e34a853ec9f3a880",
+    "raw_bytes": 3330,
+    "gzip_sha256": "0a97da91d6e6d827c543ee8e1776c757a2e8d2e08fe772a1f6a0a26b7872d981"
+  },
+  "synthetic.log": {
+    "raw_sha256": "bdba3d17a991742f447d71ed9e0751073b6ee66bf3ae2bcc2d32eee5fe6948f3",
+    "raw_bytes": 946,
+    "gzip_sha256": "74901578e8d3f2daa72e6cab740034c5cdf6ea8a723327e517e6d0e55b47b7f7"
+  },
+  "top-k-parity.log": {
+    "raw_sha256": "32c188270a191d76a4b812c84ff36f6aee6b27e3d15b1b9253915b6d35fcc446",
+    "raw_bytes": 632,
+    "gzip_sha256": "3f95a0f828bb5f7fbecce4334259ab87caa4255f9d93f777de6134c83c4e76cf"
+  },
+  "verify-feasibility.py": {
+    "raw_sha256": "c4798f87ff9066f549f1130210affaa3db23828258887e41cc2d7510fbfc8390",
+    "raw_bytes": 6714,
+    "gzip_sha256": "aa48195d38b33fd29df7a742643971d42bac62aad02bd9f02fc8343a12b17d20"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/engine.rs": {
+    "raw_sha256": "3ff559a40bf3ebd396a9a805c57efcc9b50cea4ed1b37da64e2b6483e7af00d5",
+    "raw_bytes": 44475,
+    "gzip_sha256": "0d918c96ed0f1de4f40aab8f5e4e655304bf9363685e4a82303bc7bd3bd449c7"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/ffi.rs": {
+    "raw_sha256": "bdbbff40a35d0de7f876522e9032b079dc2fc426bca2b9f034426259ea04e672",
+    "raw_bytes": 39142,
+    "gzip_sha256": "f5423db5ae64f247ee9c6195e5f3e4d8274cedca18779d57c824441725def9eb"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/generate.rs": {
+    "raw_sha256": "039eb9cd089cf77fa8808b6203b5b48826e0eba24d8bb0a89ed392bdbc7304f0",
+    "raw_bytes": 100261,
+    "gzip_sha256": "79a67313a0235f6a079d584d749db2a61e2583e3c80654d3423380d16dcdcefe"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/lib.rs": {
+    "raw_sha256": "288e661d111e06a29405dfd2eb7994a63645a065f44d18efd520ab56f59d1a24",
+    "raw_bytes": 6600,
+    "gzip_sha256": "2d3a7c8bd6b0eef89dfdbd553affdf5c64857e7574866775abb487be4182aa0e"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/trace.rs": {
+    "raw_sha256": "62453bbdd5908718d1e15fa87e91e2f852c31b4813844533a40773d26aa78731",
+    "raw_bytes": 55452,
+    "gzip_sha256": "2355e589ad91695439cf433d3fba7b4de392c71c36044c81ee1cb15c9dc77f41"
+  },
+  "source/rebirth/src/rust/rebirth-llm/src/live_capture.rs": {
+    "raw_sha256": "a05bbf2164af1abd2a0ded08eff1b72179aa810e838b589618a86c8a6ac7decf",
+    "raw_bytes": 47117,
+    "gzip_sha256": "e86f5eef53408dceefac17076932779ef9de7b45215e838d88d4bfed7a386d3a"
+  }
+}

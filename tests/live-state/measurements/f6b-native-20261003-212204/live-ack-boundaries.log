@@ -1,0 +1,9 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-0f0613474562baff)
+
+running 2 tests
+test async_job::tests::live_state_cancel_and_discard_wake_without_current_token ... ok
+test async_job::tests::live_state_order_and_correlated_acknowledgement ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 145 filtered out; finished in 0.00s
+

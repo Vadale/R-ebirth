@@ -1,0 +1,57 @@
+{
+  "status": "failed",
+  "pid": 18200,
+  "directory": "/private/tmp/relm-f6b/package-20261003-212652",
+  "started_at": 1791055612.5426428,
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-multiarch",
+        "--library=/private/tmp/relm-f6b/library",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "started_at": 1791055612.891724,
+      "pid": 18204,
+      "exit_code": 0,
+      "finished_at": 1791055685.739573
+    },
+    {
+      "name": "document",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "roxygen2::roxygenise(\"rebirth\", roclets=c(\"rd\", \"namespace\"), load_code=roxygen2::load_installed)"
+      ],
+      "status": "passed",
+      "started_at": 1791055685.740108,
+      "pid": 23939,
+      "exit_code": 0,
+      "finished_at": 1791055686.244351
+    },
+    {
+      "name": "live-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6b/live-tests.R"
+      ],
+      "status": "failed",
+      "started_at": 1791055686.244716,
+      "pid": 23952,
+      "exit_code": 1,
+      "finished_at": 1791055689.495337
+    }
+  ],
+  "source_manifest_sha256": "be44d28679204bf0dd7ddc5230c195ff4926ae7974ca048e18ee5ad690c88170",
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "stage": "live-tests",
+  "error": "live-tests failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6b/verify-package.py\", line 95, in <module>\n    stage('live-tests', ['Rscript', '--vanilla', str(ROOT / 'live-tests.R')], timeout=1800)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6b/verify-package.py\", line 71, in stage\n    raise RuntimeError(name + ' failed')\nRuntimeError: live-tests failed\n",
+  "finished_at": 1791055689.496278
+}

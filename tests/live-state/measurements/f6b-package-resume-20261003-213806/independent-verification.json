@@ -1,0 +1,16 @@
+{
+  "initial_status": "failed",
+  "initial_cases": 19,
+  "failed_case": "[MODEL] live steering audits partial zero and unchanged updates with ablation",
+  "accepted_cases": 19,
+  "accepted_expectations": 551,
+  "actual_model_cases": 3,
+  "source_difference": [
+    "rebirth/tests/testthat/test-llm-live-steering.R"
+  ],
+  "installed_library": "/private/tmp/relm-f6b/library",
+  "reinstalled": false,
+  "scoped_check_errors": 0,
+  "scoped_check_warnings": 2,
+  "warning_scope": "omitted rendered vignettes; full CI pending"
+}

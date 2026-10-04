@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "feature": "F6b independent history-preserving steering",
+  "reason": "New feature needs early steerable block with a later KV-producing block",
+  "model": {
+    "path": "tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf",
+    "sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+    "bytes": 138528,
+    "config": {
+      "arch": "llama",
+      "name": "rebirth-synthetic-llama-3l-live-state",
+      "n_vocab": 48,
+      "n_embd": 32,
+      "n_layer": 3,
+      "n_head": 4,
+      "n_head_kv": 4,
+      "n_ff": 64,
+      "n_ctx_train": 4096,
+      "rope_freq_base": 10000.0,
+      "rms_eps": 1e-05,
+      "seed": 20260705
+    }
+  },
+  "compute_dtype": "float64",
+  "versions": {
+    "python": "3.13.5",
+    "numpy": "2.5.1",
+    "gguf": "0.19.0"
+  },
+  "top": 5,
+  "coordinate_convention": "CSV indices are 1-based; manifest *_native indices are 0-based",
+  "static_prefix_vs_incremental_max_logit_delta": 3.1086244689504383e-15,
+  "cases": [
+    {
+      "name": "dynamic_steer",
+      "prompt_tokens_native": [
+        1,
+        7
+      ],
+      "state_count": 5,
+      "steer_layer_native": 1,
+      "steer_vector": [
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5
+      ],
+      "ablate_native": [],
+      "initial_coefficient": 1.0,
+      "reply_coefficients_after_states": [
+        0.0,
+        -1.0,
+        1.0,
+        null,
+        null
+      ],
+      "source_coefficients": [
+        1.0,
+        0.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "generated_tokens_native": [
+        42,
+        22,
+        19,
+        41,
+        42
+      ],
+      "min_top2_margin": 0.24475143834049384,
+      "wrong_full_replay_max_logit_delta_by_state": [
+        1.5543122344752192e-15,
+        0.858209836071496,
+        0.883205918309999,
+        0.6978541469761954,
+        0.530236201609422
+      ],
+      "ignored_updates_max_logit_delta_by_state": [
+        1.5543122344752192e-15,
+        1.9149397643481265,
+        3.1981755708744655,
+        0.6978541469761954,
+        0.530236201609422
+      ],
+      "wrong_full_replay_max_block3_key_delta_by_state": [
+        0.0,
+        1.6145553051081392,
+        3.1138560103220594,
+        3.1902120297286025,
+        3.1902120297286025
+      ]
+    },
+    {
+      "name": "dynamic_both",
+      "prompt_tokens_native": [
+        1,
+        7
+      ],
+      "state_count": 5,
+      "steer_layer_native": 1,
+      "steer_vector": [
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5,
+        1.5,
+        -1.5
+      ],
+      "ablate_native": [
+        {
+          "layer": 1,
+          "neurons": [
+            2
+          ],
+          "value": 0.25
+        }
+      ],
+      "initial_coefficient": 1.0,
+      "reply_coefficients_after_states": [
+        0.0,
+        -1.0,
+        1.0,
+        null,
+        null
+      ],
+      "source_coefficients": [
+        1.0,
+        0.0,
+        -1.0,
+        1.0,
+        1.0
+      ],
+      "generated_tokens_native": [
+        42,
+        22,
+        19,
+        41,
+        41
+      ],
+      "min_top2_margin": 0.062438630615480495,
+      "wrong_full_replay_max_logit_delta_by_state": [
+        1.609823385706477e-15,
+        0.8169659079304835,
+        0.8418740537929457,
+        0.7631244625770045,
+        0.5610121794985982
+      ],
+      "ignored_updates_max_logit_delta_by_state": [
+        1.609823385706477e-15,
+        1.9222468696485926,
+        2.93181594656167,
+        0.7631244625770045,
+        0.5610121794985982
+      ],
+      "wrong_full_replay_max_block3_key_delta_by_state": [
+        0.0,
+        1.736131016559816,
+        2.677133637286279,
+        2.7540271729235886,
+        2.7540271729235886
+      ]
+    }
+  ],
+  "provenance_sha256": {
+    "tests/llm-golden/live-state/f6b/reference_dynamic_state.py": "65e13215fa57f997d8357be8324c72b2016a296c1665951e4567a3a492d23859",
+    "tests/llm-golden/live-state/reference_live_state.py": "7a74c93562dbcac5f2b8809f324142719ae9ee76dc0fe3288bf8dab285f0089b",
+    "tests/llm-golden/live-state/f6b/incremental_reference.py": "97cac62a93aac3bb894742b48f844aab38166e387cc8754d11950ee8dd5dd8ae",
+    "tests/llm-golden/synthetic/reference_forward.py": "4d20fdad0e5a78e82927abdbb6da4dbfaec640ea151048cbaa2e6509d73d653f",
+    "tests/llm-golden/synthetic/synthetic_model.py": "3c3a6935e32e81f0a8f874dfa1e69b9898752f76a9a43e09cb2a1b209c9622cc",
+    "tests/llm-golden/synthetic/build_synthetic.py": "2033726e2692c8e4393410f610dcf4a24f13931f3d49d272711c4b1d4f223160",
+    "tests/llm-golden/requirements.txt": "58557e747b0d19c9eb0dd24ecf2317bb9d28e9bc4337bd43a85b43f614363086"
+  },
+  "artifacts": {
+    "states.csv": {
+      "rows": 10,
+      "sha256": "b36f11d11295f845702fd92510d65a34111a6085cf3d1c4bf116316c137ac54e"
+    },
+    "activations.csv": {
+      "rows": 2880,
+      "sha256": "aa5f67f83ecfa97ef08db67381fea635af7dc395774e42970ccf423acdacfd81"
+    },
+    "logits.csv": {
+      "rows": 480,
+      "sha256": "9b4b9abba9b89e62d462f04edcf906b9839869e637fb47e4cd752de74f7c6b3a"
+    },
+    "top.csv": {
+      "rows": 50,
+      "sha256": "4e51223f087b541ea41cb1d37b5665524ffa9a27407d251fdb0e1f041e6f1ed6"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "status": "failed",
+  "pid": 35839,
+  "directory": "/private/tmp/relm-f6b/queue-wakeup-20261004-101938",
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791101978.324833,
+      "pid": 35841,
+      "exit_code": 0,
+      "finished_at": 1791101978.469708
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791101978.470133,
+      "pid": 35844,
+      "exit_code": 0,
+      "finished_at": 1791102025.476618
+    },
+    {
+      "name": "clippy-no-spill",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "failed",
+      "started_at": 1791102025.476983,
+      "pid": 39031,
+      "exit_code": 101,
+      "finished_at": 1791102069.547987
+    }
+  ],
+  "started_at": 1791101978.311154,
+  "source_sha256": "ad86cbe4da35024f1431c79f189df596ec27a5a67f7731eb342584d860e18c50",
+  "stage": "clippy-no-spill",
+  "error": "clippy-no-spill failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6b/verify-queue-wakeup.py\", line 70, in <module>\n    stage('clippy-no-spill', ['cargo', 'clippy', '--locked', '--offline', '-p', 'rebirth-llm', '--no-default-features', '--all-targets', '--', '-D', 'warnings'])\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6b/verify-queue-wakeup.py\", line 50, in stage\n    assert rc == 0, name + ' failed'\n           ^^^^^^^\nAssertionError: clippy-no-spill failed\n",
+  "finished_at": 1791102069.5491269
+}

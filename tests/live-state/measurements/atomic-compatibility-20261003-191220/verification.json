@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source_manifest_sha256": "3a08dfb9e80a8b48e13491433ebdbd5caaa83c0a40b91802a73c3fb85f4516cb",
+  "source_hashes_verified": 654,
+  "executed_tests": {
+    "atomic-ids": 2,
+    "live-ack-boundaries": 2
+  },
+  "warnings": [],
+  "scope": "Checked atomic ID allocation and acknowledgement integration; no package/model/resource/RStudio rerun. Existing evidence retains original source."
+}

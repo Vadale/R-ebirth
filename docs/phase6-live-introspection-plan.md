@@ -1,8 +1,13 @@
-# Phase 6 — Live introspection proposal
+# Phase 6 — Live introspection and steering contract
 
-Date: 2026-10-03. Status: **PROPOSED — founder approval required before any
-public API amendment or runtime implementation.** This file changes no approved
-signature, decision, dependency or acceptance result. It follows the completed
+Updated: 2026-10-04. Status: **F6a APPROVED under D-041 and accepted at6877c4d.
+F6b operational acceptance is complete: native, installed R, public updates,
+remote checks at490c7f4 and actual foreground RStudio steering. Final
+PR-head CI and PR59 integration remain separate.** The founder replied "ok. continua con F6a e F6b" to the
+concrete proposal. F6a's contract below is now binding in API-GRAMMAR section11.
+Continuation into F6b is authorized; section6 finalizes its reply/audit protocol
+before that increment's implementation. No dependency or acceptance result is
+created by this approval. It follows the completed
 WP9/WP10/I1 and pre-Phase-6 maintenance work. PR57 integration is recorded by
 the coordinating task; this design did not run remote checks. The historical
 Mac timeout remains unexplained and is not claimed fixed by this proposal.
@@ -59,7 +64,7 @@ Source paths above are under `rebirth/` and
 `SOLO-PHASE-PLAN.md` section 2, `API-GRAMMAR.md` sections 2/4/9/10,
 `ROADMAP.md` Phase 6, and D-012/013/014/016/017/021/037/038.
 
-## 3. Proposed F6a public contract
+## 3. Approved F6a public contract
 
 Append arguments; preserve every existing positional argument and default:
 
@@ -72,8 +77,7 @@ llm_generate(m, prompt, max_tokens = 256, temperature = 0.8, top_p = 0.95,
              spill_dir = NULL)
 ```
 
-This is a proposed signature, not an approved export amendment. It adds no new
-function name. The extra arguments belong to live observation only:
+This signature amendment is approved under D-041. It adds no new function name. The extra arguments belong to live observation only:
 
 - `on_state = NULL` preserves current generation. Nondefault capture arguments
   without a callback are rejected, avoiding silently ignored capture requests.
@@ -202,8 +206,10 @@ without needing free queue capacity. Native terminal and delivery terminal stay
 distinct. Preserve WP10's first-consumer-error precedence, discard undelivered
 data after an observed native failure, return/destroy ownership once, and invoke
 final progress only after release. Successful final progress can still close
-the model without retroactively changing success. Close during delivery still
-abandons delivery under `stream_closed`.
+the model without retroactively changing success. As in WP10, close during
+delivery abandons an otherwise successful native result under `stream_closed`;
+an already failed/cancelled native outcome is preserved. Closing while the
+worker awaits a live acknowledgement therefore requests native cancellation.
 
 Use the existing error families: admission errors are `relm_error_argument`,
 capture/schema/I/O failures `relm_error_trace`, predictive limits
@@ -257,7 +263,7 @@ logit table, native rows/capacities, tensor scratch, FFI conversion, drained
 state, acknowledgement metadata, writer buffers, and existing WP10 transport
 allocations. Check products and sums for overflow on both boundaries.
 
-Proposed F6a limits:
+Approved F6a limits:
 
 | Resource | Bound / policy |
 |---|---|
@@ -268,8 +274,9 @@ Proposed F6a limits:
 | Live metadata | At most one prompt / 1024 states; no retained full-call activation index in relm. |
 | Spill | Preflight a conservative full-call bound against 2 GiB of serialized data and 1024 completed files; enforce actual bytes before each write as well. Refuse before submission if the conservative bound exceeds the limit. |
 
-Freeze and twin-pin a conservative **complete transient allocation formula**
-during F6a's feasibility milestone before public implementation. The limits
+The conservative **complete transient allocation formula** is frozen in
+`phase6-memory-contract.md` before public implementation. Its runtime twins and
+actual allocation/serialization checks remain required acceptance evidence. The limits
 above are not a total process RSS promise. Model weights, KV/backend buffers,
 allocator behavior, and chunks retained or copied by user code remain separate.
 Report them separately in acceptance measurements. Narrowing filters is the
@@ -297,17 +304,78 @@ per state from a single selected layer using `as.matrix(state$trace, layer=...)`
 it never repeatedly `rbind`s full hidden-state history. Users who retain all
 in-memory chunks intentionally take responsibility for that extra memory.
 
-## 6. F6b steering extension, deliberately separate
+### Bounded spill implementation and validation
+
+To avoid buffering earlier microbatches or the entire spilled state, use the
+exact `attn_norm-0` ask callback as a microbatch marker. The currently recognized
+builders place it before attention/pruning; inspect its shape without requesting
+a copy. Checked cumulative row counts must reach the current decode call's row
+count before any selected tap is copied. Only the final microbatch may emit
+selected rows. Reset first-`ffn_out` occurrence latches per layer at the marker;
+the second identically named llama residual-add node must not substitute for raw
+MLP output. At decode completion require exact row totals, every requested tap
+emitted once, no pending copy and no error. Fail classed on missing/duplicate
+markers, unsupported ordering or unexpected shape; never publish such a file.
+
+This relies on the approved single-sequence monotone path and the existing
+KV `split_simple` order. Other splitters require explicit verification rather
+than assuming that a row-count sum proves token order. Exercise a short final
+microbatch, final n_batch chunk and pruned last layer before promoting this
+design. Capture needs bounded descriptors and at most one temporary f32 vector
+outside its sink; an EOG result abandons its unpublished file safely.
+
+The live writer splits within an activation vector and retains absolute neuron
+offsets. The frozen Arrow formula in `phase6-memory-contract.md` replaces the
+preliminary 4096-byte margin: encoder-derived metadata framing and aligned
+numeric/string/offset/bitmap buffers determine fragment size and whole-call
+bytes. Records have at most4096rows, target1MiB or the accounted minimum for one
+row. Producer/writer rows, builder, encoded buffers and the byte-bounded queue
+are counted simultaneously. The lazy reader checks record lengths and buffer
+sizes/capacities before R conversion. These checks remain unverified until the
+new resource gates run; requested output matrices and user retention are separate.
+
+The implemented writer and public memory/spill measurements are recorded in
+`phase6-implementation.md`. Remote sanitizer acceptance remains pending.
+
+## 6. F6b steering extension, authorized continuation
 
 Do not call existing `llm_steer()` from a live callback. It creates a new handle
-and is correctly forbidden while another context owns the domain. The proposed
-later reply is `list(steer = data.frame(intervention = ..., coef = ...))`, with
+and is correctly forbidden while another context owns the domain. The F6b
+reply is exactly `list(steer = data.frame(intervention = ..., coef = ...))`, with
 unique 1-based indices into the submitting handle's existing `interventions`
 list; only `kind = "steer"` entries may be addressed. All coefficients must be
 finite and representable by the native contract; reject overflow in summed
 per-layer buffers. `NULL` continues unchanged. No new direction, layer,
 ablation, position filter or R handle mutation is allowed in this increment.
-This reply protocol needs its own final approval after F6a evidence.
+The founder authorized this continuation together with F6a. The following
+details finalize that bounded protocol before implementation; no new dependency,
+export, direction or same-pass intervention is introduced.
+
+- Reject extra elements/columns, duplicate indices, non-steer indices and
+  nonintegral indices. Normalize valid indices to integer and coefficients to
+  double. An empty table equals NULL. Omitted indices retain their current
+  coefficients; an identical reply does not increment the revision.
+- Validate the entire reply, f32 conversion and all summed layer buffers before
+  applying any update. Rebuild from original directions in original order,
+  preserving the existing f64 multiplication followed by f32 conversion rather
+  than accumulating incremental floating-point deltas. Copy immutable original
+  directions once per job. Internal `(job_id, state_id)` correlation rejects
+  duplicate/stale acknowledgement; callers do not supply correlation IDs.
+- Invalid user content raises `relm_error_callback`, callback=`on_state`,
+  reason=`state_reply`, preserving the original condition as parent. Internal
+  stale acknowledgement is an internal protocol error. Cancel/close takes
+  precedence over any command not yet applied.
+- Append integer `steering_revision`, `applied_after_state`, and
+  `effective_source_pos` columns after `elapsed` in `state$step`. Baseline values
+  are 0L,0L,1L. A changed reply from state k increments revision by one, records
+  k, and takes effect at source position P+k. A subsequent state reports the
+  revision that actually produced its activations/logits.
+- Add `attr(state, "steering")`, a plain data frame with integer intervention,
+  integer layer and double coef columns, sorted by original intervention index
+  and containing all current steering entries. This worker-produced snapshot
+  follows successful adapter application. The three named list elements remain
+  step/logits/trace; final text/seed returns remain unchanged. No separate receipt
+  is promised for a terminal reply when no later decode occurs.
 
 The worker validates a copied command after state `k`, updates its job-local
 copy of the original intervention specification, and applies it before decoding
@@ -348,7 +416,7 @@ unchanged code; do not rerun historical acceptance merely to gather a new date.
 | F6a.1 — independent numerical reference | Extend the existing seeded numpy synthetic reference with incremental prefixes: source activations, raw logits/top probabilities, token IDs and position mapping. Pin reference/model/artifact bytes before comparing implementation; regenerate through the existing golden workflow. | Download-free native CI. |
 | F6a.2 — bounded live delivery | Owned state/ack protocol, R payloads, same-context capture, completed spill proxies, classed failure paths and both-consumer ordering. | Synthetic native/R tests plus focused sanitizer tests for new unsafe ownership. |
 | F6a.3 — one integrated acceptance | Runnable score/cancellation examples; unchanged seeded final text/token stream with a no-op observer; resource/latency receipts; docs and one integrated review. | Existing macOS/Linux ordinary gates and one foreground M4 RStudio demo with cached Qwen. |
-| F6b — later steering | Approve exact reply/audit fields; independent changing-coefficient golden; adapter reset/reuse and measured update latency. | Same bounded fixtures, affected CI and one focused interactive demonstration. |
+| F6b — authorized steering | Implement the finalized reply/audit fields; independent changing-coefficient golden; adapter reset/reuse and measured update latency. | Same bounded fixtures, affected CI and one focused interactive demonstration. |
 
 Numerical/reference gates must catch a plausible wrong implementation:
 
@@ -411,7 +479,10 @@ continue independent work and end waiting turns. Re-run only affected gates
 after a material edit or a diagnosed failure. A documentation-only approval
 change does not warrant a native rebuild.
 
-## 8. Decision and remaining engineering uncertainty
+## 8. Original decision request and remaining engineering uncertainty
+
+The original request below is retained as history. D-041 records the founder
+approval of F6a and authorization to continue into F6b; do not repeat F6a approval.
 
 Recommended founder decision: approve **F6a only**, including the appended
 arguments, separate `on_state` payload, source-position convention, strict

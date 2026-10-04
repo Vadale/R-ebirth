@@ -1,0 +1,16 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+error: you seem to be trying to use `match` to destructure a single infallible pattern. Consider using `let`
+   --> rebirth-llm/src/live_steering_tests.rs:177:13
+    |
+177 | /             let rows = match &state.trace {
+178 | |                 crate::LiveTrace::Memory(rows) => rows,
+179 | |                 #[cfg(feature = "spill")]
+180 | |                 crate::LiveTrace::Spilled(_) => panic!("memory fixture"),
+181 | |             };
+    | |______________^ help: try: `let crate::LiveTrace::Memory(rows) = &state.trace;`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.96.0/index.html#infallible_destructuring_match
+    = note: `-D clippy::infallible-destructuring-match` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::infallible_destructuring_match)]`
+
+error: could not compile `rebirth-llm` (lib test) due to 1 previous error

@@ -7,6 +7,8 @@
 //! seeded RNG (`SplitMix64` below) — the GPU backend never selects a token, so
 //! backend non-determinism cannot enter the output.
 
+use std::cmp::Ordering;
+use std::collections::BinaryHeap;
 use std::os::raw::c_char;
 
 use crate::engine::LoadedModel;
@@ -393,11 +395,41 @@ impl LoadedModel {
         Ok(tokens)
     }
 
+    /// Live transport uses an exact-capacity UTF-8 allocation so the cached
+    /// vocabulary display-byte bound also bounds owned string storage.
+    pub(crate) fn live_token_piece(&self, id: i32) -> Result<String, RebirthError> {
+        let vocab = self.vocab_ptr();
+        // SAFETY: live vocabulary, valid sampled/source id, sizing-only call.
+        let needed =
+            unsafe { ffi::llama_token_to_piece(vocab, id, std::ptr::null_mut(), 0, 0, true) }
+                .checked_abs()
+                .ok_or_else(|| RebirthError::Internal {
+                    context: "live token size overflow".into(),
+                })?;
+        let mut bytes = vec![0_u8; needed as usize];
+        // SAFETY: the exact sized buffer and vocabulary live throughout this call.
+        let actual = unsafe {
+            ffi::llama_token_to_piece(vocab, id, bytes.as_mut_ptr().cast(), needed, 0, true)
+        };
+        if actual != needed {
+            return Err(RebirthError::Internal {
+                context: "live token piece sizing changed".into(),
+            });
+        }
+        let piece = lossy_utf8_exact(&bytes);
+        if piece.capacity() as u64 > self.max_token_piece_bytes() {
+            return Err(RebirthError::Internal {
+                context: "live token allocation exceeded cached bound".into(),
+            });
+        }
+        Ok(piece)
+    }
+
     /// The display piece for a single engine-native id. Lossy: a single token
     /// may be a partial UTF-8 byte sequence; round-trip correctness comes from
     /// [`decode_tokens`](Self::decode_tokens) on the whole id vector, not from
     /// concatenating pieces.
-    fn token_piece(&self, id: i32) -> Result<String, RebirthError> {
+    pub(crate) fn token_piece(&self, id: i32) -> Result<String, RebirthError> {
         let vocab = self.vocab_ptr();
         let buf = sized_buffer::<u8>(32, |ptr, cap| {
             // SAFETY: `vocab` is live; `ptr` names `cap` bytes (allocated by
@@ -487,7 +519,9 @@ impl LoadedModel {
         // SAFETY: `ctx_ptr` is live; `batch.raw` is a fully-populated batch whose
         // arrays outlive the call (dropped after it). `llama_decode` reads the
         // batch by value; we keep ownership of the backing arrays in `batch`.
+        self.live_capture().begin_decode(start_pos, tokens, self)?;
         let status = unsafe { ffi::llama_decode(self.ctx_ptr(), std::ptr::read(&batch.raw)) };
+        self.live_capture().end_decode()?;
         if status != 0 {
             return Err(RebirthError::Generation {
                 reason: format!("llama_decode returned {status}"),
@@ -830,6 +864,41 @@ fn sample(logits: &[f32], temperature: f32, top_p: f32, rng: &mut SplitMix64) ->
     order[keep - 1] // floating-point fallback: the least-likely kept token
 }
 
+// A max-heap whose root is the WORST retained rank. This reverses the logit
+// comparison so replacing the root preserves exactly the old full-sort order.
+#[derive(Clone, Copy)]
+struct LogitRank {
+    id: usize,
+    logit: f32,
+}
+
+pub(crate) fn top_rank_bytes() -> usize {
+    std::mem::size_of::<LogitRank>()
+}
+
+impl PartialEq for LogitRank {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id && self.logit.to_bits() == other.logit.to_bits()
+    }
+}
+
+impl Eq for LogitRank {}
+
+impl PartialOrd for LogitRank {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for LogitRank {
+    fn cmp(&self, other: &Self) -> Ordering {
+        other
+            .logit
+            .total_cmp(&self.logit)
+            .then(self.id.cmp(&other.id))
+    }
+}
+
 /// The `top` highest-logit entries of a next-token distribution `logits`.
 ///
 /// The softmax is taken over the WHOLE row (max-shifted, accumulated in f64 for
@@ -852,17 +921,33 @@ pub fn top_k_logits(logits: &[f32], top: usize) -> Vec<(usize, f32, f64)> {
     }
     // Softmax over the full row, max-shifted, accumulated in f64.
     let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max) as f64;
-    let exps: Vec<f64> = logits.iter().map(|&v| (v as f64 - max).exp()).collect();
-    let total: f64 = exps.iter().sum();
+    // Keep the original vocabulary-order f64 reduction, without retaining V
+    // exponentials. Recomputing only the selected numerators is deterministic.
+    let total: f64 = logits.iter().map(|&v| (v as f64 - max).exp()).sum();
 
-    // Descending by logit; ties by ascending index for a total, stable order
-    // (total_cmp handles any -0.0/NaN without a panic).
-    let mut order: Vec<usize> = (0..n).collect();
-    order.sort_unstable_by(|&a, &b| logits[b].total_cmp(&logits[a]).then(a.cmp(&b)));
-    order
+    // O(V log K) comparisons and O(K) rank storage: live top-20 observation must
+    // not sort and allocate an entire vocabulary on every generated token.
+    let mut ranks = BinaryHeap::with_capacity(keep);
+    for (id, &logit) in logits.iter().enumerate() {
+        let entry = LogitRank { id, logit };
+        if ranks.len() < keep {
+            ranks.push(entry);
+        } else if let Some(mut worst) = ranks.peek_mut() {
+            if entry < *worst {
+                *worst = entry;
+            }
+        }
+    }
+    ranks
+        .into_sorted_vec()
         .into_iter()
-        .take(keep)
-        .map(|i| (i, logits[i], exps[i] / total))
+        .map(|entry| {
+            (
+                entry.id,
+                entry.logit,
+                (entry.logit as f64 - max).exp() / total,
+            )
+        })
         .collect()
 }
 
@@ -887,6 +972,15 @@ impl LoadedModel {
         params: &GenerateParams,
     ) -> Result<Generation, RebirthError> {
         let _native = crate::domain::NativeGuard::try_acquire("generate")?;
+        self.generate_inner(prompt, params, None)
+    }
+
+    pub(crate) fn generate_inner(
+        &self,
+        prompt: &[i32],
+        params: &GenerateParams,
+        observer: Option<&mut crate::live_capture::LiveObserver<'_>>,
+    ) -> Result<Generation, RebirthError> {
         self.check_fits(prompt.len())?;
         if params.max_tokens == 0 {
             return Ok(Generation {
@@ -908,7 +1002,7 @@ impl LoadedModel {
         // prompt-longer-than-one-batch split. This row is the first sampling step's
         // next-token distribution.
         let logits = self.prompt_last_logits(prompt, n_vocab)?;
-        self.continue_generation(logits, prompt.len() as i32, params)
+        self.continue_generation_observed(logits, prompt.len() as i32, params, None, observer)
     }
 
     /// The autoregressive sampler loop: from `logits` (the ingested prompt's
@@ -930,10 +1024,21 @@ impl LoadedModel {
 
     fn continue_generation_with_constraint(
         &self,
+        logits: Vec<f32>,
+        start_pos: i32,
+        params: &GenerateParams,
+        constraint: Option<&mut Constraint<'_, '_>>,
+    ) -> Result<Generation, RebirthError> {
+        self.continue_generation_observed(logits, start_pos, params, constraint, None)
+    }
+
+    fn continue_generation_observed(
+        &self,
         mut logits: Vec<f32>,
         start_pos: i32,
         params: &GenerateParams,
         mut constraint: Option<&mut Constraint<'_, '_>>,
+        mut observer: Option<&mut crate::live_capture::LiveObserver<'_>>,
     ) -> Result<Generation, RebirthError> {
         let ctx_len = self.context_length() as usize;
         let vocab = self.vocab_ptr();
@@ -999,6 +1104,15 @@ impl LoadedModel {
             }
             out.push(next);
             crate::async_job::sampled(out.len())?;
+            if let Some(observer) = observer.as_deref_mut() {
+                let snapshot = self
+                    .live_capture()
+                    .snapshot(out.len(), next, n_past as u32)?;
+                observer(snapshot, &logits)?;
+                self.live_capture()
+                    .advance(n_past as u32, out.len() == params.max_tokens)?;
+                crate::async_job::checkpoint()?;
+            }
             if stream.is_some() {
                 crate::async_job::stream_token(next, out.len())?;
             }
@@ -2050,6 +2164,82 @@ mod tests {
         assert_eq!(all.len(), 4);
         // `top = 0` yields nothing.
         assert!(top_k_logits(&logits, 0).is_empty());
+    }
+
+    /// Download-free Rust CI. Literal pre-F6a full-sort implementation is the
+    /// independent algorithmic comparator; oracle tests separately pin numerics.
+    #[test]
+    fn top_k_heap_matches_full_sort_bits_and_boundaries() {
+        fn reference(logits: &[f32], top: usize) -> Vec<(usize, f32, f64)> {
+            if top.min(logits.len()) == 0 {
+                return Vec::new();
+            }
+            let max = logits.iter().copied().fold(f32::NEG_INFINITY, f32::max) as f64;
+            let exps: Vec<f64> = logits.iter().map(|&v| (v as f64 - max).exp()).collect();
+            let total: f64 = exps.iter().sum();
+            let mut ids: Vec<usize> = (0..logits.len()).collect();
+            ids.sort_unstable_by(|&a, &b| logits[b].total_cmp(&logits[a]).then(a.cmp(&b)));
+            ids.into_iter()
+                .take(top)
+                .map(|id| (id, logits[id], exps[id] / total))
+                .collect()
+        }
+        let mut rng = super::SplitMix64::new(41);
+        let mut cases = vec![
+            vec![],
+            vec![3.0],
+            vec![5.0; 129],
+            vec![-0.0, 0.0, 0.0, -0.0, -1.0, 1.0],
+            vec![f32::MAX, -f32::MAX, 0.0, f32::MIN_POSITIVE],
+            vec![f32::INFINITY, 2.0, f32::NEG_INFINITY, f32::INFINITY],
+            vec![f32::NEG_INFINITY; 4],
+            vec![
+                f32::NAN,
+                f32::from_bits(0x7fc00001),
+                f32::from_bits(0xffc00001),
+                3.0,
+                -0.0,
+            ],
+        ];
+        for n in [2, 19, 20, 21, 127, 128, 129, 4096] {
+            // Quantized random values force ties across the selection boundary.
+            cases.push(
+                (0..n)
+                    .map(|_| (rng.next_u64() % 41) as f32 - 20.0)
+                    .collect(),
+            );
+        }
+        for values in cases {
+            for top in [
+                0,
+                1,
+                2,
+                5,
+                20,
+                128,
+                values.len(),
+                values.len() + 1,
+                usize::MAX,
+            ] {
+                let actual = top_k_logits(&values, top);
+                let expected = reference(&values, top);
+                assert_eq!(actual.len(), expected.len());
+                for (a, e) in actual.iter().zip(&expected) {
+                    assert_eq!(a.0, e.0, "rank id n={} top={top}", values.len());
+                    assert_eq!(a.1.to_bits(), e.1.to_bits(), "raw logit bits");
+                    if e.2.is_nan() {
+                        assert!(a.2.is_nan());
+                    } else {
+                        assert_eq!(
+                            a.2.to_bits(),
+                            e.2.to_bits(),
+                            "full-vocabulary probability bits n={} top={top}",
+                            values.len()
+                        );
+                    }
+                }
+            }
+        }
     }
 
     #[test]

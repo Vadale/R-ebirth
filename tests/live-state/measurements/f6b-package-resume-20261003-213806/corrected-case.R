@@ -1,0 +1,27 @@
+root <- "/private/tmp/relm-f6b"
+library(relm)
+library(testthat)
+stopifnot(normalizePath(find.package("relm")) == file.path(root, "library", "relm"))
+Sys.setenv(RELM_TEST_MODEL_QWEN = "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf")
+out <- Sys.getenv("RELM_F6B_EVIDENCE")
+cases <- parse("rebirth/tests/testthat/test-llm-live-steering.R")
+wanted <- "[MODEL] live steering audits partial zero and unchanged updates with ablation"
+is_test <- vapply(cases, function(x) is.call(x) && identical(x[[1L]], as.name("test_that")), logical(1))
+selected <- which(vapply(cases, function(x) is.call(x) && identical(x[[1L]], as.name("test_that")) && identical(x[[2L]], wanted), logical(1)))
+stopifnot(length(selected) == 1L)
+case <- cases[[selected]]
+body <- as.list(case[[3L]])
+i <- which(vapply(body, function(x) is.call(x) && identical(x[[1L]], as.name("stream_test_wait")), logical(1)))
+stopifnot(length(i) == 1L)
+body[[i]] <- substitute({WAIT; saveRDS(list(error=observed$error, states=states), file.path(Sys.getenv("RELM_F6B_EVIDENCE"), "callback-diagnostic.rds")); if (!is.null(observed$error)) { print(observed$error); print(observed$error$parent); str(observed$error) }}, list(WAIT=body[[i]]))
+case[[3L]] <- as.call(body)
+temp <- file.path(out, "testdir"); dir.create(temp)
+file.copy(list.files("rebirth/tests/testthat", "^helper.*[.]R$", full.names=TRUE), temp)
+text <- c(unlist(lapply(cases[!is_test], deparse, width.cutoff=500L)), deparse(case, width.cutoff=500L))
+writeLines(text, file.path(temp, "test-corrected.R"))
+result <- testthat::test_dir(temp, package="relm", load_package="installed", reporter="summary", stop_on_failure=FALSE)
+saveRDS(result, file.path(out,"result.rds"))
+counts <- as.data.frame(result); counts <- counts[,!vapply(counts,is.list,logical(1)),drop=FALSE]
+write.csv(counts,file.path(out,"counts.csv"),row.names=FALSE)
+stopifnot(nrow(counts)==1L,!any(counts$skipped),!any(counts$failed > 0),!any(counts$error),!any(counts$warning > 0))
+cat("F6B_CORRECTED_CASE_PASSED expectations=",sum(counts$passed),"\n",sep="")

@@ -1,0 +1,6 @@
+{
+  "base": "363529252e7d7b9d9e9cf1af39c2f1c77a9355ad",
+  "production_prefix_sha256": "1abf7004e4c85cc2fc7f7be57471b1cb699412eb469071b7c13c59ee5ecc2bf9",
+  "production_prefix_unchanged": true,
+  "scope": "All edits in async_job.rs occur inside cfg(test) module. live_steering_tests.rs is included only by that module; its selected rows and numerical assertions are unchanged. Existing acceptance retains executed parent sources; no new installed runtime or sanitizer acceptance claim."
+}

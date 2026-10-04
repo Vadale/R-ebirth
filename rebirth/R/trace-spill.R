@@ -47,6 +47,9 @@ read_spill_slice <- function(x, layer, component) {
       repeat {
         batch <- stream$get_next()
         if (is.null(batch)) break
+        if (identical(attr(x, "position_space"), "model_context")) {
+          live_check_arrow_batch(batch, x)
+        }
         df <- as.data.frame(batch)
         sel <- df$layer == engine_layer & df$component == component
         if (any(sel)) {
@@ -144,6 +147,48 @@ verify_spill_integrity <- function(x, path) {
         path
       )
     )
+  }
+  space <- md[["relm.position_space"]]
+  if (identical(attr(x, "position_space"), "model_context")) {
+    expected <- list("relm.position_space" = "model_context",
+      "relm.prompt_token_count" = as.character(attr(x, "prompt_token_count")),
+      "relm.state_id" = as.character(attr(x, "state_id")),
+      "relm.source_pos" = as.character(attr(x, "live_source_pos")),
+      "relm.live_batch_rows" = as.character(attr(x, "live_batch_rows")),
+      "relm.live_batch_bytes" = sprintf("%.0f", attr(x, "live_batch_bytes")))
+    if (any(vapply(expected, function(value) length(value) != 1L || is.na(value), logical(1))) ||
+      any(!vapply(names(expected), function(key) identical(as.character(md[[key]]),
+        expected[[key]]), logical(1)))) {
+      relm_abort("relm_error_trace", "The spill file does not match this live state's coordinates or batch bounds.",
+        list(reason = "live_spill_identity", path = path))
+    }
+  } else if (!is.null(space)) {
+    relm_abort("relm_error_trace", "A live-state spill cannot be read as an ordinary prompt trace.",
+      list(reason = "live_spill_identity", path = path))
+  }
+  invisible(TRUE)
+}
+
+# The live writer guarantees bounded records. Check their Arrow lengths and
+# buffers before materializing R columns. This bounds R conversion of files
+# written under that contract; arbitrary IPC decoding and the requested output
+# slice are separate allocations, not a claimed process-RSS ceiling.
+live_check_arrow_batch <- function(batch, x) {
+  rows <- batch$length
+  bound <- attr(x, "live_batch_bytes")
+  bytes <- function(array) {
+    own <- sum(vapply(array$buffers, function(buffer) {
+      if (is.null(buffer)) 0 else max(as.double(buffer$size_bytes),
+        as.double(buffer$capacity_bytes))
+    }, numeric(1)))
+    own + sum(vapply(array$children, bytes, numeric(1)))
+  }
+  size <- bytes(batch)
+  if (length(rows) != 1L || !is.finite(rows) || rows < 0 ||
+    rows > relm_live_batch_rows || length(bound) != 1L ||
+    !is.finite(bound) || bound <= 0 || !is.finite(size) || size > bound) {
+    relm_abort("relm_error_trace", "The live spill record exceeds its admitted row or byte bound.",
+      list(reason = "live_spill_batch"))
   }
   invisible(TRUE)
 }

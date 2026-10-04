@@ -1,0 +1,49 @@
+{
+  "status": "failed",
+  "pid": 13444,
+  "directory": "/private/tmp/relm-f6b/native-20261003-210135",
+  "started_at": 1791054095.804356,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791054095.9216452,
+      "pid": 13450,
+      "exit_code": 0,
+      "finished_at": 1791054096.125133
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "failed",
+      "started_at": 1791054096.125599,
+      "pid": 13453,
+      "exit_code": 101,
+      "finished_at": 1791054101.813141
+    }
+  ],
+  "source_manifest_sha256": "a5eb343eaf506c148b559f6d2a4b0f5ac1c81547c8480eb253c6fb2401854788",
+  "stage": "clippy",
+  "error": "clippy failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6b/verify-native.py\", line 92, in <module>\n    stage('clippy', ['cargo', 'clippy', '--locked', '--offline', '-p', 'rebirth-llm', '-p', 'rebirth-ffi', '--all-targets', '--', '-D', 'warnings'])\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6b/verify-native.py\", line 68, in stage\n    raise RuntimeError(name + ' failed')\nRuntimeError: clippy failed\n",
+  "finished_at": 1791054101.8143418
+}

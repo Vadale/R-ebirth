@@ -15,6 +15,14 @@ on:
         description: Run the scoped sanitizer job using separately retained Valgrind evidence
         type: boolean
         default: false
+      sanitizer_selection:
+        description: Full suite, F6a live state, or F6b steering (scoped choices skip Valgrind)
+        type: choice
+        options:
+          - full
+          - live-only
+          - steering-only
+        default: full
 
 name: nightly-memory-safety.yaml
 
@@ -26,7 +34,7 @@ concurrency:
 
 jobs:
   valgrind-intervention:
-    if: ${{ github.event_name != 'workflow_dispatch' || !inputs.sanitizers_only }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only') }}
     runs-on: ubuntu-24.04
     name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
     timeout-minutes: 90
@@ -141,11 +149,13 @@ jobs:
 
   asan-ubsan-native:
     runs-on: ubuntu-24.04
-    name: ASan Rust + ASan/UBSan native CPU (synthetic + async ownership)
+    name: ASan Rust + ASan/UBSan native CPU (synthetic + async/live ownership)
     timeout-minutes: 90
     env:
       # Exact Ubuntu package pin; compatibility controls fail before native build.
       LLVM_PACKAGE_VERSION: '1:19.1.1-1ubuntu1~24.04.2'
+      # Only an explicit manual choice narrows the product allowlist.
+      SANITIZER_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.sanitizer_selection || 'full' }}
 
     steps:
       - uses: actions/checkout@v7
@@ -200,6 +210,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 -u tests/sanitizers/run.py \
+            --selection "$SANITIZER_SELECTION" \
             --evidence "$SANITIZER_EVIDENCE" --target "$SANITIZER_TARGET" \
             2>&1 | tee "$SANITIZER_EVIDENCE/harness.log"
 

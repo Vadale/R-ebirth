@@ -1,0 +1,10 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 44.04s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-7b8170873d856bbf)
+
+running 2 tests
+test async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer ... ok
+test async_job::tests::stream_full_queue_drain_observes_nonblocking_contention ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 136 filtered out; finished in 0.00s
+

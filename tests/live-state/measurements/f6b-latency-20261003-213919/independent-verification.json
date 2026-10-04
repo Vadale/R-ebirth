@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "runs": 16,
+  "states": 2048,
+  "backends": ["cpu", "metal"],
+  "rounds": [0, 1, 2, 3],
+  "scope": "Public R callback-to-next-state interval includes validation, ack, decode, transport and polling; reset guarded in producer; backend labels are requested handles, not fresh offload evidence."
+}

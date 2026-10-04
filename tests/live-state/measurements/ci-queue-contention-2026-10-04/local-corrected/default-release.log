@@ -1,0 +1,54 @@
+   Compiling proc-macro2 v1.0.106
+   Compiling libm v0.2.16
+   Compiling autocfg v1.5.1
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.46
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling getrandom v0.3.4
+   Compiling version_check v0.9.5
+   Compiling semver v1.0.28
+   Compiling bytes v1.12.0
+   Compiling ahash v0.8.12
+   Compiling core-foundation-sys v0.8.7
+   Compiling num-traits v0.2.19
+   Compiling iana-time-zone v0.1.65
+   Compiling rustc_version v0.4.1
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling arrow-schema v59.0.0
+   Compiling serde_core v1.0.228
+   Compiling once_cell v1.21.4
+   Compiling cc v1.2.65
+   Compiling flatbuffers v25.12.19
+   Compiling hashbrown v0.17.1
+   Compiling cmake v0.1.58
+   Compiling serde v1.0.228
+   Compiling bitflags v2.13.0
+   Compiling serde_json v1.0.145
+   Compiling syn v2.0.118
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling ryu v1.0.23
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling zerocopy-derive v0.8.52
+   Compiling num-integer v0.1.46
+   Compiling num-complex v0.4.6
+   Compiling chrono v0.4.45
+   Compiling num-bigint v0.4.8
+   Compiling half v2.7.1
+   Compiling arrow-buffer v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling arrow-array v59.0.0
+   Compiling arrow-select v59.0.0
+   Compiling arrow-ipc v59.0.0
+    Finished `release` profile [optimized] target(s) in 1m 11s
+     Running unittests src/lib.rs (target/release/deps/rebirth_llm-8fc00e7171057e13)
+
+running 2 tests
+test async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer ... ok
+test async_job::tests::stream_full_queue_drain_observes_nonblocking_contention ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 146 filtered out; finished in 0.00s
+
