@@ -1323,7 +1323,65 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-043 — Focus the product and replace automatic expansion with consolidation
+
+- **Date/status:** 2026-10-05. APPROVED product direction and roadmap revision.
+  The founder asked to focus on the model-research tool already being built,
+  exclude the biology/DNA expansion, evaluate whether existing topic modelling
+  is sufficient, reduce complexity and maintenance, and change the roadmap now.
+- **Product objective:** make local language models inspectable and
+  experimentally controllable from R, with reproducible statistical evaluation
+  and understandable visual results. The primary user journey is load, observe,
+  compare, intervene, evaluate and export an experiment.
+- **Active sequence:** complete D-042's F6c graphics, F6d direction construction
+  and evaluation, and F6e projection steering; replace the old Phase-7 general
+  types/compiler/serving programme with **Phase 7 consolidation, usability and
+  external validation**. Retain hardware-gated Phase 8 Windows/CUDA and Phase 9
+  CRAN/docs/API stability. Each step has an independently useful exit.
+- **Removed scope:** Phase 18 protein/DNA biology, `relm.bio` and the optional
+  biological Demo C are outside the active product roadmap. This is not an
+  instruction to remove existing generic model capabilities or user artifacts.
+- **Topics:** retain the existing embeddings, clustering/labels, visualizations
+  and quality examples, reusing optional ecosystem packages. A new `relm.topics`
+  satellite is not planned. Improve the existing workflow when a concrete user
+  task exposes a gap. Pretrained SAE analysis is a separate possible research
+  extension, not an obligation attached to topic modelling or the v1.0 exit.
+- **Uncommitted expansion:** a second backend, fine-tuning/RL, general compiler
+  or type language, generic serving/OpenAPI framework, model export, general
+  data streams/engine, distribution and fork remain historical ideas rather
+  than scheduled follow-on phases. A demonstrated user need, bounded proposal
+  and maintenance case must precede any explicit reactivation. Existing I1,
+  WP12a/b service and T1/T2 multimodal capability remain supported within their
+  accepted scope. No new implementation is authorized by this planning entry.
+- **Consolidation exit:** a clear supported path through the primary journey;
+  an inventory and justified disposition of duplicate/unused internals and
+  optional dependencies; targeted compatibility-preserving simplifications;
+  a measured map of test coverage/cost; runnable onboarding and one external
+  researcher completing a bounded experiment without continuous developer
+  assistance. Record actual assistance and failures. External participation is
+  a real future gate, not something a simulated agent can claim completed.
+- **Limits:** simplification does not authorize a blanket rewrite, removal of
+  public APIs, weaker numerical/resource/ownership gates or deletion of historical
+  evidence. Any concrete removal/deprecation follows compatibility and review
+  rules. No new dependency, vendor change, benchmark claim or completed test
+  is implied. Relevant correctness checks remain mandatory.
+- **Supersession:** this changes the product scope/sequence of D-002, D-010 and
+  the later-expansion portion of D-042; their accepted delivered behavior and
+  historical rationale remain intact. Old phase/WP numbers are retained for
+  provenance, never reused for a different API. Phase 7 gets a new consolidation
+  plan rather than relabelling the historical WP14 compiler work as completed.
+- **Why/alternatives:** deliver one coherent research product and maintain what
+  users actually use. Reject automatic completion of the original 22-phase
+  vision, a new satellite merely because a demo exists, and complexity reduction
+  measured only as fewer source lines or fewer tests.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
+
+D-043 removes the distribution/fork from the active product roadmap. The
+following historical playbook is not an execution instruction or an automatic
+next step; explicit reactivation is required even if its old triggers occur.
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
 

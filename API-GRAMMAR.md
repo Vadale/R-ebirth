@@ -206,7 +206,15 @@ Every condition carries structured fields where useful (e.g. `estimate_bytes` on
 
 ## 7. Reserved names — `[proposed]`, NOT approved, do not implement
 
-Reserved to keep the namespace coherent; each needs its own approved entry when its phase arrives: `llm_generate(..., on_token = )` and streaming forms (Phase 5–6); `llm_serve()` / serve module surface (Phase 7); type-contract helpers and `reb_compile()` (Phase 7); the vision-tower (T3) interpretability surface (post-Phase-11 research, D-026 — the Phase-11 `projector=`/`images=` slot was realized as approved §3 amendments on 2026-07-14); `llm_finetune()` (Phase 12); preference-optimization surface (Phase 13); `sae_features()` and `relm.topics` exports (Phase 14); export/interop surface (Phase 15); streaming-source verbs (Phase 16).
+Historical reservations keep names coherent; they are not scheduled features.
+D-043 removes automatic implementation of `llm_serve()`/generic serving,
+type-contract helpers/`reb_compile()`, `llm_finetune()`, preference optimization,
+`sae_features()`, `relm.topics`, export/interop and general streaming-source verbs.
+Each would require explicit product reactivation and its own approved entry.
+T3 vision-tower interpretability remains unapproved research; the existing
+`projector=`/`images=` T1/T2 surface remains approved and supported. Token
+streaming and live state observation are already governed by sections 10–11,
+not by these historical reservations. No approved signature changes here.
 
 ## 8. Structured output contract — `[approved: D-030]`
 

@@ -1,6 +1,6 @@
 # Visual analysis and directional steering
 
-Updated: 2026-10-04. D-042 records the founder's decision to schedule this work
+Updated: 2026-10-05. D-042 records the founder's decision to schedule this work
 after the merged F6a/F6b delivery and before Phase 7. The sequence is **F6c
 reusable graphics → F6d direction construction and evaluation → F6e projection
 steering**. Each increment ends independently usable. This document approves
@@ -134,11 +134,13 @@ in this roadmap. Keep the accepted F6a/F6b interfaces and bounded-resource
 semantics intact. Use one coherent milestone at a time, affected checks and
 sparse background monitoring for long work; preserve earlier source scopes.
 
-Technical debt directly needed by an increment belongs in that increment;
-unrelated maintenance remains separately tracked. Phase 7 still covers type
-contracts, the compile feasibility decision and generic typed serving/OpenAPI
-beyond the completed application service. Phase 8 Windows/CUDA remains deferred
-to appropriate hardware; Phase 9 CRAN/docs/API freeze remains later under the
-founder's chosen ordering. Phase 10 and Phases 12–18 remain post-v1.0 expansion;
-Phase 11's T1/T2 vision capability is already shipped, with T3/audio separate.
-Team phases 19–21 are unchanged. None is cancelled or completed by this insertion.
+Technical debt directly needed by an increment belongs in that increment.
+D-043 now replaces Phase 7's broad types/compiler/generic-service programme with
+consolidation, usability and external validation of this research workflow.
+Reduce justified internal duplication and support cost while preserving public
+contracts and distinct correctness coverage; do not start a blanket rewrite.
+Phase 8 Windows/CUDA remains hardware-deferred and Phase 9 remains CRAN/docs/API
+stability. Existing topic modelling, I1, application serving and T1/T2 vision are
+retained. Biology/DNA and a new topics satellite are outside active scope; other
+historical expansion phases are uncommitted ideas, not automatic next steps.
+See SOLO-PHASE-PLAN section 0 for the focused product boundary.

@@ -1,13 +1,13 @@
 # R-ebirth — Solo Phase Plan
 
 **Document 1 of 3** — operational decisions for the solo-development period (Phase 0 through end of Phase 1).
-Companion documents: `ARCHITECTURE.md` (document 2 — package internals, native boundary, ladder mechanics) and `API-GRAMMAR.md` (document 3 — final function signatures and naming rules).
+Companion documents: `ARCHITECTURE.md` (document 2 — package internals and native boundary) and `API-GRAMMAR.md` (document 3 — final function signatures and naming rules).
 Operational companion: the work-package plans under `docs/` — toolchain, sequencing, and the thesis case study (WP-T). This plan states *decisions*; the roadmap states *execution*.
 
-- **Status:** draft **v0.2** for founder review
-- **Date:** 2026-07-03 (v0.1 same day; superseded)
+- **Status:** focused product scope approved under D-043; earlier decisions remain historical
+- **Date:** 2026-10-05 (product focus revision; original plan 2026-07-03)
 - **Owner:** Alessandro (founder) + Claude (AI engineering)
-- **Scope:** everything needed to build alone, before any community involvement.
+- **Scope:** a maintainable R package for reproducible observation, intervention and evaluation of local language models.
 
 **Execution amendment (2026-09-27, D-028):** the next increment is specified in
 [Structured output, statistical research and practical deployment](docs/structured-production-plan.md).
@@ -24,23 +24,55 @@ and WP10, I1 validates one actual external-assistant workflow and packages the
 integration; see [the companion plan](docs/external-assistants-plan.md). This
 adds no approved relm API or dependency.
 
-**What changed in v0.2 (decision D-002):** v0.1 planned a source fork of GNU R as the delivery vehicle from day one. v0.2 changes the *delivery vehicle*, not the vision: the solo phase ships as a **package suite running on unmodified R**, with the fork deferred to the community era as the third rung of an explicit ladder (§0). Everything already designed — API grammar, Rust crates, demos, correctness harness, memory-budget rules — carries over unchanged. Consequences ripple through §1, §3, §4, §6, §7, §9. A major side effect: the GPL constraint disappears and the project can be licensed maximally free (§6).
+**Current product amendment (2026-10-05, D-043):** focus the product on the
+model-research workflow already being built. Biology/DNA is excluded; existing
+topic modelling remains an application, without a planned satellite package.
+Other historical expansions are options requiring explicit reactivation, not
+work to complete automatically after v1.0. D-043 supersedes that part of the old
+three-rung strategy while preserving all delivered capabilities and contracts.
 
 ---
 
-## 0. Delivery strategy: the three-rung ladder
+## 0. Product objective and delivery boundary
 
-**Decision: capabilities first, language later. Each rung is climbed only when the previous one has proven demand, and nothing built on one rung is discarded on the next.**
+**Make local language models inspectable and experimentally controllable from R,
+with reproducible statistical evaluation and understandable visual results.**
 
-- **Rung 1 — the package suite (solo phase, now).** `relm` (and later satellite packages) on stock R ≥ 4.5: the native inference engine with activation taps, the tidy-anatomy workflow, embeddings, topic modelling, steering/ablation — everything in the Phase 0–1 deliverables. Installs with one command into the R every researcher already has.
-- **Rung 2 — the distribution (transition).** An installer bundling vanilla R + the R-ebirth suite preinstalled + curated defaults (packages auto-attached via site profile, sensible options, pinned versions). Delivers the "batteries included, feels like a new environment" experience **without forking a single line of R**.
-- **Rung 3 — the fork (community era).** Only for the things a package can never do: new surface syntax (real type annotations, `async`/`await` keywords), changed base defaults, the speculative JIT in the evaluator, allocator/GC work. Entered only when there is a community to share the permanent upstream-merge tax. The v0.1 fork plan (base pinning, patch-first rule, PATCHES.md, upstream `make check` invariant) is preserved verbatim in `DECISIONS.md` as the rung-3 playbook.
+The primary workflow is **load → observe → compare → intervene → evaluate →
+export**. It runs on stock R and returns ordinary R data structures, with
+explicit model support, numerical provenance, bounded memory/spill and classed
+failures. Captured associations are not automatically causal explanations;
+interventions require controlled comparisons, and no safety guarantee is implied.
 
-**What a package genuinely cannot do** (the honest boundary, so it is never rediscovered by surprise): modify the parser, change base-R defaults, replace the evaluator/GC, or make R itself faster on arbitrary user loops. **Interim mitigations on rung 1:** function-based forms instead of new syntax (`async({...})`/`await()` in the promises tradition; type declarations as arguments rather than annotations), and — a roadmap-Phase-7 option — a `reb_compile()` transpiler for typed hot functions (nimble/odin precedent). Everything else discussed for research capability — speed on real workloads, the LLM anatomy lab, topic modelling, the base-R grammar — is fully deliverable from the package, because the heavy compute lives in the native engine either way.
+Maintain existing generation/structured output, embeddings, probes, traces,
+steering/ablation, async/streaming/live observation, supported T1/T2 multimodal
+work, reference applications and external-assistant integration. General
+statistics and clustering reuse the R ecosystem. Topic modelling demonstrates
+these building blocks; a separate `relm.topics` product is not an active goal.
+
+The active remaining sequence is **F6c graphics → F6d reproducible directions →
+F6e projection steering → Phase 7 consolidation/usability/external validation →
+hardware-gated Phase 8 Windows/CUDA → Phase 9 CRAN/docs/API stability**.
+Documentation and compatibility-preserving simplification also accompany every
+increment. Product progress is measured by a researcher completing a reliable
+experiment, not by the number of APIs, backends, phases or graphical panels.
+
+Biology/protein/DNA specialization and the optional biological Demo C are outside
+this product. MLX, fine-tuning/RL, SAE productization, general compiler/type
+systems, generic serving/OpenAPI frameworks, model export, general data engines,
+a bundled distribution and a fork are historical options. A concrete user need,
+bounded design and sustainable maintenance case are required before reactivation.
+Existing capabilities are not removed by a roadmap edit; actual deprecation or
+removal needs compatibility analysis and a reviewable implementation proposal.
+
+The former three-rung plan and original phase identifiers remain in DECISIONS
+for provenance. They no longer define a mandatory path beyond the focused
+package. No change to R's parser, evaluator, allocator, defaults or dependency
+policy is part of this revision.
 
 ---
 
-### 0.1 Practical operation on rung 1 (D-028)
+### 0.1 Practical operation of reference applications (D-028)
 
 Reduce the work needed to move a relm analysis from an interactive R session to
 a reproducible batch job, then to a modest local/small-team service. The first
@@ -55,11 +87,10 @@ model and process requests sequentially. Start with one inference worker on the
 16 GB target. Installation, interruption recovery, memory and the declared load
 envelope are acceptance tests, not implied by a lockfile or endpoint alone.
 
-The narrow application service can precede native async and generic type/compile
-work. It does not replace the broader Phase-7 typed endpoint/OpenAPI deliverable,
-or bring forward the distribution/fork. Production templates may generalize to
-other R analyses only after the concrete workflow is tested. New API and
-dependency choices retain their existing approval gates.
+The delivered application service remains a supported example. Under D-043 it
+does not imply a scheduled generic typed endpoint/compiler framework or a
+bundled distribution. Generalization requires a demonstrated caller and its own
+bounded proposal. New API and dependency choices retain their approval gates.
 
 ---
 
@@ -68,7 +99,8 @@ dependency choices retain their existing approval gates.
 After completed F6a/F6b, deliver F6c reusable graphics/intervention comparisons,
 then F6d construction/storage/held-out evaluation of steering directions, then
 F6e projection steering. These extend roadmap Phase 6 and precede Phase 7;
-later phase numbers and the v1.0 boundary remain unchanged. The founder approved
+the v1.0 boundary remains. D-043 subsequently redefines Phase 7 as consolidation
+and removes unrelated expansion from the active plan. The founder approved
 this scope and ordering on 2026-10-04. Detailed plan:
 `docs/phase6-visual-steering-plan.md`.
 
@@ -87,7 +119,7 @@ stage. The existing service and graphical demos do not complete these new steps.
 
 - CI tests against **R-release and R-oldrel** on every platform; never require R-devel features.
 - The v0.1 "patch-first rule" survives in spirit: new upstream minor versions (e.g. a future 4.7.0) enter the CI matrix immediately but the declared minimum moves conservatively and never to an `x.y.0`.
-- Nothing of R is modified, so there is no divergence registry and no upstream merge tax — that burden is deferred to rung 3.
+- Nothing of R is modified, so no interpreter divergence registry or fork maintenance is required.
 
 ---
 
@@ -180,27 +212,36 @@ belongs to the R-free `rebirth-llm` engine (D-009).
 - `relm` (R package), `rebirth-llm`, `rebirth-kernel`, `rebirth-ffi` (Rust crates): **MIT OR Apache-2.0**.
 - Vendored llama.cpp: MIT — compatible; tracked in `NOTICE`.
 - **Name protection unchanged (`TRADEMARK.md`):** the code is free, the name is not. Modified redistributions must rename (Rust/Firefox model). This remains the correct instrument for "my work must not be confused with someone else's fork."
-- Project self-description: *"R-ebirth — a scientific computing toolkit for R"* on rung 1; the "derived from GNU R" phrasing belongs to rung 3 only. No use of the R Foundation's logo or implied endorsement.
+- Project self-description: *"R-ebirth — reproducible model research in R"*. A hypothetical future fork would need separate branding and licensing review. No use of the R Foundation's logo or implied endorsement.
 - Rung-3 note for the future: if/when the fork happens, *that repository* inherits GPL-2 | GPL-3 — but the crates stay permissive and simply get linked in, which is exactly why the permissive-core structure is right today.
 
 ---
 
-## 7. Non-goals through end of Phase 1 (updated)
+## 7. Current non-goals and historical options
 
-> **Terminology (read this first — it is the single most confusing point in the docs).** "Phase 1" in *this* plan means the plan's own second era = **roadmap Phases 4–9** (see the the work-package plans under `docs/` mapping line), which ends at `v1.0`. It is **not** roadmap Phase 1. The non-goals below mark the boundary of *that era* — not of the whole solo project. The **full solo track runs through roadmap Phase 18** (fine-tuning, RL, topics+SAE, `relm.bio`) before any team phase; nothing below is cancelled, only sequenced after `v1.0`.
+The historical term "plan Phase 1" means roadmap Phases 4–9 ending at v1.0;
+it does not mean roadmap Phase 1. The active plan no longer promises delivery
+of every original phase through 21. D-043 makes these exclusions explicit:
 
-- **No source fork of GNU R** — re-evaluated only at the community rung (D-002).
-- **No new surface syntax** (type annotations, `async`/`await` keywords) — parser work is rung 3; interim function-based forms only.
-- **No JIT / evaluator work** — rung 3 by definition now.
-- **No Arrow-backed default verbs on the critical path** — the LLM module returns plain R structures first; kernel/Arrow work proceeds behind a flag.
-- **No MLX backend, no fine-tuning / LoRA training, no RLHF, no SAE training** *through the end of plan-Phase 1 (`v1.0`)* — **deferred, not cancelled**: MLX = roadmap Phase 10, fine-tuning = Phase 12, alignment/RL = Phase 13, topics + SAE = Phase 14 (all still solo, post-`v1.0`). Applying *pretrained* SAEs to traces belongs to Phase 14; training SAEs from scratch stays out.
-- **Streaming remains in its planned phase.** D-028 permits a narrow application
-  service after the batch/probe increment, independently of native async and
-  generic type contracts. The broader `serve` API remains subject to its own
-  specification and approval; no new public surface is approved by this exception.
-- **No multi-GPU, no distributed, no cloud integration.**
-- **No CRAN submission before Phase 1 exit** (r-universe carries distribution until then).
-- **No public release engineering** beyond r-universe binaries (no website/installer campaigns) until the community phase.
+- No biology/protein/DNA vertical, `relm.bio` or biological Demo C.
+- No separate topic-modelling satellite. Keep the existing ecosystem-based
+  example and improve it only for demonstrated usability/correctness needs.
+- No second inference engine, fine-tuning/RL/SAE product suite, general compiler,
+  type language, OpenAPI framework, model export or general data engine scheduled
+  as an automatic sequel. SAE analysis can be assessed separately if it serves
+  the core research workflow.
+- No GNU R fork, parser/JIT/GC work, bundled R distribution or mandatory team
+  expansion programme. Maintain normal project documentation and contribution
+  practices without turning them into new products.
+- No multi-GPU, distributed or cloud platform added by this revision.
+- No CRAN submission before the scheduled readiness stage; r-universe continues
+  to distribute the package. Ordinary runnable documentation is active work.
+- No implicit API/dependency/vendor approval, tolerance relaxation, deletion of
+  supported functionality or rewrite of accepted numerical/ownership semantics.
+
+Historical proposals remain attributable in DECISIONS and Git history. They are
+not a task queue. A new request and concrete decision are required to reactivate
+one; elapsed time or completion of the previous phase is insufficient.
 
 ---
 
@@ -246,11 +287,13 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 - [ ] Seeded generation reproducible run-to-run
 - [ ] `DECISIONS.md` in active use
 
-**Phase 1 exit (~month 10–12):**
+**Focused v1.0 exit (historical plan Phase 1; D-043 revision):**
 - [ ] Async generation integrated with the console event loop (session never blocks; `promises`-style API)
-- [ ] Streaming verbs v1 (token streams as data; windowed aggregation prototype)
-- [ ] Type declarations as function API (runtime-checked); `reb_compile()` transpiler explored and go/no-go decided
-- [ ] `serve` module v1: an analysis exposed as a typed HTTP endpoint with generated OpenAPI
+- [ ] Token streaming and bounded live observation/coefficient updates are usable with the console event loop
+- [ ] F6c reusable visual comparisons, F6d model-bound direction construction/evaluation and F6e independently verified projection steering are accepted
+- [ ] Phase 7 consolidation records justified simplifications, compatibility and distinct test coverage/cost
+- [ ] An external researcher completes a bounded observe/intervene/evaluate/export workflow; actual assistance and failures are recorded
+- [ ] Existing application service, topic examples and companion integration remain supported without requiring new general frameworks
 - [ ] Windows binaries on r-universe; CUDA green (WSL2 first, then native Windows)
 - [ ] CRAN submission of `relm` (Rust vendoring policy compliant)
 - [ ] Docs site generated from runnable examples; `llm_*` API declared stable
@@ -261,6 +304,6 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 
 ## 10. Open questions routed to the next two documents
 
-- `ARCHITECTURE.md` (document 2): `rebirth-ffi` unsafe-boundary design; tap-patch maintenance strategy against upstream llama.cpp releases; spill file format; async integration with R's event loop; rung-2 distribution mechanics; rung-3 trigger criteria (what observable success justifies the fork).
+- `ARCHITECTURE.md` (document 2): `rebirth-ffi` unsafe-boundary design; tap-patch maintenance strategy against upstream llama.cpp releases; spill file format; async integration with R's event loop. Later-rung sketches are historical options under D-043.
 - `API-GRAMMAR.md` (document 3): full signatures and defaults for every `llm_*` function; trace data.frame schema (`layer`, `token_pos`, `component`, `neuron`, `value`, `prompt_id`); condition class hierarchy; print formats.
-- Deferred, tracked in `DECISIONS.md` when opened: Phase 2 training backend (candle vs libtorch), MLX binding scope, satellite package split (`relm.topics`?), Positron timing.
+- Historical backend/training/satellite ideas are not open inputs for the active work. Reopen one only through an explicit product decision.
