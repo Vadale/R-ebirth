@@ -112,7 +112,7 @@ or model download follows from this roadmap decision.
 ## F6e Projection steering
 
 The concrete [F6e contract](f6e-projection-contract.md), D046/API-GRAMMAR14,
-is now proposed after the founder authorized the next increment. It reuses
+is approved after the concrete question and founder reply "vai continua". It reuses
 `llm_apply_direction()` with an appended operator argument and component-bound
 artifacts. No public/runtime implementation or vendor edit is approved yet.
 

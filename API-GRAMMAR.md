@@ -431,11 +431,11 @@ or new dependency/native/vendor change. Existing argument/intervention/oom
 conditions are reused. No new loader, direction transfer, projection operator
 or universal behavioral/quality guarantee is implied.
 
-## 14. Component projection steering — `[proposed: D-046, 2026-10-07]`
+## 14. Component projection steering — `[approved: D-046, 2026-10-07]`
 
-**Not approved or implemented.** The founder authorized starting F6e after PR62;
-this concrete extension requires its own decision. Sections12–13 remain binding
-until approval. The proposed contract and acceptance are in
+**Approved on 2026-10-07** after the concrete D046 question and the founder
+reply "vai continua". Implementation and acceptance remain required. This
+section extends sections12–13 only as stated. The contract and acceptance are in
 [the F6e projection contract](docs/f6e-projection-contract.md).
 
 ```r
@@ -476,4 +476,4 @@ validation/storage/probe ledger; base model/KV/capture retain separate contracts
 integer `configured_projections` after its existing D044 site-table columns and
 marks the configured component without storing vectors. F6c comparison alignment
 and additive-only live timeline audit retain their meanings. These behavior/schema
-extensions to D044/D045 require D046 approval; they are not yet shipped.
+extensions to D044/D045 are approved by D046; they are not yet shipped.

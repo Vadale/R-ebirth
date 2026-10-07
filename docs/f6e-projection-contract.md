@@ -1,10 +1,11 @@
 # F6e projection steering contract
 
-Date: 2026-10-07. **D-046 / API-GRAMMAR section 14: PROPOSED.** The founder
-merged F6d PR62 and authorized starting the next increment. This document is
-the concrete API, placement, compatibility and resource proposal; that earlier
-start instruction is not approval of signatures not yet presented. No F6e
-runtime, export, numerical fixture, native bridge or vendor edit is implemented.
+Date: 2026-10-07. **D-046 / API-GRAMMAR section 14: APPROVED.** The founder
+replied "vai continua" after the concrete D046 question and linked contract.
+This approves the API, placement, compatibility and resource scope below.
+Implementation, independent references and actual acceptance remain required;
+approval is not a numerical or resource result. No vendor patch or dependency
+change is authorized.
 
 ## 1 One extension to the existing application interface
 
@@ -29,7 +30,11 @@ capture profiles. A residual artifact remains `relm_direction/1`, with the same
 schema, arithmetic, canonical encoding and digests as D045. New component
 artifacts use `relm_direction/2`; the top-level component must equal the capture
 component and participates in the payload digest. Other fields/types and the
-paired arithmetic are unchanged. Freeze separate new schema-2 byte fixtures;
+paired arithmetic are unchanged. Each schema2 canonical stream uses ASCII
+`relm_direction/2` followed by NUL, then the same typed domain and value body;
+schema1 keeps its existing `relm_direction/1` prefix byte-for-byte. This applies
+to every schema2 domain, including matrix/pairs/splits/context/values/artifact.
+Freeze separate new schema-2 byte fixtures;
 do not regenerate or relabel the accepted schema-1 references.
 
 Residual artifacts remain restricted to layers `2:L`. Component artifacts may
@@ -247,6 +252,8 @@ Approved roadmap acceptance (verbatim):
    No new model download, unchanged old matrix or accepted F6d experiment rerun.
    Keep specific actual tests/counts, artifacts, backend and source identities.
 6. Freeze a **new** disjoint construction/selection/final dataset before inference.
+   The pre-inference [F6e-v1 protocol](f6e-evaluation-protocol.md) records that
+   dataset, coefficient grids, random control and bounded quality measures.
    F6d's consumed held-out set is not fresh evaluation data. Compare original,
    zero, learned additive and learned projection settings plus a norm-matched
    projection random control. Fit residual and component directions on the same
@@ -264,12 +271,11 @@ Approved roadmap acceptance (verbatim):
    Preserve all nine final PR checks and source scopes; use the existing20-minute
    quiet monitor for background work, not receipt-only CI commits.
 
-## 7 Decision requested
+## 7 Decision and execution
 
-Approve the single appended operator argument, component-specific schema2
+The founder approved the single appended operator argument, component-specific schema2
 artifacts, explicitly supported static projection behavior and map-count column
-above. Recommend this extension over a second public projection wrapper or an
+above. This extension was selected over a second public projection wrapper or an
 unapproved vendor patch: it reuses validation/ownership and preserves default
-additive calls. No new dependency or vendor change is included. After approval,
-the exact next step is independent references and the bounded native feasibility
+additive calls. No new dependency or vendor change is included. The exact next step is independent references and the bounded native feasibility
 gate; feasibility failure is reported before further scope changes.

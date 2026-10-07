@@ -1483,10 +1483,11 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
 
 ## D-046 — Component-specific static projection through the existing direction API
 
-- **Date/status:** PROPOSED on 2026-10-07. The founder merged PR62 and said
-  "Fatto, passa alla prossima fase", authorizing F6e preparation. The concrete
-  API/placement/schema/native contract below was not yet presented at that
-  instruction; no approval is inferred. D042/D043 roadmap scope is settled.
+- **Date/status:** APPROVED on 2026-10-07. Preparation was authorized by
+  "Fatto, passa alla prossima fase"; the concrete D046 API/placement/schema/native
+  contract was then presented. The subsequent founder reply "vai continua"
+  approves that contract. The earlier generic start alone was not used as
+  approval. D042/D043 roadmap scope is settled; no API question remains.
 - **Proposal:** append `operator = "add"` to `llm_apply_direction()`, accepting
   exactly `"add"` and `"project"`; preserve all existing calls/default behavior.
   No new exported wrapper. Extend the unchanged `llm_direction()` signature to
@@ -1539,7 +1540,6 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
 - **Architecture analysis:** the focused [source report](docs/f6e-native-feasibility.md)
   finds a conditional route, not executed acceptance. The documented callback
   is observational; actual safe downstream mutation remains a required gate.
-- **Next action:** the exact D046 question has been presented and is pending.
-  After approval, freeze independent
+- **Next action:** freeze independent
   numerical/encoding references and execute the private native feasibility gate.
   Approval alone is not numerical/resource/behavioral acceptance.
