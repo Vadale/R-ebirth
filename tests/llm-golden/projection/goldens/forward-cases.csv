@@ -1,0 +1,16 @@
+case,prefill_tokens,decode_tokens,total_tokens,projection_sites,steer_ablate,dynamic_steer
+baseline,3,2,5,0,0,0
+mlp_out_first_c0,3,2,5,1,0,0
+mlp_out_first_c1,3,2,5,1,0,0
+mlp_out_first_cneg1,3,2,5,1,0,0
+mlp_out_first_c2,3,2,5,1,0,0
+mlp_out_last_c1,3,2,5,1,0,0
+attn_out_first_c0,3,2,5,1,0,0
+attn_out_first_c1,3,2,5,1,0,0
+attn_out_first_cneg1,3,2,5,1,0,0
+attn_out_first_c2,3,2,5,1,0,0
+attn_out_last_c1,3,2,5,1,0,0
+multiple_sites,3,2,5,3,0,0
+projection_steer_ablate,3,2,5,2,1,0
+static_projection_dynamic_steer,3,2,5,1,1,1
+long_prefill,513,1,514,2,0,0

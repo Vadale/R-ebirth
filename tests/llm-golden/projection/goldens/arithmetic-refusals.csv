@@ -1,0 +1,12 @@
+case,reason,coef,h,direction
+nonunit,nonunit_direction,1,1;2,2;0
+zero_direction,nonunit_direction,1,1;2,0;0
+nan_direction,nonfinite_direction,1,1;2,nan;0
+nan_row,invalid_f32_row,1,nan;2,1;0
+inf_row,invalid_f32_row,1,inf;2,1;0
+wide_row,invalid_f32_row,1,6.8056469327705772e+38;2,1;0
+coefficient_inf,invalid_coefficient,inf,1;2,1;0
+coefficient_range,invalid_coefficient,6.8056469327705772e+38,1;2,1;0
+amplification_overflow,f32_overflow,-1,3.4028234663852886e+38;2,1;0
+scalar_product_overflow,f32_overflow,3.4028234663852886e+38,3.4028234663852886e+38;3.4028234663852886e+38,0.70710678118654757;0.70710678118654757
+width_mismatch,invalid_shape,1,1,1;0
