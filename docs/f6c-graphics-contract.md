@@ -1,9 +1,10 @@
 # Reusable model and intervention graphics
 
-Date: 2026-10-07. **D-044 PROPOSAL, awaiting founder approval.** D-042 and
-D-043 approve the product direction and sequence. The founder's instruction
-to start on 2026-10-07 authorizes preparing this concrete F6c contract and
-publishing the focused roadmap; it does not approve previously unseen exports.
+Date: 2026-10-07. **D-044 APPROVED.** After receiving the concrete contract and
+its API approval question, the founder merged PR60 and instructed "ho fatto il
+merge, puoi passare al prossimo step". That instruction authorizes F6c
+implementation. The preceding roadmap-only approval did not approve unseen
+exports; the signatures below were presented before this implementation decision.
 
 F6c makes three existing capabilities usable together: locating interventions
 in a model, comparing observed states, and following applied coefficients during
@@ -13,8 +14,8 @@ native operation, vendor patch or inference wrapper is proposed.
 
 ## 1 Public surface
 
-Add two constructors and three S3 plot methods. These signatures are proposed
-in API-GRAMMAR section 12, not part of the approved package surface yet.
+Add two constructors and three S3 plot methods. These signatures are approved
+in API-GRAMMAR section 12; implementation and acceptance remain separate.
 
 ```r
 plot.llm(x, layers = NULL, ...)
@@ -255,9 +256,9 @@ silent truncation. No new public condition class is proposed.
    Preserve source scopes and warnings, use background jobs and sparse monitoring.
    No unchanged native, sanitizer, vision or earlier live acceptance reruns.
 
-## 7 Decision requested
+## 7 Approved scope
 
-Approve the two new constructors, three S3 plotting methods and bounded,
+The approval covers the two new constructors, three S3 plotting methods and bounded,
 read-only comparison/timeline semantics above, with base graphics and existing
 dependencies. This approves F6c implementation only. F6d direction artifacts and
 F6e native projection retain their separate future concrete contracts.

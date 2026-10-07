@@ -8,9 +8,10 @@ the roadmap position and objectives, not new public signatures, dependencies,
 vendor patches or untested feature claims. Implementation has not started.
 
 On 2026-10-07 the founder authorized starting this sequence. The concrete F6c
-surface is now proposed in [the graphics contract](f6c-graphics-contract.md)
-and API-GRAMMAR section 12 under D-044. Its approval remains separate from the
-already approved scope/order; no product implementation has started.
+surface was presented in [the graphics contract](f6c-graphics-contract.md)
+and API-GRAMMAR section 12 under D-044, then approved by the founder's instruction
+to proceed after merging PR60. F6c implementation is now in progress; acceptance
+remains required. D-042/D-043 approved scope and order remain unchanged.
 
 ## Starting point
 
