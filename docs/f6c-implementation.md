@@ -119,6 +119,31 @@ their original values were restored and all eight final checks passed. Private
 workspace/preflight backups remain local. The namespace stays loaded safely,
 with model handles closed; namespace unloading is not claimed.
 
+## Final CI package integration correction
+
+The first F6c R matrix at `9312e38` failed the existing exact export-set test on
+all four legs: its allowlist still omitted the already approved `llm_compare`
+and `llm_timeline`. Rust's five jobs passed. Mac legs each recorded 3,365 passing
+expectations / one failure / 79 skips; Linux legs 3,359 / one / 80. No new graphics
+test failed, but the overall R jobs remain failed. The earlier local focused
+suite missed this package-wide gate. The allowlist now includes exactly the two
+D-044 additions, with the equality assertion unchanged.
+
+The same full check exposed an `object.size` namespace NOTE. All 19 affected
+calls in graphics/live-state helpers now explicitly use `utils::object.size`;
+arguments and every other source byte are unchanged, including memory bounds.
+This introduces no dependency/export or native change. The
+[retained failure and source equivalence](../tests/graphics/measurements/ci-package-37617867269/README.md)
+record the diagnosis. Targeted installed package/ledger tests passed: seven cases,
+28 expectations, no failures/skips/test warnings. Namespace/code-usage analysis
+emitted no messages; source build/scoped check has zero errors, two deliberately
+omitted-vignette warnings and no NOTE. All 136 source hashes match. The first
+local driver failed after successful tests because its manually counted guard
+expected 27 instead of 28; its unchanged receipts are retained, and the resume
+ran only the remaining code-usage/build/check stages. Final exact-head CI remains
+required. Accepted model/UI/numerical evidence retains its parent source and is
+not needlessly repeated.
+
 ## Separate GitHub maintenance item
 
 PR60's nine ordinary checks and both post-merge workflows passed. The independent

@@ -1,0 +1,8 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-package.R","package","the relm namespace loads with its compiled library",1,0,FALSE,FALSE,0,0.017,0.001,0.019,1
+"test-package.R","package","only API-GRAMMAR-approved functions are exported (spec-first gate)",1,0,FALSE,FALSE,0,0.017,0,0.018,1
+"test-package.R","package","the WP4 relm_trace S3 methods are registered (API-GRAMMAR section 2/4)",7,0,FALSE,FALSE,0,0.00499999999999998,0.002,0.00700000000000001,7
+"test-package.R","package","the WP1 S3 methods are registered (API-GRAMMAR section 3)",8,0,FALSE,FALSE,0,0.006,0.002,0.00700000000000001,8
+"test-graphics-memory.R","graphics-memory","comparison ledger exceeds materialized simultaneous base-R shapes",4,0,FALSE,FALSE,0,0.003,0.000999999999999997,0.004,4
+"test-graphics-memory.R","graphics-memory","timeline ledger exceeds expanded history and replacement shapes",4,0,FALSE,FALSE,0,0.00900000000000001,0.001,0.01,4
+"test-graphics-memory.R","graphics-memory","wide selected vectors refuse before materialization under small budgets",3,0,FALSE,FALSE,0,0.048,0.001,0.049,3

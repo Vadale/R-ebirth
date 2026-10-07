@@ -31,7 +31,7 @@ graphics_admit <- function(estimate, budget) {
 }
 
 graphics_stage <- function(bound, ...) {
-  actual <- sum(vapply(list(...), function(x) as.double(utils::object.size(x)), numeric(1)))
+  actual <- sum(vapply(list(...), function(x) as.double(object.size(x)), numeric(1)))
   if (actual > bound) relm_abort("relm_error_internal",
     "Graphics materialization exceeded its admitted ledger; report this invariant failure.",
     list(reason = "graphics_allocation", actual_bytes = actual, estimate_bytes = bound))
@@ -93,8 +93,8 @@ graphics_state <- function(state, budget, logits = TRUE) {
     graphics_fail("state_identity", "The prompt, state position or applied steering revision is inconsistent.")
   }
   if (!identical(class(steer), "data.frame")) graphics_fail("steering_audit", "The worker steering table is missing.")
-  meta <- as.double(utils::object.size(step)) + as.double(utils::object.size(steer)) +
-    as.double(utils::object.size(prompt)) + as.double(utils::object.size(model)) + 1024
+  meta <- as.double(object.size(step)) + as.double(object.size(steer)) +
+    as.double(object.size(prompt)) + as.double(object.size(model)) + 1024
   graphics_admit(32768 + 8 * meta, budget)
   graphics_steering(steer)
   if (logits) {
@@ -103,7 +103,7 @@ graphics_state <- function(state, budget, logits = TRUE) {
         c("integer", "integer", "integer", "character", "double", "double")) || nrow(lg) > 128L) {
       graphics_fail("logits_schema", "Supply the unchanged bounded top-logit table from on_state.")
     }
-    meta <- meta + as.double(utils::object.size(lg))
+    meta <- meta + as.double(object.size(lg))
     graphics_admit(32768 + 8 * meta, budget)
     if (anyNA(lg) || any(!is.finite(lg$logit)) || any(!is.finite(lg$prob)) ||
         any(lg$prob < 0 | lg$prob > 1) || any(lg$prompt_id != 1L) ||
@@ -127,7 +127,7 @@ graphics_context <- function(context, reference, intervention, budget) {
   if (!graphics_named(context, c("reference", "intervention"))) fail()
   settings <- c("seed", "chat", "temperature", "top_p", "max_tokens", "stop",
     "context_length", "backend", "relm_version", "engine_revision")
-  bytes <- as.double(utils::object.size(context))
+  bytes <- as.double(object.size(context))
   graphics_admit(32768 + 8 * bytes, budget)
   for (side in names(context)) {
     x <- context[[side]]

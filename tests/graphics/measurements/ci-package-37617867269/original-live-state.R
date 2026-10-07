@@ -193,7 +193,7 @@ live_payload_state <- function(job, payload) {
   if (!is.null(job$live$estimate)) {
     bound <- if (isTRUE(attr(trace, "spilled"))) job$live$estimate$logits_bytes else
       job$live$estimate$materialized_bytes
-    actual <- as.numeric(utils::object.size(result))
+    actual <- as.numeric(object.size(result))
     if (actual > bound || actual > job$live$budget_bytes) {
       relm_abort("relm_error_internal", "Live state materialization exceeded its admitted bound.",
         list(reason = "live_allocation_invariant", estimate_bytes = bound, actual_bytes = actual))
@@ -242,14 +242,14 @@ live_deliver <- function(job, payload) {
 live_fixed_bytes <- function(config, m, prompt,
                              original_steering = live_steering_table(m$interventions)) {
   integer_profile <- vapply(c(0L, 1L, 3L, 5L, 9L, 17L),
-    function(n) as.numeric(utils::object.size(integer(n))), numeric(1))
+    function(n) as.numeric(object.size(integer(n))), numeric(1))
   if (.Machine$sizeof.pointer != 8L ||
     !identical(integer_profile, c(48, 56, 64, 80, 96, 176)) ||
-    as.numeric(utils::object.size(double())) != 48 ||
-    as.numeric(utils::object.size(double(17L))) != 184 ||
-    as.numeric(utils::object.size(vector("list", 17L))) != 184 ||
-    as.numeric(utils::object.size(strrep("x", 8L))) -
-      as.numeric(utils::object.size(vector("list", 1L))) != 64) {
+    as.numeric(object.size(double())) != 48 ||
+    as.numeric(object.size(double(17L))) != 184 ||
+    as.numeric(object.size(vector("list", 17L))) != 184 ||
+    as.numeric(object.size(strrep("x", 8L))) -
+      as.numeric(object.size(vector("list", 1L))) != 64) {
     abort_argument("on_state", "This R allocation profile is not supported by the live memory bound.")
   }
   memory <- live_empty_trace(m, prompt)
@@ -282,9 +282,9 @@ live_fixed_bytes <- function(config, m, prompt,
     neuron = integer(), value = double(), component_levels = character(),
     component_codes = integer(), token_levels = character(), token_codes = integer(),
     row_nneuron = integer())
-  max(as.numeric(utils::object.size(empty(memory))), as.numeric(utils::object.size(empty(spilled)))) +
-    as.numeric(utils::object.size(interned)) + as.numeric(utils::object.size(config)) +
-    as.numeric(utils::object.size(original_steering))
+  max(as.numeric(object.size(empty(memory))), as.numeric(object.size(empty(spilled)))) +
+    as.numeric(object.size(interned)) + as.numeric(object.size(config)) +
+    as.numeric(object.size(original_steering))
 }
 
 live_config_strings <- function(config) {

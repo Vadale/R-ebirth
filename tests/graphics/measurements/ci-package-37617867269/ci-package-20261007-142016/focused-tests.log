@@ -1,0 +1,10 @@
+package: .................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-memory: ...........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: sum(rows$passed) == 27L is not TRUE
+Execution halted
