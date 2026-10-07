@@ -1,10 +1,10 @@
 # Contrast directions and held-out evaluation
 
-Date: 2026-10-07. **D-045 / API-GRAMMAR section 13: PROPOSED.** The founder
-authorized starting F6d after merging PR61. This document makes its concrete
-public contract reviewable; it is not an implementation or an acceptance claim.
-D-042/D-043 approve the objective and sequence. No new API approval is inferred
-from an instruction issued before these signatures were presented.
+Date: 2026-10-07. **D-045 / API-GRAMMAR section 13: APPROVED.** The founder
+replied "Vai" after this concrete proposal and the explicit API, temporary-file
+and recorded-provenance question. Proposal history remains in commit c4befed.
+No approval is pending for this scope; implementation/acceptance are separate.
+D-042/D-043 continue to bind the product objective and sequence.
 
 ## 1 Small public surface
 
@@ -131,14 +131,14 @@ only after exact-name validation. Coordinate/pair order is never canonicalized
 by sorting away a mismatch.
 
 `tools::sha256sum()` is already used by the package and needs no dependency.
-It hashes files, so this proposal explicitly permits **temporary canonical
+It hashes files, so this approved contract explicitly permits **temporary canonical
 checksum files** for these two functions and the validator used by printing.
 Write in bounded chunks to unique files in the session temporary directory,
 close descriptors and unlink on success/error/interrupt. Keep at most one file
 alive at once; cap its bytes using the admitted canonical-size estimate. No
 model file, user artifact or caller-selected path is written or overwritten.
 Disk-full/hash failures are classed errors, not a fallback to unchecked vectors.
-This is a narrow proposed amendment to API-GRAMMAR rule 9, not an implicit write.
+This is a narrow approved amendment to API-GRAMMAR rule 9, not an implicit write.
 
 RDS round-trips must preserve exact values, schema and metadata. Validation
 checks the payload digest, coordinates, finite unit norm and all semantic
@@ -185,7 +185,7 @@ explicit experiment assumptions. Across sessions, verify the pinned file and
 recreate the handle; copying the artifact's record into an unrelated handle is
 not validation. Same width, same architecture or same path is insufficient.
 Automatic loaded-weight attestation would require a separate loader contract;
-the founder is being asked to approve this narrower, honest F6d boundary.
+the founder approved this narrower, honest F6d boundary.
 
 ## 6 Memory and side effects
 
@@ -234,7 +234,7 @@ The approved roadmap acceptance is retained verbatim:
 > side-effect and public API contracts before implementation; no new dependency
 > or model download follows from this roadmap decision.
 
-After approval, execute in this order:
+Execute in this order:
 
 1. Add an independent small Python reference under
    `tests/llm-golden/directions/`, using the pinned reference environment. Freeze
@@ -294,7 +294,7 @@ After approval, execute in this order:
 
 ## 8 Decision and next action
 
-Recommended: approve the two functions, one printing method, strict single-layer
+Approved: the two functions, one printing method, strict single-layer
 paired-matrix profile, caller RDS persistence, bounded temporary checksum writes
 and explicit recorded-provenance limitation above. This provides construction,
 reuse and evaluation without a new inference framework or loader API.
@@ -304,7 +304,6 @@ design and broader native/ownership acceptance; a prompt-to-experiment runner
 duplicates existing generation/capture and adds orchestration/retention scope.
 Neither is hidden inside this proposal. F6e projection remains the next increment.
 
-Until this concrete D-045/API proposal is accepted, only contract/reference
-planning proceeds. Next authorized implementation action after approval: freeze
-the independent arithmetic/encoding reference, then implement the bounded R
-constructor and existing-steering adapter. No F6d API is implemented yet.
+The founder approved D-045. Next action: freeze the independent arithmetic and
+encoding reference, then implement the bounded R constructor and
+existing-steering adapter. No F6d API is implemented or accepted yet.

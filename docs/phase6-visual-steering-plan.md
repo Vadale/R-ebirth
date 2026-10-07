@@ -6,7 +6,7 @@ reusable graphics → F6d direction construction and evaluation → F6e projecti
 steering**. Each increment ends independently usable. This document approves
 the roadmap position and objectives, not new public signatures, dependencies,
 vendor patches or untested feature claims. F6d contract preparation is now
-authorized; its proposed public API remains unimplemented. F6e has not started.
+authorized; D045 approved its concrete API, which remains unimplemented. F6e has not started.
 
 On 2026-10-07 the founder authorized starting this sequence. The concrete F6c
 surface was presented in [the graphics contract](f6c-graphics-contract.md)
@@ -20,10 +20,11 @@ exactly the accepted `ae89e15` tree. See the
 failures and limitations. D-042/D-043 scope and order are unchanged.
 
 The founder then authorized F6d. Its concrete paired-matrix artifact, checked
-application, caller RDS persistence and held-out evaluation proposal is
+application, caller RDS persistence and held-out evaluation contract is
 [the F6d contract](f6d-direction-contract.md), D-045 / API-GRAMMAR section 13.
 Recorded provenance must not be misrepresented as authentication of loaded
-weights. Concrete API approval precedes implementation.
+weights. The founder approved D045 with "Vai" after the concrete question; implementation
+and acceptance now follow that contract.
 
 ## Starting point
 

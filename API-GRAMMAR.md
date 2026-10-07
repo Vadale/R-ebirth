@@ -391,11 +391,12 @@ retains bounded worker-applied audit rows, not activation payloads. Plots use
 base graphics on the caller's device; export remains caller-managed. Existing
 condition classes are reused, with no dependency, native or vendor change.
 
-## 13. Reproducible contrast directions — `[proposed: D-045, 2026-10-07]`
+## 13. Reproducible contrast directions — `[approved: D-045, 2026-10-07]`
 
-The founder authorized starting F6d after PR61 integration. These concrete
-signatures and their side effects have not yet been approved or implemented.
-The proposed behavior, schema, numerical guards, resource admission, error
+The founder approved this concrete contract with "Vai" on 2026-10-07 after
+the D045 question and complete proposal were presented. No API/side-effect
+approval remains pending. Implementation and acceptance are separate. The
+approved behavior, schema, numerical guards, resource admission, error
 classes and acceptance are specified in
 [the F6d direction contract](docs/f6d-direction-contract.md).
 
@@ -419,11 +420,11 @@ The application adapter requires the independently recorded destination model
 context, validates compatibility/integrity, and calls existing `llm_steer()` for
 all positions. It returns the usual fresh handle. Recorded model/checkpoint
 identity is not authentication of already-loaded weights or editable R metadata.
-Numeric-vector `llm_steer()` stays unchanged. The proposed print method is a
+Numeric-vector `llm_steer()` stays unchanged. The approved print method is a
 one-screen validated summary, invisibly returning its input.
 
 Persistence remains caller-owned trusted `saveRDS()` / `readRDS()`; application
-and printing revalidate the artifact. Proposed narrow rule-9 exception: bounded
+and printing revalidate the artifact. Approved narrow rule-9 exception: bounded
 session temporary canonical files for checksum computation, always closed and
 removed on success/error/interrupt; no user-path writes, automatic saved artifact
 or new dependency/native/vendor change. Existing argument/intervention/oom
