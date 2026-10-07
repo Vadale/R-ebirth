@@ -1,7 +1,10 @@
 # Phase 6 implementation and validation
 
-Status: operational acceptance complete, 2026-10-04. F6a and F6b are authorized
-under D-041; final PR-head CI and PR59 integration remain separate.
+Status: F6a/F6b complete and merged, 2026-10-04. All nine final PR checks passed
+atf37da77; the founder merged PR59 atcf4df63 with an identical tree. Both
+post-merge R37191616989/Rust37191616947 workflows passed. D-042 schedules the
+separate F6c/F6d/F6e extension in `phase6-visual-steering-plan.md`; it does not
+change the accepted D-041 contract or the source scopes below.
 F6a acceptance is complete at6877c4d: local functional/resource/foreground gates,
 all nine ordinary checks and independently verified scoped Linux sanitizer.
 F6b native/installed-R/public-update and foreground RStudio gates pass. All nine
@@ -610,6 +613,7 @@ Independent receipt checks verified each exact test name/count, both frozen
 source hashes and unchanged production bytes outside the test module. Logs,
 source and verification are retained under `local-corrected` and
 `verification.json` in the same evidence directory. Original failed attempts
-remain failed. Final PR-head ordinary CI remains required. No accepted model,
+remain failed. All nine final PR-head checks subsequently passed atf37da77.
+PR59 merged atcf4df63 with the identical accepted tree. No accepted model,
 installed-R, foreground, sanitizer or numerical suite was repeated for these
 fixture changes.

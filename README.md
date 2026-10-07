@@ -7,6 +7,12 @@ your machine. Generate text, produce constrained JSON, embed documents and
 inspect a model's internal activity. Results are ordinary character vectors,
 `data.frame`s and matrices, ready for R's statistical and plotting tools.
 
+The product focuses on reproducible model research: observe internal activity,
+compare conditions, apply interventions and evaluate their effects in R.
+Topic modelling is an existing application of these tools. The
+[active product plan](SOLO-PHASE-PLAN.md#0-product-objective-and-delivery-boundary)
+prioritizes this workflow, understandable visual results and maintainability.
+
 The native engine is a pinned, patched llama.cpp embedded through Rust. No
 Python, model server or API key is required. relm runs on stock R >= 4.5.
 

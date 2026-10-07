@@ -206,7 +206,15 @@ Every condition carries structured fields where useful (e.g. `estimate_bytes` on
 
 ## 7. Reserved names — `[proposed]`, NOT approved, do not implement
 
-Reserved to keep the namespace coherent; each needs its own approved entry when its phase arrives: `llm_generate(..., on_token = )` and streaming forms (Phase 5–6); `llm_serve()` / serve module surface (Phase 7); type-contract helpers and `reb_compile()` (Phase 7); the vision-tower (T3) interpretability surface (post-Phase-11 research, D-026 — the Phase-11 `projector=`/`images=` slot was realized as approved §3 amendments on 2026-07-14); `llm_finetune()` (Phase 12); preference-optimization surface (Phase 13); `sae_features()` and `relm.topics` exports (Phase 14); export/interop surface (Phase 15); streaming-source verbs (Phase 16).
+Historical reservations keep names coherent; they are not scheduled features.
+D-043 removes automatic implementation of `llm_serve()`/generic serving,
+type-contract helpers/`reb_compile()`, `llm_finetune()`, preference optimization,
+`sae_features()`, `relm.topics`, export/interop and general streaming-source verbs.
+Each would require explicit product reactivation and its own approved entry.
+T3 vision-tower interpretability remains unapproved research; the existing
+`projector=`/`images=` T1/T2 surface remains approved and supported. Token
+streaming and live state observation are already governed by sections 10–11,
+not by these historical reservations. No approved signature changes here.
 
 ## 8. Structured output contract — `[approved: D-030]`
 
@@ -355,3 +363,30 @@ in step and a worker-produced steering attribute record actual applied state.
 Original adapters are restored before model ownership returns, on every exit.
 This preserves immutable R handles and the observation boundary. No new export,
 dependency, direction, ablation or replay of historical KV is added. F6b acceptance is tracked separately and is not inferred from F6a evidence.
+
+## 12. Reusable model and intervention graphics — `[proposed: D-044]`
+
+The founder authorized starting F6c preparation on 2026-10-07. The following
+new public entries await specific approval; do not export or implement them as
+approved APIs yet. The exact proposed types, context/alignment, side effects,
+resource bounds and acceptance are in
+[the F6c graphics contract](docs/f6c-graphics-contract.md).
+
+```r
+plot.llm(x, layers = NULL, ...)
+llm_compare(reference, intervention, context, layer,
+            component = "residual", neurons = NULL,
+            max_bytes = 64 * 1024^2)
+plot.relm_comparison(x, ...)
+llm_timeline(state, history = NULL, max_states = 256L,
+             max_bytes = 8 * 1024^2)
+plot.relm_timeline(x, ...)
+```
+
+The model plot returns its metadata/site table invisibly. The constructors
+return classed data frames from existing delivered live states; they perform no
+generation and retain no native handle. Comparison uses recorded full input
+prefixes, withholding numerical differences for divergent histories. Timeline
+retains bounded worker-applied audit rows, not activation payloads. Plots use
+base graphics on the caller's device; export remains caller-managed. Existing
+condition classes are reused, with no dependency, native or vendor change.

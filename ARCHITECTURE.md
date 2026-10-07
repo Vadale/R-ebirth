@@ -6,6 +6,13 @@
 - **Date:** 2026-07-04
 - **Audience:** whoever implements Phases 0–4, and anyone reviewing that work.
 
+**Product scope amendment (2026-10-05, D-043):** the active product is the
+reproducible model-observation/intervention workflow in R. The later-rung and
+new-backend/training sketches below are historical options, not implementation
+commitments. Phase 7 now consolidates the existing product. Runtime ownership,
+numerical, error and memory contracts remain unchanged; removing duplication
+requires a concrete compatibility-preserving change, not a general rewrite.
+
 ---
 
 ## 1. System overview

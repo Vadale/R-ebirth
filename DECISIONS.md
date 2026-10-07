@@ -1287,7 +1287,134 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-042 — Visual analysis and directional steering roadmap insertion
+
+- **Date/status:** 2026-10-04. APPROVED for scope and sequencing. After reporting
+  PR59 merged, the founder explicitly requested adding the discussed graphics,
+  direction-building and projection-steering work to the roadmap and locating
+  it among the remaining phases. This is planning authorization; implementation
+  and its concrete API/dependency/vendor choices are not approved by implication.
+- **Decision:** extend Phase 6 after completed F6a/F6b with **F6c reusable
+  graphics and intervention comparisons → F6d direction construction, storage
+  and held-out evaluation → F6e native projection steering**, all before Phase 7.
+  Preserve existing later phase numbers and their hardware/team boundaries.
+- **Deliverables:** block-level architecture/intervention map, paired
+  baseline/intervention/difference views and applied-coefficient timeline;
+  model-bound direction artifacts with reproducible construction and evaluation;
+  a separate projection operator with independently verified numerical semantics.
+  See `docs/phase6-visual-steering-plan.md` for scope and acceptance planning.
+- **Why:** existing plotting and vector analysis are concentrated in demos.
+  F6a/F6b now provide the observation and applied-intervention metadata needed
+  to expose them coherently to researchers. Contrast-derived directions first
+  reuse the existing additive mechanism; projection editing is a separate step.
+- **Semantic boundary:** relm currently adds `alpha * v` to the residual stream.
+  The DwarfStar reference modifies `h` by `-alpha * v * dot(v, h)` at FFN or
+  attention output. These are different operations and locations. Same-width
+  vector files are not automatically compatible, and live R replies cannot
+  retroactively edit the state that invoked them.
+- **Limits:** API-GRAMMAR, dependency and vendor-patch decisions remain concrete
+  implementation gates. No new export, dependency, backend, model download,
+  patch, numerical tolerance or completed acceptance is created here. Preserve
+  bounded capture/spill and causal-position semantics. No inferred causal
+  network edges, universal behavioral-control claim or safety guarantee.
+- **Alternatives rejected:** renumbering all later phases; hiding projection
+  semantics behind the existing additive coefficient; one inseparable graphics
+  and native-engine milestone; treating demo plots as a complete public UI.
+
+---
+
+## D-043 — Focus the product and replace automatic expansion with consolidation
+
+- **Date/status:** 2026-10-05. APPROVED product direction and roadmap revision.
+  The founder asked to focus on the model-research tool already being built,
+  exclude the biology/DNA expansion, evaluate whether existing topic modelling
+  is sufficient, reduce complexity and maintenance, and change the roadmap now.
+- **Product objective:** make local language models inspectable and
+  experimentally controllable from R, with reproducible statistical evaluation
+  and understandable visual results. The primary user journey is load, observe,
+  compare, intervene, evaluate and export an experiment.
+- **Active sequence:** complete D-042's F6c graphics, F6d direction construction
+  and evaluation, and F6e projection steering; replace the old Phase-7 general
+  types/compiler/serving programme with **Phase 7 consolidation, usability and
+  external validation**. Retain hardware-gated Phase 8 Windows/CUDA and Phase 9
+  CRAN/docs/API stability. Each step has an independently useful exit.
+- **Removed scope:** Phase 18 protein/DNA biology, `relm.bio` and the optional
+  biological Demo C are outside the active product roadmap. This is not an
+  instruction to remove existing generic model capabilities or user artifacts.
+- **Topics:** retain the existing embeddings, clustering/labels, visualizations
+  and quality examples, reusing optional ecosystem packages. A new `relm.topics`
+  satellite is not planned. Improve the existing workflow when a concrete user
+  task exposes a gap. Pretrained SAE analysis is a separate possible research
+  extension, not an obligation attached to topic modelling or the v1.0 exit.
+- **Uncommitted expansion:** a second backend, fine-tuning/RL, general compiler
+  or type language, generic serving/OpenAPI framework, model export, general
+  data streams/engine, distribution and fork remain historical ideas rather
+  than scheduled follow-on phases. A demonstrated user need, bounded proposal
+  and maintenance case must precede any explicit reactivation. Existing I1,
+  WP12a/b service and T1/T2 multimodal capability remain supported within their
+  accepted scope. No new implementation is authorized by this planning entry.
+- **Consolidation exit:** a clear supported path through the primary journey;
+  an inventory and justified disposition of duplicate/unused internals and
+  optional dependencies; targeted compatibility-preserving simplifications;
+  a measured map of test coverage/cost; runnable onboarding and one external
+  researcher completing a bounded experiment without continuous developer
+  assistance. Record actual assistance and failures. External participation is
+  a real future gate, not something a simulated agent can claim completed.
+- **Limits:** simplification does not authorize a blanket rewrite, removal of
+  public APIs, weaker numerical/resource/ownership gates or deletion of historical
+  evidence. Any concrete removal/deprecation follows compatibility and review
+  rules. No new dependency, vendor change, benchmark claim or completed test
+  is implied. Relevant correctness checks remain mandatory.
+- **Supersession:** this changes the product scope/sequence of D-002, D-010 and
+  the later-expansion portion of D-042; their accepted delivered behavior and
+  historical rationale remain intact. Old phase/WP numbers are retained for
+  provenance, never reused for a different API. Phase 7 gets a new consolidation
+  plan rather than relabelling the historical WP14 compiler work as completed.
+- **Why/alternatives:** deliver one coherent research product and maintain what
+  users actually use. Reject automatic completion of the original 22-phase
+  vision, a new satellite merely because a demo exists, and complexity reduction
+  measured only as fewer source lines or fewer tests.
+
+---
+
+## D-044 — Reusable model graphics and bounded intervention comparisons
+
+- **Date/status:** 2026-10-07. PROPOSED public contract, not yet approved.
+  The founder authorized starting the updated sequence; D-042/D-043's scope
+  approval does not specify these new signatures. Implementation follows
+  explicit approval of this concrete entry and API-GRAMMAR section 12.
+- **Proposal:** `plot.llm()` shows a supported/generic block schematic and
+  configured interventions. `llm_compare()` returns a classed data frame of
+  selected actual live-state values, with recorded full-prefix alignment and
+  bounded top-logit comparisons. `llm_timeline()` returns a bounded history of
+  the worker's applied coefficient audit. Both tables have base-graphics plot
+  methods. Exact signatures, schemas, limits and acceptance are in
+  [the F6c contract](docs/f6c-graphics-contract.md).
+- **Scientific semantics:** metadata is not activity or a causal graph;
+  divergent input prefixes withhold activation/logit differences; missing
+  top-k probabilities are not zeros; sampled state tokens need not be final
+  output; coefficient restoration does not undo KV history. Caller-recorded
+  model/configuration provenance is validated, not falsely authenticated.
+- **Maintenance boundary:** two constructors and three S3 methods, existing
+  base graphics and dependencies, no generation wrapper, background service,
+  new condition class, native operation, vendor patch or spill-format change.
+  Results retain no model pointer or raw live-state history. Export is managed
+  by the caller's normal R devices/serialization tools.
+- **Resource boundary:** separate bounded comparison materialization and
+  compact rolling history, with pre-allocation accounting and actual R-object
+  checks. Spill selection must honor existing integrity and batch limits.
+  This is not a bound on total RStudio/model/device memory.
+- **Alternatives:** defer a browser dashboard and automatic experiment runner;
+  keep useful demo recipes but replace repeated plotting boilerplate with
+  a small supported interface. F6d/F6e retain their own later contracts.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
+
+D-043 removes the distribution/fork from the active product roadmap. The
+following historical playbook is not an execution instruction or an automatic
+next step; explicit reactivation is required even if its old triggers occur.
 
 Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustained external contributors + adoption signal + maintenance funding). If that day comes:
 
