@@ -1412,6 +1412,58 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-045 — Bounded contrast-direction artifacts and checked additive application
+
+- **Date/status:** PROPOSED on 2026-10-07. After merging PR61, the founder said
+  "ok, vai con ok vai di f6d", authorizing work on F6d. This entry presents new
+  concrete signatures and side effects for approval before implementation;
+  D-042/D-043 roadmap approval is not approval of previously unseen exports.
+- **Recommended decision:** two functions, `llm_direction()` from explicit
+  paired full-width residual matrices and `llm_apply_direction()` delegating to
+  existing additive steering, plus a one-screen `print.relm_direction()` method.
+  API-GRAMMAR section 13 and
+  [the concrete contract](docs/f6d-direction-contract.md) specify the signatures,
+  exact context, artifact shape, arithmetic, limits and acceptance sequence.
+- **Numerics:** one layer at a time; target-minus-control pair differences,
+  optional pair normalization, optional construction-control-mean
+  orthogonalization, final unit normalization. Reject degenerate/nonfinite
+  cases; fit no transformation on coefficient-selection or final-evaluation
+  data. Freeze independent arithmetic and canonical digest goldens before code.
+- **Persistence and compatibility:** a classed base data frame with bounded
+  metadata, exact coordinates and canonical payload/vector/input digests. Use
+  caller-owned trusted RDS persistence and mandatory validation before applying.
+  Require matching independently recorded checkpoint/build/tensor provenance
+  and metadata/native dimension checks. This is not authentication of loaded
+  weights: current handles have no persistent native checkpoint digest, and
+  hashing a mutable path after load does not establish one. Approving this
+  proposal explicitly accepts that recorded-provenance boundary; automatic
+  load binding requires a separate design.
+- **Declared side effect:** narrowly allow bounded temporary canonical checksum
+  files under the session temporary directory, using existing
+  `tools::sha256sum()`. Close/unlink on every exit; no user-path/model writes,
+  automatic artifact destination or new dependency. This is an explicit
+  proposed exception to API-GRAMMAR rule 9, not a hidden write.
+- **Evaluation:** a predeclared bounded cached-Qwen example separates
+  construction, coefficient selection and consumed final prompts. Keep actual
+  outputs, negative results, zero/baseline/random controls, operational quality
+  metrics and small-sample uncertainty tables. Reuse F6c for observed comparisons
+  and applied history; beneficial steering is not an engineering pass criterion.
+- **Maintenance boundary:** no new inference runner, loader argument, native
+  operation, vendor patch, dependency, custom file format, arbitrary trace
+  reader or automatic model download. Capture and native-context memory retain
+  their existing independent contracts. One focused architecture analysis found
+  no existing loaded-weight identity to reuse; one integrated implementation
+  review will follow the implementation, not another broad planning loop.
+- **Alternatives:** a high-level experiment runner duplicates capture/generation
+  and adds orchestration; automatic checkpoint attestation needs a broader
+  loader/ownership contract. Neither is hidden in this smaller increment.
+  Runtime projection remains F6e, after independently usable F6d.
+- **Next action:** founder review of this concrete API/side-effect/provenance
+  proposal, then separate new-feature reference commit and bounded R
+  implementation. No export or completed acceptance is created by this entry.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 D-043 removes the distribution/fork from the active product roadmap. The

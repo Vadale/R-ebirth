@@ -1,20 +1,29 @@
 # Visual analysis and directional steering
 
-Updated: 2026-10-05. D-042 records the founder's decision to schedule this work
+Updated: 2026-10-07. D-042 records the founder's decision to schedule this work
 after the merged F6a/F6b delivery and before Phase 7. The sequence is **F6c
 reusable graphics → F6d direction construction and evaluation → F6e projection
 steering**. Each increment ends independently usable. This document approves
 the roadmap position and objectives, not new public signatures, dependencies,
-vendor patches or untested feature claims. F6d and F6e have not started.
+vendor patches or untested feature claims. F6d contract preparation is now
+authorized; its proposed public API remains unimplemented. F6e has not started.
 
 On 2026-10-07 the founder authorized starting this sequence. The concrete F6c
 surface was presented in [the graphics contract](f6c-graphics-contract.md)
 and API-GRAMMAR section 12 under D-044, then approved by the founder's instruction
 to proceed after merging PR60. F6c implementation and local acceptance are now
 complete, including installed tests, actual cached-model comparisons, managed
-spill and foreground RStudio plotting/export. Final CI and integration remain
-pending; see the [implementation report](f6c-implementation.md) for exact source
-scopes, retained failures and limitations. D-042/D-043 scope and order are unchanged.
+spill and foreground RStudio plotting/export. PR61 passed all nine final checks
+and the founder merged it at `989000e67f565121050044e93dc0ae61a143f0db`, with
+exactly the accepted `ae89e15` tree. See the
+[implementation report](f6c-implementation.md) for source scopes, retained
+failures and limitations. D-042/D-043 scope and order are unchanged.
+
+The founder then authorized F6d. Its concrete paired-matrix artifact, checked
+application, caller RDS persistence and held-out evaluation proposal is
+[the F6d contract](f6d-direction-contract.md), D-045 / API-GRAMMAR section 13.
+Recorded provenance must not be misrepresented as authentication of loaded
+weights. Concrete API approval precedes implementation.
 
 ## Starting point
 
