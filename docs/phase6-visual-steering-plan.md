@@ -8,8 +8,10 @@ the roadmap position and objectives, not new public signatures, dependencies,
 vendor patches or untested feature claims. F6d contract preparation is now
 authorized; D045 approved its concrete API. F6d implementation, independent reference,
 installed tests, actual cached-model evaluation and local package acceptance are
-complete; final remote checks/integration remain pending. See the
-[F6d implementation report](f6d-implementation.md). F6e has not started.
+complete. All nine final PR checks passed; PR62 is merged at `6dd701b` with
+the accepted `4820051` tree. See the
+[F6d implementation report](f6d-implementation.md). The founder authorized F6e preparation after merging PR62. Its concrete native
+placement/API contract is being prepared; no projection runtime is implemented.
 
 On 2026-10-07 the founder authorized starting this sequence. The concrete F6c
 surface was presented in [the graphics contract](f6c-graphics-contract.md)
@@ -108,6 +110,11 @@ side-effect and public API contracts before implementation; no new dependency
 or model download follows from this roadmap decision.
 
 ## F6e Projection steering
+
+The concrete [F6e contract](f6e-projection-contract.md), D046/API-GRAMMAR14,
+is now proposed after the founder authorized the next increment. It reuses
+`llm_apply_direction()` with an appended operator argument and component-bound
+artifacts. No public/runtime implementation or vendor edit is approved yet.
 
 **Goal:** add a distinct runtime intervention on a supported activation stream:
 
