@@ -1,0 +1,42 @@
+{
+  "parent_failure": "/private/tmp/relm-f6c/package-resume-20261007-134046",
+  "status": "failed",
+  "pid": 14669,
+  "directory": "/private/tmp/relm-f6c/docs-20261007-134232",
+  "started_at": 1791373352.536829,
+  "stages": [
+    {
+      "name": "visual",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6c/render-installed.R"
+      ],
+      "status": "passed",
+      "pid": 14670,
+      "exit_code": 0
+    },
+    {
+      "name": "vignette",
+      "command": [
+        "quarto",
+        "render",
+        "rebirth/vignettes/model-interventions.qmd",
+        "--to",
+        "html"
+      ],
+      "status": "failed",
+      "pid": 14679,
+      "exit_code": 1
+    }
+  ],
+  "native": {
+    "path": "/private/tmp/relm-f6b/library/relm/libs/relm.so",
+    "sha256": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "scope": "Accepted F6b DLL reused unchanged. No native compilation or renewed native acceptance."
+  },
+  "stage": "vignette",
+  "error": "vignette failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6c/verify-docs.py\", line 39, in <module>\n    stage('vignette',['quarto','render','rebirth/vignettes/model-interventions.qmd','--to','html'],timeout=600)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6c/verify-docs.py\", line 24, in stage\n    if rc:raise RuntimeError(name+' failed')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vignette failed\n",
+  "finished_at": 1791373352.956728
+}

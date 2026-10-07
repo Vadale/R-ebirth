@@ -1,0 +1,155 @@
+---
+title: "See, compare and record model interventions"
+format: html
+engine: knitr
+vignette: >
+  %\VignetteIndexEntry{See, compare and record model interventions}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+The development graphics interface separates three questions: where an operation
+is configured, what was observed under two recorded inputs, and which coefficients
+a worker actually applied over time. It uses base graphics and ordinary data
+frames. It never runs inference implicitly or changes model weights.
+
+## A download-free numeric example
+
+The following editable records are **synthetic**, not model measurements. Their
+four coordinate differences were independently specified as `0.5, -1, 1, 0`.
+Real observations come directly from `llm_generate(on_state = ...)`.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 7
+library(relm)
+source(system.file("examples", "graphics-states.R", package = "relm"), local = TRUE)
+comparison <- llm_compare(reference, intervention, context, layer = 2)
+stopifnot(identical(comparison$difference, c(0.5, -1, 1, 0)))
+plot(comparison, main = "Synthetic observed-state comparison")
+```
+
+Reference and intervention use the same vertical scale. The difference panel is
+signed intervention minus reference. Attributes contain sampled-token IDs,
+applied steering, source positions and the union of the two top-k distributions.
+A token missing from one truncated top-k table is unknown, not probability zero;
+these tables cannot establish full-distribution KL or answer quality.
+
+## Record a bounded applied history
+
+```{r}
+#| fig-width: 10
+#| fig-height: 7
+history <- llm_timeline(reference, max_states = 4)
+for (i in 2:6) {
+  state <- example_state(as.integer(i), coefficient = 0,
+                         revision = 1L, after = 1L)
+  history <- llm_timeline(state, history, max_states = 4)
+}
+plot(history, main = "Synthetic applied steering; truncated window")
+history[, c("state_id", "coef", "applied_after_state", "effective_source_pos")]
+```
+
+This history retains states 3–6. The update after state 1 was effective at state 2;
+truncation must not invent an update at state 3. The audit annotation retains the
+original boundary even when the marker is outside the visible window. A sampled
+token is not necessarily committed output: cancellation and stop removal can
+prevent it from appearing in final text. Returning a coefficient to zero removes
+its future contribution, but does not erase prior KV history.
+
+`max_states` bounds whole observations; `max_bytes` bounds the helper's admitted
+materialization. Large histories evict oldest complete states. A single state
+that cannot fit raises `relm_error_oom`. Holding many old histories yourself or
+retaining all activation states is outside this working budget.
+
+## Collect real observations without retaining every activation
+
+The model example below is not executed during vignette rendering. Supply an
+already downloaded supported GGUF, its independently recorded SHA-256 and the
+actual build revision. Use exactly the same settings for the paired runs.
+`llm_tokens()` is not a substitute for the generation template's prompt IDs:
+its special-token flags differ. `llm_compare()` uses recorded matching model,
+settings, prompt text and token count, plus **every prior generated token ID**.
+The record is checked for consistency, not authenticated.
+
+```{r}
+#| eval: false
+m <- llm("/path/to/model.gguf", backend = "cpu", context_length = 512)
+changed <- llm_steer(m, layer = 2L, direction = direction, coef = 0.5)
+plot(changed, layers = c(1:4, 12))
+
+settings <- list(seed = 17, chat = FALSE, temperature = 0, top_p = 0.95,
+  max_tokens = 32L, stop = NULL, context_length = 512L, backend = "cpu",
+  relm_version = as.character(packageVersion("relm")),
+  engine_revision = "your recorded build revision")
+
+# Run sequentially, waiting for each promise before starting the next model job.
+# Save only the selected state's activations, all sampled IDs (<= 1024),
+# and a bounded audit table. Keep callbacks short.
+run <- function(model, prompt) {
+  result <- new.env(parent = emptyenv())
+  result$ids <- integer(); result$state <- NULL; result$history <- NULL
+  result$promise <- llm_generate(model, prompt, chat = settings$chat,
+    max_tokens = settings$max_tokens, seed = settings$seed,
+    temperature = settings$temperature, top_p = settings$top_p,
+    stop = settings$stop, async = TRUE, layers = 2L, top = 5L,
+    on_state = function(state) {
+      result$ids <- c(result$ids, state$step$token_id)
+      result$history <- llm_timeline(state, result$history, max_states = 32L)
+      if (state$step$state_id == 1L) {
+        result$state <- state
+        result$prefix <- result$ids
+      }
+      NULL  # history is data, not a steering reply
+    })
+  result
+}
+```
+
+After each promise settles, pair the captured states using matching records:
+
+```{r}
+#| eval: false
+record <- function(run) list(model_sha256 = recorded_sha256,
+  settings = settings, generated_tokens = run$prefix)
+paired <- llm_compare(baseline$state, treated$state,
+  context = list(reference = record(baseline), intervention = record(treated)),
+  layer = 2L)
+plot(paired)
+plot(treated$history)
+close(changed); close(m)
+```
+
+At state k, the current sampled token has not yet entered the input history for
+that state. Divergence in any earlier generated ID withholds numerical differences
+and labels the result descriptive. A single aligned comparison describes one
+controlled input, not general causal efficacy. Evaluate on held-out prompts,
+repeated seeds and external outcome measures before claiming a useful direction.
+
+## Interpret the map and export your results
+
+`plot(model)` shows configured entries, not coefficients that a live worker is
+currently applying. Detailed llama/qwen2 maps label attention, MLP and residual
+sites; Qwen2 attention-output capture is unavailable and is labelled accordingly.
+Other architectures use generic blocks. Gaps and configured steering/ablation are
+explicit. The diagram is schematic metadata, not a graph inferred from correlation.
+For more than 32 layers select a subset explicitly; timeline plots admit at most
+16 interventions, so select the relevant rows before rendering a larger audit.
+
+All plots return their source tables invisibly and restore graphical parameters.
+Scripts own the output device. RStudio uses its usual Plots pane.
+
+```{r}
+#| eval: false
+pdf("comparison.pdf", width = 10, height = 7)
+tryCatch(plot(paired), finally = dev.off())
+write.csv(as.data.frame(paired), "comparison.csv", row.names = FALSE)
+saveRDS(paired, "comparison-with-provenance.rds")
+```
+
+CSV carries columns only; RDS retains the bounded metadata too. Input state traces
+may own temporary spill files. A completed comparison contains values rather than
+file leases and remains usable after the inputs are released. Reading a missing
+or incompatible spill raises a classed error. The reader is intended for
+package-produced live Arrow files; its R materialization budget is not a hard
+bound on arbitrary hostile IPC decoder allocations or total process memory.

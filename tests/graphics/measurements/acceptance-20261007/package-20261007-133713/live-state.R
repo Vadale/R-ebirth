@@ -300,9 +300,7 @@ live_prepare <- function(live, m, prompt, max_tokens) {
       normalizePath(path.expand(live$spill_dir), mustWork = FALSE)
   } else ""
   if (live$spill && !startsWith(dir, "/")) dir <- file.path(getwd(), dir)
-  # The managed lease admits only trace-*.arrow leaves; the native live
-  # writer appends the state suffix to this shared nonce without adding a prefix.
-  id <- paste0("trace-", gsub(".", "-", next_trace_id(), fixed = TRUE))
+  id <- gsub(".", "-", next_trace_id(), fixed = TRUE)
   config <- list(layers = live$layers, components = live$components,
     top = as.double(live$top), budget_bytes = as.double(live$budget_bytes),
     r_fixed_bytes = 0, spill = live$spill, spill_dir = dir, trace_id = id,

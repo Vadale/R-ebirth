@@ -1,0 +1,4 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-graphics-spill.R","graphics-spill","selected spilled and in-memory observed values agree exactly",5,0,FALSE,FALSE,0,0.046,0.003,0.049,5
+"test-graphics-spill.R","graphics-spill","mismatched and missing spill files remain classed failures",2,0,FALSE,FALSE,0,0.016,0.002,0.018,2
+"test-graphics-spill.R","graphics-spill","live spill preparation supplies the managed lease filename prefix",7,0,FALSE,FALSE,0,0.00700000000000001,0.000999999999999997,0.00900000000000001,7

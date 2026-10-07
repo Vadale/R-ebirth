@@ -1,5 +1,23 @@
 # relm (development)
 
+## Reusable model and intervention graphics (F6c)
+
+* `plot()` on an open model shows selected blocks, supported observation sites
+  and configured steering/ablation entries. It describes metadata, not measured
+  activity or causal connections; unknown architectures remain generic.
+* `llm_compare()` pairs bounded live-state captures under caller-recorded model,
+  settings and complete generated-token history. Divergent input prefixes withhold
+  differences; truncated top-k gaps remain unknown rather than zero.
+* `llm_timeline()` retains bounded, whole-state applied coefficient history.
+  Its plot separates sampled-token IDs and actual steering timing, including
+  dropped-history disclosure. All three plots use base R and return their data
+  invisibly for caller-owned PDF/PNG and CSV/RDS workflows. No new dependency.
+* Live captures using the default managed spill directory now create filenames
+  accepted by the existing lifetime lease. An actual graphics comparison found
+  that their missing `trace-` prefix previously rejected the first spilled
+  state. The lease and native writer are unchanged; caller-managed directories
+  remain supported.
+
 ## Live state observation and coefficient steering (F6a/F6b)
 
 * `llm_generate(async = TRUE, on_state = ...)` observes the raw distribution and

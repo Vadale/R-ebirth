@@ -1,0 +1,4 @@
+Error in graphics_fail("trace_schema", "The live trace has an invalid column or coordinate schema.") : 
+  The live trace has an invalid column or coordinate schema.
+Calls: <Anonymous> ... graphics_trace_shape -> graphics_fail -> relm_abort
+Execution halted

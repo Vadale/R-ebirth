@@ -93,6 +93,24 @@ binary file connection can receive the event CSV instead. See the
 [live token-statistics demo](tests/demos/demo-streaming.R) and
 [implementation status](docs/wp10-implementation.md).
 
+## Development: reusable model and intervention graphics
+
+F6c adds three views using base R: `plot(model)` maps model blocks and configured
+interventions, `llm_compare()` compares recorded live observations, and
+`llm_timeline()` retains the coefficients the worker actually applied. Plotting
+these plain-data results returns the plotted table invisibly for export.
+The [graphics guide](rebirth/vignettes/model-interventions.qmd) includes a
+download-free example and a bounded real-model workflow.
+
+These are development features after the 0.3.0 tag; check that your installation
+exports `llm_compare` and `llm_timeline`. Caller-recorded provenance is validated,
+not authenticated. Divergent input histories withhold differences, and the map
+does not portray measured activity or causal edges. The
+[implementation report](docs/f6c-implementation.md) records local acceptance and
+remaining integration checks. For readable captions use a wide RStudio Plots
+pane and redraw after resizing, or export at 10 by 7 inches (7 by 5 was also
+checked); very narrow panes can clip labels.
+
 ## What has been validated
 
 Numerical paths are checked against independent references, with the scope of

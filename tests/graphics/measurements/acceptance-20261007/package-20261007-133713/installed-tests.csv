@@ -1,0 +1,25 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-graphics-compare.R","graphics-compare","paired values retain identity and exact signed differences",7,0,FALSE,FALSE,0,0.043,0.003,0.046,7
+"test-graphics-compare.R","graphics-compare","all prior token IDs matter but the current sample does not align input",5,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.00900000000000001,5
+"test-graphics-compare.R","graphics-compare","top-k absence is missing rather than zero or an invented KL",4,0,FALSE,FALSE,0,0.00499999999999998,0.001,0.006,4
+"test-graphics-compare.R","graphics-compare","mismatched provenance and coordinates fail before pairing",4,0,FALSE,FALSE,0,0.01,0.002,0.012,4
+"test-graphics-compare.R","graphics-compare","metadata cannot retain hidden environments or native owners",2,0,FALSE,FALSE,0,0.005,0,0.005,2
+"test-graphics-compare.R","graphics-compare","selected coordinates and materialized budgets are independently checked",5,0,FALSE,FALSE,0,0.006,0.001,0.00700000000000001,5
+"test-graphics-compare.R","graphics-compare","malformed current token, source position and partial captures fail",4,0,FALSE,FALSE,0,0.00800000000000001,0,0.00900000000000001,4
+"test-graphics-compare.R","graphics-compare","the last sampled state can exceed consumed context by one",2,0,FALSE,FALSE,0,0.005,0.001,0.006,2
+"test-graphics-compare.R","graphics-compare","ragged step, logits and steering frames fail with classed conditions",7,0,FALSE,FALSE,0,0.012,0,0.012,7
+"test-graphics-memory.R","graphics-memory","comparison ledger exceeds materialized simultaneous base-R shapes",4,0,FALSE,FALSE,0,0.003,0.001,0.00499999999999995,4
+"test-graphics-memory.R","graphics-memory","timeline ledger exceeds expanded history and replacement shapes",4,0,FALSE,FALSE,0,0.005,0.001,0.006,4
+"test-graphics-memory.R","graphics-memory","wide selected vectors refuse before materialization under small budgets",3,0,FALSE,FALSE,0,0.047,0.001,0.047,3
+"test-graphics-plots.R","graphics-plots","model map is metadata-only with explicit supported and generic detail",8,0,FALSE,FALSE,0,0.021,0.002,0.025,8
+"test-graphics-plots.R","graphics-plots","comparison and timeline restore graphics state and return plotted data",6,0,FALSE,FALSE,0,0.00900000000000001,0.000999999999999994,0.01,6
+"test-graphics-plots.R","graphics-plots","truncation preserves change timing without inventing a visible event",4,0,FALSE,FALSE,0,0.012,0.001,0.012,4
+"test-graphics-plots.R","graphics-plots","a middle block selection labels both omitted boundary ranges",2,0,FALSE,FALSE,0,0.003,0.001,0.003,2
+"test-graphics-spill.R","graphics-spill","selected spilled and in-memory observed values agree exactly",5,0,FALSE,FALSE,0,0.013,0.002,0.017,5
+"test-graphics-spill.R","graphics-spill","mismatched and missing spill files remain classed failures",2,0,FALSE,FALSE,0,0.011,0.001,0.011,2
+"test-graphics-timeline.R","graphics-timeline","timeline records applied revisions at the next decode boundary",5,0,FALSE,FALSE,0,0.00800000000000001,0.001,0.00800000000000001,5
+"test-graphics-timeline.R","graphics-timeline","rolling retention drops complete states and reports truncation",4,0,FALSE,FALSE,0,0.013,0,0.013,4
+"test-graphics-timeline.R","graphics-timeline","no steering retains one sampled-state row and failures preserve inputs",4,0,FALSE,FALSE,0,0.005,0.001,0.006,4
+"test-graphics-timeline.R","graphics-timeline","byte bound rolls whole multi-intervention states and preserves source audit",5,0,FALSE,FALSE,0,0.1,0.001,0.101,5
+"test-graphics-timeline.R","graphics-timeline","same revision cannot change coefficients and next revision must move boundary",3,0,FALSE,FALSE,0,0.0089999999999999,0.001,0.00900000000000001,3
+"test-graphics-timeline.R","graphics-timeline","corrupt missing history coordinates produce a classed failure",11,0,FALSE,FALSE,0,0.027,0,0.028,11

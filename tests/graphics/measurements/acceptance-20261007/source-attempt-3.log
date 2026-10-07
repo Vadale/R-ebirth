@@ -1,0 +1,36 @@
+graphics-compare: ...............................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-plots: ..............
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-spill: 12
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test-graphics-spill.R:25:34'): selected spilled and in-memory obse
+Error in `UseMethod("as_nanoarrow_schema")`: no applicable method for 'as_nanoarrow_schema' applied to an object of class "data.frame"
+Backtrace:
+    ▆
+ 1. └─relm (local) graphics_spill_fixture(a, file) at test-graphics-spill.R:25:34
+ 2.   ├─nanoarrow::nanoarrow_schema_modify(...) at test-graphics-spill.R:11:3
+ 3.   │ └─nanoarrow::as_nanoarrow_schema(x)
+ 4.   └─nanoarrow::as_nanoarrow_schema(df)
+
+── 2. Error ('test-graphics-spill.R:36:34'): mismatched and missing spill files 
+Error in `UseMethod("as_nanoarrow_schema")`: no applicable method for 'as_nanoarrow_schema' applied to an object of class "data.frame"
+Backtrace:
+    ▆
+ 1. └─relm (local) graphics_spill_fixture(a, file, corrupt = TRUE) at test-graphics-spill.R:36:34
+ 2.   ├─nanoarrow::nanoarrow_schema_modify(...) at test-graphics-spill.R:11:3
+ 3.   │ └─nanoarrow::as_nanoarrow_schema(x)
+ 4.   └─nanoarrow::as_nanoarrow_schema(df) at test-graphics-spill.R:11:3
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-timeline: .....................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🐝 Your tests are the bee's knees 🐝
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: Graphics source tests failed
+Execution halted

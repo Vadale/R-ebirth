@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "archived_hashes": 106,
+  "archive_bytes": 1789901,
+  "runtime_and_test_source_drift": [],
+  "documentation_only_drift": [
+    "rebirth/NEWS.md"
+  ],
+  "namespace_additions": [
+    "S3method(plot,llm)",
+    "S3method(plot,relm_comparison)",
+    "S3method(plot,relm_timeline)",
+    "export(llm_compare)",
+    "export(llm_timeline)"
+  ],
+  "new_local_links_checked": 39,
+  "native_dependency_workflow_diff": false,
+  "independent_receipt_marker": true
+}

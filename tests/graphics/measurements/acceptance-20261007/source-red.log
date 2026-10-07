@@ -1,0 +1,41 @@
+graphics-compare: 1234
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test-graphics-compare.R:5:3'): paired values retain identity and e
+Error in `llm_compare(a, b, graphics_context_fixture(9L, 10L), layer = 2)`: could not find function "llm_compare"
+
+── 2. Error ('test-graphics-compare.R:18:3'): all prior token IDs matter but the
+Error in `llm_compare(a, b, graphics_context_fixture(c(9L, 8L), c(10L, 8L)), 2)`: could not find function "llm_compare"
+
+── 3. Error ('test-graphics-compare.R:29:3'): top-k absence is missing rather th
+Error in `llm_compare(a, b, graphics_context_fixture(), 2)`: could not find function "llm_compare"
+
+── 4. Error ('test-graphics-compare.R:40:3'): mismatched provenance and coordina
+Error in `llm_compare(a, b, ctx, 2)`: could not find function "llm_compare"
+Backtrace:
+    ▆
+ 1. └─testthat::expect_error(llm_compare(a, b, ctx, 2), class = "relm_error_argument") at test-graphics-compare.R:40:3
+ 2.   └─testthat:::expect_condition_matching_(...)
+ 3.     └─testthat:::quasi_capture(...)
+ 4.       ├─testthat (local) .capture(...)
+ 5.       │ └─base::withCallingHandlers(...)
+ 6.       └─rlang::eval_bare(quo_get_expr(.quo), quo_get_env(.quo))
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-timeline: 123
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test-graphics-timeline.R:3:3'): timeline records applied revisions
+Error in `llm_timeline(graphics_state_fixture())`: could not find function "llm_timeline"
+
+── 2. Error ('test-graphics-timeline.R:14:3'): rolling retention drops complete 
+Error in `llm_timeline(graphics_state_fixture(), max_states = 2)`: could not find function "llm_timeline"
+
+── 3. Error ('test-graphics-timeline.R:26:3'): no steering retains one sampled-s
+Error in `llm_timeline(state)`: could not find function "llm_timeline"
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: Graphics source tests failed
+Execution halted

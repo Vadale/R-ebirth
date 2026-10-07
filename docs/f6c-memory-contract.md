@@ -22,7 +22,10 @@ calling only the final result size a peak bound.
 For a spilled input with B admitted Arrow buffer capacity and Q batch rows,
 reserve A = 4(B + 256Q + F). This covers two overlapping batch buffers, decoded
 numeric/string columns and conversion/copy work. Byte and capacity checks occur
-before as.data.frame conversion. The larger of the two inputs' A is sufficient
+before as.data.frame conversion. As with the accepted F6a reader, this is not
+a hard allocation bound on arbitrary hostile IPC decoding inside nanoarrow:
+its parser reads the file before the package can inspect a decoded batch. Use
+package-produced live spills; integrity metadata is not a cryptographic signature. The larger of the two inputs' A is sufficient
 because the readers execute sequentially and retain only selected output arrays.
 No unfiltered trace-to-matrix operation occurs. Reject unsupported nested schemas
 before recursive conversion; preserve existing nonce/schema/source checks.
