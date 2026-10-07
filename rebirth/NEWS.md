@@ -1,5 +1,19 @@
 # relm (development)
 
+## Recorded contrast directions (F6d)
+
+* `llm_direction()` constructs one full-width, unit residual direction from
+  explicit paired activations, with optional pair normalization and control-mean
+  orthogonalization. It records bounded provenance and numerical diagnostics;
+  unstable pairs/means are refused without dropping observations.
+* Trusted RDS artifacts preserve exact values and canonical checksums. Printing
+  and `llm_apply_direction()` validate integrity and compatibility before existing
+  additive steering; recorded provenance does not authenticate loaded weights.
+* Row-wise computation and bounded temporary checksum files respect an explicit
+  materialization budget. New documentation covers separated construction,
+  coefficient selection and held-out evaluation, including a zero-effect result.
+  No native change or new package dependency.
+
 ## Reusable model and intervention graphics (F6c)
 
 * `plot()` on an open model shows selected blocks, supported observation sites

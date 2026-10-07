@@ -1,0 +1,32 @@
+{
+  "status": "frozen_before_any_F6d_model_run",
+  "protocol": "F6d-v1",
+  "construction_pairs": 12,
+  "selection_tasks": 6,
+  "evaluation_tasks": 8,
+  "prompt_rows": 38,
+  "unique_utf8_prompt_sha256": 38,
+  "prompts_csv_sha256": "115589f45ec0a945559df720bcc2c2996717faec78f18de09e61749df63113de",
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "layer": 12,
+  "context_length": 512,
+  "backend": "cpu",
+  "max_tokens": 64,
+  "generation_seed": 101,
+  "temperature": 0,
+  "top_p": 0.95,
+  "chat": false,
+  "normalize_pairs": false,
+  "orthogonalize": false,
+  "random_direction_seed": 1045,
+  "random_coefficient": 1,
+  "bootstrap_seed": 2045,
+  "bootstrap_resamples": 2000,
+  "learned_selection_coefficients": [
+    -2,
+    -1,
+    1,
+    2
+  ],
+  "execution_status": "not_run"
+}

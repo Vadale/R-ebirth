@@ -304,6 +304,8 @@ design and broader native/ownership acceptance; a prompt-to-experiment runner
 duplicates existing generation/capture and adds orchestration/retention scope.
 Neither is hidden inside this proposal. F6e projection remains the next increment.
 
-The founder approved D-045. Next action: freeze the independent arithmetic and
-encoding reference, then implement the bounded R constructor and
-existing-steering adapter. No F6d API is implemented or accepted yet.
+The founder approved D-045. The independent arithmetic and encoding reference
+was frozen before implementation. The bounded R constructor, existing-steering
+adapter and local acceptance are complete; final remote checks and integration
+remain pending. See the [implementation report](f6d-implementation.md) for exact
+source scopes, retained failures and evaluation limits.

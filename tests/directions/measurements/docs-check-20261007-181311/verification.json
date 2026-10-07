@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source_hashes": 180,
+  "source_drift": [],
+  "new_vignette_executed": true,
+  "figure_inspected": true,
+  "errors": 0,
+  "warnings": 2,
+  "notes": 0,
+  "warning_scope": "Deliberately omitted full-vignette rebuild in scoped local package check; new vignette executed independently. Full ordinary CI still required."
+}

@@ -1,0 +1,22 @@
+{
+  "status": "passed",
+  "pid": 27083,
+  "directory": "/private/tmp/relm-f6d/model-reset-20261007-181846",
+  "started_at": 1791389926.965743,
+  "stages": [
+    {
+      "name": "model-reset",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6d/model-reset.R"
+      ],
+      "status": "passed",
+      "pid": 27084,
+      "exit_code": 0
+    }
+  ],
+  "stage": "model-reset",
+  "source_drift": [],
+  "finished_at": 1791389929.544204
+}

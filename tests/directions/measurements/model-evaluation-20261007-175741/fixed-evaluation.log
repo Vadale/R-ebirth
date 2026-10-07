@@ -1,0 +1,9 @@
+<relm_direction> layer 12, 896 residual coordinates, 12 pairs
+  pair normalization: FALSE; control orthogonalization: FALSE
+  recorded model: qwen2 / Q8_0
+  recorded SHA-256: ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e
+  Provenance is recorded, not authenticated; positive sign is target minus control.
+F6D_MODEL_ACCEPTANCE_PASSED 24 captures / 896 coordinates / exact native adapter
+Error in main() : all(base$success) is not TRUE
+Calls: main -> stopifnot
+Execution halted

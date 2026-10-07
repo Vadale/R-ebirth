@@ -6,7 +6,10 @@ reusable graphics → F6d direction construction and evaluation → F6e projecti
 steering**. Each increment ends independently usable. This document approves
 the roadmap position and objectives, not new public signatures, dependencies,
 vendor patches or untested feature claims. F6d contract preparation is now
-authorized; D045 approved its concrete API, which remains unimplemented. F6e has not started.
+authorized; D045 approved its concrete API. F6d implementation, independent reference,
+installed tests, actual cached-model evaluation and local package acceptance are
+complete; final remote checks/integration remain pending. See the
+[F6d implementation report](f6d-implementation.md). F6e has not started.
 
 On 2026-10-07 the founder authorized starting this sequence. The concrete F6c
 surface was presented in [the graphics contract](f6c-graphics-contract.md)

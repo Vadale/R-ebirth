@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "cases": 21,
+  "expectations": 1311,
+  "failures": 0,
+  "skips": 0,
+  "test_warnings": 0,
+  "source_hashes": 173,
+  "installed_hashes": 28,
+  "source_drift": [],
+  "code_usage_messages": 0,
+  "scope": "New F6d R behavior with unchanged accepted native DLL; original attempt retained failed; parent export test separate. External testthat patch-version warning retained."
+}

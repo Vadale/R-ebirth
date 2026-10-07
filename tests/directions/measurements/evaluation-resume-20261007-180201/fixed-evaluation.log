@@ -1,0 +1,3 @@
+Error in main() : all(base$success) is not TRUE
+Calls: main -> stopifnot
+Execution halted

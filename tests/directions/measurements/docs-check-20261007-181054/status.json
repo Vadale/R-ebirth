@@ -1,0 +1,25 @@
+{
+  "status": "failed",
+  "pid": 26549,
+  "directory": "/private/tmp/relm-f6d/docs-check-20261007-181054",
+  "started_at": 1791389454.6790159,
+  "stages": [
+    {
+      "name": "vignette",
+      "command": [
+        "quarto",
+        "render",
+        "contrast-directions.qmd",
+        "--to",
+        "html"
+      ],
+      "status": "failed",
+      "pid": 26555,
+      "exit_code": 1
+    }
+  ],
+  "stage": "vignette",
+  "error": "vignette failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6d/verify-docs.py\", line 40, in <module>\n    stage('vignette',['quarto','render',qmd.name,'--to','html'],timeout=600,cwd=run)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6d/verify-docs.py\", line 24, in stage\n    if rc:raise RuntimeError(name+' failed')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: vignette failed\n",
+  "finished_at": 1791389454.7195892
+}

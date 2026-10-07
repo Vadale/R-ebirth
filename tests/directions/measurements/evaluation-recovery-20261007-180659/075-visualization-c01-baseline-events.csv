@@ -1,0 +1,6 @@
+"event_id","event","prompt_id","token_pos","token_id","text","elapsed","finish_reason","validated"
+1,"token",1,1,577,"",0.030031292,"",NA
+2,"text",1,NA,NA," The",0.030033417,"",NA
+3,"token",1,2,3739,"",0.047183542,"",NA
+4,"text",1,NA,NA," human",0.04718525,"",NA
+5,"prompt_end",1,NA,NA,"",0.054752334,"length",NA

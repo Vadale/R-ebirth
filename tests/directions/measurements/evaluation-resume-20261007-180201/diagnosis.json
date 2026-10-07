@@ -1,0 +1,6 @@
+{
+  "overall_status": "failed",
+  "actual_generations_completed": 42,
+  "holdout_generations": 0,
+  "failure": "Collector compared streamed character text to unname(returned_text), which retains the public seed attribute. Actual characters agree; recovery must verify all42 raw bytes, seed, terminal events and state before using outcomes. No inference rerun authorized for these completed calls."
+}

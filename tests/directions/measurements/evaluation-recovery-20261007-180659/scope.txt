@@ -1,0 +1,4 @@
+Protocol F6d-v1 executed; raw text and failed runs are retained.
+Selected coefficient: 2
+Literal answer inclusion and eight hand-written tasks do not establish general quality or population coverage.
+Recorded provenance plus file-immutability assumptions, not authentication of loaded weights.

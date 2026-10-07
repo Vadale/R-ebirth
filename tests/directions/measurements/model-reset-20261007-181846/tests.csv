@@ -1,0 +1,2 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-directions-model.R","directions-model","[MODEL] checked direction preserves zero and original-handle seeded reset",4,0,FALSE,FALSE,0,3.401,0.162,2.3,4

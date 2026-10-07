@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "scope": "Static final source/evidence audit; no accepted numerical/model/runtime tests rerun.",
+  "native_dependency_model_inputs_unchanged": true,
+  "independent_goldens_unchanged_since_separate_commit": true,
+  "approved_namespace_additions": [
+    "S3method(print,relm_direction)",
+    "export(llm_apply_direction)",
+    "export(llm_direction)"
+  ],
+  "final_runtime_and_model_case_hashes_matched": 7,
+  "mirrored_fixture_files": 31,
+  "relative_documentation_links_checked": 32,
+  "archived_files": 546,
+  "archived_bytes": 6754787,
+  "retained_run_status": {
+    "boundaries-20261007-174433": "failed",
+    "corrected-boundaries-20261007-175129": "passed",
+    "model-evaluation-20261007-175741": "failed",
+    "evaluation-resume-20261007-180201": "failed",
+    "evaluation-recovery-20261007-180659": "passed_pending_independent_verification",
+    "docs-check-20261007-181054": "failed",
+    "docs-check-20261007-181311": "passed",
+    "model-reset-20261007-181846": "passed"
+  },
+  "evidence_manifest_sha256": "4fe39a97518c4f6b2b91c4b7f3d36a5c4301dcb2714eb2882ca421e1ff018303"
+}

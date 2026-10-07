@@ -149,7 +149,8 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          python-version: '3.13'
+          # Exact interpreter recorded by the independent D045 byte reference.
+          python-version: '3.13.5'
 
       - name: install pinned golden tooling (test-only, not a package dep)
         run: pip install -r tests/llm-golden/requirements.txt
@@ -159,6 +160,11 @@ jobs:
 
       - name: Probe statistical reference artifact check (no model)
         run: python tests/llm-golden/probe-contract/reference.py --check
+
+      - name: Contrast-direction arithmetic and canonical reference (no model)
+        run: |
+          python tests/llm-golden/directions/reference_directions.py --check
+          python tests/directions/check-fixture-mirror.py
 
       - name: Service contract consistency (planning only)
         run: python tests/service-contract/verify.py --self-test

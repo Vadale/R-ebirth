@@ -1,0 +1,20 @@
+key,value
+producer,reference_directions.py
+producer_version,1
+python_version,3.13.5
+python_implementation,CPython
+interpreter_invocation,.golden-venv/bin/python
+numpy_version,2.5.1
+gguf_version,0.19.0
+arithmetic,Python binary64 + math.fsum; Decimal90 cross-check
+producer_sha256,0e6924eb169ebaf2fb32b63b04b7957d70154ca1b9fe79d402c74c56c34d12d6
+encoding_sha256,40092826e6bd4db5d80bbbc33c2ea2ab768a2e30a5cb058abc9fcbde4a04abf0
+requirements_sha256,58557e747b0d19c9eb0dd24ecf2317bb9d28e9bc4337bd43a85b43f614363086
+tolerance_absolute,9.9999999999999998e-13
+tolerance_relative,9.9999999999999998e-13
+guard_relative,1.4210854715202004e-14
+accepted_cases,16
+rejected_cases,16
+expected_values,52
+encoding_vectors,19
+controls,77

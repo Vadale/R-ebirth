@@ -1,0 +1,22 @@
+{
+  "status": "passed_pending_independent_verification",
+  "pid": 26418,
+  "directory": "/private/tmp/relm-f6d/evaluation-recovery-20261007-180659",
+  "started_at": 1791389219.211231,
+  "stages": [
+    {
+      "name": "fixed-evaluation",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/directions/run-evaluation.R"
+      ],
+      "status": "passed",
+      "pid": 26419,
+      "exit_code": 0
+    }
+  ],
+  "stage": "fixed-evaluation",
+  "source_drift": [],
+  "finished_at": 1791389239.4361038
+}

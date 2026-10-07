@@ -1,0 +1,44 @@
+{
+  "status": "passed",
+  "runs": 76,
+  "selection_runs": 42,
+  "holdout_runs": 32,
+  "visualization_runs": 2,
+  "chosen_coefficient": 2,
+  "construction_values": 10752,
+  "width": 896,
+  "independent_direction_max_error": 4.996003610813204e-16,
+  "bootstrap_resamples": 2000,
+  "paired_intervals": 18,
+  "source_hashes": 33,
+  "scope": "Fixed synthetic/hand-authored protocol on one cached CPU model. Conditional intervals, literal answer checks, recorded provenance; no general quality claim. Plot existence only; visual inspection remains separate.",
+  "new_direction_applied_first_state": {
+    "coordinates": 896,
+    "coefficient": 2.0,
+    "absolute_bound": 1e-06,
+    "max_error": 1.3871316720259763e-07,
+    "source": "Existing retained visualization comparison; no additional inference."
+  },
+  "visual_inspection": {
+    "figures": [
+      "selection",
+      "holdout",
+      "comparison",
+      "timeline"
+    ],
+    "formats": [
+      "PDF",
+      "PNG"
+    ],
+    "png_size": [
+      1400,
+      980
+    ],
+    "pdf_inches": [
+      10,
+      7
+    ],
+    "result": "Inspected PNG views; final selection includes explicit legend, holdout labels/cap/limitations have visible margins. Comparison and timeline show actual retained model data. No new plots claimed on arbitrary small devices.",
+    "limits": "Eight final tasks; baseline8/8 and selected6/8 outputs truncated at64tokens."
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "status": "passed",
+  "pid": 26668,
+  "directory": "/private/tmp/relm-f6d/docs-check-20261007-181311",
+  "started_at": 1791389591.9287412,
+  "stages": [
+    {
+      "name": "vignette",
+      "command": [
+        "quarto",
+        "render",
+        "contrast-directions.qmd",
+        "--to",
+        "html"
+      ],
+      "status": "passed",
+      "pid": 26669,
+      "exit_code": 0
+    },
+    {
+      "name": "source-build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "--no-manual",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "pid": 26697,
+      "exit_code": 0
+    },
+    {
+      "name": "scoped-check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--no-install",
+        "--no-tests",
+        "--no-vignettes",
+        "--no-manual",
+        "--library=/private/tmp/relm-f6d/library",
+        "/private/tmp/relm-f6d/docs-check-20261007-181311/relm_0.3.0.tar.gz"
+      ],
+      "status": "passed",
+      "pid": 26731,
+      "exit_code": 0
+    }
+  ],
+  "stage": "scoped-check",
+  "scoped_check": {
+    "errors": 0,
+    "warnings": 2,
+    "notes": 0,
+    "scope": "Full rendered vignettes deliberately omitted; new vignette executed separately; installed tests recorded separately."
+  },
+  "source_drift": [],
+  "finished_at": 1791389608.000934
+}

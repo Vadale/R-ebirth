@@ -1,0 +1,64 @@
+{
+  "status": "passed",
+  "pid": 25762,
+  "directory": "/private/tmp/relm-f6d/corrected-boundaries-20261007-175129",
+  "started_at": 1791388289.622858,
+  "stages": [
+    {
+      "name": "fixture-mirror",
+      "command": [
+        "python3",
+        "tests/directions/check-fixture-mirror.py"
+      ],
+      "status": "passed",
+      "pid": 25763,
+      "exit_code": 0
+    },
+    {
+      "name": "documentation",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "roxygen2::roxygenise('rebirth',load_code=roxygen2::load_installed)"
+      ],
+      "status": "passed",
+      "pid": 25764,
+      "exit_code": 0
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6d/library",
+        "/private/tmp/relm-f6d/corrected-boundaries-20261007-175129/r-install-source"
+      ],
+      "status": "passed",
+      "pid": 25777,
+      "exit_code": 0
+    },
+    {
+      "name": "installed-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6d/corrected-tests.R"
+      ],
+      "status": "passed",
+      "pid": 25851,
+      "exit_code": 0
+    }
+  ],
+  "stage": "installed-tests",
+  "native": {
+    "path": "/private/tmp/relm-f6b/library/relm/libs/relm.so",
+    "sha256": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "scope": "Unchanged accepted F6b DLL; no native build or renewed acceptance."
+  },
+  "source_drift": [],
+  "finished_at": 1791388295.863199
+}

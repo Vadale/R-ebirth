@@ -1,0 +1,174 @@
+---
+title: "Build, preserve and evaluate a contrast direction"
+format: html
+engine: knitr
+vignette: >
+  %\VignetteIndexEntry{Build, preserve and evaluate a contrast direction}
+  %\VignetteEngine{quarto::html}
+  %\VignetteEncoding{UTF-8}
+---
+
+A contrast direction summarizes how paired residual activations differ. Its
+positive sign is **target minus control**. Adding it during inference is an
+experiment, not a guarantee that the desired behavior will improve. Keep
+construction, coefficient selection and final evaluation separate.
+
+## A complete, model-free artifact
+
+These four-coordinate matrices and provenance records are **synthetic**. The
+checksums below are labels for the example, not measurements or identities of
+loaded model weights. The numerical answer is independently specified as
+`c(2, 1, 0, 0) / sqrt(5)`.
+
+```{r}
+library(relm)
+control <- rbind(c(2, 0, -1, 0.5), c(0, 3, 1, 2))
+target <- control + rbind(c(1, 2, 0, 0), c(3, 0, 0, 0))
+dimnames(target) <- dimnames(control) <- list(c("pair-a", "pair-b"), as.character(1:4))
+hashes <- sprintf("%064x", 1:6)
+context <- list(
+  model = list(sha256 = strrep("a", 64), architecture = "synthetic",
+    quantization = "synthetic", hidden_size = 4L, layers = 3L,
+    engine_revision = "synthetic-example-v1"),
+  capture = list(component = "residual", positions = "last",
+    input_format = "raw_text", tokenizer = "gguf_embedded",
+    add_special = TRUE, parse_special = FALSE, template_sha256 = NULL,
+    context_length = 128L, backend = "cpu", relm_version = "0.3.0"),
+  pairs = data.frame(pair_id = rownames(target),
+    target_sha256 = hashes[1:2], control_sha256 = hashes[3:4],
+    target_pos = c(3L, 5L), control_pos = c(4L, 6L)),
+  splits = data.frame(prompt_sha256 = hashes,
+    split = c(rep("construction", 4), "selection", "evaluation")),
+  seed = NULL
+)
+direction <- llm_direction(target, control, context, layer = 2)
+stopifnot(max(abs(direction$value - c(2, 1, 0, 0) / sqrt(5))) < 1e-12)
+direction
+```
+
+The ordinary data-frame columns are `neuron` and `value`. The single `direction`
+attribute retains the model/capture/pair/split records, construction method,
+per-pair and aggregate norms, producer versions and canonical checksums.
+Neither the matrices nor a model pointer is retained.
+
+```{r}
+#| fig-width: 10
+#| fig-height: 7
+barplot(direction$value, names.arg = direction$neuron,
+  xlab = "Residual coordinate", ylab = "Unit-direction value",
+  main = "Synthetic paired contrast: target minus control", col = "steelblue")
+abline(h = 0)
+attr(direction, "direction")$diagnostics$pairs
+```
+
+By default, larger pair differences contribute more. `normalize_pairs = TRUE`
+gives each pair unit weight before averaging. `orthogonalize = TRUE` then
+removes the component parallel to the mean of the **original** controls. Both
+are explicit choices, not automatic improvements. Near-zero pairs, cancelled
+means, nonfinite values and degenerate projections are errors; no pair is
+silently discarded. The result always has unit Euclidean length.
+
+## Trusted persistence and integrity
+
+```{r}
+path <- tempfile(fileext = ".rds")
+saveRDS(direction, path, version = 3)
+restored <- readRDS(path)
+stopifnot(identical(restored, direction))
+print(restored) # validates the artifact before printing
+unlink(path)
+```
+
+Use RDS only for trusted data. Reading an arbitrary RDS file is not made safe by
+these functions. Printing and application check the complete schema, full neuron
+order, unit norm, diagnostic invariants and checksums. Modification of a value,
+layer or recorded model is rejected before native derivation. Checksums detect
+modification; someone who changes both an artifact and its checksums can create
+another consistent artifact. Recorded provenance is not authentication.
+
+## Collect real inputs deliberately
+
+For real work, verify the pinned GGUF file **before loading**, keep it unchanged
+throughout the experiment and retain its checksum. Record the actual patched
+engine build, model metadata and capture settings. Raw prompt tracing uses
+`add_special=TRUE` and `parse_special=FALSE`; do not reconstruct its source
+positions using `llm_tokens()` or assume that generation uses identical special-
+token parsing flags. Read positions from the actual trace.
+
+The collection loop should capture one prompt at a time on the unintervened
+handle, select one complete residual vector and release the trace. Preflight
+the final pair of matrices before collection. Do not concatenate all layers or
+silently fill missing neurons.
+
+```{r}
+#| eval: false
+# m is the original handle created from the independently verified cached file.
+tr <- llm_trace(m, construction_prompt, layers = 12, positions = "last",
+                components = "residual", spill = FALSE)
+stopifnot(identical(tr$neuron, seq_len(m$hidden_size)),
+          length(unique(tr$token_pos)) == 1L)
+values <- tr$value
+actual_source_position <- unique(tr$token_pos)
+rm(tr)
+# Repeat for the corresponding target/control prompt, storing one matrix row.
+```
+
+The complete recorded context has the structure shown above. Hash the exact
+UTF-8 prompt bytes without normalizing whitespace/newlines. Pair IDs must match
+both matrices in order, and their column names must be every neuron from 1
+through the model width. Declare construction, selection and evaluation prompt
+hashes in disjoint, nonempty sets **before** fitting. This detects declared exact
+text overlap, not semantic paraphrases or undisclosed data.
+
+The default 64 MiB budget includes materialized matrices, metadata, working arrays
+and the returned artifact. Limits are 4096 pairs, 65536 neurons, 16384 split rows
+and 8 MiB of context. Checksumming streams at most 4096 bytes per write through
+one uniquely named temporary file, removed on success, failure or interrupt.
+This is not an out-of-core constructor or a bound on all R heap/model/KV memory.
+A spilled trace still needs a bounded materialized slice for each matrix row.
+
+## Apply to a compatible model
+
+```{r}
+#| eval: false
+# destination_record was recorded independently for the actual loaded model.
+# It contains sha256, architecture, quantization, hidden_size, layers,
+# and engine_revision, exactly as construction context$model.
+changed <- llm_apply_direction(m, restored, destination_record, coef = 1)
+answer <- llm_generate(changed, held_out_prompt, temperature = 0, seed = 101)
+close(changed)
+```
+
+The six destination fields must match the artifact; available handle metadata
+must also match. The native steering capability and busy/closed checks still
+apply. The original handle is unchanged. Negative coefficients reverse the
+addition and zero retains existing zero-steering semantics. This is additive
+residual steering at every position, not F6e's prospective runtime projection.
+Copying the artifact's record into an unrelated same-width handle does **not**
+authenticate that handle. relm does not have a native loaded-weight checksum.
+
+Existing `on_state` coefficient replies can vary the new steering entry during
+generation. `llm_timeline()` records the actually applied coefficients, while
+`llm_compare()` withholds differences after input histories diverge. Returning a
+coefficient to zero cannot erase its earlier effect on KV history. Extracting
+`direction$value` and calling `llm_steer()` directly bypasses artifact checks.
+
+## Evaluate separately from construction
+
+Freeze the layer, corpus and construction method before inspecting selection
+results. On selection prompts compare the original model, a zero coefficient,
+a fixed coefficient grid and a norm-matched random direction. Require quality
+checks as well as a desired effect: a shorter incorrect answer is not an
+improvement. Freeze the chosen coefficient before final evaluation; a zero
+choice is a legitimate outcome.
+
+For each held-out prompt retain raw text, actual sampled-token IDs, finish reason,
+required-answer criteria and failures. Use paired comparisons, dose-response
+plots and uncertainty intervals appropriate to the sampling design. A small
+hand-written set does not establish broad generalization. An interval conditional
+on those tasks is not a claim about all prompts. Do not retune on the final set.
+
+The repository's F6d protocol records 12 construction pairs, six selection tasks,
+eight final tasks, fixed quality guards and a zero fallback before model execution.
+Its implementation report records actual results and limitations separately;
+this vignette's executable example claims only its synthetic arithmetic.

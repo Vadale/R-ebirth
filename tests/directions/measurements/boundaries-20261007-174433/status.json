@@ -1,0 +1,65 @@
+{
+  "status": "failed",
+  "pid": 25152,
+  "directory": "/private/tmp/relm-f6d/boundaries-20261007-174433",
+  "started_at": 1791387873.979965,
+  "stages": [
+    {
+      "name": "fixture-mirror",
+      "command": [
+        "python3",
+        "tests/directions/check-fixture-mirror.py"
+      ],
+      "status": "passed",
+      "pid": 25153,
+      "exit_code": 0
+    },
+    {
+      "name": "documentation",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "roxygen2::roxygenise('rebirth',load_code=roxygen2::load_source)"
+      ],
+      "status": "passed",
+      "pid": 25154,
+      "exit_code": 0
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6d/library",
+        "/private/tmp/relm-f6d/boundaries-20261007-174433/r-install-source"
+      ],
+      "status": "passed",
+      "pid": 25168,
+      "exit_code": 0
+    },
+    {
+      "name": "installed-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6d/installed-tests.R"
+      ],
+      "status": "failed",
+      "pid": 25240,
+      "exit_code": 1
+    }
+  ],
+  "stage": "installed-tests",
+  "native": {
+    "path": "/private/tmp/relm-f6b/library/relm/libs/relm.so",
+    "sha256": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "scope": "Unchanged accepted F6b DLL; no native build or renewed acceptance."
+  },
+  "error": "installed-tests failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6d/verify-boundaries.py\", line 49, in <module>\n    stage('installed-tests',['Rscript','--vanilla',str(scratch/'installed-tests.R')])\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6d/verify-boundaries.py\", line 22, in stage\n    if rc:raise RuntimeError(name+' failed')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: installed-tests failed\n",
+  "finished_at": 1791387878.514994
+}

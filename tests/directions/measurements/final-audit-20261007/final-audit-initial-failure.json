@@ -1,0 +1,5 @@
+{
+  "status": "failed",
+  "stage": "static fixture mirror",
+  "diagnosis": "Collector used reference root instead of its goldens/ child; source and expected files are unchanged. Failed before evidence inventory or any new test/model execution."
+}
