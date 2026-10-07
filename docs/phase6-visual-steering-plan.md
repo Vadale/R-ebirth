@@ -7,6 +7,11 @@ steering**. Each increment ends independently usable. This document approves
 the roadmap position and objectives, not new public signatures, dependencies,
 vendor patches or untested feature claims. Implementation has not started.
 
+On 2026-10-07 the founder authorized starting this sequence. The concrete F6c
+surface is now proposed in [the graphics contract](f6c-graphics-contract.md)
+and API-GRAMMAR section 12 under D-044. Its approval remains separate from the
+already approved scope/order; no product implementation has started.
+
 ## Starting point
 
 PR59 is merged at `cf4df637c1b60920560e16bb3199168b31f5910c`; its tree matches

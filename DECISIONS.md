@@ -1377,6 +1377,39 @@ approval language is superseded by the explicit reply recorded above.
 
 ---
 
+## D-044 — Reusable model graphics and bounded intervention comparisons
+
+- **Date/status:** 2026-10-07. PROPOSED public contract, not yet approved.
+  The founder authorized starting the updated sequence; D-042/D-043's scope
+  approval does not specify these new signatures. Implementation follows
+  explicit approval of this concrete entry and API-GRAMMAR section 12.
+- **Proposal:** `plot.llm()` shows a supported/generic block schematic and
+  configured interventions. `llm_compare()` returns a classed data frame of
+  selected actual live-state values, with recorded full-prefix alignment and
+  bounded top-logit comparisons. `llm_timeline()` returns a bounded history of
+  the worker's applied coefficient audit. Both tables have base-graphics plot
+  methods. Exact signatures, schemas, limits and acceptance are in
+  [the F6c contract](docs/f6c-graphics-contract.md).
+- **Scientific semantics:** metadata is not activity or a causal graph;
+  divergent input prefixes withhold activation/logit differences; missing
+  top-k probabilities are not zeros; sampled state tokens need not be final
+  output; coefficient restoration does not undo KV history. Caller-recorded
+  model/configuration provenance is validated, not falsely authenticated.
+- **Maintenance boundary:** two constructors and three S3 methods, existing
+  base graphics and dependencies, no generation wrapper, background service,
+  new condition class, native operation, vendor patch or spill-format change.
+  Results retain no model pointer or raw live-state history. Export is managed
+  by the caller's normal R devices/serialization tools.
+- **Resource boundary:** separate bounded comparison materialization and
+  compact rolling history, with pre-allocation accounting and actual R-object
+  checks. Spill selection must honor existing integrity and batch limits.
+  This is not a bound on total RStudio/model/device memory.
+- **Alternatives:** defer a browser dashboard and automatic experiment runner;
+  keep useful demo recipes but replace repeated plotting boilerplate with
+  a small supported interface. F6d/F6e retain their own later contracts.
+
+---
+
 ## Appendix A — Rung-3 fork playbook (archived from SOLO-PHASE-PLAN v0.1, 2026-07-03)
 
 D-043 removes the distribution/fork from the active product roadmap. The

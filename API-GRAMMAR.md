@@ -363,3 +363,30 @@ in step and a worker-produced steering attribute record actual applied state.
 Original adapters are restored before model ownership returns, on every exit.
 This preserves immutable R handles and the observation boundary. No new export,
 dependency, direction, ablation or replay of historical KV is added. F6b acceptance is tracked separately and is not inferred from F6a evidence.
+
+## 12. Reusable model and intervention graphics — `[proposed: D-044]`
+
+The founder authorized starting F6c preparation on 2026-10-07. The following
+new public entries await specific approval; do not export or implement them as
+approved APIs yet. The exact proposed types, context/alignment, side effects,
+resource bounds and acceptance are in
+[the F6c graphics contract](docs/f6c-graphics-contract.md).
+
+```r
+plot.llm(x, layers = NULL, ...)
+llm_compare(reference, intervention, context, layer,
+            component = "residual", neurons = NULL,
+            max_bytes = 64 * 1024^2)
+plot.relm_comparison(x, ...)
+llm_timeline(state, history = NULL, max_states = 256L,
+             max_bytes = 8 * 1024^2)
+plot.relm_timeline(x, ...)
+```
+
+The model plot returns its metadata/site table invisibly. The constructors
+return classed data frames from existing delivered live states; they perform no
+generation and retain no native handle. Comparison uses recorded full input
+prefixes, withholding numerical differences for divergent histories. Timeline
+retains bounded worker-applied audit rows, not activation payloads. Plots use
+base graphics on the caller's device; export remains caller-managed. Existing
+condition classes are reused, with no dependency, native or vendor change.
