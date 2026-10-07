@@ -17,12 +17,14 @@ test_that("only API-GRAMMAR-approved functions are exported (spec-first gate)", 
   # WP11b (API-GRAMMAR section 5, approved D-033): llm_probe(), activations().
   # WP9 (API-GRAMMAR section 9, approved D-037): llm_cancel().
   # F6c (API-GRAMMAR section 12, approved D-044): llm_compare(), llm_timeline().
+  # F6d (API-GRAMMAR section 13, approved D-045): direction construction/application.
   expect_setequal(
     getNamespaceExports("relm"),
     c(
       "llm", "llm_tokens", "llm_generate", "llm_embed", "llm_trace",
       "llm_steer", "llm_ablate", "llm_logits", "llm_download",
-      "llm_probe", "activations", "llm_cancel", "llm_compare", "llm_timeline"
+      "llm_probe", "activations", "llm_cancel", "llm_compare", "llm_timeline",
+      "llm_direction", "llm_apply_direction"
     )
   )
 })

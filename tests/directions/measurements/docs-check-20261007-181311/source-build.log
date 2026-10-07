@@ -1,0 +1,11 @@
+* checking for file ‘/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/DESCRIPTION’ ... OK
+* preparing ‘relm’:
+* checking DESCRIPTION meta-information ... OK
+* cleaning src
+* running ‘cleanup’
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+Removed empty directory ‘relm/tests/testthat/_snaps’
+Removed empty directory ‘relm/vignettes/token-streaming_files’
+* building ‘relm_0.3.0.tar.gz’
+

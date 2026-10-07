@@ -60,6 +60,20 @@ records final local installed-package/spill checks and model-free harness contro
 Remote sanitizer, reference-comparison and final CI acceptance remain pending.
 None of those pending gates is inferred from a workflow definition.
 
+## F6d recorded contrast directions (2026-10-07)
+
+The approved D045 R-only increment has passed independent numerical/byte
+references, 21 installed direction cases/1,311 expectations, one integrated
+review/closure, a separate installed cached-Qwen reset case/four expectations,
+cached-Qwen construction/native application and the frozen
+held-out evaluation. See [the F6d report](f6d-implementation.md) for exact sources,
+failed harness attempts and numerical limits. The 64-token cap truncated all
+baseline and six of eight selected outputs; the measured length reduction is
+not complete-response or general quality validation. New vignette and scoped
+check passed (0 errors/2 omitted-vignette warnings/0 notes). Final remote CI and
+integration remain pending; accepted native/F6a/b/c evidence was reused without
+relabeling it as a fresh execution.
+
 ## Implemented checks
 
 | Obligation | Executable evidence | Where it runs / prerequisite |

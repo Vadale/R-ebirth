@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "cases": 1,
+  "expectations": 4,
+  "test_failures": 0,
+  "test_errors": 0,
+  "test_skips": 0,
+  "test_warnings": 0,
+  "actual_model_calls": 5,
+  "max_tokens_per_call": 8,
+  "source_hashes_matched": 7,
+  "installed_hashes_matched": 28,
+  "artifact_sha256": "600d1e618cc117667577ecbb95d300889663c2b98c8e3f78bc981a82dcaebdf0",
+  "scope": "New original-handle reset/zero/raw-application case only; prior construction retained, no new capture or direction fit.",
+  "external_warning": "testthat built under R 4.5.2; local R 4.5.1"
+}

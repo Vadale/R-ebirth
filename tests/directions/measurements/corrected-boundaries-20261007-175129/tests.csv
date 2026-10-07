@@ -1,0 +1,22 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"test-directions-boundaries.R","directions-boundaries","paired matrices require exact complete coordinates and plain finite input",9,0,FALSE,FALSE,0,0.05,0.002,0.053,9
+"test-directions-boundaries.R","directions-boundaries","recorded capture and splits fail closed without silent reconciliation",9,0,FALSE,FALSE,0,0.022,0.001,0.024,9
+"test-directions-boundaries.R","directions-boundaries","direction construction preserves inputs and random state",8,0,FALSE,FALSE,0,0.00900000000000001,0.002,0.012,8
+"test-directions-boundaries.R","directions-boundaries","record field order canonicalizes but coordinate order does not",1,0,FALSE,FALSE,0,0.00699999999999995,0.002,0.011,1
+"test-directions-boundaries.R","directions-boundaries","trusted RDS preserves exact artifact values and validates on print",6,0,FALSE,FALSE,0,0.012,0.002,0.015,6
+"test-directions-boundaries.R","directions-boundaries","artifact tampering and incompatibility refuse before native derivation",10,0,FALSE,FALSE,0,0.03,0.003,0.036,10
+"test-directions-boundaries.R","directions-boundaries","checked application delegates exactly the approved existing intervention",3,0,FALSE,FALSE,0,0.00800000000000001,0.002,0.011,3
+"test-directions-boundaries.R","directions-boundaries","admission refuses before checksumming oversized working sets",3,0,FALSE,FALSE,0,0.014,0.000999999999999994,0.016,3
+"test-directions-boundaries.R","directions-boundaries","temporary checksum files close and disappear after failures",3,0,FALSE,FALSE,0,0.003,0.001,0.004,3
+"test-directions-boundaries.R","directions-boundaries","ignored row names cannot smuggle environments into retained artifacts",5,0,FALSE,FALSE,0,0.014,0.002,0.017,5
+"test-directions-goldens.R","directions-goldens","directions match all independent accepted arithmetic and diagnostics",113,0,FALSE,FALSE,0,0.164,0.04,0.222,113
+"test-directions-goldens.R","directions-goldens","independent degenerate and overflow cases refuse without dropping pairs",39,0,FALSE,FALSE,0,0.0379999999999999,0.00799999999999999,0.046,39
+"test-directions-goldens.R","directions-goldens","canonical R bytes exactly match all independent typed streams",1072,0,FALSE,FALSE,0,0.384,0.032,0.419,1072
+"test-directions-goldens.R","directions-goldens","independent binary artifact survives full validation and rejects edits",2,0,FALSE,FALSE,0,0.014,0.002,0.016,2
+"test-directions-memory.R","directions-memory","materialized direction stages fit the admitted independent envelope",4,0,FALSE,FALSE,0,0.112,0.013,0.126,4
+"test-directions-memory.R","directions-memory","wide canonical matrices stream in capped chunks without transposition",3,0,FALSE,FALSE,0,0.193,0.002,0.194,3
+"test-directions-memory.R","directions-memory","maximum-width arithmetic fits without copying neuron labels into temporaries",5,0,FALSE,FALSE,0,0.794,0.017,0.815,5
+"test-directions-memory.R","directions-memory","checksum byte caps precede writes and interrupt cleanup closes descriptors",5,0,FALSE,FALSE,0,0.0470000000000002,0.002,0.0489999999999999,5
+"test-directions-memory.R","directions-memory","application charges destination context before native allocation",2,0,FALSE,FALSE,0,0.00999999999999979,0.001,0.012,2
+"test-directions-memory.R","directions-memory","warning-only canonical I/O fails closed with its original condition",5,0,FALSE,FALSE,0,0.00300000000000011,0,0.004,5
+"test-directions-memory.R","directions-memory","silent partial canonical writes cannot validate a different file",4,0,FALSE,FALSE,0,0.00200000000000022,0.001,0.00300000000000011,4

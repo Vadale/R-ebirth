@@ -1,0 +1,23 @@
+{
+  "status": "failed",
+  "pid": 26090,
+  "directory": "/private/tmp/relm-f6d/model-evaluation-20261007-175741",
+  "started_at": 1791388661.411604,
+  "stages": [
+    {
+      "name": "fixed-evaluation",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/directions/run-evaluation.R"
+      ],
+      "status": "failed",
+      "pid": 26091,
+      "exit_code": 1
+    }
+  ],
+  "stage": "fixed-evaluation",
+  "error": "fixed-evaluation failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6d/verify-model.py\", line 39, in <module>\n    stage('fixed-evaluation',['Rscript','--vanilla',str(root/'tests/directions/run-evaluation.R')],timeout=1800)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6d/verify-model.py\", line 22, in stage\n    if rc:raise RuntimeError(name+' failed')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: fixed-evaluation failed\n",
+  "finished_at": 1791388664.898554
+}

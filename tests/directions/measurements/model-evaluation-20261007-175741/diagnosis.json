@@ -1,0 +1,12 @@
+{
+  "overall_status": "failed",
+  "construction_captures": 24,
+  "paired_values": 10752,
+  "direction_width": 896,
+  "independent_direction_max_error": 4.996003610813204e-16,
+  "model_acceptance_marker": true,
+  "selection_calls_rejected_before_generation": 42,
+  "selection_token_events": 0,
+  "holdout_calls": 0,
+  "reason": "Evaluation harness changed capture-only top/spill with on_state NULL. Public validation rejected all calls before generation. No text outcomes consumed."
+}

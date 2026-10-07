@@ -1,0 +1,6 @@
+directions-model: ....
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+F6D_ACTUAL_MODEL_RESET_PASSED 1 case / 4 expectations / 5 eight-token calls

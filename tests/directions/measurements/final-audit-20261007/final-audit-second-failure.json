@@ -1,0 +1,5 @@
+{
+  "status": "failed",
+  "stage": "static status labels",
+  "diagnosis": "Successful evaluation driver deliberately retained passed_pending_independent_verification, with later passed verification in a separate file. Collector now checks both original receipts without rewriting either."
+}

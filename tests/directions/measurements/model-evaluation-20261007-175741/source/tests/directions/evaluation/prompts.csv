@@ -1,0 +1,115 @@
+item_id,split,role,prompt,required_pattern,prompt_sha256
+c01,construction,target,"Answer the question concisely in one short sentence.
+Question: What does the human heart pump?
+Answer:",,2fe43a494646ea5e3b9fac472ddd679c044045454409717506b0262d679f5b98
+c01,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What does the human heart pump?
+Answer:",,8e60008bc94868abd12df40a20878b610ed420ef934f57978678bde888651c81
+c02,construction,target,"Answer the question concisely in one short sentence.
+Question: What do bees produce from nectar?
+Answer:",,2b7195cea02e2b157982919c8bb1a1a5424b5a0203ab117b53e9aab72511de63
+c02,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What do bees produce from nectar?
+Answer:",,4186750d0d1c4c4b8b3b8427dff6ba51192e7b25913032d2aa7ab0b7798162d2
+c03,construction,target,"Answer the question concisely in one short sentence.
+Question: What is the capital of France?
+Answer:",,63bfb113b8df351ded857cbc6f1f1fbf861e49746ed066ccb4d64773338997c0
+c03,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What is the capital of France?
+Answer:",,132e04d5f07c1e50644a60ea0d0a9e9e2c1a4597e10a5b611c54f781b68a6584
+c04,construction,target,"Answer the question concisely in one short sentence.
+Question: How many sides does a triangle have?
+Answer:",,b00722be7a57b304ec516340201b657ecaea96ceb2e6686d0075c4de5b1e2ed9
+c04,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: How many sides does a triangle have?
+Answer:",,d5561e2094935df6ed7e947c021b36e11c75461b862a2245d7cdc1e2df30eb4d
+c05,construction,target,"Answer the question concisely in one short sentence.
+Question: What does a thermometer measure?
+Answer:",,f3d1fbe63e7d6e54f68d38f9c0166a74aa6a2472ee7ecc007e1339e5b557d4af
+c05,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What does a thermometer measure?
+Answer:",,673bf16a0b965256e6ae7dc2e0e2c1e87d1443501918989998b6bf78d9a9556a
+c06,construction,target,"Answer the question concisely in one short sentence.
+Question: Which gas do humans need to breathe?
+Answer:",,5315dd4c766b03f876ce45176b8a67730340b0b7ecb00d3c94e404c34f944b7f
+c06,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: Which gas do humans need to breathe?
+Answer:",,280aaddfbbda10cee553fcb9b4e7675358206108149b33361a3e3f6c1d1319ed
+c07,construction,target,"Answer the question concisely in one short sentence.
+Question: What natural light source do plants use for photosynthesis?
+Answer:",,76cd1dd3be0ddd6da1808011649daaf6badb2afb355eeb8c6fe8d0487c561a65
+c07,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What natural light source do plants use for photosynthesis?
+Answer:",,2915177cc39c6a02c19b49a3ee0848f5cc66abf11f8b0de58eccb93802549461
+c08,construction,target,"Answer the question concisely in one short sentence.
+Question: How many meters are in one kilometer?
+Answer:",,bdbdd6116794f01062b63af5b5781a882bbd3e3a9fc1385371319a5b20c63b29
+c08,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: How many meters are in one kilometer?
+Answer:",,08fabee68597ebe9e2c84fcd1193877036d2c377f863404934752a676d85183a
+c09,construction,target,"Answer the question concisely in one short sentence.
+Question: What is the largest living mammal?
+Answer:",,d124e3e383dcf3d27cf69594b83cdca92a4399fa8e4e4cea70d4b7a22fe9c2c5
+c09,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What is the largest living mammal?
+Answer:",,f5c250064d659fa3e068dc0013c31134ffbccea9237b61776bc9b74391671d7c
+c10,construction,target,"Answer the question concisely in one short sentence.
+Question: What sound is commonly associated with a cat?
+Answer:",,556e9738c28cea208489974f0557839cff878f3c0266245518ca3bf41318cd8f
+c10,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What sound is commonly associated with a cat?
+Answer:",,40e083938ec3d608ff0815deb07bb9dda4a326bd2c0e0637a4c16ed4839a1e7f
+c11,construction,target,"Answer the question concisely in one short sentence.
+Question: What does liquid water become when it freezes?
+Answer:",,cc933b7d793188cc198eefc1a5b6db09014e923f0d32dd754133bee7a26f3b99
+c11,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: What does liquid water become when it freezes?
+Answer:",,ae07724039bc57f15d352212a75b5e063cb50e0e4509d6b80326fd98e2ad3917
+c12,construction,target,"Answer the question concisely in one short sentence.
+Question: Which star does Earth orbit?
+Answer:",,281ad4c19f6c8dfbc84562d7ecc1524ef2e63691d7d8a1aec5fa83a8e8f8cecd
+c12,construction,control,"Answer the question with a detailed explanation in several sentences.
+Question: Which star does Earth orbit?
+Answer:",,9a983c0006154fccc61741a96a432ca016debbb3f3674cc9d7f8c18d5bd48590
+s01,selection,task,"Answer the question accurately.
+Question: How many minutes are in one hour?
+Answer:",60|sixty,d76c44d84a4e6df2fa8611b5da1b3ac85b532c528a65b2db1e68988d057b7732
+s02,selection,task,"Answer the question accurately.
+Question: How many seasons are conventionally counted in a temperate year?
+Answer:",four|4,f83ee7aee08d47ad6e509cf888a2e09dbd0e5cc7e72cd4e7852a3f950e2241a8
+s03,selection,task,"Answer the question accurately.
+Question: Which planet is closest to the Sun?
+Answer:",Mercury,0024226603d34d0fb33a0d50607c537fff8da7213630f4611dac66041bade97d
+s04,selection,task,"Answer the question accurately.
+Question: What color is chlorophyll?
+Answer:",green,9d24a1a46821dbdc1b506e074541e739a7f30fbf0cc27424fc110d5f8164d2e8
+s05,selection,task,"Answer the question accurately.
+Question: What is the chemical formula for water?
+Answer:",H2O,4ddef0f0314f04c46aa282a6d4785c304fa77b1c894be91d9bd1dbe25140da9d
+s06,selection,task,"Answer the question accurately.
+Question: What is one plus one?
+Answer:",two|2,26536d1d80d9f1a91b51ddfa9dc20c40bda753aae5fae3e63df14b677fed5678
+e01,evaluation,task,"Answer the question accurately.
+Question: How many days are in one week?
+Answer:",seven|7,559c0506d5deeb0f07ddc01506cc9e735c612f73f5573f3565a8e0ba27364d3a
+e02,evaluation,task,"Answer the question accurately.
+Question: Which planet is commonly called the red planet?
+Answer:",Mars,376e0424f38acbfce453732b198c60879f68159a6c8200928b4de81c708b4c3b
+e03,evaluation,task,"Answer the question accurately.
+Question: Which ocean is the largest on Earth?
+Answer:",Pacific,907cb3828dc822bab9a8000b086958cd23cc4d396a4b6814dcac6221b44267c0
+e04,evaluation,task,"Answer the question accurately.
+Question: How many sides does a hexagon have?
+Answer:",six|6,f5b21323484aa0fb428f753cafce9db451eee2dd5ea89cafc95a7c29df935db0
+e05,evaluation,task,"Answer the question accurately.
+Question: What is the capital of Italy?
+Answer:",Rome,80afc3cb226ad38276314e853bc78d03c363351404daf8fc4fb0bb1af49936b0
+e06,evaluation,task,"Answer the question accurately.
+Question: How many grams are in one kilogram?
+Answer:","1000|1,000|one thousand",f60e1d133eed8573600d8bc721ddaa9e8b2b1ad11ed4f5455b7541032aa33fea
+e07,evaluation,task,"Answer the question accurately.
+Question: How many legs does a spider have?
+Answer:",eight|8,62df878e9233001e2f24a94c10ca66a2b8c7da5d202f4215d9a48e08dafe783d
+e08,evaluation,task,"Answer the question accurately.
+Question: How many colors are conventionally named in a rainbow?
+Answer:",seven|7,8434fac7476bb0be02fbcc955c847b40e7c7c3b5637a1c07269f8b6ddb5e9773

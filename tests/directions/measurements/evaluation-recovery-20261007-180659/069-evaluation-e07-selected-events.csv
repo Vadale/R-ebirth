@@ -1,0 +1,14 @@
+"event_id","event","prompt_id","token_pos","token_id","text","elapsed","finish_reason","validated"
+1,"token",1,1,363,"",0.017592292,"",NA
+2,"text",1,NA,NA," A",0.01759425,"",NA
+3,"token",1,2,34355,"",0.025608167,"",NA
+4,"text",1,NA,NA," spider",0.02561125,"",NA
+5,"token",1,3,703,"",0.03341225,"",NA
+6,"text",1,NA,NA," has",0.033414458,"",NA
+7,"token",1,4,8064,"",0.041190917,"",NA
+8,"text",1,NA,NA," eight",0.041193208,"",NA
+9,"token",1,5,14202,"",0.049040208,"",NA
+10,"text",1,NA,NA," legs",0.049042208,"",NA
+11,"token",1,6,14,"",0.056840583,"",NA
+12,"text",1,NA,NA,".",0.056842292,"",NA
+13,"prompt_end",1,NA,NA,"",0.064721333,"stop",NA

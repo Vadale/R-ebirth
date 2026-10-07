@@ -390,3 +390,43 @@ prefixes, withholding numerical differences for divergent histories. Timeline
 retains bounded worker-applied audit rows, not activation payloads. Plots use
 base graphics on the caller's device; export remains caller-managed. Existing
 condition classes are reused, with no dependency, native or vendor change.
+
+## 13. Reproducible contrast directions — `[approved: D-045, 2026-10-07]`
+
+The founder approved this concrete contract with "Vai" on 2026-10-07 after
+the D045 question and complete proposal were presented. No API/side-effect
+approval remains pending. Implementation and acceptance are separate. The
+approved behavior, schema, numerical guards, resource admission, error
+classes and acceptance are specified in
+[the F6d direction contract](docs/f6d-direction-contract.md).
+
+```r
+llm_direction(target, control, context, layer,
+              normalize_pairs = FALSE, orthogonalize = FALSE,
+              max_bytes = 64 * 1024^2)
+llm_apply_direction(m, direction, context, coef = 1,
+                    max_bytes = 64 * 1024^2)
+print.relm_direction(x, ...)
+```
+
+The constructor consumes explicit paired full-width matrices from one residual
+layer. It returns a classed base data frame with `neuron` and `value`, plus
+bounded versioned provenance/digest metadata; no capture or inference occurs.
+It averages target-minus-control differences, optionally normalizes pairs and
+orthogonalizes against the construction control mean, then returns a unit
+direction. Degenerate inputs fail rather than being silently discarded.
+
+The application adapter requires the independently recorded destination model
+context, validates compatibility/integrity, and calls existing `llm_steer()` for
+all positions. It returns the usual fresh handle. Recorded model/checkpoint
+identity is not authentication of already-loaded weights or editable R metadata.
+Numeric-vector `llm_steer()` stays unchanged. The approved print method is a
+one-screen validated summary, invisibly returning its input.
+
+Persistence remains caller-owned trusted `saveRDS()` / `readRDS()`; application
+and printing revalidate the artifact. Approved narrow rule-9 exception: bounded
+session temporary canonical files for checksum computation, always closed and
+removed on success/error/interrupt; no user-path writes, automatic saved artifact
+or new dependency/native/vendor change. Existing argument/intervention/oom
+conditions are reused. No new loader, direction transfer, projection operator
+or universal behavioral/quality guarantee is implied.

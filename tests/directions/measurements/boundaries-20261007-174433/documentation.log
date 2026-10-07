@@ -1,0 +1,98 @@
+Loading required package: nanoarrow
+Warning: package ‘nanoarrow’ was built under R version 4.5.2
+✖ directions.R:41: @seealso Could not resolve link to topic
+  "llm_apply_direction" in the dependencies or base packages..
+ℹ If you haven't documented "llm_apply_direction" yet, or just changed its
+  name, this is normal. Once "llm_apply_direction" is documented, this warning
+  goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ directions.R:41: @seealso Could not resolve link to topic "llm_compare" in
+  the dependencies or base packages..
+ℹ If you haven't documented "llm_compare" yet, or just changed its name, this
+  is normal. Once "llm_compare" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ directions.R:41: @seealso Could not resolve link to topic "llm_timeline" in
+  the dependencies or base packages..
+ℹ If you haven't documented "llm_timeline" yet, or just changed its name, this
+  is normal. Once "llm_timeline" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ directions.R:95: @param Could not resolve link to topic "llm_direction" in
+  the dependencies or base packages..
+ℹ If you haven't documented "llm_direction" yet, or just changed its name, this
+  is normal. Once "llm_direction" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ generate.R:32: @section Could not resolve link to topic "llm_cancel" in the
+  dependencies or base packages..
+ℹ If you haven't documented "llm_cancel" yet, or just changed its name, this is
+  normal. Once "llm_cancel" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ generate.R:130: @section Could not resolve link to topic "llm_cancel" in the
+  dependencies or base packages..
+ℹ If you haven't documented "llm_cancel" yet, or just changed its name, this is
+  normal. Once "llm_cancel" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-compare.R:112: @seealso Could not resolve link to topic
+  "llm_timeline" in the dependencies or base packages..
+ℹ If you haven't documented "llm_timeline" yet, or just changed its name, this
+  is normal. Once "llm_timeline" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-plots.R:62: @seealso Could not resolve link to topic "llm_timeline"
+  in the dependencies or base packages..
+ℹ If you haven't documented "llm_timeline" yet, or just changed its name, this
+  is normal. Once "llm_timeline" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-plots.R:62: @seealso Could not resolve link to topic "llm_compare"
+  in the dependencies or base packages..
+ℹ If you haven't documented "llm_compare" yet, or just changed its name, this
+  is normal. Once "llm_compare" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-timeline.R:42: @seealso Could not resolve link to topic
+  "llm_compare" in the dependencies or base packages..
+ℹ If you haven't documented "llm_compare" yet, or just changed its name, this
+  is normal. Once "llm_compare" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ probe.R:134: @seealso Could not resolve link to topic "activations" in the
+  dependencies or base packages..
+ℹ If you haven't documented "activations" yet, or just changed its name, this
+  is normal. Once "activations" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ probe.R:134: @seealso Could not resolve link to topic "predict.llm_probe" in
+  the dependencies or base packages..
+ℹ If you haven't documented "predict.llm_probe" yet, or just changed its name,
+  this is normal. Once "predict.llm_probe" is documented, this warning goes
+  away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ probe.R:197: @description Could not resolve link to topic "llm_probe" in the
+  dependencies or base packages..
+ℹ If you haven't documented "llm_probe" yet, or just changed its name, this is
+  normal. Once "llm_probe" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+Writing 'NAMESPACE'
+Writing 'llm_direction.Rd'
+Writing 'llm_apply_direction.Rd'
