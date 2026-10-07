@@ -1,0 +1,12 @@
+{
+  "graphics-helpers.R": {
+    "before_sha256": "679b804cca76eeed386365401e79389e2a9bc50717e874508aa3fe7b4d7af8e8",
+    "after_sha256": "7748009bbbe362d0e3d47340e925ff49af5db101ef8c8d88a7aa145565ccab54",
+    "only_change": "Qualify object.size as utils::object.size; identical arguments and all other source bytes"
+  },
+  "live-state.R": {
+    "before_sha256": "de134b7a008f104bc22d68051407b565604c4a32e7559ff4c96efe897d356e64",
+    "after_sha256": "f1d3100dfb7de836bd2891fdda163aeaa409b085b06cc1c5bc5a01b563f5c05d",
+    "only_change": "Qualify object.size as utils::object.size; identical arguments and all other source bytes"
+  }
+}

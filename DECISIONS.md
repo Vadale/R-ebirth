@@ -1379,10 +1379,12 @@ approval language is superseded by the explicit reply recorded above.
 
 ## D-044 — Reusable model graphics and bounded intervention comparisons
 
-- **Date/status:** 2026-10-07. PROPOSED public contract, not yet approved.
-  The founder authorized starting the updated sequence; D-042/D-043's scope
-  approval does not specify these new signatures. Implementation follows
-  explicit approval of this concrete entry and API-GRAMMAR section 12.
+- **Date/status:** APPROVED on 2026-10-07 after presentation of this concrete
+  contract and its API approval question. The founder merged PR60 and said
+  "ho fatto il merge, puoi passare al prossimo step". This instruction to proceed
+  authorizes F6c implementation; the merge alone is not treated as approval.
+  The initial proposal preceded implementation. API-GRAMMAR section 12 binds
+  the signatures and the linked contract binds their behavior.
 - **Proposal:** `plot.llm()` shows a supported/generic block schematic and
   configured interventions. `llm_compare()` returns a classed data frame of
   selected actual live-state values, with recorded full-prefix alignment and

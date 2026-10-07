@@ -1,0 +1,54 @@
+{
+  "status": "failed",
+  "pid": 14218,
+  "directory": "/private/tmp/relm-f6c/package-20261007-133713",
+  "started_at": 1791373033.571713,
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6c/library",
+        "/private/tmp/relm-f6c/package-20261007-133713/r-install-source"
+      ],
+      "status": "passed",
+      "pid": 14219,
+      "exit_code": 0
+    },
+    {
+      "name": "installed-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6c/installed-tests.R"
+      ],
+      "status": "passed",
+      "pid": 14277,
+      "exit_code": 0
+    },
+    {
+      "name": "model-composition",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6c/model-composition.R"
+      ],
+      "status": "failed",
+      "pid": 14286,
+      "exit_code": 1
+    }
+  ],
+  "native": {
+    "path": "/private/tmp/relm-f6b/library/relm/libs/relm.so",
+    "sha256": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "scope": "Accepted F6b DLL reused unchanged. No native compilation or renewed native acceptance."
+  },
+  "stage": "model-composition",
+  "error": "model-composition failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6c/verify-package.py\", line 46, in <module>\n    stage('model-composition',['Rscript','--vanilla',str(scratch/'model-composition.R')],timeout=300)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6c/verify-package.py\", line 24, in stage\n    if rc:raise RuntimeError(name+' failed')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: model-composition failed\n",
+  "finished_at": 1791373038.418441
+}

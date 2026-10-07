@@ -1,0 +1,3 @@
+Error in run(m, TRUE) : is.null(e$error) is not TRUE
+Calls: tryCatch -> tryCatchList -> run -> stopifnot
+Execution halted

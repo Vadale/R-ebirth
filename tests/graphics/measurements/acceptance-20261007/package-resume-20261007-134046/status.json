@@ -1,0 +1,66 @@
+{
+  "parent_failure": "/private/tmp/relm-f6c/package-20261007-133713",
+  "status": "failed",
+  "pid": 14502,
+  "directory": "/private/tmp/relm-f6c/package-resume-20261007-134046",
+  "started_at": 1791373246.735341,
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6c/library",
+        "/private/tmp/relm-f6c/package-resume-20261007-134046/r-install-source"
+      ],
+      "status": "passed",
+      "pid": 14503,
+      "exit_code": 0
+    },
+    {
+      "name": "prefix-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6c/prefix-tests.R"
+      ],
+      "status": "passed",
+      "pid": 14561,
+      "exit_code": 0
+    },
+    {
+      "name": "model-composition",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6c/model-composition.R"
+      ],
+      "status": "passed",
+      "pid": 14570,
+      "exit_code": 0
+    },
+    {
+      "name": "visual",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6c/render-installed.R"
+      ],
+      "status": "failed",
+      "pid": 14580,
+      "exit_code": 1
+    }
+  ],
+  "native": {
+    "path": "/private/tmp/relm-f6b/library/relm/libs/relm.so",
+    "sha256": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "scope": "Accepted F6b DLL reused unchanged. No native compilation or renewed native acceptance."
+  },
+  "stage": "visual",
+  "error": "visual failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6c/verify-package-resume.py\", line 47, in <module>\n    stage('visual',['Rscript','--vanilla',str(scratch/'render-installed.R')])\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6c/verify-package-resume.py\", line 24, in stage\n    if rc:raise RuntimeError(name+' failed')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: visual failed\n",
+  "finished_at": 1791373251.278262
+}

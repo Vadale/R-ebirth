@@ -5,12 +5,16 @@ after the merged F6a/F6b delivery and before Phase 7. The sequence is **F6c
 reusable graphics → F6d direction construction and evaluation → F6e projection
 steering**. Each increment ends independently usable. This document approves
 the roadmap position and objectives, not new public signatures, dependencies,
-vendor patches or untested feature claims. Implementation has not started.
+vendor patches or untested feature claims. F6d and F6e have not started.
 
 On 2026-10-07 the founder authorized starting this sequence. The concrete F6c
-surface is now proposed in [the graphics contract](f6c-graphics-contract.md)
-and API-GRAMMAR section 12 under D-044. Its approval remains separate from the
-already approved scope/order; no product implementation has started.
+surface was presented in [the graphics contract](f6c-graphics-contract.md)
+and API-GRAMMAR section 12 under D-044, then approved by the founder's instruction
+to proceed after merging PR60. F6c implementation and local acceptance are now
+complete, including installed tests, actual cached-model comparisons, managed
+spill and foreground RStudio plotting/export. Final CI and integration remain
+pending; see the [implementation report](f6c-implementation.md) for exact source
+scopes, retained failures and limitations. D-042/D-043 scope and order are unchanged.
 
 ## Starting point
 

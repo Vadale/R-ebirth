@@ -364,11 +364,11 @@ Original adapters are restored before model ownership returns, on every exit.
 This preserves immutable R handles and the observation boundary. No new export,
 dependency, direction, ablation or replay of historical KV is added. F6b acceptance is tracked separately and is not inferred from F6a evidence.
 
-## 12. Reusable model and intervention graphics — `[proposed: D-044]`
+## 12. Reusable model and intervention graphics — `[approved: D-044, 2026-10-07]`
 
-The founder authorized starting F6c preparation on 2026-10-07. The following
-new public entries await specific approval; do not export or implement them as
-approved APIs yet. The exact proposed types, context/alignment, side effects,
+After reviewing the concrete proposal, the founder merged PR60 and instructed
+"ho fatto il merge, puoi passare al prossimo step" on 2026-10-07, authorizing
+F6c implementation. The exact approved types, context/alignment, side effects,
 resource bounds and acceptance are in
 [the F6c graphics contract](docs/f6c-graphics-contract.md).
 

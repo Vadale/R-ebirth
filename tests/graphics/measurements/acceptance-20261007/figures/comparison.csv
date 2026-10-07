@@ -1,0 +1,5 @@
+"layer","component","neuron","reference","intervention","difference"
+2,"residual",1,1,1.5,0.5
+2,"residual",2,-2,-3,-1
+2,"residual",3,3,4,1
+2,"residual",4,0,0,0

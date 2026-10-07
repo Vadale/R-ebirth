@@ -1,0 +1,44 @@
+{
+  "parent_failure": "https://github.com/Vadale/R-ebirth/actions/runs/37617867269",
+  "status": "failed",
+  "pid": 16901,
+  "directory": "/private/tmp/relm-f6c/ci-package-20261007-142016",
+  "started_at": 1791375616.369567,
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6c/library",
+        "/private/tmp/relm-f6c/ci-package-20261007-142016/r-install-source"
+      ],
+      "status": "passed",
+      "pid": 16902,
+      "exit_code": 0
+    },
+    {
+      "name": "focused-tests",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6c/ci-package-tests.R"
+      ],
+      "status": "failed",
+      "pid": 16963,
+      "exit_code": 1
+    }
+  ],
+  "native": {
+    "path": "/private/tmp/relm-f6b/library/relm/libs/relm.so",
+    "sha256": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "scope": "Accepted F6b DLL reused unchanged. No native compilation or renewed native acceptance."
+  },
+  "stage": "focused-tests",
+  "error": "focused-tests failed",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6c/verify-ci-package.py\", line 48, in <module>\n    stage('focused-tests',['Rscript','--vanilla',str(scratch/'ci-package-tests.R')])\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6c/verify-ci-package.py\", line 24, in stage\n    if rc:raise RuntimeError(name+' failed')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: focused-tests failed\n",
+  "finished_at": 1791375618.744975
+}

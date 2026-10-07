@@ -1,0 +1,19 @@
+{
+  "status": "passed",
+  "executed_cases": 7,
+  "expectations": 28,
+  "failures": 0,
+  "skips": 0,
+  "test_warnings": 0,
+  "executed_at": "/private/tmp/relm-f6c/ci-package-20261007-142016",
+  "remaining_checks_at": "/private/tmp/relm-f6c/ci-package-resume-20261007-142257",
+  "code_usage_messages": 0,
+  "scoped_check": {
+    "errors": 0,
+    "warnings": 2,
+    "notes": 0
+  },
+  "source_hashes_verified": 136,
+  "source_drift": [],
+  "scope": "Focused installed package/graphics-memory tests; retained parent model/UI/numerical scopes. No native build or model run."
+}

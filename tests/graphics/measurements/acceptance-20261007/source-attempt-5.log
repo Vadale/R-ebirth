@@ -1,0 +1,35 @@
+graphics-compare: ........................................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-memory: ...........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-plots: ..................12
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test-graphics-plots.R:53:3'): a middle block selection labels bo
+Expected `any(grepl("blocks 1-4 omitted", text, fixed = TRUE, useBytes = TRUE))` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+
+── 2. Failure ('test-graphics-plots.R:54:3'): a middle block selection labels bo
+Expected `any(grepl("blocks 7-24 omitted", text, fixed = TRUE, useBytes = TRUE))` to be TRUE.
+Differences:
+`actual`:   FALSE
+`expected`: TRUE 
+
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-spill: .......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🐝 Your tests are the bee's knees 🐝
+graphics-timeline: ................................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: Graphics source tests failed
+Execution halted

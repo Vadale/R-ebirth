@@ -1,0 +1,29 @@
+graphics-compare: ....................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+graphics-timeline: 12....
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test-graphics-timeline.R:4:3'): timeline records applied revisions
+<relm_error_trace/relm_error/error/condition>
+Error in `graphics_fail("timeline_schema", "The timeline's column schema has been modified.")`: The timeline's column schema has been modified.
+Backtrace:
+    ▆
+ 1. └─relm (local) llm_timeline(...) at test-graphics-timeline.R:4:3
+ 2.   └─relm (local) graphics_fail("timeline_schema", "The timeline's column schema has been modified.")
+ 3.     └─relm:::relm_abort("relm_error_trace", message, list(reason = reason))
+
+── 2. Error ('test-graphics-timeline.R:15:3'): rolling retention drops complete 
+<relm_error_trace/relm_error/error/condition>
+Error in `graphics_fail("timeline_schema", "The timeline's column schema has been modified.")`: The timeline's column schema has been modified.
+Backtrace:
+    ▆
+ 1. └─relm (local) llm_timeline(graphics_state_fixture(2), h, max_states = 2) at test-graphics-timeline.R:15:3
+ 2.   └─relm (local) graphics_fail("timeline_schema", "The timeline's column schema has been modified.")
+ 3.     └─relm:::relm_abort("relm_error_trace", message, list(reason = reason))
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: Graphics source tests failed
+Execution halted

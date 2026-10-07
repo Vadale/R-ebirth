@@ -1,0 +1,61 @@
+{
+  "parent_failure": "/private/tmp/relm-f6c/docs-20261007-134232",
+  "status": "passed",
+  "pid": 14788,
+  "directory": "/private/tmp/relm-f6c/checks-20261007-134534",
+  "started_at": 1791373534.386985,
+  "stages": [
+    {
+      "name": "vignette",
+      "command": [
+        "quarto",
+        "render",
+        "rebirth/vignettes/model-interventions.qmd",
+        "--to",
+        "html"
+      ],
+      "status": "passed",
+      "pid": 14789,
+      "exit_code": 0
+    },
+    {
+      "name": "source-build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "--no-manual",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "pid": 14836,
+      "exit_code": 0
+    },
+    {
+      "name": "scoped-check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--no-install",
+        "--no-tests",
+        "--no-vignettes",
+        "--no-manual",
+        "--library=/private/tmp/relm-f6c/library",
+        "/private/tmp/relm-f6c/checks-20261007-134534/relm_0.3.0.tar.gz"
+      ],
+      "status": "passed",
+      "pid": 14879,
+      "exit_code": 0
+    }
+  ],
+  "native": {
+    "path": "/private/tmp/relm-f6b/library/relm/libs/relm.so",
+    "sha256": "6edc6e6d512bb16e9d5ad8ed22093291e61a81bb89e5c2d07bee134db6ff04ac",
+    "scope": "Accepted F6b DLL reused unchanged. No native compilation or renewed native acceptance."
+  },
+  "stage": "scoped-check",
+  "source_drift": [],
+  "finished_at": 1791373552.091516
+}
