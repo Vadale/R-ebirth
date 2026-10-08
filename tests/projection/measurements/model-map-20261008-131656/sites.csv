@@ -1,0 +1,10 @@
+"layer","site","detail","configured_steers","configured_ablations","configured_projections"
+1,"attn_out","Post-projection attention; capture unavailable for qwen2",0,0,0
+1,"mlp_out","MLP output; observation site",0,0,0
+1,"residual","Post-intervention residual; steer before ablate",0,0,0
+12,"attn_out","Post-projection attention; capture unavailable for qwen2",0,0,0
+12,"mlp_out","MLP output; observation site",0,0,1
+12,"residual","Post-intervention residual; steer before ablate",0,0,0
+24,"attn_out","Post-projection attention; capture unavailable for qwen2",0,0,0
+24,"mlp_out","MLP output; observation site",0,0,0
+24,"residual","Post-intervention residual; steer before ablate",0,0,0

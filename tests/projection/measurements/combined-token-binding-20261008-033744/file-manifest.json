@@ -1,0 +1,190 @@
+{
+  "actual-profile.csv": {
+    "bytes": 657,
+    "sha256": "e615c42a078b343fce63a9fd1504d931eca4aca6d8de4ecb64ca306da92f997f"
+  },
+  "binary-bindings.json": {
+    "bytes": 10187,
+    "sha256": "0f2419bc69320dae0a05fb3074254d19fde8ce3702b09457e8ff8e1370d2f1b4"
+  },
+  "candidate.patch": {
+    "bytes": 102638,
+    "sha256": "9297394554655c76e2e89d2026404d395ad52804ed873425dc33ee8b7f72c472"
+  },
+  "carried-native-bridge-receipt.json": {
+    "bytes": 225,
+    "sha256": "fc2e9632145e763bbf15b490f83280d1c3f58c67c17188e85092ee664e284747"
+  },
+  "changed-source.tar.gz": {
+    "bytes": 234424,
+    "sha256": "a50d276ce8c56b0270c7a08cb10914983d363c644eb2b796eca640188e8e7875"
+  },
+  "check-combined-token-mode.R": {
+    "bytes": 1370,
+    "sha256": "a35167480ffa5039b027bfc596c02999108ec33a547446431801eab847bb4da0"
+  },
+  "check-combined-tokens.R": {
+    "bytes": 9229,
+    "sha256": "1fcf0dbccece2e6737ddff009d43293887233669f31651be7e346147ad0ed3f5"
+  },
+  "clippy-default.log": {
+    "bytes": 282,
+    "sha256": "b4e441c3c06cc0e774f7296485e28989360fc14bd1eec1e30e92dfd0d1345d74"
+  },
+  "clippy-private.log": {
+    "bytes": 283,
+    "sha256": "a79927df03e9511dcfae00178e7551c9518799ad7092061809ae67bf7e3bcbb8"
+  },
+  "combined-R-binding.log": {
+    "bytes": 8755,
+    "sha256": "a8abffcefea7b3dfc1a7672be75cde159b3b39607309488f761a2ce5a24bc3c1"
+  },
+  "combined-cases.csv": {
+    "bytes": 1205,
+    "sha256": "27022cfbd3d66b9c8842950c2a7246d8203d4f4f81d416b8fb4e7282b4e9828b"
+  },
+  "combined-collector.py": {
+    "bytes": 3405,
+    "sha256": "26608e147b45e807d9de244c8196d87f8687c2906df1d9557dde8304e8e0356d"
+  },
+  "combined-exact-terms.csv": {
+    "bytes": 2269,
+    "sha256": "614cdaf7b520a10adf06282c136ef079f7c56212a6581e1d3ae72f9bee14eb08"
+  },
+  "combined-materialization.csv": {
+    "bytes": 229,
+    "sha256": "f6bb185b92d6958e6142565d7e4f91e051ca2c8f29b1939e376b9f576c0dcfeb"
+  },
+  "combined-mixed-terms.csv": {
+    "bytes": 2274,
+    "sha256": "cb679ad3a1032ebfc80f2870aa018ed30d9cddc3123836df439841cded0f6ab6"
+  },
+  "combined-owner-receipts.json": {
+    "bytes": 417,
+    "sha256": "7ab95924763c77d337140a2f373b48d732ddceb82e4a3618db4f6e24849bce66"
+  },
+  "combined-raw-token-logits.csv": {
+    "bytes": 5555,
+    "sha256": "cbb946195bb92c164879b48b9e3e1290372982d6a25c8bdaf022b6c37e56caf5"
+  },
+  "combined-steer-terms.csv": {
+    "bytes": 2273,
+    "sha256": "1265bdb8ff509f12462c49174f0aa80b011558ffae2935576eb0ba52ea55655c"
+  },
+  "combined-token-collector.py": {
+    "bytes": 1757,
+    "sha256": "10132092127f9c83c8ee2815ab7a7f8d9f4db69e16c3346dc041dba18c7176ed"
+  },
+  "combined-token-ready.json": {
+    "bytes": 17211,
+    "sha256": "91622873394881171ed0d47925b41b71b45a01330d8162b0ffd401b5f90e79b7"
+  },
+  "default-ffi/entrypoint.c": {
+    "bytes": 286,
+    "sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596"
+  },
+  "default-fresh-link.log": {
+    "bytes": 779,
+    "sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+  },
+  "default-profile.csv": {
+    "bytes": 657,
+    "sha256": "1f24079793238584025a2b1f975be8eb38be168925022a4f169e53f2949be55c"
+  },
+  "default-registration.log": {
+    "bytes": 166,
+    "sha256": "b84473aaf9d06d599a265e565ca9d4a54067b523c943d917802671590aa0a86a"
+  },
+  "default-static-build.log": {
+    "bytes": 65487,
+    "sha256": "950c48adfca00f62738074033767d07a3978b62a84ec1a5e241c44e6dc380d97"
+  },
+  "format.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "native-bridge-receipt-recovered.json": {
+    "bytes": 225,
+    "sha256": "fc2e9632145e763bbf15b490f83280d1c3f58c67c17188e85092ee664e284747"
+  },
+  "native-token-receipt.json": {
+    "bytes": 175,
+    "sha256": "4dfd54a05a402c75871938e3fd51186b9436ed144074dfb67a42228c7ad24715"
+  },
+  "native-token-shape.log": {
+    "bytes": 621,
+    "sha256": "384d7f88b09a849c86a26fc712dd9d6338a7be9654c6df35a63360173eb62cc8"
+  },
+  "no-spill-default.log": {
+    "bytes": 282,
+    "sha256": "516c30a3f9e34bbec817dc1761904102019365886338c6e54066ee330b61fbd7"
+  },
+  "no-spill-private.log": {
+    "bytes": 282,
+    "sha256": "dca9013e209483c4e03d2eaa0fc3e8fe647f812a582dca4ebe73f1fe194f9292"
+  },
+  "owner-binding.json": {
+    "bytes": 9188,
+    "sha256": "0cfea9282a9514becddd546ee6a454b42d2ecaa220308ceb34c6a3121e52923a"
+  },
+  "owner-verification.json": {
+    "bytes": 2733,
+    "sha256": "dd7c342ddfe0716fcc6679bb10f132b260bf54eb6e068866484e903f7fc5cc2f"
+  },
+  "partial-verification.json": {
+    "bytes": 1180,
+    "sha256": "10a2e654aa3c2870271bf5266d2fa90fb7ce42dab40ac2625e29ea3b87fa0b83"
+  },
+  "private-ffi/entrypoint.c": {
+    "bytes": 286,
+    "sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596"
+  },
+  "private-fresh-link.log": {
+    "bytes": 779,
+    "sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+  },
+  "private-profile.csv": {
+    "bytes": 657,
+    "sha256": "1f24079793238584025a2b1f975be8eb38be168925022a4f169e53f2949be55c"
+  },
+  "private-registration.log": {
+    "bytes": 166,
+    "sha256": "002b93d1f477d6f6923506a841a841793ef4b8a3e2b56636b9b97689847ee2a5"
+  },
+  "private-static-build.log": {
+    "bytes": 65571,
+    "sha256": "3c0febd4da5bbdb6695681dbdc1904e9ad04a8bc80b0b1736acfd8fba7da7ed0"
+  },
+  "ready.json": {
+    "bytes": 17211,
+    "sha256": "91622873394881171ed0d47925b41b71b45a01330d8162b0ffd401b5f90e79b7"
+  },
+  "registration-receipts.json": {
+    "bytes": 367,
+    "sha256": "fad2cb62d9a8a6d853cb8d9b64382be4b34886b4a830f6c8832508cd76be8cef"
+  },
+  "source-manifest.json": {
+    "bytes": 13241,
+    "sha256": "4b5ad5049a70dbd79500f1618bdc340c5633ff9f55af0d43f95bbdb0b09810e3"
+  },
+  "status.json": {
+    "bytes": 6892,
+    "sha256": "11fbd90ec7dd834537ea03fe837ef9e503911039dc8c657f169a440e95825db3"
+  },
+  "test-combined-token-collector.py": {
+    "bytes": 2480,
+    "sha256": "3e0b56325e0fa18dc86178b24cabd0473f79c5a5bddbd2b76a09607746f96708"
+  },
+  "token-values-receipt.json": {
+    "bytes": 184,
+    "sha256": "038711cfe8d5d4a00115f9acf18734ac8f1f71bb50bee1c25cef7ca5e4dc482d"
+  },
+  "verify-combined-token-owner.py": {
+    "bytes": 10617,
+    "sha256": "8496d29f07295cb1043124abee023d4c9017977aeadb206b432bf1f10a8ca3f0"
+  },
+  "verify-combined-tokens.py": {
+    "bytes": 11151,
+    "sha256": "a6058b1705e499a3c62949d3c232d67e7800d2235193b6d6e428821fc464fc1b"
+  }
+}

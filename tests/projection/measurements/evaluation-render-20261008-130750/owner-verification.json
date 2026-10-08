@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "original_files": 20,
+  "source_hashes": 172,
+  "installed_hashes": 28,
+  "evaluation_original_hashes": 616,
+  "comparison_coordinates": 1792,
+  "timeline_states": 4,
+  "summary_settings": 4,
+  "intervals": 36,
+  "visual_inspection": {
+    "figures": 5,
+    "PNG": "All five individually inspected: legible, no clipped labels; static projection distinguished from additive revisions.",
+    "PDF": "Same render recipe and data; PDF bytes retained."
+  },
+  "models": 0,
+  "inference": 0,
+  "warnings": 0,
+  "model_map": "Still pending actual configured handle",
+  "scope": "Saved observations and fixed-corpus summaries; no same-row native formula or generalized efficacy claim",
+  "original_status_preserved": "awaiting_visual_verification"
+}

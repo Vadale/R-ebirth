@@ -1,0 +1,11 @@
+{
+  "status": "awaiting_visual_verification",
+  "pid": 91084,
+  "directory": "/private/tmp/relm-f6e/evaluation-render-20261008-130750",
+  "updated_unix": 1791457671.409285,
+  "stage": "complete",
+  "models": 0,
+  "inference": 0,
+  "figures": 5,
+  "recipe_sha256": "2976a16f93b36726cf54ea82c05d06ba9ce4c345343bad5ed6fd52add01cc480"
+}

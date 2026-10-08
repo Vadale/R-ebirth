@@ -1,0 +1,15 @@
+"field","native","R"
+"direction_bytes",272,272
+"plan_bytes",80,80
+"context_bytes",7024,7024
+"frame_bytes",14242,14242
+"probe_bytes",6929,6929
+"projection_bytes",28547,28547
+"residual_probe_bytes",0,0
+"adapter_data_bytes",0,0
+"adapter_fixed_bytes",256,256
+"metadata_bytes",0,0
+"r_projection_bytes",4608,4608
+"r_adapter_bytes",0,0
+"existing_direction_estimate",0,0
+"total_bytes",33411,33411

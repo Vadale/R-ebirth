@@ -1,0 +1,16 @@
+{
+  "status": "pruning_protocol_verified",
+  "independent_values_within_main_count": 144,
+  "fixed_schedule_final_values": 144,
+  "fixed_schedule_history_values": 144,
+  "replay_final_and_history_values": 576,
+  "cross_schedule_accuracy_accepted": false,
+  "cross_schedule_outliers": {
+    "mlp_out_last_c1": [],
+    "attn_out_last_c1": [],
+    "long_prefill": [
+      1,
+      43
+    ]
+  }
+}

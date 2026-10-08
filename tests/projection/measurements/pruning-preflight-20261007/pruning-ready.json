@@ -1,0 +1,159 @@
+{
+  "status": "ready",
+  "test_id": "projection::tests::projection_microbatches_pruning_and_graph_reuse",
+  "owned_changes": [
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs"
+  ],
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "2deda583e707c56430ad648532e0c9e6cb988650abf63f54e21723f178c39db9",
+    "rebirth/src/rust/rebirth-llm/build.rs": "3dcd4270bf9902eb01191509cc9f1185bac9bda71e0464ee13dd3a795059febe",
+    "rebirth/src/rust/rebirth-llm/native/CMakeLists.txt": "744d603003e13889f32c311493b7179bbf62f364b15cbdfa67ffb354859f6d30",
+    "rebirth/src/rust/rebirth-llm/native/projection.cpp": "1e0e1dcebd0a8d447a2a01e0cae513e99800371cb90a818d1a43c1d3bd8a3755",
+    "rebirth/src/rust/rebirth-llm/native/projection.h": "50fce200c0b80b06d7cbc5540bba9ff1689a06e43ecf07d4584fa1607ca98fb5",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "d6f172cb39b34a9be3d3ee5a25d96b3ebfee4a13734a069d33d7c6b3e68bb600",
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs": "cc23b56ab16914e68955668165a45fb7d8b094cd3e88a58dfc5bd8cb9b67beee",
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "11504e25a58c570d55966446addc8249f85a08a2f95d6d82314ab8fca686b9fb",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "c3da7521e1ae5917d17b72bf342d924a3aae1ed949bd6a89da7098f3be12fc69",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "34785cb13f9372dea7ae768b3e4236f81fb4642f1b6632eb019c8538947356bd",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "580668a4b022df2bb32598a7b2fa945f91c216e4bdcbd3abe4e9947a2ab61b35",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "32443e3c01d922c425d663213c34826d4cd2fb443e62caf463eecf9bf9c6c8b3",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "59b8449214f5cd323afd4ac4aec7d036969ae08b7a573581cfcc9eb6609b75ab",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "5e3dd10ef6b90fe66010704ca5202e51587abe8f00af10e01ea5f2b3e28054b7",
+    "rebirth/src/rust/rebirth-llm/src/projection_diagnostic.rs": "f72cfce728cb1a4dbea0e88ce001386899d9ade3ac8ba5b8315d9f09676837d3"
+  },
+  "source_hashes_digest": "6e7e356fcd6adad63ab630d32d4e702e1ae366119ff359998b4e477e21d924ae",
+  "reference_commit": "d8a4800",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "independent_expected_cases": 3,
+  "independent_expected_values": 10042,
+  "same_row_expected_values": 704,
+  "runtime_or_reference_or_tolerance_change": false,
+  "builds_tests_models_executed": false,
+  "static_checks": [
+    "rustfmt --edition 2021 and --check",
+    "scoped git diff --check"
+  ],
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "rebirth-llm",
+    "--lib",
+    "projection::tests::projection_microbatches_pruning_and_graph_reuse",
+    "--",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+  "environment": {
+    "F6E_SOURCE": "Owner current source manifest digest",
+    "F6E_REFERENCE_MANIFEST_SHA256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959"
+  },
+  "marker": {
+    "prefix": "F6E_PROJECTION_PRUNING",
+    "schema": 1,
+    "status": "passed",
+    "fields": [
+      "schema",
+      "status",
+      "source_manifest_sha256",
+      "reference_manifest_sha256",
+      "model_sha256",
+      "test_id",
+      "expected_cases",
+      "executed_cases",
+      "counts",
+      "cases",
+      "limitation"
+    ],
+    "expected_cases": 3,
+    "executed_cases": 3,
+    "counts": {
+      "independent_values": 144,
+      "fixed_schedule_final_values": 144,
+      "fixed_schedule_history_values": 144,
+      "aligned_replay_final_values": 144,
+      "aligned_replay_history_values": 144,
+      "grouped_replay_final_values": 144,
+      "grouped_replay_history_values": 144,
+      "cross_schedule_observation_values": 144
+    },
+    "cases": {
+      "names": [
+        "mlp_out_last_c1",
+        "attn_out_last_c1",
+        "long_prefill"
+      ],
+      "fields": [
+        "case",
+        "prefill_tokens",
+        "decode_tokens",
+        "total_tokens",
+        "n_batch",
+        "n_ubatch",
+        "phase_schedule",
+        "grouped_schedule",
+        "reference_logits",
+        "aligned_logits",
+        "aligned_replay_logits",
+        "aligned_history_logits",
+        "aligned_replay_history_logits",
+        "grouped_all_logits",
+        "grouped_last_logits",
+        "grouped_repeat_logits",
+        "grouped_all_history_logits",
+        "grouped_last_history_logits",
+        "grouped_repeat_history_logits",
+        "independent_abs_errors",
+        "fixed_schedule_final_abs_errors",
+        "fixed_schedule_history_abs_errors",
+        "pruning_bitwise_equal",
+        "history_bitwise_equal",
+        "aligned_replay_bitwise_equal",
+        "aligned_history_replay_bitwise_equal",
+        "grouped_replay_bitwise_equal",
+        "grouped_history_replay_bitwise_equal",
+        "continuation_token_native",
+        "continuation_position_native",
+        "cross_schedule_reference"
+      ],
+      "all_logit_and_error_array_lengths": 48,
+      "long_phase_schedule": [
+        512,
+        1,
+        1
+      ],
+      "long_grouped_schedule": [
+        512,
+        2
+      ],
+      "short_phase_schedule": [
+        3,
+        1,
+        1
+      ],
+      "short_grouped_schedule": [
+        5
+      ],
+      "continuation_token_native": 1,
+      "continuation_position_native": "total_tokens, appended without KV reset for each comparison",
+      "cross_schedule_reference_fields": [
+        "status",
+        "abs_errors",
+        "outlier_native_tokens",
+        "max_abs_error"
+      ],
+      "cross_schedule_reference_status": "unaccepted_cross_schedule_observation"
+    },
+    "assertions": "Independent aligned logits use existing absolute0.01. Fixed-schedule all/last final48 and continuation48 use existing absolute0.01 AND finite bitwise equality. Aligned and grouped replays each require finite bitwise final+continuation equality. The144aligned independent values are already included in10042; native-to-native comparisons and cross-schedule observations are separate. Same-row704 at2e-6 unchanged.",
+    "raw_case_prefix": "F6E_PROJECTION_PRUNING_CASE",
+    "raw_case_semantics": "Identical case object emitted before numerical/parity assertions, without passed status. Retains all raw arrays/errors if later assertions fail.",
+    "limitation": "Independent0.01 acceptance follows the declared prefill/decode phases. Grouped all-prompt versus that reference is an unaccepted cross-schedule observation; no batching-invariant accuracy or kernel-cause claim."
+  },
+  "bounds": "Only fixed48logit/error arrays retained; prefix logits immediately dropped; no full N-by-vocab extraction or added activation buffers. Maximum fixture514tokens; actual n_batch drives chunking. Three bounded JSON case records retained for one final marker.",
+  "preserved_failure": "Native7 original mismatch and16-run diagnostic are unchanged; raw grouped-vs-reference errors remain emitted without asserting acceptance.",
+  "native_ready_modified": false
+}

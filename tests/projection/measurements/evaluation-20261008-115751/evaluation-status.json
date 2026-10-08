@@ -1,0 +1,9 @@
+{
+  "status": "failed",
+  "stage": "diagnose_before_retry",
+  "pid": 88498,
+  "run_dir": "/private/tmp/relm-f6e/evaluation-20261008-115751",
+  "updated_unix": 1791453476.9647639,
+  "error": "experiment exit 1",
+  "traceback_file": "/private/tmp/relm-f6e/evaluation-20261008-115751/failure.txt"
+}

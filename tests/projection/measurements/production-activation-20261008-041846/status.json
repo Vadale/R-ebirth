@@ -1,0 +1,204 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 77606,
+  "directory": "/private/tmp/relm-f6e/production-activation-20261008-041846",
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "pid": 77612,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 77615,
+      "exit_code": 0,
+      "log_sha256": "dc0df075b47317fe13d23e0bdb95fd7a59ed908ab19cfe5aa63b9428afd443c0"
+    },
+    {
+      "name": "clippy-private",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "projection-private",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 77655,
+      "exit_code": 0,
+      "log_sha256": "ac1cb53998fa6e6b4ea62ba57b331c79a045a83bd29ce88ef0f2bb58ca5f98ca"
+    },
+    {
+      "name": "no-spill-default",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--lib"
+      ],
+      "status": "passed",
+      "pid": 77683,
+      "exit_code": 0,
+      "log_sha256": "f844d9c2bd3aff1bd1604f767f02184d9a9bd350a56b5c3778e32fb42563926c"
+    },
+    {
+      "name": "no-spill-private",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--features",
+        "projection-private",
+        "--lib"
+      ],
+      "status": "passed",
+      "pid": 77693,
+      "exit_code": 0,
+      "log_sha256": "783a3c4744b359348146dfacf03f0036784964f96643c43db5c79b09ae6366ac"
+    },
+    {
+      "name": "native-1",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--test",
+        "projection_production",
+        "default_constructor_routes_and_owned_lifecycle",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "pid": 77698,
+      "exit_code": 0,
+      "log_sha256": "fe847c3927f30d1f0981aaaa210969c32d1fc8ecded897fd4b89353a019b5780"
+    },
+    {
+      "name": "native-2",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "async_job::tests::projection_static_live_restore_cancel_and_poison",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "pid": 78082,
+      "exit_code": 0,
+      "log_sha256": "cd41ab29615fbdb430e3ae29fcc99ef781af0e27e4cf13b21f10889dd268bd32"
+    },
+    {
+      "name": "default-static-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "pid": 78097,
+      "exit_code": 0,
+      "log_sha256": "776abba16de3269837ef2d83a94a727467b402a2d2f226e0157e0aabe55b3bec"
+    },
+    {
+      "name": "default-fresh-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "pid": 78104,
+      "exit_code": 0,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "default-registration",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-production-default.R",
+        "/private/tmp/relm-f6e/production-activation-20261008-041846/default-ffi/relm.so"
+      ],
+      "status": "passed",
+      "pid": 78125,
+      "exit_code": 0,
+      "log_sha256": "61cede7efffa084e7b92d4a75bd76dd5c37da29a7d7565ec9fbe194d8bef2b17"
+    }
+  ],
+  "model_loads_planned": 2,
+  "scope": "default native activation/new worker and fresh default DLL; not installed public R/text/evaluation acceptance",
+  "source_manifest_sha256": "18ebedbbf3469f2ae7358e8044836f51e866372c3af2e84fc9107070aa0ab31e",
+  "source_count": 115,
+  "stage": "default-registration",
+  "compiler_warnings": [],
+  "outcomes": 3,
+  "cases": 27,
+  "refusals": 13,
+  "compared_values": 291,
+  "model_loads_reported": 2,
+  "constructor_calls_reported": 3,
+  "independent_numerical_oracle": false,
+  "source_drift": [],
+  "finished_at": 1791425941.832909
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "captures": 24,
+  "capture_matrix_values": 43008,
+  "randomized_rows": 12,
+  "direction_values": 2688,
+  "maximum_absolute_errors": {
+    "residual": 1.38777878078145e-16,
+    "mlp": 6.93889390390723e-17,
+    "random_mlp": 5.55111512312578e-17
+  },
+  "models": 0,
+  "inference": 0,
+  "scope": "Independent retained RDS, matrix provenance, pair swaps and base-R arithmetic"
+}

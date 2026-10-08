@@ -1,0 +1,12 @@
+{
+  "status": "verified",
+  "cases": 2,
+  "expectations": 1074,
+  "source_hashes": 40,
+  "test_failures": 0,
+  "test_errors": 0,
+  "test_skips": 0,
+  "test_warnings": 0,
+  "scope": "source-only affected schema1 encoding19vectors/artifact validation; no prior arithmetic/model suite repeated; installed acceptance pending",
+  "external_warning": "testthat patch-version warning retained"
+}

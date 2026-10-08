@@ -1,0 +1,22 @@
+{
+  "default-ffi/relm.so": {
+    "bytes": 37095720,
+    "sha256": "e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d"
+  },
+  "default-ffi/entrypoint.o": {
+    "bytes": 2304,
+    "sha256": "19abc7dc19af6d3283c22c093a852427dc81fc0c8813974afbb47326dab387aa"
+  },
+  "default-ffi/binding-binaries/projection_state.o": {
+    "bytes": 4184,
+    "sha256": "469a98e5deb25a2e974959063d61a6a1daa9ea01f6ff3c40139725a1f0960fa8"
+  },
+  "default-ffi/binding-binaries/librelm.a": {
+    "bytes": 144920608,
+    "sha256": "f11710218bb51b693e1058056d4c9009f6fcee2c2915a9333192176efd2a3dc1"
+  },
+  "default-ffi/binding-binaries/librelm-r-state.a": {
+    "bytes": 4552,
+    "sha256": "f9f3e02f89d2aa67dbca7f61594d22965cb7ea8b084f8434277ff352ed8b78ba"
+  }
+}

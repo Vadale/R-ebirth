@@ -1,0 +1,12 @@
+{
+  "status": "verified_failure_before_model_load",
+  "source_hashes": 229,
+  "installed_hashes": 28,
+  "tar_members": 151,
+  "stage_logs": 2,
+  "installed_dll_sha256": "e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d",
+  "model_loads": 0,
+  "public_cases": 0,
+  "completed": "Fresh install and source/body/formals loop completed; dependency metadata check failed before codetools/marker/model invocation. No product change.",
+  "diagnosis": "Empty earlier library directory shadows packageDescription; the existing complete package resolves through requireNamespace. Preserve exact dependency files and resolve versions after namespace loading. Correct literal newline in final marker before its first execution."
+}

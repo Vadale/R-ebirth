@@ -1,0 +1,45 @@
+{
+  "status": "failed",
+  "pid": 96301,
+  "directory": "/private/tmp/relm-f6e/installed-review-20261008-151124",
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6e/public-library-review",
+        "/private/tmp/relm-f6e/installed-review-20261008-151124/package-source"
+      ],
+      "status": "passed",
+      "pid": 96302,
+      "exit_code": 0,
+      "log_sha256": "6b75b19105fd9764c6c4a7fb41127547f876b78ba1540fe112eb16957161f652"
+    },
+    {
+      "name": "installed-source",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "library(relm);stopifnot(normalizePath(find.package('relm'))==normalizePath('/private/tmp/relm-f6e/public-library-review/relm'));e<-new.env(parent=baseenv());for(f in list.files('rebirth/R',full.names=TRUE,pattern='[.]R$')) sys.source(f,e);n<-ls(e,all.names=TRUE);for(k in n) if(is.function(e[[k]])) {a<-get(k,asNamespace('relm'),inherits=FALSE);stopifnot(identical(formals(a),formals(e[[k]])),identical(body(a),body(e[[k]])))};stopifnot(packageVersion('later')=='1.4.8',packageVersion('promises')=='1.5.0');codetools::checkUsagePackage('relm');cat('F6E_INSTALLED_REVIEW_SOURCE functions=',sum(vapply(mget(n,e),is.function,logical(1))),'\\n',sep='')"
+      ],
+      "status": "failed",
+      "pid": 96377,
+      "exit_code": 1,
+      "log_sha256": "69625aedd4701feed1c641a86a600aee424420cb97b7d0f7d5dff4bf9b14a3f3"
+    }
+  ],
+  "scope": "Fresh corrected installed library: zero/live capture and real R GC registry reuse only; no efficacy or old public suite",
+  "stage": "installed-source",
+  "error": "installed-source failed; preserve and diagnose before any affected correction",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/run-installed-review.py\", line 55, in main\n    text=stage('installed-source',['Rscript','--vanilla','-e',code]);assert text.strip()=='F6E_INSTALLED_REVIEW_SOURCE functions=259'\n  File \"/private/tmp/relm-f6e/run-installed-review.py\", line 31, in stage\n    assert code==0,name+' failed; preserve and diagnose before any affected correction'\nAssertionError: installed-source failed; preserve and diagnose before any affected correction\n",
+  "source_drift": [],
+  "installed_drift": [],
+  "dependency_drift": [],
+  "input_drift": [],
+  "finished_at": 1791465087.1195982
+}

@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "source_hashes": 229,
+  "source_archive_members": 151,
+  "installed_hashes": 28,
+  "dependency_hashes": 998,
+  "exact_named_cases": 10,
+  "bitwise_coordinate_pairs": 1792,
+  "registry_profiles": 13,
+  "actual_gc_calls": 11,
+  "open_candidates_finalized_by_gc": 4,
+  "max_simultaneous_derived": 3,
+  "attempts": {
+    "load": 1,
+    "derive": 13,
+    "generate": 3,
+    "trace": 0,
+    "logits": 0,
+    "tokenize": 0
+  },
+  "dll_sha256": "e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d",
+  "CPU_offload_layers": "0/25",
+  "known_tokenizer_warning": 1,
+  "new_R_native_errors_warnings": 0,
+  "source_body_formals": "Carried fresh-install loop completed before parent metadata failure; previous259-function source contract unchanged",
+  "codetools": "New runtime preflight silent after existing namespaces loaded",
+  "scope": "Installed review corrections only. Timing fields are finite but differ, and are retained rather than used as an identity requirement. No efficacy/timing/independent-golden claim.",
+  "model_calls_during_owner_verification": 0,
+  "original_driver_status": "awaiting_owner_verification",
+  "fixed_profile_comparisons": 325
+}

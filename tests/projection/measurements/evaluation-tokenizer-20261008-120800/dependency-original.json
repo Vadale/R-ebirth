@@ -1,0 +1,30 @@
+{
+  "mode": "original",
+  "library_paths": ["/private/tmp/relm-f6e/public-library-budget", "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library"],
+  "packages": [
+    {
+      "package": "later",
+      "available": false,
+      "path": null,
+      "version": null
+    },
+    {
+      "package": "promises",
+      "available": false,
+      "path": null,
+      "version": null
+    }
+  ],
+  "dependency_gate": "async_dependency",
+  "error": {
+    "message": "Async generation requires later >= 1.4.8. Install it with install.packages('later').",
+    "reason": "async_dependency",
+    "package": "later",
+    "required_version": "1.4.8",
+    "installed_version": null,
+    "call": "relm:::async_check_dependencies()"
+  },
+  "models": 0,
+  "inference": 0,
+  "raw_failed_settings_verified": 72
+}

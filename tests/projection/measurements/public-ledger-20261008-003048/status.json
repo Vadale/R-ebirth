@@ -1,0 +1,90 @@
+{
+  "status": "failed",
+  "pid": 44694,
+  "directory": "/private/tmp/relm-f6e/public-ledger-20261008-003048",
+  "started_at": 1791412248.502584,
+  "stages": [
+    {
+      "name": "r-source",
+      "command": [
+        "Rscript",
+        "/private/tmp/relm-f6e/check-ledger-source.R"
+      ],
+      "status": "passed",
+      "started_at": 1791412248.6160672,
+      "pid": 44703,
+      "exit_code": 0,
+      "finished_at": 1791412249.292097,
+      "log_sha256": "dee5af997c981f44f3e62fb893b97bbc6109bcde11b60ca32d3eb15abb583d28"
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791412249.292969,
+      "pid": 44713,
+      "exit_code": 0,
+      "finished_at": 1791412249.4444659,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-llm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791412249.444936,
+      "pid": 44716,
+      "exit_code": 0,
+      "finished_at": 1791412250.802294,
+      "log_sha256": "ee6270f9f640b3f91cd3fe8549ae3d89c9402c7ad37564069d85b682780a6c95"
+    },
+    {
+      "name": "clippy-ffi",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "failed",
+      "started_at": 1791412250.802718,
+      "pid": 44750,
+      "exit_code": 101,
+      "finished_at": 1791412294.162045,
+      "log_sha256": "2314f038ee57d17ed786b28fdc2d76e59755ee01f8e0c5069db1efaa75fc4fde"
+    }
+  ],
+  "models": 0,
+  "production_armed": false,
+  "scope": "new native admission/profile, independent R equations and strict boundary controls; constructor ownership still requires integration proof",
+  "source_manifest_sha256": "27ba3514957949e45cf2f6dbf8aea563bdf88e0f5669d9d3688cf11612eddd9a",
+  "source_count": 100,
+  "stage": "clippy-ffi",
+  "r_cases": 7,
+  "r_expectations": 229,
+  "error": "clippy-ffi failed; diagnose retained sources/log before an affected-only correction",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-public-ledger.py\", line 60, in main\n    stage('clippy-ffi',['cargo','clippy','--locked','--offline','-p','rebirth-ffi','--all-targets','--','-D','warnings'])\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6e/verify-public-ledger.py\", line 36, in stage\n    if rc:raise RuntimeError(name+' failed; diagnose retained sources/log before an affected-only correction')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: clippy-ffi failed; diagnose retained sources/log before an affected-only correction\n",
+  "source_drift": [],
+  "finished_at": 1791412294.167968
+}

@@ -1,0 +1,30 @@
+{
+  "model_calls": 0,
+  "controls": [
+    {
+      "test": "projection::review_tests::projection_zero_live_capture_preserves_identity_without_row_work",
+      "control": "bound marker accepted",
+      "status": "passed"
+    },
+    {
+      "test": "projection::review_tests::projection_zero_live_capture_preserves_identity_without_row_work",
+      "control": "wrong count refused",
+      "status": "passed"
+    },
+    {
+      "test": "projection::review_tests::projection_zero_live_capture_preserves_identity_without_row_work",
+      "control": "wrong source refused",
+      "status": "passed"
+    },
+    {
+      "test": "projection_review_registry_tests::projection_registry_reuses_expired_slots_without_weakening_admission",
+      "control": "bound marker accepted",
+      "status": "passed"
+    },
+    {
+      "test": "projection_review_registry_tests::projection_registry_reuses_expired_slots_without_weakening_admission",
+      "control": "wrong count refused",
+      "status": "passed"
+    }
+  ]
+}

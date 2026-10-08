@@ -1,0 +1,20 @@
+{
+  "check-metal-collector.py": "59fd51ddabe3b6ed73a4c1f9d8216382d8403bb65835e46174d516849672d6cf",
+  "metal-collector-controls.json": "ed2adf54d6dbe298c71182df7c1c423a1b3978d14d86dbb45657f1cf77f759f3",
+  "metal-collector.py": "619ad6162ad9bbd122f37653adbc7c3661d778632aa63572f3a708c6ca7e5ad0",
+  "metal-diagnosis.json": "011776503169f05573077f3377b159a6a950379893f2d15ae7cf66c47646df53",
+  "metal-ready-owner.json": "97b98a044d9b2101f3ebf7ab82909ad2eb5ceb7f08fdfeb1a8004eda0c2909cf",
+  "metal-ready.json": "8914350079d12c5f4ccc48f8e80262a50ee5e603562258adec072e186ac85a5b",
+  "prelaunch-verification.json": "585ef145a8ed2e1b4339eebeace5127e04280d78c466e9f401a44a82954064d2",
+  "source/docs/f6e-memory-contract.md": "cf4da2ebef6553e14208bf303c4f4d9d6f9969fd9c202bb35be904069328b757",
+  "source/rebirth/src/rust/rebirth-llm/native/projection.cpp": "87a22c84559beac46a5735b82b07959f998f5dafcc7e8f252cfce04249272e48",
+  "source/rebirth/src/rust/rebirth-llm/native/projection.h": "930f5dc8e3b4cce0050efa0291d00871728cd1e4bafd5c7df73e3490a6cdc17e",
+  "source/rebirth/src/rust/rebirth-llm/src/ffi.rs": "c0a07d113018c978790b179dbe2a159a7029eeb02f172b5d2077754fab4a7985",
+  "source/rebirth/src/rust/rebirth-llm/src/projection.rs": "8ef57603fe3189a6f9c52a0b54251e9d77c380afef767e15a81d0b347863c70a",
+  "source/rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "36119db9111fe954cfbf87eb1291cd1c319b868915c02a4e7891c541bcb6b36c",
+  "source/rebirth/src/rust/rebirth-llm/src/projection_tests.rs": "0518a9eb9b76938a4841b7d0e3045db71f25b3506f74b9b63897c6ea20745ad1",
+  "synthetic-attempt-1/check-metal-collector.py": "a4ef956f6b55ffcfadfde9e5d46902e7c4b798fe35fd201329ae5347aeb36b34",
+  "synthetic-attempt-1/metal-collector.py": "619ad6162ad9bbd122f37653adbc7c3661d778632aa63572f3a708c6ca7e5ad0",
+  "synthetic-attempt-1/result.json": "96776c0f236c185dbe2edbe26464980c33b9b7da241a0f9e26a997de82c27415",
+  "verify-feasibility-metal.py": "745454fe7184d0c77ac6ed534e6f2b7f3f7371c335a6af456790efd4192ec389"
+}

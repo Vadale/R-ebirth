@@ -1,0 +1,5 @@
+"run_id","state_id","prompt_token_count","source_pos","source_token_id","generated_prefix_ids","state_file","state_sha256"
+"v001",1,22,22,26,"","states/v001-1.rds","249f8035734262ab5ca34b428326a25f5a1da51b485c79221f353a2ac90447e0"
+"v001",2,22,23,21476,"21476","states/v001-2.rds","088c9bc495d4ef8fed56fb23050ae6d2efcb60b80c68a710a2d9774f2bba626e"
+"v002",1,22,22,26,"","states/v002-1.rds","79f80ea3d0c716f1f4f08a8d7156686324a0845d593dfc10bcb5d43a45accdad"
+"v002",2,22,23,21476,"21476","states/v002-2.rds","df96f55ca721c7f691f83a58e37e6eb91927d4813178ecb94e5ccf23779a2b05"

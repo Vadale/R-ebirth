@@ -1,0 +1,6 @@
+"event_id","event","prompt_id","token_pos","token_id","text","elapsed","finish_reason","validated"
+1,"token",1,1,57859,"",0.017073584,"",
+2,"text",1,,," Oslo",0.017078917,"",
+3,"token",1,2,14,"",0.025703875,"",
+4,"text",1,,,".",0.0257095,"",
+5,"prompt_end",1,,,"",0.034189084,"stop",

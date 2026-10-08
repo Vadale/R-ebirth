@@ -1,0 +1,19 @@
+{
+  "status": "failed_execution_preserved",
+  "original_pid": 95151,
+  "verified_source_hashes": 194,
+  "verified_stage_logs": 6,
+  "passed_preparatory_stages": [
+    "format",
+    "clippy-default",
+    "clippy-private",
+    "no-spill-default",
+    "no-spill-private"
+  ],
+  "native_test_status": "FAILED; no complete native cases or final marker accepted",
+  "failure": "Second live state compares cumulative copies2 with erroneous per-state expected1. Capture counters initialize once and accumulate. Product counter semantics unchanged. Correct test expectations; preserve zero projection stats and all numerical assertions.",
+  "native_2_and_fresh_dll_profile": "unexecuted",
+  "compiler_linker_warnings": 0,
+  "model_replay": false,
+  "scope": "Raw failure/source inspection only; no compilation/model/test rerun"
+}

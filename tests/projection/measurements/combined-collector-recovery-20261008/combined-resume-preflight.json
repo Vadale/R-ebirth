@@ -1,0 +1,18 @@
+{
+  "status": "ready",
+  "remaining_execution_block_byte_identical": true,
+  "carried_stages": 6,
+  "carried_outcomes": 1,
+  "carried_cases": 2,
+  "source_hashes_verified": 112,
+  "no_product_source_change": true,
+  "collector_controls": 12,
+  "collector_negatives": 10,
+  "other_collector_functions_AST_identical": 4,
+  "models_run": 0,
+  "native_tests_run": 0,
+  "driver_sha256": "45d4dc03c4d024a2d9dd8d97025b3648fc4bbfe21e231154e6778dc0405cc488",
+  "binding_sha256": "87c47dbe9601ef0a42444ff031662416baaa81e525ce65f2c754af44f0294b36",
+  "collector_sha256": "26608e147b45e807d9de244c8196d87f8687c2906df1d9557dde8304e8e0356d",
+  "synthetic_fixture_correction": "Initial standalone positive omitted required exact test-name line; restored that fixture line, retained strict collector assertion and original fixture. Actual retained native log already passed corrected parser."
+}

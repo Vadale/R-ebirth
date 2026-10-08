@@ -1,0 +1,10 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"source-test.R","source-test","direction operators are exact plain strings before artifact work",9,0,FALSE,FALSE,0,0.042,0.002,0.044,9
+"source-test.R","source-test","projection application routes validated first and last component sites",20,0,FALSE,FALSE,0,0.156,0.009,0.167,20
+"source-test.R","source-test","operator mismatch tampering and foreign provenance precede derivation",5,0,FALSE,FALSE,0,0.022,0.003,0.025,5
+"source-test.R","source-test","projection coefficients retain zero and reject hidden or non-f32 values",8,0,FALSE,FALSE,0,0.031,0.003,0.034,8
+"source-test.R","source-test","additive application preserves old dispatch and charges new artifact on projected source",6,0,FALSE,FALSE,0,0.013,0.00199999999999999,0.015,6
+"source-test.R","source-test","ordinary residual derivation preserves the recorded projection admission",8,0,FALSE,FALSE,0,0.00599999999999995,0,0.006,8
+"source-test.R","source-test","projection image requests and live projection revisions refuse without execution",5,0,FALSE,FALSE,0,0.021,0.001,0.021,5
+"source-test.R","source-test","explicit direction inheritance uses a new combined budget and production preflight",5,0,FALSE,FALSE,0,0.099,0.001,0.099,5
+"source-test.R","source-test","projection responses bind every term and actual model fact before derivation",31,0,FALSE,FALSE,0,0.048,0.001,0.0489999999999999,31

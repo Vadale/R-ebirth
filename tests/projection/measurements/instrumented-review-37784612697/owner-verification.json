@@ -1,0 +1,45 @@
+{
+  "status": "passed",
+  "whole_run": "success",
+  "head": "1a9ec091f43c6d869f9184f95af2ce3a89bbb850",
+  "run_id": 37784612697,
+  "source_hashes_verified": 1001,
+  "artifact_hashes_verified": {
+    "sanitizers": 629,
+    "valgrind": 56
+  },
+  "native_objects": 270,
+  "rust_archives": 3,
+  "modes": {
+    "sanitizers": {
+      "tests": 1,
+      "executed_cases": 8,
+      "rejected_cases": 2,
+      "compared_values": 224,
+      "model_loads": 1,
+      "constructor_calls": 1,
+      "errors": 0,
+      "applied_suppressions": 0
+    },
+    "valgrind": {
+      "tests": 2,
+      "executed_cases": 18,
+      "rejected_cases": 4,
+      "compared_values": 227,
+      "model_loads": 2,
+      "constructor_calls": 2,
+      "errors": 0,
+      "applied_suppressions": 0
+    }
+  },
+  "runtime_fault_controls": "passed",
+  "real_literal_percent_filename_control": "passed",
+  "own_package_compiler_warnings": 0,
+  "retained_external_compiler_warnings": {
+    "sanitizers": 17,
+    "valgrind": 10
+  },
+  "external_diagnostics_exactly_match_parent": true,
+  "integration_binary_built_not_executed": true,
+  "scope": "Affected default-library CPU zero/live regression plus previously unrun worker Memcheck. No R/SEXP/FFI-registry, GPU, universal UB, new golden accuracy or performance claim. Parent successes carried at exact retained source scopes."
+}

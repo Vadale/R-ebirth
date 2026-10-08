@@ -1,0 +1,6 @@
+.projection-source-a54f1514c553: .............
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+F6E_GRAPHICS_SOURCE cases=2 expectations=13 failures=0 errors=0 skips=0 warnings=0
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 

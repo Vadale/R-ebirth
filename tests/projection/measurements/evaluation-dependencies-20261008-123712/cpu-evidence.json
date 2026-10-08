@@ -1,0 +1,42 @@
+{
+  "backend": "cpu",
+  "n_gpu_layers": 0,
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "actual_offload_layers": 0,
+  "actual_total_layers": 25,
+  "buffers": [
+    {
+      "name": "CPU_Mapped",
+      "kind": "model",
+      "MiB": 500.79
+    },
+    {
+      "name": "CPU_REPACK",
+      "kind": "model",
+      "MiB": 500.52
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    }
+  ],
+  "retained_warnings": [
+    "[3] load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden"
+  ],
+  "tokenizer_caveat": "Pinned GGUF stores zero-based token 128247 </s> as NORMAL (1). The unchanged loader adds it to EOG and ORs CONTROL, emitting this warning. This is runtime tokenizer semantics, not a compiler warning or projection defect; no claim of no output effect.",
+  "scope": "actual load-time native buffer/offload messages; not loaded-weight authentication",
+  "raw_log": {
+    "file": "placement-load.log",
+    "sha256": "0982f299fadaf691e9e2de516f7827d0f151e90bc9d0c05a040f9b7bdd7cd232"
+  },
+  "tokenizer_diagnosis": {
+    "file": "token-warning-diagnosis.json",
+    "sha256": "befbfb9501178b798872e61e2bf9966845579cb37263c5a51a7bf2992db059b9"
+  }
+}

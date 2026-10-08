@@ -1,0 +1,81 @@
+{
+  "status": "failed",
+  "pid": 54586,
+  "directory": "/private/tmp/relm-f6e/unarmed-transfer-20261008-014739",
+  "started_at": 1791416859.168618,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791416859.283651,
+      "pid": 54594,
+      "exit_code": 0,
+      "finished_at": 1791416859.47943,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-llm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791416859.4799411,
+      "pid": 54597,
+      "exit_code": 0,
+      "finished_at": 1791416860.848057,
+      "log_sha256": "54e94c41467b7e4c48483931863b34976e432d408efccd03ece6f780c1807e68"
+    },
+    {
+      "name": "clippy-ffi",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "failed",
+      "started_at": 1791416860.848532,
+      "pid": 54631,
+      "exit_code": 101,
+      "finished_at": 1791416861.926559,
+      "log_sha256": "89825e8877dcf2aa610492967a68d2d9057c5d522b146601ca2276313cdc1bf8"
+    }
+  ],
+  "models": 0,
+  "production_armed": false,
+  "scope": "new unarmed transfer/cache/registry/state helpers and R owner binding, no live model constructor acceptance",
+  "source_manifest_sha256": "3a42e51b3eb34967de4b5448085f3da769beb9029cbc01b33588e8e108304b24",
+  "source_count": 107,
+  "accepted_prior_scopes_not_reexecuted": [
+    "native ledger95/40",
+    "R ledger7/229",
+    "R owners7/70",
+    "private1-9/CPU/Metal/diagnostic/reference"
+  ],
+  "stage": "clippy-ffi",
+  "error": "clippy-ffi failed; diagnose retained sources/log before an affected-only correction",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-transfer.py\", line 55, in main\n    stage('clippy-ffi',['cargo','clippy','--locked','--offline','-p','rebirth-ffi','--all-targets','--','-D','warnings'])\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6e/verify-transfer.py\", line 37, in stage\n    if rc:raise RuntimeError(name+' failed; diagnose retained sources/log before an affected-only correction')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: clippy-ffi failed; diagnose retained sources/log before an affected-only correction\n",
+  "source_drift": [],
+  "finished_at": 1791416861.9304872
+}

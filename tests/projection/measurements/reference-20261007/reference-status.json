@@ -1,0 +1,252 @@
+{
+  "commands": [
+    ".golden-venv/bin/python tests/llm-golden/projection/reference_projection.py --write",
+    "PYTHONDONTWRITEBYTECODE=1 .golden-venv/bin/python tests/llm-golden/projection/reference_projection.py --check"
+  ],
+  "counts": {
+    "arithmetic_accepted": 13,
+    "arithmetic_refused": 11,
+    "arithmetic_values": 52,
+    "controls": 191,
+    "encoding_nodes": 364,
+    "encoding_vectors": 11,
+    "forward_activation_values": 21888,
+    "forward_cases": 15,
+    "forward_input_tokens": 584,
+    "forward_logit_values": 3648,
+    "forward_projected_rows": 1108,
+    "forward_site_values": 2944,
+    "pure_site_cases": 3,
+    "pure_site_values": 6
+  },
+  "encoding_sha256": "897380e9e1be60cf1ed4bc40b6e1090979e0a54b34aa20cebe3e754ce5b05d9b",
+  "file_count": 49,
+  "files": {
+    "tests/llm-golden/projection/ENCODING.md": {
+      "bytes": 2665,
+      "sha256": "897380e9e1be60cf1ed4bc40b6e1090979e0a54b34aa20cebe3e754ce5b05d9b"
+    },
+    "tests/llm-golden/projection/README.md": {
+      "bytes": 8327,
+      "sha256": "fb40a93a74a71c4e3b3988b6d75cd357aaaf5fe787d6f12feb98ae413aef5239"
+    },
+    "tests/llm-golden/projection/forward_projection.py": {
+      "bytes": 5083,
+      "sha256": "4a182d12bc73214abb724b89cf9b757d39b735a98889ced7e68677ba5454a554"
+    },
+    "tests/llm-golden/projection/goldens/arithmetic-cases.csv": {
+      "bytes": 398,
+      "sha256": "8765a8cd962f84bd5fa825095b86c446da432174339440ef8bd03f731b34894d"
+    },
+    "tests/llm-golden/projection/goldens/arithmetic-expected.csv": {
+      "bytes": 2212,
+      "sha256": "fa3462fb3e7b10bc107e432311c80c57727e6974eb9b68a621a8a0df414ffb2f"
+    },
+    "tests/llm-golden/projection/goldens/arithmetic-inputs.csv": {
+      "bytes": 2993,
+      "sha256": "3658379e6bc34696e454cece60bdbab42a29a0afc91c275842592a6ed2346028"
+    },
+    "tests/llm-golden/projection/goldens/arithmetic-refusals.csv": {
+      "bytes": 650,
+      "sha256": "13425719de4a02675e2383f96fe56b3d28a2524d3b7edcf7d5827f7eba0daf1f"
+    },
+    "tests/llm-golden/projection/goldens/artifact-digests.csv": {
+      "bytes": 991,
+      "sha256": "9caf30563b00f5be68a053af0a8e00aa69badc0b5ce180a57594f55986f6f163"
+    },
+    "tests/llm-golden/projection/goldens/attn_out_artifact.bin": {
+      "bytes": 2723,
+      "sha256": "2a8c5d766db5a0debda26ea0178a267249a432342a075d080e29ef87c6d2e74e"
+    },
+    "tests/llm-golden/projection/goldens/attn_out_artifact.hex": {
+      "bytes": 5447,
+      "sha256": "ebbaaa38e7755f5477635c7ae004b3bfe65308c3220f825548ebe139e44793dc"
+    },
+    "tests/llm-golden/projection/goldens/attn_out_context.bin": {
+      "bytes": 1527,
+      "sha256": "4a22fa01fab4ed6376973024ec582f8b521a14acd0269246f2896a1605fd267d"
+    },
+    "tests/llm-golden/projection/goldens/attn_out_context.hex": {
+      "bytes": 3055,
+      "sha256": "59b2df20091874ecc621a0ce3b16cebb26e258ea208fa37abb9ecf0d539b2bfe"
+    },
+    "tests/llm-golden/projection/goldens/control.bin": {
+      "bytes": 120,
+      "sha256": "39c1c7a9e4f3fe328ce71d5aff96af7bc7a41f3e901166e6b982101b212fd218"
+    },
+    "tests/llm-golden/projection/goldens/control.hex": {
+      "bytes": 241,
+      "sha256": "f712baf461ec4bbde11f1d59765dee9d6811b52ca2d0a559c91f710b5b37ec47"
+    },
+    "tests/llm-golden/projection/goldens/controls.csv": {
+      "bytes": 8561,
+      "sha256": "7887a972dfbe7030234ed6c72e083040192b25ff569fe173ca63ff5da597382c"
+    },
+    "tests/llm-golden/projection/goldens/encoding-fields.csv": {
+      "bytes": 36288,
+      "sha256": "84cc6c76fb82047e29e1b77178bde22df5b0cc52126257467e56e6ea1c334d73"
+    },
+    "tests/llm-golden/projection/goldens/encoding-index.csv": {
+      "bytes": 1414,
+      "sha256": "daa20b7bcec09bf60d0e607b01e487c3447bdfd195cf443a0d8815c0cba97833"
+    },
+    "tests/llm-golden/projection/goldens/forward-activations.csv": {
+      "bytes": 1175676,
+      "sha256": "4ef433caf477ad649ccbdebc23fb1ab8dd7efd94b7ae1c9feed36c78b82b9346"
+    },
+    "tests/llm-golden/projection/goldens/forward-cases.csv": {
+      "bytes": 547,
+      "sha256": "0a86aa8f40887d961af39531a3d999e888ad1bf6470bd174068aa40faef04dbb"
+    },
+    "tests/llm-golden/projection/goldens/forward-logits.csv": {
+      "bytes": 157281,
+      "sha256": "3565696c1c44a3bcf8411f6cbb0dcc3045fec58fec98b850c39f5972996b8328"
+    },
+    "tests/llm-golden/projection/goldens/forward-projections.csv": {
+      "bytes": 29603,
+      "sha256": "4ce9e680cc522cb34456aa1cb0d3f9a8161ca80e80e886bd114d1a4c9bc6edf9"
+    },
+    "tests/llm-golden/projection/goldens/forward-residual-interventions.csv": {
+      "bytes": 444,
+      "sha256": "1f807aa9bb1bbf1de1494d4f124e61aebd9537befe3dfa74e29199f0ced4f8a4"
+    },
+    "tests/llm-golden/projection/goldens/forward-row-witnesses.csv": {
+      "bytes": 97278,
+      "sha256": "17b93a1ebd7694119560e1237a236bfe52296c0ba8d0119b9e7d1a6540584c54"
+    },
+    "tests/llm-golden/projection/goldens/forward-sites.csv": {
+      "bytes": 218257,
+      "sha256": "64dc4ca438d72ec2986c92617dc85e5b67a3e8ad8366ce090a44135d9e076c5c"
+    },
+    "tests/llm-golden/projection/goldens/forward-tokens.csv": {
+      "bytes": 16805,
+      "sha256": "77930fe3e8a5d598361ec9dcc762c68e2e85da764d130c49e10f8e18d749fd08"
+    },
+    "tests/llm-golden/projection/goldens/manifest.csv": {
+      "bytes": 3868,
+      "sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959"
+    },
+    "tests/llm-golden/projection/goldens/manifest.json": {
+      "bytes": 28324,
+      "sha256": "ab9e0361b5237bd89901854225f430a8492704cab8607c8ddc9b55dc9c7769b6"
+    },
+    "tests/llm-golden/projection/goldens/mlp_out_artifact.bin": {
+      "bytes": 2721,
+      "sha256": "5f34fe3697afce4717ff5cd7fa11f527fa9f6106aa8550c9a21fcdf03a7f0bfa"
+    },
+    "tests/llm-golden/projection/goldens/mlp_out_artifact.hex": {
+      "bytes": 5443,
+      "sha256": "63822e5d812eeb7869ac5df004d75da5c7af043a4e99d0980d0206531540698c"
+    },
+    "tests/llm-golden/projection/goldens/mlp_out_context.bin": {
+      "bytes": 1526,
+      "sha256": "5f36f86262734cc1e46ec121cab9caa6b1045757d5c5b065c5b0dfa1a169d552"
+    },
+    "tests/llm-golden/projection/goldens/mlp_out_context.hex": {
+      "bytes": 3053,
+      "sha256": "485d3db732cbc04246c03d8f809bca43afbed73847a85ea9cfae449d313cfbd9"
+    },
+    "tests/llm-golden/projection/goldens/negative_zero.bin": {
+      "bytes": 40,
+      "sha256": "03e1779d5686911f8f43de8590fd552c8621d1ab55186061ab67fe6f8d05c3cd"
+    },
+    "tests/llm-golden/projection/goldens/negative_zero.hex": {
+      "bytes": 81,
+      "sha256": "19b4d039a5ef560dfe433df9a809404dc9d5937225baf0f0072eb4b51dc8f5fe"
+    },
+    "tests/llm-golden/projection/goldens/pairs.bin": {
+      "bytes": 455,
+      "sha256": "eda63512eeb59ebd09fce1c53b7f02507c16cdffbddcdffe47a58d117ef93e10"
+    },
+    "tests/llm-golden/projection/goldens/pairs.hex": {
+      "bytes": 911,
+      "sha256": "636680cabf1300fcc1816c6fab5a708da5433dc33cd02b4637ee6bf393697f76"
+    },
+    "tests/llm-golden/projection/goldens/positive_zero.bin": {
+      "bytes": 40,
+      "sha256": "7d7177f9d28b482cf8711f1e09b6d4a3804f3814a0b605f6fa7852981599ab8f"
+    },
+    "tests/llm-golden/projection/goldens/positive_zero.hex": {
+      "bytes": 81,
+      "sha256": "e6f6709ebfacb166a6c65f844abc40d7af658015c735609b4758622a406b690c"
+    },
+    "tests/llm-golden/projection/goldens/prompts.csv": {
+      "bytes": 577,
+      "sha256": "3b0c607350e980c07e1bd7a378252ca9ef006744b45a11f78083bb63566b8f66"
+    },
+    "tests/llm-golden/projection/goldens/provenance.csv": {
+      "bytes": 667,
+      "sha256": "9ddc951f146e280b728016f9f8caa1b376cc7dfba5946b09438f07a5dc704d75"
+    },
+    "tests/llm-golden/projection/goldens/site-math-inputs.csv": {
+      "bytes": 202,
+      "sha256": "c487615d34b0ede07beefb65d5bd79e4fe5a005f2fd9c44ad131e609ef61bbda"
+    },
+    "tests/llm-golden/projection/goldens/site-math.csv": {
+      "bytes": 757,
+      "sha256": "9afa8387a3b39441e59df10ae373114813feada47d490169fe7e8c493ec74688"
+    },
+    "tests/llm-golden/projection/goldens/sources.csv": {
+      "bytes": 1016,
+      "sha256": "e90ec3a17b924a0055cb997606e6a9c287e1a5031599034048096ca98fd372f3"
+    },
+    "tests/llm-golden/projection/goldens/splits.bin": {
+      "bytes": 574,
+      "sha256": "b1a8e1b1ac845b602caed467e6db237909387076a15a862f919ba32ada812f75"
+    },
+    "tests/llm-golden/projection/goldens/splits.hex": {
+      "bytes": 1149,
+      "sha256": "8ed0b9aa28fc3c3fd65d5f5520c9b4d6cff518f06dfd015d4b458441dfbe776a"
+    },
+    "tests/llm-golden/projection/goldens/target.bin": {
+      "bytes": 120,
+      "sha256": "0b28bfdbb202160ae4520e55986c363a9a27831815755336baffb7426a9bd4c2"
+    },
+    "tests/llm-golden/projection/goldens/target.hex": {
+      "bytes": 241,
+      "sha256": "481e1cfeb12e82511d776c8c2e0c7dbbb7855f225aa1329788cea9d4028d4cb1"
+    },
+    "tests/llm-golden/projection/goldens/values.bin": {
+      "bytes": 88,
+      "sha256": "bc07e19066ffd716d7e2e82b87ff79f38f82f87359783379e7400627593af1ca"
+    },
+    "tests/llm-golden/projection/goldens/values.hex": {
+      "bytes": 177,
+      "sha256": "7086080bc0e297e1579d35518afcb0eda0038a2d2fe92a578a5d77614515f350"
+    },
+    "tests/llm-golden/projection/reference_projection.py": {
+      "bytes": 29110,
+      "sha256": "328660be8f80c96ce1b2ad41ce831bff1b5e017505f6a895c6cb875131b49f41"
+    }
+  },
+  "forward_source_sha256": "4a182d12bc73214abb724b89cf9b757d39b735a98889ced7e68677ba5454a554",
+  "limitations": [
+    "No engine/CPU/Metal execution",
+    "Qwen2 is site-math only; no full Qwen model",
+    "No GGUF optional output bias/scale; pure site oracle covers that order",
+    "No final-layer engine row-pruning or actual batching claim"
+  ],
+  "logs": {
+    "/private/tmp/relm-f6e/reference-check.log": "84a743d9bc9c612bf3bfc1cdb7a7b5de68fe1eff44c221a71e9b249a2eaf9579",
+    "/private/tmp/relm-f6e/reference-write.log": "84a743d9bc9c612bf3bfc1cdb7a7b5de68fe1eff44c221a71e9b249a2eaf9579"
+  },
+  "manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+  "next_gate": "Owner inspect and separate golden commit before native product arithmetic; no commit or push performed",
+  "producer_sha256": "328660be8f80c96ce1b2ad41ce831bff1b5e017505f6a895c6cb875131b49f41",
+  "results": {
+    "check": "passed",
+    "old_tracked_golden_diff_against_HEAD": "empty",
+    "write": "passed"
+  },
+  "runtime_acceptance": false,
+  "scope": "tests/llm-golden/projection only",
+  "status": "ready",
+  "task": "D046 independent projection references",
+  "total_bytes": 1859807,
+  "versions": {
+    "gguf": "0.19.0",
+    "numpy": "2.5.1",
+    "python": "3.13.5"
+  }
+}

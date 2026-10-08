@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "pid": 53944,
+  "directory": "/private/tmp/relm-f6e/owners-rebox-20261008-013803",
+  "started_at": 1791416283.1966588,
+  "cases": 1,
+  "expectations": 7,
+  "source_hashes": 8,
+  "source_drift": [],
+  "model_runs": 0,
+  "installed_acceptance": false,
+  "test_log_sha256": "d9b8d6e877b9b0a7aec05a1f9ec90930ef5a2c132754d87d376a5a123e417b0b",
+  "finished_at": 1791416283.5538769
+}

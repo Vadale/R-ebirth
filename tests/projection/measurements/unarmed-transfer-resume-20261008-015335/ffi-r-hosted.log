@@ -1,0 +1,8 @@
+F6E_PROJECTION_TRANSFER_TEST {"test":"projection_transfer_source_registry_and_payload","status":"passed","expected_cases":14,"executed_cases":14,"expected_rejections":10,"rejected_cases":10}
+F6E_PROJECTION_TRANSFER_TEST {"test":"projection_transfer_borrowed_residual_inputs","status":"passed","expected_cases":12,"executed_cases":12,"expected_rejections":9,"rejected_cases":9}
+F6E_PROJECTION_STATE_FACTS {"fixture":"compiled_scalar","hash_slots":0,"bindings":2,"c_finalizer_bytes":8,"query_workspace_bytes":264,"ffi_response_bytes":1464}
+F6E_PROJECTION_STATE_FACTS {"fixture":"unhashed","hash_slots":0,"bindings":2,"c_finalizer_bytes":8,"query_workspace_bytes":264,"ffi_response_bytes":1464}
+F6E_PROJECTION_STATE_FACTS {"fixture":"hashed","hash_slots":29,"bindings":2,"c_finalizer_bytes":8,"query_workspace_bytes":264,"ffi_response_bytes":1464}
+F6E_PROJECTION_TRANSFER_TEST {"test":"projection_transfer_r_state_facts","status":"passed","expected_cases":16,"executed_cases":16,"expected_rejections":12,"rejected_cases":12}
+F6E_TRANSFER_R_HOSTED_SUCCESS outcomes=3 cases=42 rejections=31 models=0
+F6E_TRANSFER_R_BINDING states=2 candidate_queries=2 close_checks=2 models=0 armed=FALSE

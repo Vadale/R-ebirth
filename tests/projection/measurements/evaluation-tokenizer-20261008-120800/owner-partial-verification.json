@@ -1,0 +1,31 @@
+{
+  "status": "FAILED",
+  "diagnosis": "Runner R_LIBS_USER excluded existing optional async dependencies. All 72 selection calls refused by the unchanged R dependency gate before rebirth_async_ready or native submission.",
+  "source_count": 168,
+  "installed_count": 28,
+  "original_file_hashes_verified": 445,
+  "source_and_installed_drift": false,
+  "attempt_counts": {
+    "load": 1,
+    "trace": 24,
+    "derive": 66,
+    "generate": 72,
+    "tokenize": 0
+  },
+  "selection_generation_submissions": 0,
+  "construction_captures": 24,
+  "capture_matrix_values": 43008,
+  "direction_values": 2688,
+  "construction_evidence_status": "PASS independently checked from retained RDS; no capture repeated",
+  "selection_settings_failed": 72,
+  "selection_or_final_quality_accepted": false,
+  "final_settings_attempted": 0,
+  "native_warnings": [
+    "[3] load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden"
+  ],
+  "native_errors": 0,
+  "dependency_installations": 0,
+  "original_driver_status_preserved": true,
+  "diagnosis_scripts_note": "Retained initial model-free inspector failures: qualified/unqualified call comparison, S3 JSON serialization, and assumed service-library path. Actual installed versions and user-library paths independently read; no product, model, bounds, or verifier changes.",
+  "scope": "No generation output or sampled token was produced for selection. Constructor attempts and construction traces are separate executed scopes, not zero total native activity."
+}

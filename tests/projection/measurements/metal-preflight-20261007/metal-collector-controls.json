@@ -1,0 +1,317 @@
+{
+  "status": "passed",
+  "scope": "synthetic collector checks only; not native, numerical or Metal acceptance",
+  "controls": 62,
+  "results": [
+    {
+      "name": "exact 71 synthetic receipts",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "refuse kind=0",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse kind=1",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse is_host=1",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse device_type=0",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse usage=1",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse view_offset=4",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse dtype_f32=False",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse data_nonnull=False",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse contiguous=False",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse no_staging_supported=False",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse decode_failed=True",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse width=31",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse depth=4",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse layer_native=1",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse component_code=1",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse phase=unknown",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse rows=0",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse bytes=129",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse device_index=1",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse schema=2",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse flags=True",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 0",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 1",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 2",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 3",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 4",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 5",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 6",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing identity/shape flag 7",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse bounded-name corruption 30",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse bounded-name corruption 31",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse bounded-name corruption 32",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse bounded-name corruption 33",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse bounded-name corruption 34",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse bounded-name corruption 35",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse missing actual receipt",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse duplicate actual receipt",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse wrong per-site multiplicity",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse unbound native backend",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse unapproved pointer/field",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "compiled-ledger-shaped synthetic positive",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "refuse ledger total",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger buffer_info_size",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger projection_info_size",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger proof_slots",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger proof_size",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger runtime_size",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger frame_bytes",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger direction_bytes",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger runtime_bytes",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger probe_bytes",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "refuse ledger access_frame_bytes",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "unchanged inherited digest",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited integer",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited number",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited markers",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited test_result",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited test_receipt",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited verify_same_row",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited verify_backend",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "unchanged inherited verify_benchmark",
+      "status": "passed",
+      "expected_rejection": false
+    }
+  ]
+}

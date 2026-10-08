@@ -1,0 +1,8 @@
+{
+  "binary-bindings.json": "a7264d71dc92c8cd67abb0fb51b63c3a80b5c522b4bbd3ce2e79d9145a5e0cce",
+  "check-installed-public-remaining.R": "210e82c9330421b0bfb27bed924aaacc623233819c8aa21789c7bcb895edbc7c",
+  "installed-public-budget-binding.json": "f138190ec63a31c3f1fda800b440c36058f33f9355868d63736518ecb0514496",
+  "owner-verification.json": "c4bf7df95d3743adb183c4595f512e84f4100ec397c9537ab6e3aa23268d29e5",
+  "prepare-installed-public-budget.py": "d55338ee392ed25f6e0b723e1c3989df9c7fcf96012de23795d333ae97f4fffc",
+  "verify-installed-public-budget.py": "12d6277729f41880fa7c5e07f75ae42b83d2b9492251ef34176615941beb496a"
+}

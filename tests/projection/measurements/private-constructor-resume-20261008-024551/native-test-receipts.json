@@ -1,0 +1,54 @@
+[
+  {
+    "compared_values": 0,
+    "executed_cases": 12,
+    "expected_cases": 12,
+    "expected_rejections": 12,
+    "expected_values": 0,
+    "max_abs_error": 0.0,
+    "model_loads": 0,
+    "rejected_cases": 12,
+    "source": "9cf850e8e474483c4ca1a6909da1396566382ce2722005ae558f28294ce317ef",
+    "status": "passed",
+    "test": "constructor_residual_probe_and_frame_equations"
+  },
+  {
+    "compared_values": 0,
+    "executed_cases": 15,
+    "expected_cases": 15,
+    "expected_rejections": 12,
+    "expected_values": 0,
+    "max_abs_error": 0.0,
+    "model_loads": 1,
+    "rejected_cases": 12,
+    "source": "9cf850e8e474483c4ca1a6909da1396566382ce2722005ae558f28294ce317ef",
+    "status": "passed",
+    "test": "constructor_source_budget_inheritance_and_failure_ownership"
+  },
+  {
+    "compared_values": 240,
+    "executed_cases": 4,
+    "expected_cases": 4,
+    "expected_rejections": 1,
+    "expected_values": 240,
+    "max_abs_error": 0.0018421050599896072,
+    "model_loads": 1,
+    "rejected_cases": 1,
+    "source": "9cf850e8e474483c4ca1a6909da1396566382ce2722005ae558f28294ce317ef",
+    "status": "passed",
+    "test": "constructor_composition_matches_frozen_reference"
+  },
+  {
+    "test": "projection_constructor_rhost_transfer",
+    "status": "passed",
+    "expected_cases": 18,
+    "executed_cases": 18,
+    "expected_rejections": 10,
+    "rejected_cases": 10,
+    "expected_values": 0,
+    "compared_values": 0,
+    "max_abs_error": 0,
+    "model_loads": 1,
+    "twin_cases": 4
+  }
+]

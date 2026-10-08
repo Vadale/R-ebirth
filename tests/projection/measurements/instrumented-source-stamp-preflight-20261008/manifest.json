@@ -1,0 +1,8 @@
+{
+  "control-result.json": "449cf82192fc368b7d5c775b2907e8efa517d596f795f682e0385e4db509bbd8",
+  "previous-instrumented_review_controls.py": "de365c4272373b29e9b883e47ff76331323fd26940df6d79272f6b977ddfe31f",
+  "prepare-instrumented-source-stamp.py": "8c94bd3b2090446a1686afd0eca03b00fd2c61f35816a6c9594eca6cbfbda086",
+  "current-scope.json": "4fc29cbff9883bafa8be57004cd7048e199450c690cce0bd9358a6f84dbf2c5d",
+  "previous-scope.json": "357c430dda4aedb523b8a26dcef6ce020c0a2ebacb3716d0abdcf6a04af7346c",
+  "previous-projection_review_tests.rs": "3b7e80cbaac257d132f2c901e3895b67a64c5ede18ece8cd951e671242982f55"
+}

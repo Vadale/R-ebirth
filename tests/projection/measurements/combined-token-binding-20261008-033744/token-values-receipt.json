@@ -1,0 +1,12 @@
+{
+  "calls": 5,
+  "values": 240,
+  "fixed_token_ids": [
+    1,
+    7,
+    13
+  ],
+  "source_reset_equal": true,
+  "parent_close_equal": true,
+  "independent_numerical_oracle": false
+}

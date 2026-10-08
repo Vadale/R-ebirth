@@ -1,0 +1,3 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"source-test.R","source-test","projection inventory binds actual metadata and accumulated residual owners",6,0,FALSE,FALSE,0,0.078,0.003,0.082,6
+"source-test.R","source-test","projection candidate wraps an independent un-hashed state and shares unchanged entries",26,0,FALSE,FALSE,0,0.014,0.001,0.016,26

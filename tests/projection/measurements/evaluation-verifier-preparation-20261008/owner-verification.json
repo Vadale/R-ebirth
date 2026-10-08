@@ -1,0 +1,48 @@
+{
+  "status": "verified preparation",
+  "scope": "agent model-free controls and exact source/hash/raw counts; no rerun, inference or actual R RNG verification",
+  "tests": 28,
+  "test_methods": [
+    "test_positive_selection_and_complete_recompute",
+    "test_missing_selection_run",
+    "test_duplicate_selection_run",
+    "test_prompt_leakage",
+    "test_token_cap_retuning",
+    "test_seed_attribute_not_assumed_from_request",
+    "test_raw_output_hash_corruption",
+    "test_recomputed_hash_does_not_hide_text_event_disagreement",
+    "test_source_drift",
+    "test_swapped_random_roles_must_be_truthful",
+    "test_bootstrap_indices_not_merely_shape_checked",
+    "test_signs_not_merely_balanced_checked",
+    "test_coefficient_retuning_final",
+    "test_final_before_selection_lock",
+    "test_postlock_selection_change",
+    "test_zero_semantics_not_hidden_by_success",
+    "test_duplicate_json_fields_rejected",
+    "test_malformed_csv_and_nonfinite_rejected",
+    "test_metric_unicode_literal_and_repeat_controls",
+    "test_type7_and_paired_resampling_controls",
+    "test_every_selection_quality_guard_and_zero_fallback",
+    "test_failed_selection_baseline_invalidates_selection",
+    "test_zero_elapsed_is_not_a_false_determinism_failure",
+    "test_finish_and_token_event_mutations_are_rejected",
+    "test_actual_length_finish_is_retained_in_primary_metrics",
+    "test_unaligned_second_view_is_reported_not_compared",
+    "test_missing_final_and_retuned_lock_rejected",
+    "test_failed_final_learned_call_withholds_fixed_sample"
+  ],
+  "source_hashes": {
+    "tests/projection/evaluation/verify_results.py": {
+      "sha256": "7a83c90a80c96ad6bec2ce1e8d94d68068607909d39bbf1c34aa6e6ad4130461",
+      "bytes": 39792
+    },
+    "tests/projection/evaluation/test_verify_results.py": {
+      "sha256": "e32359d91d9f2fb94441348d409375139cbdc1ae55bd228970fb6dab262b49ed",
+      "bytes": 21687
+    }
+  },
+  "model_calls": 0,
+  "source_drift": [],
+  "collector_note": "Original owner check expected verbose test-name lines; actual retained unittest output uses 28 dots plus Ran 28 tests/OK. Corrected collector from raw log and 28 AST test methods without re-execution."
+}

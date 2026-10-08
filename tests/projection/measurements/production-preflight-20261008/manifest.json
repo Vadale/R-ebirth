@@ -1,0 +1,9 @@
+{
+  "production-ready.json": "2a448bdd5443c79b9e4d3eac277d765dd14b465c233a3add80c51cc7f57675da",
+  "production-binding.json": "818b7f3d57a0336233e4facf0c12b1094c7390abe7fa51ff9a633f025c7a850f",
+  "verify-production.py": "b41e79aad4658a0c124d0ae45bce5c3245e220fbaed83319efcf075d589e5803",
+  "production-collector.py": "061874a78b8538eb0bc2f562857e18c2bef44a010afd6576ece8d230db784ea1",
+  "test-production-collector.py": "a654cc9ee2507b9b73aa96049a6f8877822272a2c375a9d368a60bc559bf62c6",
+  "production-collector-controls.json": "2931eb568b69055d28f3897611e3732f75c579526962a6d862baab15927360bc",
+  "check-production-default.R": "8c990b13243608eec95c65db78d8bea5e3de3a71f8fc74f3d880ecb8622566b2"
+}

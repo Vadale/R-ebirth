@@ -1,0 +1,23 @@
+{
+  "status": "verified_partial_scope_original_combined_run_failed",
+  "source_count": 112,
+  "tar_members": 44,
+  "R_headers": 42,
+  "new_logs": 7,
+  "carried_logs": 6,
+  "complete_native_registration_outcomes": 3,
+  "complete_cases": 6,
+  "complete_refusals": 2,
+  "partial_R_cases": 1,
+  "tiny_model_loads": 1,
+  "constructor_calls": 0,
+  "compiler_linker_warnings": 0,
+  "source_manifest_sha256": "29835e928e07da28036ae9f14fb55401dc66382913f80b3747a0c40bcbe04935",
+  "C_bytes_bound_to_both_feature_archives": true,
+  "fresh_default_private_DLL_hashes": {
+    "default": "b3f3b6463a415794a5fc26643f6712bea7db75b0b4e644ea817bfd3c415ff854",
+    "private": "6b61754c82fadb9bdea440d6173dbfe012c49c20c616c6c9fde76bcb989f6e07"
+  },
+  "cause": "Fixture invoked text logits on a frozen no_vocab synthetic model. Tokenizer refusal occurred before baseline logits/any constructor. Correct private test adapter to fixed raw-token logits on same tiny model; do not regenerate model/reference or weaken remaining cases.",
+  "next": "Narrow private-only fixed-token R-host helper; preserve successful registration/source scopes. No unchanged native/constructor/CPU/Metal/reference rerun."
+}

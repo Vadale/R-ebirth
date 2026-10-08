@@ -1,0 +1,16 @@
+{
+  "R_version": "4.5.1",
+  "sources": [
+    {
+      "file": "memory.c",
+      "url": "https://svn.r-project.org/R/tags/R-4-5-1/src/main/memory.c",
+      "sha256": "5d1d6a3b93eb893009d3401abfff0cb8de4cce60cb22e6b3f773246b15178ad1"
+    },
+    {
+      "file": "envir.c",
+      "url": "https://svn.r-project.org/R/tags/R-4-5-1/src/main/envir.c",
+      "sha256": "13162d0e393f8ea0d9e5b9cd491517d00e1abcc50864b416c6b59b1409f1a21a"
+    }
+  ],
+  "scope": "Source-based allocation structure, not native accessor acceptance."
+}

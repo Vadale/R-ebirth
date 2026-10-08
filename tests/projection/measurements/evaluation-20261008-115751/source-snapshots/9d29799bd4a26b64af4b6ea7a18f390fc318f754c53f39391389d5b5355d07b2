@@ -1,0 +1,115 @@
+item_id,split,role,question,prompt,required_pattern,prompt_sha256
+f6e-c01,construction,target,Which author wrote Pride and Prejudice?,"Answer accurately and briefly in one short sentence.
+Question: Which author wrote Pride and Prejudice?
+Answer:",Jane Austen|Austen,9bcc1e9f5a7e168bdf5c26d59c1cde3c7ae1ea36a35ed5c5fa8024357842a946
+f6e-c01,construction,control,Which author wrote Pride and Prejudice?,"Answer accurately with a detailed explanation in several sentences.
+Question: Which author wrote Pride and Prejudice?
+Answer:",Jane Austen|Austen,ebc495c6ec9deb9864a2b4a4727d6184e27a1cbc22b844bb4a44182b5681addf
+f6e-c02,construction,target,What is the capital of Portugal?,"Answer accurately and briefly in one short sentence.
+Question: What is the capital of Portugal?
+Answer:",Lisbon,670a6f7c882d6cc2afab41f5abfc7010bf1012ff0a254f26fe0bb5d7ea68ea26
+f6e-c02,construction,control,What is the capital of Portugal?,"Answer accurately with a detailed explanation in several sentences.
+Question: What is the capital of Portugal?
+Answer:",Lisbon,2e6705ac4f7c521ea9e74d07e0e3678a70974856951edd03b2945dc586106223
+f6e-c03,construction,target,What is the SI unit of force?,"Answer accurately and briefly in one short sentence.
+Question: What is the SI unit of force?
+Answer:",newton,ab5348abbbac24de00998088eb537b5959b5c1f811758019a114fc1ec5cb4ba2
+f6e-c03,construction,control,What is the SI unit of force?,"Answer accurately with a detailed explanation in several sentences.
+Question: What is the SI unit of force?
+Answer:",newton,5da7610b5feebc791ec9324affafc8b595b1514896037d73ae6db9950f3e6d46
+f6e-c04,construction,target,What is a polygon with five sides called?,"Answer accurately and briefly in one short sentence.
+Question: What is a polygon with five sides called?
+Answer:",pentagon,06a829b36c79ddd563c9ce8750e97b5307cffc8102a9127daec9275bdd7f32ea
+f6e-c04,construction,control,What is a polygon with five sides called?,"Answer accurately with a detailed explanation in several sentences.
+Question: What is a polygon with five sides called?
+Answer:",pentagon,d6cc8cfea1266a49c04611b24878ef9267d9d4764266efc392f1348b9ce92bf9
+f6e-c05,construction,target,Which reddish metal is commonly used in electrical wiring?,"Answer accurately and briefly in one short sentence.
+Question: Which reddish metal is commonly used in electrical wiring?
+Answer:",copper,ad83190917c7acd299b617662e2159884ea3e992a10a5517dc758ea15ee5a8cb
+f6e-c05,construction,control,Which reddish metal is commonly used in electrical wiring?,"Answer accurately with a detailed explanation in several sentences.
+Question: Which reddish metal is commonly used in electrical wiring?
+Answer:",copper,84c5ef899507fc5bcb94e78168001d81b4128f1e566a5fe16f46c6ce4ab1102c
+f6e-c06,construction,target,What is nine multiplied by seven?,"Answer accurately and briefly in one short sentence.
+Question: What is nine multiplied by seven?
+Answer:",63|sixty-three|sixty three,f1b67c3f29ae5f30d3c94a389f8168756dda42d4cdfc23d82653941aa950e041
+f6e-c06,construction,control,What is nine multiplied by seven?,"Answer accurately with a detailed explanation in several sentences.
+Question: What is nine multiplied by seven?
+Answer:",63|sixty-three|sixty three,dfff9ceb84b0141260192e8e8580e95d5abf7c443f768f2510ec74d84487b158
+f6e-c07,construction,target,Which cardinal direction does the north end of a compass needle indicate?,"Answer accurately and briefly in one short sentence.
+Question: Which cardinal direction does the north end of a compass needle indicate?
+Answer:",north,30ee5a9fe2939ab94dc91175036b5044855482f2bb4ae0f6072f6af82f27fe9c
+f6e-c07,construction,control,Which cardinal direction does the north end of a compass needle indicate?,"Answer accurately with a detailed explanation in several sentences.
+Question: Which cardinal direction does the north end of a compass needle indicate?
+Answer:",north,b1c3f8c083426a3886b66726dea930e229b505d676d263ea3c16ac28b4238f63
+f6e-c08,construction,target,Which long keyboard key usually inserts a space between words?,"Answer accurately and briefly in one short sentence.
+Question: Which long keyboard key usually inserts a space between words?
+Answer:",space bar|spacebar,21fd5749f31e7536c1027c06f9a2330544bd64e3e69ef6dd501c9df51d9ec15d
+f6e-c08,construction,control,Which long keyboard key usually inserts a space between words?,"Answer accurately with a detailed explanation in several sentences.
+Question: Which long keyboard key usually inserts a space between words?
+Answer:",space bar|spacebar,2744c85ba8a3a30d4b50e936d3ebf720bae335f8855dd1ac5060a508521fe117
+f6e-c09,construction,target,Which instrument measures atmospheric pressure?,"Answer accurately and briefly in one short sentence.
+Question: Which instrument measures atmospheric pressure?
+Answer:",barometer,0066c1680d54be92611513897f2bb1e1aee195198ce15f37141aa8e92d6867c2
+f6e-c09,construction,control,Which instrument measures atmospheric pressure?,"Answer accurately with a detailed explanation in several sentences.
+Question: Which instrument measures atmospheric pressure?
+Answer:",barometer,622c3f809dfb2106c5e00cebc4014886c9eb1874a2de798acd3ea3534edfc457
+f6e-c10,construction,target,In which country is the Leaning Tower of Pisa?,"Answer accurately and briefly in one short sentence.
+Question: In which country is the Leaning Tower of Pisa?
+Answer:",Italy,9734c9ed3c80a7c9d39a873058d4b7489a1608b5c40aefd0793785a45c813b5d
+f6e-c10,construction,control,In which country is the Leaning Tower of Pisa?,"Answer accurately with a detailed explanation in several sentences.
+Question: In which country is the Leaning Tower of Pisa?
+Answer:",Italy,db226f7c080dcc256adfa9d96a3f45f4b01f87d9a1273631accc382d433f7028
+f6e-c11,construction,target,Which element has the chemical symbol Au?,"Answer accurately and briefly in one short sentence.
+Question: Which element has the chemical symbol Au?
+Answer:",gold,d6335655523d0e68e879163e82d992079daa39bcc9824ebf9ef8cc7e12b1a624
+f6e-c11,construction,control,Which element has the chemical symbol Au?,"Answer accurately with a detailed explanation in several sentences.
+Question: Which element has the chemical symbol Au?
+Answer:",gold,e15df86035d5b8f301e9d7329261c90123c9ad4b4750f5165942b5a5142aa8da
+f6e-c12,construction,target,"At standard atmospheric pressure, at how many degrees Celsius does pure water freeze?","Answer accurately and briefly in one short sentence.
+Question: At standard atmospheric pressure, at how many degrees Celsius does pure water freeze?
+Answer:",zero|0,ee3dd6f0340f8b385507fde1217e1440cfb429d6dee0d11a92a4f95cdfc053ca
+f6e-c12,construction,control,"At standard atmospheric pressure, at how many degrees Celsius does pure water freeze?","Answer accurately with a detailed explanation in several sentences.
+Question: At standard atmospheric pressure, at how many degrees Celsius does pure water freeze?
+Answer:",zero|0,71dad30ad992816b3be7bb133a08dd76747fd2e944bfd6e2eb1162947336deb5
+f6e-s01,selection,task,What is the capital of Norway?,"Answer the question accurately.
+Question: What is the capital of Norway?
+Answer:",Oslo,10d3c1e61203548bd774049deda9a2398a9af7d8a883c526fb3a165d0d22ca11
+f6e-s02,selection,task,How many hours are in two days?,"Answer the question accurately.
+Question: How many hours are in two days?
+Answer:",48|forty-eight|forty eight,cdcfb7b6254147f6d53e83d4a8a06b7b158f695c13d6e6585b58f60f59eb37fe
+f6e-s03,selection,task,Which keyboard musical instrument commonly has 88 keys?,"Answer the question accurately.
+Question: Which keyboard musical instrument commonly has 88 keys?
+Answer:",piano,1b944bf0319fb21966578cabebc0dd82fc4e75086ad4144b0a73c0617631d9ea
+f6e-s04,selection,task,What is five squared?,"Answer the question accurately.
+Question: What is five squared?
+Answer:",25|twenty-five|twenty five,00a6b0acc445176f0b37bfa239b421a40d9dbcfe1f2c0a81c834ccc3b7549af1
+f6e-s05,selection,task,Which author wrote the novel Nineteen Eighty-Four?,"Answer the question accurately.
+Question: Which author wrote the novel Nineteen Eighty-Four?
+Answer:",George Orwell|Orwell,461f989ce79a955d47288a129d4836f9ac1523e7ed85c05f9a2c07ff0f470f41
+f6e-s06,selection,task,Which element has the chemical symbol Ag?,"Answer the question accurately.
+Question: Which element has the chemical symbol Ag?
+Answer:",silver,6a84a4eec5d9e381ec9b00447bd3b46e9b4b38408c8202cd794d711c9f5704b4
+f6e-e01,evaluation,task,What is the capital of Austria?,"Answer the question accurately.
+Question: What is the capital of Austria?
+Answer:",Vienna,08fb123a84b88cdfb3b9b0b309fbf5b1cb5893d9c706987c814b2495ff682d09
+f6e-e02,evaluation,task,Which number does the Roman numeral X represent?,"Answer the question accurately.
+Question: Which number does the Roman numeral X represent?
+Answer:",10|ten,ecb0113d07ed1888367be4a5d03cd9f235b5b6f1f2ce3896d736254b2d20d9d9
+f6e-e03,evaluation,task,What is the SI unit of energy?,"Answer the question accurately.
+Question: What is the SI unit of energy?
+Answer:",joule,cdc3bfbcdae58e23c9b1b31bf21c9554fefdf916674df4f265f9efa585d8bf71
+f6e-e04,evaluation,task,What is the largest continent by land area?,"Answer the question accurately.
+Question: What is the largest continent by land area?
+Answer:",Asia,a3770802973edc12f7e46e20ee947ec4609e9e14773707f30265411fb5fa80eb
+f6e-e05,evaluation,task,How many degrees are in a right angle?,"Answer the question accurately.
+Question: How many degrees are in a right angle?
+Answer:",90|ninety,9eb0bb6b6b65fde2be4ae08b03af29dc5db3d5537ea9603fccbaf6db042fc7a5
+f6e-e06,evaluation,task,What is the main currency of the United Kingdom?,"Answer the question accurately.
+Question: What is the main currency of the United Kingdom?
+Answer:",pound|sterling,0e29526c7282cad4e1fb3980c6a783a5bcb58f46bc7a5c7b48ae932c53316d21
+f6e-e07,evaluation,task,Which playwright wrote Hamlet?,"Answer the question accurately.
+Question: Which playwright wrote Hamlet?
+Answer:",William Shakespeare|Shakespeare,65b147c1423f1afb217c8770c0adb89763199e229e86bf761b442221c9f7c36a
+f6e-e08,evaluation,task,Which instrument measures wind speed?,"Answer the question accurately.
+Question: Which instrument measures wind speed?
+Answer:",anemometer,954115daca352fd1e8649719f0d75b0ecd90bdbdb9d8c199b40b4eb35aacb92a

@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "observed_states": 4,
+  "bitwise_coordinate_pairs": 1792,
+  "CSV_roundtrip_max_abs": 4.885e-15,
+  "registry_profiles": 13,
+  "capacities": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 2],
+  "attempts": {
+    "load": 1,
+    "derive": 13,
+    "generate": 3,
+    "trace": 0,
+    "logits": 0,
+    "tokenize": 0
+  },
+  "model_calls_during_verification": 0
+}

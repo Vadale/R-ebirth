@@ -1,0 +1,134 @@
+{
+  "status": "ready",
+  "original_source_hashes": {
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "dea96e449d9e6d4dffaf33f0d7ac2edfea8ff73ba910980e857a206dc55b090b",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "05259c00287bc6b8e07608f81f55bfc68d2637a1320400a3ab819d5b625bc523",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "6727456fc2fb342cb530c5e5e137e828283674f05058cd81bcb18edfc97ea2f8",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": "2c59e7b99a04c0b3d9e419b86cae9868d953470321e8819183ba48ebdcbf7c9b",
+    "docs/f6e-memory-contract.md": "98bacdd6b338d1b71c6cbed6af176924e6fc53854ede3650d84600f770faaf36"
+  },
+  "scope": "bounded over-budget OOM class; malformed/overflow unchanged; model-free native and R-hosted exact regressions",
+  "no_builds_tests_models_executed_by_agent": true,
+  "frozen": true,
+  "source_hashes": {
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "2962115b711346b384b4c63e70b39e90f34ab91b408a4d5cd1fc8eee6d383212",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "144afa91e27ac986dd843cabb1a95bc1c6fac866aafc0b0d2f8daf665c139bfc",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "3294fbe4c809df97b2af257135643dbfcc5204ebd0ffb3bc1f20283a2cbc5cae",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": "877aec9bfe20a44bbf66f15fc466f6d19d6ae3656449ed6be3e5ea37c1afaeb6",
+    "docs/f6e-memory-contract.md": "7b38d243749b56378b641d443e56fcd8b1bedf6c354dfb5a9345b10d9e6def15",
+    "rebirth/src/rust/rebirth-ffi/src/projection_budget_error_selftest.rs": "19075183061a6288a1151b5e5267ab556b079617decd8807347b073d4fd885ef"
+  },
+  "changed_files": [
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs",
+    "docs/f6e-memory-contract.md",
+    "rebirth/src/rust/rebirth-ffi/src/projection_budget_error_selftest.rs"
+  ],
+  "profile_fields": 27,
+  "input_fields": 15,
+  "term_fields": 14,
+  "estimate_formula_before_final_gate_byte_identical": true,
+  "estimate_formula_sha256": "a3b2f70c40c24f62483395ce5cf37625ef782b6b7ac1c6042e7272a3d929a6b5",
+  "interface": {
+    "oom_class": "relm_error_oom",
+    "message": "Projection owners and working copies exceed max_bytes. Reduce projection sites or increase max_bytes.",
+    "message_utf8_bytes": 101,
+    "fields": {
+      "estimate_bytes": "plain scalar R double of actual total",
+      "budget_bytes": "plain scalar R double of valid caller budget"
+    },
+    "generic_malformed_or_checked_overflow": "relm_error_intervention; original message/reason payload unchanged",
+    "display_allocation": "projection_resolve borrows suggestion; no generic Display/human_bytes/format allocations"
+  },
+  "profile_delta": {
+    "new_fields": 0,
+    "existing_numeric_terms_changed": false,
+    "error_format_bytes_expected": 150,
+    "ffi_response_bytes_expected": 1512,
+    "error_response_workspace": "compiled sizeof Result + 2/4 Robj arrays + 2/4 str arrays + all four IntoIter owners + 4 List + class/message pair + two u64 references",
+    "charged_by": "max(existing response, state-query workspace, new explicit error-response workspace)",
+    "gate": "R-hosted fixture asserts actual error workspace <= response1512 and error grammar150; execution pending",
+    "enum_and_existing_layout_types_unchanged": true
+  },
+  "parent_R_change": "projection_transport_bytes failure=max(object.size(existing Intervention prototype),object.size(OOM prototype with fixed message and two double fields)); compare actual selftest payload. Existing R overbudget class already OOM; no formula/tolerance relaxation.",
+  "native_test": {
+    "id": "projection_profile::tests::projection_budget_oom_class_preserves_arithmetic_and_error_capacity",
+    "cases": 11,
+    "refusals": 7,
+    "marker": "F6E_PROJECTION_LEDGER_TEST",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--lib",
+      "projection_profile::tests::projection_budget_oom_class_preserves_arithmetic_and_error_capacity",
+      "--",
+      "--exact",
+      "--test-threads=1",
+      "--nocapture"
+    ]
+  },
+  "r_hosted_test": {
+    "symbol": "wrap__rebirth_selftest_projection_budget_error",
+    "arity": 0,
+    "marker": "F6E_PROJECTION_BUDGET_CLASS_TEST",
+    "marker_test": "projection_budget_error_rhost",
+    "cases": 8,
+    "refusals": 3,
+    "returned_fields": [
+      "ok",
+      "oom",
+      "malformed",
+      "overflow",
+      "profile",
+      "inputs",
+      "terms",
+      "error_response_bytes"
+    ],
+    "inputs_note": "returned inputs have budget=total-1; set max_bytes=terms$total_bytes when independently recalculating success terms",
+    "marker_extra_fields": [
+      "error_response_bytes",
+      "ffi_response_bytes",
+      "error_format_bytes",
+      "model_loads",
+      "inference_calls"
+    ],
+    "recipe": "fresh default DLL, existing package init/registration; Rscript initialized main thread; .Call(getNativeSymbolInfo(\"wrap__rebirth_selftest_projection_budget_error\", dll)$address). No model handle. Not exported in NAMESPACE."
+  },
+  "expected_new_totals": {
+    "outcomes": 2,
+    "cases": 19,
+    "refusals": 10,
+    "model_loads": 0,
+    "inference_calls": 0
+  },
+  "affected_commands": [
+    "cargo clippy --locked --offline -p rebirth-llm --all-targets -- -D warnings",
+    "cargo clippy --locked --offline -p rebirth-ffi --all-targets -- -D warnings",
+    "cargo check --locked --offline -p rebirth-llm --no-default-features",
+    "cargo check --locked --offline -p rebirth-ffi --no-default-features"
+  ],
+  "static_checks": [
+    "rustfmt only on five affected Rust files",
+    "rustfmt --check passed",
+    "pre-gate estimate arithmetic body byte-identical to preserved original"
+  ],
+  "instrumented_freeze_preserved": {
+    "ready_sha256": "f8e47ce0f90e36cd06d1723f7741ed443f696b7462dc5acc9b065182cd4a5937",
+    "scope_sha256": "f54771e80fef090551a4dfc39c2cfff6294f66500f34f0c9a3972bf620f3c3c2",
+    "must_not_execute_old_freeze_as_new_source": true
+  },
+  "remaining_unrun": [
+    "affected native/FFI compilation",
+    "one new native regression",
+    "one new R-hosted regression and actual payload envelope",
+    "parent R transport update/twin",
+    "fresh corrected DLL/install",
+    "remaining affected installed public cases"
+  ]
+}

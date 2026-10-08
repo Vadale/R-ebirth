@@ -1,0 +1,275 @@
+{
+  "source": "/private/tmp/relm-f6e/public-ledger-resume-20261008-010121",
+  "files": [
+    {
+      "path": "Makevars",
+      "bytes": 2625,
+      "sha256": "b2d278da7d616fcfc98a2d9608c37ce607a075752acdf438df54302d5c3b4ff4",
+      "archived": true
+    },
+    {
+      "path": "__pycache__/ledger-collector.cpython-314.pyc",
+      "bytes": 10785,
+      "sha256": "5a8960561f4188fa74f547c292db3a7f90da27a98e5daa960aa3d16368d7ad00",
+      "archived": false
+    },
+    {
+      "path": "candidate.patch",
+      "bytes": 60931,
+      "sha256": "beec834f8bad19cd901654ad9b74e84061b8854bb13198fa460150494d5386e7",
+      "archived": true
+    },
+    {
+      "path": "cargo-static-artifact.json",
+      "bytes": 1008,
+      "sha256": "a0ad6de9d89a1b48392bfe5ddb7a2f581f17a3709cee7227af7cf62c898c7596",
+      "archived": true
+    },
+    {
+      "path": "changed-source.tar.gz",
+      "bytes": 176166,
+      "sha256": "32425e69c7be85e6a99f7f6c69a4ee41e3e8c3372089f9e1429690855025c4c6",
+      "archived": true
+    },
+    {
+      "path": "check-ledger-hosted.R",
+      "bytes": 667,
+      "sha256": "88a6535f9c04314cbe5b5148a9adb18fdf25920201a0dd2226ba2e6e7bb0276d",
+      "archived": true
+    },
+    {
+      "path": "check-ledger-twins.R",
+      "bytes": 2005,
+      "sha256": "9a0ed2ca34b954bf90d0d8581f904485b415e46f3323b3af70f8caa8bd97264d",
+      "archived": true
+    },
+    {
+      "path": "clippy-ffi.log",
+      "bytes": 177,
+      "sha256": "a63afcd82714f0a15a344eb149e7a714474992f337c9a1b27230451038eb47da",
+      "archived": true
+    },
+    {
+      "path": "entrypoint.c",
+      "bytes": 286,
+      "sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+      "archived": true
+    },
+    {
+      "path": "ffi-fresh-link.log",
+      "bytes": 779,
+      "sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a",
+      "archived": true
+    },
+    {
+      "path": "ffi-hosted/entrypoint.c",
+      "bytes": 286,
+      "sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+      "archived": true
+    },
+    {
+      "path": "ffi-hosted/entrypoint.o",
+      "bytes": 2312,
+      "sha256": "ef534a52ca2fa2a7de12d229dc78d4c57bd2a78b6a1f1587657567c456513172",
+      "archived": false
+    },
+    {
+      "path": "ffi-hosted/relm.so",
+      "bytes": 36568920,
+      "sha256": "d51daa06a6e9961f1e7307808c2cf0a5800138c156356ed26243c9b124d76e8b",
+      "archived": false
+    },
+    {
+      "path": "ffi-r-hosted.log",
+      "bytes": 17015,
+      "sha256": "c2c6c13a8203cdc31062799fc64a89b6b56aadbaa88c5acc9b5d9fba8de54688",
+      "archived": true
+    },
+    {
+      "path": "ffi-static-build.log",
+      "bytes": 64608,
+      "sha256": "286b8a39588948a3a8a183e4b0db9f60a954d873884caad52a15ee624dbd7bbd",
+      "archived": true
+    },
+    {
+      "path": "format.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "archived": true
+    },
+    {
+      "path": "fresh-ffi-binding.json",
+      "bytes": 1800,
+      "sha256": "57744ffb42a8cda4e86913dc25003e5cec5ccfcb9df61f361c5d2173fec443ff",
+      "archived": true
+    },
+    {
+      "path": "ledger-collector.py",
+      "bytes": 5099,
+      "sha256": "5ebbc1b070189fdfb1a1ce477eb625b9576d737461dd106bbbd9f46623fafe58",
+      "archived": true
+    },
+    {
+      "path": "ledger-revision-ready.json",
+      "bytes": 15739,
+      "sha256": "7e09db012062e44e0b5afdc29e82b1d45e503ae3c7accb92fc4bc18cdb87bee9",
+      "archived": true
+    },
+    {
+      "path": "native-01.log",
+      "bytes": 651,
+      "sha256": "a4f8eb36c23981f794f3023bda1b3f34cfaa54220eb8897e87093809beaacf61",
+      "archived": true
+    },
+    {
+      "path": "native-02.log",
+      "bytes": 548,
+      "sha256": "1506b4f9ce57f83ad59ef35fe2458df388c9030d0282d5226ec602ce2b3c0680",
+      "archived": true
+    },
+    {
+      "path": "native-03.log",
+      "bytes": 570,
+      "sha256": "ea010ca0b4a1478157da8e811db17f0f2fe6fa4baf402527208aebff79bb00a2",
+      "archived": true
+    },
+    {
+      "path": "native-04.log",
+      "bytes": 550,
+      "sha256": "f243e7be05f8ddddfe34c049ba9cda2ec5d2216bcf9464d22ba83fed98fed428",
+      "archived": true
+    },
+    {
+      "path": "native-05.log",
+      "bytes": 578,
+      "sha256": "0b0ec93d0614e0909950351dee4f2cb2256bacfd5de75873127eacf73de757ee",
+      "archived": true
+    },
+    {
+      "path": "native-06.log",
+      "bytes": 552,
+      "sha256": "5e6e4dbe1b475dd9275f19363fada03a8cd18a97215dd5aa78cc23c1cee541c6",
+      "archived": true
+    },
+    {
+      "path": "native-profile.json",
+      "bytes": 713,
+      "sha256": "bf3a7dd2f5b8512ec9b0442e864c5b219a729ca5653eddcd05d8ab5763277bab",
+      "archived": true
+    },
+    {
+      "path": "native-r-tag.json",
+      "bytes": 483,
+      "sha256": "fbac95ea105c36f8727b9880214af79bd9fa099d68696a1048a64b63210e816a",
+      "archived": true
+    },
+    {
+      "path": "native-test-receipts.json",
+      "bytes": 1466,
+      "sha256": "bc1c6b0e2171c64746c9e567cc666e4a9ab272cd937b72da7436270700f14dc9",
+      "archived": true
+    },
+    {
+      "path": "native-twins.csv",
+      "bytes": 32591,
+      "sha256": "a626f0ab52f87c17b267d1ffa629dfc4bf103742cfe8cd99d35cd37f0554200b",
+      "archived": true
+    },
+    {
+      "path": "native-twins.json",
+      "bytes": 21102,
+      "sha256": "b9c272b4f62a02c68c885d0041bccca2ace6736424e640809443b1966b05810d",
+      "archived": true
+    },
+    {
+      "path": "no-spill-compile.log",
+      "bytes": 261,
+      "sha256": "6d024b3b6fb552e5b2ba8c4739ef1f75fb44b6c1534eb868200edf92e29572a5",
+      "archived": true
+    },
+    {
+      "path": "owner-binding.json",
+      "bytes": 1727,
+      "sha256": "0b7dad630cf879c7dad10047e70915269ff8d7f43c8ed9f00326db74f624526c",
+      "archived": true
+    },
+    {
+      "path": "owner-native-verification.json",
+      "bytes": 603,
+      "sha256": "60aaa5eae196b349c45a0d9ada11858342b6d9c0b15b64c9115a231ed94b7e87",
+      "archived": true
+    },
+    {
+      "path": "projection-memory.R",
+      "bytes": 12348,
+      "sha256": "8dabf5766046fe44ba5076890245df68094a1f4e16bd90af7bec2a9ca1fff129",
+      "archived": true
+    },
+    {
+      "path": "public-ledger-ready.json",
+      "bytes": 21385,
+      "sha256": "12ad5c19eec8bfdf855c115e12a84b11ce22272d3a3d15b19d7e0a93432572b2",
+      "archived": true
+    },
+    {
+      "path": "r-allocation-prototype.rds",
+      "bytes": 555,
+      "sha256": "c94a59c4d25a05422d0eba3d43c874b7b5477aefd518d7a7efcd219203f8ac0e",
+      "archived": true
+    },
+    {
+      "path": "r-native-parity.csv",
+      "bytes": 8405,
+      "sha256": "b6e5aee490e2f15b863225f93523b6840ef3117b69751317e63feae8f6282468",
+      "archived": true
+    },
+    {
+      "path": "r-native-twins.log",
+      "bytes": 115,
+      "sha256": "f419b18fbec21c3f3768f83a479cf8833deed1dbcc8dbcd0848e761f89dc9e98",
+      "archived": true
+    },
+    {
+      "path": "ready.json",
+      "bytes": 21385,
+      "sha256": "12ad5c19eec8bfdf855c115e12a84b11ce22272d3a3d15b19d7e0a93432572b2",
+      "archived": true
+    },
+    {
+      "path": "revision-ready.json",
+      "bytes": 15739,
+      "sha256": "7e09db012062e44e0b5afdc29e82b1d45e503ae3c7accb92fc4bc18cdb87bee9",
+      "archived": true
+    },
+    {
+      "path": "source-manifest.json",
+      "bytes": 11568,
+      "sha256": "08cffc5bf0fac267f8caa25a44fddcab0cebab88f86679d5abc8157f212b4459",
+      "archived": true
+    },
+    {
+      "path": "status.json",
+      "bytes": 7828,
+      "sha256": "86a01db6912a001c7312511f6aa4ccd1af4364ec26e391861cb0ec86080dda52",
+      "archived": true
+    },
+    {
+      "path": "test-ledger-hosted-collector.py",
+      "bytes": 1873,
+      "sha256": "49fbee28c0ab69fd2fcfdad38bafd0e6ebafd154569ba0fac21fd5fbdcef3a01",
+      "archived": true
+    },
+    {
+      "path": "test-projection-memory.R",
+      "bytes": 7541,
+      "sha256": "8ca28f9e00e9fc71fd678a18a93426cfe514a61be106a9927c41e5a3ca364d2a",
+      "archived": true
+    },
+    {
+      "path": "verify-public-ledger-resume.py",
+      "bytes": 10097,
+      "sha256": "a918b8981ff9f9a1f409f0ec78aeebad1727744f4b80b97a0ac5610c756b6ba0",
+      "archived": true
+    }
+  ]
+}

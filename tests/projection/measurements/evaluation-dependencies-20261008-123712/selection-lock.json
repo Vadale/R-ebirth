@@ -1,0 +1,12 @@
+{
+  "schema": "F6e-selection-lock/1",
+  "selected_add": 2,
+  "selected_project": 1,
+  "selection_evidence_sha256": "abf409ebd411451d7f5d2b83cd541a377b2f0481f466252d3de937689a1dd021",
+  "selection_report": {
+    "file": "selection-report.json",
+    "sha256": "ebb10701700f860d3c9a91a7d66a64a2611ace73ca56fbfddae564c1cef5ac4a"
+  },
+  "verifier_sha256": "7a83c90a80c96ad6bec2ce1e8d94d68068607909d39bbf1c34aa6e6ad4130461",
+  "locked_at_unix": 1791455984.807297
+}

@@ -1,0 +1,41 @@
+test_directory_and_pid_environment_sequences_are_literal (__main__.PathControls.test_directory_and_pid_environment_sequences_are_literal) ... ERROR
+test_plain_path_stays_exact (__main__.PathControls.test_plain_path_stays_exact) ... ERROR
+test_retained_worker_name_is_literal (__main__.PathControls.test_retained_worker_name_is_literal) ... ERROR
+
+======================================================================
+ERROR: test_directory_and_pid_environment_sequences_are_literal (__main__.PathControls.test_directory_and_pid_environment_sequences_are_literal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/instrumented_path_controls.py", line 23, in test_directory_and_pid_environment_sequences_are_literal
+    args = module.ProjectionRun.valgrind_args(SimpleNamespace(evidence=Path("/out%q{HOME}")), Path("/binary"), "safe-%3A-%p", [])
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/instrumented.py", line 217, in valgrind_args
+    f"--suppressions={self.root / 'tests/valgrind/relm.supp'}", binary, *arguments]
+                      ^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'root'
+
+======================================================================
+ERROR: test_plain_path_stays_exact (__main__.PathControls.test_plain_path_stays_exact)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/instrumented_path_controls.py", line 27, in test_plain_path_stays_exact
+    args = module.ProjectionRun.valgrind_args(SimpleNamespace(evidence=Path("/out")), Path("/binary"), "plain", [])
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/instrumented.py", line 217, in valgrind_args
+    f"--suppressions={self.root / 'tests/valgrind/relm.supp'}", binary, *arguments]
+                      ^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'root'
+
+======================================================================
+ERROR: test_retained_worker_name_is_literal (__main__.PathControls.test_retained_worker_name_is_literal)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/instrumented_path_controls.py", line 16, in test_retained_worker_name_is_literal
+    args = module.ProjectionRun.valgrind_args(SimpleNamespace(evidence=Path("/out")), Path("/binary"), label, ["--exact", "test"])
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/instrumented.py", line 217, in valgrind_args
+    f"--suppressions={self.root / 'tests/valgrind/relm.supp'}", binary, *arguments]
+                      ^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'root'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (errors=3)

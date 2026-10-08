@@ -1,0 +1,4 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"source-test.R","source-test","projection constructor schema 2 refuses old or missing probe ledgers",9,0,FALSE,FALSE,0,0.033,0.002,0.035,9
+"source-test.R","source-test","projection constructor counts one residual sentinel peak for either kind",48,0,FALSE,FALSE,0,0.059,0.003,0.061,48
+"source-test.R","source-test","projection constructor scalar probe charge reaches transport and owner inventory",4,0,FALSE,FALSE,0,0.01,0,0.011,4

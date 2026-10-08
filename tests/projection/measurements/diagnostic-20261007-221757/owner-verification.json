@@ -1,0 +1,61 @@
+{
+  "status": "diagnostic_evidence_verified_not_feature_acceptance",
+  "sources_verified": 603,
+  "source_manifest_sha256": "b57f951bab36cd5e1c023b56f67818101cfdd902a0419530169fa8d9bd05db63",
+  "raw_log_sha256": "dfeb00c6c4f33d9b8736fccf4a82a20fdcf9aae76b48f262e82d7aad6f2c71e2",
+  "runs": 16,
+  "reported_pairs": 17,
+  "extra_bitwise_checks": [
+    [
+      "zero/split_all_audit",
+      "zero/split_last_audit"
+    ],
+    [
+      "zero/grouped_all_audit",
+      "zero/grouped_last_audit"
+    ],
+    [
+      "zero/split_all_audit",
+      "zero/split_all_no_audit"
+    ],
+    [
+      "zero/grouped_last_audit",
+      "zero/grouped_last_no_audit"
+    ],
+    [
+      "zero/grouped_last_no_audit",
+      "zero/grouped_last_repeat"
+    ],
+    [
+      "active/split_all_audit",
+      "active/split_last_audit"
+    ],
+    [
+      "active/grouped_all_audit",
+      "active/grouped_last_audit"
+    ],
+    [
+      "active/split_all_audit",
+      "active/split_all_no_audit"
+    ],
+    [
+      "active/grouped_last_audit",
+      "active/grouped_last_no_audit"
+    ],
+    [
+      "active/grouped_last_no_audit",
+      "active/grouped_last_repeat"
+    ]
+  ],
+  "audited_same_row_values": 3072,
+  "audited_witnesses": 8240,
+  "format_clippy_passed": true,
+  "warnings": 0,
+  "acceptance_claim": false,
+  "localizes_discrepancy_to": "batch grouping among tested factors",
+  "upstream_kernel_cause": "not established",
+  "unchanged_tolerances": {
+    "whole_forward": 0.01,
+    "same_row": 2e-06
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "driver_sha256": "e5e3458ac0d4c1bb79c6d78e65a5679236698ba66a03ae87292d5eb4bbbcea25",
+  "files": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/render.R": "2976a16f93b36726cf54ea82c05d06ba9ce4c345343bad5ed6fd52add01cc480",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/owner-verification.json": "b46ab553fb776136bb9eef0e00188b3d501b70a06930fa0126ac8b0ed82cbfab",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/owner-summary.csv": "62048ac7a021d13c384463c6df66f22f92a9890c3f4435122588f776c5e1870f",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/complete-report.json": "5540887fb2b8680a3ebcbe4266809e2c626cd86f240f76db197c49a4c2e8b21c"
+  },
+  "scope": "Saved actual F6c states and frozen efficacy results; no model or inference; actual model map remains separate"
+}

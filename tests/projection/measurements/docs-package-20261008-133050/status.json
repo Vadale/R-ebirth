@@ -1,0 +1,75 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 91763,
+  "directory": "/private/tmp/relm-f6e/docs-package-20261008-133050",
+  "stages": [
+    {
+      "name": "vignette-contrast-directions",
+      "command": [
+        "quarto",
+        "render",
+        "contrast-directions.qmd",
+        "--to",
+        "html"
+      ],
+      "status": "passed",
+      "pid": 91769,
+      "exit_code": 0
+    },
+    {
+      "name": "vignette-model-interventions",
+      "command": [
+        "quarto",
+        "render",
+        "model-interventions.qmd",
+        "--to",
+        "html"
+      ],
+      "status": "passed",
+      "pid": 91796,
+      "exit_code": 0
+    },
+    {
+      "name": "source-build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "--no-manual",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth"
+      ],
+      "status": "passed",
+      "pid": 91824,
+      "exit_code": 0
+    },
+    {
+      "name": "scoped-check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--no-install",
+        "--no-tests",
+        "--no-vignettes",
+        "--no-manual",
+        "--library=/private/tmp/relm-f6e/public-library-budget",
+        "/private/tmp/relm-f6e/docs-package-20261008-133050/relm_0.3.0.tar.gz"
+      ],
+      "status": "passed",
+      "pid": 91869,
+      "exit_code": 0
+    }
+  ],
+  "updated_unix": 1791459086.222177,
+  "stage": "complete",
+  "models": 0,
+  "native_builds": 0,
+  "scoped_check": {
+    "errors": 0,
+    "warnings": 2,
+    "notes": 0,
+    "tests": "not rerun",
+    "vignettes": "Two changed documents rendered separately; omitted bundled-vignette warnings retained"
+  }
+}

@@ -1,0 +1,19 @@
+[
+  {
+    "compared_values": 34748,
+    "executed_cases": 15,
+    "expected_cases": 15,
+    "expected_values": 34748,
+    "max_abs_error": 0.004728402942419052,
+    "max_rel_error": 0.003640861296857505,
+    "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+    "negative_controls_expected": 0,
+    "negative_controls_rejected": 0,
+    "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+    "relative_error_scale": "1+abs(reference)",
+    "schema": 1,
+    "source_manifest_sha256": "6c3c79a70d231648708d3285553c917df9b622269f55800866aa3e19d21e5b52",
+    "status": "passed",
+    "test_id": "projection::tests::projection_forward_matches_independent_reference"
+  }
+]

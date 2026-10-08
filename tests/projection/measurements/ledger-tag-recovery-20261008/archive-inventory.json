@@ -1,0 +1,77 @@
+{
+  "source": "/private/tmp/relm-f6e/ledger-tag-recovery-20261008",
+  "files": [
+    {
+      "path": "check-ledger-twins.R",
+      "bytes": 2005,
+      "sha256": "9a0ed2ca34b954bf90d0d8581f904485b415e46f3323b3af70f8caa8bd97264d",
+      "archived": true
+    },
+    {
+      "path": "ledger-collector.py",
+      "bytes": 5220,
+      "sha256": "e20962bd0e2d6862a40c9b1e979f25bac5fade814c5909adc99a1842493a87ed",
+      "archived": true
+    },
+    {
+      "path": "native-profile.json",
+      "bytes": 713,
+      "sha256": "bf3a7dd2f5b8512ec9b0442e864c5b219a729ca5653eddcd05d8ab5763277bab",
+      "archived": true
+    },
+    {
+      "path": "native-r-tag.json",
+      "bytes": 483,
+      "sha256": "fbac95ea105c36f8727b9880214af79bd9fa099d68696a1048a64b63210e816a",
+      "archived": true
+    },
+    {
+      "path": "native-twins.csv",
+      "bytes": 32591,
+      "sha256": "a626f0ab52f87c17b267d1ffa629dfc4bf103742cfe8cd99d35cd37f0554200b",
+      "archived": true
+    },
+    {
+      "path": "owner-native-verification.json",
+      "bytes": 603,
+      "sha256": "60aaa5eae196b349c45a0d9ada11858342b6d9c0b15b64c9115a231ed94b7e87",
+      "archived": true
+    },
+    {
+      "path": "r-allocation-prototype.rds",
+      "bytes": 555,
+      "sha256": "c94a59c4d25a05422d0eba3d43c874b7b5477aefd518d7a7efcd219203f8ac0e",
+      "archived": true
+    },
+    {
+      "path": "r-native-parity.csv",
+      "bytes": 8405,
+      "sha256": "b6e5aee490e2f15b863225f93523b6840ef3117b69751317e63feae8f6282468",
+      "archived": true
+    },
+    {
+      "path": "r-native-twins.log",
+      "bytes": 115,
+      "sha256": "f419b18fbec21c3f3768f83a479cf8833deed1dbcc8dbcd0848e761f89dc9e98",
+      "archived": true
+    },
+    {
+      "path": "verification.json",
+      "bytes": 1234,
+      "sha256": "0ff0f2a81e89b7016ef45befb512a6af32ed59d4865ea36c023f9f7e781c17c7",
+      "archived": true
+    },
+    {
+      "path": "verify-ledger-native-owner.py",
+      "bytes": 2748,
+      "sha256": "5baf9d7bdd13847e1a55f918d2f5901a9350dd5ea15a49f2aecf6c02a9ab54a5",
+      "archived": true
+    },
+    {
+      "path": "verify-ledger-tag-recovery.py",
+      "bytes": 4049,
+      "sha256": "b1fd7b582bf9a01d4c00e96342cc4c279bf10a2a6ed1e562cb24376ecce2a4ca",
+      "archived": true
+    }
+  ]
+}

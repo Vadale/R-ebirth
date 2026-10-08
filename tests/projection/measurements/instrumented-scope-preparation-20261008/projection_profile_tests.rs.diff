@@ -1,0 +1,67 @@
+--- rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs (original scope)
++++ rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs (accepted budget correction)
+@@ -250,3 +250,64 @@
+     }
+     marker("projection_profile_error_grammar_owns_one_exact_copy", 6, 0);
+ }
++
++#[test]
++fn projection_budget_oom_class_preserves_arithmetic_and_error_capacity() {
++    let p = ProjectionAllocationProfile::compiled(ProjectionFfiProfile::default());
++    let mut cases = 0;
++    let mut refusals = 0;
++    for (mode, h, previous) in [
++        (ProjectionAdmissionMode::NewSite, 1, 0),
++        (ProjectionAdmissionMode::NewSite, 32, 1),
++        (ProjectionAdmissionMode::Inherit, 32, 2),
++        (ProjectionAdmissionMode::NewSite, 65536, 31),
++    ] {
++        let mut i = inputs(mode, h, previous);
++        let estimate = p.estimate(&i).unwrap();
++        i.max_bytes = estimate.total_bytes;
++        assert_eq!(p.estimate(&i).unwrap().fields(), estimate.fields());
++        cases += 1;
++        i.max_bytes -= 1;
++        let error = p.estimate(&i).unwrap_err();
++        assert_eq!(error.class(), "relm_error_oom");
++        match error {
++            RebirthError::Oom {
++                estimate_bytes,
++                budget_bytes,
++                suggestion,
++            } => {
++                assert_eq!(estimate_bytes, estimate.total_bytes);
++                assert_eq!(budget_bytes, i.max_bytes);
++                assert_eq!(suggestion, BUDGET_MESSAGE);
++                assert_eq!(suggestion.capacity(), suggestion.len());
++                assert!(suggestion.capacity() <= p.error_format_bytes as usize);
++            }
++            other => panic!("expected predictive OOM, got {other:?}"),
++        }
++        cases += 1;
++        refusals += 1;
++    }
++    for invalid in 0..3 {
++        let mut i = inputs(ProjectionAdmissionMode::NewSite, 32, 0);
++        match invalid {
++            0 => i.max_bytes = 0,
++            1 => i.max_bytes = MAX_BYTES + 1,
++            _ => i.existing_direction_estimate = u64::MAX,
++        }
++        let error = p.estimate(&i).unwrap_err();
++        assert_eq!(error.class(), "relm_error_intervention");
++        assert!(matches!(error, RebirthError::Intervention { .. }));
++        cases += 1;
++        refusals += 1;
++    }
++    // New fixed OOM text fits the already admitted largest setter/context
++    // grammar. Enum/format-frame/layout charges therefore remain unchanged.
++    assert_eq!(p.error_format_bytes, 150);
++    assert_eq!(ERROR_BYTES, 150);
++    assert_eq!((cases, refusals), (11, 7));
++    marker(
++        "projection_budget_oom_class_preserves_arithmetic_and_error_capacity",
++        cases,
++        refusals,
++    );
++}

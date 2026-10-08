@@ -1,0 +1,26 @@
+[1] "/Users/alessandrovadala/Library/R/arm64/4.5/library/later"
+[1] NA
+[1] "Error in utils::packageVersion(\"later\") : \n  there is no package called ‘later’\n"
+attr(,"class")
+[1] "try-error"
+attr(,"condition")
+<packageNotFoundError in utils::packageVersion("later"): there is no package called ‘later’>
+[1] TRUE
+ [1] "compiler"  "later"     "graphics"  "tools"     "utils"     "grDevices"
+ [7] "Rcpp"      "stats"     "relm"      "datasets"  "methods"   "base"     
+[1] ‘1.4.8’
+function (pkg, lib.loc = NULL) 
+{
+    res <- suppressWarnings(packageDescription(pkg, lib.loc = lib.loc, 
+        fields = "Version"))
+    if (!is.na(res)) 
+        package_version(res)
+    else stop(packageNotFoundError(pkg, lib.loc, sys.call()))
+}
+<bytecode: 0x142605dc0>
+<environment: namespace:utils>
+Warning message:
+In utils::packageDescription("later") :
+  DESCRIPTION file of package 'later' is missing or broken
+Error in utils::packageVersion("later") : 
+  there is no package called ‘later’

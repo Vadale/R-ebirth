@@ -1,0 +1,7 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"source-test.R","source-test","projection preparation charges workflow objects independently of vector width",3,0,FALSE,FALSE,0,0.03,0.002,0.032,3
+"source-test.R","source-test","projection preparation binds actual inventory and native response before arrays",7,0,FALSE,FALSE,0,0.042,0.002,0.045,7
+"source-test.R","source-test","projection preparation rejects altered native scope and charges before allocation",10,0,FALSE,FALSE,0,0.061,0.002,0.063,10
+"source-test.R","source-test","projection derivation carries admitted arrays and creates independent R state",7,0,FALSE,FALSE,0,0.004,0,0.005,7
+"source-test.R","source-test","projection derivation closes delivered handle if R wrapping fails",3,0,FALSE,FALSE,0,0.011,0,0.011,3
+"source-test.R","source-test","projection inherited residual uses recorded budget without a new site",7,0,FALSE,FALSE,0,0.014,0.001,0.014,7

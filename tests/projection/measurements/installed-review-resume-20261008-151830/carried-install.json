@@ -1,0 +1,7 @@
+{
+  "directory": "/private/tmp/relm-f6e/installed-review-20261008-151124",
+  "status": "whole_run_failed_before_model",
+  "carried": "Fresh installation and function body/formals assertions before the failed dependency metadata check; no reinstall or source loop replay",
+  "source_manifest_sha256": "f9564223e10f10275802b291abc1cdde04c3c75a101ae2d4ca83da7a341e2cdb",
+  "installed_manifest_sha256": "4cc42ec4d2e11a7d68ad07db3b68cf01190eea110d487b94ac8d49c7f13f329f"
+}

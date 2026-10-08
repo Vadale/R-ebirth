@@ -1,0 +1,123 @@
+{
+  "status": "partial_stages_verified_overall_failed",
+  "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+  "sources_verified": 623,
+  "executed_native_tests": 3,
+  "native_receipts": [
+    {
+      "compared_values": 10042,
+      "executed_cases": 3,
+      "expected_cases": 3,
+      "expected_values": 10042,
+      "max_abs_error": 0.003909901715815067,
+      "max_rel_error": 0.002995177727885454,
+      "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+      "negative_controls_expected": 0,
+      "negative_controls_rejected": 0,
+      "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+      "relative_error_scale": "1+abs(reference)",
+      "schema": 1,
+      "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+      "status": "passed",
+      "test_id": "projection::tests::projection_microbatches_pruning_and_graph_reuse"
+    },
+    {
+      "compared_values": 0,
+      "executed_cases": 6,
+      "expected_cases": 6,
+      "expected_values": 0,
+      "max_abs_error": 0.0,
+      "max_rel_error": 0.0,
+      "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+      "negative_controls_expected": 1,
+      "negative_controls_rejected": 1,
+      "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+      "relative_error_scale": "1+abs(reference)",
+      "schema": 1,
+      "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+      "status": "passed",
+      "test_id": "projection::tests::projection_capture_and_static_additive_composition"
+    },
+    {
+      "compared_values": 0,
+      "executed_cases": 3,
+      "expected_cases": 3,
+      "expected_values": 0,
+      "max_abs_error": 0.0,
+      "max_rel_error": 0.0,
+      "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+      "negative_controls_expected": 3,
+      "negative_controls_rejected": 3,
+      "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+      "relative_error_scale": "1+abs(reference)",
+      "schema": 1,
+      "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+      "status": "passed",
+      "test_id": "projection::tests::projection_cancel_fault_and_owner_cleanup"
+    }
+  ],
+  "pruning": {
+    "status": "pruning_protocol_verified",
+    "independent_values_within_main_count": 144,
+    "fixed_schedule_final_values": 144,
+    "fixed_schedule_history_values": 144,
+    "replay_final_and_history_values": 576,
+    "cross_schedule_accuracy_accepted": false,
+    "cross_schedule_outliers": {
+      "mlp_out_last_c1": [],
+      "attn_out_last_c1": [],
+      "long_prefill": [
+        1,
+        43
+      ]
+    }
+  },
+  "same_row": {
+    "compared_values": 704,
+    "expected_values": 704,
+    "max_abs_error": 0.0,
+    "max_scaled_error": 0.0,
+    "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+    "requested_backend": "cpu",
+    "scaled_error_definition": "abs(actual-expected_f32)/(1+abs(expected_f32))",
+    "scaled_error_limit": 2e-06,
+    "schema": 1,
+    "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+    "status": "passed",
+    "test_id": "projection::tests::projection_microbatches_pruning_and_graph_reuse"
+  },
+  "cpu_benchmark": {
+    "samples": 20,
+    "tokens_per_sample": 128,
+    "mode_order": [
+      "callback_free",
+      "dormant",
+      "zero",
+      "active_one",
+      "active_multi"
+    ],
+    "medians_seconds": [
+      1.3462640000000001,
+      1.35030975,
+      1.350369667,
+      1.36216725,
+      1.37016425
+    ],
+    "dormant_ratio": 1.003005168377079,
+    "dormant_limit": 1.05,
+    "backend": [
+      [
+        "CPU",
+        75.06
+      ]
+    ]
+  },
+  "metal": {
+    "status": "failed_before_timing",
+    "test_passes": 0,
+    "timing_samples": 0,
+    "reason": "native_status=-6 producer/layout/alias/buffer refusal during tiny-model derive probe; detailed cause requires source/actual buffer evidence"
+  },
+  "warnings": 0,
+  "public_feature_acceptance": false
+}

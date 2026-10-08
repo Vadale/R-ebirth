@@ -1,0 +1,13 @@
+{
+  "status": "verified_failure_before_native_build",
+  "run": 37782783888,
+  "head": "26eff2c4dd64ab9d285576f64f563c78ce08be1b",
+  "source_hashes": 1001,
+  "raw_files": 8,
+  "native_builds": 0,
+  "native_tests": 0,
+  "model_loads": 0,
+  "cause": "The unchanged conservative unconditional-test source guard rejects env::var inside the test body. Its only occurrence is the terminal source-provenance JSON field, not a skip/admission branch. Refactor that expression into a helper outside the test, preserving assertions and the guard itself.",
+  "whole_workflow": "failed",
+  "correction": "Test-only source stamp helper; no product, assertion, model, runtime guard or bound change. Actual affected ASan/Memcheck remain unexecuted."
+}

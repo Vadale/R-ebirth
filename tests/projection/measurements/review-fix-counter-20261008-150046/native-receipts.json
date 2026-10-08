@@ -1,0 +1,42 @@
+[
+  {
+    "audit_rows": 4,
+    "compared_values": 224,
+    "constructor_calls": 1,
+    "executed_cases": 8,
+    "expected_cases": 8,
+    "expected_rejections": 2,
+    "expected_values": 224,
+    "live_states": 2,
+    "max_abs_error": 0.0,
+    "model_loads": 1,
+    "probe_decodes": 2,
+    "refused_deliveries": 0,
+    "rejected_cases": 2,
+    "source": "review-fix-counter-141bb5fe313457248707587c3898a23555358e0ed4d86c880b3ac20535752471",
+    "status": "passed",
+    "test": "projection_zero_live_capture_preserves_identity_without_row_work",
+    "zero_barriers": 0,
+    "zero_read_bytes": 0,
+    "zero_rows": 0,
+    "zero_write_bytes": 0
+  },
+  {
+    "test": "projection_registry_reuses_expired_slots_without_weakening_admission",
+    "status": "passed",
+    "expected_cases": 78,
+    "executed_cases": 78,
+    "expected_rejections": 5,
+    "rejected_cases": 5,
+    "expected_values": 0,
+    "compared_values": 0,
+    "max_abs_error": 0.0,
+    "model_loads": 0,
+    "inference_calls": 0,
+    "sequential_registrations": 64,
+    "simultaneous_registrations": 8,
+    "peak_live_entries": 9,
+    "final_capacity": 2,
+    "actual_r_gc_executed": false
+  }
+]

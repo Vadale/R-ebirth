@@ -1,0 +1,1 @@
+The first collector-control script failed at its second positive fixture: deleting the libtest prefix also deleted the required exact test name. The raw native log positive passed. The standalone fixture now retains a separate exact-name line. No native/model execution occurred; collector name/count assertions are unchanged.

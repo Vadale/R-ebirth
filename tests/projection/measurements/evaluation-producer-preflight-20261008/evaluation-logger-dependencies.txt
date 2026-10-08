@@ -1,0 +1,10 @@
+log_capture.o: \
+  /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/SDKSettings.json \
+  tests/projection/evaluation/log_capture.c \
+  rebirth/src/llama.cpp/include/llama.h \
+  rebirth/src/llama.cpp/ggml/include/ggml.h \
+  rebirth/src/llama.cpp/ggml/include/ggml-cpu.h \
+  rebirth/src/llama.cpp/ggml/include/ggml-backend.h \
+  rebirth/src/llama.cpp/ggml/include/ggml-alloc.h \
+  rebirth/src/llama.cpp/ggml/include/ggml-opt.h \
+  rebirth/src/llama.cpp/ggml/include/gguf.h

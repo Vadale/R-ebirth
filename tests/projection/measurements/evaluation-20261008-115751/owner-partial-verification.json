@@ -1,0 +1,28 @@
+{
+  "status": "FAILED",
+  "diagnosis": "New evidence collector refused the now-visible pinned-model tokenizer warning before any inference.",
+  "original_source_count": 166,
+  "original_installed_count": 28,
+  "original_file_hashes_verified": 180,
+  "source_and_installed_drift": false,
+  "model_load_attempts": 1,
+  "trace_attempts": 0,
+  "generation_attempts": 0,
+  "derive_attempts": 0,
+  "tokenizer_attempts": 0,
+  "actual_offload": "0/25",
+  "actual_buffers": [
+    "CPU_Mapped model 500.79 MiB",
+    "CPU_REPACK model 500.52 MiB",
+    "CPU KV 6.00 MiB",
+    "CPU compute 300.25 MiB"
+  ],
+  "native_warnings": 1,
+  "native_errors": 0,
+  "compiler_warnings": 0,
+  "token_warning_diagnosis_sha256": "befbfb9501178b798872e61e2bf9966845579cb37263c5a51a7bf2992db059b9",
+  "experiment_log_sha256": "ac8ae5011fc2b3e2f467ebd75823548626ece2375197eae6a4371b384d42df64",
+  "native_placement_log_sha256": "69a8f4261a6d92c5599a03c6addc2222951edd6b9ff460e15bb7aa126179db6d",
+  "original_driver_status_preserved": true,
+  "inference_or_model_tests_rerun": false
+}

@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "candidate_head": "1a9ec091f43c6d869f9184f95af2ce3a89bbb850",
+  "verified_utc": "2026-10-08T14:09:03.017741+00:00",
+  "checked_hash_counts": {
+    "source_sha256": 8,
+    "evidence_sha256": 19,
+    "raw_receipts_inspected_sha256": 9
+  },
+  "instrumented_source_bindings": 1001,
+  "report_sha256": "2d72c57f405f3a82437b6dce5687d7e5636d943bd734a2541e336d604befd6b3",
+  "scope": "Mechanical parent verification of the existing same-reviewer closure and its source/evidence bindings; no new review, tests, builds or model calls."
+}

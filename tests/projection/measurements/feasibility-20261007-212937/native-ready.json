@@ -1,0 +1,293 @@
+{
+  "status": "ready",
+  "reference_commit": "d8a4800",
+  "source_head": "d8a4800c3dcdace0d2e9300da7b368bf34461df6",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "reference_manifest_json_sha256": "ab9e0361b5237bd89901854225f430a8492704cab8607c8ddc9b55dc9c7769b6",
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "2deda583e707c56430ad648532e0c9e6cb988650abf63f54e21723f178c39db9",
+    "rebirth/src/rust/rebirth-llm/build.rs": "3dcd4270bf9902eb01191509cc9f1185bac9bda71e0464ee13dd3a795059febe",
+    "rebirth/src/rust/rebirth-llm/native/CMakeLists.txt": "744d603003e13889f32c311493b7179bbf62f364b15cbdfa67ffb354859f6d30",
+    "rebirth/src/rust/rebirth-llm/native/projection.cpp": "1e0e1dcebd0a8d447a2a01e0cae513e99800371cb90a818d1a43c1d3bd8a3755",
+    "rebirth/src/rust/rebirth-llm/native/projection.h": "50fce200c0b80b06d7cbc5540bba9ff1689a06e43ecf07d4584fa1607ca98fb5",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "d6f172cb39b34a9be3d3ee5a25d96b3ebfee4a13734a069d33d7c6b3e68bb600",
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs": "5a23ba5a17ab3623bd830f069eec2a856bb3484ec51e19a96ada06ce4fd57790",
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "38358eb1f0bd39cdd75cc7f58f50d1c99fa262b99d2d4dda091478a5d312564e",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "c3da7521e1ae5917d17b72bf342d924a3aae1ed949bd6a89da7098f3be12fc69",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "34785cb13f9372dea7ae768b3e4236f81fb4642f1b6632eb019c8538947356bd",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "580668a4b022df2bb32598a7b2fa945f91c216e4bdcbd3abe4e9947a2ab61b35",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "32443e3c01d922c425d663213c34826d4cd2fb443e62caf463eecf9bf9c6c8b3",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "59b8449214f5cd323afd4ac4aec7d036969ae08b7a573581cfcc9eb6609b75ab",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "5e3dd10ef6b90fe66010704ca5202e51587abe8f00af10e01ea5f2b3e28054b7"
+  },
+  "source_hashes_digest": "d130df6ec25dcbd5e2cda56dd6f4e77debbe06190236473d8ab8a8af26f8e561",
+  "builds_tests_models_executed": false,
+  "static_checks": [
+    "rustfmt --check for all owned Rust sources",
+    "clang++ -std=c++17 -fsyntax-only for projection.cpp against pinned headers",
+    "git diff --check for owned sources",
+    "read-only fixture comparison-count calculation"
+  ],
+  "scope": "cfg(test) private native feasibility only; C++ bridge compiled into existing archive; no R/FFI public arming, vendor/dependency/golden/workflow change",
+  "production_config_change": false,
+  "test_config_change": "Fresh contexts preserve resolved n_batch/n_ubatch only under cfg(test); targeted capacity assertion expects 512/128.",
+  "nonignored_tests": [
+    {
+      "id": "projection::tests::projection_row_matches_independent_reference",
+      "expected_cases": 13,
+      "expected_values": 52,
+      "negative_controls_expected": 0
+    },
+    {
+      "id": "projection::tests::projection_boundary_rejects_invalid_inputs",
+      "expected_cases": 17,
+      "expected_values": 0,
+      "negative_controls_expected": 17
+    },
+    {
+      "id": "projection::tests::projection_capacity_ledger_matches_owned_buffers",
+      "expected_cases": 8,
+      "expected_values": 0,
+      "negative_controls_expected": 1
+    },
+    {
+      "id": "projection::tests::projection_classifier_accepts_only_declared_dense_sites",
+      "expected_cases": 12,
+      "expected_values": 0,
+      "negative_controls_expected": 8
+    },
+    {
+      "id": "projection::tests::projection_probe_rejects_missing_noop_and_wrong_site",
+      "expected_cases": 6,
+      "expected_values": 0,
+      "negative_controls_expected": 6
+    },
+    {
+      "id": "projection::tests::projection_forward_matches_independent_reference",
+      "expected_cases": 15,
+      "expected_values": 34748,
+      "negative_controls_expected": 0
+    },
+    {
+      "id": "projection::tests::projection_microbatches_pruning_and_graph_reuse",
+      "expected_cases": 3,
+      "expected_values": 10042,
+      "negative_controls_expected": 0
+    },
+    {
+      "id": "projection::tests::projection_capture_and_static_additive_composition",
+      "expected_cases": 6,
+      "expected_values": 0,
+      "negative_controls_expected": 1
+    },
+    {
+      "id": "projection::tests::projection_cancel_fault_and_owner_cleanup",
+      "expected_cases": 3,
+      "expected_values": 0,
+      "negative_controls_expected": 3
+    }
+  ],
+  "ignored_benchmark_id": "projection::tests::projection_feasibility_model",
+  "cli": {
+    "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+    "fmt": "cargo fmt --all -- --check",
+    "clippy": "cargo clippy -p rebirth-llm --all-targets -- -D warnings",
+    "no_spill_compile": "cargo test -p rebirth-llm --no-default-features --no-run",
+    "exact_test": "cargo test -p rebirth-llm <exact-test-id> -- --exact --nocapture",
+    "benchmark": "cargo test -p rebirth-llm --release projection::tests::projection_feasibility_model -- --ignored --exact --nocapture"
+  },
+  "environment": {
+    "F6E_SOURCE": "Owner source manifest digest; required for benchmark, included in test markers.",
+    "F6E_REFERENCE_MANIFEST_SHA256": "CSV manifest hash above; benchmark/reference validates exact value.",
+    "F6E_MODEL": "Existing cached Qwen2 GGUF absolute path.",
+    "F6E_MODEL_SHA256": "Exact cached file SHA-256, independently rechecked by native harness.",
+    "F6E_BACKEND": "cpu or metal; owner runs each once."
+  },
+  "test_marker": {
+    "prefix": "F6E_PROJECTION_TEST",
+    "schema": 1,
+    "fields": [
+      "schema",
+      "test_id",
+      "source_manifest_sha256",
+      "reference_manifest_sha256",
+      "model_sha256",
+      "expected_cases",
+      "executed_cases",
+      "expected_values",
+      "compared_values",
+      "max_abs_error",
+      "max_rel_error",
+      "relative_error_scale",
+      "negative_controls_expected",
+      "negative_controls_rejected",
+      "status"
+    ],
+    "status": "passed",
+    "relative_error_scale": "abs(error)/(1+abs(reference))",
+    "count_rules": "All expected/executed, expected/compared and expected/rejected pairs equal; cases positive; numerical value counts above; one marker per exact test, emitted after assertions."
+  },
+  "benchmark_marker": {
+    "prefix": "F6E_PROJECTION_BENCH",
+    "schema": 1,
+    "status": "passed",
+    "fields": [
+      "schema",
+      "status",
+      "source_manifest_sha256",
+      "reference_manifest_sha256",
+      "model_sha256",
+      "model",
+      "build_profile",
+      "debug_assertions",
+      "requested_backend",
+      "resolved_backend",
+      "callback_free_backend",
+      "hooked_backend",
+      "tiny_forward",
+      "settings",
+      "samples",
+      "mode_order",
+      "median_elapsed_seconds",
+      "dormant_ratio",
+      "dormant_limit",
+      "active_limit"
+    ],
+    "backend_object_fields": [
+      "resolved_backend",
+      "gpu_layer_policy",
+      "offloaded_layers",
+      "selected_devices",
+      "compute_buffers_mib",
+      "native_load_log"
+    ],
+    "sample_fields": [
+      "round",
+      "warmup",
+      "mode",
+      "prefill_seconds",
+      "decode_seconds",
+      "elapsed_seconds",
+      "decoded_tokens",
+      "site_rows",
+      "read_bytes",
+      "write_bytes",
+      "barriers"
+    ],
+    "raw_prefixes": [
+      "F6E_PROJECTION_SAMPLE",
+      "F6E_PROJECTION_TIMING",
+      "F6E_PROJECTION_METAL_FORWARD",
+      "F6E_PROJECTION_FAILURE",
+      "F6E_PROJECTION_LEDGER",
+      "F6E_PROJECTION_SAME_ROW"
+    ],
+    "modes": [
+      "callback_free",
+      "dormant",
+      "zero",
+      "active_one",
+      "active_multi"
+    ],
+    "sample_count": 20,
+    "warmups_per_mode": 1,
+    "measured_rounds": 3,
+    "round_orders": [
+      [
+        "callback_free",
+        "dormant",
+        "zero",
+        "active_one",
+        "active_multi"
+      ],
+      [
+        "active_multi",
+        "zero",
+        "callback_free",
+        "active_one",
+        "dormant"
+      ],
+      [
+        "active_one",
+        "dormant",
+        "active_multi",
+        "zero",
+        "callback_free"
+      ]
+    ],
+    "settings": {
+      "max_tokens": 128,
+      "n_batch": 512,
+      "n_ubatch": 128,
+      "context_length": 768,
+      "seed": 42,
+      "temperature": 0.8,
+      "top_p": 0.95,
+      "component": "mlp_out",
+      "direction": "unit axis at native coordinate 1",
+      "single_site": "middle layer",
+      "multi_sites": "distinct first/middle/last layers",
+      "coefficient": 1.0
+    },
+    "acceptance": "release/debug_assertions=false; actual CPU no GPU or actual Metal/MTL<digits> positive matching compute buffer and full requested offload; 128 tokens per sample; baseline/dormant/zero exact generation parity; zero copies/writes/barriers; active positive writes; median dormant/baseline<=1.05; no active cost threshold.",
+    "tiny_forward": "null on CPU; on Metal status=passed, model_sha256=e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05, cases15, values34748, max_abs/max_rel_error and actual backend receipt. Runs once before cached-Qwen timing. Includes same_row object with2944 independent same-observed-row f32 comparisons at scaled2e-6.",
+    "timing_semantics": "prefill/decode durations cover engine decode; elapsed_seconds also includes sampling/output; medians/ratio use elapsed_seconds; complete benchmark marker only after all gates."
+  },
+  "memory": "See docs/f6e-memory-contract.md. Immutable f64 plan<=32 sites/H<=65536; one f32 row/context; 20H probe data with transferred baseline rows; actual compiled descriptors/frames/error bound, inherited Arc sharing and accumulated residual capacities; private observer separately capped8MiB/128rows/2048scalarwitnesses. Public configurable R/FFI twin is not armed in this private milestone.",
+  "untested_boundaries": [
+    "Rust type/link/clippy acceptance",
+    "Actual scheduler mutation/alias/Metal causal behavior",
+    "All nine fixture/lifecycle/resource tests",
+    "Release CPU/Metal latency and token counts",
+    "Full configurable R/FFI admission before public arming"
+  ],
+  "owner_driver_contract_verified": true,
+  "prelaunch_correction": {
+    "removed_unused_begin_owner_parameter": true,
+    "runtime_decode_thread_validation_retained": true,
+    "post_rows_read_actual_tensor_storage": true,
+    "probe_current_pre_row_uses_existing_producer_box": true,
+    "probe_additional_storage": "one baseline_signal f32, included in size_of::<Probe>(); no H buffer added",
+    "probe_readback_scaled_limit": 2e-06,
+    "probe_consumer_absolute_limit": 0.01,
+    "static_checks": [
+      "rustfmt --edition 2021 --check on projection.rs and projection_test_support.rs",
+      "git diff --check on the three corrected files"
+    ],
+    "builds_tests_models_executed": false
+  },
+  "same_row_marker": {
+    "prefix": "F6E_PROJECTION_SAME_ROW",
+    "schema": 1,
+    "status": "passed",
+    "fields": [
+      "schema",
+      "status",
+      "source_manifest_sha256",
+      "reference_manifest_sha256",
+      "test_id",
+      "requested_backend",
+      "expected_values",
+      "compared_values",
+      "max_abs_error",
+      "max_scaled_error",
+      "scaled_error_definition",
+      "scaled_error_limit"
+    ],
+    "counts": {
+      "projection::tests::projection_forward_matches_independent_reference": 2944,
+      "projection::tests::projection_microbatches_pruning_and_graph_reuse": 704
+    },
+    "scaled_error_definition": "abs(actual-expected_f32)/(1+abs(expected_f32))",
+    "scaled_error_limit": 2e-06,
+    "comparison": "Independent ascending scalar f64 dot/update loop on actual retained pre-row and actual plan Site; one checked cast to f32; actual post-row read back from tensor storage. Zero coefficient preserves original pre-row. Whole-forward expected_values unchanged.",
+    "metal_result_location": "F6E_PROJECTION_METAL_FORWARD.same_row and F6E_PROJECTION_BENCH.tiny_forward.same_row"
+  },
+  "owner_driver_sha256": "8846c1eef11961e9aa160f7bd6bc8694515250eba7ffaedb7781748ef77e2ccd",
+  "owner_verification": {
+    "source_hashes_matched": 14,
+    "exact_count_controls": 36,
+    "benchmark_collector_controls": 39,
+    "actual_runtime_acceptance": false
+  }
+}

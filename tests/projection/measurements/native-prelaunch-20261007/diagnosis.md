@@ -1,0 +1,1 @@
+Pre-execution interface inspection found Slot::begin requires an unused fourth owner argument while decode_batch supplies the intended three. No Rust compilation, fixture or model was run. Preserve the original frozen source and correct the integration before launch.

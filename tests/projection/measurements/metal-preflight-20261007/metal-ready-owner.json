@@ -1,0 +1,174 @@
+{
+  "status": "ready",
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "cf4da2ebef6553e14208bf303c4f4d9d6f9969fd9c202bb35be904069328b757",
+    "rebirth/src/rust/rebirth-llm/build.rs": "3dcd4270bf9902eb01191509cc9f1185bac9bda71e0464ee13dd3a795059febe",
+    "rebirth/src/rust/rebirth-llm/native/CMakeLists.txt": "744d603003e13889f32c311493b7179bbf62f364b15cbdfa67ffb354859f6d30",
+    "rebirth/src/rust/rebirth-llm/native/projection.cpp": "87a22c84559beac46a5735b82b07959f998f5dafcc7e8f252cfce04249272e48",
+    "rebirth/src/rust/rebirth-llm/native/projection.h": "930f5dc8e3b4cce0050efa0291d00871728cd1e4bafd5c7df73e3490a6cdc17e",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "8ef57603fe3189a6f9c52a0b54251e9d77c380afef767e15a81d0b347863c70a",
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs": "0518a9eb9b76938a4841b7d0e3045db71f25b3506f74b9b63897c6ea20745ad1",
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "36119db9111fe954cfbf87eb1291cd1c319b868915c02a4e7891c541bcb6b36c",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "c3da7521e1ae5917d17b72bf342d924a3aae1ed949bd6a89da7098f3be12fc69",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "34785cb13f9372dea7ae768b3e4236f81fb4642f1b6632eb019c8538947356bd",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "580668a4b022df2bb32598a7b2fa945f91c216e4bdcbd3abe4e9947a2ab61b35",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "c0a07d113018c978790b179dbe2a159a7029eeb02f172b5d2077754fab4a7985",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "59b8449214f5cd323afd4ac4aec7d036969ae08b7a573581cfcc9eb6609b75ab",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "5e3dd10ef6b90fe66010704ca5202e51587abe8f00af10e01ea5f2b3e28054b7",
+    "rebirth/src/rust/rebirth-llm/src/projection_diagnostic.rs": "f72cfce728cb1a4dbea0e88ce001386899d9ade3ac8ba5b8315d9f09676837d3"
+  },
+  "source_hashes_digest": "db35cdc00ff04c8d06b6da1499e0d5bc248a706abd01fef0e0219995d4a1a38e",
+  "changed_files": [
+    "rebirth/src/rust/rebirth-llm/native/projection.cpp",
+    "rebirth/src/rust/rebirth-llm/native/projection.h",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs"
+  ],
+  "reference_commit": "d8a4800",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "vendor_dependency_golden_public_changes": false,
+  "builds_tests_models_executed": false,
+  "static_checks": [
+    "rustfmt --edition2021 and --check on four changedRust files",
+    "clang++ -std=c++17 -Wall -Wextra -Werror -fsyntax-only on projection.cpp with pinnedGGML headers",
+    "scoped git diff --check"
+  ],
+  "static_correction_note": "Strict C++ warning pass found boolean bitwise conjunction; changed to sequential always-executed name copies with logical conjunction, then strictsyntax passed. No build/model call.",
+  "correction": "Host buffer predicate returns immediately before Metal inspection. Nonhost accepts only actual registeredMTL device/defaultshared type identity and exact canonical sharedtype/device naming. Private/mapped/unknown remain unsupported. Same predicate used by classify/row/scalarconsumer. Row also refusesweightusage.",
+  "fallback_proof": "See metal-diagnosis.json shared_to_private_fallback_proof: initializedimmutable use_shared_buffers selectsdefaultshared singleton; allocator ANDs same property. Actual defaultshared identity therefore rulesoutfalse/private fallback. No name-only trust, env mutation or opaqueMetalcontext access.",
+  "tests": [
+    {
+      "id": "projection::tests::projection_buffer_identity_accepts_only_host_or_default_shared",
+      "expected_cases": 21,
+      "expected_values": 0,
+      "negative_controls_expected": 17
+    },
+    {
+      "id": "projection::tests::projection_capacity_ledger_matches_owned_buffers",
+      "expected_cases": 8,
+      "expected_values": 0,
+      "negative_controls_expected": 1
+    },
+    {
+      "id": "projection::tests::projection_classifier_accepts_only_declared_dense_sites",
+      "expected_cases": 12,
+      "expected_values": 0,
+      "negative_controls_expected": 8
+    }
+  ],
+  "new_control_mask": 2097151,
+  "new_controls": "SharedMTL0/MTL15 identity positives; actualCPUhost allocation and exactrow roundtrip positives. Private/mapped/wrongregistry/wrongdefault/wrongregistereddevice/wrongdevicetype/name-mismatch/missingindex/noncanonicalleadingzero/null/unknownnamespace/overflow refusals; weightbuffer read/write and rowbounds refusals.",
+  "benchmark_id": "projection::tests::projection_feasibility_model",
+  "benchmark_environment": {
+    "F6E_BACKEND": "metal",
+    "F6E_MODEL": "existing cachedQwen2 GGUF",
+    "F6E_MODEL_SHA256": "owner exact cached file SHA",
+    "F6E_SOURCE": "owner final source manifest digest",
+    "F6E_REFERENCE_MANIFEST_SHA256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959"
+  },
+  "execution_scope": "Owner only: focused3tests plus incompleteMetalrelease tinyforward/probe+cachedQwenbenchmark. No CPUbenchmark or native1-9whole-suite rerun requested. Existingbenchmark token/sample/backend/golden/dormant thresholds unchanged.",
+  "buffer_receipt": {
+    "prefix": "F6E_PROJECTION_BUFFER",
+    "schema": 1,
+    "when": "FixedPOD captured at first nonempty selectedreadyproducer beforeanyrowaccess. Printed once per context/site afterdecode/completeness check, outsidecallback. Newinheritedcontext resetscopiedreceipt slots; proof never retains tensor/data pointers.",
+    "fields": [
+      "schema",
+      "phase",
+      "width",
+      "depth",
+      "layer_native",
+      "component_code",
+      "kind",
+      "is_host",
+      "usage",
+      "device_type",
+      "flags",
+      "device_index",
+      "type_name_bytes",
+      "device_name_bytes",
+      "registry_name_bytes",
+      "rows",
+      "bytes",
+      "dtype_f32",
+      "view_offset",
+      "data_nonnull",
+      "contiguous",
+      "no_staging_supported",
+      "decode_failed"
+    ],
+    "phase_values": [
+      "probe_baseline",
+      "probe_edited",
+      "projected"
+    ],
+    "component_codes": {
+      "0": "mlp_out",
+      "1": "attn_out"
+    },
+    "kind_codes": {
+      "0": "unsupported",
+      "1": "generic_host",
+      "2": "metal_default_shared"
+    },
+    "flags": {
+      "1": "registryidentity == registeredMTL",
+      "2": "actualbuft == actualdevicedefaultbuft",
+      "4": "actualdevice == registeredMTLdevice atparsedindex",
+      "8": "whole typename == whole devicename",
+      "16": "deviceGPUtype",
+      "32": "allboundednamescompleteNULterminated",
+      "64": "actualtensor datanonnull",
+      "128": "classifier provedcontiguous nonviewF32"
+    },
+    "name_arrays": "type32bytes/device32bytes/registry16bytes; NULterminated complete names; bytearrays avoidcallback strings/escaping/allocation. No rawpointer published.",
+    "shared_success_requirements": {
+      "kind": 2,
+      "is_host": 0,
+      "device_type": 1,
+      "flags": 255,
+      "usage": "not GGML_BACKEND_BUFFER_USAGE_WEIGHTS",
+      "dtype_f32": true,
+      "view_offset": 0,
+      "data_nonnull": true,
+      "contiguous": true,
+      "no_staging_supported": true,
+      "decode_failed": false,
+      "names": "typename==devicename==MTL+canonical device_index; registrynameMTL",
+      "bytes": "rows*width*4"
+    },
+    "binding": "Require actualtiny width32/depth3 probe/producer receipts and actualcachedQwen width/depth/probe/projected receipts in same owner-boundMetal log. Zero-onlyprojectedgraphs legitimately have no readycopyreceipt, but their qualification probes do. No rawpointer identity exposed; booleans/flags come from C++ pointer-equality checks."
+  },
+  "memory": {
+    "retained": "Proof contains Option<ProjectionInfo>+reportedbit in32fixedslots. Larger size_of Runtime automatically charged for source/candidate/probe owners; no newheap beyond alreadyboxedRuntime.",
+    "frames": "frame_bytes now includes2*sizeof ProjectionInfo (node+consumer coexistence) plus compiled relm_projection_access_frame_size (C++identityframe+uint32parsedindex+size_tloopindex+boolcopycompletion). No guessedreserve.",
+    "receipt": "Printsreferences to retainedPOD bytearrays/scalars; no String/JSONtree allocation. Fixednames32/32/16. ExistingHf32 row and20Hprobe payload unchanged.",
+    "ledger_extra_fields": [
+      "projection_info_size",
+      "buffer_info_size",
+      "proof_size",
+      "proof_slots",
+      "access_frame_bytes"
+    ],
+    "capacity_assertions": "C++ProjectionInfo size matchesreprCRust; accessframepositive and includedwith2PODframes; existing64MiBcase bound unchanged."
+  },
+  "untested": [
+    "Rusttype/link/clippy",
+    "ActualMetalproducerbuffer identity",
+    "Actualsharedwritecausality andfulltinyreference",
+    "CorrectedMetalperformancegate"
+  ],
+  "native_ready_modified": false,
+  "owner_driver_contract_verified": true,
+  "metal_collector_verified": true,
+  "collector_controls": 62,
+  "parent_scope": "three affected tests and Metal only",
+  "memory_document_updated_by_parent": true,
+  "driver_hashes": {
+    "verify-feasibility-metal.py": "745454fe7184d0c77ac6ed534e6f2b7f3f7371c335a6af456790efd4192ec389",
+    "metal-collector.py": "619ad6162ad9bbd122f37653adbc7c3661d778632aa63572f3a708c6ca7e5ad0",
+    "check-metal-collector.py": "59fd51ddabe3b6ed73a4c1f9d8216382d8403bb65835e46174d516849672d6cf",
+    "metal-collector-controls.json": "ed2adf54d6dbe298c71182df7c1c423a1b3978d14d86dbb45657f1cf77f759f3"
+  }
+}

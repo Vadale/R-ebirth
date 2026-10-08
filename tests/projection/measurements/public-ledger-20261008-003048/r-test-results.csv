@@ -1,0 +1,8 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+".projection-ledger-ae9f890cb6d.R",".projection-ledger-ae9f890cb6d","projection R profile rejects hidden owners and incompatible compiled fields",15,0,FALSE,FALSE,0,0.059,0.003,0.062,15
+".projection-ledger-ae9f890cb6d.R",".projection-ledger-ae9f890cb6d","projection R arithmetic shares inherited directions and enforces exact budgets",146,0,FALSE,FALSE,0,0.148,0.021,0.168,146
+".projection-ledger-ae9f890cb6d.R",".projection-ledger-ae9f890cb6d","projection R exact arithmetic rejects overflow before multiplication",12,0,FALSE,FALSE,0,0.017,0,0.017,12
+".projection-ledger-ae9f890cb6d.R",".projection-ledger-ae9f890cb6d","projection command validation refuses attributes nonunit and incompatible modes",13,0,FALSE,FALSE,0,0.026,0.001,0.026,13
+".projection-ledger-ae9f890cb6d.R",".projection-ledger-ae9f890cb6d","projection responses bind every term and actual model fact before derivation",30,0,FALSE,FALSE,0,0.052,0.001,0.053,30
+".projection-ledger-ae9f890cb6d.R",".projection-ledger-ae9f890cb6d","projection R transport accounts actual pool sizes and untraversed pointer tags",4,0,FALSE,FALSE,0,0.011,0.001,0.011,4
+".projection-ledger-ae9f890cb6d.R",".projection-ledger-ae9f890cb6d","recorded capture and splits fail closed without silent reconciliation",9,0,FALSE,FALSE,0,0.052,0.000999999999999994,0.0529999999999999,9

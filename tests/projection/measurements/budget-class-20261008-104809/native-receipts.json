@@ -1,0 +1,10 @@
+[
+  {
+    "test": "projection_budget_oom_class_preserves_arithmetic_and_error_capacity",
+    "status": "passed",
+    "expected_cases": 11,
+    "executed_cases": 11,
+    "expected_rejections": 7,
+    "rejected_cases": 7
+  }
+]

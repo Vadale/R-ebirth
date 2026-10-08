@@ -1,0 +1,18 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-0f0613474562baff)
+
+running 1 test
+test projection::tests::projection_microbatches_pruning_and_graph_reuse ... 
+thread 'projection::tests::projection_microbatches_pruning_and_graph_reuse' (15330630) panicked at rebirth-llm/src/projection_test_support.rs:319:5:
+native 0.547000527381897, reference 0.5585253461344721, delta 0.011524818752575161
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    projection::tests::projection_microbatches_pruning_and_graph_reuse
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 157 filtered out; finished in 0.12s
+
+error: test failed, to rerun pass `-p rebirth-llm --lib`

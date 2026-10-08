@@ -430,3 +430,50 @@ removed on success/error/interrupt; no user-path writes, automatic saved artifac
 or new dependency/native/vendor change. Existing argument/intervention/oom
 conditions are reused. No new loader, direction transfer, projection operator
 or universal behavioral/quality guarantee is implied.
+
+## 14. Component projection steering — `[approved: D-046, 2026-10-07]`
+
+**Approved on 2026-10-07** after the concrete D046 question and the founder
+reply "vai continua". Implementation and acceptance remain required. This
+section extends sections12–13 only as stated. The contract and acceptance are in
+[the F6e projection contract](docs/f6e-projection-contract.md).
+
+```r
+llm_apply_direction(m, direction, context, coef = 1,
+                    max_bytes = 64 * 1024^2, operator = "add")
+```
+
+Append the exact-choice `operator` (`"add"` or `"project"`), preserving every
+existing positional call and the default residual addition. No new export is
+proposed. `llm_direction()` keeps its signature, arithmetic and limits; it also
+accepts full-width `mlp_out`/`attn_out` construction profiles at layers1:L and
+returns component-specific `relm_direction/2` artifacts. Existing residual
+schema1 artifacts/layers2:L/bytes remain unchanged. Application requires the
+existing independently recorded model context and integrity checks: addition
+accepts only residual schema1, projection only component schema2. No implicit
+transfer or loaded-weight authentication is claimed.
+
+Projection applies `h - coef * v * dot(v,h)` for the unit stored direction on
+all executed token columns, initially at validated dense-Llama MLP/post-Wo
+attention or Qwen2 MLP sites on CPU/Metal. It returns a fresh immutable handle;
+weights/source handle are unchanged. At most32 distinct(layer,component) sites
+are allowed; duplicate sites fail. Static projection precedes residual steering
+and ablation at each graph site; existing steer-before-ablate semantics remain.
+Coefficients are fixed per projected handle; D041 live replies still update only
+additive `steer` entries. Text generation/logits use the projected context;
+image input is initially unsupported, and ordinary trace/embed retain their
+existing intervened-handle rejection.
+
+A shared context-owned native callback bridge is a gated feasibility proposal,
+not an assertion that observable tensors are safely editable. It must prove the
+producer/alias/backend/downstream contract, byte bounds, negative controls and
+error ownership before public activation; no vendor patch/dependency is approved
+here. Existing argument/intervention/OOM/busy/closed classes and canonical-file
+cleanup apply. Default max_bytes remains64MiB and includes the added projection
+validation/storage/probe ledger; base model/KV/capture retain separate contracts.
+
+`print`/`summary` identify the static component projection. `plot.llm` appends
+integer `configured_projections` after its existing D044 site-table columns and
+marks the configured component without storing vectors. F6c comparison alignment
+and additive-only live timeline audit retain their meanings. These behavior/schema
+extensions to D044/D045 are approved by D046; they are not yet shipped.

@@ -1,0 +1,10 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 77094,
+  "directory": "/private/tmp/relm-f6e/public-application-source-20261008-040358",
+  "scope": "source-only R binding/mocks; no installed/native/model acceptance",
+  "child_pid": 77095,
+  "exit_code": 0,
+  "log_sha256": "0598ef8715dd3cd92dab49333bfcaffa6ab5ebdaf13d7c0f5f191d5e9a840888",
+  "source_drift": []
+}

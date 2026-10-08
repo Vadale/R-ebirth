@@ -1,0 +1,7 @@
+{
+  "actual-base-r.R": "30d3cfeaf518c319de0a4b1fab9247fc285c2fadddee4f74e6ccfeb35f51d96b",
+  "owner-verification.json": "79fa3ec5a27d950026af7db9b2694e18b6103a2dc28b52e4287df40fdfb4f459",
+  "rng.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rng.stdout": "cb66a4354168de74fabb39c0e3c41f17e359d05bd5eabb7e84c91f01e843d4a1",
+  "verifier-source.py": "7a83c90a80c96ad6bec2ce1e8d94d68068607909d39bbf1c34aa6e6ad4130461"
+}

@@ -1,0 +1,14 @@
+{
+  "verify-instrumented-review-owner.zero-warning-draft.py": "a49bff29c4e95c399386369586c48a0153a710ac951e06c5d65af902b3a5e47e",
+  "local-only-binaries.json": "c5f71bb2fefe36ab3a34908dacdf57a967105712b3af2a2b61f99e6dcc2347f0",
+  "verify-instrumented-review-owner.indent-draft.py": "a7c0cddfab787839605bbc1945826a55d2458f2dbbfb175cced81c1d8c870d37",
+  "verify-instrumented-review-owner.py": "2f89c15ccbd8e56b44690a28e412e3decc1422dc9c9c109fa6fde974e7cff012",
+  "owner-verification.json": "31afdca1b1779246e2b82515478ea951fb6fa9f1fc65ced5080fd47156a348b4",
+  "owner-inspector-notes.txt": "8a9770ca4f49f6eac785722bfdd890aa22a37c62e766818a4b8fc85f8d81b505",
+  "parent-warning-addendum.json": "a7c48a5dd523cec8499e5a70d8cc76ee166bc6551798a7b9d15c95536803fa47",
+  "compiler-warning-inventory.json": "1bec5bc4949fff55a31444905b7e17e897d14f0749cd44b847f1d2d606a26eb8",
+  "raw-file-hashes.json": "f605dec35fe8f178bfec0cbb59b2c1f6d0f004ba9277a276d0db7703e289a32d",
+  "original-text-evidence.tar.gz": "ba11e4e50a6031458911f7ca936c48a791093d9eb70ac88ece85c46dfa3655f7",
+  "run.json": "6ea1fefa434a913e8b8b93f82eab1a595629ce4aee7188a6c470204878cde97c",
+  "instrumented-source-stamp-dispatch.json": "3b6b740540d33dd24c8735099afcc3a37f07da6b8b1b6cd06c288eeb4538cbcf"
+}

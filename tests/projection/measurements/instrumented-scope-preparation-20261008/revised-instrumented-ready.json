@@ -1,0 +1,148 @@
+{
+  "accepted_current_source_manifests": {
+    "budget": "8e8cbead752c46f5b2f3ccc97de9ca96619ee40787501a329ebea343ad01f941",
+    "installed": "534785f188b08bcb39ac143f48002ebe41d6e9e6394df81c199ace5dffaf85db"
+  },
+  "accepted_production_manifest": "18ebedbbf3469f2ae7358e8044836f51e866372c3af2e84fc9107070aa0ab31e",
+  "accepted_production_sources_unchanged": {
+    "rebirth/src/rust/rebirth-ffi/src/projection_bridge.rs": "f36cad8e3e30dd41e63c198392891aa4b06795f4f0fabd2ed6a752b9d298c4f7",
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs": "5924d6181d2435c9b75990a7dee770ff88ab7f25b5b71e9469b0a9f0cdc614e2",
+    "rebirth/src/rust/rebirth-llm/src/async_job.rs": "b0ab9c1a664637706bb3a17f0308ae428a7836b3666f88aa6b25e21dd31784d1",
+    "rebirth/src/rust/rebirth-llm/src/embed.rs": "e6ff1224db2c5c87fe66617217d13c176b43583dd8a0dac1cbc7c2464f1e75c7",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "e8ef2e5039de8852dc79130c24798401f845f812a785035c56a8f09da840b2ca",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "dd47e7e70a18eea28d5736dd3492bd6c01498d4dbc669bde1ac3fbac7b47ed12",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "f70e3a354346edeecf031b78644390ad0e78b11272f60251f38d691e6eef1502",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "a77d48068ebcb98ba71f779b8beb4ecceef35554de37ba7d33ea0872f55adcb2",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "948e2fa72e539ef819b4e9d6ab21f6d52094dfb3379fd1d9b3c3d92a4006c6fa",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "7412cfe9523f315e43bd4510a09ab22dc26ff2dbb76484d47b6b837b973762da",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs": "b26025c163081c4780c729bedc1abbba9a20552d71dd6a142fe4acb15344a809",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "3d37d289e6c6e63bc1f5cdb2c894ba2c3a67bd8ccba0bc154cf8e3ddcbaac0d7",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor.rs": "3d8909672966dd1daa94459f61e0ac999890453af41a265424474d897ebc6fc6",
+    "rebirth/src/rust/rebirth-llm/src/projection_production_worker_tests.rs": "de6d15aa0f09c701a1ba4c7b3168beeab22c60b96196e6fa563c13be30887ee6",
+    "rebirth/src/rust/rebirth-llm/src/trace.rs": "571831088afa4743a24bc28c2bf7c84c7ebb7c2b879b9070c6b4ec6985977637",
+    "rebirth/src/rust/rebirth-llm/src/vision.rs": "e554d3f023300a28d167efd921f66374a73c565567458a2c12cdf7a40dbc32ab",
+    "rebirth/src/rust/rebirth-llm/tests/projection_production.rs": "895ba6e4cc5916eb4a0f1e2e0da42a033ba58a121e440c926f140ef20a37748b"
+  },
+  "added_source_bindings_count": 138,
+  "bound_source_count": 996,
+  "carried_model_free_controls": {
+    "driver_and_controls_unchanged": true,
+    "owner_receipt": "tests/projection/measurements/instrumented-collector-20261008/owner-verification.json",
+    "owner_receipt_sha256": "05cacd0da7242c2485868800ae2be4930f308157f999f035aae7d2a33e23d457",
+    "tests": 40
+  },
+  "commands": [
+    "python3 tests/projection/instrumented_controls.py",
+    "python3 -u tests/projection/instrumented.py --mode sanitizers --source-manifest tests/projection/instrumented-scope.json --evidence \"$RUNNER_TEMP/relm-f6e-asan-evidence\" --target \"$RUNNER_TEMP/relm-f6e-asan-target\"",
+    "python3 -u tests/projection/instrumented.py --mode valgrind --source-manifest tests/projection/instrumented-scope.json --evidence \"$RUNNER_TEMP/relm-f6e-valgrind-evidence\" --target \"$RUNNER_TEMP/relm-f6e-valgrind-target\""
+  ],
+  "control_marker": "F6E_PROJECTION_INSTRUMENTED_CONTROLS",
+  "control_marker_fields": {
+    "executed_tests": 40,
+    "status": "passed"
+  },
+  "current_workflow_binding": {
+    "parent_route": "projection-only, two exact default-production tests in ASan/UBSan and separate Memcheck; full remains scheduled default",
+    "path": ".github/workflows/nightly-memory-safety.yaml",
+    "previous_sha256": "c530d3f26cfa14e5e9d4db3cd7bd3e45d84606fd6ce41b1cc48620ace0065f7b",
+    "retained_parent_receipt": "tests/projection/measurements/instrumented-collector-20261008/workflow-check.json",
+    "sha256": "9aebbaa8343e7a7e3cdd9ae86fee17163a3e813f4b82b451c2104b154eb5056a"
+  },
+  "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+  "existing_harness_sha256": "5a6265a7139a250999da97f582132eda78e8d52d74f1ee6a3667a1a9e42ba2f8",
+  "frozen": true,
+  "historical_production_source_superseded": [
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs"
+  ],
+  "marker": "F6E_PROJECTION_INSTRUMENTED",
+  "marker_fields": [
+    "status",
+    "mode",
+    "selection",
+    "executed_tests",
+    "executed_cases",
+    "rejected_cases",
+    "compared_values",
+    "reported_model_loads",
+    "reported_constructor_calls",
+    "default_features",
+    "source_manifest_sha256"
+  ],
+  "modes": [
+    "sanitizers",
+    "valgrind"
+  ],
+  "native_scope_file": "tests/projection/instrumented-scope.json",
+  "native_scope_sha256": "126b53bff265a8f4ecf1d61ec5128d619b24d45b80fe8437999104c5a7675985",
+  "native_test_ids": [
+    "default_constructor_routes_and_owned_lifecycle",
+    "async_job::tests::projection_static_live_restore_cancel_and_poison"
+  ],
+  "new_model_free_control_tests": 40,
+  "no_builds_tests_models_executed_by_agent": true,
+  "original_ready_sha256": "f8e47ce0f90e36cd06d1723f7741ed443f696b7462dc5acc9b065182cd4a5937",
+  "original_scope_sha256": "f54771e80fef090551a4dfc39c2cfff6294f66500f34f0c9a3972bf620f3c3c2",
+  "pending_native_correction": null,
+  "per_mode": {
+    "cases": 23,
+    "refusals": 11,
+    "reported_constructor_calls": 3,
+    "reported_model_loads": 2,
+    "tests": 2,
+    "values": 291
+  },
+  "pre_dispatch_requirements": [
+    "commit/carry all current bound source files so fresh checkout has matching bytes",
+    "parent sole executor; select projection-only",
+    "no implicit source-refresh on future drift"
+  ],
+  "preparation_archive": "tests/projection/measurements/instrumented-scope-preparation-20261008",
+  "revision": 2,
+  "revision_verification_sha256": "271e71ce8e4133e6939660f82cbbf6fff82dff1a36f00be4aeef81b6823ae8fa",
+  "scope": "Explicit source-scope revision after accepted OOM correction and installed public continuation; no instrumentation execution",
+  "selected_production_test_sources_unchanged": {
+    "rebirth/src/rust/rebirth-llm/src/projection_production_worker_tests.rs": "de6d15aa0f09c701a1ba4c7b3168beeab22c60b96196e6fa563c13be30887ee6",
+    "rebirth/src/rust/rebirth-llm/tests/projection_production.rs": "895ba6e4cc5916eb4a0f1e2e0da42a033ba58a121e440c926f140ef20a37748b"
+  },
+  "source_deltas": [
+    {
+      "acceptance": "8e8cbead752c46f5b2f3ccc97de9ca96619ee40787501a329ebea343ad01f941",
+      "current_sha256": "2962115b711346b384b4c63e70b39e90f34ab91b408a4d5cd1fc8eee6d383212",
+      "path": "rebirth/src/rust/rebirth-llm/src/projection_profile.rs",
+      "previous_sha256": "dea96e449d9e6d4dffaf33f0d7ac2edfea8ff73ba910980e857a206dc55b090b",
+      "reason": "bounded over-budget OOM class"
+    },
+    {
+      "acceptance": "8e8cbead752c46f5b2f3ccc97de9ca96619ee40787501a329ebea343ad01f941",
+      "current_sha256": "144afa91e27ac986dd843cabb1a95bc1c6fac866aafc0b0d2f8daf665c139bfc",
+      "path": "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs",
+      "previous_sha256": "05259c00287bc6b8e07608f81f55bfc68d2637a1320400a3ab819d5b625bc523",
+      "reason": "focused model-free OOM class/capacity regression"
+    }
+  ],
+  "source_hashes": {
+    "docs/f6e-instrumented-plan.md": "06d7c7a751949533b26fcb1462b028073b8db3fcbe825485538601e39b78c913",
+    "tests/projection/instrumented-scope.json": "126b53bff265a8f4ecf1d61ec5128d619b24d45b80fe8437999104c5a7675985",
+    "tests/projection/instrumented.py": "9ee6b5d4453c0c07e1e720412159d7c6d706f1bbecac2ccfee424258ac67ab82",
+    "tests/projection/instrumented_controls.py": "e466917499cb850b11df6a9a4dfef9145f6a8a690cf1cc240b0ec2b004f5effc",
+    "tests/projection/instrumented_memcheck_probe.c": "023ff185599b373ca8f34d0e8472af46c9d9cc627d57b0650897a7f2f7fdabb2"
+  },
+  "static_checks": [
+    "all858 original hashes compared:856unchanged+2acceptedchanges",
+    "all117 budget and145 installed source hashes match current",
+    "two selected test files byte-identical",
+    "vendor path/hash set unchanged",
+    "58frozen reference files byte-identical tod8a4800",
+    "workflow matches parent retained bytes"
+  ],
+  "status": "ready",
+  "unrun": [
+    "Linuxbuildsbothmodes",
+    "sanitizerandMemcheckruntimecontrols",
+    "twonamedproducttestspermodes",
+    "actualcompiledobject/binaryaudits",
+    "workflowdispatch",
+    "independentinstrumentationownerverification"
+  ],
+  "workflow_patch": "Parent applied and verified projection-only route; current bytes bound in revised source scope. Agent made no workflow edits."
+}

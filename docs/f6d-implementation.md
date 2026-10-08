@@ -109,8 +109,10 @@ scoped package check passed with **0 errors, 2 deliberately omitted-vignette
 warnings, 0 notes**; 180 source hashes matched without drift. The initial Quarto
 launcher failed before any expression because the restricted runtime blocked its
 architecture `sysctl`. Its unchanged pipeline then passed under ordinary local
-runtime permissions; both receipts are retained. Local work is accepted; all
-nine final remote checks and integration remain pending. No clean-CRAN, universal
+runtime permissions; both receipts are retained. Local work and all nine final remote checks passed at `4820051`
+(R37652234079/Rust37652233870). The founder merged PR62 at `6dd701b` on
+2026-10-07; the fetched main tree exactly matches the accepted candidate.
+Automatic post-main checks are a separate pending execution. No clean-CRAN, universal
 provenance or release claim is made.
 
 The ordinary golden job now pins Python 3.13.5, the exact already-used test

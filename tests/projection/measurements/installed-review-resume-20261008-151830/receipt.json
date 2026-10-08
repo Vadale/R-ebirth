@@ -1,0 +1,17 @@
+{
+  "status": "awaiting_owner_verification",
+  "cases": 10,
+  "coordinates": 1792,
+  "attempts": {
+    "load": 1,
+    "derive": 13,
+    "generate": 3,
+    "trace": 0,
+    "logits": 0,
+    "tokenize": 0
+  },
+  "actual_gc_calls": 11,
+  "gc_finalized_open_candidates": 4,
+  "max_simultaneous_derived": 3,
+  "scope": "Installed zero plus live capture and real GC registry reuse; no efficacy, timing or new independent numerical accuracy"
+}

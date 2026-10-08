@@ -1,0 +1,23 @@
+{
+  "accepted-local-Makevars": "b2d278da7d616fcfc98a2d9608c37ce607a075752acdf438df54302d5c3b4ff4",
+  "budget-owner-verification.json": "c4bf7df95d3743adb183c4595f512e84f4100ec397c9537ab6e3aa23268d29e5",
+  "budget-source-manifest.json": "8e8cbead752c46f5b2f3ccc97de9ca96619ee40787501a329ebea343ad01f941",
+  "collector-owner-verification.json": "05cacd0da7242c2485868800ae2be4930f308157f999f035aae7d2a33e23d457",
+  "current-changed-sources/rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "2962115b711346b384b4c63e70b39e90f34ab91b408a4d5cd1fc8eee6d383212",
+  "current-changed-sources/rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "144afa91e27ac986dd843cabb1a95bc1c6fac866aafc0b0d2f8daf665c139bfc",
+  "current-workflow.yaml": "9aebbaa8343e7a7e3cdd9ae86fee17163a3e813f4b82b451c2104b154eb5056a",
+  "frozen-reference-hashes.json": "3689e5311fc36284cfef872e32d9e39d7004f69c1e5af30c25cc2e91eb3c6241",
+  "installed-owner-verification.json": "7b134f865ec360f3848c163dd059cd2ee0b036941b57baaafdd97c7fbc46705a",
+  "installed-source-manifest.json": "534785f188b08bcb39ac143f48002ebe41d6e9e6394df81c199ace5dffaf85db",
+  "original-changed-sources/rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "dea96e449d9e6d4dffaf33f0d7ac2edfea8ff73ba910980e857a206dc55b090b",
+  "original-changed-sources/rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "05259c00287bc6b8e07608f81f55bfc68d2637a1320400a3ab819d5b625bc523",
+  "original-instrumented-ready.json": "f8e47ce0f90e36cd06d1723f7741ed443f696b7462dc5acc9b065182cd4a5937",
+  "original-instrumented-scope.json": "f54771e80fef090551a4dfc39c2cfff6294f66500f34f0c9a3972bf620f3c3c2",
+  "prepare_scope.py": "aeb0ba7dd514376d785f498d2eb1f5b89c0f4d110ed1ad4ee2a4d65f71eaa155",
+  "projection_profile.rs.diff": "1fa9de2d299727efd7cc4d65477189888de6e10dbdd13da06690a39e3862eef3",
+  "projection_profile_tests.rs.diff": "a33c0c2fc67f36cfcd87eeae3b9a133704fc041a132deb3b2b1c70586554b99e",
+  "revised-instrumented-ready.json": "c10031c3396722836cf9a9204b4c63fbd241fecd22d23a886fd7af4b23267182",
+  "revised-instrumented-scope.json": "126b53bff265a8f4ecf1d61ec5128d619b24d45b80fe8437999104c5a7675985",
+  "revision-verification.json": "271e71ce8e4133e6939660f82cbbf6fff82dff1a36f00be4aeef81b6823ae8fa",
+  "workflow-check.json": "a214a69bf9be8af1e5cab9cf10dc0ff5b1fb28f26b7321bf90a0543ff7bca5e4"
+}

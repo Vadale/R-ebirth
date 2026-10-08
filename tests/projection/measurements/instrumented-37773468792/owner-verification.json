@@ -1,0 +1,36 @@
+{
+  "status": "partial_verified",
+  "whole_run": "failed",
+  "head": "e2081b43ebc7108c7bdc7b96fc2203b679d222a7",
+  "run_id": 37773468792,
+  "source_hashes_verified": 996,
+  "asan_artifact_hashes_verified": 635,
+  "native_objects": 270,
+  "rust_archives": 3,
+  "sanitizers": {
+    "tests": 2,
+    "cases": 23,
+    "refusals": 11,
+    "values": 291,
+    "reported_tiny_loads": 2,
+    "reported_constructors": 3
+  },
+  "memcheck_constructor": {
+    "tests": 1,
+    "cases": 13,
+    "refusals": 9,
+    "values": 288,
+    "reported_tiny_loads": 1,
+    "reported_constructors": 2,
+    "errors": 0,
+    "applied_suppressions": 0
+  },
+  "memcheck_worker": {
+    "executed": false,
+    "reason": "Valgrind rejects percent-encoded XML path before binary execution",
+    "stdout_bytes": 0,
+    "xml_present": false
+  },
+  "compiler_warnings": 0,
+  "limits": "Original e2081b4 scope; no R/SEXP, GPU, universal UB, new golden accuracy or later review-fix execution claim."
+}

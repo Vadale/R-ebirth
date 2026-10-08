@@ -1,0 +1,14 @@
+F6E_PUBLIC_CASE installed_signature refusal=FALSE
+F6E_PUBLIC_CASE installed_wrappers refusal=FALSE
+F6E_PUBLIC_CASE cpu_loaded refusal=FALSE
+F6E_PUBLIC_CASE capture_coordinates refusal=FALSE
+F6E_PUBLIC_CASE schema2_real_captures refusal=FALSE
+F6E_PUBLIC_CASE trusted_artifact_roundtrip refusal=FALSE
+F6E_PUBLIC_CASE baseline_public_logits refusal=FALSE
+F6E_PUBLIC_CASE zero_public_logits refusal=FALSE
+F6E_PUBLIC_CASE zero_seeded_text refusal=FALSE
+F6E_PUBLIC_CASE exact_public_budget refusal=FALSE
+Error in check("minus_one_refused", refuses(apply(m, d, record, max_bytes = exact -  : 
+  F6e public gate failed: minus_one_refused
+Calls: main -> check
+Execution halted

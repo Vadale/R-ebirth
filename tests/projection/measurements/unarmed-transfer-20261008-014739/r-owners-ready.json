@@ -1,0 +1,16 @@
+{
+  "status": "ready",
+  "acceptance": "source-only",
+  "cases": 7,
+  "expectations": 70,
+  "models": 0,
+  "installed": false,
+  "public_armed": false,
+  "pending": "actual native state query/frame and combined transfer/constructor gate",
+  "hashes": {
+    "rebirth/R/projection-memory.R": "e2b3cdce1af40801d5e0f020cee1b85e6f4d6d5f44f6d49b3114ed636ed7fcfe",
+    "rebirth/R/projection-owners.R": "f3c0e776b959026d8777d2a87762071fd06490cf18bda64f2a1efa96e42a8adc",
+    "rebirth/tests/testthat/test-projection-owners.R": "9e13fc9179d6e5ebb34176bae8b3cbf3388008e1d34f295c4db50b99f004d395",
+    "docs/f6e-r-ownership-contract.md": "65523003c852baf248a6e1cbdae4e83361e189827b5404b5a29b042998369780"
+  }
+}

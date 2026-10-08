@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/private/tmp/relm-f6e/run-evaluation.py", line 90, in <module>
+    try:main()
+        ~~~~^^
+  File "/private/tmp/relm-f6e/run-evaluation.py", line 75, in main
+    execute('experiment',['/usr/local/bin/Rscript','--vanilla',str(SOURCES/'run.R'),str(out)],env=env,timeout=20000)
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/relm-f6e/run-evaluation.py", line 24, in execute
+    require(r.returncode==0,f'{name} exit {r.returncode}')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/relm-f6e/run-evaluation.py", line 19, in require
+    if not x:raise ValueError(m)
+             ^^^^^^^^^^^^^^^^^^^
+ValueError: experiment exit 1

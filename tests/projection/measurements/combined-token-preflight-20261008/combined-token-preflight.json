@@ -1,0 +1,37 @@
+{
+  "status": "ready",
+  "ready_sha256": "91622873394881171ed0d47925b41b71b45a01330d8162b0ffd401b5f90e79b7",
+  "driver_sha256": "a6058b1705e499a3c62949d3c232d67e7800d2235193b6d6e428821fc464fc1b",
+  "binding_sha256": "0cfea9282a9514becddd546ee6a454b42d2ecaa220308ceb34c6a3121e52923a",
+  "source_hashes": 4,
+  "preserved_hashes": 19,
+  "authorized_parent_source_changes": [
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs"
+  ],
+  "new_execution": {
+    "outcomes": 4,
+    "cases": 37,
+    "refusals": 10,
+    "model_loads_planned": 1,
+    "constructor_calls_planned": 5,
+    "raw_logit_calls_planned": 5,
+    "raw_logit_values_planned": 240
+  },
+  "carried_parent": {
+    "outcomes": 3,
+    "cases": 6,
+    "refusals": 2
+  },
+  "collector_controls": 28,
+  "negative_controls": 23,
+  "R_scripts_parsed": 2,
+  "no_model_or_native_execution": true,
+  "all_link_contract_keys_checked": [
+    "entrypoint_sha256",
+    "entrypoint_source",
+    "link_command",
+    "link_environment",
+    "static_archive"
+  ]
+}

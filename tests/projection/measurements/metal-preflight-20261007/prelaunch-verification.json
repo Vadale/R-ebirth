@@ -1,0 +1,11 @@
+{
+  "status": "verified",
+  "source_files": 15,
+  "owner_source_hashes_digest": "db35cdc00ff04c8d06b6da1499e0d5bc248a706abd01fef0e0219995d4a1a38e",
+  "changes_from_agent_freeze": [
+    "docs/f6e-memory-contract.md"
+  ],
+  "synthetic_controls": 62,
+  "native_or_model_executions": 0,
+  "next": "one scoped Metal driver; native and performance acceptance still pending"
+}

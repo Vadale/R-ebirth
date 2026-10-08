@@ -1,0 +1,13 @@
+{
+  "test": "projection_budget_error_rhost",
+  "status": "passed",
+  "expected_cases": 8,
+  "executed_cases": 8,
+  "expected_rejections": 3,
+  "rejected_cases": 3,
+  "error_response_bytes": 504,
+  "ffi_response_bytes": 1512,
+  "error_format_bytes": 150,
+  "model_loads": 0,
+  "inference_calls": 0
+}

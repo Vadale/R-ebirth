@@ -1,0 +1,8 @@
+test_actual_r_serialization (__main__.CollectorControls.test_actual_r_serialization) ... ok
+test_cpu_positive_and_rejections (__main__.CollectorControls.test_cpu_positive_and_rejections) ... ok
+test_setting_routes (__main__.CollectorControls.test_setting_routes) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK

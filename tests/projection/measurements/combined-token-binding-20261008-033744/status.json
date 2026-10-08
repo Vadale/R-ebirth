@@ -1,0 +1,260 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 73254,
+  "directory": "/private/tmp/relm-f6e/combined-token-binding-20261008-033744",
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "pid": 73260,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-private",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "projection-private",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 73263,
+      "exit_code": 0,
+      "log_sha256": "a79927df03e9511dcfae00178e7551c9518799ad7092061809ae67bf7e3bcbb8"
+    },
+    {
+      "name": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 76192,
+      "exit_code": 0,
+      "log_sha256": "b4e441c3c06cc0e774f7296485e28989360fc14bd1eec1e30e92dfd0d1345d74"
+    },
+    {
+      "name": "no-spill-default",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features"
+      ],
+      "status": "passed",
+      "pid": 76213,
+      "exit_code": 0,
+      "log_sha256": "516c30a3f9e34bbec817dc1761904102019365886338c6e54066ee330b61fbd7"
+    },
+    {
+      "name": "no-spill-private",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--features",
+        "projection-private"
+      ],
+      "status": "passed",
+      "pid": 76220,
+      "exit_code": 0,
+      "log_sha256": "dca9013e209483c4e03d2eaa0fc3e8fe647f812a582dca4ebe73f1fe194f9292"
+    },
+    {
+      "name": "native-token-shape",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "--features",
+        "projection-private",
+        "projection_combined_test::tests::fixed_fixture_shape",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "pid": 76224,
+      "exit_code": 0,
+      "log_sha256": "384d7f88b09a849c86a26fc712dd9d6338a7be9654c6df35a63360173eb62cc8"
+    },
+    {
+      "name": "default-static-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "pid": 76257,
+      "exit_code": 0,
+      "log_sha256": "950c48adfca00f62738074033767d07a3978b62a84ec1a5e241c44e6dc380d97"
+    },
+    {
+      "name": "default-fresh-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "pid": 76265,
+      "exit_code": 0,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "default-registration",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-combined-token-mode.R",
+        "/private/tmp/relm-f6e/combined-token-binding-20261008-033744/default-ffi/relm.so",
+        "default",
+        "/private/tmp/relm-f6e/combined-token-binding-20261008-033744"
+      ],
+      "status": "passed",
+      "pid": 76286,
+      "exit_code": 0,
+      "log_sha256": "b84473aaf9d06d599a265e565ca9d4a54067b523c943d917802671590aa0a86a"
+    },
+    {
+      "name": "private-static-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--features",
+        "projection-private",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "pid": 76295,
+      "exit_code": 0,
+      "log_sha256": "3c0febd4da5bbdb6695681dbdc1904e9ad04a8bc80b0b1736acfd8fba7da7ed0"
+    },
+    {
+      "name": "private-fresh-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "pid": 76303,
+      "exit_code": 0,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "private-registration",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-combined-token-mode.R",
+        "/private/tmp/relm-f6e/combined-token-binding-20261008-033744/private-ffi/relm.so",
+        "private",
+        "/private/tmp/relm-f6e/combined-token-binding-20261008-033744"
+      ],
+      "status": "passed",
+      "pid": 76324,
+      "exit_code": 0,
+      "log_sha256": "002b93d1f477d6f6923506a841a841793ef4b8a3e2b56636b9b97689847ee2a5"
+    },
+    {
+      "name": "combined-R-binding",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-combined-tokens.R",
+        "/private/tmp/relm-f6e/combined-token-binding-20261008-033744/private-ffi/relm.so",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf"
+      ],
+      "status": "passed",
+      "pid": 76333,
+      "exit_code": 0,
+      "log_sha256": "a8abffcefea7b3dfc1a7672be75cde159b3b39607309488f761a2ce5a24bc3c1"
+    }
+  ],
+  "model_loads_planned": 1,
+  "public_operator_enabled": false,
+  "scope": "private bridge and actual R constructor combined budget; not installed package/evaluation/production activation",
+  "source_manifest_sha256": "4b5ad5049a70dbd79500f1618bdc340c5633ff9f55af0d43f95bbdb0b09810e3",
+  "source_count": 114,
+  "carried_accepted_scopes": [
+    "parent bridge1/2/0 and default-private registrations2/4/2 at29835e92; not current helper execution",
+    "private constructor49/35/240 at9cf850e8",
+    "R binding6/37 source only",
+    "R constructor3/61",
+    "all prior private/ledger/transfer/ref/model timing gates"
+  ],
+  "stage": "combined-R-binding",
+  "source_drift": [],
+  "compiler_warnings": [],
+  "outcomes": 4,
+  "cases": 37,
+  "refusals": 10,
+  "model_loads": 1,
+  "constructor_calls": 5,
+  "compiled_profile_terms": 42,
+  "raw_token_calls": 5,
+  "raw_token_values": 240,
+  "independent_numerical_oracle": false,
+  "carried_parent_outcomes": 3,
+  "carried_parent_cases": 6,
+  "carried_parent_refusals": 2,
+  "finished_at": 1791423517.082804
+}

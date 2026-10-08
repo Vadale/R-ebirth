@@ -1,0 +1,137 @@
+{
+  "status": "failed",
+  "pid": 72550,
+  "directory": "/private/tmp/relm-f6e/combined-binding-resume-20261008-031932",
+  "stages": [],
+  "model_loads_planned": 1,
+  "public_operator_enabled": false,
+  "scope": "private bridge and actual R constructor combined budget; not installed package/evaluation/production activation",
+  "source_manifest_sha256": "29835e928e07da28036ae9f14fb55401dc66382913f80b3747a0c40bcbe04935",
+  "source_count": 112,
+  "carried_accepted_scopes": [
+    "private constructor49/35/240 at9cf850e8",
+    "R binding6/37 source only",
+    "R constructor3/61",
+    "all prior private/ledger/transfer/ref/model timing gates"
+  ],
+  "carried_stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "pid": 71663,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-private",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "projection-private",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 71666,
+      "exit_code": 0,
+      "log_sha256": "772babe6320a13523486292093b2660409c79e3508c06b282f5d03d9d30502bd"
+    },
+    {
+      "name": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 71675,
+      "exit_code": 0,
+      "log_sha256": "54ead9b47dd815ec574bd7bd75774d6694a028bf32e4efc17eff3f4dd42254b8"
+    },
+    {
+      "name": "no-spill-default",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features"
+      ],
+      "status": "passed",
+      "pid": 71681,
+      "exit_code": 0,
+      "log_sha256": "7198af91215d854c35d909ba1dc87ccd3fd6af9c543f9cc989209b6948d6c1a0"
+    },
+    {
+      "name": "no-spill-private",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--features",
+        "projection-private"
+      ],
+      "status": "passed",
+      "pid": 71692,
+      "exit_code": 0,
+      "log_sha256": "9d59c38341b17ae92c2818900a9d277fb37d292f8f2d5c68687b3f808e8b64e7"
+    },
+    {
+      "name": "native-bridge-frame",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "tests::projection_bridge_compiled_frame",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "pid": 71696,
+      "exit_code": 0,
+      "log_sha256": "7bfee4282583770e29e14709d2022fb043baeefc16443968ae5ef8786aa3171f"
+    }
+  ],
+  "carried_directory": "/private/tmp/relm-f6e/combined-binding-20261008-031008",
+  "carried_outcomes": 1,
+  "carried_cases": 2,
+  "carried_refusals": 0,
+  "collector_recovery": "Exact named libtest prefix normalized; original failed run preserved; no native rerun.",
+  "error": "'base'",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-combined-resume.py\", line 60, in main\n    base=ready['fresh_dll_contract']['base'];binaries={};modes=[]\n         ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\nKeyError: 'base'\n",
+  "source_drift": [],
+  "finished_at": 1791422372.7675872
+}

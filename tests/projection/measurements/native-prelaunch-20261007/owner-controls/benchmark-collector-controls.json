@@ -1,0 +1,202 @@
+{
+  "scope": "synthetic receipt parser controls only; no native/model execution",
+  "controls": [
+    {
+      "name": "valid-cpu",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "valid-metal-with-tiny-forward",
+      "status": "passed",
+      "expected_rejection": false
+    },
+    {
+      "name": "wrong-source",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-model",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "debug-build",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "zero-work",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "short-work",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-order",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "bool-round",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-warmup",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "nan-time",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "negative-time",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "impossible-time",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "zero-mode-copies",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "active-no-write",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "false-volume",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-median",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-ratio",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "relaxed-bound",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "invented-active-bound",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-grid",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-token-cap",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "cpu-gpu-policy",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "unbound-log",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "metal-missing-forward",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "metal-zero-values",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "metal-golden-bound",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "metal-no-offload",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "metal-wrong-device",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "same-row-zero-work",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "same-row-nan",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "same-row-bound-failure",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "same-row-relaxed-bound",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "same-row-wrong-source",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "metal-false-native-log",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "missing-raw-sample",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "duplicate-raw-sample",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "honest-dormant-bound-failure",
+      "status": "passed",
+      "expected_rejection": true
+    },
+    {
+      "name": "valid-cpu-micro-same-row",
+      "status": "passed",
+      "expected_rejection": false
+    }
+  ],
+  "count": 39,
+  "driver_sha256": "8846c1eef11961e9aa160f7bd6bc8694515250eba7ffaedb7781748ef77e2ccd"
+}

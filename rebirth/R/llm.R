@@ -214,9 +214,7 @@ llm <- function(path,
 # source's — the native vision context lives on the shared model, so the
 # projector carries over structurally (WP-V2, D-026).
 new_llm <- function(payload, path, interventions = list(), projector = NULL) {
-  state <- new.env(parent = emptyenv())
-  state$closed <- FALSE
-  state$ptr <- payload$ptr
+  state <- relm_check(rebirth_model_state(payload$ptr))
 
   obj <- structure(
     list(
@@ -325,6 +323,9 @@ print.llm <- function(x, ...) {
     cat(sprintf("  projector:       %s\n", basename(x$projector)))
   }
   cat(sprintf("  interventions:   %d active\n", length(x$interventions)))
+  for (iv in x$interventions) {
+    if (identical(iv$kind, "project")) cat(sprintf("    - %s\n", format_intervention(iv)))
+  }
   invisible(x)
 }
 
@@ -407,6 +408,9 @@ format_intervention <- function(iv) {
       "ablate layer %d  neurons %s -> %s  (%s)",
       iv$layer, format_index_set(iv$neurons), format(iv$value), iv$component
     )
+  } else if (identical(kind, "project")) {
+    sprintf("project layer %d  %s  (fixed coef %s, all executed positions)",
+      iv$layer, iv$component, format(iv$coef))
   } else {
     "intervention (unrecognized)"
   }

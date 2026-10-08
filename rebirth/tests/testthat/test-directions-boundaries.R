@@ -24,7 +24,8 @@ test_that("recorded capture and splits fail closed without silent reconciliation
     if (kind == "missing") bad$context$splits$split[7] <- "evaluation"
     if (kind == "order") bad$context$pairs <- bad$context$pairs[3:1, ]
     if (kind == "width") bad$context$model$hidden_size <- 3L
-    if (kind == "capture") bad$context$capture$component <- "attn_out"
+    # D046 admits full-width attn_out; head-space captures remain unsupported.
+    if (kind == "capture") bad$context$capture$component <- "attn_heads"
     if (kind == "special") bad$context$capture$parse_special <- TRUE
     if (kind == "position") bad$context$pairs$target_pos[1] <- 0L
     if (kind == "unknown") bad$context$extra <- 1

@@ -1,0 +1,91 @@
+{
+  "source_repository": "XHToken/Spark-X2.5-4B",
+  "source_revision": "0bcb35678590218655dff3765b9e61c83b35e9c4",
+  "renderer": "Jinja2 3.1.6 ImmutableSandboxedEnvironment",
+  "template_sha256": {
+    "chat_template.jinja": "705345721970da40e6aa56db548a46ecd1d8d94a5418808fa180ac19ee77a9ba",
+    "tokenizer-chat-template.jinja": "25576c2aaec931fce04fedbd6ba06de209e553673858073120697884316158fe"
+  },
+  "cases": [
+    {
+      "name": "ascii-ordinary",
+      "prompt": "Hello.",
+      "structured": false,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>Hello.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|><think>",
+      "rendered_sha256": "ed15eebe7cd732a487ebb1a4f72f31fa78409248259a5756772787828bbecc20"
+    },
+    {
+      "name": "ascii-structured",
+      "prompt": "Hello.",
+      "structured": true,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>Hello.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|></think>",
+      "rendered_sha256": "5fb9d5b0805b28075db745a9d233c26a1d9464504f2071942673cba9fdab6715"
+    },
+    {
+      "name": "unicode-ordinary",
+      "prompt": "Unicode: caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "structured": false,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>Unicode: caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|><think>",
+      "rendered_sha256": "2f25f86b7353d326cd222a2af69e943d2ac0ae53c0dc55e8dd50903fb50d9bb7"
+    },
+    {
+      "name": "unicode-structured",
+      "prompt": "Unicode: caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "structured": true,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>Unicode: caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|></think>",
+      "rendered_sha256": "0f86d941231b7cc6ea231bb0a27864b82d0d86e3c98ddeeb99622fffb44b5e3c"
+    },
+    {
+      "name": "empty-ordinary",
+      "prompt": "",
+      "structured": false,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|><\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|><think>",
+      "rendered_sha256": "f3ebe5e093dd7e031171a58b6558f0aa3ccb7294a4ad84af55211df6edc287df"
+    },
+    {
+      "name": "empty-structured",
+      "prompt": "",
+      "structured": true,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|><\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|></think>",
+      "rendered_sha256": "6b56be0df93e06dc9d0912e2a92ef94917a366fac82fbd4e1c27e932167bf86c"
+    },
+    {
+      "name": "whitespace-ordinary",
+      "prompt": "  Preserve this whitespace.\n\n",
+      "structured": false,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>  Preserve this whitespace.\n\n<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|><think>",
+      "rendered_sha256": "9fd4cf882d14a69ef9b0faf3c2867f07fb364059f26e5dd7a78bff27645c7fcd"
+    },
+    {
+      "name": "whitespace-structured",
+      "prompt": "  Preserve this whitespace.\n\n",
+      "structured": true,
+      "add_assistant": true,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>  Preserve this whitespace.\n\n<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|Bot|></think>",
+      "rendered_sha256": "0b1bf5fa915dea7c824ff8a9afd20f6e4907e6c57f264e61af3db352cca95367"
+    },
+    {
+      "name": "no-assistant-ordinary",
+      "prompt": "Hello.",
+      "structured": false,
+      "add_assistant": false,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>Hello.<\uff5cend\u2581of\u2581sentence\uff5c>",
+      "rendered_sha256": "0c024744041f20722d609daaa601b68052c8dce67ed7488acdcead4ba4be68db"
+    },
+    {
+      "name": "no-assistant-structured",
+      "prompt": "Hello.",
+      "structured": true,
+      "add_assistant": false,
+      "rendered": "<\uff5cstart\u2581of\u2581sentence\uff5c><|System|>\nyou are a helpful assistant.<\uff5cend\u2581of\u2581sentence\uff5c><\uff5cstart\u2581of\u2581sentence\uff5c><|User|>Hello.<\uff5cend\u2581of\u2581sentence\uff5c>",
+      "rendered_sha256": "0c024744041f20722d609daaa601b68052c8dce67ed7488acdcead4ba4be68db"
+    }
+  ]
+}

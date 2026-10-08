@@ -1,0 +1,9 @@
+{
+  "diagnosis.md": "d8251770114e05344b9ffccc94fc84d025dd66af3ce6fee1074df3fa1d90e1f2",
+  "local-only-binaries.json": "e66a9682734340f0fe22678c326f749ff1d7015afa9e9a3a3653a8bdd845cb2d",
+  "original-text-evidence.tar.gz": "1d13084f8493a01cb325d00ce635a4cf9f3856d002dc0b20ea4dcfe64b44ba6b",
+  "owner-verification.json": "c30df60281913f5156eeabad2fe37c5fdb103e952c53c86224ded1f90b7eae38",
+  "raw-file-hashes.json": "6fba15610cc9374591e2fd88a4f6dc4894ca2861eb096920453b9cfcf53ac503",
+  "run.json": "41d59dae693e95781806b2a82659e794b7e81203c39b99be7cecfae541ef53f2",
+  "verify-instrumented-parent.py": "05c257b416fb59d71b649618021e580d2ff91a0e1e7db831e6625d2facd563ea"
+}

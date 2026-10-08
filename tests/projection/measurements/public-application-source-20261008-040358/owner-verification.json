@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "scope": "Source-only exact R implementation and boundary doubles; not installed, native, model or UI acceptance.",
+  "cases": 9,
+  "expectations": 97,
+  "new_cases": 8,
+  "new_expectations": 66,
+  "affected_existing_response_expectations": 31,
+  "failed": 0,
+  "error": 0,
+  "skipped": 0,
+  "test_warnings": 0,
+  "external_warning": "testthat built under R 4.5.2",
+  "source_count": 18,
+  "source_manifest_sha256": "36d5a95dcf8d258325da7c4bd58e54f7bd0b8e2b0c47fc14a8d510f02bd57435",
+  "raw_log_sha256": "0598ef8715dd3cd92dab49333bfcaffa6ab5ebdaf13d7c0f5f191d5e9a840888",
+  "results_csv_sha256": "d588e354c0adb12b3a8829789756fdd9b3d4edb0386c8d16fa0ea34135b841e1",
+  "source_drift": [],
+  "native_calls": 0,
+  "model_calls": 0,
+  "driver_status_preserved": "awaiting_owner_verification"
+}

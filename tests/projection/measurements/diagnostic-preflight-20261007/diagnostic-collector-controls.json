@@ -1,0 +1,47 @@
+{
+  "scope": "synthetic collection parser only, no native acceptance",
+  "controls": [
+    {
+      "name": "complete synthetic16run17pair8audit collection",
+      "status": "passed"
+    },
+    {
+      "name": "wrong-source",
+      "status": "passed"
+    },
+    {
+      "name": "missing-run",
+      "status": "passed"
+    },
+    {
+      "name": "missing-pair",
+      "status": "passed"
+    },
+    {
+      "name": "bad-schedule",
+      "status": "passed"
+    },
+    {
+      "name": "wrong-golden",
+      "status": "passed"
+    },
+    {
+      "name": "fabricated-pair",
+      "status": "passed"
+    },
+    {
+      "name": "false-witness-count",
+      "status": "passed"
+    },
+    {
+      "name": "false-same-row-count",
+      "status": "passed"
+    },
+    {
+      "name": "acceptance-claim",
+      "status": "passed"
+    }
+  ],
+  "count": 10,
+  "driver_sha256": "0d335aa632443315a1114f62d434ff452b82c5c48716f0193c5fc57f3a3efefb"
+}

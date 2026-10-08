@@ -1,0 +1,80 @@
+{
+  "protocol": "F6e-v1",
+  "status": "frozen_before_any_F6e_inference",
+  "execution_status": "not_run",
+  "construction_pairs": 12,
+  "selection_tasks": 6,
+  "evaluation_tasks": 8,
+  "prompt_rows": 38,
+  "prior_F6d_prompt_hash_overlap": 0,
+  "prior_F6d_exact_question_overlap": 0,
+  "prompts_csv_sha256": "9d29799bd4a26b64af4b6ea7a18f390fc318f754c53f39391389d5b5355d07b2",
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "layer": 12,
+  "components": [
+    "residual",
+    "mlp_out"
+  ],
+  "backend": "cpu",
+  "context_length": 512,
+  "chat": false,
+  "temperature": 0,
+  "top_p": 0.95,
+  "max_tokens": 256,
+  "generation_seed": 1046,
+  "normalize_pairs": false,
+  "orthogonalize": false,
+  "add_coefficients": [
+    -2,
+    -1,
+    1,
+    2
+  ],
+  "project_coefficients": [
+    -1,
+    0.5,
+    1,
+    2
+  ],
+  "random_control": "balanced_pair_sign_randomization_with_truthful_prompt_role_swaps",
+  "random_seed": 1046,
+  "random_plus_pairs": 6,
+  "random_minus_pairs": 6,
+  "random_project_coefficient": 1,
+  "selection_settings": [
+    "baseline",
+    "zero_add",
+    "zero_project",
+    "add_-2",
+    "add_-1",
+    "add_1",
+    "add_2",
+    "project_-1",
+    "project_0.5",
+    "project_1",
+    "project_2",
+    "random_project_1"
+  ],
+  "final_settings": [
+    "baseline",
+    "zero_add",
+    "zero_project",
+    "selected_add",
+    "selected_project",
+    "random_project_1"
+  ],
+  "selection_generations": 72,
+  "final_generations": 48,
+  "bootstrap_seed": 2046,
+  "bootstrap_resamples": 2000,
+  "generation_watchdog_seconds": 120,
+  "holdout_isolation": "no coefficient/layer/metric/prompt/token-limit retuning after any selection/final outcome",
+  "limitations": [
+    "small hand-written convenience corpus",
+    "literal answer metric only",
+    "prompt hashes do not establish semantic/pretraining independence",
+    "random-pair-sign control is not uniform spherical noise",
+    "different sites/vectors confound isolated operator comparisons",
+    "256-token cap does not guarantee complete answers"
+  ]
+}

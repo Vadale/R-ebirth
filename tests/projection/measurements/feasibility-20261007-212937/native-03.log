@@ -1,0 +1,10 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-0f0613474562baff)
+
+running 1 test
+test projection::tests::projection_capacity_ledger_matches_owned_buffers ... F6E_PROJECTION_LEDGER {"direction_bytes":16777728,"frame_bytes":350,"plan_bytes":2112,"probe_bytes":1312505,"probe_size":56,"runtime_bytes":527296,"runtime_size":592,"site_size":32,"sites":32,"total":18619991,"width":65536}
+F6E_PROJECTION_TEST {"compared_values":0,"executed_cases":8,"expected_cases":8,"expected_values":0,"max_abs_error":0.0,"max_rel_error":0.0,"model_sha256":"e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05","negative_controls_expected":1,"negative_controls_rejected":1,"reference_manifest_sha256":"78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959","relative_error_scale":"1+abs(reference)","schema":1,"source_manifest_sha256":"aada551ec0adeb07a335024510910c21e96dbefa9ed5ecb925e771f51d8ee1a1","status":"passed","test_id":"projection::tests::projection_capacity_ledger_matches_owned_buffers"}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 157 filtered out; finished in 0.10s
+

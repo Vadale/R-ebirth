@@ -1,0 +1,12 @@
+{
+  "status": "awaiting_visual_verification",
+  "pid": 91377,
+  "directory": "/private/tmp/relm-f6e/model-map-20261008-131656",
+  "updated_unix": 1791458217.644053,
+  "stage": "complete",
+  "cases": 7,
+  "refusals": 1,
+  "load_attempts": 1,
+  "derive_attempts": 1,
+  "generation_attempts": 0
+}

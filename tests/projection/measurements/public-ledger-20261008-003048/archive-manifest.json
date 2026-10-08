@@ -1,0 +1,86 @@
+{
+  "candidate.patch": {
+    "bytes": 58609,
+    "sha256": "e17f69bf96879e1eed1f9cb88e58ecf296b7c1c28df63a9a3c189427f4906d6e"
+  },
+  "changed-source.tar.gz": {
+    "bytes": 176007,
+    "sha256": "c162f2d500f5b19410db346bc251c5a144296e52067b26e5666891fbef5aa26d"
+  },
+  "check-ledger-source.R": {
+    "bytes": 1860,
+    "sha256": "823037cd937edff6a9df8a3561408ec74344c20829afad0b9d93945563c9cfb7"
+  },
+  "check-ledger-twins.R": {
+    "bytes": 2005,
+    "sha256": "9a0ed2ca34b954bf90d0d8581f904485b415e46f3323b3af70f8caa8bd97264d"
+  },
+  "clippy-ffi.log": {
+    "bytes": 1677,
+    "sha256": "2314f038ee57d17ed786b28fdc2d76e59755ee01f8e0c5069db1efaa75fc4fde"
+  },
+  "clippy-llm.log": {
+    "bytes": 177,
+    "sha256": "ee6270f9f640b3f91cd3fe8549ae3d89c9402c7ad37564069d85b682780a6c95"
+  },
+  "format.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "ledger-collector.py": {
+    "bytes": 4274,
+    "sha256": "f20c22596fdadc0be95699cce70111fe6408701b8f7ad5d268d944fa1db364ec"
+  },
+  "owner-binding.json": {
+    "bytes": 1188,
+    "sha256": "0f5969d805bf8ce967b2e706ea14749ed4d4dea505008df8b37dde6a20fa0aa7"
+  },
+  "owner-partial-verification.json": {
+    "bytes": 627,
+    "sha256": "85a6b8387b9a4aff91d51ea4f369f205e302f19c9482c9346ec66944343a28e1"
+  },
+  "projection-memory.R": {
+    "bytes": 12348,
+    "sha256": "8dabf5766046fe44ba5076890245df68094a1f4e16bd90af7bec2a9ca1fff129"
+  },
+  "r-source.log": {
+    "bytes": 649,
+    "sha256": "dee5af997c981f44f3e62fb893b97bbc6109bcde11b60ca32d3eb15abb583d28"
+  },
+  "r-test-results.csv": {
+    "bytes": 1420,
+    "sha256": "fc53e988befe5e7945c445080f7b0d30829efba668938b2d600755c6f5b0e3b6"
+  },
+  "r-test-results.rds": {
+    "bytes": 32475,
+    "sha256": "251ca16bb609e5d66af222535379fae455968464e1b12776c66f920afdb52acf"
+  },
+  "ready.json": {
+    "bytes": 15997,
+    "sha256": "b5771bfabd839e4c7b2512b1f6c10bb8d27c8fc991df33db8cccaf65b5566f88"
+  },
+  "source-manifest.json": {
+    "bytes": 11470,
+    "sha256": "27ba3514957949e45cf2f6dbf8aea563bdf88e0f5669d9d3688cf11612eddd9a"
+  },
+  "source-test.R": {
+    "bytes": 8500,
+    "sha256": "cb7ad6edd99ba17085ad5732596cadac2748fe51270971079021729ddb14c236"
+  },
+  "status.json": {
+    "bytes": 3199,
+    "sha256": "d97f7cabebfe32533e42a190467b9270a92c39fd2d4ef411cf0c5ea2c4c4f092"
+  },
+  "test-ledger-collector.py": {
+    "bytes": 4305,
+    "sha256": "c9ee34dcaaf29a54df5aed4e3420ebcbf534ce5a97c21747df20539f58c5aaa8"
+  },
+  "test-projection-memory.R": {
+    "bytes": 7541,
+    "sha256": "8ca28f9e00e9fc71fd678a18a93426cfe514a61be106a9927c41e5a3ca364d2a"
+  },
+  "verify-public-ledger.py": {
+    "bytes": 7385,
+    "sha256": "9c80a0f71dd0ab4cf53e9fcfdd85482155e76d4f351d8e0357f5ea1fe28363b7"
+  }
+}

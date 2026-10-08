@@ -1,0 +1,11 @@
+{
+  "pid": 90242,
+  "launched_unix": 1791455832.041452,
+  "driver": "/private/tmp/relm-f6e/run-evaluation-dependencies.py",
+  "driver_sha256": "1fe5c68d38e09f58e4104d9049c45a2cce0876ddeec8ab5170048816a63dc4ef",
+  "binding_sha256": "f2d64a69d14dabce7ab54e6a9d72fc8353b7d3f44359521055bdd80a0b6a847d",
+  "status_file": "/private/tmp/relm-f6e/evaluation-status.json",
+  "carried_captures": 24,
+  "new_trace_attempts_planned": 0,
+  "scope": "First actual selection generation after pre-admission dependency failure; frozen construction reused; no model download/product rebuild/install"
+}

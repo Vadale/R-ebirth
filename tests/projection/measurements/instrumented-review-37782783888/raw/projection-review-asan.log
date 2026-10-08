@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/runner/work/R-ebirth/R-ebirth/tests/projection/instrumented_review.py", line 146, in <module>
+    main()
+  File "/home/runner/work/R-ebirth/R-ebirth/tests/projection/instrumented_review.py", line 138, in main
+    runner.preflight()
+  File "/home/runner/work/R-ebirth/R-ebirth/tests/projection/instrumented_review.py", line 72, in preflight
+    BASE.check_unconditional_source((self.root / ZERO_SOURCE).read_text(), ZERO_ID)
+  File "/home/runner/work/R-ebirth/R-ebirth/tests/sanitizers/run.py", line 223, in check_unconditional_source
+    require(not re.search(r"\breturn\b|#\[ignore|\b(?:option_env!|env::var)|\b(?:SKIP|skip!)", body),
+  File "/home/runner/work/R-ebirth/R-ebirth/tests/sanitizers/run.py", line 112, in require
+    raise RuntimeError(message)
+RuntimeError: selected test contains a possible early-return/model skip: projection::review_tests::projection_zero_live_capture_preserves_identity_without_row_work

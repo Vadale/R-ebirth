@@ -34,6 +34,12 @@ use rebirth_llm::{
 // R-main-thread handle registry and async boundary (D-037).
 include!("async_boundary.rs");
 include!("live_boundary.rs");
+include!("projection_boundary.rs");
+include!("projection_budget_error_selftest.rs");
+include!("projection_transfer_boundary.rs");
+include!("projection_constructor_boundary.rs");
+include!("projection_bridge.rs");
+include!("projection_combined_test_boundary.rs");
 
 // --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
 
@@ -1166,6 +1172,11 @@ extendr_api::extendr_module! {
     fn rebirth_async_submit;
     fn rebirth_live_submit;
     fn rebirth_live_preflight;
+    fn rebirth_projection_allocation_profile;
+    fn rebirth_projection_preflight;
+    fn rebirth_projection_construct;
+    fn rebirth_model_state;
+    fn rebirth_projection_state_facts;
     fn rebirth_async_state_ack;
     fn rebirth_async_poll;
     fn rebirth_async_ack;
@@ -1182,6 +1193,11 @@ extendr_api::extendr_module! {
     fn rebirth_spill_cleanup;
     fn rebirth_spill_sweep;
     fn rebirth_intervene;
+    fn rebirth_selftest_projection_ledger;
+    fn rebirth_selftest_projection_budget_error;
+    fn rebirth_selftest_projection_transfer;
+    fn rebirth_selftest_projection_constructor;
+    fn rebirth_selftest_projection_combined_logits;
     fn rebirth_selftest_new_handle;
     fn rebirth_selftest_validate_image;
     fn rebirth_selftest_panic;
@@ -1308,5 +1324,32 @@ mod tests {
         assert_eq!(base, "l_out");
         assert_eq!(il, 7);
         assert_eq!(from_engine_index(il), 8, "l_out-7 -> API layer 8");
+    }
+    #[test]
+    fn projection_bridge_compiled_frame() {
+        use super::{
+            projection_bridge_frame_bytes, projection_constructor_command_bytes,
+            projection_native_profile,
+        };
+        use extendr_api::Robj;
+        use rebirth_llm::RebirthError;
+        use std::any::Any;
+        // Pure layout test. Runs as one owner-selected rebirth-ffi libtest;
+        // neither initializes R nor creates a model or evaluates the bridge.
+        let scalar = std::mem::size_of::<extendr_api::SEXP>();
+        let roots = 14 * std::mem::size_of::<Robj>();
+        let references = 7 * std::mem::size_of::<&Robj>();
+        let outer = std::mem::size_of::<
+            Result<Result<Robj, Box<dyn std::error::Error>>, Box<dyn Any + Send>>,
+        >();
+        let inner = std::mem::size_of::<Result<Result<Robj, RebirthError>, Box<dyn Any + Send>>>();
+        let expected = (7 * scalar + roots + references + outer + inner) as u64;
+        assert_eq!(projection_bridge_frame_bytes(), expected);
+        let profile = projection_native_profile().unwrap();
+        assert_eq!(
+            profile.command_bytes,
+            projection_constructor_command_bytes() + expected
+        );
+        println!("F6E_PROJECTION_BRIDGE_TEST {{\"test\":\"projection_bridge_compiled_frame\",\"status\":\"passed\",\"expected_cases\":2,\"executed_cases\":2,\"expected_rejections\":0,\"rejected_cases\":0,\"bridge_frame_bytes\":{expected},\"ffi_command_bytes\":{}}}",profile.command_bytes);
     }
 }

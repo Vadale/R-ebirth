@@ -1,0 +1,21 @@
+<llm> qwen2.5-0.5b-instruct-q8_0.gguf
+  architecture:    qwen2
+  parameters:      630 M
+  quantization:    Q8_0
+  layers x hidden: 24 x 896
+  context:         512 tokens
+  backend:         cpu
+  interventions:   1 active
+    - project layer 12  mlp_out  (fixed coef 1, all executed positions)
+<llm summary> qwen2.5-0.5b-instruct-q8_0.gguf
+  architecture:    qwen2
+  parameters:      630 M
+  quantization:    Q8_0
+  layers x hidden: 24 x 896
+  context:         512 tokens (trained: 32768)
+  backend:         cpu
+  memory:          638.7 MB
+  vocabulary:      151,936 tokens
+  description:     qwen2 1B Q8_0
+  interventions:   1 active
+    - project layer 12  mlp_out  (fixed coef 1, all executed positions)

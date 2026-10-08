@@ -1,0 +1,151 @@
+{
+  "scope": "synthetic collector controls only",
+  "count": 36,
+  "controls": [
+    {
+      "name": "projection::tests::projection_row_matches_independent_reference",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_row_matches_independent_reference:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_row_matches_independent_reference:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_row_matches_independent_reference:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_boundary_rejects_invalid_inputs",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_boundary_rejects_invalid_inputs:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_boundary_rejects_invalid_inputs:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_boundary_rejects_invalid_inputs:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capacity_ledger_matches_owned_buffers",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capacity_ledger_matches_owned_buffers:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capacity_ledger_matches_owned_buffers:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capacity_ledger_matches_owned_buffers:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_classifier_accepts_only_declared_dense_sites",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_classifier_accepts_only_declared_dense_sites:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_classifier_accepts_only_declared_dense_sites:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_classifier_accepts_only_declared_dense_sites:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_probe_rejects_missing_noop_and_wrong_site",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_probe_rejects_missing_noop_and_wrong_site:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_probe_rejects_missing_noop_and_wrong_site:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_probe_rejects_missing_noop_and_wrong_site:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_forward_matches_independent_reference",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_forward_matches_independent_reference:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_forward_matches_independent_reference:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_forward_matches_independent_reference:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_microbatches_pruning_and_graph_reuse",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_microbatches_pruning_and_graph_reuse:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_microbatches_pruning_and_graph_reuse:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_microbatches_pruning_and_graph_reuse:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capture_and_static_additive_composition",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capture_and_static_additive_composition:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capture_and_static_additive_composition:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_capture_and_static_additive_composition:reject-negative_controls_rejected",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_cancel_fault_and_owner_cleanup",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_cancel_fault_and_owner_cleanup:reject-executed_cases",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_cancel_fault_and_owner_cleanup:reject-compared_values",
+      "status": "passed"
+    },
+    {
+      "name": "projection::tests::projection_cancel_fault_and_owner_cleanup:reject-negative_controls_rejected",
+      "status": "passed"
+    }
+  ],
+  "driver_sha256": "8846c1eef11961e9aa160f7bd6bc8694515250eba7ffaedb7781748ef77e2ccd"
+}

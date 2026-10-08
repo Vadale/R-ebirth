@@ -1,0 +1,10 @@
+{
+  "rebirth/R/conditions.R": "3e0ec83f0887b1d1836303c184e198b77b16160d8830869c7c580aa2a3dba1d5",
+  "rebirth/R/direction-schema.R": "23016d58be8a59739b56908cdc006a7c07a6388d338e6f254cdf510d34f03985",
+  "rebirth/R/live-state.R": "f1d3100dfb7de836bd2891fdda163aeaa409b085b06cc1c5bc5a01b563f5c05d",
+  "rebirth/R/projection-memory.R": "e2b3cdce1af40801d5e0f020cee1b85e6f4d6d5f44f6d49b3114ed636ed7fcfe",
+  "rebirth/R/projection-owners.R": "f3c0e776b959026d8777d2a87762071fd06490cf18bda64f2a1efa96e42a8adc",
+  "rebirth/R/llm.R": "776a5b945e48bf3893d3cd0f118d0968282c72feba7f3c1a5841a09572673bf1",
+  "rebirth/tests/testthat/test-projection-memory.R": "8ca28f9e00e9fc71fd678a18a93426cfe514a61be106a9927c41e5a3ca364d2a",
+  "rebirth/tests/testthat/test-projection-owners.R": "9e13fc9179d6e5ebb34176bae8b3cbf3388008e1d34f295c4db50b99f004d395"
+}

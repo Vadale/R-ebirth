@@ -1,0 +1,15 @@
+{
+  "configured-model-map.png": "e10c366437d1680bdae70db800769dd76424f4b32a3992e756ab308e3443c457",
+  "configured-model-map.pdf": "cfbc66ceab070b6a375346e1ac4f3873b8cb4efb6e687d6c4aab9d01a3f94c40",
+  "native-placement.log": "88e9439967065976966c928221385f956bfb54e6bb3f7177bcff6003e3f8cb77",
+  "attempts.rds": "2eb60b5a77bd1a5c919e2dab14e5f353cedc3a457ae8d693c55c15d68a27ce3b",
+  "cases.csv": "894c42fdb6d286bdf8df889a592c13a6a49d98b25837973b7268ead1f40a0918",
+  "configured-metadata.rds": "93d58eeeb91ee198bf14a10f764d181a685290ae5a55149d5606bbdfa32d1a53",
+  "model-map.log": "073c07d1b22451e1e060054f3fd4be3f6c9b0b8db1a38c1bbe9c05f974bf126b",
+  "closed-error.rds": "5fb4b313739d1633d7c29807fb64dd48718d1c79ca158a05ac05685a744a9c94",
+  "sites.rds": "1cc01793b6d5b70f86e439536e64fd8961014e0e69f0b06dc5063ee9ec30daad",
+  "handle-summary.txt": "7a68ab7de15b6630f9f310fb13035b808d64ac32a6c2ef1b95d065d98299885f",
+  "sites.csv": "1ec526f32d3adddbd8309936ada86f2f1ee4e2d2795c4fa3f70c8c8ee6f879a4",
+  "cpu-evidence.json": "7ce6e938db87f4c4fccad0482f8d80d10bb2d622b47b2f3123479a684fa0c812",
+  "receipt.json": "dab43d16781d3267d6b40159bbe8a19f1ced8c6cfcbbec6db0c4127c1e906adb"
+}

@@ -1,0 +1,9 @@
+test_directory_and_pid_environment_sequences_are_literal (__main__.PathControls.test_directory_and_pid_environment_sequences_are_literal) ... ok
+test_plain_path_stays_exact (__main__.PathControls.test_plain_path_stays_exact) ... ok
+test_retained_worker_name_is_literal (__main__.PathControls.test_retained_worker_name_is_literal) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+F6E_INSTRUMENTED_PATH_CONTROLS {"status":"passed","cases":3,"models":0}

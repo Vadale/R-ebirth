@@ -1,0 +1,9 @@
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+F6E_MODEL_MAP_CASE actual_original_metadata refusal=FALSE
+F6E_MODEL_MAP_CASE actual_projection_configuration refusal=FALSE
+F6E_MODEL_MAP_CASE print_and_summary refusal=FALSE
+F6E_MODEL_MAP_CASE png_table_and_par refusal=FALSE
+F6E_MODEL_MAP_CASE pdf_table_and_par refusal=FALSE
+F6E_MODEL_MAP_CASE closed_map_refused refusal=TRUE
+F6E_MODEL_MAP_CASE owners_closed refusal=FALSE
+F6E_MODEL_MAP_COMPLETE cases=7 refusals=1 load_attempts=1 derive_attempts=1 generation_attempts=0

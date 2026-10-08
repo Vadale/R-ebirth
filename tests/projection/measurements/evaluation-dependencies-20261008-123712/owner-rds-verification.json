@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "successful_generation_RDS": 120,
+  "cancelled_view_RDS": 2,
+  "retained_states": 4,
+  "state_values": 3584,
+  "raw_event_rows": 54180,
+  "delivered_token_events": 27030,
+  "metric_values": 720,
+  "zero_identity_pairs": 28,
+  "bootstrap_intervals": 36,
+  "maximum_interval_rounding_difference": 5.6843418860808e-14,
+  "models": 0,
+  "inference": 0,
+  "RNG_draws": 0,
+  "cancellation": {
+    "states_per_view": 2,
+    "delivered_tokens_per_view": 1,
+    "error_generated_tokens": 2
+  },
+  "scope": "Independent RDS/text/event/metric/bootstrap/state audit; no general efficacy claim or same-row projection formula assertion across changed histories"
+}

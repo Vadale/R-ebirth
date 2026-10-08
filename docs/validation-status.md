@@ -70,9 +70,10 @@ held-out evaluation. See [the F6d report](f6d-implementation.md) for exact sourc
 failed harness attempts and numerical limits. The 64-token cap truncated all
 baseline and six of eight selected outputs; the measured length reduction is
 not complete-response or general quality validation. New vignette and scoped
-check passed (0 errors/2 omitted-vignette warnings/0 notes). Final remote CI and
-integration remain pending; accepted native/F6a/b/c evidence was reused without
-relabeling it as a fresh execution.
+check passed (0 errors/2 omitted-vignette warnings/0 notes). All nine final PR
+checks passed at `4820051`; PR62 is merged at `6dd701b` with the exact accepted
+tree. Automatic post-main R37659181391/Rust37659181395 are a separate pending
+execution. Accepted native/F6a/b/c evidence was reused without relabeling it.
 
 ## Implemented checks
 

@@ -1,0 +1,282 @@
+{
+  "status": "verified",
+  "receipt_count": 71,
+  "tiny_receipts": 57,
+  "qwen_receipts": 14,
+  "devices": [
+    "MTL0"
+  ],
+  "scope": "actual registered default shared Metal buffers; flags are native pointer-identity observations, not authentication",
+  "counts": [
+    {
+      "key": [
+        32,
+        3,
+        "probe_baseline",
+        0,
+        0
+      ],
+      "count": 8
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_baseline",
+        0,
+        1
+      ],
+      "count": 6
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_baseline",
+        1,
+        0
+      ],
+      "count": 2
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_baseline",
+        1,
+        1
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_baseline",
+        2,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_baseline",
+        2,
+        1
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_edited",
+        0,
+        0
+      ],
+      "count": 8
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_edited",
+        0,
+        1
+      ],
+      "count": 6
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_edited",
+        1,
+        0
+      ],
+      "count": 2
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_edited",
+        1,
+        1
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_edited",
+        2,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "probe_edited",
+        2,
+        1
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "projected",
+        0,
+        0
+      ],
+      "count": 8
+    },
+    {
+      "key": [
+        32,
+        3,
+        "projected",
+        0,
+        1
+      ],
+      "count": 6
+    },
+    {
+      "key": [
+        32,
+        3,
+        "projected",
+        1,
+        0
+      ],
+      "count": 2
+    },
+    {
+      "key": [
+        32,
+        3,
+        "projected",
+        1,
+        1
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "projected",
+        2,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        32,
+        3,
+        "projected",
+        2,
+        1
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        896,
+        24,
+        "probe_baseline",
+        0,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        896,
+        24,
+        "probe_baseline",
+        12,
+        0
+      ],
+      "count": 3
+    },
+    {
+      "key": [
+        896,
+        24,
+        "probe_baseline",
+        23,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        896,
+        24,
+        "probe_edited",
+        0,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        896,
+        24,
+        "probe_edited",
+        12,
+        0
+      ],
+      "count": 3
+    },
+    {
+      "key": [
+        896,
+        24,
+        "probe_edited",
+        23,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        896,
+        24,
+        "projected",
+        0,
+        0
+      ],
+      "count": 1
+    },
+    {
+      "key": [
+        896,
+        24,
+        "projected",
+        12,
+        0
+      ],
+      "count": 2
+    },
+    {
+      "key": [
+        896,
+        24,
+        "projected",
+        23,
+        0
+      ],
+      "count": 1
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+"source-test.R","source-test","projection inventory binds actual metadata and accumulated residual owners",7,0,FALSE,FALSE,0,0.08,0.003,0.083,7

@@ -1,0 +1,245 @@
+{
+  "status": "ready",
+  "scope": "Independent F6e-v1 evaluation verifier only",
+  "scientific_result": false,
+  "model_calls": 0,
+  "builds": 0,
+  "golden_runs": 0,
+  "files": {
+    "tests/projection/evaluation/verify_results.py": {
+      "sha256": "7a83c90a80c96ad6bec2ce1e8d94d68068607909d39bbf1c34aa6e6ad4130461",
+      "bytes": 39792
+    },
+    "tests/projection/evaluation/test_verify_results.py": {
+      "sha256": "e32359d91d9f2fb94441348d409375139cbdc1ae55bd228970fb6dab262b49ed",
+      "bytes": 21687
+    }
+  },
+  "schema": {
+    "schema": "F6e-results/1",
+    "bundle": "Directory with receipt.json; every file descriptor is {file: safe relative path, sha256: lowercase hex}.",
+    "receipt_exact_fields": [
+      "schema",
+      "protocol_sha256",
+      "manifest_sha256",
+      "prompts_sha256",
+      "identity",
+      "rng",
+      "producer_sources",
+      "artifacts",
+      "files"
+    ],
+    "identity_exact_fields": [
+      "model_sha256",
+      "backend",
+      "context_length",
+      "layer",
+      "package_version",
+      "engine_revision",
+      "source_revision",
+      "r_version",
+      "dll_sha256",
+      "cpu_evidence",
+      "installed_evidence"
+    ],
+    "identity_notes": "backend=cpu, context_length=512, layer=12; cpu_evidence/installed_evidence are hashed file descriptors. The CPU evidence is JSON with at least backend='cpu', n_gpu_layers=0, model_sha256. r_version is as.character(getRversion()), e.g.4.5.1. Other identity strings are nonempty; source_revision is a Git SHA and dll_sha256 is SHA256.",
+    "rng_exact_fields": {
+      "kind": [
+        "Mersenne-Twister",
+        "Inversion",
+        "Rejection"
+      ],
+      "sign_seed": 1046,
+      "bootstrap_seed": 2046,
+      "sign_algorithm": "set.seed(1046); sample(rep(c(-1L, 1L), each = 6L))",
+      "bootstrap_algorithm": "set.seed(2046); t(replicate(2000L, sample.int(8L, 8L, replace = TRUE)))"
+    },
+    "producer_sources": "Nonempty list of original source names, including the executed R recipe; each must occur in both source tables.",
+    "artifacts": "Exactly residual, mlp, random_mlp file descriptors for saved/reloaded trusted RDS artifacts. Integrity binding here; arithmetic and RDS validation remain the separate construction gate.",
+    "files": {
+      "sources_before": "required descriptor",
+      "sources_after": "required descriptor",
+      "construction": "required descriptor",
+      "artifact_pairs": "required descriptor",
+      "random_signs": "required descriptor",
+      "bootstrap": "required descriptor",
+      "selection": "required descriptor",
+      "evaluation": "null until complete stage",
+      "views": "null until complete stage",
+      "view_states": "null until complete stage",
+      "selection_lock": "null until complete stage"
+    },
+    "runs_columns": [
+      "ordinal",
+      "run_id",
+      "phase",
+      "item_id",
+      "setting",
+      "operator",
+      "coefficient",
+      "artifact",
+      "artifact_sha256",
+      "prompt_sha256",
+      "request_seed",
+      "returned_seed",
+      "chat",
+      "temperature",
+      "top_p",
+      "max_tokens",
+      "stop_is_null",
+      "images_is_null",
+      "schema_is_null",
+      "async",
+      "on_state",
+      "watchdog_seconds",
+      "status",
+      "started_unix",
+      "ended_unix",
+      "elapsed_seconds",
+      "text_file",
+      "text_sha256",
+      "events_file",
+      "events_sha256",
+      "error_file",
+      "error_sha256",
+      "selection_lock_sha256"
+    ],
+    "runs_types": "CSV UTF8/LF, exact column order, no row names. Integer fields are canonical decimal; doubles finite decimal; logical fields exactly TRUE/FALSE. Missing numeric/character fields use empty fields, never literal NA. Raw UTF8 text file is unmodified returned character bytes, no added newline; returned_seed is attr(text,'seed') separately. All other text including literal NA is data.",
+    "runs_values": {
+      "ordinal": "1..72 selection;73..120 evaluation;121..122 view",
+      "run_id": "s001..s072,e001..e048,v001..v002",
+      "phase": "selection/evaluation/view",
+      "order": "task-major frozen prompt order, then manifest setting order; views baseline then selected_project on construction f6e-c01 target",
+      "operator": "none/add/project",
+      "artifact": "empty for baseline, residual for add, mlp for learned project, random_mlp for random",
+      "status": "ok/error/cancelled/timed_out",
+      "settings": "chat FALSE, temperature 0, top_p .95, max_tokens 256, request_seed1046, stop/images/schema_is_null TRUE, async TRUE,on_state TRUE only views,watchdog120",
+      "missing": "returned_seed/text descriptor empty on failure, error descriptor empty on success, selection_lock_sha256 empty for selection and required later",
+      "time": "started_unix,ended_unix are common-clock POSIX seconds; elapsed_seconds is separately measured nonnegative elapsed time; calls must be sequential",
+      "errors": "error file CSV exact columns class,reason,message with one row; class may be semicolon-separated condition classes; preserve original message"
+    },
+    "event_columns": [
+      "event_id",
+      "event",
+      "prompt_id",
+      "token_pos",
+      "token_id",
+      "text",
+      "elapsed",
+      "finish_reason",
+      "validated"
+    ],
+    "event_notes": "Exact WP10 schema. NA numeric/logical is empty; otherwise token IDs/positions are 1-based. Ordinary validated is always empty. On success exactly one terminal prompt_end; text events reconstruct returned bytes; on failure no prompt_end. Equality removes only elapsed, not token/text/end semantics.",
+    "construction_columns": [
+      "item_id",
+      "role",
+      "prompt_sha256",
+      "source_pos",
+      "capture_file",
+      "capture_sha256"
+    ],
+    "construction_notes": "24 rows in frozen construction prompt order; capture_file is the actual one-trace/two-component retained receipt per prompt, not fabricated model provenance. source_pos comes from trace.",
+    "artifact_pairs_columns": [
+      "artifact",
+      "item_id",
+      "target_sha256",
+      "control_sha256",
+      "target_pos",
+      "control_pos"
+    ],
+    "artifact_pairs_notes": "36 rows: artifacts residual,mlp,random_mlp; each in c01..c12 order. Learned roles unchanged; random roles and positions swapped iff saved sign is -1.",
+    "signs_columns": [
+      "item_id",
+      "sign"
+    ],
+    "bootstrap_columns": [
+      "replicate",
+      "draw1",
+      "draw2",
+      "draw3",
+      "draw4",
+      "draw5",
+      "draw6",
+      "draw7",
+      "draw8"
+    ],
+    "bootstrap_notes": "2000 rows in replicate order, each 8 indices in1..8; generated once with the exact recorded base-R algorithm, not reseeded per replicate.",
+    "sources_columns": [
+      "source",
+      "snapshot_file",
+      "sha256"
+    ],
+    "sources_notes": "Before/after source sets and hashes must match; snapshots are bundle files. Include this verifier, frozen protocol/manifest/prompts and all producer_sources. Installed evidence remains separately bound; snapshots do not authenticate execution.",
+    "selection_lock_exact_fields": [
+      "schema",
+      "selected_add",
+      "selected_project",
+      "selection_evidence_sha256",
+      "selection_report",
+      "verifier_sha256",
+      "locked_at_unix"
+    ],
+    "selection_lock_notes": "schema=F6e-selection-lock/1. Run verifier --stage selection to a fresh JSON report after72calls; store selected fields/evidence digest and report descriptor here. Lock time after selection and before final. Every later run binds SHA256 of this exact lock file. No final data enters selection.",
+    "view_state_columns": [
+      "run_id",
+      "state_id",
+      "prompt_token_count",
+      "source_pos",
+      "source_token_id",
+      "generated_prefix_ids",
+      "state_file",
+      "state_sha256"
+    ],
+    "view_notes": "Four rows, v001 thenv002,state_id1,2. Cancel in second on_state; expect one sampled token and requested relm_error_cancelled. generated_prefix_ids empty forstate1 and first1-basedtoken_id forstate2. source_pos=P+state_id-1. Retain actual full state RDS via descriptor; only compare states with equal prompt hash and generated prefix. These calls are excluded from efficacy metrics.",
+    "metrics": [
+      "required",
+      "characters",
+      "tokens",
+      "empty",
+      "truncated",
+      "repeated"
+    ],
+    "metric_rules": "required uses case-insensitive literal alternatives split by | and Unicode non-alphanumeric boundaries;characters counts Unicode code points;tokens counts token events;empty uses whitespace-only;truncated means finish_reason length;repeated counts adjacent equal lowercase whitespace tokens, preserving punctuation. Errors have no six-metric outcome; affected fixed-eight-task contrasts are withheld without case deletion.",
+    "intervals": "Five nonbaseline settings vs baseline plus selected_project vs selected_add; six metrics; same2000pairedtaskresamples; percentile95% using R default quantile type7; no population/multiplicity claim.",
+    "pins": {
+      "protocol_sha256": "59f925c7e36b4305bcd8e603419b2f50f3cfb7679acee6260e2e53a27756df62",
+      "manifest_sha256": "e5f07e6a99c7d604084ff7f8f3b1312633af0b17d428af457aa895624a1c5833",
+      "prompts_sha256": "9d29799bd4a26b64af4b6ea7a18f390fc318f754c53f39391389d5b5355d07b2",
+      "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e"
+    }
+  },
+  "schema_file": "/private/tmp/relm-f6e/evaluation-verifier-schema.json",
+  "schema_sha256": "50043f47f5b329629f353c297b5a342a2f9e14651827b3577880646c42b86cc8",
+  "controls": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 python3 tests/projection/evaluation/test_verify_results.py",
+    "tests": 28,
+    "status": "passed",
+    "log": "/private/tmp/relm-f6e/evaluation-verifier-controls-frozen.log",
+    "sha256": "d235fcc3c985d51aeb0d919a1efcc11ded65da9da9219e2e996052a0d1f5fc30",
+    "scope": "Synthetic bundles and controlled RNG doubles only. Actual base-R RNG subprocess is implemented but not executed by this agent."
+  },
+  "commands": {
+    "schema": "PYTHONDONTWRITEBYTECODE=1 python3 tests/projection/evaluation/verify_results.py --schema",
+    "selection": "PYTHONDONTWRITEBYTECODE=1 python3 tests/projection/evaluation/verify_results.py --stage selection --bundle BUNDLE --output NEW_SELECTION_REPORT --rscript RSCRIPT",
+    "complete": "PYTHONDONTWRITEBYTECODE=1 python3 tests/projection/evaluation/verify_results.py --stage complete --bundle BUNDLE --output NEW_COMPLETE_REPORT --rscript RSCRIPT"
+  },
+  "expected_gates": {
+    "selection_calls": 72,
+    "evaluation_calls": 48,
+    "view_calls": 2,
+    "view_states": 4,
+    "intervals": 36,
+    "bootstrap_resamples": 2000,
+    "unit": "paired task",
+    "fixed_final_tasks": 8
+  },
+  "limitations": [
+    "No actual model/result acceptance; parent sole execution owner.",
+    "Bound file/source/runtime evidence does not authenticate inference or loaded weights.",
+    "Capture/direction/state RDS content arithmetic and graphics remain separate owner gates.",
+    "Final errors retain all eight tasks and withhold affected contrasts; baseline/zero errors leave identity unresolved."
+  ],
+  "preserved_draft_failures": [
+    "/private/tmp/relm-f6e/evaluation-verifier-controls-draft-syntax.log"
+  ]
+}

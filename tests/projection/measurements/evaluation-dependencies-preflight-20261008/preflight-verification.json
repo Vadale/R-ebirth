@@ -1,0 +1,24 @@
+{
+  "status": "PASS",
+  "model_calls": 0,
+  "inference": 0,
+  "controls": {
+    "positive": 2,
+    "negative": 5
+  },
+  "full_driver_preflight": "All pre-model stages executed under experiment interception; no experiment process created",
+  "carried_files": 40,
+  "carried_captures": 24,
+  "carried_artifacts": 3,
+  "dependency_packages": 10,
+  "dependency_files": 998,
+  "inference_body_and_task_setting_loops": "byte-for-byte identical to failed parent",
+  "original_construction_body": "identical except added branch indentation; never run by this continuation",
+  "collector": "unchanged 129a1f79813bb5fad75f6988ef4802d0c6e883dd2e9e5361750316df89b66107",
+  "verifier": "unchanged 7a83c90a80c96ad6bec2ce1e8d94d68068607909d39bbf1c34aa6e6ad4130461",
+  "preflight_notes": [
+    "Negative missing-package-path control emits its expected normalizePath warning; positive full driver preflight is silent except the completion marker.",
+    "Dependency freeze first consulted unloaded jsonlite metadata after async dependencies; packageDescription returned NA. Revised to actual producer load order (jsonlite first) and direct installed DESCRIPTION reads before successful freeze.",
+    "Unexecuted driver draft reused dependencies for both runtime inventory and C-header text. Corrected to distinct runtime_dependencies before full intercepted driver preflight."
+  ]
+}

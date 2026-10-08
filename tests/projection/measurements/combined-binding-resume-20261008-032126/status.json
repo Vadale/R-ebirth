@@ -1,0 +1,249 @@
+{
+  "status": "failed",
+  "pid": 72614,
+  "directory": "/private/tmp/relm-f6e/combined-binding-resume-20261008-032126",
+  "stages": [
+    {
+      "name": "default-static-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "pid": 72620,
+      "exit_code": 0,
+      "log_sha256": "763f53591246ed6699da3eed1e162407a5da12563f33228a84f61fe476db47af"
+    },
+    {
+      "name": "default-fresh-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "pid": 72626,
+      "exit_code": 0,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "default-registration",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-bridge-mode.R",
+        "/private/tmp/relm-f6e/combined-binding-resume-20261008-032126/default-ffi/relm.so",
+        "default",
+        "/private/tmp/relm-f6e/combined-binding-resume-20261008-032126"
+      ],
+      "status": "passed",
+      "pid": 72649,
+      "exit_code": 0,
+      "log_sha256": "01ad06340f227fb3190aa48a642ff8f4559cfe8713eb7707990d4b6f55a5e343"
+    },
+    {
+      "name": "private-static-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--features",
+        "projection-private",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "pid": 72658,
+      "exit_code": 0,
+      "log_sha256": "cb9594bd3e8b2c970d2b95ce7aa50d8a9a2d68c44888a2aeecd9416c4fb57978"
+    },
+    {
+      "name": "private-fresh-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "pid": 72664,
+      "exit_code": 0,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "private-registration",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-bridge-mode.R",
+        "/private/tmp/relm-f6e/combined-binding-resume-20261008-032126/private-ffi/relm.so",
+        "private",
+        "/private/tmp/relm-f6e/combined-binding-resume-20261008-032126"
+      ],
+      "status": "passed",
+      "pid": 72685,
+      "exit_code": 0,
+      "log_sha256": "714dd0701e8694d7875710668884b67c82eb1edda8fe63a9725f083a7731a8ea"
+    },
+    {
+      "name": "combined-R-binding",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-combined-binding.R",
+        "/private/tmp/relm-f6e/combined-binding-resume-20261008-032126/private-ffi/relm.so",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf"
+      ],
+      "status": "failed",
+      "pid": 72696,
+      "exit_code": 1,
+      "log_sha256": "5e4c0c894351cad69be4026e1e29ab3a0ae802d810b8c0b45b29b8890e6f9d54"
+    }
+  ],
+  "model_loads_planned": 1,
+  "public_operator_enabled": false,
+  "scope": "private bridge and actual R constructor combined budget; not installed package/evaluation/production activation",
+  "source_manifest_sha256": "29835e928e07da28036ae9f14fb55401dc66382913f80b3747a0c40bcbe04935",
+  "source_count": 112,
+  "carried_accepted_scopes": [
+    "private constructor49/35/240 at9cf850e8",
+    "R binding6/37 source only",
+    "R constructor3/61",
+    "all prior private/ledger/transfer/ref/model timing gates"
+  ],
+  "carried_stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "pid": 71663,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-private",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "projection-private",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 71666,
+      "exit_code": 0,
+      "log_sha256": "772babe6320a13523486292093b2660409c79e3508c06b282f5d03d9d30502bd"
+    },
+    {
+      "name": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 71675,
+      "exit_code": 0,
+      "log_sha256": "54ead9b47dd815ec574bd7bd75774d6694a028bf32e4efc17eff3f4dd42254b8"
+    },
+    {
+      "name": "no-spill-default",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features"
+      ],
+      "status": "passed",
+      "pid": 71681,
+      "exit_code": 0,
+      "log_sha256": "7198af91215d854c35d909ba1dc87ccd3fd6af9c543f9cc989209b6948d6c1a0"
+    },
+    {
+      "name": "no-spill-private",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--features",
+        "projection-private"
+      ],
+      "status": "passed",
+      "pid": 71692,
+      "exit_code": 0,
+      "log_sha256": "9d59c38341b17ae92c2818900a9d277fb37d292f8f2d5c68687b3f808e8b64e7"
+    },
+    {
+      "name": "native-bridge-frame",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "tests::projection_bridge_compiled_frame",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "pid": 71696,
+      "exit_code": 0,
+      "log_sha256": "7bfee4282583770e29e14709d2022fb043baeefc16443968ae5ef8786aa3171f"
+    }
+  ],
+  "carried_directory": "/private/tmp/relm-f6e/combined-binding-20261008-031008",
+  "carried_outcomes": 1,
+  "carried_cases": 2,
+  "carried_refusals": 0,
+  "collector_recovery": "Exact named libtest prefix normalized; original failed run preserved; no native rerun.",
+  "stage": "combined-R-binding",
+  "error": "combined-R-binding failed: preserve/diagnose before affected-only correction",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-combined-resume2.py\", line 101, in main\n    log=stage('combined-R-binding',['Rscript','--vanilla',str(ROOT/'check-combined-binding.R'),binaries['private']['dll_path'],str(REPO/bind['model_path'])],cwd=REPO,timeout=300)\n  File \"/private/tmp/relm-f6e/verify-combined-resume2.py\", line 26, in stage\n    assert code==0,name+' failed: preserve/diagnose before affected-only correction'\n           ^^^^^^^\nAssertionError: combined-R-binding failed: preserve/diagnose before affected-only correction\n",
+  "source_drift": [],
+  "finished_at": 1791422490.6060889
+}

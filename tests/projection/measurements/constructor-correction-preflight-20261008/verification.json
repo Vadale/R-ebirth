@@ -1,0 +1,17 @@
+{
+  "status": "source_preflight_passed_not_execution",
+  "changed_native_paths": [
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs"
+  ],
+  "new_sha256": "2d07138d7e288cbecffb7e97cd7664db89e043875567376d784149e854225752",
+  "native_source_hashes": 20,
+  "reference_hashes": 4,
+  "collector_controls_carried": 56,
+  "collector_sha256": "3f3965a71395bf9bc33590d6b4535144db611041bda66bab4b5088599d30337e",
+  "remaining_driver_tail_byte_identical": true,
+  "carried_R_cases": 3,
+  "carried_R_expectations": 61,
+  "carried_llm_clippy": true,
+  "R_tests_repeated": 0,
+  "native_cases_previously_executed": 0
+}

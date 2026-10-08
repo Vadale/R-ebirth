@@ -1,0 +1,16 @@
+{
+  "overall_run": "failed",
+  "passed_exact_test": "projection::tests::projection_forward_matches_independent_reference",
+  "cases": 15,
+  "whole_forward_values": 34748,
+  "max_abs_error": 0.004728402942419052,
+  "same_row_values": 2944,
+  "same_row_max_abs_error": 0.0,
+  "source_manifest_sha256": "6c3c79a70d231648708d3285553c917df9b622269f55800866aa3e19d21e5b52",
+  "current_source_drift": [],
+  "stage_log_hashes_matched": 5,
+  "test_warnings": [],
+  "failed_test": "projection::tests::projection_microbatches_pruning_and_graph_reuse",
+  "failure_scope": "long_prefill final-token logit outside unchanged0.01; cause under diagnosis",
+  "native08_09_and_benchmarks": "unexecuted"
+}

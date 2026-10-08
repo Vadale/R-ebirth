@@ -1,0 +1,44 @@
+{
+  "status": "verified",
+  "run_overall_status_preserved": "awaiting_owner_verification",
+  "source_manifest_sha256": "31a68e040cd179e8c8120e0adeaafebef0685ba5d6902339c7ef9aa98420ea38",
+  "source_files": 623,
+  "archived_sources": 14,
+  "stage_logs": 7,
+  "warnings": 0,
+  "affected_outcomes": 3,
+  "guard_capacity_classifier_cases": [
+    21,
+    8,
+    12
+  ],
+  "negative_controls": [
+    17,
+    1,
+    8
+  ],
+  "metal_forward": {
+    "cases": 15,
+    "values": 34748,
+    "max_abs_error": 0.0032854005694389343,
+    "same_row_values": 2944,
+    "same_row_max_error": 0.0
+  },
+  "buffer_receipts": 71,
+  "actual_shared_device": "MTL0",
+  "samples": 20,
+  "tokens_per_sample": 128,
+  "medians": [
+    1.1968704159999999,
+    1.231477208,
+    1.234167583,
+    1.2761238750000001,
+    1.368325542
+  ],
+  "dormant_ratio": 1.0289144017074612,
+  "dormant_limit": 1.05,
+  "active_limit": null,
+  "private_max_ledger_bytes": 18633740,
+  "public_feature_acceptance": false,
+  "scope": "scoped private Metal correction; earlier CPU/native gates retain exact source scopes; no public R/FFI/resource/UB acceptance"
+}

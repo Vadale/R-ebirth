@@ -1,0 +1,23 @@
+{
+  "mode": "corrected",
+  "library_paths": ["/private/tmp/relm-f6e/public-library-budget", "/private/tmp/relm-service/library", "/Users/alessandrovadala/Library/R/arm64/4.5/library", "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library"],
+  "packages": [
+    {
+      "package": "later",
+      "available": true,
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/later",
+      "version": "1.4.8"
+    },
+    {
+      "package": "promises",
+      "available": true,
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/promises",
+      "version": "1.5.0"
+    }
+  ],
+  "dependency_gate": "PASS",
+  "error": null,
+  "models": 0,
+  "inference": 0,
+  "raw_failed_settings_verified": 0
+}

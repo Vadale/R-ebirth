@@ -1,0 +1,107 @@
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+Get:3 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]
+Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [531 kB]
+Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main all Packages [640 B]
+Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.3 kB]
+Get:10 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [474 kB]
+Hit:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease
+Get:4 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:5 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:6 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1375 kB]
+Get:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en [306 kB]
+Get:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1702 kB]
+Get:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [341 kB]
+Get:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [1761 kB]
+Get:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [401 kB]
+Get:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages [55.0 kB]
+Get:18 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en [14.3 kB]
+Get:19 http://azure.archive.ubuntu.com/ubuntu noble-security/main amd64 Packages [1074 kB]
+Get:20 http://azure.archive.ubuntu.com/ubuntu noble-security/main Translation-en [223 kB]
+Get:21 http://azure.archive.ubuntu.com/ubuntu noble-security/universe amd64 Packages [1218 kB]
+Get:22 http://azure.archive.ubuntu.com/ubuntu noble-security/universe Translation-en [245 kB]
+Get:23 http://azure.archive.ubuntu.com/ubuntu noble-security/multiverse Translation-en [11.6 kB]
+Fetched 10.1 MB in 2s (5423 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following additional packages will be installed:
+  libclang-common-19-dev libclang-cpp19 libclang1-19 llvm-19-dev
+  llvm-19-linker-tools llvm-19-runtime llvm-19-tools
+Suggested packages:
+  clang-19-doc wasi-libc llvm-19-doc
+The following NEW packages will be installed:
+  clang-19 libclang-common-19-dev libclang-cpp19 libclang-rt-19-dev
+  libclang1-19 llvm-19 llvm-19-dev llvm-19-linker-tools llvm-19-runtime
+  llvm-19-tools
+0 upgraded, 10 newly installed, 0 to remove and 17 not upgraded.
+Need to get 95.0 MB of archives.
+After this operation, 608 MB of additional disk space will be used.
+Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]
+Get:2 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libclang-cpp19 amd64 1:19.1.1-1ubuntu1~24.04.2 [14.3 MB]
+Get:3 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libclang-common-19-dev amd64 1:19.1.1-1ubuntu1~24.04.2 [743 kB]
+Get:4 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 llvm-19-linker-tools amd64 1:19.1.1-1ubuntu1~24.04.2 [1314 kB]
+Get:5 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libclang1-19 amd64 1:19.1.1-1ubuntu1~24.04.2 [8272 kB]
+Get:6 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 clang-19 amd64 1:19.1.1-1ubuntu1~24.04.2 [78.9 kB]
+Get:7 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 libclang-rt-19-dev amd64 1:19.1.1-1ubuntu1~24.04.2 [3893 kB]
+Get:8 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 llvm-19-runtime amd64 1:19.1.1-1ubuntu1~24.04.2 [553 kB]
+Get:9 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 llvm-19 amd64 1:19.1.1-1ubuntu1~24.04.2 [17.8 MB]
+Get:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 llvm-19-tools amd64 1:19.1.1-1ubuntu1~24.04.2 [541 kB]
+Get:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 llvm-19-dev amd64 1:19.1.1-1ubuntu1~24.04.2 [47.5 MB]
+Fetched 95.0 MB in 35s (2733 kB/s)
+Selecting previously unselected package libclang-cpp19.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 203191 files and directories currently installed.)
+Preparing to unpack .../0-libclang-cpp19_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking libclang-cpp19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package libclang-common-19-dev:amd64.
+Preparing to unpack .../1-libclang-common-19-dev_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking libclang-common-19-dev:amd64 (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package llvm-19-linker-tools.
+Preparing to unpack .../2-llvm-19-linker-tools_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking llvm-19-linker-tools (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package libclang1-19.
+Preparing to unpack .../3-libclang1-19_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking libclang1-19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package clang-19.
+Preparing to unpack .../4-clang-19_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking clang-19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package libclang-rt-19-dev:amd64.
+Preparing to unpack .../5-libclang-rt-19-dev_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking libclang-rt-19-dev:amd64 (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package llvm-19-runtime.
+Preparing to unpack .../6-llvm-19-runtime_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking llvm-19-runtime (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package llvm-19.
+Preparing to unpack .../7-llvm-19_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking llvm-19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package llvm-19-tools.
+Preparing to unpack .../8-llvm-19-tools_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking llvm-19-tools (1:19.1.1-1ubuntu1~24.04.2) ...
+Selecting previously unselected package llvm-19-dev.
+Preparing to unpack .../9-llvm-19-dev_1%3a19.1.1-1ubuntu1~24.04.2_amd64.deb ...
+Unpacking llvm-19-dev (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up libclang1-19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up libclang-common-19-dev:amd64 (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up libclang-rt-19-dev:amd64 (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up llvm-19-linker-tools (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up llvm-19-runtime (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up llvm-19-tools (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up libclang-cpp19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up clang-19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up llvm-19 (1:19.1.1-1ubuntu1~24.04.2) ...
+Setting up llvm-19-dev (1:19.1.1-1ubuntu1~24.04.2) ...
+Processing triggers for systemd (255.4-1ubuntu8.17) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Not building database; man-db/auto-update is not 'true'.
+Processing triggers for libc-bin (2.39-0ubuntu8.9) ...
+
+Running kernel seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+No user sessions are running outdated binaries.
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.

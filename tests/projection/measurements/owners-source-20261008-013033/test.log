@@ -1,0 +1,11 @@
+source-test: .........1.................................
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('source-test.R:59:5'): projection scalar scan refuses hidden owne
+Expected `projection_owner_scan(list(), bad, 3L, 4L)` to throw a error.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: sum(frame$failed) == 0L is not TRUE
+Execution halted

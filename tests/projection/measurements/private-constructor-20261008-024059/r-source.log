@@ -1,0 +1,6 @@
+source-test: .............................................................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+F6E_CONSTRUCTOR_R_SOURCE cases=3 expectations=61 failures=0 errors=0 skips=0 warnings=0 models=0

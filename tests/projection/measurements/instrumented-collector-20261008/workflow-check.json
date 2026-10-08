@@ -1,0 +1,9 @@
+{
+  "scope": "R yaml parse and routing assertions only; no remote execution",
+  "workflow_sha256": "9aebbaa8343e7a7e3cdd9ae86fee17163a3e813f4b82b451c2104b154eb5056a",
+  "projection_steps": 4,
+  "unchanged_scope_steps_excluded": 4,
+  "scheduled_default": "full",
+  "steps": 13,
+  "retained_preflight_note": "Initial manual assertion guessed 14 total steps and failed after successful YAML parse; actual source has 9 original + 4 added = 13. Replaced arbitrary total-count check with exact selected and excluded route assertions; no workflow relaxation."
+}

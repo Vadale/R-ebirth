@@ -1,0 +1,7 @@
+{
+  "status": "verified_failure",
+  "model_loads": 0,
+  "installations": 0,
+  "cause": "Current-source loader restored exact approved namespace and help, but link resolver still consults installed package help index from old namespace. The strict unresolved-link gate correctly stopped before install.",
+  "correction": "Carry restored source documentation; install candidate, then validate/re-render docs against THAT newly installed matching namespace. Require documentation bytes unchanged and no unresolved link/name diagnostics. No R/native implementation change."
+}

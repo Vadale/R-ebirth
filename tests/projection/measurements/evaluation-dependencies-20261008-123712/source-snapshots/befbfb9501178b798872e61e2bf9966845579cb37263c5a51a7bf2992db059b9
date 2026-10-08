@@ -1,0 +1,55 @@
+{
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "gguf_version": 3,
+  "tensors": 291,
+  "metadata_entries": 26,
+  "metadata_bytes": 5931189,
+  "metadata_sha256": "ce98a193e9d08aa64d049e21af5be38dc7582f0b570baeb20d0422b0aa536dea",
+  "metadata": {
+    "tokenizer.ggml.model": "gpt2",
+    "tokenizer.ggml.pre": "qwen2",
+    "tokenizer.ggml.tokens": {
+      "element_type": 8,
+      "length": 151936,
+      "selected": [
+        {
+          "zero_based_id": 128247,
+          "value": "</s>"
+        },
+        {
+          "zero_based_id": 151643,
+          "value": "<|endoftext|>"
+        },
+        {
+          "zero_based_id": 151645,
+          "value": "<|im_end|>"
+        }
+      ]
+    },
+    "tokenizer.ggml.token_type": {
+      "element_type": 5,
+      "length": 151936,
+      "selected": [
+        {
+          "zero_based_id": 128247,
+          "value": 1
+        },
+        {
+          "zero_based_id": 151643,
+          "value": 3
+        },
+        {
+          "zero_based_id": 151645,
+          "value": 3
+        }
+      ]
+    },
+    "tokenizer.ggml.eos_token_id": 151645,
+    "tokenizer.ggml.padding_token_id": 151643,
+    "tokenizer.ggml.bos_token_id": 151643,
+    "tokenizer.ggml.add_bos_token": false
+  },
+  "vocab_source_sha256": "33a3ac4e52bebb21101d0228e9ff5dbde34e7e4d119334a09e7d9e09f915423f",
+  "diagnosis": "Pinned GGUF stores zero-based token 128247 </s> as NORMAL (1). The unchanged loader adds it to EOG and ORs CONTROL, emitting this warning. This is runtime tokenizer semantics, not a compiler warning or projection defect; no claim of no output effect.",
+  "evidence_scope": "Metadata inspected without model load/inference. Failed attempt has one model load and zero trace/generation/derive/tokenization attempts."
+}

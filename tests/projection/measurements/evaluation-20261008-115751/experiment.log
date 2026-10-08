@@ -1,0 +1,19 @@
+F6E_EVALUATION_STAGE load_cpu
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+Traceback (most recent call last):
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/collect_run.py", line 154, in <module>
+    require(len(sys.argv)==3,'stage and bundle required');main(sys.argv[1],sys.argv[2])
+                                                          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/collect_run.py", line 131, in main
+    data=(root/'native-placement.log').read_bytes();result=cpu_receipt(data)
+                                                           ~~~~~~~~~~~^^^^^^
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/collect_run.py", line 43, in cpu_receipt
+    require(not re.search(r'^\[(?:3|4)\]',text,re.M), 'native load warning/error requires diagnosis')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/collect_run.py", line 31, in require
+    if not ok: raise ValueError(message)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: native load warning/error requires diagnosis
+Error in helper("cpu") : Independent evidence stage failed: cpu
+Calls: f6e_main -> withCallingHandlers -> helper
+Execution halted

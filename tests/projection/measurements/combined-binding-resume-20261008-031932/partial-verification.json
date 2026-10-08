@@ -1,0 +1,10 @@
+{
+  "status": "verified_collector_configuration_failure_before_new_execution",
+  "sources": 112,
+  "tar_members": 44,
+  "carried_log_hashes": 6,
+  "new_execution_stages": 0,
+  "models": 0,
+  "cause": "The actual ready fresh_dll_contract is flat; driver incorrectly indexed an absent base field. Correct one lookup, preserve the exact prepared link/build contract.",
+  "source_manifest_sha256": "29835e928e07da28036ae9f14fb55401dc66382913f80b3747a0c40bcbe04935"
+}

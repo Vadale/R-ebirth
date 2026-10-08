@@ -111,8 +111,26 @@ jobs:
       # the committed synthetic GGUF must match the numpy oracle golden within
       # the documented F32-vs-F64 tolerance. Download-free, synthetic-only.
       - name: cargo test (R-free engine crate)
+        id: engine_tests
         if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked -p rebirth-llm
+
+      # This new controlled observation runs only after an engine test failure.
+      # It does not replace, relax, retry or turn that failed test green.
+      - name: Retain output-policy failure diagnosis
+        if: failure() && steps.engine_tests.outcome == 'failure'
+        run: |
+          mkdir -p "$RUNNER_TEMP/projection-policy-diagnosis"
+          git rev-parse HEAD > "$RUNNER_TEMP/projection-policy-diagnosis/source-sha.txt"
+          cargo test --locked -p rebirth-llm --lib projection::tests::projection_output_policy_failure_diagnostic -- --exact --ignored --nocapture > "$RUNNER_TEMP/projection-policy-diagnosis/native.log" 2>&1
+
+      - name: Upload output-policy failure observations
+        if: failure() && steps.engine_tests.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: projection-policy-diagnosis-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/projection-policy-diagnosis
+          if-no-files-found: error
 
       # Ownership assertions must remain active in optimized builds (D-037).
       - name: async ownership and cancellation (release profile)
@@ -149,7 +167,7 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          # Exact interpreter recorded by the independent D045 byte reference.
+          # Exact interpreter recorded by the independent D045/D046 references.
           python-version: '3.13.5'
 
       - name: install pinned golden tooling (test-only, not a package dep)
@@ -165,6 +183,23 @@ jobs:
         run: |
           python tests/llm-golden/directions/reference_directions.py --check
           python tests/directions/check-fixture-mirror.py
+
+      - name: Projection arithmetic, forward and schema-2 references (no engine)
+        id: projection_reference
+        run: |
+          python tests/projection/test_reference_retention.py
+          python tests/projection/test_reference_comparison.py
+          python tests/projection/check_reference_retained.py --output "$RUNNER_TEMP/projection-reference-check"
+          python tests/projection/test_fixture_mirror.py
+          python tests/projection/check-fixture-mirror.py
+
+      - name: Retain strict projection reference failure bytes
+        if: failure() && steps.projection_reference.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: projection-reference-check-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/projection-reference-check
+          if-no-files-found: warn
 
       - name: Service contract consistency (planning only)
         run: python tests/service-contract/verify.py --self-test

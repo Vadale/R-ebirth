@@ -1,0 +1,39 @@
+{
+  "status": "diagnosed",
+  "library_candidates": {
+    "/private/tmp/relm-f6e/public-library-review/later": {
+      "directory": false,
+      "description": false,
+      "metadata": false
+    },
+    "/private/tmp/relm-f6e/public-library-review/promises": {
+      "directory": false,
+      "description": false,
+      "metadata": false
+    },
+    "/private/tmp/relm-service/library/later": {
+      "directory": true,
+      "description": false,
+      "metadata": false
+    },
+    "/private/tmp/relm-service/library/promises": {
+      "directory": false,
+      "description": false,
+      "metadata": false
+    },
+    "/Users/alessandrovadala/Library/R/arm64/4.5/library/later": {
+      "directory": true,
+      "description": true,
+      "metadata": true
+    },
+    "/Users/alessandrovadala/Library/R/arm64/4.5/library/promises": {
+      "directory": true,
+      "description": true,
+      "metadata": true
+    }
+  },
+  "resolved_after_namespace_load": "later 1.4.8 /Users/alessandrovadala/Library/R/arm64/4.5/library/later \npromises 1.5.0 /Users/alessandrovadala/Library/R/arm64/4.5/library/promises \n",
+  "stderr": "",
+  "reason": "packageDescription chooses the first accessible directory even without package metadata; find.package and namespace loading resolve the real installed user-library package. Explicitly load the existing namespace before checking its version. No library path or dependency bytes changed.",
+  "model_calls": 0
+}

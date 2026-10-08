@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "source_count": 10,
+  "cases": 6,
+  "expectations": 37,
+  "failures": 0,
+  "skips": 0,
+  "test_warnings": 0,
+  "scope": "Source-only mocked boundary sequencing and cleanup; not native/installed/model acceptance",
+  "external_warning": "testthat built under R4.5.2",
+  "log_sha256": "ac4f1dd5c0e9e8807b3666cf5d9934d808a53e4a7b63ea4859f03a203e64161d"
+}

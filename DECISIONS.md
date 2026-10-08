@@ -1479,3 +1479,78 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
 4. **Versioning:** `R-ebirth X.Y (compatible with R x.y.z)` — the upstream compatibility level always stated, including in `R.version`.
 5. **Scope reserved to the fork (nothing else justifies it):** speculative JIT in the evaluator; real surface syntax (type annotations, `async`/`await` keywords); base-default changes. All three stay function-based/API-level until then.
 6. **Licensing at rung 3:** the fork repository inherits GPL-2 | GPL-3 (combined distributions effectively GPL-3 for Apache-2.0 compatibility); the permissive Rust crates (`rebirth-llm` etc.) remain MIT OR Apache-2.0 and are linked in — which is why they must stay R-free (see `ARCHITECTURE.md` §2).
+
+
+## D-046 — Component-specific static projection through the existing direction API
+
+- **Acceptance clarification, approved 2026-10-08:** the founder explicitly
+  authorized relaxing the two byte/bit comparisons after reviewing the Linux
+  diagnostic ("Ok allenta i test ma muoviti a risolvere"). Frozen fixtures,
+  producer, encoding and integrity checks remain exact. Recomputed F64
+  observations use the previously fixed absolute-plus-relative1e-12 bound;
+  different native output policies use the existing absolute0.01 downstream
+  bound. Same-policy replay and zero/original identity remain bitwise, with
+  unchanged2e-6 same-row projection checks. No kernel benignity or general
+  batching-invariance claim follows. Historical strict failures remain failed.
+  `methods` is now declared in DESCRIPTION for the already used base-R
+  allocation prototypes; this adds no installation or non-base dependency.
+- **Date/status:** APPROVED on 2026-10-07. Preparation was authorized by
+  "Fatto, passa alla prossima fase"; the concrete D046 API/placement/schema/native
+  contract was then presented. The subsequent founder reply "vai continua"
+  approves that contract. The earlier generic start alone was not used as
+  approval. D042/D043 roadmap scope is settled; no API question remains.
+- **Proposal:** append `operator = "add"` to `llm_apply_direction()`, accepting
+  exactly `"add"` and `"project"`; preserve all existing calls/default behavior.
+  No new exported wrapper. Extend the unchanged `llm_direction()` signature to
+  explicit full-width MLP/post-Wo attention construction profiles, using new
+  schema2 artifacts while retaining residual schema1 byte compatibility.
+  [API-GRAMMAR14](API-GRAMMAR.md) and [the concrete contract](docs/f6e-projection-contract.md)
+  define limits, supported sites, error behavior, native proof and acceptance.
+- **Operation:** for unit `v`, `h_new = h - coef * v * dot(v,h)`. Zero identity,
+  unit removal, negative amplification, sign invariance and unchanged orthogonal
+  components are distinct from additive steering and independently verified.
+  The native direction stays f64; deterministic coordinate-order f64 arithmetic
+  writes checked f32 rows at the actual producer boundary, with no silent
+  normalization/clipping or whole-context host copy.
+- **Placement/scope:** initial validated dense-Llama MLP/post-Wo attention and
+  Qwen2 MLP sites on CPU/Metal, text generation/logits only. A name or architecture
+  string does not prove a safely editable site, especially Llama's dense/MoE
+  duplicate `ffn_out` names. Unsupported/missing/ambiguous sites fail closed.
+  One static projection per(layer,component), at most32 sites; graph-order
+  composition precedes existing residual steer-then-ablate. F6b replies remain
+  additive-only; no hidden live projection or vision/ordinary-trace extension.
+- **Identity/persistence:** validate destination recorded model context and
+  component-bound artifact integrity; projection rejects residual artifacts,
+  addition rejects component artifacts. No implicit transfer or loaded-weight
+  authentication. Existing trusted RDS and bounded temporary checksum files are
+  reused; no new side-effect category or model download.
+- **Native path:** recommend a feasibility-gated zero-vendor-patch callback
+  bridge, with one stable context-owned dispatcher and a relm-owned C++ site
+  classifier compiled against actual pinned headers. Rust keeps opaque tensors.
+  Mutation precedes live observation, runs on every actual selected-site row,
+  and cannot depend on an R callback or final-row capture filter. Prove alias,
+  backend synchronization, downstream use and failure propagation; callback
+  false alone is not whole-decode cancellation. Freeze actual compiled memory
+  capacities/probe storage before production arming. A required vendor patch
+  would be a separate concrete approval, not an inferred escape route.
+- **Graphics compatibility:** append `configured_projections` to the existing
+  model-map table and mark the configured component; all existing columns keep
+  their meaning. Print/summary show the operator. Timeline remains explicitly
+  additive live history, not an invented applied-projection revision stream.
+- **Validation:** separate independent new goldens before implementation,
+  private CPU/Metal feasibility/negative controls, allocation/FFI/lifecycle and
+  affected instrumented native gates, fresh installed tests, a new frozen
+  held-out experiment comparing additive and projection plus baselines, scoped
+  graphics/vignette/package checks and one integrated implementation review.
+  Preserve old accepted evidence and all nine final CI names. Existing F6d
+  held-out prompts are consumed and cannot become new evaluation data.
+- **Alternatives:** a separate public projection wrapper duplicates artifact
+  validation and increases the surface; changing residual coefficient sign is
+  not projection; a vendor graph-op patch is more invasive and is not the
+  default before the bounded zero-patch feasibility gate. No new dependency.
+- **Architecture analysis:** the focused [source report](docs/f6e-native-feasibility.md)
+  finds a conditional route, not executed acceptance. The documented callback
+  is observational; actual safe downstream mutation remains a required gate.
+- **Next action:** freeze independent
+  numerical/encoding references and execute the private native feasibility gate.
+  Approval alone is not numerical/resource/behavioral acceptance.

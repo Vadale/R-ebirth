@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "pid": 53209,
+  "directory": "/private/tmp/relm-f6e/owners-constructor-20261008-013420",
+  "started_at": 1791416060.493471,
+  "cases": 2,
+  "expectations": 32,
+  "source_hashes": 8,
+  "source_drift": [],
+  "model_runs": 0,
+  "installed_acceptance": false,
+  "test_log_sha256": "5b8ce9f77abeca3e208c7c56cd09081df86d17afd9143335ed204a937c70d4ac",
+  "finished_at": 1791416060.8458052
+}

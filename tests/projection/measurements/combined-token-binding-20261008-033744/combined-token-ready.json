@@ -1,0 +1,304 @@
+{
+  "status": "ready",
+  "scope": "Private fixed-token R-hosted combined-constructor harness adapter only",
+  "original_source_hashes": {
+    "docs/f6e-memory-contract.md": "d3160a76a3601dcde3de8add9088b0f79f02825eb76a8017efa950ee5b00c72c",
+    "rebirth/src/rust/rebirth-ffi/Cargo.toml": "2847beacc07ea97a6e19ef42309555f626d81fcc62ff9baaea2c277805b7dfc0",
+    "rebirth/src/rust/rebirth-ffi/native/projection_state.c": "5cbb782ea0e957e9899143d10a3b151d4e84b592efe435c83f51cd97705272a0",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": "f428ee6483d2c243b03d72f4a6ff115b3f61a7832e714c7bb71162f0b40562fe",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "6727456fc2fb342cb530c5e5e137e828283674f05058cd81bcb18edfc97ea2f8",
+    "rebirth/src/rust/rebirth-ffi/src/projection_bridge.rs": "1fffb87166da8c74d8915ecfe6271855f704f4d5b857f068436a803ef03104b3",
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs": "2d07138d7e288cbecffb7e97cd7664db89e043875567376d784149e854225752",
+    "rebirth/src/rust/rebirth-llm/Cargo.toml": "172e43bf2326b6b895b2bd2904fb41c8493ba56ffa5328ca9f59c9bd7596c45e",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "56c88408bc86d2c9e947a3ca813c1daa6de05acbd5d27fe5236f5a06dce12236",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "0fd5fffe1e4624d54fb132746612f76843e39103f6defacb462c6b8b363f841d",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "a08feacb22a44fa997dee7e52cab39ef472d78d05cbe94a73449027cfc3ae037",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "1b1af381021dc84fc00e672d7f3e0845d70cc6cc5b35e0f179028578deb1646c",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "5c848d144b0103b9b152b3c4e1f0277eab2bd69d7a6be03dfd3f3be2b2d42805",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "a9915e2718faa2fa57a51f8d668dfa8b6a0e4d3288b2c6ae9af76740d09a681f",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs": "9f1d0f5f1b515e11391857338bee6ae795f81764835351fe3c9c8e975639a2f3",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "c87f53fe912bab19120bbb28dd2ceba90f037df33a8bb5d5f631acee95b576a5",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor.rs": "f549f670968240a7d00e6f0537792ca95360652baf521fdd5a6b6775dfe98bff",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor_tests.rs": "26efc42fc11d61b460e1f679835c2fa2c7b871fe437c697606239c4376a3de19",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "4f1a0b81a8b680c194f2a6919c7b4cc27547b56b56de76758803411f585d6df1",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "05259c00287bc6b8e07608f81f55bfc68d2637a1320400a3ab819d5b625bc523",
+    "rebirth/src/rust/rebirth-llm/src/trace.rs": "bcdf63a7d51b60eae0276c3f3603bc2925f967efe0961d53852a6936eb777655"
+  },
+  "original_receipt_sha256": "cbdb86a2c37e5090ff477b4f272e91a24d2ee1da3fa70f1eca98bbc4e83e4a46",
+  "no_builds_tests_models_executed_by_agent": true,
+  "original_source_snapshot": "/private/tmp/relm-f6e/combined-token-original",
+  "approved_extension": "One projection-private llm helper module and cfg line for authoritative no-clone scalar shape guard; no constructor/profile/type changes.",
+  "owned_files": [
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs",
+    "rebirth/src/rust/rebirth-ffi/src/projection_combined_test_boundary.rs",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_combined_test.rs"
+  ],
+  "source_hashes": {
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": "2c59e7b99a04c0b3d9e419b86cae9868d953470321e8819183ba48ebdcbf7c9b",
+    "rebirth/src/rust/rebirth-ffi/src/projection_combined_test_boundary.rs": "25f11e75c7f7a0ad08e65d0b66c7bba1321fd3dbfa16b7f582694c7bd25ac61b",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "1024a27fe281e6aa21d312249b68ff90e32017f2f9f41c9dc30064db526ff196",
+    "rebirth/src/rust/rebirth-llm/src/projection_combined_test.rs": "cb34d39bdc4ae443f638b65800e602839cada3dbfc4b5b694dbcaa4ccedc732b"
+  },
+  "changed_hashes": {
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": {
+      "before": "f428ee6483d2c243b03d72f4a6ff115b3f61a7832e714c7bb71162f0b40562fe",
+      "after": "2c59e7b99a04c0b3d9e419b86cae9868d953470321e8819183ba48ebdcbf7c9b"
+    },
+    "rebirth/src/rust/rebirth-ffi/src/projection_combined_test_boundary.rs": {
+      "before": null,
+      "after": "25f11e75c7f7a0ad08e65d0b66c7bba1321fd3dbfa16b7f582694c7bd25ac61b"
+    },
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": {
+      "before": "5c848d144b0103b9b152b3c4e1f0277eab2bd69d7a6be03dfd3f3be2b2d42805",
+      "after": "1024a27fe281e6aa21d312249b68ff90e32017f2f9f41c9dc30064db526ff196"
+    },
+    "rebirth/src/rust/rebirth-llm/src/projection_combined_test.rs": {
+      "before": null,
+      "after": "cb34d39bdc4ae443f638b65800e602839cada3dbfc4b5b694dbcaa4ccedc732b"
+    }
+  },
+  "preserved_source_hashes": {
+    "docs/f6e-memory-contract.md": "d3160a76a3601dcde3de8add9088b0f79f02825eb76a8017efa950ee5b00c72c",
+    "rebirth/src/rust/rebirth-ffi/Cargo.toml": "2847beacc07ea97a6e19ef42309555f626d81fcc62ff9baaea2c277805b7dfc0",
+    "rebirth/src/rust/rebirth-ffi/native/projection_state.c": "5cbb782ea0e957e9899143d10a3b151d4e84b592efe435c83f51cd97705272a0",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "6727456fc2fb342cb530c5e5e137e828283674f05058cd81bcb18edfc97ea2f8",
+    "rebirth/src/rust/rebirth-ffi/src/projection_bridge.rs": "1fffb87166da8c74d8915ecfe6271855f704f4d5b857f068436a803ef03104b3",
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs": "2d07138d7e288cbecffb7e97cd7664db89e043875567376d784149e854225752",
+    "rebirth/src/rust/rebirth-llm/Cargo.toml": "172e43bf2326b6b895b2bd2904fb41c8493ba56ffa5328ca9f59c9bd7596c45e",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "56c88408bc86d2c9e947a3ca813c1daa6de05acbd5d27fe5236f5a06dce12236",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "0fd5fffe1e4624d54fb132746612f76843e39103f6defacb462c6b8b363f841d",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "a08feacb22a44fa997dee7e52cab39ef472d78d05cbe94a73449027cfc3ae037",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "1b1af381021dc84fc00e672d7f3e0845d70cc6cc5b35e0f179028578deb1646c",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "a9915e2718faa2fa57a51f8d668dfa8b6a0e4d3288b2c6ae9af76740d09a681f",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs": "9f1d0f5f1b515e11391857338bee6ae795f81764835351fe3c9c8e975639a2f3",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "c87f53fe912bab19120bbb28dd2ceba90f037df33a8bb5d5f631acee95b576a5",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor.rs": "f549f670968240a7d00e6f0537792ca95360652baf521fdd5a6b6775dfe98bff",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor_tests.rs": "26efc42fc11d61b460e1f679835c2fa2c7b871fe437c697606239c4376a3de19",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "4f1a0b81a8b680c194f2a6919c7b4cc27547b56b56de76758803411f585d6df1",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "05259c00287bc6b8e07608f81f55bfc68d2637a1320400a3ab819d5b625bc523",
+    "rebirth/src/rust/rebirth-llm/src/trace.rs": "bcdf63a7d51b60eae0276c3f3603bc2925f967efe0961d53852a6936eb777655"
+  },
+  "preservation_summary": {
+    "prior_native_C_Cargo_count": 16,
+    "preserved_exact": 15,
+    "authorized_exception": "rebirth/src/rust/rebirth-llm/src/lib.rs adds only cfg(feature=\"projection-private\") module declaration",
+    "constructor_profile_arithmetic_capacity_C_Cargo_changes": false,
+    "parent_constructor_helper_preserved": true,
+    "ffi_profile_and_bridge_preserved": true
+  },
+  "diagnosis": "The frozen H32/D3/Q48 synthetic GGUF is no_vocab. Ordinary text rebirth_logits must tokenize and fails before any constructor. Existing public prompt_last_logits already supports raw fixed IDs; this helper reuses it without changing production logits or constructor behavior.",
+  "interface": {
+    "entrypoint": "rebirth_selftest_projection_combined_logits",
+    "symbol": "wrap__rebirth_selftest_projection_combined_logits",
+    "arity": 1,
+    "arguments": [
+      "ptr"
+    ],
+    "feature": "projection-private",
+    "native_method": "LoadedModel::projection_combined_test_logits",
+    "native_module": "projection_combined_test (cfg feature=projection-private only)",
+    "fixed_native_token_ids": [
+      1,
+      7,
+      13
+    ],
+    "vocab": 48,
+    "shape_guard": {
+      "hidden_size": 32,
+      "layers": 3,
+      "vocab": 48,
+      "minimum_context_length": 3
+    },
+    "success": {
+      "names": [
+        "ok",
+        "logits"
+      ],
+      "ok": true,
+      "logits": "plain non-ALTREP REALSXP length48, no attributes, f32 values exactly widened to f64"
+    },
+    "default_error": {
+      "class": "relm_error_intervention",
+      "message": "Projection combined logits selftest is unavailable in this build.",
+      "before": "Any checked_handle/model/native access"
+    },
+    "private_invalid_foreign_closed_pointer_error": {
+      "class": "relm_error_closed",
+      "message": "Projection admission could not access the model."
+    },
+    "private_shape_error": {
+      "class": "relm_error_intervention",
+      "message": "Projection combined logits selftest requires H32/D3/vocab48/context>=3."
+    },
+    "panic_error": {
+      "class": "relm_error_internal",
+      "message": "Projection admission failed internally."
+    },
+    "error_names": [
+      "ok",
+      "class",
+      "message",
+      "fields"
+    ],
+    "error_fields": "list(reason=message); existing projection_resolve mapping unchanged"
+  },
+  "ordering": "checked_handle precedes source.run; native scalar guard and unchanged prompt_last_logits execute inside source.run; run releases model Ref and NativeGuard before Doubles::from_values or list! allocates any R result. Existing prompt_last_logits resets KV and ingests3 fixed tokens. No metadata clone/tokenizer/probe/new model/second context.",
+  "profile": {
+    "changed_fields": [],
+    "changed_terms": [],
+    "layout_changes": false,
+    "constructor_changes": false,
+    "schema_version": 2,
+    "profile_input_term_counts": [
+      27,
+      15,
+      14
+    ],
+    "reason": "Harness adapter is called separately before/after construction, never from admitted constructor/profile path. Adds no retained model or handle fields."
+  },
+  "harness_only_allocation": "Existing raw prompt result owns48f32 (192 payload bytes). Exact iterator Doubles::from_values allocates the one ordinary R48double vector (384 payload bytes) directly, with no intermediate native f64 Vec. Fixed3-token stack array; existing3-token decode batch; bounded scalar/wrapper descriptors. These are separate harness calls and never coexist on constructor stack.",
+  "tests": [
+    {
+      "id": "projection_combined_test::tests::fixed_fixture_shape",
+      "crate": "rebirth-llm",
+      "feature": "projection-private",
+      "expected_cases": 6,
+      "expected_rejections": 4,
+      "model_count": 0,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "--features",
+        "projection-private",
+        "projection_combined_test::tests::fixed_fixture_shape",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    }
+  ],
+  "marker": {
+    "prefix": "F6E_PROJECTION_COMBINED_TOKEN_TEST",
+    "fields": [
+      "test",
+      "status",
+      "expected_cases",
+      "executed_cases",
+      "expected_rejections",
+      "rejected_cases",
+      "model_count"
+    ],
+    "test": "fixed_fixture_shape",
+    "status": "passed",
+    "expected_cases": 6,
+    "executed_cases": 6,
+    "expected_rejections": 4,
+    "rejected_cases": 4,
+    "model_count": 0
+  },
+  "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+  "default_build_command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "rebirth-ffi",
+    "--lib"
+  ],
+  "private_build_command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "rebirth-ffi",
+    "--lib",
+    "--features",
+    "projection-private"
+  ],
+  "affected_compile_commands": [
+    [
+      "cargo",
+      "clippy",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-ffi",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    [
+      "cargo",
+      "clippy",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-ffi",
+      "--all-targets",
+      "--features",
+      "projection-private",
+      "--",
+      "-D",
+      "warnings"
+    ]
+  ],
+  "fresh_dll_contract": {
+    "platform": "accepted primary macOS arm64; use fresh scratch directory under this owner run",
+    "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+    "static_archive": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a",
+    "entrypoint_source": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/entrypoint.c",
+    "entrypoint_sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+    "scratch_preparation": "copy exact entrypoint.c into a NEW empty scratch directory in owner run; preserve hash; no installed/accepted relm.so reuse",
+    "link_cwd": "new scratch directory containing copied entrypoint.c only",
+    "link_environment": {
+      "PKG_LIBS": "-L/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug -lrelm -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-metal -lggml-base -framework Metal -framework MetalKit -framework Foundation -framework Accelerate -lc++"
+    },
+    "link_command": [
+      "R",
+      "CMD",
+      "SHLIB",
+      "-o",
+      "relm.so",
+      "entrypoint.c"
+    ],
+    "link_scope": "same ordered native archives/system flags as current src/Makevars, no Makevars recipe/document generation/cache cleaning; relm-grammar already contains projection.cpp",
+    "dll_name_requirement": "relm.so basename invokes existing R_init_relm and its real extendr registration/panic hook",
+    "retention_requirement": "retain fresh static archive/DLL/entrypoint hashes and raw link/Rscript logs bound to corrected source snapshot",
+    "feature_artifact_order": "Build/link/snapshot fresh default/private separately; never load both relm DLLs in one R process. Run new one-argument helper registration checks and parent corrected combined gate only; previous registration/bridge/constructor acceptance is retained separately."
+  },
+  "production_armed": false,
+  "public_r_operator_enabled": false,
+  "parent_actual_gate": "Replace only ordinary text logits calls with this fixed-token internal helper in the parent-owned combined27-case script. Preserve original/derived before/after numerical and lifecycle assertions, configured budgets and constructor counts; no old49-case constructor/native CPU/Metal/reference rerun.",
+  "parent_actual_call_recipe": ".Call(getNativeSymbolInfo(\"wrap__rebirth_selftest_projection_combined_logits\",PACKAGE=fresh_private_dll),source_or_derived_ptr)",
+  "raw_route_checks": "Assert exact names c(\"ok\",\"logits\"), ok TRUE, typeof(logits)==\"double\", length48, is.null(attributes(logits)), all(is.finite(logits)); compare original/derived values according to existing parent combined assertions. Helper decodes3 fixed native IDs once per call, no model load.",
+  "static_validation": [
+    "rustfmt --edition2021 --config skip_children=true and --check on4 ownedRustfiles",
+    "git diff --check on changed tracked module files",
+    "19 original sources unchanged including15/16 prior native/C/Cargo and accepted FFIprofile/bridge/constructorhelper; only oldllmlib cfg module addition is authorized exception"
+  ],
+  "do_not_rerun": [
+    "accepted bridge-frame native test",
+    "old49-case constructor suite",
+    "old native1-9/CPU/Metal/Qwen/performance/diagnostic/reference suites"
+  ],
+  "r_hosted_registration_gate": {
+    "modes": [
+      "default",
+      "private"
+    ],
+    "cases_per_build": 2,
+    "refusals_per_build": 1,
+    "model_count": 0,
+    "source": "args <- commandArgs(trailingOnly=TRUE)\nstopifnot(length(args)==2L,args[[2L]] %in% c(\"default\",\"private\"))\npath <- normalizePath(args[[1L]],mustWork=TRUE)\nstopifnot(!\"relm\" %in% names(getLoadedDLLs()))\ndll <- dyn.load(path,local=TRUE,now=TRUE)\ns <- getNativeSymbolInfo(\"wrap__rebirth_selftest_projection_combined_logits\",PACKAGE=dll)\nstopifnot(identical(s$numParameters,1L),identical(normalizePath(s$dll[[\"path\"]],mustWork=TRUE),path))\nz <- .Call(s,NULL)\nexpected_class <- if(args[[2L]]==\"default\") \"relm_error_intervention\" else \"relm_error_closed\"\nexpected_message <- if(args[[2L]]==\"default\") \"Projection combined logits selftest is unavailable in this build.\" else \"Projection admission could not access the model.\"\nstopifnot(identical(names(z),c(\"ok\",\"class\",\"message\",\"fields\")),identical(z$ok,FALSE),identical(z$class,expected_class),identical(z$message,expected_message),identical(z$fields,list(reason=expected_message)))\ncat(sprintf('F6E_PROJECTION_COMBINED_TOKEN_R {\"mode\":\"%s\",\"status\":\"passed\",\"expected_cases\":2,\"executed_cases\":2,\"expected_rejections\":1,\"rejected_cases\":1,\"model_count\":0}\\n',args[[2L]]))\n"
+  }
+}

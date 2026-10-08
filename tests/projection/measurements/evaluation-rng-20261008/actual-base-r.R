@@ -1,0 +1,5 @@
+RNGkind("Mersenne-Twister", "Inversion", "Rejection")
+cat("VERSION", as.character(getRversion()), sep=","); cat("\n")
+set.seed(1046); cat(c("SIGNS", sample(rep(c(-1L,1L),each=6L))), sep=","); cat("\n")
+set.seed(2046); b <- t(replicate(2000L,sample.int(8L,8L,replace=TRUE)))
+write.table(b,stdout(),sep=",",row.names=FALSE,col.names=FALSE,quote=FALSE)

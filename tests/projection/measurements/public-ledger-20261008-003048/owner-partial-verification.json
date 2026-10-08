@@ -1,0 +1,22 @@
+{
+  "status": "partial_verified",
+  "overall_attempt": "failed",
+  "native_tests_executed": 0,
+  "model_runs": 0,
+  "R_cases": 7,
+  "R_expectations": 229,
+  "R_failures": 0,
+  "R_warnings": 0,
+  "external_warning": "testthat built under R4.5.2",
+  "passed_stages": [
+    "r-source",
+    "format",
+    "clippy-llm"
+  ],
+  "failed_stage": "clippy-ffi",
+  "reason": "extendr_api::test! expands to unresolved unapproved extendr_engine dependency",
+  "source_manifest_sha256": "27ba3514957949e45cf2f6dbf8aea563bdf88e0f5669d9d3688cf11612eddd9a",
+  "source_count": 100,
+  "archived_source_members": 29,
+  "production_arming": false
+}

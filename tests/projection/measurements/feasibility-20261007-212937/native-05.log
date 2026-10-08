@@ -1,0 +1,15 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-0f0613474562baff)
+
+running 1 test
+test projection::tests::projection_probe_rejects_missing_noop_and_wrong_site ... F6E_PROJECTION_FAILURE site=0:0 native_status=0 marker=1 rows=1 reason=projection downstream capability probe failed
+F6E_PROJECTION_FAILURE site=0:0 native_status=0 marker=1 rows=1 reason=projection producer readback failed
+F6E_PROJECTION_FAILURE site=0:0 native_status=0 marker=1 rows=1 reason=projection downstream capability probe failed
+F6E_PROJECTION_FAILURE site=0:0 native_status=0 marker=1 rows=1 reason=projection downstream capability probe failed
+F6E_PROJECTION_FAILURE site=0:0 native_status=0 marker=1 rows=1 reason=projection producer readback failed
+F6E_PROJECTION_FAILURE site=0:0 native_status=0 marker=1 rows=1 reason=projection downstream capability probe failed
+F6E_PROJECTION_TEST {"compared_values":0,"executed_cases":6,"expected_cases":6,"expected_values":0,"max_abs_error":0.0,"max_rel_error":0.0,"model_sha256":"e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05","negative_controls_expected":6,"negative_controls_rejected":6,"reference_manifest_sha256":"78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959","relative_error_scale":"1+abs(reference)","schema":1,"source_manifest_sha256":"aada551ec0adeb07a335024510910c21e96dbefa9ed5ecb925e771f51d8ee1a1","status":"passed","test_id":"projection::tests::projection_probe_rejects_missing_noop_and_wrong_site"}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 157 filtered out; finished in 0.06s
+

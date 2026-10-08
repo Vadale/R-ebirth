@@ -1,0 +1,9 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 42318,
+  "directory": "/private/tmp/relm-f6e/graphics-source-20261007-233326",
+  "scope": "source-only projection graphics table tests; no native/model/installed acceptance",
+  "exit_code": 0,
+  "source_drift": [],
+  "log_sha256": "6f6b797e5aabdb66933a3b46f00cffd9af4def62093035fc8b3da09dc3f3da22"
+}

@@ -1,0 +1,3 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.46s
+  Executable unittests src/lib.rs (target/debug/deps/rebirth_llm-7b8170873d856bbf)

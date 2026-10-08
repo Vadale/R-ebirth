@@ -1,0 +1,16 @@
+# One new affected R transport regression, no DLL/model.
+.libPaths(c('/private/tmp/relm-f6d/library', .libPaths()))
+repo <- '/Users/alessandrovadala/DOCUDESK/R-ebirth'
+out <- Sys.getenv('F6E_BUDGET_RUN');stopifnot(nzchar(out))
+env <- new.env(parent=globalenv())
+for(f in c('conditions.R','direction-schema.R','direction-arithmetic.R','direction-encoding.R','direction-validation.R','directions.R','live-state.R','projection-memory.R')) sys.source(file.path(repo,'rebirth/R',f),env)
+expr<-as.list(parse(file.path(repo,'rebirth/tests/testthat/test-projection-memory.R')))
+helper<-Filter(function(x)is.call(x)&&identical(x[[1]],as.name('<-'))&&identical(x[[2]],as.name('projection_test_profile')),expr)
+selected<-Filter(function(x)is.call(x)&&identical(x[[1]],as.name('test_that'))&&identical(x[[2]],'projection transport covers OOM fields and the bounded intervention alternative'),expr)
+stopifnot(length(helper)==1L,length(selected)==1L)
+text<-gsub('relm:::','',c(deparse(helper[[1]],width.cutoff=500L),deparse(selected[[1]],width.cutoff=500L)),fixed=TRUE)
+path<-file.path(out,'source-test.R');writeLines(text,path)
+z<-testthat::test_file(path,env=env,reporter='summary',stop_on_failure=FALSE)
+f<-as.data.frame(z);saveRDS(z,file.path(out,'r-source-results.rds'));write.csv(f[,setdiff(names(f),'result'),drop=FALSE],file.path(out,'r-source-results.csv'),row.names=FALSE)
+stopifnot(nrow(f)==1L,f$passed==12L,f$failed==0L,!f$error,!f$skipped,f$warning==0L)
+cat('F6E_BUDGET_R_SOURCE cases=1 expectations=12 failures=0 errors=0 skips=0 warnings=0\n')

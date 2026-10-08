@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "cases": 1,
+  "expectations": 10,
+  "prior_failed_attempt": "/private/tmp/relm-f6e/owners-source-20261008-013033",
+  "native_or_model_runs": 0,
+  "source_scope": "The corrected fixture is frozen in source-test.R. Its executed helpers are parsed-body identical to the original frozen source; the full-file execution interval was not separately snapshotted. Subsequent constructor/settings changes have their own frozen run."
+}

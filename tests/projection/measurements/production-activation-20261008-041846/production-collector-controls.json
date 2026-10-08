@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "positive": 5,
+  "negative": 43,
+  "controls": 48,
+  "scope": "synthetic collector controls only; no native/model acceptance"
+}

@@ -1,0 +1,198 @@
+{
+  "status": "failed",
+  "pid": 38258,
+  "directory": "/private/tmp/relm-f6e/feasibility-pruning-20261007-224427",
+  "started_at": 1791405867.047405,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791405867.16475,
+      "pid": 38264,
+      "exit_code": 0,
+      "finished_at": 1791405867.375948,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791405867.376368,
+      "pid": 38267,
+      "exit_code": 0,
+      "finished_at": 1791405868.473654,
+      "log_sha256": "ed77bde1f49ab4a018b6af0d4152deb0b16167109a17ec76543a68083f6f7453"
+    },
+    {
+      "name": "no-spill-compile",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--lib",
+        "--no-run"
+      ],
+      "status": "passed",
+      "started_at": 1791405868.474095,
+      "pid": 38273,
+      "exit_code": 0,
+      "finished_at": 1791405869.647936,
+      "log_sha256": "43c7e7fd6c22817470b365f8a6e8002955b538a21b7c2084017c4bb490e27f8f"
+    },
+    {
+      "name": "native-07",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_microbatches_pruning_and_graph_reuse",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791405869.648469,
+      "pid": 38291,
+      "exit_code": 0,
+      "finished_at": 1791405871.554398,
+      "log_sha256": "e9bfce76c31a60a6ab7e4e370217f39679de559e3ff7335b2f87a6e3c54a68a6"
+    },
+    {
+      "name": "native-08",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_capture_and_static_additive_composition",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791405871.5615091,
+      "pid": 38332,
+      "exit_code": 0,
+      "finished_at": 1791405871.702453,
+      "log_sha256": "a151841b27cd2fb787f9aa39412d3b213de5992f67684085b93d0343ec2169e6"
+    },
+    {
+      "name": "native-09",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_cancel_fault_and_owner_cleanup",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791405871.7030149,
+      "pid": 38352,
+      "exit_code": 0,
+      "finished_at": 1791405871.846237,
+      "log_sha256": "38c0fb025c806332a55ebbd8d2de5fcd320d3465f67ea05a9ce5e23b93f15936"
+    },
+    {
+      "name": "benchmark-cpu",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--release",
+        "--lib",
+        "projection::tests::projection_feasibility_model",
+        "--",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791405871.8469021,
+      "pid": 38372,
+      "exit_code": 0,
+      "finished_at": 1791405928.753296,
+      "log_sha256": "1494444afce166b1901c1556cdc94ac9e3b4cb5c3129662f1464f3edd840b114"
+    },
+    {
+      "name": "benchmark-metal",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--release",
+        "--lib",
+        "projection::tests::projection_feasibility_model",
+        "--",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "failed",
+      "started_at": 1791405928.7555149,
+      "pid": 38831,
+      "exit_code": 101,
+      "finished_at": 1791405930.244001,
+      "log_sha256": "07b90729bb00c4690a405812269d256cc12387cef0addb2ff04a9e45eeaf02db"
+    }
+  ],
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "public_feature_acceptance": false,
+  "carried_parent_verifications": [
+    "/private/tmp/relm-f6e/feasibility-20261007-212937/owner-verification.json",
+    "/private/tmp/relm-f6e/feasibility-resume-20261007-213532/owner-verification.json"
+  ],
+  "diagnosis_verification": "/private/tmp/relm-f6e/diagnostic-20261007-221757/owner-verification.json",
+  "executed_scope": "corrected native7 plus unexecuted native8-9 and CPU/Metal benchmarks; native1-6 retain exact verified parent scopes",
+  "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+  "stage": "benchmark-metal",
+  "error": "",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-feasibility-pruning.py\", line 181, in main\n    verify_benchmark(rows,backend,source,log)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6e/verify-feasibility-pruning.py\", line 236, in verify_benchmark\n    assert len(rows)==1\n           ^^^^^^^^^^^^\nAssertionError\n",
+  "source_drift": [],
+  "finished_at": 1791405930.333087
+}

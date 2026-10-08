@@ -1,0 +1,20 @@
+{
+  "source_sha": "1a9ec091f43c6d869f9184f95af2ce3a89bbb850",
+  "bound_files": 1001,
+  "scope_sha256": "4fc29cbff9883bafa8be57004cd7048e199450c690cce0bd9358a6f84dbf2c5d",
+  "command": [
+    "gh",
+    "workflow",
+    "run",
+    "nightly-memory-safety.yaml",
+    "--ref",
+    "codex/projection-steering",
+    "-f",
+    "sanitizers_only=true",
+    "-f",
+    "sanitizer_selection=projection-review-fixes"
+  ],
+  "returncode": 0,
+  "stdout": "https://github.com/Vadale/R-ebirth/actions/runs/37784612697\n",
+  "stderr": ""
+}

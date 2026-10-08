@@ -50,7 +50,8 @@ test_that("checksum byte caps precede writes and interrupt cleanup closes descri
   connections <- nrow(showConnections(all = TRUE))
   expect_error(relm:::direction_hash("values", list(neuron = 1L, value = 1), 8), class = "relm_error_internal")
   expect_identical(list.files(tempdir(), pattern = "^relm-direction-", full.names = TRUE), before)
-  testthat::local_mocked_bindings(direction_stream = function(domain, x, emit, vector) {
+  testthat::local_mocked_bindings(direction_stream = function(domain, x, emit, vector, schema = "relm_direction/1") {
+    expect_identical(schema, "relm_direction/1")
     emit(as.raw(1)); signalCondition(structure(list(message = "injected interruption", call = NULL), class = c("interrupt", "condition")))
   }, .package = "relm")
   caught <- tryCatch(relm:::direction_hash("values", list(), 100), interrupt = identity)

@@ -1,0 +1,15 @@
+{
+  "status": "verified_failure",
+  "failed_stage": "clippy-ffi",
+  "source_count": 107,
+  "source_manifest_sha256": "3a42e51b3eb34967de4b5448085f3da769beb9029cbc01b33588e8e108304b24",
+  "archived_source_count": 36,
+  "native_tests_executed": 0,
+  "models": 0,
+  "passed_stages": [
+    "format",
+    "clippy-llm"
+  ],
+  "diagnosis": "The Rust extern declaration uses extendr SEXP, whose pointee is a non-exhaustive SEXPREC. -D warnings rejects it as improper_ctypes. The accessor only transfers opaque R object pointers; Rust does not need or use the pointee layout.",
+  "correction": "Declare the two C object pointers as *mut c_void and explicitly cast protected Robj pointers at the call. Retain the C SEXP signature with official installed headers, all checks, compiled pointer sizes and behavior. No allow attribute, new dependency or R initialization is needed."
+}

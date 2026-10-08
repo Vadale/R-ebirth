@@ -1,0 +1,10 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.99s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-40b9218285e7d8ec)
+
+running 1 test
+test projection_combined_test::tests::fixed_fixture_shape ... F6E_PROJECTION_COMBINED_TOKEN_TEST {"test":"fixed_fixture_shape","status":"passed","expected_cases":6,"executed_cases":6,"expected_rejections":4,"rejected_cases":4,"model_count":0}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 172 filtered out; finished in 0.00s
+

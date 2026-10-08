@@ -1,0 +1,26 @@
+[
+  {
+    "fixture": "compiled_scalar",
+    "hash_slots": 0,
+    "bindings": 2,
+    "c_finalizer_bytes": 8,
+    "query_workspace_bytes": 264,
+    "ffi_response_bytes": 1464
+  },
+  {
+    "fixture": "unhashed",
+    "hash_slots": 0,
+    "bindings": 2,
+    "c_finalizer_bytes": 8,
+    "query_workspace_bytes": 264,
+    "ffi_response_bytes": 1464
+  },
+  {
+    "fixture": "hashed",
+    "hash_slots": 29,
+    "bindings": 2,
+    "c_finalizer_bytes": 8,
+    "query_workspace_bytes": 264,
+    "ffi_response_bytes": 1464
+  }
+]
