@@ -1,0 +1,131 @@
+{
+  "status": "failed",
+  "pid": 95151,
+  "directory": "/private/tmp/relm-f6e/review-fix-20261008-143824",
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "pid": 95157,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 95160,
+      "exit_code": 0,
+      "log_sha256": "89f548312b47336de92196ce374e582e1bb8a80d01f1cbb8070abc61142d71d6"
+    },
+    {
+      "name": "clippy-private",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "projection-private",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "pid": 95200,
+      "exit_code": 0,
+      "log_sha256": "5cb828d0fee18553638d26b3d9c5e181a0d3d79f96e9f75bbad0785399ac54de"
+    },
+    {
+      "name": "no-spill-default",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--lib"
+      ],
+      "status": "passed",
+      "pid": 95231,
+      "exit_code": 0,
+      "log_sha256": "b9f104d32800f69f84fc0c1b4adff7b9990b83db13757452c39f463d3946119c"
+    },
+    {
+      "name": "no-spill-private",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--features",
+        "projection-private",
+        "--lib"
+      ],
+      "status": "passed",
+      "pid": 95237,
+      "exit_code": 0,
+      "log_sha256": "7d7f94a8014e0d2e2d77a02f57ae0ac354164b73a3ef3f4a4677a65b07c2b1a7"
+    },
+    {
+      "name": "native-1",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::review_tests::projection_zero_live_capture_preserves_identity_without_row_work",
+        "--",
+        "--exact",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "status": "failed",
+      "pid": 95242,
+      "exit_code": 101,
+      "log_sha256": "0f3f35ea1b88fc44eb81b258976ce469ee9e825eecb24f1c35700a9279b40fdf"
+    }
+  ],
+  "model_loads_planned": 1,
+  "scope": "two integrated-review findings: zero-live no-copy and bounded registry reuse; exact regressions and fresh default DLL profile, not whole-suite or installed acceptance",
+  "source_manifest_sha256": "3c1f26ab00f5559c71bbb3b099417be9bbc90fc48da988cea3c07aefba1efc7f",
+  "source_count": 194,
+  "stage": "native-1",
+  "error": "native-1 failed; preserve and diagnose before affected-only correction",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-review-fix.py\", line 46, in main\n    receipts.append(c.native(stage('native-'+str(idx),test['command'],extra=test.get('env')),test));(run/'native-receipts.json').write_text(json.dumps(receipts,indent=2)+'\\n')\n                             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6e/verify-review-fix.py\", line 26, in stage\n    assert code==0,name+' failed; preserve and diagnose before affected-only correction'\n           ^^^^^^^\nAssertionError: native-1 failed; preserve and diagnose before affected-only correction\n",
+  "source_drift": [],
+  "finished_at": 1791463110.174043
+}

@@ -1,0 +1,42 @@
+{
+  "parent": "/private/tmp/relm-f6e/review-fix-20261008-143824",
+  "stages": [
+    {
+      "name": "no-spill-default",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--lib"
+      ],
+      "status": "passed",
+      "pid": 95231,
+      "exit_code": 0,
+      "log_sha256": "b9f104d32800f69f84fc0c1b4adff7b9990b83db13757452c39f463d3946119c"
+    },
+    {
+      "name": "no-spill-private",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--features",
+        "projection-private",
+        "--lib"
+      ],
+      "status": "passed",
+      "pid": 95237,
+      "exit_code": 0,
+      "log_sha256": "7d7f94a8014e0d2e2d77a02f57ae0ac354164b73a3ef3f4a4677a65b07c2b1a7"
+    }
+  ],
+  "scope": "Unchanged product/library source; only cfg(test) assertions changed."
+}

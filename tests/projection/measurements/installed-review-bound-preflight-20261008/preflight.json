@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "driver_ast": "parsed",
+  "native_owner_status": "passed",
+  "source_files": 197,
+  "dependency_files": 998,
+  "external_binary_hashes": {
+    "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/f6e_log_capture.dylib": "08940819d736dd1674351cafa0bae8aaf5e7542f361610bfb612baad17611310",
+    "/private/tmp/relm-f6e/review-fix-counter-20261008-150046/default-ffi/relm.so": "e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d"
+  },
+  "external_binary_copy": false,
+  "driver_sha256": "e0ff4801e7833d97bf64c85ad57af514b0142d70040d2156deca084628715db4",
+  "binding_sha256": "585a2c129d09d96941b018cc650a4606da9c5662c45fa13107e1faf27909624d",
+  "model_calls": 0,
+  "note": "External model, logger and accepted DLL are bound before and after execution, without copying them into ordinary input receipts. Original driver draft retained."
+}

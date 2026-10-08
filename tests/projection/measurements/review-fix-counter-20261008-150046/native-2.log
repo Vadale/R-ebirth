@@ -1,0 +1,11 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.67s
+     Running unittests src/lib.rs (target/debug/deps/relm-263a667cb7d1ae60)
+
+running 1 test
+test projection_review_registry_tests::projection_registry_reuses_expired_slots_without_weakening_admission ... F6E_PROJECTION_REVIEW_TEST {"test":"projection_registry_reuses_expired_slots_without_weakening_admission","status":"passed","expected_cases":78,"executed_cases":78,"expected_rejections":5,"rejected_cases":5,"expected_values":0,"compared_values":0,"max_abs_error":0.0,"model_loads":0,"inference_calls":0,"sequential_registrations":64,"simultaneous_registrations":8,"peak_live_entries":9,"final_capacity":2,"actual_r_gc_executed":false}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.01s
+

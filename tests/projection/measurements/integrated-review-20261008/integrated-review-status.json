@@ -1,0 +1,28 @@
+{
+  "status": "needs_correction",
+  "candidate_head": "e2081b43ebc7108c7bdc7b96fc2203b679d222a7",
+  "base": "6dd701beb128d267a9c5f7324ace04b2c043589c",
+  "started_utc": "2026-10-08T11:57:06.021011+00:00",
+  "scope": "One read-only integrated F6e product review; no builds/tests/models/references",
+  "authorship_limit": "Reviewer authored independent evaluation verifier; no independent authorship review claimed for that file.",
+  "completed_utc": "2026-10-08T12:06:54.824709+00:00",
+  "report": "/private/tmp/relm-f6e/integrated-review.md",
+  "verdict": "request-changes",
+  "findings": [
+    {
+      "priority": "P2",
+      "file": "rebirth/src/rust/rebirth-llm/src/projection.rs",
+      "line": 347,
+      "title": "Zero projection copies all rows when live capture requests ready"
+    },
+    {
+      "priority": "P2",
+      "file": "rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs",
+      "line": 79,
+      "title": "Registry capacity grows after expired owners are filtered"
+    }
+  ],
+  "executed_checks": [],
+  "product_edits": false,
+  "remote_instrumented_results_claimed": false
+}

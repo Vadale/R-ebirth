@@ -1,0 +1,11 @@
+{
+  "status": "formatting corrected; tests unexecuted",
+  "changes": {
+    "rebirth/src/rust/rebirth-llm/src/projection_review_tests.rs": {
+      "owner_sha256": "f90285a5e8488d393788c592708d58eb05c3115ea43df89e9bb0cebbd4869e8f",
+      "formatted_sha256": "85f458507929320f75e30a092c38e3f0b05a18d23729b96b6f79f03c343871a2"
+    }
+  },
+  "original_ready_preserved": true,
+  "reason": "rustfmt line wrapping only, matching initial check diagnostic"
+}

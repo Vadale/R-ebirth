@@ -1,0 +1,149 @@
+diff --git a/docs/f6e-implementation.md b/docs/f6e-implementation.md
+index 9213e53..3c1922b 100644
+--- a/docs/f6e-implementation.md
++++ b/docs/f6e-implementation.md
+@@ -1124,3 +1124,23 @@ next. The996-file instrumented source freeze still matches. A publication-only
+ scan covered2,553 loose additions and2,369 members in23 compressed source
+ archives without finding a compiled executable/static archive; it did not run
+ tests or change source. Existing DLLs and compiled native artifacts stay local.
++
++## Integrated implementation review: two corrections required (2026-10-08)
++
++The single integrated review inspected published candidate `e2081b4` against
++`6dd701b` and requested two scoped corrections. A zero-coefficient projection
++still reads every producer row when live capture independently requests its
++ready callback. The projection registry also reserves one additional slot on
++each successful derivation after expired owners are filtered, retaining capacity
++according to past derivations rather than current live owners. Both are P2
++findings; their original [report and receipt](../tests/projection/measurements/integrated-review-20261008/integrated-review.md) are retained.
++
++The existing native owner is preparing only these corrections and focused
++regressions; execution and acceptance remain pending. ASan/UBSan and the separate
++Memcheck run `37773468792` remain bound to the preceding `e2081b4` source, not to
++future corrections. No previously accepted efficacy, graphics, package or
++operational evidence is relabelled as execution of corrected sources. The same
++reviewer will close only the affected findings after the new evidence is ready.
++The reviewer authored the reference/verifier work and explicitly excludes an
++independent authorship review of it; the parent independently checked actual
++scientific outputs.
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
+index 9be46c8..8716f5a 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
+@@ -76,7 +76,12 @@ fn projection_reserve_registration<T>(
+     {
+         return Err(projection_argument());
+     }
+-    let capacity = admitted_capacity
++    // Expired weak owners do not require replacement slots. Live entries plus
++    // the candidate fit the already admitted old-capacity-plus-one bound.
++    let capacity = registry
++        .iter()
++        .filter(|w| w.strong_count() > 0)
++        .count()
+         .checked_add(1)
+         .ok_or_else(projection_argument)?;
+     let mut replacement = Vec::new();
+@@ -213,7 +218,7 @@ mod projection_transfer_selftest {
+         assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
+         projection_reserve_registration(&mut registry, &a, &b, capacity, bytes).unwrap();
+         assert_eq!(registry.len(), 2);
+-        assert_eq!(registry.capacity(), capacity + 1);
++        assert_eq!(registry.capacity(), registry.len());
+         assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
+         assert_eq!(registry[1].as_ptr(), Rc::as_ptr(&b));
+         let new_capacity = registry.capacity();
+@@ -226,9 +231,15 @@ mod projection_transfer_selftest {
+             projection_reserve_registration(&mut registry, &a, &b, new_capacity, new_bytes)
+                 .is_err()
+         );
+-        assert!(
+-            projection_reserve_registration(&mut registry, &a, &absent, capacity, bytes).is_err()
+-        );
++        let stale_capacity = new_capacity + 1;
++        assert!(projection_reserve_registration(
++            &mut registry,
++            &a,
++            &absent,
++            stale_capacity,
++            projection_registry_charge(stale_capacity).unwrap(),
++        )
++        .is_err());
+         drop(b);
+         let capacity = registry.capacity();
+         projection_reserve_registration(
+@@ -240,7 +251,7 @@ mod projection_transfer_selftest {
+         )
+         .unwrap();
+         assert_eq!(registry.len(), 2);
+-        assert_eq!(registry.capacity(), capacity + 1);
++        assert_eq!(registry.capacity(), registry.len());
+         let output = projection_handle_only(ExternalPtr::new(LlmHandle::empty()));
+         let list = output.as_list().unwrap();
+         assert_eq!(list.names().unwrap().collect::<Vec<_>>(), vec!["ok", "ptr"]);
+@@ -342,3 +353,7 @@ mod projection_transfer_selftest {
+         marker("projection_transfer_r_state_facts", 16, 12);
+     }
+ }
++
++#[cfg(test)]
++#[path = "projection_review_registry_tests.rs"]
++mod projection_review_registry_tests;
+diff --git a/rebirth/src/rust/rebirth-llm/src/projection.rs b/rebirth/src/rust/rebirth-llm/src/projection.rs
+index 44409e9..ccd0027 100644
+--- a/rebirth/src/rust/rebirth-llm/src/projection.rs
++++ b/rebirth/src/rust/rebirth-llm/src/projection.rs
+@@ -330,6 +330,15 @@ impl Runtime {
+         if rows == 0 {
+             return Ok(true);
+         }
++        // A live observer can request ready independently of this zero site.
++        // Preserve the producer/occurrence/shape checks, then let capture proceed
++        // without reading the projection scratch row. Probes/audits still read.
++        if self.probe.is_none()
++            && self.audit.is_none()
++            && index.is_some_and(|i| self.plan.sites[i].coef == 0.0)
++        {
++            return Ok(true);
++        }
+         let h = self.plan.width;
+         for row_index in 0..rows as usize {
+             if self.fault == Fault::Cancel || crate::async_job::checkpoint().is_err() {
+@@ -936,3 +945,7 @@ include!("projection_constructor.rs");
+ #[cfg(test)]
+ #[path = "projection_tests.rs"]
+ mod tests;
++
++#[cfg(test)]
++#[path = "projection_review_tests.rs"]
++mod review_tests;
+diff --git a/tests/projection/instrumented.py b/tests/projection/instrumented.py
+index 97efbd4..5402af4 100644
+--- a/tests/projection/instrumented.py
++++ b/tests/projection/instrumented.py
+@@ -207,10 +207,13 @@ class ProjectionRun(BASE.Run):
+             self.valgrind_probes()
+ 
+     def valgrind_args(self, binary, label, arguments):
++        # Valgrind expands %p/%q/%% in output filenames. The portable test
++        # labels deliberately contain literal percent-encoded Rust separators.
++        xml_path = str(self.evidence / (label + ".xml")).replace("%", "%%")
+         return ["valgrind", "--tool=memcheck", "--error-exitcode=1", "--leak-check=full",
+                 "--errors-for-leak-kinds=definite,indirect", "--show-leak-kinds=definite,indirect",
+                 "--track-origins=yes", "--gen-suppressions=all", "--xml=yes",
+-                f"--xml-file={self.evidence / (label + '.xml')}",
++                f"--xml-file={xml_path}",
+                 f"--suppressions={self.root / 'tests/valgrind/relm.supp'}", binary, *arguments]
+ 
+     def valgrind_probes(self):
+@@ -221,6 +224,10 @@ class ProjectionRun(BASE.Run):
+                       "-o", binary], "memcheck-probe-build")
+         for mode, fault in (("safe", None), ("invalid-write", "InvalidWrite"), ("leak", "Leak_DefinitelyLost")):
+             label = "memcheck-control-" + mode
++            if mode == "safe":
++                # An actual Valgrind process must preserve both an invalid
++                # format sequence and a would-be PID expansion literally.
++                label += "-%3A-%p"
+             status, _, _ = self.command(self.valgrind_args(binary, label, [mode]), label, check=False)
+             require(status == (0 if fault is None else 1), "incorrect Memcheck control exit")
+             collect_valgrind((self.evidence / (label + ".xml")).read_text(), binary, fault)

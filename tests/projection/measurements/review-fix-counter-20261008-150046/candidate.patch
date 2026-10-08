@@ -1,0 +1,342 @@
+diff --git a/.github/workflows/nightly-memory-safety.yaml b/.github/workflows/nightly-memory-safety.yaml
+index 6348164..406ed4a 100644
+--- a/.github/workflows/nightly-memory-safety.yaml
++++ b/.github/workflows/nightly-memory-safety.yaml
+@@ -16,13 +16,14 @@ on:
+         type: boolean
+         default: false
+       sanitizer_selection:
+-        description: Full suite, F6a live, F6b steering, or F6e projection (includes scoped Memcheck)
++        description: Full suite, F6a live, F6b steering, or scoped F6e projection/review closure (includes Memcheck)
+         type: choice
+         options:
+           - full
+           - live-only
+           - steering-only
+           - projection-only
++          - projection-review-fixes
+         default: full
+ 
+ name: nightly-memory-safety.yaml
+@@ -35,7 +36,7 @@ concurrency:
+ 
+ jobs:
+   valgrind-intervention:
+-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only' && inputs.sanitizer_selection != 'projection-only') }}
++    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only' && inputs.sanitizer_selection != 'projection-only' && inputs.sanitizer_selection != 'projection-review-fixes') }}
+     runs-on: ubuntu-24.04
+     name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
+     timeout-minutes: 90
+@@ -186,21 +187,21 @@ jobs:
+           } 2>&1 | tee "$SANITIZER_EVIDENCE/toolchain-install.log"
+ 
+       - name: Reject no-op and false-success harness controls
+-        if: env.SANITIZER_SELECTION != 'projection-only'
++        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
+         run: |
+           set -euo pipefail
+           python3 -m unittest discover -s tests/sanitizers -p 'test_*.py' -v \
+             2>&1 | tee "$SANITIZER_EVIDENCE/harness-controls.log"
+ 
+       - name: Graph sizing regression with the pinned Linux compiler
+-        if: env.SANITIZER_SELECTION != 'projection-only'
++        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
+         run: |
+           set -euo pipefail
+           python3 tests/sanitizers/graph_size.py --cc clang-19 \
+             --evidence "$SANITIZER_EVIDENCE/graph-size-layout"
+ 
+       - name: CPU callback signatures and runtime rejection controls
+-        if: env.SANITIZER_SELECTION != 'projection-only'
++        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
+         run: |
+           set -euo pipefail
+           python3 tests/sanitizers/cpu_callbacks.py --cc clang-19 --cxx clang++-19 \
+@@ -211,7 +212,7 @@ jobs:
+       # compiler caches, controls the environment, and proves instrumentation
+       # before accepting the exact allowlist of real executed tests.
+       - name: Validate runtime, rebuild instrumented native code and execute required cases
+-        if: env.SANITIZER_SELECTION != 'projection-only'
++        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
+         run: |
+           set -euo pipefail
+           python3 -u tests/sanitizers/run.py \
+@@ -239,7 +240,7 @@ jobs:
+             2>&1 | tee "$SANITIZER_EVIDENCE/projection-asan.log"
+ 
+       - name: Install Valgrind for the separate F6e baseline build
+-        if: env.SANITIZER_SELECTION == 'projection-only'
++        if: env.SANITIZER_SELECTION == 'projection-only' || env.SANITIZER_SELECTION == 'projection-review-fixes'
+         run: |
+           set -euo pipefail
+           sudo apt-get install -y valgrind \
+@@ -255,6 +256,37 @@ jobs:
+             --target "$RUNNER_TEMP/relm-f6e-valgrind-target" \
+             2>&1 | tee "$SANITIZER_EVIDENCE/projection-valgrind.log"
+ 
++      - name: Validate affected review collector controls and retain source scope
++        if: env.SANITIZER_SELECTION == 'projection-review-fixes'
++        run: |
++          set -euo pipefail
++          cp .github/workflows/nightly-memory-safety.yaml "$SANITIZER_EVIDENCE/workflow.yaml"
++          cp tests/projection/instrumented-review-scope.json "$SANITIZER_EVIDENCE/projection-review-source-scope.json"
++          python3 tests/projection/instrumented_review_controls.py \
++            2>&1 | tee "$SANITIZER_EVIDENCE/projection-review-controls.log"
++          python3 tests/projection/instrumented_path_controls.py \
++            2>&1 | tee "$SANITIZER_EVIDENCE/projection-path-controls.log"
++
++      - name: Execute only the new zero/live ASan and UBSan regression
++        if: env.SANITIZER_SELECTION == 'projection-review-fixes'
++        run: |
++          set -euo pipefail
++          python3 -u tests/projection/instrumented_review.py --mode sanitizers \
++            --source-manifest tests/projection/instrumented-review-scope.json \
++            --evidence "$SANITIZER_EVIDENCE/projection-review-asan" \
++            --target "$RUNNER_TEMP/relm-f6e-review-asan-target" \
++            2>&1 | tee "$SANITIZER_EVIDENCE/projection-review-asan.log"
++
++      - name: Execute the unrun worker and new zero/live Memcheck regressions
++        if: env.SANITIZER_SELECTION == 'projection-review-fixes'
++        run: |
++          set -euo pipefail
++          python3 -u tests/projection/instrumented_review.py --mode valgrind \
++            --source-manifest tests/projection/instrumented-review-scope.json \
++            --evidence "$SANITIZER_EVIDENCE/projection-review-valgrind" \
++            --target "$RUNNER_TEMP/relm-f6e-review-valgrind-target" \
++            2>&1 | tee "$SANITIZER_EVIDENCE/projection-review-valgrind.log"
++
+       - name: Retain sanitizer logs and evidence, including failures
+         if: always()
+         uses: actions/upload-artifact@v7
+diff --git a/docs/f6e-implementation.md b/docs/f6e-implementation.md
+index 9213e53..e04c8f0 100644
+--- a/docs/f6e-implementation.md
++++ b/docs/f6e-implementation.md
+@@ -19,8 +19,8 @@ integrated F6d main6dd701beb128d267a9c5f7324ace04b2c043589c.
+ | Installed package/resource/lifecycle | 27 new public cases/six refusals plus ten parent cases accepted; exact memory and CPU/Metal text/live/lifecycle checks pass. Scoped package check passes0 errors/two known omitted-vignette warnings at7d63e8a9; final cross-platform PR matrix remains pending |
+ | New held-out experiment | F6e-v1 independently verified atf0a014c4:120 successful generations plus two expected cancelled views; modest projection result, seven/eight final outputs truncated. No general efficacy claim |
+ | Saved-state rendering | Five PDF/PNG figures verified at a5d6369a; 1,792 comparison coordinates and four timeline states match retained observations. Actual configured-handle map also passes7 cases/one refusal at4c97b6da |
+-| Integrated implementation review | Not started; one review after complete implementation |
+-| F6e final CI/integration | No feature PR or dispatch yet |
++| Integrated implementation review | Completed at e2081b4 with two P2 findings; scoped corrections and new regression execution pending independent acceptance |
++| F6e final CI/integration | Implementation/evidence published through e2081b4. Parent instrumented run partially verified below; no feature PR or final nine-check matrix yet |
+ 
+ ## Native decision and required boundaries
+ 
+@@ -1124,3 +1124,64 @@ next. The996-file instrumented source freeze still matches. A publication-only
+ scan covered2,553 loose additions and2,369 members in23 compressed source
+ archives without finding a compiled executable/static archive; it did not run
+ tests or change source. Existing DLLs and compiled native artifacts stay local.
++
++## Integrated implementation review: two corrections required (2026-10-08)
++
++The single integrated review inspected published candidate `e2081b4` against
++`6dd701b` and requested two scoped corrections. A zero-coefficient projection
++still reads every producer row when live capture independently requests its
++ready callback. The projection registry also reserves one additional slot on
++each successful derivation after expired owners are filtered, retaining capacity
++according to past derivations rather than current live owners. Both are P2
++findings; their original [report and receipt](../tests/projection/measurements/integrated-review-20261008/integrated-review.md) are retained.
++
++The existing native owner is preparing only these corrections and focused
++regressions; execution and acceptance remain pending. ASan/UBSan and the separate
++Memcheck run `37773468792` remain bound to the preceding `e2081b4` source, not to
++future corrections. No previously accepted efficacy, graphics, package or
++operational evidence is relabelled as execution of corrected sources. The same
++reviewer will close only the affected findings after the new evidence is ready.
++The reviewer authored the reference/verifier work and explicitly excludes an
++independent authorship review of it; the parent independently checked actual
++scientific outputs.
++
++
++## Parent instrumented execution and affected correction preparation (2026-10-08)
++
++[Run 37773468792](https://github.com/Vadale/R-ebirth/actions/runs/37773468792)
++**failed** on published e2081b4. Independent inspection accepts both named
++ASan/UBSan tests (23 cases, 11 refusals, 291 values), and the first separate
++Memcheck constructor test (13 cases, nine refusals, 288 values) at that source.
++All 996 source bindings, 635 ASan artifact hashes, 270 native objects, the
++rebirth_llm/arrow_array/std archive instrumentation and actual runtime fault
++controls were verified. The successful Memcheck XML contains no finding or
++applied suppression. These are bounded path checks, not new golden accuracy.
++
++The second Memcheck worker test never executed: the percent-encoded Rust test
++name entered `--xml-file` without escaping Valgrind's percent syntax. Valgrind
++rejected the command before starting its target. Empty stdout, absent XML and
++the actual diagnostic are retained; the whole job remains failed. The
++[original text evidence and separate owner verification](../tests/projection/measurements/instrumented-37773468792/owner-verification.json)
++have manifest `1e09301a677b2e33cb6f724f4e3f8d7b4bd9ff0cd6a7387150c7f527a0405607`.
++Seven compiled artifacts remain local, with explicit hashes in the archive.
++
++The parent escapes literal percent characters in XML paths and adds a real
++safe Memcheck control containing both `%3A` and `%p`. Three new model-free
++command controls pass; actual corrected Linux execution remains pending.
++The new affected selection executes only the zero/live regression under
++ASan/UBSan, then the previously unexecuted worker and zero/live regression under
++separate Memcheck. Accepted parent test executions are carried, not replayed.
++The production integration artifact is still built to prove production-rlib
++instrumentation, but is not executed by this affected selection.
++
++The native owner prepared both review corrections and two new exact tests.
++Parent inspection found no new owner, layout or admission-formula change.
++The new tests plan 86 cases, seven refusals and 224 identity values: one tiny
++model load/constructor for zero/live capture, and a model-free Rc registry test.
++Rustfmt required line wrapping in the new zero/live test only; the original
++source and failed formatting diagnostic are retained. Five model-free controls
++against the actual marker contracts pass. Current native execution, fresh
++compiled profile and independent acceptance remain separate pending gates.
++A further installed recipe is prepared for two zero/live states and actual R
++GC registry reuse; it has only been parsed, not executed. No efficacy data,
++reference goldens or prior public acceptance cases were replayed.
+diff --git a/docs/f6e-instrumented-plan.md b/docs/f6e-instrumented-plan.md
+index 62f5737..4a41bf7 100644
+--- a/docs/f6e-instrumented-plan.md
++++ b/docs/f6e-instrumented-plan.md
+@@ -1,7 +1,24 @@
+ # F6e targeted native memory acceptance
+ 
+-Status: prepared source only, 2026-10-08. No command below has been executed by
+-this document's author. Parent owns execution and independent collection.
++Status: original plan retained below. Parent execution of run37773468792 on
++e2081b4 is partially verified: both ASan/UBSan tests and Memcheck constructor
++passed; the worker Memcheck command failed before test startup due to literal
++percent characters in its XML filename. See the implementation report for the
++separate owner receipt. The whole original workflow remains failed.
++
++The new `projection-review-fixes` selection is prepared but unexecuted. It uses
++`instrumented_review.py` and `instrumented-review-scope.json`: ASan/UBSan executes
++only the new zero/live regression (8 cases/2 refusals/224 identity values);
++Memcheck executes the previously unexecuted worker plus that regression
++(18 cases/4 refusals/227 values). It builds the production integration artifact
++for the unchanged production-rlib audit without executing it. No accepted
++parent test scope is replayed. The original scope file remains unchanged.
++The XML path correction escapes every literal percent character. The next real
++Memcheck safe control must create a filename containing literal `%3A` and `%p`;
++model-free command tests alone do not establish that runtime acceptance.
++The installed R/GC and FFI registry checks remain separate from this Linux scope.
++
++## Original preparation record
+ 
+ This closes the affected native instrumentation requirement in
+ [f6e-projection-contract.md §6](f6e-projection-contract.md). The accepted normal
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
+index 9be46c8..8716f5a 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
+@@ -76,7 +76,12 @@ fn projection_reserve_registration<T>(
+     {
+         return Err(projection_argument());
+     }
+-    let capacity = admitted_capacity
++    // Expired weak owners do not require replacement slots. Live entries plus
++    // the candidate fit the already admitted old-capacity-plus-one bound.
++    let capacity = registry
++        .iter()
++        .filter(|w| w.strong_count() > 0)
++        .count()
+         .checked_add(1)
+         .ok_or_else(projection_argument)?;
+     let mut replacement = Vec::new();
+@@ -213,7 +218,7 @@ mod projection_transfer_selftest {
+         assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
+         projection_reserve_registration(&mut registry, &a, &b, capacity, bytes).unwrap();
+         assert_eq!(registry.len(), 2);
+-        assert_eq!(registry.capacity(), capacity + 1);
++        assert_eq!(registry.capacity(), registry.len());
+         assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
+         assert_eq!(registry[1].as_ptr(), Rc::as_ptr(&b));
+         let new_capacity = registry.capacity();
+@@ -226,9 +231,15 @@ mod projection_transfer_selftest {
+             projection_reserve_registration(&mut registry, &a, &b, new_capacity, new_bytes)
+                 .is_err()
+         );
+-        assert!(
+-            projection_reserve_registration(&mut registry, &a, &absent, capacity, bytes).is_err()
+-        );
++        let stale_capacity = new_capacity + 1;
++        assert!(projection_reserve_registration(
++            &mut registry,
++            &a,
++            &absent,
++            stale_capacity,
++            projection_registry_charge(stale_capacity).unwrap(),
++        )
++        .is_err());
+         drop(b);
+         let capacity = registry.capacity();
+         projection_reserve_registration(
+@@ -240,7 +251,7 @@ mod projection_transfer_selftest {
+         )
+         .unwrap();
+         assert_eq!(registry.len(), 2);
+-        assert_eq!(registry.capacity(), capacity + 1);
++        assert_eq!(registry.capacity(), registry.len());
+         let output = projection_handle_only(ExternalPtr::new(LlmHandle::empty()));
+         let list = output.as_list().unwrap();
+         assert_eq!(list.names().unwrap().collect::<Vec<_>>(), vec!["ok", "ptr"]);
+@@ -342,3 +353,7 @@ mod projection_transfer_selftest {
+         marker("projection_transfer_r_state_facts", 16, 12);
+     }
+ }
++
++#[cfg(test)]
++#[path = "projection_review_registry_tests.rs"]
++mod projection_review_registry_tests;
+diff --git a/rebirth/src/rust/rebirth-llm/src/projection.rs b/rebirth/src/rust/rebirth-llm/src/projection.rs
+index 44409e9..ccd0027 100644
+--- a/rebirth/src/rust/rebirth-llm/src/projection.rs
++++ b/rebirth/src/rust/rebirth-llm/src/projection.rs
+@@ -330,6 +330,15 @@ impl Runtime {
+         if rows == 0 {
+             return Ok(true);
+         }
++        // A live observer can request ready independently of this zero site.
++        // Preserve the producer/occurrence/shape checks, then let capture proceed
++        // without reading the projection scratch row. Probes/audits still read.
++        if self.probe.is_none()
++            && self.audit.is_none()
++            && index.is_some_and(|i| self.plan.sites[i].coef == 0.0)
++        {
++            return Ok(true);
++        }
+         let h = self.plan.width;
+         for row_index in 0..rows as usize {
+             if self.fault == Fault::Cancel || crate::async_job::checkpoint().is_err() {
+@@ -936,3 +945,7 @@ include!("projection_constructor.rs");
+ #[cfg(test)]
+ #[path = "projection_tests.rs"]
+ mod tests;
++
++#[cfg(test)]
++#[path = "projection_review_tests.rs"]
++mod review_tests;
+diff --git a/tests/projection/instrumented.py b/tests/projection/instrumented.py
+index 97efbd4..5402af4 100644
+--- a/tests/projection/instrumented.py
++++ b/tests/projection/instrumented.py
+@@ -207,10 +207,13 @@ class ProjectionRun(BASE.Run):
+             self.valgrind_probes()
+ 
+     def valgrind_args(self, binary, label, arguments):
++        # Valgrind expands %p/%q/%% in output filenames. The portable test
++        # labels deliberately contain literal percent-encoded Rust separators.
++        xml_path = str(self.evidence / (label + ".xml")).replace("%", "%%")
+         return ["valgrind", "--tool=memcheck", "--error-exitcode=1", "--leak-check=full",
+                 "--errors-for-leak-kinds=definite,indirect", "--show-leak-kinds=definite,indirect",
+                 "--track-origins=yes", "--gen-suppressions=all", "--xml=yes",
+-                f"--xml-file={self.evidence / (label + '.xml')}",
++                f"--xml-file={xml_path}",
+                 f"--suppressions={self.root / 'tests/valgrind/relm.supp'}", binary, *arguments]
+ 
+     def valgrind_probes(self):
+@@ -221,6 +224,10 @@ class ProjectionRun(BASE.Run):
+                       "-o", binary], "memcheck-probe-build")
+         for mode, fault in (("safe", None), ("invalid-write", "InvalidWrite"), ("leak", "Leak_DefinitelyLost")):
+             label = "memcheck-control-" + mode
++            if mode == "safe":
++                # An actual Valgrind process must preserve both an invalid
++                # format sequence and a would-be PID expansion literally.
++                label += "-%3A-%p"
+             status, _, _ = self.command(self.valgrind_args(binary, label, [mode]), label, check=False)
+             require(status == (0 if fault is None else 1), "incorrect Memcheck control exit")
+             collect_valgrind((self.evidence / (label + ".xml")).read_text(), binary, fault)

@@ -1,0 +1,11 @@
+test_actual_finding_refused (__main__.Controls.test_actual_finding_refused) ... ok
+test_bound_positive (__main__.Controls.test_bound_positive) ... ok
+test_marker_mutations_refused (__main__.Controls.test_marker_mutations_refused) ... ok
+test_only_affected_names (__main__.Controls.test_only_affected_names) ... ok
+test_structural_mutations_refused (__main__.Controls.test_structural_mutations_refused) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.001s
+
+OK
+F6E_REVIEW_MEMORY_CONTROLS {"methods":5,"marker_negatives":13,"structural_negatives":6,"models":0}

@@ -1,0 +1,20 @@
+Diff in /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm/src/projection_review_tests.rs:197:
+ 
+     // Zero remains subject to the producer/graph-reuse check before any bypass.
+     zero.projection().lock().as_mut().unwrap().proofs[0].wrappers = Some(u32::MAX);
+-    let invalid = zero.generate_observed(
+-        &prompt,
+-        &params,
+-        &[1],
+-        &[Component::MlpOut],
+-        &mut |_, _| {
++    let invalid =
++        zero.generate_observed(&prompt, &params, &[1], &[Component::MlpOut], &mut |_, _| {
+             refused_deliveries += 1;
+             Ok(())
+-        },
+-    );
++        });
+     assert!(matches!(invalid, Err(RebirthError::Intervention { .. })));
+     assert_eq!(refused_deliveries, 0);
+     assert!(zero.projection().failed());

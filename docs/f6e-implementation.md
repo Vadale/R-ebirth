@@ -19,8 +19,8 @@ integrated F6d main6dd701beb128d267a9c5f7324ace04b2c043589c.
 | Installed package/resource/lifecycle | 27 new public cases/six refusals plus ten parent cases accepted; exact memory and CPU/Metal text/live/lifecycle checks pass. Scoped package check passes0 errors/two known omitted-vignette warnings at7d63e8a9; final cross-platform PR matrix remains pending |
 | New held-out experiment | F6e-v1 independently verified atf0a014c4:120 successful generations plus two expected cancelled views; modest projection result, seven/eight final outputs truncated. No general efficacy claim |
 | Saved-state rendering | Five PDF/PNG figures verified at a5d6369a; 1,792 comparison coordinates and four timeline states match retained observations. Actual configured-handle map also passes7 cases/one refusal at4c97b6da |
-| Integrated implementation review | Not started; one review after complete implementation |
-| F6e final CI/integration | No feature PR or dispatch yet |
+| Integrated implementation review | Completed at e2081b4 with two P2 findings; both corrections now pass independent local native verification (86 cases/seven refusals/224 identity values). Fresh installed and affected Linux gates, then same-reviewer closure, remain pending |
+| F6e final CI/integration | Implementation/evidence published through e2081b4. Parent instrumented run partially verified below; no feature PR or final nine-check matrix yet |
 
 ## Native decision and required boundaries
 
@@ -1124,3 +1124,123 @@ next. The996-file instrumented source freeze still matches. A publication-only
 scan covered2,553 loose additions and2,369 members in23 compressed source
 archives without finding a compiled executable/static archive; it did not run
 tests or change source. Existing DLLs and compiled native artifacts stay local.
+
+## Integrated implementation review: two corrections required (2026-10-08)
+
+The single integrated review inspected published candidate `e2081b4` against
+`6dd701b` and requested two scoped corrections. A zero-coefficient projection
+still reads every producer row when live capture independently requests its
+ready callback. The projection registry also reserves one additional slot on
+each successful derivation after expired owners are filtered, retaining capacity
+according to past derivations rather than current live owners. Both are P2
+findings; their original [report and receipt](../tests/projection/measurements/integrated-review-20261008/integrated-review.md) are retained.
+
+The existing native owner is preparing only these corrections and focused
+regressions; execution and acceptance remain pending. ASan/UBSan and the separate
+Memcheck run `37773468792` remain bound to the preceding `e2081b4` source, not to
+future corrections. No previously accepted efficacy, graphics, package or
+operational evidence is relabelled as execution of corrected sources. The same
+reviewer will close only the affected findings after the new evidence is ready.
+The reviewer authored the reference/verifier work and explicitly excludes an
+independent authorship review of it; the parent independently checked actual
+scientific outputs.
+
+
+## Parent instrumented execution and affected correction preparation (2026-10-08)
+
+[Run 37773468792](https://github.com/Vadale/R-ebirth/actions/runs/37773468792)
+**failed** on published e2081b4. Independent inspection accepts both named
+ASan/UBSan tests (23 cases, 11 refusals, 291 values), and the first separate
+Memcheck constructor test (13 cases, nine refusals, 288 values) at that source.
+All 996 source bindings, 635 ASan artifact hashes, 270 native objects, the
+rebirth_llm/arrow_array/std archive instrumentation and actual runtime fault
+controls were verified. The successful Memcheck XML contains no finding or
+applied suppression. These are bounded path checks, not new golden accuracy.
+
+The second Memcheck worker test never executed: the percent-encoded Rust test
+name entered `--xml-file` without escaping Valgrind's percent syntax. Valgrind
+rejected the command before starting its target. Empty stdout, absent XML and
+the actual diagnostic are retained; the whole job remains failed. The
+[original text evidence and separate owner verification](../tests/projection/measurements/instrumented-37773468792/owner-verification.json)
+have manifest `1e09301a677b2e33cb6f724f4e3f8d7b4bd9ff0cd6a7387150c7f527a0405607`.
+Seven compiled artifacts remain local, with explicit hashes in the archive.
+
+The parent escapes literal percent characters in XML paths and adds a real
+safe Memcheck control containing both `%3A` and `%p`. Three new model-free
+command controls pass; actual corrected Linux execution remains pending.
+The new affected selection executes only the zero/live regression under
+ASan/UBSan, then the previously unexecuted worker and zero/live regression under
+separate Memcheck. Accepted parent test executions are carried, not replayed.
+The production integration artifact is still built to prove production-rlib
+instrumentation, but is not executed by this affected selection.
+
+The native owner prepared both review corrections and two new exact tests.
+Parent inspection found no new owner, layout or admission-formula change.
+The new tests plan 86 cases, seven refusals and 224 identity values: one tiny
+model load/constructor for zero/live capture, and a model-free Rc registry test.
+Rustfmt required line wrapping in the new zero/live test only; the original
+source and failed formatting diagnostic are retained. Five model-free controls
+against the actual marker contracts pass. Current native execution, fresh
+compiled profile and independent acceptance remain separate pending gates.
+A further installed recipe is prepared for two zero/live states and actual R
+GC registry reuse; it has only been parsed, not executed. No efficacy data,
+reference goldens or prior public acceptance cases were replayed.
+
+
+## Review regression counter failure and scoped correction (2026-10-08)
+
+Local run95151 passed formatting, both clippy modes and both no-spill library
+checks, then failed the new zero/live regression. The second snapshot reports
+cumulative capture counters (two copies/256 bytes), but the test expected the
+per-state one-copy/128-byte value. The existing capture implementation initializes
+those counters once per session, increments them after each captured row and
+forwards them unchanged into each snapshot. This was a test expectation error;
+it does not by itself accept the runtime correction.
+
+All six logs and 194 source hashes were independently verified and preserved in
+[the failed-run archive](../tests/projection/measurements/review-fix-20261008-143824/owner-failure-verification.json),
+manifest `d7f34c03b87861ed65b6767faf7cb71c10c75a08f32efb105aa889f79f437156`.
+No complete native-test marker was emitted. The registry test and fresh DLL
+profile were not executed. The original run remains failed.
+
+The native owner changed only four counter assertions: both baseline and
+projected snapshots now require cumulative counts1/2 and bytes128/256. Zero
+projection-work counters, scratch preservation, numerical equalities, refusal
+and poison checks remain unchanged, as do all44 other recorded native sources.
+The parent launched an affected continuation after binding that exact source.
+Both no-spill library checks are carried because the only changed module is
+under cfg(test); formatting and clippy cover the edited regression. The failed
+zero/live test, previously unrun registry test and fresh default DLL profile
+remain pending independent acceptance. No old public or efficacy run is repeated.
+
+
+## Review corrections: local native acceptance (2026-10-08)
+
+The corrected continuation95940 is independently accepted at
+[its separate owner receipt](../tests/projection/measurements/review-fix-counter-20261008-150046/owner-verification.json),
+archive manifest `0c370dd74309665058f447a18d5daffef86ee475a57d9e2b6a7f2e9853dd0bf1`.
+Both exact native regressions passed: zero/live capture has8 cases/two refusals
+and224 bitwise identity values; registry reuse has78 cases/five refusals,
+64 sequential Rc releases, eight simultaneous registrations, peak nine entries
+and final capacity two. The latter is not an actual R garbage-collection test.
+Projection row/read/write/barrier work remains zero while live capture delivers
+both states. Probe/audit checks and malformed/poison refusals remain exercised.
+These identity comparisons are not new independent golden accuracy.
+
+The owner verified194 source hashes, four changed-source archive members,
+eight current stage logs, two carried no-spill logs and42 R headers. Actual
+current Cargo default features, the C object in both its own and bundled
+archives, nine linked archives and the fresh entrypoint/DLL are bound. All27
+compiled allocation-profile numbers exactly match the prior profile, including
+runtime5072, derive11959, command744, response1512 and grammar150 bytes. There
+are no compiler/linker warnings. No native/model execution was repeated during
+owner verification. Original driver status is retained unchanged beside the
+separate owner PASS; the preceding failed run remains failed.
+
+The resulting local DLL has SHA256
+`e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d`.
+An affected fresh installed gate is now launched with these exact bytes. It
+covers zero/live capture and actual R GC registry reuse using the saved
+operational direction, with no efficacy recapture or old public suite replay.
+Current-source Linux instrumentation and same-reviewer correction closure
+remain separate gates. The full feature is not yet complete.

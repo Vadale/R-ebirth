@@ -1,0 +1,87 @@
+{
+  "mode": "default",
+  "artifact": {
+    "reason": "compiler-artifact",
+    "package_id": "path+file:///Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi#0.0.0",
+    "manifest_path": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi/Cargo.toml",
+    "target": {
+      "kind": [
+        "rlib",
+        "staticlib"
+      ],
+      "crate_types": [
+        "rlib",
+        "staticlib"
+      ],
+      "name": "relm",
+      "src_path": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi/src/lib.rs",
+      "edition": "2021",
+      "doc": true,
+      "doctest": true,
+      "test": true
+    },
+    "profile": {
+      "opt_level": "0",
+      "debuginfo": 2,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": false
+    },
+    "features": [
+      "default",
+      "spill"
+    ],
+    "filenames": [
+      "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.rlib",
+      "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a"
+    ],
+    "executable": null,
+    "fresh": false
+  },
+  "cargo_build": {
+    "reason": "build-script-executed",
+    "package_id": "path+file:///Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi#0.0.0",
+    "linked_libs": [
+      "static=relm-r-state"
+    ],
+    "linked_paths": [
+      "native=/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out"
+    ],
+    "cfgs": [],
+    "env": [],
+    "out_dir": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out"
+  },
+  "static_archives": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a": "f11710218bb51b693e1058056d4c9009f6fcee2c2915a9333192176efd2a3dc1",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm-grammar.a": "e5462f31665a4285960e2f597bc4db218ba48dc5fadf16d8ca813daf9c94efad",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libmtmd.a": "b98113f925b14b58304740a39038c409d2ad7d2c943526bdd73fa0193cb33358",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libvendor-hash.a": "e6db9e6b061d5149f50dd4bf7d222669665730666c4cfc3f88829543a9547278",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libllama.a": "81f404efd0808caa8dd2cb88145709d382d6b108d105669786f0b96a84afc65e",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml.a": "c6127878664f08d1ba2ec97691184ba90a47f260f2757684192187b66b8515c4",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml-cpu.a": "5581e5667d1743d519396e100ecd50caa4886d08f975177e395bcea14bba6793",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml-metal.a": "0d13629ebfdfd69fedffb073a65890cb86bb366e4cec160fe6194deca6e0476b",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml-base.a": "6862c779eec0e613017657f3c8b8675784e72939c27e6a1ec1144ccec766f603"
+  },
+  "C_files": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out/projection_state.o": "469a98e5deb25a2e974959063d61a6a1daa9ea01f6ff3c40139725a1f0960fa8",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out/librelm-r-state.a": "f9f3e02f89d2aa67dbca7f61594d22965cb7ea8b084f8434277ff352ed8b78ba"
+  },
+  "local_copies": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a": {
+      "path": "/private/tmp/relm-f6e/review-fix-counter-20261008-150046/default-ffi/binding-binaries/librelm.a",
+      "sha256": "f11710218bb51b693e1058056d4c9009f6fcee2c2915a9333192176efd2a3dc1"
+    },
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out/projection_state.o": {
+      "path": "/private/tmp/relm-f6e/review-fix-counter-20261008-150046/default-ffi/binding-binaries/projection_state.o",
+      "sha256": "469a98e5deb25a2e974959063d61a6a1daa9ea01f6ff3c40139725a1f0960fa8"
+    },
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out/librelm-r-state.a": {
+      "path": "/private/tmp/relm-f6e/review-fix-counter-20261008-150046/default-ffi/binding-binaries/librelm-r-state.a",
+      "sha256": "f9f3e02f89d2aa67dbca7f61594d22965cb7ea8b084f8434277ff352ed8b78ba"
+    }
+  },
+  "entrypoint_sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+  "dll_path": "/private/tmp/relm-f6e/review-fix-counter-20261008-150046/default-ffi/relm.so",
+  "dll_sha256": "e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d",
+  "dll_bytes": 37095720
+}
