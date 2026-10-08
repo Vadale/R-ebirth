@@ -448,7 +448,10 @@ fn pruning_reference(
     {
         close(f64::from(actual), f64::from(expected), &mut policy_max);
     }
-    assert!(pruning_bitwise_equal && history_bitwise_equal);
+    // D046 clarification approved 2026-10-08: different output policies may
+    // select different F32 kernels even without projection. The unchanged
+    // downstream 0.01 comparisons above gate that difference; retain its bits
+    // as observations. Same-policy replay and zero identity remain exact.
     assert!(aligned_replay_bitwise_equal && aligned_history_replay_bitwise_equal);
     assert!(grouped_replay_bitwise_equal && grouped_history_replay_bitwise_equal);
     (receipt, independent_max)
@@ -491,6 +494,37 @@ fn forward_reference_backend(
         let dummy = configured.is_empty();
         if dummy {
             configured = vec![axis(32, 0, Component::MlpOut, 0.0)];
+        }
+        if micro_only {
+            let mut zero_sites = configured.clone();
+            for site in &mut zero_sites {
+                site.coef = 0.0;
+            }
+            let zero = base
+                .derive_projection(zero_sites, &empty(), Fault::None)
+                .unwrap();
+            let rows: Vec<_> = tokens.iter().filter(|r| &r[0] == name).collect();
+            let ids: Vec<i32> = rows.iter().map(|r| r[2].parse().unwrap()).collect();
+            for last_only in [false, true] {
+                let mut results = Vec::new();
+                for handle in [&base, &zero] {
+                    handle.clear_memory();
+                    let batch = handle.n_batch() as usize;
+                    for (chunk, input) in ids.chunks(batch).enumerate() {
+                        handle
+                            .decode_projection_tokens(input, (chunk * batch) as i32, last_only)
+                            .unwrap();
+                    }
+                    let last = (ids.len() - 1) % batch;
+                    results.push((
+                        handle.logits_ith(last as i32, 48).unwrap(),
+                        fixed_history_logits(handle, ids.len()),
+                    ));
+                }
+                assert!(same_logit_bits(&results[0].0, &results[1].0));
+                assert!(same_logit_bits(&results[0].1, &results[1].1));
+            }
+            println!("F6E_ZERO_POLICY_IDENTITY case={name} policies=2 values=192");
         }
         let spec = residual(case[5] == "1");
         let model = base

@@ -1483,6 +1483,17 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
 
 ## D-046 — Component-specific static projection through the existing direction API
 
+- **Acceptance clarification, approved 2026-10-08:** the founder explicitly
+  authorized relaxing the two byte/bit comparisons after reviewing the Linux
+  diagnostic ("Ok allenta i test ma muoviti a risolvere"). Frozen fixtures,
+  producer, encoding and integrity checks remain exact. Recomputed F64
+  observations use the previously fixed absolute-plus-relative1e-12 bound;
+  different native output policies use the existing absolute0.01 downstream
+  bound. Same-policy replay and zero/original identity remain bitwise, with
+  unchanged2e-6 same-row projection checks. No kernel benignity or general
+  batching-invariance claim follows. Historical strict failures remain failed.
+  `methods` is now declared in DESCRIPTION for the already used base-R
+  allocation prototypes; this adds no installation or non-base dependency.
 - **Date/status:** APPROVED on 2026-10-07. Preparation was authorized by
   "Fatto, passa alla prossima fase"; the concrete D046 API/placement/schema/native
   contract was then presented. The subsequent founder reply "vai continua"

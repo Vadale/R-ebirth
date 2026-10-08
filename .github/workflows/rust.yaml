@@ -188,6 +188,7 @@ jobs:
         id: projection_reference
         run: |
           python tests/projection/test_reference_retention.py
+          python tests/projection/test_reference_comparison.py
           python tests/projection/check_reference_retained.py --output "$RUNNER_TEMP/projection-reference-check"
           python tests/projection/test_fixture_mirror.py
           python tests/projection/check-fixture-mirror.py

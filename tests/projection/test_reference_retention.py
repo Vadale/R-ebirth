@@ -10,6 +10,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 spec = importlib.util.spec_from_file_location('retained', Path(__file__).with_name('check_reference_retained.py'))
 retained = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(retained)
@@ -22,16 +23,16 @@ class RetentionControls(unittest.TestCase):
             (goldens/'manifest.json').write_bytes(b'expected\n')
             producer=root/'reference.py'; producer.write_text('# synthetic collector input\n')
             output=root/'out'; actual=b'actual\x00bytes\n'
-            def fake_run(path, run_name):
+            def fake_run(path):
                 self.assertEqual(Path(path),producer)
-                self.assertEqual(sys.argv,[str(producer),'--check'])
-                with tempfile.TemporaryDirectory(prefix='relm-f6e-reference-check-') as tmp:
-                    (Path(tmp)/'manifest.json').write_bytes(actual)
-                    raise AssertionError('golden byte mismatch: manifest.json')
+                def generate(tmp):
+                    (tmp/'manifest.json').write_bytes(actual)
+                    raise AssertionError('synthetic producer refusal')
+                return {'generate':generate}
             fake_numpy=types.SimpleNamespace(show_config=lambda:print('synthetic config'),show_runtime=lambda:print('synthetic runtime'))
             with patch.object(retained,'PRODUCER',producer), patch.object(retained,'PRODUCER_SHA',retained.sha(producer)), patch.object(retained,'GOLDENS',goldens), patch.object(retained.runpy,'run_path',side_effect=fake_run) as runner, patch.dict(sys.modules,{'numpy':fake_numpy}), patch.object(sys,'argv',['collector','--output',str(output)]), contextlib.redirect_stderr(io.StringIO()):
                 original=tempfile.TemporaryDirectory
-                with self.assertRaisesRegex(AssertionError,'golden byte mismatch'):
+                with self.assertRaisesRegex(AssertionError,'synthetic producer refusal'):
                     retained.main()
                 self.assertIs(tempfile.TemporaryDirectory,original)
                 self.assertEqual(runner.call_count,1)

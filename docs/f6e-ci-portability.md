@@ -3,8 +3,9 @@
 The first PR63 matrix on `3a818f48fc9e623ec4bb04d6cfd48b8f8e397f18`
 failed six of nine jobs. Vendored integrity, supply-chain checks and the macOS
 x86_64 engine link passed. The matrix is not accepted and its failed receipts
-remain unchanged. No tolerance, original bitwise assertion, frozen golden or
-native vendor source is changed by these corrections.
+remain unchanged. Candidate6913a0f initially preserved every strict comparison.
+The subsequent founder-approved comparison correction is recorded below; no
+numerical tolerance, frozen golden or native vendor source is changed.
 
 ## R 4.6 state inspection
 
@@ -130,3 +131,54 @@ failure. An initial owner inspector used Python's compensated `sum` rather than
 the operator's sequential accumulation, and initially missed a first marker
 prefixed by Rust's test runner. Both collector corrections used retained output;
 no native execution or tolerance changed for them.
+
+## Approved comparison correction and remaining R fixtures
+
+On2026-10-08 the founder explicitly approved relaxing the two exact byte/bit
+requirements after the concrete proposal: "Ok allenta i test ma muoviti a
+risolvere". D046 records this clarification. Original failed runs remain failed;
+acceptance of the new criteria requires the final PR matrix.
+
+The frozen producer and45 reference files remain unchanged. The CI entry point
+calls its generation function exactly once, then verifies both44-row manifests
+against their own bytes and the frozen manifest against its fixed SHA-256.
+Canonical encodings, source/configuration metadata, discrete fields, shapes and
+unlisted files stay exact. Only explicitly named F64 logit/norm/control
+observations and corresponding case metrics use the already frozen1e-12
+absolute-plus-relative bound. Nonfinite values and changed zero signs refuse.
+The original strict `reference_projection.py --check` command is unchanged;
+the new CI success marker is explicitly `D046_REFERENCE_PORTABLE_OK`.
+
+The native pruning gate keeps its existing absolute0.01 comparisons between
+output policies, while retaining their bit differences in the receipt. Its
+additional bitwise cross-policy assertion is removed. Same-policy replay stays
+bitwise; new original/zero controls verify exact final and following-token
+logits under both output policies for all three affected pruning cases.
+Same-row projection arithmetic remains2e-6, and the existing producer/row-count,
+resource, failure and lifecycle requirements are unchanged.
+
+Retained Linux evidence on6913a0f establishes that original and zero paths both
+have cross-policy final-logit differences up to4.76837158203125e-7, while zero
+versus original at the same policy is exact. Active projection differs across
+policies by2.980232238769531e-7; all256 actual row coordinates match the operator.
+Forty of45 reference files are byte-identical; the largest recomputed F64 logit
+difference is1.7763568394002505e-15. All191 control names/outcomes are unchanged.
+The Linux NumPy build is configured for OpenBLAS and the original Mac build for
+Accelerate; detailed loaded-library introspection is unavailable without the
+absent threadpoolctl package. Its warning is retained; no dependency is installed.
+These results do not isolate a specific kernel cause or prove general harmlessness.
+
+Four model-free comparator methods cover allowed differences and deliberate
+numeric, type, shape, checksum, encoding, control-outcome and inventory corruption.
+The retained Linux outputs pass the new comparator without invoking the producer
+or any model. The first comparator draft omitted scalar case diagnostic fields;
+those existing F64 fields are now explicitly listed, with the bound unchanged.
+Two affected retention controls verify failure propagation and saved bytes.
+
+The complete R matrix on6913a0f compiled and ran on all four platforms, including
+R4.6. Its remaining two assertion failures were the single-state inventory's old
+496/776-byte expectations; the third80-byte weak reference makes them576/856.
+Those expectations and their independent arithmetic comment are corrected.
+`methods` is declared in DESCRIPTION for the base-R package already used by the
+allocation prototypes; this requires no installation. The old-R legacy-accessor
+NOTE remains explicit. New actual CI results are required before completion.

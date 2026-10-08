@@ -1,5 +1,6 @@
 // A new failure-localization experiment, not a replacement acceptance gate.
-// It leaves the original pruning bitwise assertion and all numerical bounds intact.
+// Historical failure observations are retained; the approved ordinary gate now
+// distinguishes exact same-policy identity from numerical cross-policy comparison.
 #[test]
 #[ignore = "run explicitly after an output-policy failure; not ordinary acceptance"]
 fn projection_output_policy_failure_diagnostic() {

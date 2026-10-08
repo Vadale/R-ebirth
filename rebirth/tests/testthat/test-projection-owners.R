@@ -2,9 +2,9 @@ test_that("projection state inventory adds hash bindings and both finalizer type
   plain <- list(hash_slots = 0, bindings = 2, c_finalizer_bytes = 8)
   hashed <- plain; hashed$hash_slots <- 29
   # Independent R64 inventory: 112 binding bytes + 112 conservative symbol
-  # bytes + 56 logical bytes + two80-byte weakrefs + 56-byte C function owner.
-  expect_identical(relm:::projection_state_bytes(plain), 496)
-  expect_identical(relm:::projection_state_bytes(hashed), 776)
+  # bytes + 56 logical bytes + three80-byte weakrefs + 56-byte C function owner.
+  expect_identical(relm:::projection_state_bytes(plain), 576)
+  expect_identical(relm:::projection_state_bytes(hashed), 856)
   expect_identical(relm:::projection_state_bytes(hashed) - relm:::projection_state_bytes(plain),
     as.double(object.size(vector("list", 29L))))
   for (key in c("bindings", "c_finalizer_bytes")) {

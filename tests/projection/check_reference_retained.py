@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Run the frozen strict reference check and retain failed generated observations.
+"""Run the frozen producer once with the approved portable comparison.
 
-This does not edit references, change comparisons or turn a failed check green.
-Only the ordinary required CI reference check calls it; it is not a second run.
+Frozen reference bytes and the producer are unchanged. Numerical observations
+use their predeclared F64 tolerance; exact integrity/discrete fields stay exact.
 """
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ import shutil
 import sys
 import tempfile
 from pathlib import Path
+from compare_reference import compare_reference
 
 REPO = Path(__file__).resolve().parents[2]
 PRODUCER = REPO / "tests/llm-golden/projection/reference_projection.py"
@@ -74,8 +75,11 @@ def main():
     try:
         tempfile.TemporaryDirectory = RetainedDirectory
         sys.path.insert(0, str(PRODUCER.parent))
-        sys.argv = [str(PRODUCER), "--check"]
-        runpy.run_path(str(PRODUCER), run_name="__main__")
+        producer = runpy.run_path(str(PRODUCER))
+        with tempfile.TemporaryDirectory(prefix="relm-f6e-reference-check-") as tmp:
+            producer["generate"](Path(tmp))
+            report = compare_reference(Path(tmp), GOLDENS)
+        print("D046_REFERENCE_PORTABLE_OK " + json.dumps(report, sort_keys=True))
     finally:
         tempfile.TemporaryDirectory = original
         sys.argv = before_argv

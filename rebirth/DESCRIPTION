@@ -20,6 +20,7 @@ BugReports: https://github.com/Vadale/R-ebirth/issues
 Depends:
     R (>= 4.5.0)
 Imports:
+    methods,
     nanoarrow
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
