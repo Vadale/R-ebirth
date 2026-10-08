@@ -64,3 +64,5 @@ fn projection_long_prefill_schedule_diagnostic() {
 
 include!("projection_test_support.rs");
 include!("projection_diagnostic.rs");
+
+include!("projection_policy_diagnostic.rs");
