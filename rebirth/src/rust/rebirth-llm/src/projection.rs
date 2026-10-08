@@ -330,6 +330,15 @@ impl Runtime {
         if rows == 0 {
             return Ok(true);
         }
+        // A live observer can request ready independently of this zero site.
+        // Preserve the producer/occurrence/shape checks, then let capture proceed
+        // without reading the projection scratch row. Probes/audits still read.
+        if self.probe.is_none()
+            && self.audit.is_none()
+            && index.is_some_and(|i| self.plan.sites[i].coef == 0.0)
+        {
+            return Ok(true);
+        }
         let h = self.plan.width;
         for row_index in 0..rows as usize {
             if self.fault == Fault::Cancel || crate::async_job::checkpoint().is_err() {
@@ -936,3 +945,7 @@ include!("projection_constructor.rs");
 #[cfg(test)]
 #[path = "projection_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "projection_review_tests.rs"]
+mod review_tests;

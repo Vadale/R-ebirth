@@ -16,13 +16,14 @@ on:
         type: boolean
         default: false
       sanitizer_selection:
-        description: Full suite, F6a live, F6b steering, or F6e projection (includes scoped Memcheck)
+        description: Full suite, F6a live, F6b steering, or scoped F6e projection/review closure (includes Memcheck)
         type: choice
         options:
           - full
           - live-only
           - steering-only
           - projection-only
+          - projection-review-fixes
         default: full
 
 name: nightly-memory-safety.yaml
@@ -35,7 +36,7 @@ concurrency:
 
 jobs:
   valgrind-intervention:
-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only' && inputs.sanitizer_selection != 'projection-only') }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only' && inputs.sanitizer_selection != 'projection-only' && inputs.sanitizer_selection != 'projection-review-fixes') }}
     runs-on: ubuntu-24.04
     name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
     timeout-minutes: 90
@@ -186,21 +187,21 @@ jobs:
           } 2>&1 | tee "$SANITIZER_EVIDENCE/toolchain-install.log"
 
       - name: Reject no-op and false-success harness controls
-        if: env.SANITIZER_SELECTION != 'projection-only'
+        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
         run: |
           set -euo pipefail
           python3 -m unittest discover -s tests/sanitizers -p 'test_*.py' -v \
             2>&1 | tee "$SANITIZER_EVIDENCE/harness-controls.log"
 
       - name: Graph sizing regression with the pinned Linux compiler
-        if: env.SANITIZER_SELECTION != 'projection-only'
+        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
         run: |
           set -euo pipefail
           python3 tests/sanitizers/graph_size.py --cc clang-19 \
             --evidence "$SANITIZER_EVIDENCE/graph-size-layout"
 
       - name: CPU callback signatures and runtime rejection controls
-        if: env.SANITIZER_SELECTION != 'projection-only'
+        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
         run: |
           set -euo pipefail
           python3 tests/sanitizers/cpu_callbacks.py --cc clang-19 --cxx clang++-19 \
@@ -211,7 +212,7 @@ jobs:
       # compiler caches, controls the environment, and proves instrumentation
       # before accepting the exact allowlist of real executed tests.
       - name: Validate runtime, rebuild instrumented native code and execute required cases
-        if: env.SANITIZER_SELECTION != 'projection-only'
+        if: env.SANITIZER_SELECTION != 'projection-only' && env.SANITIZER_SELECTION != 'projection-review-fixes'
         run: |
           set -euo pipefail
           python3 -u tests/sanitizers/run.py \
@@ -239,7 +240,7 @@ jobs:
             2>&1 | tee "$SANITIZER_EVIDENCE/projection-asan.log"
 
       - name: Install Valgrind for the separate F6e baseline build
-        if: env.SANITIZER_SELECTION == 'projection-only'
+        if: env.SANITIZER_SELECTION == 'projection-only' || env.SANITIZER_SELECTION == 'projection-review-fixes'
         run: |
           set -euo pipefail
           sudo apt-get install -y valgrind \
@@ -254,6 +255,37 @@ jobs:
             --evidence "$SANITIZER_EVIDENCE/projection-valgrind" \
             --target "$RUNNER_TEMP/relm-f6e-valgrind-target" \
             2>&1 | tee "$SANITIZER_EVIDENCE/projection-valgrind.log"
+
+      - name: Validate affected review collector controls and retain source scope
+        if: env.SANITIZER_SELECTION == 'projection-review-fixes'
+        run: |
+          set -euo pipefail
+          cp .github/workflows/nightly-memory-safety.yaml "$SANITIZER_EVIDENCE/workflow.yaml"
+          cp tests/projection/instrumented-review-scope.json "$SANITIZER_EVIDENCE/projection-review-source-scope.json"
+          python3 tests/projection/instrumented_review_controls.py \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-review-controls.log"
+          python3 tests/projection/instrumented_path_controls.py \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-path-controls.log"
+
+      - name: Execute only the new zero/live ASan and UBSan regression
+        if: env.SANITIZER_SELECTION == 'projection-review-fixes'
+        run: |
+          set -euo pipefail
+          python3 -u tests/projection/instrumented_review.py --mode sanitizers \
+            --source-manifest tests/projection/instrumented-review-scope.json \
+            --evidence "$SANITIZER_EVIDENCE/projection-review-asan" \
+            --target "$RUNNER_TEMP/relm-f6e-review-asan-target" \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-review-asan.log"
+
+      - name: Execute the unrun worker and new zero/live Memcheck regressions
+        if: env.SANITIZER_SELECTION == 'projection-review-fixes'
+        run: |
+          set -euo pipefail
+          python3 -u tests/projection/instrumented_review.py --mode valgrind \
+            --source-manifest tests/projection/instrumented-review-scope.json \
+            --evidence "$SANITIZER_EVIDENCE/projection-review-valgrind" \
+            --target "$RUNNER_TEMP/relm-f6e-review-valgrind-target" \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-review-valgrind.log"
 
       - name: Retain sanitizer logs and evidence, including failures
         if: always()

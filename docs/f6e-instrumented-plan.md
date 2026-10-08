@@ -1,7 +1,24 @@
 # F6e targeted native memory acceptance
 
-Status: prepared source only, 2026-10-08. No command below has been executed by
-this document's author. Parent owns execution and independent collection.
+Status: original plan retained below. Parent execution of run37773468792 on
+e2081b4 is partially verified: both ASan/UBSan tests and Memcheck constructor
+passed; the worker Memcheck command failed before test startup due to literal
+percent characters in its XML filename. See the implementation report for the
+separate owner receipt. The whole original workflow remains failed.
+
+The new `projection-review-fixes` selection is prepared but unexecuted. It uses
+`instrumented_review.py` and `instrumented-review-scope.json`: ASan/UBSan executes
+only the new zero/live regression (8 cases/2 refusals/224 identity values);
+Memcheck executes the previously unexecuted worker plus that regression
+(18 cases/4 refusals/227 values). It builds the production integration artifact
+for the unchanged production-rlib audit without executing it. No accepted
+parent test scope is replayed. The original scope file remains unchanged.
+The XML path correction escapes every literal percent character. The next real
+Memcheck safe control must create a filename containing literal `%3A` and `%p`;
+model-free command tests alone do not establish that runtime acceptance.
+The installed R/GC and FFI registry checks remain separate from this Linux scope.
+
+## Original preparation record
 
 This closes the affected native instrumentation requirement in
 [f6e-projection-contract.md §6](f6e-projection-contract.md). The accepted normal

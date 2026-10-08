@@ -76,7 +76,12 @@ fn projection_reserve_registration<T>(
     {
         return Err(projection_argument());
     }
-    let capacity = admitted_capacity
+    // Expired weak owners do not require replacement slots. Live entries plus
+    // the candidate fit the already admitted old-capacity-plus-one bound.
+    let capacity = registry
+        .iter()
+        .filter(|w| w.strong_count() > 0)
+        .count()
         .checked_add(1)
         .ok_or_else(projection_argument)?;
     let mut replacement = Vec::new();
@@ -213,7 +218,7 @@ mod projection_transfer_selftest {
         assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
         projection_reserve_registration(&mut registry, &a, &b, capacity, bytes).unwrap();
         assert_eq!(registry.len(), 2);
-        assert_eq!(registry.capacity(), capacity + 1);
+        assert_eq!(registry.capacity(), registry.len());
         assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
         assert_eq!(registry[1].as_ptr(), Rc::as_ptr(&b));
         let new_capacity = registry.capacity();
@@ -226,9 +231,15 @@ mod projection_transfer_selftest {
             projection_reserve_registration(&mut registry, &a, &b, new_capacity, new_bytes)
                 .is_err()
         );
-        assert!(
-            projection_reserve_registration(&mut registry, &a, &absent, capacity, bytes).is_err()
-        );
+        let stale_capacity = new_capacity + 1;
+        assert!(projection_reserve_registration(
+            &mut registry,
+            &a,
+            &absent,
+            stale_capacity,
+            projection_registry_charge(stale_capacity).unwrap(),
+        )
+        .is_err());
         drop(b);
         let capacity = registry.capacity();
         projection_reserve_registration(
@@ -240,7 +251,7 @@ mod projection_transfer_selftest {
         )
         .unwrap();
         assert_eq!(registry.len(), 2);
-        assert_eq!(registry.capacity(), capacity + 1);
+        assert_eq!(registry.capacity(), registry.len());
         let output = projection_handle_only(ExternalPtr::new(LlmHandle::empty()));
         let list = output.as_list().unwrap();
         assert_eq!(list.names().unwrap().collect::<Vec<_>>(), vec!["ok", "ptr"]);
@@ -342,3 +353,7 @@ mod projection_transfer_selftest {
         marker("projection_transfer_r_state_facts", 16, 12);
     }
 }
+
+#[cfg(test)]
+#[path = "projection_review_registry_tests.rs"]
+mod projection_review_registry_tests;

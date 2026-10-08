@@ -207,10 +207,13 @@ class ProjectionRun(BASE.Run):
             self.valgrind_probes()
 
     def valgrind_args(self, binary, label, arguments):
+        # Valgrind expands %p/%q/%% in output filenames. The portable test
+        # labels deliberately contain literal percent-encoded Rust separators.
+        xml_path = str(self.evidence / (label + ".xml")).replace("%", "%%")
         return ["valgrind", "--tool=memcheck", "--error-exitcode=1", "--leak-check=full",
                 "--errors-for-leak-kinds=definite,indirect", "--show-leak-kinds=definite,indirect",
                 "--track-origins=yes", "--gen-suppressions=all", "--xml=yes",
-                f"--xml-file={self.evidence / (label + '.xml')}",
+                f"--xml-file={xml_path}",
                 f"--suppressions={self.root / 'tests/valgrind/relm.supp'}", binary, *arguments]
 
     def valgrind_probes(self):
@@ -221,6 +224,10 @@ class ProjectionRun(BASE.Run):
                       "-o", binary], "memcheck-probe-build")
         for mode, fault in (("safe", None), ("invalid-write", "InvalidWrite"), ("leak", "Leak_DefinitelyLost")):
             label = "memcheck-control-" + mode
+            if mode == "safe":
+                # An actual Valgrind process must preserve both an invalid
+                # format sequence and a would-be PID expansion literally.
+                label += "-%3A-%p"
             status, _, _ = self.command(self.valgrind_args(binary, label, [mode]), label, check=False)
             require(status == (0 if fault is None else 1), "incorrect Memcheck control exit")
             collect_valgrind((self.evidence / (label + ".xml")).read_text(), binary, fault)
