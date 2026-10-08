@@ -1,0 +1,40 @@
+--- rebirth/src/rust/rebirth-llm/src/projection_profile.rs (original scope)
++++ rebirth/src/rust/rebirth-llm/src/projection_profile.rs (accepted budget correction)
+@@ -14,6 +14,7 @@
+ // frame and exact String copy have separate charges.
+ const ERROR_MESSAGE: &str =
+     "Projection admission refused: invalid shape, capacity, ownership, arithmetic, or budget.";
++const BUDGET_MESSAGE: &str = "Projection owners and working copies exceed max_bytes. Reduce projection sites or increase max_bytes.";
+ // Full grammar: static context-allocation refusal and the two existing adapter
+ // setter errors. Signed i32 uses at most 11 decimal bytes, usize at most 20.
+ const ABLATE_ERROR_BYTES: usize =
+@@ -37,7 +38,10 @@
+     }
+ }
+ const ERROR_BYTES: usize = max(
+-    max(ERROR_MESSAGE.len(), ABLATE_ERROR_BYTES),
++    max(
++        max(ERROR_MESSAGE.len(), BUDGET_MESSAGE.len()),
++        ABLATE_ERROR_BYTES,
++    ),
+     max(
+         max(STEER_ERROR_BYTES, CONTEXT_ERROR_BYTES),
+         DECODE_ERROR_BYTES,
+@@ -474,8 +478,15 @@
+             e.r_adapter_bytes,
+             e.existing_direction_estimate,
+         ])?;
+-        if e.total_bytes > i.max_bytes || usize::try_from(e.total_bytes).is_err() {
+-            return Err(admission_error());
++        if usize::try_from(e.total_bytes).is_err() {
++            return Err(admission_error());
++        }
++        if e.total_bytes > i.max_bytes {
++            return Err(RebirthError::Oom {
++                estimate_bytes: e.total_bytes,
++                budget_bytes: i.max_bytes,
++                suggestion: bounded_error_reason(format_args!("{BUDGET_MESSAGE}")),
++            });
+         }
+         Ok(e)
+     }

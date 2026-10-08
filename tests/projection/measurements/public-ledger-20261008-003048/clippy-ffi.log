@@ -1,0 +1,36 @@
+    Checking once_cell v1.21.4
+   Compiling syn v2.0.118
+   Compiling extendr-ffi v0.9.0
+   Compiling paste v1.0.15
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling extendr-api v0.9.0
+   Compiling lazy_static v1.5.0
+   Compiling zerocopy-derive v0.8.52
+   Compiling extendr-macros v0.9.0
+   Compiling readonly v0.2.13
+    Checking zerocopy v0.8.52
+    Checking half v2.7.1
+    Checking ahash v0.8.12
+    Checking arrow-buffer v59.0.0
+    Checking arrow-data v59.0.0
+    Checking arrow-array v59.0.0
+    Checking arrow-select v59.0.0
+    Checking arrow-ipc v59.0.0
+    Checking rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+error[E0432]: unresolved import `extendr_engine`
+   --> rebirth-ffi/src/projection_boundary.rs:391:9
+    |
+391 | / ...   extendr_api::test! {
+392 | | ...       // Empty closed handles retain the real ExternalPtr<LlmHandle> type
+393 | | ...       // and tag, but contain no model and cannot enter the native engine.
+394 | | ...       let pointer_a=ExternalPtr::new(LlmHandle::empty());
+...   |
+410 | | ...       println!("F6E_PROJECTION_LEDGER_TEST {{\"test\":\"projection_profile_ffi_descriptors_and_schema_are_exact\",\"status\":...
+411 | | ...   }
+    | |_______^ no external crate `extendr_engine`
+    |
+    = note: this error originates in the macro `extendr_api::test` (in Nightly builds, run with -Z macro-backtrace for more info)
+
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `rebirth-ffi` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

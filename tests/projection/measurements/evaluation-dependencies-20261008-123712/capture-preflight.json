@@ -1,0 +1,8 @@
+{
+  "matrix_bound_each": 1150560,
+  "matrices": 4,
+  "trace_bound": 78848,
+  "sum": 4681088,
+  "max_bytes": 67108864,
+  "scope": "four construction matrices plus one materialized trace"
+}

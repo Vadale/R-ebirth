@@ -1,0 +1,33 @@
+{
+  "status": "prelaunch_verified_not_native_acceptance",
+  "changed_files": [
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs"
+  ],
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "2deda583e707c56430ad648532e0c9e6cb988650abf63f54e21723f178c39db9",
+    "rebirth/src/rust/rebirth-llm/build.rs": "3dcd4270bf9902eb01191509cc9f1185bac9bda71e0464ee13dd3a795059febe",
+    "rebirth/src/rust/rebirth-llm/native/CMakeLists.txt": "744d603003e13889f32c311493b7179bbf62f364b15cbdfa67ffb354859f6d30",
+    "rebirth/src/rust/rebirth-llm/native/projection.cpp": "1e0e1dcebd0a8d447a2a01e0cae513e99800371cb90a818d1a43c1d3bd8a3755",
+    "rebirth/src/rust/rebirth-llm/native/projection.h": "50fce200c0b80b06d7cbc5540bba9ff1689a06e43ecf07d4584fa1607ca98fb5",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "d6f172cb39b34a9be3d3ee5a25d96b3ebfee4a13734a069d33d7c6b3e68bb600",
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs": "cc23b56ab16914e68955668165a45fb7d8b094cd3e88a58dfc5bd8cb9b67beee",
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "11504e25a58c570d55966446addc8249f85a08a2f95d6d82314ab8fca686b9fb",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "c3da7521e1ae5917d17b72bf342d924a3aae1ed949bd6a89da7098f3be12fc69",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "34785cb13f9372dea7ae768b3e4236f81fb4642f1b6632eb019c8538947356bd",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "580668a4b022df2bb32598a7b2fa945f91c216e4bdcbd3abe4e9947a2ab61b35",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "32443e3c01d922c425d663213c34826d4cd2fb443e62caf463eecf9bf9c6c8b3",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "59b8449214f5cd323afd4ac4aec7d036969ae08b7a573581cfcc9eb6609b75ab",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "5e3dd10ef6b90fe66010704ca5202e51587abe8f00af10e01ea5f2b3e28054b7",
+    "rebirth/src/rust/rebirth-llm/src/projection_diagnostic.rs": "f72cfce728cb1a4dbea0e88ce001386899d9ade3ac8ba5b8315d9f09676837d3"
+  },
+  "source_hashes_digest": "6e7e356fcd6adad63ab630d32d4e702e1ae366119ff359998b4e477e21d924ae",
+  "runtime_unchanged": true,
+  "reference_unchanged": true,
+  "controls": 28,
+  "main_counts": [
+    3,
+    10042,
+    704
+  ],
+  "scope": "native7 correction + unexecuted8-9 and CPU/Metal release; carry accepted1-6 without repetition"
+}

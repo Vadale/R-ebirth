@@ -1,0 +1,24 @@
+{
+  "fixture": "two_closed_llm_handles",
+  "model_count": 0,
+  "externalptr_r_type": "externalptr",
+  "protected_is_null": true,
+  "tag_r_type": "character",
+  "tag_length": 1,
+  "tag_utf8_bytes": 15,
+  "externalptr_bytes": [
+    184,
+    184
+  ],
+  "tag_bytes": [
+    120,
+    120
+  ],
+  "pointer_pair_bytes": 432,
+  "tag_pair_bytes": 304,
+  "combined_bytes": 688,
+  "empty_pair_bytes": 64,
+  "empty_quad_bytes": 80,
+  "charged_tag_bytes": 176,
+  "shared_character_payload": true
+}

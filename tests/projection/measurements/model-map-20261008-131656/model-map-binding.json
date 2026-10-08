@@ -1,0 +1,21 @@
+{
+  "driver_sha256": "431764990a1dd8912b7194981265e68afba9839fcd0924a73e6878663a0de77b",
+  "files": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/model-map.R": "625ed5a792049723f724f008ec8a3a4e46a8a0575a3872af09e855c4a1c02a0a",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/collect_run.py": "129a1f79813bb5fad75f6988ef4802d0c6e883dd2e9e5361750316df89b66107",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/token-warning-diagnosis.json": "befbfb9501178b798872e61e2bf9966845579cb37263c5a51a7bf2992db059b9",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/artifacts/mlp.rds": "f8e9b69aa68ed1edd420ddf05ed85446fc3b3a208a3f9ace72bc2f0b3fafbb5a",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/config.json": "934e1fa8751fd081782e395ebbf95c9fa5727778cf2aa1b52495a2752b5ea1d0",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/owner-verification.json": "b46ab553fb776136bb9eef0e00188b3d501b70a06930fa0126ac8b0ed82cbfab"
+  },
+  "expected_cases": [
+    "actual_original_metadata",
+    "actual_projection_configuration",
+    "print_and_summary",
+    "png_table_and_par",
+    "pdf_table_and_par",
+    "closed_map_refused",
+    "owners_closed"
+  ],
+  "scope": "One actual load/one project derive for configured map only; no generation, capture, tokenization or efficacy rerun"
+}

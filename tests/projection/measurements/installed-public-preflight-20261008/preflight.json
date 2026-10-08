@@ -1,0 +1,21 @@
+{
+  "status": "prepared_not_executed",
+  "source_native_files": 51,
+  "cases": 37,
+  "refusals": 6,
+  "new_model_loads": 2,
+  "script_hashes": {
+    "/private/tmp/relm-f6e/check-installed-public.R": "8c01f1f0e09619ef7e615a3fa25d83400b1c14cdce38c9936e84f6b5126afb54",
+    "/private/tmp/relm-f6e/generate-wrappers.R": "68c9691b5669adb1a1777252ad382e41607bc6980e85ee67311dbf8e53bbfe62",
+    "/private/tmp/relm-f6e/verify-installed-public.py": "9f3ee5dc1b2b1868a9769565975416cd252c0a7be18569d0836900f551e4c654"
+  },
+  "binding_sha256": "cc9d008f6b4177f81dd3cea0be76d9cf6be1f3e60fd787126bac720854606e9d",
+  "draft_corrections_before_execution": [
+    "Explicit trace neuron column names",
+    "Structured output is a character value",
+    "Live observation uses async promises",
+    "Exact total is the returned terms total",
+    "Expected refusal count is six"
+  ],
+  "acceptance": "No installed or model result yet. New operational prompts are independent of the frozen efficacy protocol."
+}

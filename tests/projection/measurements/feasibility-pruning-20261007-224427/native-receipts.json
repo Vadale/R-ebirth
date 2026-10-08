@@ -1,0 +1,53 @@
+[
+  {
+    "compared_values": 10042,
+    "executed_cases": 3,
+    "expected_cases": 3,
+    "expected_values": 10042,
+    "max_abs_error": 0.003909901715815067,
+    "max_rel_error": 0.002995177727885454,
+    "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+    "negative_controls_expected": 0,
+    "negative_controls_rejected": 0,
+    "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+    "relative_error_scale": "1+abs(reference)",
+    "schema": 1,
+    "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+    "status": "passed",
+    "test_id": "projection::tests::projection_microbatches_pruning_and_graph_reuse"
+  },
+  {
+    "compared_values": 0,
+    "executed_cases": 6,
+    "expected_cases": 6,
+    "expected_values": 0,
+    "max_abs_error": 0.0,
+    "max_rel_error": 0.0,
+    "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+    "negative_controls_expected": 1,
+    "negative_controls_rejected": 1,
+    "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+    "relative_error_scale": "1+abs(reference)",
+    "schema": 1,
+    "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+    "status": "passed",
+    "test_id": "projection::tests::projection_capture_and_static_additive_composition"
+  },
+  {
+    "compared_values": 0,
+    "executed_cases": 3,
+    "expected_cases": 3,
+    "expected_values": 0,
+    "max_abs_error": 0.0,
+    "max_rel_error": 0.0,
+    "model_sha256": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+    "negative_controls_expected": 3,
+    "negative_controls_rejected": 3,
+    "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+    "relative_error_scale": "1+abs(reference)",
+    "schema": 1,
+    "source_manifest_sha256": "77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6",
+    "status": "passed",
+    "test_id": "projection::tests::projection_cancel_fault_and_owner_cleanup"
+  }
+]

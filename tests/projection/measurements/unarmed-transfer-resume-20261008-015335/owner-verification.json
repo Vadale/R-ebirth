@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "source_manifest_sha256": "e6266b0d68d88018fa6c9e8352d4587a1c308b9459b4c9c98fd17da508ad63fb",
+  "source_count": 107,
+  "source_archive_members": 36,
+  "R_headers": 42,
+  "stage_logs": 9,
+  "native_outcomes": 6,
+  "cases": 78,
+  "refusals": 55,
+  "state_facts": [
+    {
+      "fixture": "compiled_scalar",
+      "hash_slots": 0,
+      "bindings": 2,
+      "c_finalizer_bytes": 8,
+      "query_workspace_bytes": 264,
+      "ffi_response_bytes": 1464
+    },
+    {
+      "fixture": "unhashed",
+      "hash_slots": 0,
+      "bindings": 2,
+      "c_finalizer_bytes": 8,
+      "query_workspace_bytes": 264,
+      "ffi_response_bytes": 1464
+    },
+    {
+      "fixture": "hashed",
+      "hash_slots": 29,
+      "bindings": 2,
+      "c_finalizer_bytes": 8,
+      "query_workspace_bytes": 264,
+      "ffi_response_bytes": 1464
+    }
+  ],
+  "R_closed_fixture_bindings": 2,
+  "models": 0,
+  "production_armed": false,
+  "compiler_warnings": 0,
+  "link_warnings": 0,
+  "dll_sha256": "18609cd281c2530c88a6f47c79a635d44afc2788c420ef34bb029cc1e449fb7f",
+  "C_object_sha256": "ceb6d33c3ce6314bfc08c6035e9f5fc0719b86b629d44625853fad82dafbd600",
+  "C_object_bytes_bound_to_both_archives": true,
+  "profile_delta_diagnosis": "Only dynamic registry96->160 and containing ffi_fixed1720->1784 differ. Compiled equation binds capacity4->8; the new selftest registers more empty handles. Query264 remains below unchanged1464 response workspace; no layout/formula change or hidden reserve. Actual constructor admission and dynamic source/registry revalidation remain pending.",
+  "scope": "Unarmed helpers and R closed-empty-handle binding only; not loaded model or public memory acceptance"
+}

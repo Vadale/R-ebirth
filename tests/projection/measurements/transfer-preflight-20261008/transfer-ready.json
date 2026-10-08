@@ -1,0 +1,317 @@
+{
+  "status": "ready",
+  "scope": "unarmed source/residual/cache/registry/handle-only helpers plus bounded installed-R-header source-state query; no derive or projection arming",
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "3b28c95e43e18c89c91b9edc73dbf82a991b5f74d05f5783d8f088f163829c49",
+    "rebirth/src/rust/rebirth-ffi/build.rs": "da060ac57c464f19c232b3f28299c92f95971bddde02f526c281e8f7be6a3817",
+    "rebirth/src/rust/rebirth-ffi/native/projection_state.c": "1eb19898426fdf7a804d12611674ac9332380bfb01f4773b59a530febc19031d",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": "294c96cbebd3c89bb2f90f7c20284cca082d36455f2538a04affb20836c18044",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "544f7804ca4787dbf010c0a499f6327534d273f195ad2bbb565c06414caa5d1b",
+    "rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs": "673003eb34b6820954e78b9bf78ebb1c4383c1baae4e0c1029f700597bf49b67",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "7bf77a9bf516629d80b50aba87aa451589945e1abcc5c15c7a4f8b09944f24b8",
+    "rebirth/src/rust/rebirth-llm/src/intervene_projection_tests.rs": "e69c4cf4a8d44ee15e5dd96ac816b67fab05d1efc43df6b4fe0ffbd5b7950f7b",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs": "50648bafa636f48e09b83a231827cdcaf400dd4ac6f7c0c88157a124ae703e36",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "1f70ccb233f46671d612086c041a6752e80e6c331cd94b1a6bd429413419cd99"
+  },
+  "tests": [
+    {
+      "execution": "cargo_libtest",
+      "crate": "rebirth-llm",
+      "id": "intervene::projection_transfer_tests::projection_transfer_residual_shapes_and_values",
+      "expected_cases": 17,
+      "expected_rejections": 14,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "intervene::projection_transfer_tests::projection_transfer_residual_shapes_and_values",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    },
+    {
+      "execution": "cargo_libtest",
+      "crate": "rebirth-llm",
+      "id": "intervene::projection_transfer_tests::projection_transfer_residual_exact_capacities",
+      "expected_cases": 5,
+      "expected_rejections": 4,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "intervene::projection_transfer_tests::projection_transfer_residual_exact_capacities",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    },
+    {
+      "execution": "cargo_libtest",
+      "crate": "rebirth-llm",
+      "id": "probe::projection_transfer_tests::projection_transfer_requires_cached_residual_capabilities",
+      "expected_cases": 14,
+      "expected_rejections": 6,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "probe::projection_transfer_tests::projection_transfer_requires_cached_residual_capabilities",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    }
+  ],
+  "r_hosted": {
+    "entrypoint": "rebirth_selftest_projection_transfer",
+    "symbol": "wrap__rebirth_selftest_projection_transfer",
+    "expected_outcomes": 3,
+    "outcomes": [
+      {
+        "test": "projection_transfer_source_registry_and_payload",
+        "expected_cases": 14,
+        "expected_rejections": 10
+      },
+      {
+        "test": "projection_transfer_borrowed_residual_inputs",
+        "expected_cases": 12,
+        "expected_rejections": 9
+      },
+      {
+        "test": "projection_transfer_r_state_facts",
+        "expected_cases": 16,
+        "expected_rejections": 12
+      }
+    ],
+    "contract": {
+      "platform": "accepted primary macOS arm64; use fresh scratch directory under this owner run",
+      "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+      "build_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--target-dir",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target"
+      ],
+      "profile": "debug/default features; reuse existing cache; this freshly rebuilds changed FFI source into librelm.a",
+      "static_archive": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a",
+      "entrypoint_source": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/entrypoint.c",
+      "entrypoint_sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+      "scratch_preparation": "copy exact entrypoint.c into a NEW empty scratch directory in owner run; preserve hash; no installed/accepted relm.so reuse",
+      "link_cwd": "new scratch directory containing copied entrypoint.c only",
+      "link_environment": {
+        "PKG_LIBS": "-L/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug -lrelm -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-metal -lggml-base -framework Metal -framework MetalKit -framework Foundation -framework Accelerate -lc++"
+      },
+      "link_command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "link_scope": "same ordered native archives/system flags as current src/Makevars, no Makevars recipe/document generation/cache cleaning; relm-grammar already contains projection.cpp",
+      "dll_name_requirement": "relm.so basename invokes existing R_init_relm and its real extendr registration/panic hook",
+      "r_hosted_script": "args <- commandArgs(trailingOnly = TRUE)\nstopifnot(length(args) == 1L)\npath <- normalizePath(args[[1L]], mustWork = TRUE)\nstopifnot(!\"relm\" %in% names(getLoadedDLLs()))\ndll <- dyn.load(path, local = TRUE, now = TRUE)\nstopifnot(identical(normalizePath(dll[[\"path\"]], mustWork = TRUE), path))\nsymbol <- getNativeSymbolInfo(\"wrap__rebirth_selftest_projection_transfer\", PACKAGE = dll)\nstopifnot(identical(symbol$numParameters, 0L))\nstopifnot(identical(normalizePath(symbol$dll[[\"path\"]], mustWork = TRUE), path))\nresult <- .Call(symbol)\nstopifnot(identical(result, list(ok = TRUE)))\ninvisible(gc())\n",
+      "r_command": [
+        "Rscript",
+        "--vanilla",
+        "<owner-written-script.R>",
+        "<fresh-scratch-dir>/relm.so"
+      ],
+      "completion_requirement": "fresh Rscript exits zero; registered .Call returns exactly list(ok=TRUE); three exact F6E_PROJECTION_TRANSFER_TEST and three F6E_PROJECTION_STATE_FACTS receipts",
+      "retention_requirement": "retain fresh static archive/DLL/entrypoint hashes and raw link/Rscript logs bound to corrected source snapshot",
+      "models": 0,
+      "unnecessary_work": "do not run document binary, R wrapper generation, package installation, existing R7 cases or llm clippy again",
+      "build_addition": "rebirth-ffi/build.rs compiles only native/projection_state.c against existing installed R toolchain; librelm-r-state.a is bundled in librelm.a, unchanged package/scratch PKG_LIBS"
+    }
+  },
+  "totals": {
+    "new_native_cases": 36,
+    "new_native_rejections": 24,
+    "new_r_hosted_cases": 42,
+    "new_r_hosted_rejections": 31,
+    "new_cases": 78,
+    "new_rejections": 55,
+    "models": 0
+  },
+  "markers": {
+    "F6E_PROJECTION_TRANSFER_TEST": {
+      "fields": [
+        "test",
+        "status",
+        "expected_cases",
+        "executed_cases",
+        "expected_rejections",
+        "rejected_cases"
+      ],
+      "status": "passed",
+      "count": 6,
+      "exact_counts": [
+        {
+          "execution": "cargo_libtest",
+          "crate": "rebirth-llm",
+          "id": "intervene::projection_transfer_tests::projection_transfer_residual_shapes_and_values",
+          "expected_cases": 17,
+          "expected_rejections": 14,
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "-p",
+            "rebirth-llm",
+            "--lib",
+            "intervene::projection_transfer_tests::projection_transfer_residual_shapes_and_values",
+            "--",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ]
+        },
+        {
+          "execution": "cargo_libtest",
+          "crate": "rebirth-llm",
+          "id": "intervene::projection_transfer_tests::projection_transfer_residual_exact_capacities",
+          "expected_cases": 5,
+          "expected_rejections": 4,
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "-p",
+            "rebirth-llm",
+            "--lib",
+            "intervene::projection_transfer_tests::projection_transfer_residual_exact_capacities",
+            "--",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ]
+        },
+        {
+          "execution": "cargo_libtest",
+          "crate": "rebirth-llm",
+          "id": "probe::projection_transfer_tests::projection_transfer_requires_cached_residual_capabilities",
+          "expected_cases": 14,
+          "expected_rejections": 6,
+          "command": [
+            "cargo",
+            "test",
+            "--locked",
+            "--offline",
+            "-p",
+            "rebirth-llm",
+            "--lib",
+            "probe::projection_transfer_tests::projection_transfer_requires_cached_residual_capabilities",
+            "--",
+            "--exact",
+            "--nocapture",
+            "--test-threads=1"
+          ]
+        },
+        {
+          "test": "projection_transfer_source_registry_and_payload",
+          "expected_cases": 14,
+          "expected_rejections": 10
+        },
+        {
+          "test": "projection_transfer_borrowed_residual_inputs",
+          "expected_cases": 12,
+          "expected_rejections": 9
+        },
+        {
+          "test": "projection_transfer_r_state_facts",
+          "expected_cases": 16,
+          "expected_rejections": 12
+        }
+      ]
+    },
+    "F6E_PROJECTION_STATE_FACTS": {
+      "fields": [
+        "fixture",
+        "hash_slots",
+        "bindings",
+        "c_finalizer_bytes",
+        "query_workspace_bytes",
+        "ffi_response_bytes"
+      ],
+      "count": 3,
+      "fixtures": {
+        "compiled_scalar": 0,
+        "unhashed": 0,
+        "hashed": 29
+      },
+      "bindings": 2,
+      "c_finalizer_bytes": "actual sizeof(R_CFinalizer_t), compared to Rust extern-C function pointer type; no guessed compiled value",
+      "coverage": "ffi_response_bytes >= query_workspace_bytes; both actual compiled values",
+      "immediate_scope": "bytecode-produced scalar fixture exercises official lookup path; no private tag or private layout is inspected or asserted"
+    }
+  },
+  "interfaces": {
+    "LoadedModel::projection_validate_transfer": "(&ProjectionCommand,&InterventionSpec,ProjectionFfiProfile) -> Result<(ProjectionAllocationProfile,ProjectionAdmission,ProjectionEstimate)>; current native identity facts reread; exact baseline capacity/current plan proofs/restoration/residual cache checked; no constructor/decode",
+    "LoadedModel::projection_residual_layer_is_cached": "(engine_layer:u32,steering:bool)->bool; lookup only, no cache insertion/probe",
+    "ProjectionResidualInput::validate": "borrowed five slices + native width/depth + cache-only closure; scope ends before owned-array copies; strict scalar/shape/layer checks and missing capabilities refused",
+    "projection_same_source": "expected LlmHandle and current Robj -> same live typed ExternalPtr by exact Rc identity; hold its run()/model borrow across future transaction",
+    "projection_reserve_registration": "old registry, source/candidate Rc, admitted capacity and bytes; exact cap+1 replacement, source membership/candidate freshness/stale-budget checks; no R calls, old registry unchanged on failure",
+    "projection_handle_only": "ExternalPtr<LlmHandle> -> list(ok=TRUE,ptr); no metadata copy",
+    "rebirth_projection_state_facts": "(state:Robj,ptr:Robj)->bare list(hash_slots,bindings,c_finalizer_bytes) or existing classed error payload; internal registered symbol wrap__rebirth_projection_state_facts"
+  },
+  "profile_change": {
+    "schema_fields": 26,
+    "new_fields": [],
+    "layout_types_changed": false,
+    "equations_changed": false,
+    "ffi_response_bytes": "max(previous compiled response workspace, actual C frame + sizeof(ProjectionStateFacts)+2*sizeof(Robj)+sizeof(List)+sizeof([(&str,u64);3])+sizeof(slice iterator))",
+    "ffi_fixed_bytes": "existing profile composes ffi.response_bytes, so maximum is charged there; this separate query call does not coexist with profile serialization",
+    "native_other_charges": "registry old/new arrays and one Vec already present; borrowed five slice descriptors fit existing five Vec descriptors with nonoverlapping phases; cache MutexGuard fits existing projection guard frame",
+    "r_reboxing_bytes": 112,
+    "r_reboxing_term": "parent query/scan workspace, 2 actual R64 scalar pool objects56 each",
+    "affected_existing_profile_test": "rebirth_selftest_projection_ledger existing47cases/19refusals may be used for changed compiled profile plus12 native/R twin receipts; no old llm6/numerical/backend rerun needed solely for the added helper methods"
+  },
+  "source_evidence": {
+    "promise_unforced": "retained R4.5.1 envir.c113-121 BINDING_VALUE and995-1046 findVarInFrame3 return a promise without evaluation; active bindings rejected in completed first pass",
+    "bounded_reboxing": "retained R4.5.1 memory.c4377-4420 R_expand_binding_value creates at most one scalar per lookup, installs it back into source environment",
+    "why_not_CAR": "installed R4.5 PrivateHeaders/Rinlinedfuns.h92-97 rejects immediate binding cells; production accessor uses no private headers or declarations",
+    "protected_ownership": "Rscript .Call arguments and extendr Robj owners protect env/ptr; official reboxing stores values back into that rooted environment"
+  },
+  "non_authentication": "native source identity/current dimensions/plan/capacity and residual capability are authoritative; supplied accumulated ablation values are not authenticated against discarded historical adapter inputs; no extra native identity storage added",
+  "remaining_production_integration": [
+    "bind actual R owner inventory and private inherited budget settings before allocation",
+    "hold exact source RefCell model borrow/native guard, validate borrowed arrays/cache before copies, then reserve/check ten exact adapter capacities",
+    "invoke native transfer re-admission and bounded projection constructor/sentinel; no uncharged residual probes",
+    "repeat dynamic registry admission and execute atomic exact registration with no R call in the critical section",
+    "build handle-only result and parent unhashed2binding state/global finalizer with measured full source/candidate inventory",
+    "complete independent constructor-level R/native parity and owner-selected execution before any public arming"
+  ],
+  "static_validation": [
+    "rustfmt --edition2021 --check --config skip_children=true passed on eight touched Rust sources",
+    "git diff --check passed on touched paths",
+    "no build/test/model/R script/CI execution by agent"
+  ],
+  "no_builds_tests_models_executed_by_agent": true,
+  "production_armed": false,
+  "execution_owner": "parent only; reuse existing target cache/fresh DLL; preserve all accepted numerical/backend/ledger evidence scopes",
+  "preserved_prior_ready": "/private/tmp/relm-f6e/public-ledger-ready.json unchanged historical handoff; owner accepted source snapshots remain authoritative"
+}

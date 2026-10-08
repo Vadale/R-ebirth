@@ -1,0 +1,33 @@
+test_actual_r_serialization (__main__.CollectorControls.test_actual_r_serialization) ... /Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/test_collect_run.py:32: ResourceWarning: unclosed file <_io.TextIOWrapper name='/private/tmp/relm-f6e/evaluation-producer-preflight-v2/transport.csv' mode='r' encoding='UTF-8'>
+  rows=list(csv.DictReader((root/'transport.csv').open(newline='')))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+FAIL
+test_cpu_positive_and_rejections (__main__.CollectorControls.test_cpu_positive_and_rejections) ... ok
+test_setting_routes (__main__.CollectorControls.test_setting_routes) ... ok
+
+======================================================================
+FAIL: test_actual_r_serialization (__main__.CollectorControls.test_actual_r_serialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/test_collect_run.py", line 33, in test_actual_r_serialization
+    self.assertEqual(rows,[dict(x='a\nb',y='',z='TRUE'),dict(x='è,"x"',y='1',z='FALSE'),dict(x='NA',y='2',z='')])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [{'x'[37 chars]: 'è,\\x\\""', 'y': '1', 'z': 'FALSE'}, {'x': [20 chars] ''}] != [{'x'[37 chars]: 'è,"x"', 'y': '1', 'z': 'FALSE'}, {'x': 'NA'[16 chars] ''}]
+
+First differing element 1:
+{'x': 'è,\\x\\""', 'y': '1', 'z': 'FALSE'}
+{'x': 'è,"x"', 'y': '1', 'z': 'FALSE'}
+
+  [{'x': 'a\nb', 'y': '', 'z': 'TRUE'},
+-  {'x': 'è,\\x\\""', 'y': '1', 'z': 'FALSE'},
+?           ^^ ---
+
++  {'x': 'è,"x"', 'y': '1', 'z': 'FALSE'},
+?           ^
+
+   {'x': 'NA', 'y': '2', 'z': ''}]
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.027s
+
+FAILED (failures=1)

@@ -1,0 +1,211 @@
+{
+  "status": "failed",
+  "pid": 34531,
+  "directory": "/private/tmp/relm-f6e/feasibility-20261007-212937",
+  "started_at": 1791401377.896878,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791401378.087805,
+      "pid": 34539,
+      "exit_code": 0,
+      "finished_at": 1791401378.6389298,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791401378.639414,
+      "pid": 34542,
+      "exit_code": 0,
+      "finished_at": 1791401384.557081,
+      "log_sha256": "70dec0457c73127deccaaff373b251ec1b9db7004419d66e316c90e782c57dcf"
+    },
+    {
+      "name": "no-spill-compile",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--lib",
+        "--no-run"
+      ],
+      "status": "passed",
+      "started_at": 1791401384.557683,
+      "pid": 34973,
+      "exit_code": 0,
+      "finished_at": 1791401389.603372,
+      "log_sha256": "365dddebf544ab7714b1ddee75d81ac846ba8f875e6a73a995eb6fd93408fb4f"
+    },
+    {
+      "name": "native-01",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_row_matches_independent_reference",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791401389.603847,
+      "pid": 35402,
+      "exit_code": 0,
+      "finished_at": 1791401395.486421,
+      "log_sha256": "5825e1be703efec5946227539b9ec2a62466642391c3638e1e2bbd91b2d4e276"
+    },
+    {
+      "name": "native-02",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_boundary_rejects_invalid_inputs",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791401395.4873228,
+      "pid": 35840,
+      "exit_code": 0,
+      "finished_at": 1791401395.5786262,
+      "log_sha256": "e69d5c20e0141f722226ba8968922eac1cf7f4beecac8f211bebfd744c68bc90"
+    },
+    {
+      "name": "native-03",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_capacity_ledger_matches_owned_buffers",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791401395.5791218,
+      "pid": 35851,
+      "exit_code": 0,
+      "finished_at": 1791401395.728363,
+      "log_sha256": "ff191e35f406dfbed0b1751f043ca93bd93b55680fc69cca99d5a885990c091d"
+    },
+    {
+      "name": "native-04",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_classifier_accepts_only_declared_dense_sites",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791401395.728878,
+      "pid": 35871,
+      "exit_code": 0,
+      "finished_at": 1791401395.8195798,
+      "log_sha256": "e53894445e5ae6b4323dc95637cc7450d43ec29b2be5cfab1bc6660c818de5cd"
+    },
+    {
+      "name": "native-05",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_probe_rejects_missing_noop_and_wrong_site",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791401395.820269,
+      "pid": 35882,
+      "exit_code": 0,
+      "finished_at": 1791401395.961895,
+      "log_sha256": "e4d6ab35c3bed62bc7f18297dfb2e6e9b3cab783d22dc30f6298c64e2ac80b35"
+    },
+    {
+      "name": "native-06",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_forward_matches_independent_reference",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "failed",
+      "started_at": 1791401395.96249,
+      "pid": 35902,
+      "exit_code": 101,
+      "finished_at": 1791401396.112156,
+      "log_sha256": "3c2f695922a7a4e5b4a006582ee5d55d17e8482bc2da8c78d54f252c38458cdc"
+    }
+  ],
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "public_feature_acceptance": false,
+  "source_manifest_sha256": "aada551ec0adeb07a335024510910c21e96dbefa9ed5ecb925e771f51d8ee1a1",
+  "stage": "native-06",
+  "error": "native-06 failed; inspect retained source/log before any correction or retry",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-feasibility.py\", line 153, in main\n    log=stage(f'native-{index:02}', ['cargo','test','--locked','--offline','-p','rebirth-llm','--lib',test_id,'--','--exact','--nocapture','--test-threads=1'])\n  File \"/private/tmp/relm-f6e/verify-feasibility.py\", line 131, in stage\n    if rc and not allow_failure:raise RuntimeError(name+' failed; inspect retained source/log before any correction or retry')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: native-06 failed; inspect retained source/log before any correction or retry\n",
+  "source_drift": [],
+  "finished_at": 1791401396.184339
+}

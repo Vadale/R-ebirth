@@ -1,0 +1,9 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 42164,
+  "directory": "/private/tmp/relm-f6e/schema1-compatibility-20261007-233126",
+  "scope": "source-only schema1 compatibility tests; no native/model/installed acceptance",
+  "exit_code": 0,
+  "source_drift": [],
+  "log_sha256": "9154d3d28058736f80e7c2dfa7dfd2392a328914cc68db29a3e43697a57ae8ab"
+}

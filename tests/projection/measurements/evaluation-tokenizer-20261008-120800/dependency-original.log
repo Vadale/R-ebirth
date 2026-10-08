@@ -1,0 +1,2 @@
+Error: identical(as.list(r$error), as.list(err)) is not TRUE
+Execution halted

@@ -1,0 +1,3 @@
+"event_id","event","prompt_id","token_pos","token_id","text","elapsed","finish_reason","validated"
+1,"token",1,1,21476,"",0.032674791,"",
+2,"text",1,,," Jane",0.032680708,"",

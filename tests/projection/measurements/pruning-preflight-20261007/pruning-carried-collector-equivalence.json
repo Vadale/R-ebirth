@@ -1,0 +1,18 @@
+{
+  "unchanged_functions": [
+    "test_result",
+    "test_receipt",
+    "verify_same_row",
+    "verify_backend",
+    "verify_benchmark",
+    "integer",
+    "number",
+    "markers"
+  ],
+  "unchanged_control_scopes": [
+    "36 exact-count controls",
+    "39 benchmark/same-row controls"
+  ],
+  "new_controls": 28,
+  "new_scope": "pruning protocol/raw observations only; not native evidence"
+}

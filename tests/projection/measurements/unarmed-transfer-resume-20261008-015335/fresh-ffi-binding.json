@@ -1,0 +1,18 @@
+{
+  "static_archives": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a": "eb599e9b1171ca3699eac7457b455ab08796d46d1aeca9003847e827ac079b74",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm-grammar.a": "2a6fdd3f45e5dc625c609c53703cb1065c3b871f04b2ba39dea112df63996252",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libmtmd.a": "cafd1e48aa00caaadd60360253568c47d837b2e805962be1681122e220dd1dac",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libvendor-hash.a": "d37fae4a98df63c2d34f45b6c2e8060910b7bb1be97d01a243cd9cae6924af0c",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libllama.a": "2ebda6a14174d68b462f43bb7d09b6b617685d1adfae9d3367d98bff8cc63c02",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml.a": "2ebdd70b2dad0a16e92378bfc982f18dc31b053275b665bdfdfe8572f986e852",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml-cpu.a": "e442ef9015b04140782dc0b00434619b2def00f69ff361604c59c260e61c7bf8",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml-metal.a": "0a92365f32707b34902a1a06b3921b86ba5a95a9791ee106c52c33e631fd988a",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/libggml-base.a": "48fc4c95a91c70f8f797ca77333509835b9b52f85c2c6abd0a51d68a7f4269ad"
+  },
+  "entrypoint_sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+  "dll_path": "/private/tmp/relm-f6e/unarmed-transfer-resume-20261008-015335/ffi-hosted/relm.so",
+  "dll_sha256": "18609cd281c2530c88a6f47c79a635d44afc2788c420ef34bb029cc1e449fb7f",
+  "dll_bytes": 36762872,
+  "old_library_reused": false
+}

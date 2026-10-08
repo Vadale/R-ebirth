@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "scope": "one real model-free base-R RNG invocation; no relm/model load or efficacy result",
+  "r_version": "4.5.1",
+  "rng_kind": [
+    "Mersenne-Twister",
+    "Inversion",
+    "Rejection"
+  ],
+  "sign_seed": 1046,
+  "signs": [
+    1,
+    -1,
+    -1,
+    -1,
+    1,
+    -1,
+    1,
+    -1,
+    1,
+    -1,
+    1,
+    1
+  ],
+  "bootstrap_seed": 2046,
+  "bootstrap_rows": 2000,
+  "draws_per_row": 8,
+  "verifier_sha256": "7a83c90a80c96ad6bec2ce1e8d94d68068607909d39bbf1c34aa6e6ad4130461",
+  "stdout_sha256": "cb66a4354168de74fabb39c0e3c41f17e359d05bd5eabb7e84c91f01e843d4a1",
+  "stderr_bytes": 0
+}

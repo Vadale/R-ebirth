@@ -1,0 +1,3 @@
+Error in main() : object 'llm_apply_direction' not found
+Calls: main -> check -> isTRUE -> formals
+Execution halted

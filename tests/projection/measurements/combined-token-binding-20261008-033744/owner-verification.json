@@ -1,0 +1,88 @@
+{
+  "status": "passed",
+  "source_manifest_sha256": "4b5ad5049a70dbd79500f1618bdc340c5633ff9f55af0d43f95bbdb0b09810e3",
+  "source_count": 114,
+  "source_archive_members": 46,
+  "stage_logs": 13,
+  "R_headers": 42,
+  "new_outcomes": 4,
+  "new_cases": 37,
+  "new_refusals": 10,
+  "combined_R_cases": 27,
+  "combined_R_refusals": 4,
+  "model_loads": 1,
+  "constructor_calls": 5,
+  "independent_integer_terms": 42,
+  "raw_token_calls": 5,
+  "raw_token_values": 240,
+  "raw_values_scope": "fixed-token source/refusal/reset and parent-close equality, NOT new numerical golden accuracy",
+  "original_reset_equal": true,
+  "child_survives_parent_close": true,
+  "forced_R_wrap_failure_closes_delivered_handle": true,
+  "materialization": {
+    "exact_budget": 1273947,
+    "actual_R_bytes": 1210312,
+    "R_bound_bytes": 1245080,
+    "workspace_bytes": 12432,
+    "model_skeleton_bytes": 1206688,
+    "state_extra_bytes": 1272,
+    "flat_bytes": 864,
+    "mixed_flat_bytes": 1160,
+    "construct_calls": 5,
+    "model_loads": 1
+  },
+  "totals": {
+    "exact": 1273947,
+    "steer": 83393,
+    "mixed": 85641
+  },
+  "dynamic_registry": {
+    "exact": {
+      "capacity": 4,
+      "bytes": 96
+    },
+    "steer": {
+      "capacity": 6,
+      "bytes": 128
+    },
+    "mixed": {
+      "capacity": 7,
+      "bytes": 144
+    }
+  },
+  "compiled_fixed_profile": {
+    "version": 2,
+    "direction_arc_header_bytes": 16,
+    "plan_arc_bytes": 48,
+    "site_bytes": 32,
+    "runtime_bytes": 5072,
+    "probe_state_bytes": 56,
+    "model_owner_bytes": 912,
+    "derive_frame_bytes": 11959,
+    "callback_frame_bytes": 429,
+    "probe_frame_bytes": 153,
+    "residual_probe_fixed_bytes": 522,
+    "adapter_fixed_bytes": 256,
+    "error_format_bytes": 150,
+    "metadata_owner_bytes": 0,
+    "slot_bytes": 64,
+    "proof_bytes": 152,
+    "projection_info_bytes": 128,
+    "cpp_access_frame_bytes": 77,
+    "cpp_name_frame_bytes": 64,
+    "ffi_command_bytes": 744,
+    "ffi_response_bytes": 1512,
+    "ffi_handle_tag_bytes": 15,
+    "layout_checksum": 423797551137116,
+    "max_sites": 32,
+    "max_width": 65536
+  },
+  "DLL_hashes": {
+    "default": "9ddd8842c4ab7cda964554261977f1beea7b323d58a9e6a95b668320131d4c71",
+    "private": "4411205d8238e81425b0aa1c5b91bed87fbd74fc9db91c7ee55025850cf2c651"
+  },
+  "C_bytes_bound_to_both_archives_in_both_modes": true,
+  "compiler_linker_warnings": 0,
+  "carried_parent_scope": "bridge plus registration3outcomes6cases2refusals at29835e92, separate from these new helper executions",
+  "scope": "Actual private constructor through R ownership/inventory, configured exact/minus-one budget, inheritance and cleanup. Default public activation/installed/resource/evaluation/instrumented acceptance still pending."
+}

@@ -1,0 +1,4 @@
+Warning in normalizePath(x$path) :
+  path[1]="/nonexistent-f6e-package": No such file or directory
+F6E_RESUME_CONTROLS positive=2 negative=5 models=0 inference=0
+F6E_RESUME_PREFLIGHT dependencies=PASS carried_artifacts=3 carried_captures=24 models=0 inference=0

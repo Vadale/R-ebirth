@@ -1,0 +1,10 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 71441,
+  "directory": "/private/tmp/relm-f6e/binding-source-20261008-030147",
+  "scope": "source-only R binding/mocks; no installed/native/model acceptance",
+  "child_pid": 71442,
+  "exit_code": 0,
+  "log_sha256": "ac4f1dd5c0e9e8807b3666cf5d9934d808a53e4a7b63ea4859f03a203e64161d",
+  "source_drift": []
+}

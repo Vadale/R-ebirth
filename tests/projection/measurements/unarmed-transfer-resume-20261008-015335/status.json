@@ -1,0 +1,221 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 55023,
+  "directory": "/private/tmp/relm-f6e/unarmed-transfer-resume-20261008-015335",
+  "started_at": 1791417215.693697,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791417215.8070998,
+      "pid": 55029,
+      "exit_code": 0,
+      "finished_at": 1791417216.006988,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-ffi",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791417216.007575,
+      "pid": 55032,
+      "exit_code": 0,
+      "finished_at": 1791417216.491107,
+      "log_sha256": "e85938eeae9005f3a40289cb9b99d0d584399d2d7d757ef5928743ce963f6ab0"
+    },
+    {
+      "name": "no-spill-compile",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--lib",
+        "--no-run"
+      ],
+      "status": "passed",
+      "started_at": 1791417216.4915578,
+      "pid": 55038,
+      "exit_code": 0,
+      "finished_at": 1791417217.978932,
+      "log_sha256": "a742efbb34020aef18e66fbd0e8caf0186ab46e38b89e7d1c8f5f94a691c3cd5"
+    },
+    {
+      "name": "native-01",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "intervene::projection_transfer_tests::projection_transfer_residual_shapes_and_values",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791417217.979336,
+      "pid": 55054,
+      "exit_code": 0,
+      "finished_at": 1791417220.166071,
+      "log_sha256": "d76321de85e925726c312664ce2699c4680137b776c9bf807dd394f2c364fbc5"
+    },
+    {
+      "name": "native-02",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "intervene::projection_transfer_tests::projection_transfer_residual_exact_capacities",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791417220.1668348,
+      "pid": 55068,
+      "exit_code": 0,
+      "finished_at": 1791417220.259152,
+      "log_sha256": "043f7394e372d08ccc1f1cc924a3f07ac8e6c08ac9dad8f16e017e413df622c4"
+    },
+    {
+      "name": "native-03",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "probe::projection_transfer_tests::projection_transfer_requires_cached_residual_capabilities",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791417220.259831,
+      "pid": 55070,
+      "exit_code": 0,
+      "finished_at": 1791417220.3509572,
+      "log_sha256": "fe652824d24dc8fe5c1c482b368b90e2efa6e9d8eb6dfe80d1f5b4ce28207bb9"
+    },
+    {
+      "name": "ffi-static-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--target-dir",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "started_at": 1791417220.351703,
+      "pid": 55072,
+      "exit_code": 0,
+      "finished_at": 1791417222.276822,
+      "log_sha256": "437c35b84287ac3b1ba2ceb3edb563d8a0827261b5dc25a24af1734799b49072"
+    },
+    {
+      "name": "ffi-fresh-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "started_at": 1791417222.4306712,
+      "pid": 55258,
+      "exit_code": 0,
+      "finished_at": 1791417222.738852,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "ffi-r-hosted",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-transfer-hosted.R",
+        "/private/tmp/relm-f6e/unarmed-transfer-resume-20261008-015335/ffi-hosted/relm.so"
+      ],
+      "status": "passed",
+      "started_at": 1791417222.7578082,
+      "pid": 55279,
+      "exit_code": 0,
+      "finished_at": 1791417223.446042,
+      "log_sha256": "d21c146a73ee80f03f49492143fd210f88abb98268425a3a5c9ba91bb546c674"
+    }
+  ],
+  "models": 0,
+  "production_armed": false,
+  "scope": "new unarmed transfer/cache/registry/state helpers and R owner binding, no live model constructor acceptance",
+  "carried_engine_clippy": {
+    "source_manifest_sha256": "3a42e51b3eb34967de4b5448085f3da769beb9029cbc01b33588e8e108304b24",
+    "log_sha256": "54e94c41467b7e4c48483931863b34976e432d408efccd03ece6f780c1807e68",
+    "all_prior_sources_except_opaque_ffi_declaration_unchanged": true
+  },
+  "source_manifest_sha256": "e6266b0d68d88018fa6c9e8352d4587a1c308b9459b4c9c98fd17da508ad63fb",
+  "source_count": 107,
+  "accepted_prior_scopes_not_reexecuted": [
+    "native ledger95/40",
+    "R ledger7/229",
+    "R owners7/70",
+    "private1-9/CPU/Metal/diagnostic/reference"
+  ],
+  "stage": "ffi-r-hosted",
+  "link_warnings": [],
+  "profile_changes": {
+    "ffi_fixed_bytes": {
+      "before": 1720,
+      "after": 1784
+    },
+    "ffi_registry_bytes": {
+      "before": 96,
+      "after": 160
+    }
+  },
+  "native_outcomes": 6,
+  "native_cases": 78,
+  "native_rejections": 55,
+  "R_state_bindings": 2,
+  "source_drift": [],
+  "compiler_warnings": [],
+  "finished_at": 1791417223.532811
+}

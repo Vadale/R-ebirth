@@ -1,0 +1,48 @@
+{
+  "status": "preflight_passed",
+  "native_model_calls": 0,
+  "inference_calls": 0,
+  "producer_controls": {
+    "tests": 3,
+    "typed_nodes": 11,
+    "setting_routes": 14,
+    "csv_rows": 3,
+    "cpu_receipt_positive": 1,
+    "cpu_receipt_negative": 8
+  },
+  "logger_adapter": {
+    "cases": 6,
+    "refusals": 4,
+    "models": 0,
+    "compiler_diagnostics": 0
+  },
+  "source_token_controls": {
+    "cases": 5,
+    "positives": 2,
+    "refusals": 3
+  },
+  "source_only_contract_check": {
+    "agent": "f6_independent_goldens",
+    "findings": [
+      "sampled/source token distinction fixed",
+      "generation attempt count distinguished from setting records"
+    ],
+    "scope": "single narrow producer-to-verifier pass; not integrated implementation review"
+  },
+  "preserved_drafts": [
+    "unsupported per-call trace max_bytes removed before execution; real trace_budget option used",
+    "Unicode fixture escape typo",
+    "CSV default backslash quoting incompatible with Python; qmethod=double corrected",
+    "unclosed Python control CSV handle corrected",
+    "view source token mismatch identified before inference"
+  ],
+  "canonical_reference_use": "encoding functions applied only to new captured data; no old goldens regenerated or suite rerun",
+  "remaining": [
+    "actual CPU receipt",
+    "24 construction traces",
+    "72 selection + 48 final setting attempts",
+    "two two-state views",
+    "independent final owner verification",
+    "actual result/graphics/package/instrumented acceptance"
+  ]
+}

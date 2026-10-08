@@ -1,0 +1,12 @@
+{
+  "status": "awaiting_visual_verification",
+  "models": 0,
+  "inference": 0,
+  "comparison_coordinates": 1792,
+  "timeline_states": 4,
+  "figures": 5,
+  "PDF": 5,
+  "PNG": 5,
+  "model_map": "Not executed; requires a separate actual open configured handle",
+  "scope": "Saved actual observations and independently verified fixed-corpus summaries"
+}

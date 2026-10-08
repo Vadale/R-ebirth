@@ -1,0 +1,4 @@
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/test_verify_results.py", line 114
+    stop_is_null="TRUE", images_is_null="TRUE", schema_is_null="TRUE", async="TRUE", on_state="TRUE" if view else "FALSE", watchdog_seconds="120",
+                                                                       ^^^^^
+SyntaxError: invalid syntax

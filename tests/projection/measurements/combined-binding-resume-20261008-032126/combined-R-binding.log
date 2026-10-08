@@ -1,0 +1,5 @@
+F6E_BINDING_CASE actual_model_shape refusal=FALSE
+Error in logits(m) : 
+  Tokenization failed (the model carries no tokenizer (no_vocab)). The model may lack a tokenizer, or a token id may be outside its vocabulary. Check the input and that the model file carries a tokenizer.
+Calls: logits -> <Anonymous> -> relm_abort
+Execution halted

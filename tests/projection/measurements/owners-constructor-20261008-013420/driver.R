@@ -1,0 +1,26 @@
+# New R owner inventory and flat arrays only; no DLL, model or prior suite.
+repo <- '/Users/alessandrovadala/DOCUDESK/R-ebirth'
+out <- Sys.getenv('F6E_OWNER_RUN'); stopifnot(nzchar(out))
+env <- new.env(parent = globalenv())
+for (f in c('conditions.R','direction-schema.R','live-state.R','projection-memory.R','projection-owners.R'))
+  sys.source(file.path(repo,'rebirth/R',f),envir=env)
+old <- parse(file.path(repo,'rebirth/tests/testthat/test-projection-memory.R'))
+helper <- Filter(function(x) is.call(x) && identical(x[[1]],as.name('<-')) &&
+  identical(x[[2]],as.name('projection_test_profile')),as.list(old))
+stopifnot(length(helper)==1L)
+finalizers <- parse(file.path(repo,'rebirth/R/llm.R'))
+finalizer <- Filter(function(x) is.call(x) && identical(x[[1]],as.name('<-')) && identical(x[[2]],as.name('finalize_llm_state')),as.list(finalizers))
+stopifnot(length(finalizer)==1L); eval(finalizer[[1]],envir=env)
+text <- c(deparse(helper[[1]],width.cutoff=500),readLines(file.path(repo,'rebirth/tests/testthat/test-projection-owners.R')))
+text <- gsub('relm:::', '',text,fixed=TRUE)
+expressions <- parse(text=text)
+selected <- Filter(function(x) !is.call(x) || !identical(x[[1]],as.name('test_that')) || x[[2]] %in% c('projection inventory binds actual metadata and accumulated residual owners','projection candidate wraps an independent un-hashed state and shares unchanged entries'),as.list(expressions))
+text <- unlist(lapply(selected,deparse,width.cutoff=500L))
+path <- file.path(out,'source-test.R');writeLines(text,path)
+result <- testthat::test_file(path,env=env,reporter='summary',stop_on_failure=FALSE)
+frame <- as.data.frame(result)
+saveRDS(result,file.path(out,'r-test-results.rds'))
+write.csv(frame[,setdiff(names(frame),'result'),drop=FALSE],file.path(out,'r-test-results.csv'),row.names=FALSE)
+stopifnot(nrow(frame)==2L,all(frame$passed>0),sum(frame$failed)==0L,
+ sum(frame$error)==0L,sum(frame$skipped)==0L,sum(frame$warning)==0L)
+cat(sprintf('F6E_OWNERS_R_SOURCE cases=%d expectations=%d failures=0 errors=0 skips=0 warnings=0 models=0\n',nrow(frame),sum(frame$passed)))

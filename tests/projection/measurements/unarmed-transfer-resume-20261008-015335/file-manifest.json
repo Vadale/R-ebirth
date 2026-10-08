@@ -1,0 +1,138 @@
+{
+  "actual-profile.csv": {
+    "bytes": 675,
+    "sha256": "223089c5be661328b3469bae174c48241cacc20c0995ee333bb13ab89e83d101"
+  },
+  "actual-profile.json": {
+    "bytes": 714,
+    "sha256": "88dfff2dfadd8ec410b0a9f8d064379c0142c67d34d0c248511e2018b3d64779"
+  },
+  "candidate.patch": {
+    "bytes": 74283,
+    "sha256": "f8215a79867560bf4ba027006f69741d239a119ea0c8ee3df90581a032061ef4"
+  },
+  "cargo-static-artifact.json": {
+    "bytes": 1008,
+    "sha256": "a0ad6de9d89a1b48392bfe5ddb7a2f581f17a3709cee7227af7cf62c898c7596"
+  },
+  "changed-source.tar.gz": {
+    "bytes": 199554,
+    "sha256": "d1c23ceb6e9a8eb1aa4556d0f587c1911081aa099ac22999930def8f94f04fc6"
+  },
+  "check-transfer-hosted.R": {
+    "bytes": 3351,
+    "sha256": "a02dbcd43b1fa862ac6bb10d3d98f89ae4c0143e2776e4db94a700478390646c"
+  },
+  "clippy-ffi.log": {
+    "bytes": 177,
+    "sha256": "e85938eeae9005f3a40289cb9b99d0d584399d2d7d757ef5928743ce963f6ab0"
+  },
+  "collector-correction.txt": {
+    "bytes": 238,
+    "sha256": "34618c217c5a370f7bd480d814d8a4c69299cfdcd4e75d79961ceab8da37517c"
+  },
+  "ffi-fresh-link.log": {
+    "bytes": 779,
+    "sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+  },
+  "ffi-r-hosted.log": {
+    "bytes": 1183,
+    "sha256": "d21c146a73ee80f03f49492143fd210f88abb98268425a3a5c9ba91bb546c674"
+  },
+  "ffi-static-build.log": {
+    "bytes": 65488,
+    "sha256": "437c35b84287ac3b1ba2ceb3edb563d8a0827261b5dc25a24af1734799b49072"
+  },
+  "format.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "fresh-ffi-binding.json": {
+    "bytes": 1803,
+    "sha256": "ff0cd66d217bd3dfada9913416b93a74fb1e4bfc37200ff1e11edacff94c1171"
+  },
+  "native-01.log": {
+    "bytes": 662,
+    "sha256": "d76321de85e925726c312664ce2699c4680137b776c9bf807dd394f2c364fbc5"
+  },
+  "native-02.log": {
+    "bytes": 551,
+    "sha256": "043f7394e372d08ccc1f1cc924a3f07ac8e6c08ac9dad8f16e017e413df622c4"
+  },
+  "native-03.log": {
+    "bytes": 573,
+    "sha256": "fe652824d24dc8fe5c1c482b368b90e2efa6e9d8eb6dfe80d1f5b4ce28207bb9"
+  },
+  "native-test-receipts.json": {
+    "bytes": 1209,
+    "sha256": "b069fd040ab03589d07b14cc0f1f137ff98c5e65d22f96e40b49359386bfa679"
+  },
+  "no-spill-compile.log": {
+    "bytes": 261,
+    "sha256": "a742efbb34020aef18e66fbd0e8caf0186ab46e38b89e7d1c8f5f94a691c3cd5"
+  },
+  "owner-binding.json": {
+    "bytes": 7367,
+    "sha256": "80036ecbac09133be17a0c78eb7f9fa785fc415a2e1c19a7960fe7e8b6aa4f8d"
+  },
+  "owner-verification.json": {
+    "bytes": 1694,
+    "sha256": "104b4f5ef6a7b565f4ace232139620d94d8da705e620653d81ab87bcfa547d0e"
+  },
+  "r-accessor-build-binding.json": {
+    "bytes": 973,
+    "sha256": "d3ab87a30ca007acb58666083e8455a6b80f3edfc1e58a9cf1b7c07cc1b23206"
+  },
+  "r-owners-ready.json": {
+    "bytes": 699,
+    "sha256": "be47d632004795be5da47919bfeb4ee57e42f661d3a10a2de443a6eec9030b2d"
+  },
+  "r-state-binding.csv": {
+    "bytes": 197,
+    "sha256": "bb1f38fd22f27505cc2acca757a62eda6be1449dcc3e775c46a4b013db57c8ab"
+  },
+  "ready.json": {
+    "bytes": 16176,
+    "sha256": "22d59b7fc752f69f00c805bbef0b0b2f0ac026a4eb83aafdfcb37e353e270298"
+  },
+  "revision-ready.json": {
+    "bytes": 16176,
+    "sha256": "22d59b7fc752f69f00c805bbef0b0b2f0ac026a4eb83aafdfcb37e353e270298"
+  },
+  "source-manifest.json": {
+    "bytes": 12305,
+    "sha256": "e6266b0d68d88018fa6c9e8352d4587a1c308b9459b4c9c98fd17da508ad63fb"
+  },
+  "state-facts.json": {
+    "bytes": 516,
+    "sha256": "4d268fc93be9f568f8f04c0c245c8f27a194623d78471237c94630c183270853"
+  },
+  "status.json": {
+    "bytes": 5994,
+    "sha256": "87dffc38fdb8ec2043a5641ef27e54c51855f4b169abb531b08229797fbf2678"
+  },
+  "test-transfer-collector.py": {
+    "bytes": 2630,
+    "sha256": "dea2d0ea2741912674f4cb74383a04c85297f6ceb05bd59156b7909afa7f6100"
+  },
+  "transfer-collector.py": {
+    "bytes": 2017,
+    "sha256": "9660e2a5c7b32ab9b85b76646bf22ab40e99535319181c7b909ec2272791dd40"
+  },
+  "transfer-revision-ready.json": {
+    "bytes": 16176,
+    "sha256": "22d59b7fc752f69f00c805bbef0b0b2f0ac026a4eb83aafdfcb37e353e270298"
+  },
+  "verify-transfer-owner-initial.py": {
+    "bytes": 6774,
+    "sha256": "e693f784f4f7e61b3cf31a9507d8ce11ae132b38e17d511b9b4dfeba4d75b82e"
+  },
+  "verify-transfer-owner.py": {
+    "bytes": 7181,
+    "sha256": "19df0df5c9a244869f3c77c1e2abdc987cd86514b7f1a34bec681ce729527c49"
+  },
+  "verify-transfer-resume.py": {
+    "bytes": 11222,
+    "sha256": "06cec241db464ebf70d25afd2eeacfb84b93cbf9d06ea5bf02227abbf3172f67"
+  }
+}

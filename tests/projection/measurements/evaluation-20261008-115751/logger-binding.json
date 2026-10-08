@@ -1,0 +1,10 @@
+{
+  "source_sha256": "4c0fc1837faaa68f65b9ddbf5a7405e0234338d8396a4a6a0f84d8460dbc0a22",
+  "binary_sha256": "08940819d736dd1674351cafa0bae8aaf5e7542f361610bfb612baad17611310",
+  "compile_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "model_free_log_sha256": "a10bfc60fcaf38af96e964b7bb1af652127125ea1f3692fa0d88198295ac6ef3",
+  "actual_adapter_cases": 6,
+  "refusals": 4,
+  "models": 0,
+  "scope": "C adapter only; default logger restored after no native owners"
+}

@@ -1,0 +1,16 @@
+"field","value"
+"mode",1
+"hidden_size",32
+"layers",3
+"previous_sites",0
+"steer_entries",0
+"ablate_entries",0
+"source_baseline_values",0
+"metadata_bytes",0
+"metadata_scratch_bytes",0
+"existing_direction_estimate",0
+"r_projection_fixed_bytes",4096
+"r_adapter_bytes",0
+"max_bytes",33410
+"backend",0
+"production_armed",1

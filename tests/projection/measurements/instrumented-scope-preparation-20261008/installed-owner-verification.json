@@ -1,0 +1,39 @@
+{
+  "status": "PASS",
+  "source_manifest_sha256": "534785f188b08bcb39ac143f48002ebe41d6e9e6394df81c199ace5dffaf85db",
+  "source_count": 145,
+  "source_archive_members": 58,
+  "installed_files": 28,
+  "stage_logs": 3,
+  "DLL_sha256": "d7f946c23fa078a3426fc92791f9615f36a81643f18feab43741603ff42533fb",
+  "installed_functions_compared": 259,
+  "codetools_diagnostics": 0,
+  "warnings": 0,
+  "new_public_cases": 27,
+  "expected_refusals": 6,
+  "parent_cases_carried_at_original_source": 10,
+  "attempt_counts": {
+    "load": 2,
+    "trace": 0,
+    "generate": 18,
+    "logits": 1,
+    "derive": 6
+  },
+  "raw_capture_values_carried": 3584,
+  "independent_direction_values": 896,
+  "direction_max_abs_error": 3.1086244689504383e-15,
+  "public_same_row_values": 896,
+  "public_same_row_max_abs_error": 4.96275689432224e-08,
+  "public_same_row_bound": "2e-6*(1+abs(expected)) unchanged",
+  "native_ledger_terms_recomputed": 14,
+  "exact_budget": 1520395,
+  "minus_one_actual_class": "relm_error_oom",
+  "cancel_receipt": {
+    "states_delivered": 3,
+    "token_events_delivered": 2,
+    "error_generated_tokens_reported": 3,
+    "scope": "distinct counters retained; no equality of delivered and native-reported counts claimed"
+  },
+  "scope": "Installed R/public CPU/Metal text, structured, stream/live and ownership; operational prompts only, no efficacy/timing/new offload proof",
+  "driver_status_preserved": "awaiting_owner_verification"
+}

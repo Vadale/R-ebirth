@@ -1,0 +1,11 @@
+{
+  "status": "failed",
+  "passed_cases": 5,
+  "failed_cases": 1,
+  "passed_expectations": 42,
+  "failed_expectations": 1,
+  "source_hashes": 7,
+  "cause": "R replacement attr(names(x), hidden) strips the attribute through names<-. The negative fixture was valid rather than attributed. structure(x,names=structure(names(x),hidden=...)) preserves the intended hostile attribute. Source validator unchanged; fix fixture only.",
+  "models": 0,
+  "DLL_loaded": false
+}

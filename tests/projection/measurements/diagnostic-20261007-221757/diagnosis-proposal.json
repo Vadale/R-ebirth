@@ -1,0 +1,105 @@
+{
+  "status": "proposal_ready_no_source_edits",
+  "evidence": {
+    "path": "/private/tmp/relm-f6e/diagnostic-20261007-221757/collection.json",
+    "sha256": "6cc29afbb7ed6764f2f27fb47264bcbc490dcaf44a932e7118c1fad15890ae2a",
+    "source_manifest_sha256": "b57f951bab36cd5e1c023b56f67818101cfdd902a0419530169fa8d9bd05db63",
+    "runs": 16,
+    "acceptance_claim": false
+  },
+  "interpretation": [
+    "The frozen fixture explicitly declares513prefill tokens followed by1decode token. Its mathematical producer nevertheless executes every token one at a time; it does not implement or certify native batched numerical equivalence.",
+    "The accepted native oracle replay respects that phase boundary with [512,1,1]. Native7 then passes all514tokens to prompt_last_logits, which clears KV and uses [512,2], changing the last native batch as well as requesting last-only outputs. This is a test-protocol mismatch for the declared fixture and a real retained cross-schedule numerical failure, not evidence that the mathematical goldens are wrong.",
+    "Controlled results isolate the observed difference to schedule dependence in thisCPU configuration: ordinary and zero coincide per schedule; observer and pruning controls coincide at fixed schedule; all audited writes/positions and same-row edits are complete/exact. These facts exclude the tested missing-write, observer, pruning and cleared-context reuse explanations. They do not establish a specific kernel, quantization or allocator cause.",
+    "The grouped514-token prompt remains outside demonstrated0.01 independent-reference accuracy. Its two outliers and cross-schedule difference must remain explicit limitations; no general batching-invariant numerical claim follows from the proposed test correction."
+  ],
+  "observations": {
+    "split_final_max_golden_abs": 0.0025548937037489783,
+    "grouped_final_max_golden_abs": 0.011524818752575161,
+    "grouped_outliers": [
+      {
+        "token_native": 1,
+        "expected": 0.5585253461344721,
+        "actual": 0.547000527381897,
+        "abs_error": 0.011524818752575161
+      },
+      {
+        "token_native": 43,
+        "expected": -0.22785592401986232,
+        "actual": -0.23890945315361023,
+        "abs_error": 0.011053529133747908
+      }
+    ],
+    "active_schedule_max_abs": 0.011423110961914062,
+    "active_continuation_max_abs": 0.00019124150276184082,
+    "ordinary_schedule_max_abs": 0.007766246795654297,
+    "ordinary_continuation_max_abs": 9.870529174804688e-05,
+    "audit_rows_per_site": 515,
+    "audit_missing_and_duplicates": 0,
+    "same_row_values_per_audit": 384,
+    "same_row_max_scaled_error": 0.0,
+    "active_writes": 1030,
+    "active_written_bytes": 131840
+  },
+  "proposed_native7_correction": [
+    "Keep the existing three cases and primary independent activation/site/logit/witness comparisons unchanged. For the additional pruned independent-reference check, ingest only ids[..prefill] with prompt_last_logits, then decode each declared decode token individually at its absolute position with last_only=true, retaining KV. Compare its final48logits to the frozen reference using unchanged0.01. Apply the same fixture phase boundary to the two short3+2cases, not a long-case special bypass.",
+    "Repeat this aligned pruned protocol from cleared KV and require bitwise-equal final logits, preserving the existing reuse assertion. Existing independent whole-forward count10042 and same-row704 remain unchanged.",
+    "Retain the grouped-prompt path as a separate controlled pruning comparison: from cleared KV run all ids in n_batch chunks with all output rows, copying only the final48logits; compare with prompt_last_logits(all ids), which uses exactly the same chunk schedule but last-only outputs. Compare each value with unchanged0.01, report exact bitwise parity too, then repeat the grouped last-only run and require bitwise equality. This adds144native-to-native comparisons across the same three cases; it is not counted as independent golden evidence.",
+    "Emit a separate bounded pruning/protocol receipt naming prefill/decode counts, aligned schedule, grouped schedule, independent48count and errors, fixed-schedule48parity/errors, and reuse equality for each case. Retain the grouped-vs-frozen raw48logits/error/outlier counts explicitly as cross-schedule observations with no accuracy acceptance claim. Preserve original failed native7 and the complete single diagnostic collection; no threshold, reference, runtime, vendor or dependency change."
+  ],
+  "proposed_edit_scope": [
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs",
+    "/private/tmp/relm-f6e/native-ready.json after parent authorization"
+  ],
+  "bounds": "Only final48logit vectors per comparison; no full514x48materialization or new activation storage. Existing same-row2e-6 and downstream0.01 unchanged. Keep old exact repeat assertions.",
+  "source_sites": [
+    {
+      "path": "tests/llm-golden/projection/README.md",
+      "line": 68,
+      "evidence": "Coordinates and3+2/513+1phase contract; line75 explicitly disclaims inferring final-layer pruning from sequential math."
+    },
+    {
+      "path": "tests/llm-golden/projection/reference_projection.py",
+      "line": 327,
+      "evidence": "513prefix plus fixed decode token13; prefill513; phase labels line339; every token calls runner.decode at342."
+    },
+    {
+      "path": "tests/llm-golden/projection/forward_projection.py",
+      "line": 51,
+      "evidence": "Single-token decode uses/extends previousKV at67-72; no native batch policy."
+    },
+    {
+      "path": "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs",
+      "line": 394,
+      "evidence": "Accepted replay stops at declared prefill and then decodes one token at a time."
+    },
+    {
+      "path": "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs",
+      "line": 542,
+      "evidence": "Failing extra check passes all ids to prompt_last_logits and compares to phase-specific golden."
+    },
+    {
+      "path": "rebirth/src/rust/rebirth-llm/src/generate.rs",
+      "line": 642,
+      "evidence": "prompt_last_logits clearsKV and sends entire supplied sequence through decode_chunked(last_only=true)."
+    },
+    {
+      "path": "rebirth/src/rust/rebirth-llm/src/generate.rs",
+      "line": 580,
+      "evidence": "Chunk boundary depends only on n_batch, giving [512,2] for514tokens."
+    },
+    {
+      "path": "rebirth/src/rust/rebirth-llm/src/projection_diagnostic.rs",
+      "line": 46,
+      "evidence": "Each diagnostic run clearsKV, changes only declared schedule/output policy, and appends a common token at position514 without clearingKV."
+    },
+    {
+      "path": "rebirth/src/rust/rebirth-llm/src/projection_diagnostic.rs",
+      "line": 233,
+      "evidence": "Replays the failed test transition, then separates observer/schedule/pruning/reuse controls."
+    }
+  ],
+  "tests_builds_models_executed_by_agent": false,
+  "repo_source_edits": false,
+  "remaining": "Parent decision on the scoped acceptance interpretation precedes any test correction/execution; no kernel-cause claim."
+}

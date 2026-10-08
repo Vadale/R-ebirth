@@ -1,0 +1,146 @@
+{
+  "status": "ready",
+  "task": "single retained native-07 failure diagnostic",
+  "test_id": "projection::tests::projection_long_prefill_schedule_diagnostic",
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "2deda583e707c56430ad648532e0c9e6cb988650abf63f54e21723f178c39db9",
+    "rebirth/src/rust/rebirth-llm/build.rs": "3dcd4270bf9902eb01191509cc9f1185bac9bda71e0464ee13dd3a795059febe",
+    "rebirth/src/rust/rebirth-llm/native/CMakeLists.txt": "744d603003e13889f32c311493b7179bbf62f364b15cbdfa67ffb354859f6d30",
+    "rebirth/src/rust/rebirth-llm/native/projection.cpp": "1e0e1dcebd0a8d447a2a01e0cae513e99800371cb90a818d1a43c1d3bd8a3755",
+    "rebirth/src/rust/rebirth-llm/native/projection.h": "50fce200c0b80b06d7cbc5540bba9ff1689a06e43ecf07d4584fa1607ca98fb5",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "d6f172cb39b34a9be3d3ee5a25d96b3ebfee4a13734a069d33d7c6b3e68bb600",
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs": "cc23b56ab16914e68955668165a45fb7d8b094cd3e88a58dfc5bd8cb9b67beee",
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "ad38f1fc978d81df31d116d29cab5ed8aec2be01f10ffbb5ef31fbef2e596b6e",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "c3da7521e1ae5917d17b72bf342d924a3aae1ed949bd6a89da7098f3be12fc69",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "34785cb13f9372dea7ae768b3e4236f81fb4642f1b6632eb019c8538947356bd",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "580668a4b022df2bb32598a7b2fa945f91c216e4bdcbd3abe4e9947a2ab61b35",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "32443e3c01d922c425d663213c34826d4cd2fb443e62caf463eecf9bf9c6c8b3",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "59b8449214f5cd323afd4ac4aec7d036969ae08b7a573581cfcc9eb6609b75ab",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "5e3dd10ef6b90fe66010704ca5202e51587abe8f00af10e01ea5f2b3e28054b7",
+    "rebirth/src/rust/rebirth-llm/src/projection_diagnostic.rs": "f72cfce728cb1a4dbea0e88ce001386899d9ade3ac8ba5b8315d9f09676837d3"
+  },
+  "source_hashes_digest": "83f80cc4d81e6f43787e70c2cf1e97e438a6e37b10a7398d5a037823d1b86899",
+  "changed_files": [
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_diagnostic.rs"
+  ],
+  "reference_commit": "d8a4800",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "runtime_changed": false,
+  "golden_or_tolerance_changed": false,
+  "builds_tests_models_executed": false,
+  "static_checks": [
+    "rustfmt --edition 2021 and --check for the two owned diagnostic files",
+    "scoped git diff --check"
+  ],
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "rebirth-llm",
+    "--lib",
+    "projection::tests::projection_long_prefill_schedule_diagnostic",
+    "--",
+    "--ignored",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+  "environment": {
+    "F6E_SOURCE": "Use diagnostic source manifest digest",
+    "F6E_REFERENCE_MANIFEST_SHA256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959"
+  },
+  "scope": "CPU/debug same pinned tiny3-layer model; one ignored diagnostic test,16 bounded controlled executions plus preexisting derivation sentinel; no cached Qwen, no accepted suite rerun",
+  "hypothesis_not_conclusion": "Original comparison changes schedule [512,1,1] to[512,2] AND output policy all tolast-only. Both selected long-case projection sites are layer0. Runtime cause unproven.",
+  "run_matrix": {
+    "ordinary": [
+      "split_all",
+      "grouped_last"
+    ],
+    "each_zero_and_active": [
+      "split_all_audit",
+      "grouped_last_no_audit",
+      "grouped_last_repeat",
+      "split_all_no_audit",
+      "grouped_last_audit",
+      "grouped_all_audit",
+      "split_last_audit"
+    ],
+    "runs": 16,
+    "pairs": 17,
+    "audit_runs": 8,
+    "same_row_values_per_audit_run_expected": 384,
+    "witnesses_per_audit_run_expected": 1030,
+    "last_position_native": 513,
+    "continuation_token_native": 1,
+    "continuation_position_native": 514,
+    "kv_reset": "Once before each run only; subsequent token uses retained514-token KV history"
+  },
+  "markers": {
+    "F6E_PROJECTION_DIAGNOSTIC_START": [
+      "schema",
+      "source_manifest_sha256",
+      "reference_manifest_sha256",
+      "model_sha256",
+      "backend",
+      "tokens_native",
+      "n_batch",
+      "n_ubatch",
+      "runs_expected",
+      "whole_forward_tolerance",
+      "same_row_scaled_tolerance",
+      "status"
+    ],
+    "F6E_PROJECTION_DIAGNOSTIC_RUN": [
+      "schema",
+      "id",
+      "mode",
+      "schedule",
+      "last_only",
+      "audit",
+      "cache_cleared_before_run",
+      "continuation_without_cache_reset",
+      "sites",
+      "steps",
+      "final_logits",
+      "continuation_logits",
+      "golden",
+      "observed_rows",
+      "witness_columns",
+      "witnesses",
+      "site_counts",
+      "site_missing",
+      "duplicate_positions",
+      "same_row",
+      "status"
+    ],
+    "F6E_PROJECTION_DIAGNOSTIC_PAIR": [
+      "left",
+      "right",
+      "final_logits",
+      "continuation_logits"
+    ],
+    "F6E_PROJECTION_DIAGNOSTIC_COMPLETE": [
+      "schema",
+      "runs_expected",
+      "runs_collected",
+      "audit_runs_expected",
+      "same_row_values_per_audit_run_expected",
+      "witnesses_per_audit_run_expected",
+      "status",
+      "acceptance_claim",
+      "no_tolerance_or_golden_change"
+    ]
+  },
+  "receipt_semantics": "Collected, not passed. Every active final logit retains independent f64 golden and unchanged0.01 exceedance; same-row counts/scaled2e-6 exceedances separate. No mismatch assertion masks later control evidence. Pair objects have compared_values48/max_abs_error/max_error_token_native/count_above_0_01/bitwise_equal. Site/witness counts include one extra history token. Non-audited site_missing is not measured.",
+  "bounds": "Existing observer <=128Hrows,<=2048witnesses,<=8MiB; actualH32,6 positions,2sites,515 tokens; <=1MiB encoded per-run receipt; only48+48output values retained per run; one candidate context plus original at a time. No HxN full capture, no runtime change.",
+  "evidence_read": [
+    "/private/tmp/relm-f6e/feasibility-resume-20261007-213532/native-06.log",
+    "/private/tmp/relm-f6e/feasibility-resume-20261007-213532/native-07.log",
+    "/private/tmp/relm-f6e/feasibility-resume-20261007-213532/status.json"
+  ],
+  "acceptance_claim": false
+}

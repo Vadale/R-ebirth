@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "source_hashes": {
+    "tests/projection/check-fixture-mirror.py": "c839ee61e9d2ad642f9d5ef06f24bde394a9f4dc4e6d312be10c400bfa9f6f4d",
+    "tests/projection/test_fixture_mirror.py": "53e64b0c1305316ac4132c6413e9af975d06941220a0d7cbfa18e73494d2560e",
+    ".github/workflows/rust.yaml": "5d4a7ab582596842a8a03c038f4a8995d025510d4661623f2fd3f299f1eff4c9"
+  },
+  "tests": 3,
+  "mutation_subcases": 3,
+  "mirrored_files": 14,
+  "reference_reexecuted": false,
+  "native_or_model_execution": false,
+  "CI_reference_execution": "pending future PR"
+}

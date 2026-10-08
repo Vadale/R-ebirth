@@ -1,0 +1,1 @@
+Initial owner verifier expected staticlib as the sole Cargo crate type. Actual Cargo.toml/output declare rlib and staticlib; exact both-kind check and archive filename binding correct this collector assumption. Native work was not rerun.

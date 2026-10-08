@@ -1,0 +1,36 @@
+[package]
+name = "rebirth-ffi"
+description = "The R <-> Rust boundary for the relm package: the only crate holding unsafe, SEXP marshalling, index conversion, panic catching, and condition mapping (ARCHITECTURE.md §2)."
+publish = false
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+
+# The R-loadable static library is named `relm` (the R package name), so the
+# generated entrypoint (R_init_relm), NAMESPACE (useDynLib(relm, ...)),
+# document.rs (relm::get_relm_metadata), and Makevars (-lrelm) all agree. The
+# crate (`rebirth-ffi`) and workspace are unchanged: only the staticlib name and
+# the R-visible identity are `relm`.
+[lib]
+name = "relm"
+crate-type = ["rlib", "staticlib"]
+
+[[bin]]
+name = "document"
+path = "document.rs"
+
+[features]
+# Forward the engine's disk-spill feature (DECISIONS.md D-013). Default on, so the
+# R package ships with `llm_trace(spill = TRUE)` functional; a
+# `--no-default-features` build drops spill in both crates (no Arrow), keeping the
+# no-spill configuration coherent end to end.
+default = ["spill"]
+# Internal constructor gate; never enabled by the public package build.
+projection-private = ["rebirth-llm/projection-private"]
+spill = ["rebirth-llm/spill"]
+
+[dependencies]
+extendr-api = "0.9"
+rebirth-llm = { path = "../rebirth-llm", default-features = false }

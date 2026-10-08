@@ -1,0 +1,12 @@
+{
+  "status": "verified",
+  "cases": 2,
+  "expectations": 13,
+  "source_hashes": 27,
+  "test_failures": 0,
+  "test_errors": 0,
+  "test_skips": 0,
+  "test_warnings": 0,
+  "scope": "source-only table counts/formatting/additive-only history filtering; no graphical render or installed/native/model acceptance",
+  "external_warning": "testthat patch-version warning retained"
+}

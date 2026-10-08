@@ -1,0 +1,19 @@
+{
+  "cargo_record": {
+    "reason": "build-script-executed",
+    "package_id": "path+file:///Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi#0.0.0",
+    "linked_libs": [
+      "static=relm-r-state"
+    ],
+    "linked_paths": [
+      "native=/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out"
+    ],
+    "cfgs": [],
+    "env": [],
+    "out_dir": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out"
+  },
+  "files": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out/projection_state.o": "ceb6d33c3ce6314bfc08c6035e9f5fc0719b86b629d44625853fad82dafbd600",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/build/rebirth-ffi-86754e5e31e386b4/out/librelm-r-state.a": "c470a0db3f6f8d8db89256ec9262ec2a7ab46137fbd3d149d6fd6f7f23933c4c"
+  }
+}

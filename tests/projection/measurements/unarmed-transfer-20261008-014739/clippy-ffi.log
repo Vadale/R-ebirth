@@ -1,0 +1,23 @@
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+    Checking rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+error: `extern` block uses type `extendr_ffi::SEXPREC`, which is not FFI-safe
+  --> rebirth-ffi/src/projection_transfer_boundary.rs:11:16
+   |
+11 |         state: extendr_api::SEXP,
+   |                ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = note: this struct is non-exhaustive
+   = note: `-D improper-ctypes` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(improper_ctypes)]`
+
+error: `extern` block uses type `extendr_ffi::SEXPREC`, which is not FFI-safe
+  --> rebirth-ffi/src/projection_transfer_boundary.rs:12:14
+   |
+12 |         ptr: extendr_api::SEXP,
+   |              ^^^^^^^^^^^^^^^^^ not FFI-safe
+   |
+   = note: this struct is non-exhaustive
+
+error: could not compile `rebirth-ffi` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `rebirth-ffi` (lib test) due to 2 previous errors

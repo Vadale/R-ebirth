@@ -1,0 +1,14 @@
+{
+  "status": "prepared_not_executed",
+  "source_hashes": {
+    "rebirth/R/projection-memory.R": "d6bbacbfc358988511dc29fee667a275cee22f5e0cc5c85a9ba0374ea47b970c",
+    "rebirth/tests/testthat/test-projection-constructor-memory.R": "3e928cd757bd13039e503561c4ff72ed6dd9dfa8d5e0e268f68ff458b23516e6",
+    "rebirth/tests/testthat/test-projection-memory.R": "fa866b053b49efa0f2a6c7e2628bbc1fe8dc7037e06270137a18aebe205012b2"
+  },
+  "collector_controls": 56,
+  "R_test_syntax": "passed five files, no expression execution",
+  "driver_sha256": "05204c2bda12ac487236ffd664f2c847464c2a21eefe4ec8b30fdc26592a7721",
+  "models_executed": 0,
+  "no_new_dependencies": true,
+  "default_private_feature": false
+}

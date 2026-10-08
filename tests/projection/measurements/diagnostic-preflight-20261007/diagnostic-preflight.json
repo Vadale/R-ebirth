@@ -1,0 +1,11 @@
+{
+  "source_hashes_matched": 15,
+  "runtime_source_changed": false,
+  "existing_file_changes": [
+    "rebirth/src/rust/rebirth-llm/src/projection_tests.rs"
+  ],
+  "added_file": "projection_diagnostic.rs",
+  "collector_controls": 10,
+  "launch_authorized_within_D046": true,
+  "diagnostic_not_acceptance": true
+}

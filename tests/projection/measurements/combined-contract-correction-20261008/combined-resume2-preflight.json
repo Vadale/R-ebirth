@@ -1,0 +1,20 @@
+{
+  "status": "ready",
+  "only_changes": [
+    "binding-file selector",
+    "remove nonexistent nested base key"
+  ],
+  "validated_all_five_base_keys": [
+    "entrypoint_sha256",
+    "entrypoint_source",
+    "link_command",
+    "link_environment",
+    "static_archive"
+  ],
+  "entrypoint_and_42_header_hashes_verified": true,
+  "default_and_private_commands_verified": true,
+  "sources": 112,
+  "new_native_or_model_execution": 0,
+  "driver_sha256": "fe881c465d09f381866ab87a0f7020eb595026760cc582a04a866970fb126816",
+  "binding_sha256": "138af54c851779c1682a24f7bbf2c85af78187d8defec14e5bc5e712fb0aee18"
+}

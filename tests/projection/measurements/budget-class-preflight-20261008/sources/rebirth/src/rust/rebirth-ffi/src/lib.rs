@@ -1,0 +1,1354 @@
+//! `relm` — the native boundary of the R package (extendr).
+//!
+//! This is the only crate that speaks R (extendr) and the only one that holds
+//! the boundary `unsafe` (ARCHITECTURE.md §2). Its job for WP1:
+//!
+//! - expose one internal `.Call` entry, [`rebirth_model_load`], that all R-side
+//!   validation has already vetted;
+//! - catch any Rust panic (`catch_unwind`) so it becomes a classed
+//!   `relm_error_internal` payload, never a raw panic on the R console;
+//! - map every [`RebirthError`] variant to a structured payload
+//!   `list(ok, class, message, fields)` **returned** to R — the R helper
+//!   `relm_abort()` does the actual `stop()` (condition raising stays in R,
+//!   ARCHITECTURE.md §2), while this crate decides the class + fields (§8);
+//! - expose the close / is-closed boundary calls plus the backend-capability
+//!   query R needs to resolve `backend = "auto"`.
+//!
+//! None of these functions is `@export`ed: the user-facing surface is the R
+//! `llm()` (and its S3 methods), which call these wrappers internally.
+
+use std::any::Any;
+use std::cell::RefCell;
+use std::collections::HashMap;
+use std::panic::{catch_unwind, AssertUnwindSafe};
+use std::path::PathBuf;
+
+use extendr_api::prelude::*;
+use rebirth_llm::{
+    BackendKind, CaptureRow, CaptureSpec, CompiledSchema, Component, GenerateParams,
+    InterventionSpec, LoadRequest, LoadedModel, ModelMetadata, Pooling, Positions, RebirthError,
+    SpillPlan, TraceOutput, STRUCTURED_MAX_PROMPTS, STRUCTURED_MAX_PROMPT_BYTES,
+    STRUCTURED_MAX_SCHEMA_BYTES, STRUCTURED_MAX_TOKENS, STRUCTURED_MAX_TOTAL_PROMPT_BYTES,
+};
+
+// R-main-thread handle registry and async boundary (D-037).
+include!("async_boundary.rs");
+include!("live_boundary.rs");
+include!("projection_boundary.rs");
+include!("projection_budget_error_selftest.rs");
+include!("projection_transfer_boundary.rs");
+include!("projection_constructor_boundary.rs");
+include!("projection_bridge.rs");
+include!("projection_combined_test_boundary.rs");
+
+// --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
+
+/// R (1-based token id) -> engine (0-based). The only place the conversion is
+/// applied on the way in (ARCHITECTURE.md §4). `id <= 0` is out of range for a
+/// 1-based id and maps to a negative engine id the engine's validation rejects.
+fn to_engine_token(id_1based: i32) -> i32 {
+    id_1based - 1
+}
+
+/// Engine (0-based token id) -> R (1-based). The only place the conversion is
+/// applied on the way out (ARCHITECTURE.md §4).
+fn from_engine_token(id_0based: i32) -> i32 {
+    id_0based + 1
+}
+
+/// R (1-based index) -> engine (0-based), for layers/positions/neurons. The single
+/// inbound conversion site (ARCHITECTURE.md §4). Fallible on purpose (M-4/P-4).
+///
+/// R validates every layer/position/neuron as a positive integer before the
+/// boundary, so a value `< 1` here means R's validation broke. We reject it with
+/// `relm_error_internal` — we want that bug report — rather than clamping it (the
+/// old `.max(0)`) into engine index 0, which would silently ablate/trace a
+/// DIFFERENT, valid item (layer 1, neuron 1). At the boundary, out-of-contract input
+/// is an error, never a plausible different request.
+fn to_engine_index(one_based: i32) -> Result<u32, RebirthError> {
+    if one_based < 1 {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "a 1-based index reached the FFI boundary as {one_based} (< 1); R must \
+                 validate layers/positions/neurons as positive integers before the call"
+            ),
+        });
+    }
+    Ok((one_based - 1) as u32)
+}
+
+/// Engine (0-based index) -> R (1-based), for layers/positions/neurons. The single
+/// outbound conversion site (ARCHITECTURE.md §4). Inverse of [`to_engine_index`] on
+/// the valid range: `from_engine_index(to_engine_index(x)?) == x` for `x >= 1`.
+fn from_engine_index(zero_based: u32) -> i32 {
+    (zero_based as i64 + 1) as i32
+}
+
+/// A 1-based count/size (e.g. `max_tokens`, `top`, `context_length`) that R
+/// validated as a positive integer before the boundary. A value `< 1` here means R's
+/// validation broke, so reject with `relm_error_internal` rather than silently
+/// clamping it (the old `.max(0)`/`.max(1)`) into a different valid request (P-4).
+fn checked_count(value: i32, name: &str) -> Result<usize, RebirthError> {
+    if value < 1 {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "{name} = {value} reached the FFI boundary below 1; R must validate it as a \
+                 positive integer before the call"
+            ),
+        });
+    }
+    Ok(value as usize)
+}
+
+/// The trace memory budget (bytes) R computed and validated (always `> 0` from
+/// `trace_budget()`, or `Inf` in the self-test's "never spill" path). A negative or
+/// NaN value means R's computation broke, so reject rather than clamp it to 0 (the
+/// old `.max(0.0)`), which would silently force every capture to spill or OOM;
+/// `Inf` saturates to `u64::MAX`, the intended unbounded-budget sentinel (P-4).
+fn checked_budget_bytes(budget_bytes: f64) -> Result<u64, RebirthError> {
+    if budget_bytes < 0.0 || budget_bytes.is_nan() {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "the trace budget reached the FFI boundary as {budget_bytes} (negative or NaN); \
+                 R computes a positive budget before the call"
+            ),
+        });
+    }
+    Ok(budget_bytes as u64)
+}
+
+/// The per-image byte cap R validated (`options(relm.image_max_bytes=)`, a
+/// positive finite number). A non-positive or NaN value means R's validation
+/// broke, so reject with `relm_error_internal` rather than clamp (hard rule 8b);
+/// the engine additionally enforces its own hard `i32::MAX` ceiling (F6), so an
+/// oversized-but-finite value cannot widen the decode surface.
+fn checked_image_max_bytes(max_bytes: f64) -> Result<u64, RebirthError> {
+    if max_bytes.is_nan() || max_bytes <= 0.0 {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "the image byte cap reached the FFI boundary as {max_bytes} (not a positive \
+                 number); R validates options(relm.image_max_bytes=) before the call"
+            ),
+        });
+    }
+    Ok(if max_bytes.is_infinite() {
+        u64::MAX
+    } else {
+        max_bytes as u64
+    })
+}
+
+/// Borrow the live model behind `ptr` and run `f`, mapping a closed/foreign
+/// pointer, a `RebirthError`, or a caught panic to the right classed payload.
+fn with_model<F>(ptr: &Robj, f: F) -> Robj
+where
+    F: FnOnce(&LoadedModel) -> Result<Robj, RebirthError>,
+{
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        let handle = checked_handle(ptr)?;
+        handle.run(f)
+    })))
+}
+
+// --- payload construction --------------------------------------------------
+
+/// Build the R payload for a successful load: the handle plus every metadata
+/// slot the R `llm` object stores (`API-GRAMMAR.md` §2, plus summary extras).
+fn ok_payload(ptr: Robj, meta: ModelMetadata) -> Robj {
+    List::from_pairs(vec![
+        ("ok", Robj::from(true)),
+        ("ptr", ptr),
+        ("architecture", Robj::from(meta.architecture)),
+        ("parameters", Robj::from(meta.parameters as f64)),
+        ("quantization", Robj::from(meta.quantization)),
+        ("layers", Robj::from(meta.layers)),
+        ("hidden_size", Robj::from(meta.hidden_size)),
+        ("context_length", Robj::from(meta.context_length as i32)),
+        ("context_train", Robj::from(meta.context_train)),
+        ("backend", Robj::from(meta.backend)),
+        ("size_bytes", Robj::from(meta.size_bytes as f64)),
+        ("vocab_size", Robj::from(meta.vocab_size)),
+        ("description", Robj::from(meta.description)),
+    ])
+    .into()
+}
+
+/// The structured `fields` sub-list carried by each error class (§8: code — and
+/// coding models — branch on these).
+fn error_fields(error: &RebirthError) -> Robj {
+    let pairs: Vec<(&str, Robj)> = match error {
+        RebirthError::ModelLoad { failing_check } => {
+            vec![("failing_check", Robj::from(failing_check.as_str()))]
+        }
+        RebirthError::Backend {
+            requested,
+            available,
+        } => vec![
+            ("requested", Robj::from(requested.as_str())),
+            ("available", Robj::from(available.as_str())),
+        ],
+        RebirthError::Closed => Vec::new(),
+        RebirthError::Busy { operation, reason } => vec![
+            ("operation", Robj::from(operation.as_str())),
+            ("reason", Robj::from(reason.as_str())),
+        ],
+        RebirthError::Argument { argument, reason } => vec![
+            ("argument", Robj::from(argument.as_str())),
+            ("reason", Robj::from(reason.as_str())),
+        ],
+        RebirthError::Cancelled {
+            reason,
+            seed,
+            prompt_id,
+            generated_tokens,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            ("seed", Robj::from(*seed as f64)),
+            ("prompt_id", Robj::from(*prompt_id as i32)),
+            ("generated_tokens", Robj::from(*generated_tokens as i32)),
+        ],
+        RebirthError::Stream {
+            reason,
+            prompt_id,
+            event_id,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            (
+                "prompt_id",
+                Robj::from(
+                    prompt_id
+                        .and_then(|n| i32::try_from(n).ok())
+                        .unwrap_or(i32::MIN),
+                ),
+            ),
+            (
+                "event_id",
+                Robj::from(
+                    event_id
+                        .and_then(|n| i32::try_from(n).ok())
+                        .unwrap_or(i32::MIN),
+                ),
+            ),
+        ],
+        RebirthError::Tokenize { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::Generation { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::Schema {
+            reason,
+            schema_path,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            ("schema_path", Robj::from(schema_path.as_str())),
+        ],
+        RebirthError::StructuredOutput {
+            reason,
+            prompt_id,
+            seed,
+            generated_tokens,
+            partial_bytes,
+        } => vec![
+            ("reason", Robj::from(reason.as_str())),
+            ("prompt_id", Robj::from(*prompt_id as i32)),
+            ("seed", Robj::from(*seed as f64)),
+            ("generated_tokens", Robj::from(*generated_tokens as i32)),
+            ("partial_bytes", Raw::from_bytes(partial_bytes).into()),
+        ],
+        RebirthError::ContextOverflow {
+            prompt_tokens,
+            context_length,
+            overflow,
+        } => vec![
+            ("prompt_tokens", Robj::from(*prompt_tokens as i32)),
+            ("context_length", Robj::from(*context_length as i32)),
+            ("overflow", Robj::from(*overflow as i32)),
+        ],
+        RebirthError::Embed { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::Trace { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        RebirthError::Intervention { reason } => {
+            vec![("reason", Robj::from(reason.as_str()))]
+        }
+        // Only the fields the specific failure carries (API-GRAMMAR §6:
+        // `path` on a decode failure, `expected`/`actual` on a mismatch).
+        RebirthError::Image {
+            path,
+            expected,
+            actual,
+            ..
+        } => {
+            let mut pairs: Vec<(&str, Robj)> = Vec::new();
+            if let Some(p) = path {
+                pairs.push(("path", Robj::from(p.as_str())));
+            }
+            if let Some(e) = expected {
+                pairs.push(("expected", Robj::from(*e)));
+            }
+            if let Some(a) = actual {
+                pairs.push(("actual", Robj::from(*a)));
+            }
+            pairs
+        }
+        // R has no u64: the two byte sizes surface as doubles (exact for these
+        // magnitudes), matching the R-side predictive OOM's `estimate_bytes` field.
+        RebirthError::Oom {
+            estimate_bytes,
+            budget_bytes,
+            ..
+        } => vec![
+            ("estimate_bytes", Robj::from(*estimate_bytes as f64)),
+            ("budget_bytes", Robj::from(*budget_bytes as f64)),
+        ],
+        RebirthError::Internal { context } => {
+            vec![("context", Robj::from(context.as_str()))]
+        }
+    };
+    List::from_pairs(pairs).into()
+}
+
+/// Map a `RebirthError` to the `(class, message, fields)` payload R raises.
+fn error_payload(error: RebirthError) -> Robj {
+    List::from_pairs(vec![
+        ("ok", Robj::from(false)),
+        ("class", Robj::from(error.class())),
+        ("message", Robj::from(error.to_string())),
+        ("fields", error_fields(&error)),
+    ])
+    .into()
+}
+
+/// A caught panic becomes a `relm_error_internal` payload with the panic
+/// message — a panic must never reach the R console raw (ARCHITECTURE.md §2).
+fn panic_payload(panic: Box<dyn Any + Send>) -> Robj {
+    let context = panic
+        .downcast_ref::<&str>()
+        .map(|s| (*s).to_string())
+        .or_else(|| panic.downcast_ref::<String>().cloned())
+        .unwrap_or_else(|| "a panic with a non-string payload".to_string());
+    error_payload(RebirthError::Internal { context })
+}
+
+/// Resolve a `catch_unwind` outcome into the classed payload R receives: a
+/// success passes through, a `RebirthError` becomes its error payload, and a
+/// caught panic becomes a `relm_error_internal` payload (§2). Every boundary
+/// entry funnels its result through here.
+fn resolve(result: std::thread::Result<Result<Robj, RebirthError>>) -> Robj {
+    match result {
+        Ok(Ok(payload)) => payload,
+        Ok(Err(error)) => error_payload(error),
+        Err(panic) => panic_payload(panic),
+    }
+}
+
+// --- boundary entries ------------------------------------------------------
+
+// Filesystem ownership is independent of the inference permit. These calls
+// never access a model or invoke R from another thread.
+#[extendr]
+fn rebirth_spill_prepare(path: &str) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        rebirth_llm::prepare_managed_spill(path)?;
+        Ok(list!(ok = true).into())
+    })))
+}
+
+#[extendr]
+fn rebirth_spill_cleanup(path: &str) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        Ok(list!(
+            ok = true,
+            removed = rebirth_llm::cleanup_managed_spill(path)
+        )
+        .into())
+    })))
+}
+
+#[extendr]
+fn rebirth_spill_sweep(path: &str, cutoff: f64) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        Ok(list!(
+            ok = true,
+            removed = rebirth_llm::sweep_managed_spill(path, cutoff)
+        )
+        .into())
+    })))
+}
+
+// Load a GGUF model. All argument validation and defaulting happen in R before
+// this call (ARCHITECTURE.md §2); here we only normalize the enum/sentinel args
+// (§4), run the engine under `catch_unwind`, and return a classed payload.
+// `gpu_layers < 0` is the R `NULL` sentinel (auto / all layers). `backend` is a
+// concrete backend name resolved in R — never `"auto"`. `projector` is the
+// mmproj GGUF path enabling image input (WP-V2, D-026), or "" for the R `NULL`
+// sentinel (text-only, unchanged).
+// (Plain `//`, not `///`: extendr propagates doc comments into the generated R
+// wrapper; these entries are internal, so their wrappers stay undocumented.)
+#[extendr]
+fn rebirth_model_load(
+    path: &str,
+    context_length: i32,
+    gpu_layers: i32,
+    backend: &str,
+    mmap: bool,
+    projector: &str,
+) -> Robj {
+    let backend = match BackendKind::parse(backend) {
+        Some(kind) => kind,
+        None => {
+            return error_payload(RebirthError::Internal {
+                context: format!(
+                    "backend '{backend}' reached the boundary unresolved (R must resolve \"auto\")"
+                ),
+            });
+        }
+    };
+    // R validates context_length as a positive integer; a value below 1 here means
+    // that validation broke -- reject, never clamp it to 1 (P-4).
+    if context_length < 1 {
+        return error_payload(RebirthError::Internal {
+            context: format!(
+                "context_length {context_length} reached the FFI boundary below 1; R must \
+                 validate it as a positive integer before the call"
+            ),
+        });
+    }
+    let request = LoadRequest {
+        path: PathBuf::from(path),
+        context_length: context_length as u32,
+        gpu_layers: if gpu_layers < 0 {
+            None
+        } else {
+            Some(gpu_layers)
+        },
+        backend,
+        mmap,
+        projector: if projector.is_empty() {
+            None
+        } else {
+            Some(PathBuf::from(projector))
+        },
+    };
+
+    // The entire success path -- load, metadata snapshot, external-pointer and
+    // payload construction -- runs inside catch_unwind so a panic anywhere maps
+    // to a classed relm_error_internal (ARCHITECTURE.md §2.2), never a generic
+    // extendr error.
+    resolve(catch_unwind(AssertUnwindSafe(|| {
+        let _native = native_guard("llm")?;
+        let loaded = rebirth_llm::load(request)?;
+        let meta = loaded.metadata();
+        let ptr: Robj = ExternalPtr::new(LlmHandle::new(loaded)).into();
+        Ok::<Robj, RebirthError>(ok_payload(ptr, meta))
+    })))
+}
+
+// Deterministically free the native model behind `ptr` (the `close.llm` path).
+// Idempotent: a double close, or a pointer already freed by the GC finalizer,
+// is a no-op. Returns an R NULL.
+#[extendr]
+fn rebirth_handle_close(ptr: Robj) -> Robj {
+    if let Ok(handle) = checked_handle(&ptr) {
+        let _ = handle.close();
+    }
+    // A null (finalized) or foreign pointer is treated as already closed.
+    ().into()
+}
+
+// Whether `ptr` is closed — the tag every future boundary entry consults first
+// (ARCHITECTURE.md §3). A finalized or foreign pointer counts as closed.
+#[extendr]
+fn rebirth_handle_is_closed(ptr: Robj) -> bool {
+    match checked_handle(&ptr) {
+        Ok(handle) => handle.is_closed(),
+        Err(_) => true,
+    }
+}
+
+// The backends this build can use, in preference order (GPU first). R uses this
+// to resolve `backend = "auto"` and to validate an explicit backend.
+#[extendr]
+fn rebirth_available_backends() -> Robj {
+    let _native = match native_guard("available_backends") {
+        Ok(guard) => guard,
+        Err(error) => return error_payload(error),
+    };
+    let names: Vec<String> = rebirth_llm::available_backends()
+        .iter()
+        .map(|b| b.as_str().to_string())
+        .collect();
+    names.into()
+}
+
+// Encode `text` into tokens. Returns a payload carrying the 1-based token ids
+// (R API, §4) and their display pieces; R assembles the named integer vector.
+// `add_special`/`parse_special` are decided in R (chat vs raw completion).
+#[extendr]
+fn rebirth_tokenize(ptr: Robj, text: &str, add_special: bool, parse_special: bool) -> Robj {
+    with_model(&ptr, |model| {
+        let enc = model.encode(text, add_special, parse_special)?;
+        let ids: Vec<i32> = enc.ids.iter().map(|&id| from_engine_token(id)).collect();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("ids", Robj::from(ids)),
+            ("pieces", Robj::from(enc.pieces)),
+        ])
+        .into())
+    })
+}
+
+// Decode 1-based token ids (R API, §4) back into a single string. The ids are
+// validated as positive integers in R; the engine range-checks after the
+// 1->0-based conversion here.
+#[extendr]
+fn rebirth_detokenize(ptr: Robj, ids: Vec<i32>) -> Robj {
+    with_model(&ptr, |model| {
+        let engine_ids: Vec<i32> = ids.iter().map(|&id| to_engine_token(id)).collect();
+        let text = model.decode_tokens(&engine_ids, false, true)?;
+        Ok(List::from_pairs(vec![("ok", Robj::from(true)), ("text", Robj::from(text))]).into())
+    })
+}
+
+// Generate a continuation of `prompt`. All argument validation and defaulting
+// (including drawing the seed when the user passed NULL) happen in R; here we
+// build the params, run template + tokenize + generate under `with_model`'s
+// catch_unwind, and return the continuation text plus the seed actually used.
+// `stop` is the R character vector of stop sequences (empty for none). `seed`
+// arrives as a double (R has no u64) holding a whole non-negative number.
+// `images` is THIS prompt's image file paths (WP-V2, D-026), empty for the
+// text-only path — which then routes through the pre-WP-V2 code unchanged
+// (byte-identical, zero mtmd involvement); `image_max_bytes` is the validated
+// R option `relm.image_max_bytes` (consulted only when images are present).
+// (Ten params: this boundary mirrors the R `llm_generate()` arguments 1:1;
+// extendr maps each to a `.Call` argument, so they cannot be bundled.)
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_generate(
+    ptr: Robj,
+    prompt: &str,
+    chat: bool,
+    max_tokens: i32,
+    temperature: f64,
+    top_p: f64,
+    seed: f64,
+    stop: Vec<String>,
+    images: Vec<String>,
+    image_max_bytes: f64,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let params = GenerateParams {
+            max_tokens: checked_count(max_tokens, "max_tokens")?,
+            temperature: temperature as f32,
+            top_p: top_p as f32,
+            seed: seed as u64,
+            stop,
+        };
+        let generation = if images.is_empty() {
+            model.generate_prompt(prompt, chat, &params)?
+        } else {
+            let max_bytes = checked_image_max_bytes(image_max_bytes)?;
+            model.generate_prompt_with_images(prompt, chat, &images, max_bytes, &params)?
+        };
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("text", Robj::from(generation.text)),
+            (
+                "generated_tokens",
+                Robj::from(generation.tokens.len() as i32),
+            ),
+            ("seed", Robj::from(generation.seed as f64)),
+        ])
+        .into())
+    })
+}
+
+// Compile once per vector call, with a new sampler state for each prompt.
+// All results stay private until every prompt succeeds. R adds names/seed.
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_generate_structured(
+    ptr: Robj,
+    prompts: Vec<String>,
+    chat: bool,
+    max_tokens: i32,
+    temperature: f64,
+    top_p: f64,
+    seed: f64,
+    schema: &str,
+) -> Robj {
+    with_model(&ptr, |model| {
+        if prompts.is_empty()
+            || prompts.len() > STRUCTURED_MAX_PROMPTS
+            || prompts
+                .iter()
+                .any(|p| p.len() > STRUCTURED_MAX_PROMPT_BYTES)
+            || prompts.iter().map(String::len).sum::<usize>() > STRUCTURED_MAX_TOTAL_PROMPT_BYTES
+            || max_tokens < 1
+            || max_tokens as usize > STRUCTURED_MAX_TOKENS
+            || !temperature.is_finite()
+            || temperature < 0.0
+            || temperature > f32::MAX as f64
+            || !top_p.is_finite()
+            || top_p <= 0.0
+            || top_p > 1.0
+            || !seed.is_finite()
+            || seed < 0.0
+            || seed.fract() != 0.0
+            || seed >= 18446744073709551616.0
+        {
+            return Err(RebirthError::Internal {
+                context: "invalid constrained-generation boundary arguments".into(),
+            });
+        }
+        if schema.len() > STRUCTURED_MAX_SCHEMA_BYTES {
+            return Err(RebirthError::Schema {
+                reason: "schema exceeds 64 KiB".into(),
+                schema_path: String::new(),
+            });
+        }
+        let schema = CompiledSchema::compile(schema)?;
+        let params = GenerateParams {
+            max_tokens: max_tokens as usize,
+            temperature: temperature as f32,
+            top_p: top_p as f32,
+            seed: seed as u64,
+            stop: Vec::new(),
+        };
+        let generations = model.generate_prompts_structured(&prompts, chat, &params, &schema)?;
+        let (output, counts): (Vec<String>, Vec<i32>) = generations
+            .into_iter()
+            .map(|g| (g.text, g.tokens.len() as i32))
+            .unzip();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("text", Robj::from(output)),
+            ("generated_tokens", Robj::from(counts)),
+            ("seed", Robj::from(seed)),
+        ])
+        .into())
+    })
+}
+
+// Next-token distribution for `prompt`: a forward pass over the prompt tokens,
+// then the `top` highest-logit next tokens (`llm_logits`). R has validated
+// m/prompt/top; here we run next_token_logits under with_model's catch_unwind and
+// return four parallel columns the R side stacks into the per-prompt data.frame
+// (§4). `token_id` is shifted engine 0-based -> R 1-based here (the single §4 index
+// boundary), consistent with llm_tokens; `logit`/`prob` are upcast f32/f64 -> R
+// doubles. The rows arrive already ordered rank 1..top (descending logit); R adds
+// the `rank` and `prompt_id` columns. Active interventions on the handle apply
+// (the forward pass runs on the handle's own context, which carries them),
+// exactly as for llm_generate.
+#[extendr]
+fn rebirth_logits(ptr: Robj, prompt: &str, top: i32) -> Robj {
+    with_model(&ptr, |model| {
+        let entries = model.next_token_logits(prompt, checked_count(top, "top")?)?;
+        let token_id: Vec<i32> = entries
+            .iter()
+            .map(|e| from_engine_token(e.token_id))
+            .collect();
+        let token: Vec<String> = entries.iter().map(|e| e.token.clone()).collect();
+        let logit: Vec<f64> = entries.iter().map(|e| e.logit as f64).collect();
+        let prob: Vec<f64> = entries.iter().map(|e| e.prob).collect();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("token_id", Robj::from(token_id)),
+            ("token", Robj::from(token)),
+            ("logit", Robj::from(logit)),
+            ("prob", Robj::from(prob)),
+        ])
+        .into())
+    })
+}
+
+/// Rebuild the per-text image sets from the flat transport R sends
+/// (`images_flat` split by `images_lens`, one length per text). Empty `lens` =
+/// the text-only call. Any inconsistency is an out-of-contract boundary input
+/// (R authors both vectors together), rejected with `relm_error_internal` —
+/// never silently padded or truncated (hard rule 8b).
+fn split_image_sets(
+    flat: Vec<String>,
+    lens: &[i32],
+    n_texts: usize,
+) -> Result<Vec<Vec<String>>, RebirthError> {
+    if lens.len() != n_texts {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "images_lens has {} entries for {} texts; R authors one length per input",
+                lens.len(),
+                n_texts
+            ),
+        });
+    }
+    let mut total: usize = 0;
+    for &l in lens {
+        if l < 0 {
+            return Err(RebirthError::Internal {
+                context: format!("images_lens contains a negative length ({l})"),
+            });
+        }
+        total += l as usize;
+    }
+    if total != flat.len() {
+        return Err(RebirthError::Internal {
+            context: format!(
+                "images_lens sums to {total} but images_flat has {} paths",
+                flat.len()
+            ),
+        });
+    }
+    let mut sets = Vec::with_capacity(n_texts);
+    let mut it = flat.into_iter();
+    for &l in lens {
+        sets.push(it.by_ref().take(l as usize).collect());
+    }
+    Ok(sets)
+}
+
+// Embed a character vector into a row-major matrix. R has validated
+// m/x/pooling/normalize (and, for WP-V3 images, the pairing/marker/projector
+// checks); here we parse the pooling enum, rebuild the per-text image sets
+// from the flat transport, run the engine under with_model's catch_unwind,
+// and return the flat values plus the two dimensions. `images_lens` empty =
+// text-only, routed through the pre-WP-V3 embed_texts unchanged
+// (byte-identical). No 1-based<->0-based conversion is needed: llm_embed
+// takes text, not token-id indices, so the §4 index boundary is crossed
+// nowhere here.
+#[extendr]
+fn rebirth_embed(
+    ptr: Robj,
+    texts: Vec<String>,
+    pooling: &str,
+    normalize: bool,
+    images_flat: Vec<String>,
+    images_lens: Vec<i32>,
+    image_max_bytes: f64,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let pool = Pooling::parse(pooling).ok_or_else(|| RebirthError::Internal {
+            context: format!(
+                "pooling '{pooling}' reached the boundary unresolved (R must resolve match.arg)"
+            ),
+        })?;
+        let refs: Vec<&str> = texts.iter().map(String::as_str).collect();
+        let emb = if images_lens.is_empty() {
+            model.embed_texts(&refs, pool, normalize)?
+        } else {
+            let sets = split_image_sets(images_flat, &images_lens, texts.len())?;
+            let max_bytes = checked_image_max_bytes(image_max_bytes)?;
+            model.embed_texts_with_images(&refs, &sets, pool, normalize, max_bytes)?
+        };
+        // Upcast f32 -> f64 (R doubles); `values` stays row-major (n_rows x n_embd),
+        // consumed by matrix(..., byrow = TRUE) in R.
+        let values: Vec<f64> = emb.values.iter().map(|&v| v as f64).collect();
+        Ok(List::from_pairs(vec![
+            ("ok", Robj::from(true)),
+            ("values", Robj::from(values)),
+            ("n_embd", Robj::from(emb.n_embd as i32)),
+            ("n_rows", Robj::from(emb.n_rows as i32)),
+        ])
+        .into())
+    })
+}
+
+// Trace activations over the prompt tokens. R has validated m/prompts/layers/
+// positions/components/spill and (for the length-known filters with spill = FALSE)
+// run the predictive OOM check; here we build the engine-native (0-based) capture
+// spec -- the 1-based -> 0-based conversion for `layers`/`positions` happens ONLY
+// here (ARCHITECTURE §4) -- assemble the spill plan, run trace_texts_spill under
+// with_model's catch_unwind (which does the authoritative count -> estimate ->
+// decide, so the `positions = "all"` size is exact), and return either the seven
+// long-format in-memory columns (indices shifted back to 1-based) or a spill
+// report (the file path + the capture's dims for the lazy object). `layers` empty
+// = all blocks; `positions_mode` is "last"/"all"/"explicit" with `positions_values`
+// the 1-based explicit positions (empty otherwise). The spill strings (path,
+// model, trace_id, spec_key) are authored in R, which owns the session spill dir.
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_trace(
+    ptr: Robj,
+    prompts: Vec<String>,
+    layers: Vec<i32>,
+    positions_mode: &str,
+    positions_values: Vec<i32>,
+    components: Vec<String>,
+    spill: bool,
+    budget_bytes: f64,
+    spill_path: &str,
+    model_id: &str,
+    trace_id: &str,
+    spec_key: &str,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let spec = build_capture_spec(&layers, positions_mode, &positions_values, &components)?;
+        let refs: Vec<&str> = prompts.iter().map(String::as_str).collect();
+        let plan = SpillPlan {
+            spill,
+            budget_bytes: checked_budget_bytes(budget_bytes)?,
+            spill_path: spill_path.to_string(),
+            model: model_id.to_string(),
+            trace_id: trace_id.to_string(),
+            spec_key: spec_key.to_string(),
+        };
+        Ok(trace_output_payload(
+            model.trace_texts_spill(&refs, &spec, &plan)?,
+        ))
+    })
+}
+
+/// The R payload for a completed trace: the in-memory long-format columns, or a
+/// spill report the R side turns into a lazy `relm_trace`.
+fn trace_output_payload(output: TraceOutput) -> Robj {
+    match output {
+        TraceOutput::Memory {
+            rows,
+            positions_recycled,
+        } => trace_payload(&rows, positions_recycled),
+        #[cfg(feature = "spill")]
+        TraceOutput::Spilled(report) => spill_payload(&report),
+    }
+}
+
+/// The R payload for a spilled trace: the file path plus the capture's dimensions
+/// (layers/positions shifted engine 0-based -> R 1-based), so the boundary builds
+/// a lazy `relm_trace` whose print/summary need no data load. `n_rows`/
+/// `n_positions` are doubles (R has no u64; exact at these magnitudes).
+#[cfg(feature = "spill")]
+fn spill_payload(report: &rebirth_llm::SpillReport) -> Robj {
+    let layers: Vec<i32> = report
+        .layers
+        .iter()
+        .map(|&l| from_engine_index(l))
+        .collect();
+    let positions: Vec<i32> = report
+        .positions
+        .iter()
+        .map(|&p| from_engine_index(p))
+        .collect();
+    let components: Vec<String> = report
+        .components
+        .iter()
+        .map(|c| c.as_str().to_string())
+        .collect();
+    List::from_pairs(vec![
+        ("ok", Robj::from(true)),
+        ("spilled", Robj::from(true)),
+        ("positions_recycled", Robj::from(report.positions_recycled)),
+        ("spill_path", Robj::from(report.path.as_str())),
+        ("n_rows", Robj::from(report.n_rows as f64)),
+        ("n_positions", Robj::from(report.n_positions as f64)),
+        ("layers", Robj::from(layers)),
+        ("positions", Robj::from(positions)),
+        ("components", Robj::from(components)),
+        ("n_embd", Robj::from(report.n_embd as i32)),
+        ("trace_id", Robj::from(report.trace_id.as_str())),
+    ])
+    .into()
+}
+
+/// Build the engine-native capture spec from the validated R arguments, applying
+/// the 1-based -> 0-based conversion for `layers`/`positions` here and nowhere else.
+fn build_capture_spec(
+    layers: &[i32],
+    positions_mode: &str,
+    positions_values: &[i32],
+    components: &[String],
+) -> Result<CaptureSpec, RebirthError> {
+    let layers = if layers.is_empty() {
+        None
+    } else {
+        Some(
+            layers
+                .iter()
+                .map(|&l| to_engine_index(l))
+                .collect::<Result<Vec<_>, _>>()?,
+        )
+    };
+    let positions = match positions_mode {
+        "last" => Positions::Last,
+        "all" => Positions::All,
+        "explicit" => Positions::Explicit(
+            positions_values
+                .iter()
+                .map(|&p| to_engine_index(p))
+                .collect::<Result<Vec<_>, _>>()?,
+        ),
+        other => {
+            return Err(RebirthError::Internal {
+                context: format!(
+                    "positions mode '{other}' reached the boundary unresolved \
+                     (R must pass \"last\", \"all\", or \"explicit\")"
+                ),
+            })
+        }
+    };
+    let components = components
+        .iter()
+        .map(|c| {
+            Component::parse(c).ok_or_else(|| RebirthError::Internal {
+                context: format!("component '{c}' reached the boundary unresolved"),
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(CaptureSpec {
+        layers,
+        positions,
+        components,
+    })
+}
+
+/// Expand the captured rows into the `relm_trace` payload (API-GRAMMAR §2). The
+/// per-neuron numeric columns (`prompt_id`/`token_pos`/`layer`/`neuron`/`value`) are
+/// emitted in full; the `token` and `component` labels — constant across a row's
+/// neurons — are INTERNED (D-017): each distinct label crosses the boundary once (a
+/// levels table) with a per-row 1-based code into it, and R re-expands them to the
+/// identical per-neuron character columns via `rep()`. This removes the per-neuron
+/// `String` clone that made the transient payload ~30x the f32 activation size (the
+/// audit's H-1); the reconstructed data.frame columns are byte-identical. Every
+/// index is shifted engine 0-based -> R 1-based here; `value` is upcast f32 -> f64.
+/// `positions_recycled` is the API-GRAMMAR §4 warning signal R acts on.
+fn trace_payload(rows: &[CaptureRow], positions_recycled: bool) -> Robj {
+    let total: usize = rows.iter().map(|r| r.values.len()).sum();
+    let n_rows = rows.len();
+    let mut prompt_id = Vec::with_capacity(total);
+    let mut token_pos = Vec::with_capacity(total);
+    let mut layer = Vec::with_capacity(total);
+    let mut neuron = Vec::with_capacity(total);
+    let mut value = Vec::with_capacity(total);
+
+    // Interned per-row token/component transport (D-017). Each distinct label is
+    // pushed once into a levels table; `*_codes[r]` is the 1-based position of row
+    // `r`'s label in that table. These codes are a TRANSPORT index for R's `[`, not
+    // the 1-based API index of ARCHITECTURE §4 (the genuine indices go through
+    // `from_engine_index` above). `token: None` (the raw-id path, or a no_vocab model
+    // with no pieces) becomes an `NA` level, so R reconstructs `NA_character_` —
+    // agreeing with the spill path (`append_null`) and the schema, never `""`.
+    // `row_nneuron[r]` is the `rep()` count R expands each row's code by.
+    //
+    // The `*_index` maps make interning O(1) per row. The keys borrow from `rows`
+    // (immutable for the whole loop), so a distinct token/component is looked up by
+    // hash instead of the old O(distinct-levels) linear scan — for a wide capture
+    // (all positions, all layers) the distinct-token count grows with the prompt
+    // length, so that scan was O(rows x tokens).
+    let mut component_levels: Vec<String> = Vec::new();
+    let mut component_index: HashMap<&str, i32> = HashMap::new();
+    let mut component_codes: Vec<i32> = Vec::with_capacity(n_rows);
+    let mut token_levels: Vec<Option<String>> = Vec::new();
+    let mut token_index: HashMap<Option<&str>, i32> = HashMap::new();
+    let mut token_codes: Vec<i32> = Vec::with_capacity(n_rows);
+    let mut row_nneuron: Vec<i32> = Vec::with_capacity(n_rows);
+
+    for row in rows {
+        let pid = from_engine_index(row.prompt_id);
+        let pos = from_engine_index(row.token_pos);
+        let lyr = from_engine_index(row.layer);
+
+        let comp = row.component.as_str();
+        let ccode = *component_index.entry(comp).or_insert_with(|| {
+            component_levels.push(comp.to_string());
+            component_levels.len() as i32 // 1-based for R indexing
+        });
+        component_codes.push(ccode);
+
+        let tok = row.token.as_deref();
+        let tcode = *token_index.entry(tok).or_insert_with(|| {
+            token_levels.push(row.token.clone());
+            token_levels.len() as i32 // 1-based for R indexing
+        });
+        token_codes.push(tcode);
+
+        row_nneuron.push(row.values.len() as i32);
+
+        for (k, &v) in row.values.iter().enumerate() {
+            prompt_id.push(pid);
+            token_pos.push(pos);
+            layer.push(lyr);
+            neuron.push(from_engine_index(k as u32));
+            value.push(v as f64);
+        }
+    }
+
+    List::from_pairs(vec![
+        ("ok", Robj::from(true)),
+        ("spilled", Robj::from(false)),
+        ("positions_recycled", Robj::from(positions_recycled)),
+        ("prompt_id", Robj::from(prompt_id)),
+        ("token_pos", Robj::from(token_pos)),
+        ("layer", Robj::from(layer)),
+        ("neuron", Robj::from(neuron)),
+        ("value", Robj::from(value)),
+        ("component_levels", Robj::from(component_levels)),
+        ("component_codes", Robj::from(component_codes)),
+        ("token_levels", Robj::from(token_levels)),
+        ("token_codes", Robj::from(token_codes)),
+        ("row_nneuron", Robj::from(row_nneuron)),
+    ])
+    .into()
+}
+
+// Derive a NEW handle with the FULL accumulated intervention spec applied to a
+// fresh context on `ptr`'s shared weights (WP5, D-016). R has validated every
+// argument (layer/neuron ranges, the layer-1 steer limit, positions/component
+// restrictions, the supported architecture) and flattened its accumulated
+// interventions list into these dense arrays; here we do ONLY the 1-based ->
+// 0-based layer/neuron conversion (ARCHITECTURE §4) and replay the arrays into an
+// `InterventionSpec`, which sums steers per layer and unions ablations
+// (last-write-wins by replay order) exactly as the engine's builder is unit-tested
+// to do (D-016). `derive_with_interventions` clones the source `Arc<Model>` (no
+// reload) and builds a fresh context, so the SOURCE handle is only read and stays
+// bit-for-bit unchanged (reversibility). The whole body runs under with_model's
+// catch_unwind, so a panic never crosses the ABI, and a non-zero native setter
+// return is already mapped to RebirthError::Intervention inside the engine.
+//
+// Steering: `steer_layers[i]` (1-based) carries the summed vector at
+// `steer_vectors[i*n_embd .. (i+1)*n_embd]` (row-major). Ablation: one
+// (`ablate_layers[i]`, `ablate_neurons[i]`, `ablate_values[i]`) triple per ablated
+// neuron (both index vectors 1-based). Empty arrays mean "that kind is absent".
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_intervene(
+    ptr: Robj,
+    n_embd: i32,
+    n_layer: i32,
+    steer_layers: Vec<i32>,
+    steer_vectors: Vec<f64>,
+    ablate_layers: Vec<i32>,
+    ablate_neurons: Vec<i32>,
+    ablate_values: Vec<f64>,
+) -> Robj {
+    with_model(&ptr, |model| {
+        // The architecture allow-list is gone (D-021): `derive_with_interventions`
+        // runs the runtime sentinel probe, which proves the mechanism takes effect on
+        // this model at the requested layers and raises `relm_error_intervention`
+        // if it would silently no-op — the same fails-loud guarantee, per model.
+
+        // n_embd / n_layer are the model's own dimensions (m$hidden_size / m$layers),
+        // always >= 1 for a real model. Route them through the same reject-not-clamp
+        // guard as every other boundary scalar (M-4 / Hard rule 8b) instead of the
+        // lone `.max(0)` clamp: an out-of-contract dimension is an internal error to
+        // surface, not a silent 0 that would only trip the length check below.
+        let width = checked_count(n_embd, "n_embd")?;
+        // Defensive: R is the sole caller and guarantees these lengths, but check
+        // rather than risk an out-of-bounds slice panic on an internal mismatch.
+        if steer_vectors.len() != width.saturating_mul(steer_layers.len())
+            || ablate_layers.len() != ablate_neurons.len()
+            || ablate_layers.len() != ablate_values.len()
+        {
+            return Err(RebirthError::Internal {
+                context: "intervention arrays reached the boundary with inconsistent lengths"
+                    .to_string(),
+            });
+        }
+
+        let mut spec = InterventionSpec::new(width, checked_count(n_layer, "n_layer")?);
+
+        // Steering: one row per accumulated steer entry; add_steer sums rows that
+        // land on the same engine layer (control vectors are additive, D-016).
+        for (i, &layer_1based) in steer_layers.iter().enumerate() {
+            let il = to_engine_index(layer_1based)? as usize;
+            let start = i * width;
+            let vector: Vec<f32> = steer_vectors[start..start + width]
+                .iter()
+                .map(|&v| v as f32)
+                .collect();
+            spec.add_steer(il, &vector);
+        }
+
+        // Ablation: one (layer, neuron, value) triple per ablated neuron; add_ablation
+        // unions with last-write-wins in replay (accumulation) order (D-016).
+        for i in 0..ablate_layers.len() {
+            let il = to_engine_index(ablate_layers[i])? as usize;
+            let neuron = to_engine_index(ablate_neurons[i])? as usize;
+            spec.add_ablation(il, &[neuron], ablate_values[i] as f32);
+        }
+
+        let derived = model.derive_with_interventions(&spec)?;
+        let meta = derived.metadata();
+        let new_ptr: Robj = ExternalPtr::new(LlmHandle::new(derived)).into();
+        Ok(ok_payload(new_ptr, meta))
+    })
+}
+
+// Test-only: a real, already-closed handle for exercising the close /
+// is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
+#[extendr]
+fn rebirth_selftest_new_handle() -> Robj {
+    ExternalPtr::new(LlmHandle::empty()).into()
+}
+
+// Test-only: run the WP-V2 image pre-decode gate (read once -> magic
+// allow-list -> byte cap -> header-only dimension probe -> dimension/pixel
+// caps) on `path` with NO model, NO projector, and NO decode, returning the
+// classed payload (`relm_error_image` on rejection, the detected format on
+// success). This is what lets the per-commit, model-free R suite assert every
+// adversarial rejection of audit req 4 (audio magics, GIF, garbage, truncated,
+// over-dims) through the real classed-condition plumbing. Internal (never in
+// NAMESPACE).
+#[extendr]
+fn rebirth_selftest_validate_image(path: &str, max_bytes: f64) -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(
+        || -> Result<Robj, RebirthError> {
+            let format =
+                rebirth_llm::validate_image_file(path, checked_image_max_bytes(max_bytes)?)?;
+            Ok(List::from_pairs(vec![
+                ("ok", Robj::from(true)),
+                ("format", Robj::from(format)),
+            ])
+            .into())
+        },
+    )))
+}
+
+// Test-only: force a panic inside the `catch_unwind` path and return the
+// resulting `relm_error_internal` payload — proves a panic maps to a classed
+// condition instead of reaching R raw. Internal (never in NAMESPACE).
+#[extendr]
+fn rebirth_selftest_panic() -> Robj {
+    resolve(catch_unwind(AssertUnwindSafe(
+        || -> Result<Robj, RebirthError> {
+            panic!("forced panic for the internal-error self-test")
+        },
+    )))
+}
+
+// Test-only: trace RAW (1-based) token ids with spill, bypassing the tokenizer, so
+// the `no_vocab` synthetic model can exercise the full spill path (writer + reader)
+// in CI where `llm_trace()` (which tokenizes text) cannot run. Fixed capture spec
+// (all layers, all positions, all three components) to keep the surface small; the
+// R test authors the matching `spec_key`. Internal (never in NAMESPACE).
+#[allow(clippy::too_many_arguments)]
+#[extendr]
+fn rebirth_selftest_trace_tokens_spill(
+    ptr: Robj,
+    tokens: Vec<i32>,
+    spill: bool,
+    budget_bytes: f64,
+    spill_path: &str,
+    model_id: &str,
+    trace_id: &str,
+    spec_key: &str,
+) -> Robj {
+    with_model(&ptr, |model| {
+        let spec = CaptureSpec {
+            layers: None,
+            positions: Positions::All,
+            components: vec![Component::Residual, Component::AttnOut, Component::MlpOut],
+        };
+        let ids: Vec<i32> = tokens.iter().map(|&t| to_engine_token(t)).collect();
+        let plan = SpillPlan {
+            spill,
+            budget_bytes: checked_budget_bytes(budget_bytes)?,
+            spill_path: spill_path.to_string(),
+            model: model_id.to_string(),
+            trace_id: trace_id.to_string(),
+            spec_key: spec_key.to_string(),
+        };
+        Ok(trace_output_payload(model.trace_token_batch_spill(
+            &[&ids],
+            &spec,
+            &plan,
+        )?))
+    })
+}
+
+// Macro to generate exports. The functions above are internal `.Call` targets;
+// the user-facing surface is the R `llm()` and its S3 methods.
+extendr_api::extendr_module! {
+    mod relm;
+    fn rebirth_model_load;
+    fn rebirth_handle_close;
+    fn rebirth_handle_is_closed;
+    fn rebirth_available_backends;
+    fn rebirth_tokenize;
+    fn rebirth_detokenize;
+    fn rebirth_generate;
+    fn rebirth_generate_structured;
+    fn rebirth_async_ready;
+    fn rebirth_stream_regular_file;
+    fn rebirth_async_submit;
+    fn rebirth_live_submit;
+    fn rebirth_live_preflight;
+    fn rebirth_projection_allocation_profile;
+    fn rebirth_projection_preflight;
+    fn rebirth_projection_construct;
+    fn rebirth_projection_state_facts;
+    fn rebirth_async_state_ack;
+    fn rebirth_async_poll;
+    fn rebirth_async_ack;
+    fn rebirth_async_discard;
+    fn rebirth_async_cancel;
+    fn rebirth_async_shutdown;
+    fn rebirth_async_test_handle;
+    fn rebirth_async_test_config;
+    fn rebirth_async_test_stats;
+    fn rebirth_logits;
+    fn rebirth_embed;
+    fn rebirth_trace;
+    fn rebirth_spill_prepare;
+    fn rebirth_spill_cleanup;
+    fn rebirth_spill_sweep;
+    fn rebirth_intervene;
+    fn rebirth_selftest_projection_ledger;
+    fn rebirth_selftest_projection_budget_error;
+    fn rebirth_selftest_projection_transfer;
+    fn rebirth_selftest_projection_constructor;
+    fn rebirth_selftest_projection_combined_logits;
+    fn rebirth_selftest_new_handle;
+    fn rebirth_selftest_validate_image;
+    fn rebirth_selftest_panic;
+    fn rebirth_selftest_trace_tokens_spill;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{
+        checked_budget_bytes, checked_count, checked_image_max_bytes, from_engine_index,
+        split_image_sets, to_engine_index,
+    };
+    use rebirth_llm::parse_tensor_name;
+
+    // The canonical defect class (ARCHITECTURE §4): 1-based <-> 0-based conversion
+    // lives ONLY here, so it is property-tested here.
+    #[test]
+    fn engine_index_round_trips_over_the_valid_range() {
+        // from_engine_index(to_engine_index(x)) == x for every 1-based index.
+        for x in 1..=4096i32 {
+            assert_eq!(
+                from_engine_index(to_engine_index(x).expect("valid 1-based index")),
+                x,
+                "round-trip at {x}"
+            );
+        }
+        // Anchor the two ends explicitly: layer 1 <-> engine il 0.
+        assert_eq!(to_engine_index(1).unwrap(), 0);
+        assert_eq!(from_engine_index(0), 1);
+    }
+
+    #[test]
+    fn to_engine_index_rejects_out_of_contract_indices() {
+        // M-4/P-4: an index < 1 (R validation broke) is rejected with
+        // relm_error_internal, never clamped to engine 0 (which would ablate/trace
+        // a different, valid item). The old `.max(0)` returned 0 for both.
+        for bad in [0i32, -1, -7, i32::MIN] {
+            let err = to_engine_index(bad).expect_err("index < 1 must reject");
+            assert_eq!(err.class(), "relm_error_internal", "bad index {bad}");
+        }
+    }
+
+    #[test]
+    fn checked_count_rejects_below_one_and_passes_positive() {
+        // The count/size boundary guard (max_tokens, top, context_length): reject < 1,
+        // pass a positive value through as usize (P-4).
+        assert_eq!(checked_count(1, "top").unwrap(), 1);
+        assert_eq!(checked_count(4096, "max_tokens").unwrap(), 4096);
+        for bad in [0i32, -1, i32::MIN] {
+            assert_eq!(
+                checked_count(bad, "top").unwrap_err().class(),
+                "relm_error_internal"
+            );
+        }
+    }
+
+    #[test]
+    fn split_image_sets_rebuilds_the_per_text_sets_and_rejects_inconsistency() {
+        // The WP-V3 flat transport: one length per text, paths in order.
+        // Runs per-commit in CI (cargo test, the R-CMD-check job).
+        let s = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>();
+        let sets = split_image_sets(s(&["a.png", "b.png", "c.png"]), &[2, 0, 1], 3)
+            .expect("consistent transport");
+        assert_eq!(sets, vec![s(&["a.png", "b.png"]), s(&[]), s(&["c.png"])]);
+        // All-empty sets are valid (every input text-only).
+        assert_eq!(
+            split_image_sets(vec![], &[0, 0], 2).expect("all empty"),
+            vec![Vec::<String>::new(), Vec::new()]
+        );
+        // Inconsistencies are out-of-contract boundary input: reject, never
+        // pad/truncate (hard rule 8b).
+        for (flat, lens, n) in [
+            (s(&["a.png"]), vec![1, 0], 1usize),  // lens.len() != n_texts
+            (s(&["a.png"]), vec![2], 1),          // sum > flat
+            (s(&["a.png", "b.png"]), vec![1], 1), // sum < flat
+            (s(&[]), vec![-1], 1),                // negative length
+        ] {
+            assert_eq!(
+                split_image_sets(flat, &lens, n).unwrap_err().class(),
+                "relm_error_internal"
+            );
+        }
+    }
+
+    #[test]
+    fn checked_image_max_bytes_rejects_non_positive_and_nan() {
+        // The image byte-cap guard (WP-V2): reject <= 0 and NaN with
+        // relm_error_internal (R validates the option before the call), pass a
+        // positive finite value, saturate Inf (the engine's own i32::MAX hard
+        // ceiling still applies downstream). Runs per-commit in CI (cargo test).
+        assert_eq!(checked_image_max_bytes(1.0).unwrap(), 1);
+        assert_eq!(
+            checked_image_max_bytes(64.0 * 1024.0 * 1024.0).unwrap(),
+            67_108_864
+        );
+        assert_eq!(checked_image_max_bytes(f64::INFINITY).unwrap(), u64::MAX);
+        for bad in [0.0, -1.0, f64::NAN, f64::NEG_INFINITY] {
+            assert_eq!(
+                checked_image_max_bytes(bad).unwrap_err().class(),
+                "relm_error_internal",
+                "bad cap {bad}"
+            );
+        }
+    }
+
+    #[test]
+    fn checked_budget_bytes_rejects_negative_and_nan_but_passes_inf() {
+        // The trace budget guard: reject negative/NaN (R computes a positive budget),
+        // pass 0, a finite value, and Inf (the self-test's unbounded sentinel, which
+        // saturates to u64::MAX) (P-4).
+        assert_eq!(checked_budget_bytes(0.0).unwrap(), 0);
+        assert_eq!(checked_budget_bytes(2048.0).unwrap(), 2048);
+        assert_eq!(checked_budget_bytes(f64::INFINITY).unwrap(), u64::MAX);
+        assert!(checked_budget_bytes(-1.0).is_err());
+        assert!(checked_budget_bytes(f64::NAN).is_err());
+    }
+
+    #[test]
+    fn tensor_name_layer_surfaces_as_one_based_api_layer() {
+        // The tap parses a graph tensor name to a 0-based engine layer; this
+        // boundary is the only place it becomes the 1-based API layer. So the
+        // graph name "l_out-7" (engine il = 7) surfaces to R as layer 8.
+        let (base, il) = parse_tensor_name("l_out-7").expect("l_out-7 parses");
+        assert_eq!(base, "l_out");
+        assert_eq!(il, 7);
+        assert_eq!(from_engine_index(il), 8, "l_out-7 -> API layer 8");
+    }
+    #[test]
+    fn projection_bridge_compiled_frame() {
+        use super::{
+            projection_bridge_frame_bytes, projection_constructor_command_bytes,
+            projection_native_profile,
+        };
+        use extendr_api::Robj;
+        use rebirth_llm::RebirthError;
+        use std::any::Any;
+        // Pure layout test. Runs as one owner-selected rebirth-ffi libtest;
+        // neither initializes R nor creates a model or evaluates the bridge.
+        let scalar = std::mem::size_of::<extendr_api::SEXP>();
+        let roots = 14 * std::mem::size_of::<Robj>();
+        let references = 7 * std::mem::size_of::<&Robj>();
+        let outer = std::mem::size_of::<
+            Result<Result<Robj, Box<dyn std::error::Error>>, Box<dyn Any + Send>>,
+        >();
+        let inner = std::mem::size_of::<Result<Result<Robj, RebirthError>, Box<dyn Any + Send>>>();
+        let expected = (7 * scalar + roots + references + outer + inner) as u64;
+        assert_eq!(projection_bridge_frame_bytes(), expected);
+        let profile = projection_native_profile().unwrap();
+        assert_eq!(
+            profile.command_bytes,
+            projection_constructor_command_bytes() + expected
+        );
+        println!("F6E_PROJECTION_BRIDGE_TEST {{\"test\":\"projection_bridge_compiled_frame\",\"status\":\"passed\",\"expected_cases\":2,\"executed_cases\":2,\"expected_rejections\":0,\"rejected_cases\":0,\"bridge_frame_bytes\":{expected},\"ffi_command_bytes\":{}}}",profile.command_bytes);
+    }
+}

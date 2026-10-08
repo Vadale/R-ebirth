@@ -1,0 +1,149 @@
+{
+  "status": "passed",
+  "scope": "synthetic protocol collector controls; no native or model execution",
+  "count": 28,
+  "controls": [
+    {
+      "name": "valid-including-unaccepted-cross-schedule-outlier",
+      "passed": true,
+      "expected_rejection": false
+    },
+    {
+      "name": "wrong-source",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-model",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-reference",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-test",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "missing-case",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "false-value-count",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "false-parity-count",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-prefill",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-phase-schedule",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-grouped-schedule",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-context-setting",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-history-token",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-history-position",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "empty-values",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "nonfinite-values",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-reference-value",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "independent-bound-exceeded",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "false-pruning-equality",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "mismatched-history",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "mismatched-replay",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "mismatched-grouped-replay",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "hidden-outlier",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "false-observation-acceptance",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "wrong-observation-error",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "missing-raw-case",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "duplicate-raw-case",
+      "passed": true,
+      "expected_rejection": true
+    },
+    {
+      "name": "raw-value-mismatch",
+      "passed": true,
+      "expected_rejection": true
+    }
+  ],
+  "collector_sha256": "49c3a03f107589ec3198cec97aa83a3c5d05b3afd5bb150298d1d3d798c4b59e",
+  "driver_sha256": "d3de5e2eba169c664b6ad7fa1b8b5e7a57b0957839f907c8c9515260ef2c0048"
+}

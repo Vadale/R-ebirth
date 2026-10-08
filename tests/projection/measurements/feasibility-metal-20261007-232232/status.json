@@ -1,0 +1,173 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 40140,
+  "directory": "/private/tmp/relm-f6e/feasibility-metal-20261007-232232",
+  "started_at": 1791408152.254125,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791408152.367038,
+      "pid": 40146,
+      "exit_code": 0,
+      "finished_at": 1791408152.5151901,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791408152.515687,
+      "pid": 40149,
+      "exit_code": 0,
+      "finished_at": 1791408156.250325,
+      "log_sha256": "25bb89d2f3154684751a62a3927b9c783ad29f7721f1e0e2c233c16cbcbf054d"
+    },
+    {
+      "name": "no-spill-compile",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--lib",
+        "--no-run"
+      ],
+      "status": "passed",
+      "started_at": 1791408156.250755,
+      "pid": 40538,
+      "exit_code": 0,
+      "finished_at": 1791408160.0640361,
+      "log_sha256": "88ee03857e31cd5093fdb5d48d0f24f9a87178cf2be74409461230a89a23e489"
+    },
+    {
+      "name": "affected-01",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_buffer_identity_accepts_only_host_or_default_shared",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791408160.064527,
+      "pid": 40932,
+      "exit_code": 0,
+      "finished_at": 1791408164.5845041,
+      "log_sha256": "96cd5c32f39db9a29272bed8ce619a457bee9857cac16582c7d5609598a255f3"
+    },
+    {
+      "name": "affected-02",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_capacity_ledger_matches_owned_buffers",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791408164.585953,
+      "pid": 41321,
+      "exit_code": 0,
+      "finished_at": 1791408164.793398,
+      "log_sha256": "a2360f098e62d3a85925b0e65439609199665016f27f17354f4140b1fddb5549"
+    },
+    {
+      "name": "affected-03",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_classifier_accepts_only_declared_dense_sites",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791408164.79422,
+      "pid": 41341,
+      "exit_code": 0,
+      "finished_at": 1791408164.885411,
+      "log_sha256": "3e5a93cdeb443b6afff866b17ac333c792a144fbd66b0d00ed47cb6d2c58059d"
+    },
+    {
+      "name": "benchmark-metal",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--release",
+        "--lib",
+        "projection::tests::projection_feasibility_model",
+        "--",
+        "--exact",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791408164.886158,
+      "pid": 41352,
+      "exit_code": 0,
+      "finished_at": 1791408218.8574579,
+      "log_sha256": "41954dd345892a310d9779f70ae8b81b26c7db33520f0b5ef2529e730b78eaa6"
+    }
+  ],
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "public_feature_acceptance": false,
+  "carried_parent_verifications": [
+    "/private/tmp/relm-f6e/feasibility-20261007-212937/owner-verification.json",
+    "/private/tmp/relm-f6e/feasibility-resume-20261007-213532/owner-verification.json"
+  ],
+  "diagnosis_verification": "/private/tmp/relm-f6e/diagnostic-20261007-221757/owner-verification.json",
+  "executed_scope": "three affected buffer/capacity/classifier tests and remaining Metal release leg only; accepted native1-9 and CPU timings retain exact parent scope",
+  "carried_cpu_native7_9_verification": "/private/tmp/relm-f6e/feasibility-pruning-20261007-224427/owner-verification.json",
+  "source_manifest_sha256": "31a68e040cd179e8c8120e0adeaafebef0685ba5d6902339c7ef9aa98420ea38",
+  "stage": "benchmark-metal",
+  "source_drift": [],
+  "ready_source_drift": [],
+  "finished_at": 1791408218.961029
+}

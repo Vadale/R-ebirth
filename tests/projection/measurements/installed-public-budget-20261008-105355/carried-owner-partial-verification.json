@@ -1,0 +1,25 @@
+{
+  "status": "verified_partial_failure",
+  "source_hashes": 115,
+  "installed_hashes": 28,
+  "tar_members": 58,
+  "log_hashes": 4,
+  "source_manifest_sha256": "43f0203b4909653e835832b9ede7b6698176c0bf87dc1a3ab1a210544f0ec2ff",
+  "model_loads": 1,
+  "traces": 4,
+  "public_positive_cases": [
+    "installed_signature",
+    "installed_wrappers",
+    "cpu_loaded",
+    "capture_coordinates",
+    "schema2_real_captures",
+    "trusted_artifact_roundtrip",
+    "baseline_public_logits",
+    "zero_public_logits",
+    "zero_seeded_text",
+    "exact_public_budget"
+  ],
+  "failing_case": "minus_one_refused",
+  "failure_class": "Not retained by original boolean helper; bounded diagnostic is required. Do not infer no refusal.",
+  "passed_scopes": "Install/default DLL/docs exact regeneration/namespace/source body-formals and codetools; first ten public cases only. No remaining public case acceptance."
+}

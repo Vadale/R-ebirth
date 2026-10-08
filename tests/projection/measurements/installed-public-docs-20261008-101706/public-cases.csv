@@ -1,0 +1,11 @@
+"case","status","refusal"
+"installed_signature","passed",FALSE
+"installed_wrappers","passed",FALSE
+"cpu_loaded","passed",FALSE
+"capture_coordinates","passed",FALSE
+"schema2_real_captures","passed",FALSE
+"trusted_artifact_roundtrip","passed",FALSE
+"baseline_public_logits","passed",FALSE
+"zero_public_logits","passed",FALSE
+"zero_seeded_text","passed",FALSE
+"exact_public_budget","passed",FALSE

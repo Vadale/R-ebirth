@@ -1,0 +1,86 @@
+[
+  {
+    "setting": "baseline",
+    "operator": "none",
+    "coefficient": 0,
+    "artifact": ""
+  },
+  {
+    "setting": "zero_add",
+    "operator": "add",
+    "coefficient": 0,
+    "artifact": "residual"
+  },
+  {
+    "setting": "zero_project",
+    "operator": "project",
+    "coefficient": 0,
+    "artifact": "mlp"
+  },
+  {
+    "setting": "add_-2",
+    "operator": "add",
+    "coefficient": -2,
+    "artifact": "residual"
+  },
+  {
+    "setting": "add_-1",
+    "operator": "add",
+    "coefficient": -1,
+    "artifact": "residual"
+  },
+  {
+    "setting": "add_1",
+    "operator": "add",
+    "coefficient": 1,
+    "artifact": "residual"
+  },
+  {
+    "setting": "add_2",
+    "operator": "add",
+    "coefficient": 2,
+    "artifact": "residual"
+  },
+  {
+    "setting": "project_-1",
+    "operator": "project",
+    "coefficient": -1,
+    "artifact": "mlp"
+  },
+  {
+    "setting": "project_0.5",
+    "operator": "project",
+    "coefficient": 0.5,
+    "artifact": "mlp"
+  },
+  {
+    "setting": "project_1",
+    "operator": "project",
+    "coefficient": 1,
+    "artifact": "mlp"
+  },
+  {
+    "setting": "project_2",
+    "operator": "project",
+    "coefficient": 2,
+    "artifact": "mlp"
+  },
+  {
+    "setting": "random_project_1",
+    "operator": "project",
+    "coefficient": 1,
+    "artifact": "random_mlp"
+  },
+  {
+    "setting": "selected_add",
+    "operator": "add",
+    "coefficient": -1,
+    "artifact": "residual"
+  },
+  {
+    "setting": "selected_project",
+    "operator": "project",
+    "coefficient": 0.5,
+    "artifact": "mlp"
+  }
+]

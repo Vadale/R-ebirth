@@ -1,0 +1,45 @@
+[
+  {
+    "stage": "r-source",
+    "execution_source": "/private/tmp/relm-f6e/private-constructor-20261008-024059",
+    "record": {
+      "name": "r-source",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-constructor-source.R"
+      ],
+      "status": "passed",
+      "started_at": 1791420059.5865889,
+      "pid": 57114,
+      "exit_code": 0,
+      "finished_at": 1791420059.969208,
+      "log_sha256": "d4683e63834e31c2b1a64b5ffcb471097b98f46065b1898c89bbdad5d25174a7"
+    }
+  },
+  {
+    "stage": "clippy-llm",
+    "execution_source": "/private/tmp/relm-f6e/private-constructor-20261008-024059",
+    "record": {
+      "name": "clippy-llm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791420060.173697,
+      "pid": 57126,
+      "exit_code": 0,
+      "finished_at": 1791420063.9641862,
+      "log_sha256": "2a7a7ee7aade085d8ff59844c59cc002beaac4e0e989b8ea3a2084aeebe9f2de"
+    }
+  }
+]

@@ -1,0 +1,36 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+error: invalid format string: unmatched `}` found
+   --> rebirth-ffi/src/projection_constructor_boundary.rs:322:132
+    |
+322 | ...file\":{{{}}},\"inputs\":{{{}}},\"terms\":{{{}}}}",fields(profile.fields()),fields(input.fields()),fields(e.fields()));
+    |                                                    ^ unmatched `}` in format string
+    |
+    = note: if you intended to print `}`, you can escape it using `}}`
+
+error[E0624]: method `hidden_size` is private
+   --> rebirth-ffi/src/projection_constructor_boundary.rs:110:15
+    |
+110 |         model.hidden_size() as usize,
+    |               ^^^^^^^^^^^ private method
+    |
+   ::: rebirth-llm/src/engine.rs:661:5
+    |
+661 |     pub(crate) fn hidden_size(&self) -> i32 {
+    |     --------------------------------------- private method defined here
+
+error[E0624]: method `num_layers` is private
+   --> rebirth-ffi/src/projection_constructor_boundary.rs:111:15
+    |
+111 |         model.num_layers() as usize,
+    |               ^^^^^^^^^^ private method
+    |
+   ::: rebirth-llm/src/engine.rs:669:5
+    |
+669 |     pub(crate) fn num_layers(&self) -> i32 {
+    |     -------------------------------------- private method defined here
+
+For more information about this error, try `rustc --explain E0624`.
+error: could not compile `rebirth-ffi` (lib) due to 3 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `rebirth-ffi` (lib test) due to 3 previous errors

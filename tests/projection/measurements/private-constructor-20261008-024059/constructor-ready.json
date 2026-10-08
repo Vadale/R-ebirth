@@ -1,0 +1,446 @@
+{
+  "status": "ready",
+  "scope": "Actual privately gated loaded-model constructor and bounded handle-only FFI transfer; production operator unavailable",
+  "execution_owner": "parent only",
+  "no_builds_tests_models_executed_by_agent": true,
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "21a748702ee15fe5fecdac8e809e923de5af82b25e718a0f24dfa98cc93574fd",
+    "rebirth/src/rust/rebirth-llm/Cargo.toml": "172e43bf2326b6b895b2bd2904fb41c8493ba56ffa5328ca9f59c9bd7596c45e",
+    "rebirth/src/rust/rebirth-ffi/Cargo.toml": "2847beacc07ea97a6e19ef42309555f626d81fcc62ff9baaea2c277805b7dfc0",
+    "rebirth/src/rust/rebirth-ffi/native/projection_state.c": "5cbb782ea0e957e9899143d10a3b151d4e84b592efe435c83f51cd97705272a0",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "c87f53fe912bab19120bbb28dd2ceba90f037df33a8bb5d5f631acee95b576a5",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor.rs": "f549f670968240a7d00e6f0537792ca95360652baf521fdd5a6b6775dfe98bff",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor_tests.rs": "26efc42fc11d61b460e1f679835c2fa2c7b871fe437c697606239c4376a3de19",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "4f1a0b81a8b680c194f2a6919c7b4cc27547b56b56de76758803411f585d6df1",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "05259c00287bc6b8e07608f81f55bfc68d2637a1320400a3ab819d5b625bc523",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "5c848d144b0103b9b152b3c4e1f0277eab2bd69d7a6be03dfd3f3be2b2d42805",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "0fd5fffe1e4624d54fb132746612f76843e39103f6defacb462c6b8b363f841d",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "56c88408bc86d2c9e947a3ca813c1daa6de05acbd5d27fe5236f5a06dce12236",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "a08feacb22a44fa997dee7e52cab39ef472d78d05cbe94a73449027cfc3ae037",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "a9915e2718faa2fa57a51f8d668dfa8b6a0e4d3288b2c6ae9af76740d09a681f",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "1b1af381021dc84fc00e672d7f3e0845d70cc6cc5b35e0f179028578deb1646c",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs": "9f1d0f5f1b515e11391857338bee6ae795f81764835351fe3c9c8e975639a2f3",
+    "rebirth/src/rust/rebirth-llm/src/trace.rs": "bcdf63a7d51b60eae0276c3f3603bc2925f967efe0961d53852a6936eb777655",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": "2621e1c4dbb17c9e5eba8dd8274397b7282eeb8fc270c351d3e9a9f451836488",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "711446a407bac764ece54c5937a130a8c983914cb80ad9bd2adae503c3ad692e",
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs": "3766b7e6bcfa30219d131e0834915dd62fc5af189b59d6ca5deedd8239689a42"
+  },
+  "owned_files": [
+    "docs/f6e-memory-contract.md",
+    "rebirth/src/rust/rebirth-llm/Cargo.toml",
+    "rebirth/src/rust/rebirth-ffi/Cargo.toml",
+    "rebirth/src/rust/rebirth-ffi/native/projection_state.c",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor_tests.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs",
+    "rebirth/src/rust/rebirth-llm/src/trace.rs",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs",
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs"
+  ],
+  "preserved_parent_abi_hash": {
+    "rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs": "31583c7a27f4511bfb4f162648d5d544e1865ae44bf3b90cbe75ff8c9e848ba8"
+  },
+  "reference_commit": "d8a4800",
+  "reference_hashes": {
+    "tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf": "e255ed5db07f318cbc3bd1d4d5a5a261bdef0867b3bbd1e26228f015b872bd05",
+    "tests/llm-golden/projection/goldens/forward-projections.csv": "4ce9e680cc522cb34456aa1cb0d3f9a8161ca80e80e886bd114d1a4c9bc6edf9",
+    "tests/llm-golden/projection/goldens/forward-logits.csv": "3565696c1c44a3bcf8411f6cbb0dcc3045fec58fec98b850c39f5972996b8328",
+    "tests/llm-golden/projection/goldens/manifest.csv": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959"
+  },
+  "profile_version": 2,
+  "profile_fields": [
+    "version",
+    "direction_arc_header_bytes",
+    "plan_arc_bytes",
+    "site_bytes",
+    "runtime_bytes",
+    "probe_state_bytes",
+    "model_owner_bytes",
+    "derive_frame_bytes",
+    "callback_frame_bytes",
+    "probe_frame_bytes",
+    "residual_probe_fixed_bytes",
+    "ffi_fixed_bytes",
+    "adapter_fixed_bytes",
+    "error_format_bytes",
+    "metadata_owner_bytes",
+    "slot_bytes",
+    "proof_bytes",
+    "projection_info_bytes",
+    "cpp_access_frame_bytes",
+    "cpp_name_frame_bytes",
+    "ffi_command_bytes",
+    "ffi_response_bytes",
+    "ffi_registry_bytes",
+    "ffi_handle_tag_bytes",
+    "layout_checksum",
+    "max_sites",
+    "max_width"
+  ],
+  "profile_field_count": 27,
+  "input_fields": [
+    "mode",
+    "hidden_size",
+    "layers",
+    "previous_sites",
+    "steer_entries",
+    "ablate_entries",
+    "source_baseline_values",
+    "metadata_bytes",
+    "metadata_scratch_bytes",
+    "existing_direction_estimate",
+    "r_projection_fixed_bytes",
+    "r_adapter_bytes",
+    "max_bytes",
+    "backend",
+    "production_armed"
+  ],
+  "input_field_count": 15,
+  "term_fields": [
+    "direction_bytes",
+    "plan_bytes",
+    "context_bytes",
+    "frame_bytes",
+    "probe_bytes",
+    "projection_bytes",
+    "residual_probe_bytes",
+    "adapter_data_bytes",
+    "adapter_fixed_bytes",
+    "metadata_bytes",
+    "r_projection_bytes",
+    "r_adapter_bytes",
+    "existing_direction_estimate",
+    "total_bytes"
+  ],
+  "term_field_count": 14,
+  "config_fields": [
+    "mode",
+    "layer",
+    "component",
+    "coef",
+    "direction",
+    "steer_entries",
+    "ablate_entries",
+    "existing_direction_estimate",
+    "r_projection_fixed_bytes",
+    "r_adapter_bytes",
+    "max_bytes"
+  ],
+  "new_term_formula": "residual_probe_bytes = 0 if S=A=0, otherwise 8*H*D+4*H+residual_probe_fixed_bytes; total adds it once outside projection_bytes",
+  "compiled_changes": [
+    "residual_probe_fixed_bytes is the exact scalar-capture/spec/row/TraceContext/Batch/guard descriptor sum in probe.rs; no BTree insertion",
+    "derive_frame_bytes adds receipt, two borrowed residual descriptors, two Runtime installation values, one Arc<[f64]> descriptor; updated Profile/Estimate sizeof automatically included",
+    "ffi_command_bytes adds actual borrowed array/reference/Ref/RefMut/Rc/native guard/shell/Any pointer owners and C shell frame getter",
+    "ffi_response_bytes now uses27+15+14 exact named scalar arrays; dynamic registry charge still recomputed from actual current capacity",
+    "Slot/Runtime/Metal POD retained layouts unchanged; no new dormant dispatcher heap"
+  ],
+  "activation_gate": {
+    "feature": "projection-private",
+    "default": false,
+    "production_armed": false,
+    "registered_product_constructor": false,
+    "registered_selftest_only": true,
+    "public_r_operator": "still unavailable; parent must bind/verify full R inventory and construction budget before arming"
+  },
+  "native_interface": "LoadedModel::projection_construct(&ProjectionCommand,ProjectionResidualArrays,ProjectionFfiProfile)->Result<(LoadedModel,ProjectionConstructionReceipt),RebirthError> under cfg(test) or projection-private",
+  "native_receipt_fields": [
+    "adapter_capacities[10]",
+    "projection_probe_decodes",
+    "residual_probe_decodes"
+  ],
+  "ffi_interface": "Unregistered projection_construct_boundary(ptr:&Robj,config:&Robj,values:[&Robj;5],refuse_transfer:bool)->Result<Robj>; last flag is private refusal seam; success exactly list(ok=TRUE,ptr)",
+  "ordering": [
+    "All R pointer/tag/finalizer/list allocations occur with NULL address before Rust handle allocation",
+    "Install matching Any boxes using official nonallocating R_SetExternalPtrAddr",
+    "Recheck identity after R allocations; retain exact source Ref/native guard and registry RefMut through native re-admission, five exact copies, probes, adapters and exact registration",
+    "No R call during native transfer; error/panic drops native candidate under guard, registry untouched until successful exact replacement",
+    "Return preallocated R list; parent R must close on later environment/finalizer assembly failure"
+  ],
+  "tests": [
+    {
+      "crate": "rebirth-llm",
+      "execution": "cargo_libtest",
+      "id": "projection::constructor_tests::constructor_residual_probe_and_frame_equations",
+      "marker_test": "constructor_residual_probe_and_frame_equations",
+      "expected_cases": 12,
+      "expected_rejections": 12,
+      "expected_values": 0,
+      "model_loads": 0,
+      "planned_llama_decode_calls": 0,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--features",
+        "projection-private",
+        "--lib",
+        "projection::constructor_tests::constructor_residual_probe_and_frame_equations",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    },
+    {
+      "crate": "rebirth-llm",
+      "execution": "cargo_libtest",
+      "id": "projection::constructor_tests::constructor_source_budget_inheritance_and_failure_ownership",
+      "marker_test": "constructor_source_budget_inheritance_and_failure_ownership",
+      "expected_cases": 15,
+      "expected_rejections": 12,
+      "expected_values": 0,
+      "model_loads": 1,
+      "planned_llama_decode_calls": 14,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--features",
+        "projection-private",
+        "--lib",
+        "projection::constructor_tests::constructor_source_budget_inheritance_and_failure_ownership",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    },
+    {
+      "crate": "rebirth-llm",
+      "execution": "cargo_libtest",
+      "id": "projection::constructor_tests::constructor_composition_matches_frozen_reference",
+      "marker_test": "constructor_composition_matches_frozen_reference",
+      "expected_cases": 4,
+      "expected_rejections": 1,
+      "expected_values": 240,
+      "model_loads": 1,
+      "planned_llama_decode_calls": 19,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--features",
+        "projection-private",
+        "--lib",
+        "projection::constructor_tests::constructor_composition_matches_frozen_reference",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    },
+    {
+      "crate": "rebirth-ffi",
+      "execution": "r_hosted_internal_selftest",
+      "id": "projection_constructor_rhost_transfer",
+      "entrypoint": "rebirth_selftest_projection_constructor",
+      "symbol": "wrap__rebirth_selftest_projection_constructor",
+      "arity": 1,
+      "expected_cases": 18,
+      "expected_rejections": 10,
+      "expected_values": 0,
+      "model_loads": 1,
+      "planned_llama_decode_calls": 12,
+      "twin_cases": 4
+    }
+  ],
+  "test_totals": {
+    "outcomes": 4,
+    "cases": 49,
+    "refusals": 35,
+    "independent_logits": 240,
+    "twin_cases": 4,
+    "independent_r_native_terms": 56,
+    "model_loads": 3,
+    "planned_llama_decode_calls": 45,
+    "decode_counts_are": "source-derived planned calls, not execution receipts; successful probe counts asserted in tests; owner verifies actual logs"
+  },
+  "markers": {
+    "F6E_PROJECTION_CONSTRUCTOR_TEST": {
+      "common_fields": [
+        "test",
+        "status",
+        "expected_cases",
+        "executed_cases",
+        "expected_rejections",
+        "rejected_cases",
+        "expected_values",
+        "compared_values",
+        "max_abs_error",
+        "model_loads"
+      ],
+      "native_extra_fields": [
+        "source"
+      ],
+      "rhost_extra_fields": [
+        "twin_cases"
+      ],
+      "status": "passed",
+      "bounds": {
+        "max_abs_error": 0.01,
+        "independent_composition_values": 240
+      }
+    },
+    "F6E_PROJECTION_CONSTRUCTOR_TWIN": {
+      "count": 4,
+      "cases": [
+        "s0a0",
+        "s1a0",
+        "s0a1",
+        "s1a1"
+      ],
+      "root_fields": [
+        "case",
+        "profile",
+        "inputs",
+        "terms"
+      ],
+      "schema_counts": [
+        27,
+        15,
+        14
+      ],
+      "before_each_marker": [
+        "native estimate succeeds",
+        "exact budget preserves all14terms",
+        "budget-minus-one refuses"
+      ]
+    }
+  },
+  "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+  "compile_commands": [
+    [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    [
+      "cargo",
+      "clippy",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-llm",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    [
+      "cargo",
+      "clippy",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-ffi",
+      "--all-targets",
+      "--features",
+      "projection-private",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    [
+      "cargo",
+      "check",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-ffi",
+      "--no-default-features"
+    ],
+    [
+      "cargo",
+      "check",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-ffi",
+      "--no-default-features",
+      "--features",
+      "projection-private"
+    ]
+  ],
+  "r_hosted_contract": {
+    "platform": "accepted primary macOS arm64; use fresh scratch directory under this owner run",
+    "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+    "build_command": [
+      "cargo",
+      "build",
+      "--locked",
+      "--offline",
+      "-p",
+      "rebirth-ffi",
+      "--lib",
+      "--target-dir",
+      "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target",
+      "--features",
+      "projection-private"
+    ],
+    "profile": "fresh debug projection-private+default spill; existing target cache",
+    "static_archive": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a",
+    "entrypoint_source": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/entrypoint.c",
+    "entrypoint_sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+    "scratch_preparation": "copy exact entrypoint.c into a NEW empty scratch directory in owner run; preserve hash; no installed/accepted relm.so reuse",
+    "link_cwd": "new scratch directory containing copied entrypoint.c only",
+    "link_environment": {
+      "PKG_LIBS": "-L/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug -lrelm -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-metal -lggml-base -framework Metal -framework MetalKit -framework Foundation -framework Accelerate -lc++"
+    },
+    "link_command": [
+      "R",
+      "CMD",
+      "SHLIB",
+      "-o",
+      "relm.so",
+      "entrypoint.c"
+    ],
+    "link_scope": "same ordered native archives/system flags as current src/Makevars, no Makevars recipe/document generation/cache cleaning; relm-grammar already contains projection.cpp",
+    "dll_name_requirement": "relm.so basename invokes existing R_init_relm and its real extendr registration/panic hook",
+    "r_hosted_script": "args <- commandArgs(trailingOnly=TRUE)\nstopifnot(length(args)==2L)\npath <- normalizePath(args[[1L]],mustWork=TRUE)\nmodel <- normalizePath(args[[2L]],mustWork=TRUE)\nstopifnot(!\"relm\" %in% names(getLoadedDLLs()))\ndll <- dyn.load(path,local=TRUE,now=TRUE)\nsymbol <- getNativeSymbolInfo(\"wrap__rebirth_selftest_projection_constructor\",PACKAGE=dll)\nstopifnot(identical(symbol$numParameters,1L))\nstopifnot(identical(normalizePath(symbol$dll[[\"path\"]],mustWork=TRUE),path))\nresult <- .Call(symbol,model)\nstopifnot(identical(result,list(ok=TRUE)))\ninvisible(gc())\n",
+    "r_command": [
+      "Rscript",
+      "--vanilla",
+      "<owner-written-script.R>",
+      "<fresh-scratch-dir>/relm.so",
+      "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf"
+    ],
+    "completion_requirement": "Fresh Rscript .Call returns exactly list(ok=TRUE), final18/10 constructor marker and four27/15/14 twin receipts; verify only new gates",
+    "retention_requirement": "retain fresh static archive/DLL/entrypoint hashes and raw link/Rscript logs bound to corrected source snapshot",
+    "models": 1,
+    "unnecessary_work": "No old suites/private1-9/model benchmarks/Qwen/metadata/document-generation/package install"
+  },
+  "static_validation": [
+    "rustfmt --edition2021 --check --config skip_children=true passed on16 owned Rust files",
+    "git diff --check passed on native crates and owned memory document",
+    "parent void-pointer ABI source hash preserved exactly",
+    "new implementation items precede existing cfg(test) modules; no lint suppression"
+  ],
+  "remaining_before_production": [
+    "Owner executes only these new constructor/FFI tests and affected compilation",
+    "Parent independently compares version2 compiled profile/equations (four actual FFI receipts,56terms)",
+    "Parent binds actual source/candidate R metadata/environment/finalizer/residual-array inventory and configured total to this exact constructor boundary",
+    "Register/enable product derive only after actual combined-budget/construction acceptance; route projected residual additions via bounded inherit",
+    "Public R error/close/live construction integration remains parent-owned; no public/model/performance acceptance inferred from source freeze"
+  ]
+}

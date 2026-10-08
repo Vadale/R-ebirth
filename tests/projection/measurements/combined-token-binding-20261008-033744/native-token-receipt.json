@@ -1,0 +1,9 @@
+{
+  "test": "fixed_fixture_shape",
+  "status": "passed",
+  "expected_cases": 6,
+  "executed_cases": 6,
+  "expected_rejections": 4,
+  "rejected_cases": 4,
+  "model_count": 0
+}

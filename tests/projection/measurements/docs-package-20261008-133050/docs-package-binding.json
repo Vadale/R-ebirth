@@ -1,0 +1,9 @@
+{
+  "driver_sha256": "da9bbee4c1c2cb34959b0b66902699c6afe10eb17591fc46fe32d88027c8a26e",
+  "files": {
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/vignettes/contrast-directions.qmd": "b0654f0f1dbc3e2ebe0aa391dc6670b51eb1c2a517b19cf21d74525fbafbed17",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/vignettes/model-interventions.qmd": "66e6ebf50e9a9003993cc4ce585df1172c614f46136726267960a451c095dc83",
+    "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/config.json": "934e1fa8751fd081782e395ebbf95c9fa5727778cf2aa1b52495a2752b5ea1d0"
+  },
+  "scope": "PREPARED ONLY: two changed vignettes plus source packaging and no-install/no-tests/no-vignettes/no-manual check; two known omitted-vignette warnings retained"
+}

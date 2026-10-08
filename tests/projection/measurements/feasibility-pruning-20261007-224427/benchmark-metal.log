@@ -1,0 +1,19 @@
+    Finished `release` profile [optimized] target(s) in 0.07s
+     Running unittests src/lib.rs (target/release/deps/rebirth_llm-8fc00e7171057e13)
+
+running 1 test
+test projection::tests::projection_feasibility_model ... F6E_PROJECTION_FAILURE site=0:0 native_status=-6 marker=1 rows=1 reason=unsupported projection producer/layout/alias/buffer
+
+thread 'projection::tests::projection_feasibility_model' (15393629) panicked at rebirth-llm/src/projection_test_support.rs:495:14:
+called `Result::unwrap()` on an `Err` value: Intervention { reason: "unsupported projection producer/layout/alias/buffer" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    projection::tests::projection_feasibility_model
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 158 filtered out; finished in 1.36s
+
+error: test failed, to rerun pass `-p rebirth-llm --lib`

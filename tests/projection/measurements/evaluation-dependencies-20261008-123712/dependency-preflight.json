@@ -1,0 +1,57 @@
+{
+  "status": "PASS",
+  "library_paths": ["/private/tmp/relm-f6e/public-library-budget", "/private/tmp/relm-service/library", "/Users/alessandrovadala/Library/R/arm64/4.5/library", "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library"],
+  "packages": [
+    {
+      "package": "cli",
+      "version": "3.6.6",
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/cli"
+    },
+    {
+      "package": "jsonlite",
+      "version": "2.0.0",
+      "path": "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/jsonlite"
+    },
+    {
+      "package": "later",
+      "version": "1.4.8",
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/later"
+    },
+    {
+      "package": "lifecycle",
+      "version": "1.0.5",
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/lifecycle"
+    },
+    {
+      "package": "magrittr",
+      "version": "2.0.4",
+      "path": "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/magrittr"
+    },
+    {
+      "package": "otel",
+      "version": "0.2.0",
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/otel"
+    },
+    {
+      "package": "promises",
+      "version": "1.5.0",
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/promises"
+    },
+    {
+      "package": "R6",
+      "version": "2.6.1",
+      "path": "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/R6"
+    },
+    {
+      "package": "Rcpp",
+      "version": "1.1.0",
+      "path": "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library/Rcpp"
+    },
+    {
+      "package": "rlang",
+      "version": "1.2.0",
+      "path": "/Users/alessandrovadala/Library/R/arm64/4.5/library/rlang"
+    }
+  ],
+  "scope": "Existing installed optional dependencies; before model loading"
+}

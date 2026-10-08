@@ -1,0 +1,96 @@
+{
+  "status": "ready",
+  "frozen": true,
+  "scope": "F6e-only Linux ASan/UBSan and targeted Memcheck driver/plan; runtime and existing harness/workflow unchanged",
+  "source_hashes": {
+    "tests/projection/instrumented.py": "9ee6b5d4453c0c07e1e720412159d7c6d706f1bbecac2ccfee424258ac67ab82",
+    "tests/projection/instrumented_controls.py": "e466917499cb850b11df6a9a4dfef9145f6a8a690cf1cc240b0ec2b004f5effc",
+    "tests/projection/instrumented_memcheck_probe.c": "023ff185599b373ca8f34d0e8472af46c9d9cc627d57b0650897a7f2f7fdabb2",
+    "tests/projection/instrumented-scope.json": "f54771e80fef090551a4dfc39c2cfff6294f66500f34f0c9a3972bf620f3c3c2",
+    "docs/f6e-instrumented-plan.md": "06d7c7a751949533b26fcb1462b028073b8db3fcbe825485538601e39b78c913"
+  },
+  "native_scope_file": "tests/projection/instrumented-scope.json",
+  "bound_source_count": 858,
+  "accepted_production_manifest": "18ebedbbf3469f2ae7358e8044836f51e866372c3af2e84fc9107070aa0ab31e",
+  "accepted_production_sources_unchanged": {
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "f70e3a354346edeecf031b78644390ad0e78b11272f60251f38d691e6eef1502",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "948e2fa72e539ef819b4e9d6ab21f6d52094dfb3379fd1d9b3c3d92a4006c6fa",
+    "rebirth/src/rust/rebirth-llm/src/vision.rs": "e554d3f023300a28d167efd921f66374a73c565567458a2c12cdf7a40dbc32ab",
+    "rebirth/src/rust/rebirth-llm/src/embed.rs": "e6ff1224db2c5c87fe66617217d13c176b43583dd8a0dac1cbc7c2464f1e75c7",
+    "rebirth/src/rust/rebirth-llm/src/async_job.rs": "b0ab9c1a664637706bb3a17f0308ae428a7836b3666f88aa6b25e21dd31784d1",
+    "rebirth/src/rust/rebirth-llm/src/trace.rs": "571831088afa4743a24bc28c2bf7c84c7ebb7c2b879b9070c6b4ec6985977637",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "dd47e7e70a18eea28d5736dd3492bd6c01498d4dbc669bde1ac3fbac7b47ed12",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "7412cfe9523f315e43bd4510a09ab22dc26ff2dbb76484d47b6b837b973762da",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "3d37d289e6c6e63bc1f5cdb2c894ba2c3a67bd8ccba0bc154cf8e3ddcbaac0d7",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs": "b26025c163081c4780c729bedc1abbba9a20552d71dd6a142fe4acb15344a809",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "a77d48068ebcb98ba71f779b8beb4ecceef35554de37ba7d33ea0872f55adcb2",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "dea96e449d9e6d4dffaf33f0d7ac2edfea8ff73ba910980e857a206dc55b090b",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor.rs": "3d8909672966dd1daa94459f61e0ac999890453af41a265424474d897ebc6fc6",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "e8ef2e5039de8852dc79130c24798401f845f812a785035c56a8f09da840b2ca",
+    "rebirth/src/rust/rebirth-ffi/src/projection_bridge.rs": "f36cad8e3e30dd41e63c198392891aa4b06795f4f0fabd2ed6a752b9d298c4f7",
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs": "5924d6181d2435c9b75990a7dee770ff88ab7f25b5b71e9469b0a9f0cdc614e2",
+    "rebirth/src/rust/rebirth-llm/src/projection_production_worker_tests.rs": "de6d15aa0f09c701a1ba4c7b3168beeab22c60b96196e6fa563c13be30887ee6",
+    "rebirth/src/rust/rebirth-llm/tests/projection_production.rs": "895ba6e4cc5916eb4a0f1e2e0da42a033ba58a121e440c926f140ef20a37748b"
+  },
+  "existing_harness_sha256": "5a6265a7139a250999da97f582132eda78e8d52d74f1ee6a3667a1a9e42ba2f8",
+  "existing_workflow_unchanged_sha256": "c530d3f26cfa14e5e9d4db3cd7bd3e45d84606fd6ce41b1cc48620ace0065f7b",
+  "native_test_ids": [
+    "default_constructor_routes_and_owned_lifecycle",
+    "async_job::tests::projection_static_live_restore_cancel_and_poison"
+  ],
+  "per_mode": {
+    "tests": 2,
+    "cases": 23,
+    "refusals": 11,
+    "values": 291,
+    "reported_model_loads": 2,
+    "reported_constructor_calls": 3
+  },
+  "new_model_free_control_tests": 40,
+  "modes": [
+    "sanitizers",
+    "valgrind"
+  ],
+  "commands": [
+    "python3 tests/projection/instrumented_controls.py",
+    "python3 -u tests/projection/instrumented.py --mode sanitizers --source-manifest tests/projection/instrumented-scope.json --evidence \"$RUNNER_TEMP/relm-f6e-asan-evidence\" --target \"$RUNNER_TEMP/relm-f6e-asan-target\"",
+    "python3 -u tests/projection/instrumented.py --mode valgrind --source-manifest tests/projection/instrumented-scope.json --evidence \"$RUNNER_TEMP/relm-f6e-valgrind-evidence\" --target \"$RUNNER_TEMP/relm-f6e-valgrind-target\""
+  ],
+  "cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+  "marker": "F6E_PROJECTION_INSTRUMENTED",
+  "marker_fields": [
+    "status",
+    "mode",
+    "selection",
+    "executed_tests",
+    "executed_cases",
+    "rejected_cases",
+    "compared_values",
+    "reported_model_loads",
+    "reported_constructor_calls",
+    "default_features",
+    "source_manifest_sha256"
+  ],
+  "control_marker": "F6E_PROJECTION_INSTRUMENTED_CONTROLS",
+  "control_marker_fields": {
+    "status": "passed",
+    "executed_tests": 40
+  },
+  "workflow_patch": "Exact parent-only route described in docs/f6e-instrumented-plan.md section4; no existing workflow/harness edits by agent",
+  "static_checks": [
+    "Python AST parse of two new files",
+    "exact40controlmethodsourcecount",
+    "18frozenproductionsourcehashesequal"
+  ],
+  "unrun": [
+    "40model-freecollectorcontrols",
+    "Linuxbuildsbothmodes",
+    "sanitizerandMemcheckruntimecontrols",
+    "twonamedproducttestspermodes",
+    "actualcompiledobject/binaryaudits",
+    "workflowdispatch",
+    "independentownerverification"
+  ],
+  "no_builds_tests_models_executed_by_agent": true,
+  "pending_native_correction": "Parent authorized separate allocation-budget error-class correction after this freeze; regenerate a new explicit native scope only after its source freeze; preserve this scope as original, never claim old hashes tested new code."
+}

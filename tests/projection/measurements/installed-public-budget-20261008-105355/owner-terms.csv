@@ -1,0 +1,15 @@
+"field","value"
+"direction_bytes",7184
+"plan_bytes",80
+"context_bytes",10480
+"frame_bytes",14306
+"probe_bytes",24209
+"projection_bytes",56259
+"residual_probe_bytes",0
+"adapter_data_bytes",0
+"adapter_fixed_bytes",256
+"metadata_bytes",0
+"r_projection_bytes",58056
+"r_adapter_bytes",864
+"existing_direction_estimate",1404960
+"total_bytes",1520395

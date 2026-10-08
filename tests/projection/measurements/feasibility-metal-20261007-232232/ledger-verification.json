@@ -1,0 +1,22 @@
+{
+  "status": "verified",
+  "compiled": {
+    "access_frame_bytes": 77,
+    "buffer_info_size": 104,
+    "direction_bytes": 16777728,
+    "frame_bytes": 659,
+    "plan_bytes": 2112,
+    "probe_bytes": 1316985,
+    "probe_size": 56,
+    "projection_info_size": 128,
+    "proof_size": 152,
+    "proof_slots": 32,
+    "runtime_bytes": 536256,
+    "runtime_size": 5072,
+    "site_size": 32,
+    "sites": 32,
+    "total": 18633740,
+    "width": 65536
+  },
+  "scope": "private native admission; not public R/FFI resource acceptance"
+}

@@ -1,0 +1,10 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 44.48s
+     Running unittests src/lib.rs (target/debug/deps/rebirth_llm-40b9218285e7d8ec)
+
+running 1 test
+test projection::constructor_tests::constructor_residual_probe_and_frame_equations ... F6E_PROJECTION_CONSTRUCTOR_TEST {"compared_values":0,"executed_cases":12,"expected_cases":12,"expected_rejections":12,"expected_values":0,"max_abs_error":0.0,"model_loads":0,"rejected_cases":12,"source":"9cf850e8e474483c4ca1a6909da1396566382ce2722005ae558f28294ce317ef","status":"passed","test":"constructor_residual_probe_and_frame_equations"}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 171 filtered out; finished in 0.00s
+

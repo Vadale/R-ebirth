@@ -1,0 +1,37 @@
+{
+  "status": "PASS",
+  "source_count": 172,
+  "installed_count": 28,
+  "original_file_hashes_verified": 616,
+  "dependency_packages": 10,
+  "dependency_file_hashes": 998,
+  "source_installed_dependency_drift": false,
+  "attempt_counts": {
+    "load": 1,
+    "trace": 0,
+    "derive": 107,
+    "generate": 122,
+    "tokenize": 1
+  },
+  "successful_generations": 120,
+  "expected_cancelled_views": 2,
+  "carried_construction_files": 40,
+  "carried_captures": 24,
+  "selected": {
+    "add": 2,
+    "project": 1
+  },
+  "selection_locked_before_final": true,
+  "zero_identity_pairs": 28,
+  "independent_R_metric_values": 720,
+  "independent_R_intervals": 36,
+  "retained_state_values": 3584,
+  "native_warning": "[3] load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden",
+  "native_errors": 0,
+  "R_warnings": 0,
+  "models_rerun_for_verification": 0,
+  "exact_DLL": "d7f946c23fa078a3426fc92791f9615f36a81643f18feab43741603ff42533fb",
+  "scientific_scope": "Valid fixed-corpus experiment; no population, pure-operator or general efficacy claim. All 8 baseline and 7 selected projection final outputs hit the 256-token cap.",
+  "original_driver_status_preserved": "awaiting_owner_verification",
+  "audit_note": "Initial independent RDS inspector read empty generated-prefix CSV fields as numeric NA. Original script/log retained; explicit character parsing preserves actual empty fields. A separate initial eligibility inspector grouped learned and random project_1 by coefficient; corrected to the frozen exact setting names. No producer, report, metric, data or model rerun."
+}

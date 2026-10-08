@@ -1,0 +1,98 @@
+{
+  "status": "passed",
+  "controls": 18,
+  "positive": 2,
+  "negative": 16,
+  "checks": [
+    {
+      "name": "native_positive",
+      "expected": "accepted",
+      "passed": true
+    },
+    {
+      "name": "hosted_positive",
+      "expected": "accepted",
+      "passed": true
+    },
+    {
+      "name": "zero_tests",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "ignored",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "wrong_name",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "missing_marker",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "duplicate_marker",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "wrong_cases",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "boolean_count",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "duplicate_json_key",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_no_completion",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_fake_libtest",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_frame_excess",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_models",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_wrong_class_counts",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_warning",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_no_twin",
+      "expected": "refused",
+      "passed": true
+    },
+    {
+      "name": "hosted_wrong_profile",
+      "expected": "refused",
+      "passed": true
+    }
+  ]
+}

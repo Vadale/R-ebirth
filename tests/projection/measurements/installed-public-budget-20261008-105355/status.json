@@ -1,0 +1,66 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 86642,
+  "directory": "/private/tmp/relm-f6e/installed-public-budget-20261008-105355",
+  "stages": [
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6e/public-library-budget",
+        "/private/tmp/relm-f6e/installed-public-budget-20261008-105355/r-install-source"
+      ],
+      "status": "passed",
+      "pid": 86645,
+      "exit_code": 0,
+      "log_sha256": "6b75b19105fd9764c6c4a7fb41127547f876b78ba1540fe112eb16957161f652"
+    },
+    {
+      "name": "installed-source-usage",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "library(relm);stopifnot(normalizePath(find.package('relm'))==normalizePath(Sys.getenv('F6E_EXPECT_LIBRARY')));e<-new.env(parent=baseenv());for(f in list.files('rebirth/R',full.names=TRUE,pattern='[.]R$')) sys.source(f,e);n<-ls(e,all.names=TRUE);for(k in n) if(is.function(e[[k]])) {a<-get(k,asNamespace('relm'),inherits=FALSE);stopifnot(identical(formals(a),formals(e[[k]])),identical(body(a),body(e[[k]])))};codetools::checkUsagePackage('relm');cat('F6E_INSTALLED_SOURCE_FORMALS_BODIES_MATCH functions=',sum(vapply(mget(n,e),is.function,logical(1))), '\\n',sep='')"
+      ],
+      "status": "passed",
+      "pid": 86703,
+      "exit_code": 0,
+      "log_sha256": "3d00e25cb5682bf01a0dfa4fbf39eb29017da625afb23186cddaf41383225f00"
+    },
+    {
+      "name": "public-model",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-installed-public-remaining.R",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+        "/private/tmp/relm-f6e/installed-public-budget-20261008-105355"
+      ],
+      "status": "passed",
+      "pid": 86716,
+      "exit_code": 0,
+      "log_sha256": "13c59f55e53f802a777d8ecdb8256614567281a81ccffe65c2502fe4447671cf"
+    }
+  ],
+  "scope": "Fresh R installation with exact current accepted default F6e DLL; 27 remaining public CPU/Metal operational checks with retained four captures, not behavioral evaluation",
+  "native": {
+    "path": "/private/tmp/relm-f6e/budget-class-20261008-104809/default-ffi/relm.so",
+    "sha256": "d7f946c23fa078a3426fc92791f9615f36a81643f18feab43741603ff42533fb"
+  },
+  "source_manifest_sha256": "534785f188b08bcb39ac143f48002ebe41d6e9e6394df81c199ace5dffaf85db",
+  "source_count": 145,
+  "stage": "public-model",
+  "cases": 27,
+  "refusals": 6,
+  "carried_parent_cases": 10,
+  "new_model_loads": 2,
+  "behavioral_evaluation": false,
+  "source_drift": [],
+  "installed_drift": [],
+  "finished_at": 1791449643.071222
+}

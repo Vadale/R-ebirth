@@ -1,0 +1,13 @@
+{
+  "status": "verified_failure",
+  "source_files": 107,
+  "installed_files": 28,
+  "tar_members": 50,
+  "log_hashes": 5,
+  "source_manifest_sha256": "bbe43f6d18fe058717bb3107d7ffe5ad667fa7a5416323419559f5082513b40a",
+  "model_loads": 0,
+  "public_cases": 0,
+  "cause": "roxygen load_installed resolved an older namespace, removing approved exports/S3 registrations and eight help topics; code bodies were installed but the public function was unavailable. Documentation exit zero was not correctness.",
+  "carried": "Wrapper generation and exact DLL/source function parity are valid at their source scope. Regenerate docs from current source and reinstall affected R package; no native rebuild or wrapper rerun.",
+  "warnings": "Documentation emitted unresolved links/missing names and deleted approved help; these are the diagnosed failure, not suppressed warnings."
+}

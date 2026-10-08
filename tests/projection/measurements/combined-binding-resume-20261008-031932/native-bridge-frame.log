@@ -1,0 +1,11 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.16s
+     Running unittests src/lib.rs (target/debug/deps/relm-263a667cb7d1ae60)
+
+running 1 test
+test tests::projection_bridge_compiled_frame ... F6E_PROJECTION_BRIDGE_TEST {"test":"projection_bridge_compiled_frame","status":"passed","expected_cases":2,"executed_cases":2,"expected_rejections":0,"rejected_cases":0,"bridge_frame_bytes":320,"ffi_command_bytes":744}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+

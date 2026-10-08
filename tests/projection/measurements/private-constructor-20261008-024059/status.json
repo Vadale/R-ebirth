@@ -1,0 +1,99 @@
+{
+  "status": "failed",
+  "pid": 57108,
+  "directory": "/private/tmp/relm-f6e/private-constructor-20261008-024059",
+  "started_at": 1791420059.4664772,
+  "stages": [
+    {
+      "name": "r-source",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-constructor-source.R"
+      ],
+      "status": "passed",
+      "started_at": 1791420059.5865889,
+      "pid": 57114,
+      "exit_code": 0,
+      "finished_at": 1791420059.969208,
+      "log_sha256": "d4683e63834e31c2b1a64b5ffcb471097b98f46065b1898c89bbdad5d25174a7"
+    },
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791420059.96959,
+      "pid": 57123,
+      "exit_code": 0,
+      "finished_at": 1791420060.173124,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy-llm",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791420060.173697,
+      "pid": 57126,
+      "exit_code": 0,
+      "finished_at": 1791420063.9641862,
+      "log_sha256": "2a7a7ee7aade085d8ff59844c59cc002beaac4e0e989b8ea3a2084aeebe9f2de"
+    },
+    {
+      "name": "clippy-ffi-private",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "projection-private",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "failed",
+      "started_at": 1791420063.964669,
+      "pid": 57533,
+      "exit_code": 101,
+      "finished_at": 1791420107.014373,
+      "log_sha256": "ca9aebadaf82e190520c9dc56ea6fdc36ef52180fa9e43004969238bea437cab"
+    }
+  ],
+  "planned_model_loads": 3,
+  "production_armed": false,
+  "scope": "private loaded-model constructor/native FFI; full R public inventory binding and activation still pending",
+  "source_manifest_sha256": "a829f585af85a87bd048559b71138e54612c390bd2235b16b04a74afc79b79e8",
+  "source_count": 115,
+  "accepted_prior_scopes_not_reexecuted": [
+    "native ledger95/40",
+    "unarmed transfer78/55",
+    "R ledger7/229",
+    "R owners7/70",
+    "private1-9/CPU/Metal/diagnostic/reference"
+  ],
+  "stage": "clippy-ffi-private",
+  "error": "clippy-ffi-private failed; diagnose retained sources/log before an affected-only correction",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-constructor.py\", line 56, in main\n    stage(['format','clippy-llm','clippy-ffi-private','no-spill-default','no-spill-private'][n],cmd)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-f6e/verify-constructor.py\", line 37, in stage\n    if rc:raise RuntimeError(name+' failed; diagnose retained sources/log before an affected-only correction')\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: clippy-ffi-private failed; diagnose retained sources/log before an affected-only correction\n",
+  "source_drift": [],
+  "finished_at": 1791420107.0196638
+}

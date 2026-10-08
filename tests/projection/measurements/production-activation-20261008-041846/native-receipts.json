@@ -1,0 +1,30 @@
+[
+  {
+    "test": "default_constructor_routes_and_owned_lifecycle",
+    "status": "passed",
+    "expected_cases": 13,
+    "executed_cases": 13,
+    "expected_rejections": 9,
+    "rejected_cases": 9,
+    "expected_values": 288,
+    "compared_values": 288,
+    "model_loads": 1,
+    "constructor_calls": 2,
+    "library_cfg_test": false,
+    "private_feature": false
+  },
+  {
+    "test": "projection_static_live_restore_cancel_and_poison",
+    "status": "passed",
+    "expected_cases": 10,
+    "executed_cases": 10,
+    "expected_rejections": 2,
+    "rejected_cases": 2,
+    "expected_values": 3,
+    "compared_values": 3,
+    "model_loads": 1,
+    "constructor_calls": 1,
+    "library_cfg_test": true,
+    "private_feature": false
+  }
+]

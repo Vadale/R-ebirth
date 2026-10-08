@@ -1,0 +1,20 @@
+{
+  "status": "awaiting_owner_verification",
+  "stage": "complete",
+  "pid": 90242,
+  "run_dir": "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712",
+  "updated_unix": 1791456085.025302,
+  "setting_attempts": 122,
+  "actual_attempt_counters": {
+    "load": 1,
+    "trace": 0,
+    "derive": 107,
+    "generate": 122,
+    "tokenize": 1
+  },
+  "all_generation_calls_attempted": true,
+  "carried_construction_captures": 24,
+  "new_trace_attempts": 0,
+  "experiment_log_sha256": "847b129176dbeb3216caac18ecf8fde554456109eabeaaa9d3631415dd2332b1",
+  "scientific_acceptance": false
+}

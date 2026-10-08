@@ -1,0 +1,25 @@
+{
+  "status": "verified_failed_attempt",
+  "source_files": 115,
+  "archive_members": 43,
+  "log_hashes": 4,
+  "R_cases": 3,
+  "R_expectations": 61,
+  "native_cases_executed": 0,
+  "models_loaded": 0,
+  "passed_stages": [
+    "r-source",
+    "format",
+    "clippy-llm"
+  ],
+  "failure_stage": "clippy-ffi-private",
+  "diagnosis": [
+    "Malformed closing brace in selftest JSON println format.",
+    "Redundant outer FFI borrowed-array validation attempted to call crate-private H/D accessors. The actual constructor already performs authoritative borrowed validation immediately before the five copies."
+  ],
+  "correction": "Fix format brace and remove only redundant FFI validation. Preserve authoritative validation, budgets, native source, public gating and test assertions.",
+  "warnings": [
+    "External testthat package built under R4.5.2; failed compiler emits its normal build-failed warning."
+  ],
+  "source_manifest_sha256": "a829f585af85a87bd048559b71138e54612c390bd2235b16b04a74afc79b79e8"
+}

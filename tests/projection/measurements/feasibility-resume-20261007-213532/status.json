@@ -1,0 +1,121 @@
+{
+  "status": "failed",
+  "pid": 36159,
+  "directory": "/private/tmp/relm-f6e/feasibility-resume-20261007-213532",
+  "started_at": 1791401732.942517,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791401733.0545018,
+      "pid": 36165,
+      "exit_code": 0,
+      "finished_at": 1791401733.2043421,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791401733.204761,
+      "pid": 36168,
+      "exit_code": 0,
+      "finished_at": 1791401733.934644,
+      "log_sha256": "309b728be1d191ff1c2ab9193742a617f599c0a2fd6f6d7ee5c94cb14495a113"
+    },
+    {
+      "name": "no-spill-compile",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--no-default-features",
+        "--lib",
+        "--no-run"
+      ],
+      "status": "passed",
+      "started_at": 1791401733.9351501,
+      "pid": 36174,
+      "exit_code": 0,
+      "finished_at": 1791401734.5968041,
+      "log_sha256": "d04416651987a7081001a938f476dd8d1346eee895fd2235da26cb575a1df526"
+    },
+    {
+      "name": "native-06",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_forward_matches_independent_reference",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791401734.59729,
+      "pid": 36198,
+      "exit_code": 0,
+      "finished_at": 1791401736.241956,
+      "log_sha256": "9e5ce0b22d678adbc44cdc171da01716c262bfd42383df60cd591ced5887631e"
+    },
+    {
+      "name": "native-07",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_microbatches_pruning_and_graph_reuse",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "failed",
+      "started_at": 1791401736.243006,
+      "pid": 36241,
+      "exit_code": 101,
+      "finished_at": 1791401736.428153,
+      "log_sha256": "b46b335611882822596bbaa7193f890d3a1ffdf58ac6afee40da18aef39e8bde"
+    }
+  ],
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "public_feature_acceptance": false,
+  "carried_parent_verification": "/private/tmp/relm-f6e/feasibility-20261007-212937/owner-verification.json",
+  "executed_scope": "affected native6-9 plus previously unrun CPU/Metal benchmark",
+  "source_manifest_sha256": "6c3c79a70d231648708d3285553c917df9b622269f55800866aa3e19d21e5b52",
+  "stage": "native-07",
+  "error": "native-07 failed; inspect retained source/log before any correction or retry",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-feasibility-resume.py\", line 155, in main\n    log=stage(f'native-{index:02}', ['cargo','test','--locked','--offline','-p','rebirth-llm','--lib',test_id,'--','--exact','--nocapture','--test-threads=1'])\n  File \"/private/tmp/relm-f6e/verify-feasibility-resume.py\", line 131, in stage\n    if rc and not allow_failure:raise RuntimeError(name+' failed; inspect retained source/log before any correction or retry')\n                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: native-07 failed; inspect retained source/log before any correction or retry\n",
+  "source_drift": [],
+  "finished_at": 1791401736.451044
+}

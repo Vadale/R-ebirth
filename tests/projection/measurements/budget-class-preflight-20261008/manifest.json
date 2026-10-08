@@ -1,0 +1,19 @@
+{
+  "budget-class-binding.json": "880351b5d1d94953e895f00a9d3f62926bbcebae2d2c19eb11c71e71665d59b6",
+  "budget-class-collector-controls.json": "8c817adedb1f3aebd939a4f299874f2108caaa2c01cd69e3908e7e285257689c",
+  "budget-class-collector.py": "bfbdd8b4c9908e6d7141c52d43f3ccb7ffa80d2755e2e0fa91aff55014961423",
+  "budget-class-ready.json": "4974b3494701395121dd992b39906fe9f35e33ea654e65723bc4708c9c061964",
+  "check-budget-class-hosted.R": "946440d3280eb7ebcec5aae99191ac5b0e39d057d51f7d7aba11aa2ed846964d",
+  "check-budget-class-source.R": "f3527c7f01913281e5276dea6f97412b4b5c048f9df29b5ea5149f0d3fb5d36b",
+  "prepare-budget-class-driver.py": "832b512028ad48c5b3ba3b66476db758798b2ba29edbc67b25021c55c136201d",
+  "sources/docs/f6e-memory-contract.md": "7b38d243749b56378b641d443e56fcd8b1bedf6c354dfb5a9345b10d9e6def15",
+  "sources/rebirth/R/projection-memory.R": "0ce25d09ebbe54152923cb2d03e467549dd50b8c5b10a295340990e23ef5fc6b",
+  "sources/rebirth/src/rust/rebirth-ffi/src/lib.rs": "877aec9bfe20a44bbf66f15fc466f6d19d6ae3656449ed6be3e5ea37c1afaeb6",
+  "sources/rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "3294fbe4c809df97b2af257135643dbfcc5204ebd0ffb3bc1f20283a2cbc5cae",
+  "sources/rebirth/src/rust/rebirth-ffi/src/projection_budget_error_selftest.rs": "19075183061a6288a1151b5e5267ab556b079617decd8807347b073d4fd885ef",
+  "sources/rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "2962115b711346b384b4c63e70b39e90f34ab91b408a4d5cd1fc8eee6d383212",
+  "sources/rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "144afa91e27ac986dd843cabb1a95bc1c6fac866aafc0b0d2f8daf665c139bfc",
+  "sources/rebirth/tests/testthat/test-projection-memory.R": "8dd9c8c927e7b62223215961f853e570a03717065efa28f33661189b73549620",
+  "test-budget-class-collector.py": "8c496d5644120bb2ef958c01c1fbcf057d7ae2ebd3c7380db93a9494a16376a0",
+  "verify-budget-class.py": "1b781373b3d12d0e3c830d06e29bd23c7dd7d9f744d89c2b23204f6cd58347b6"
+}

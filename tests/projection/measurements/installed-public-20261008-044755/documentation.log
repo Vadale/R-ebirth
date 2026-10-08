@@ -1,0 +1,130 @@
+✖ directions.R:46: @seealso Could not resolve link to topic
+  "llm_apply_direction" in the dependencies or base packages..
+ℹ If you haven't documented "llm_apply_direction" yet, or just changed its
+  name, this is normal. Once "llm_apply_direction" is documented, this warning
+  goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ directions.R:46: @seealso Could not resolve link to topic "llm_compare" in
+  the dependencies or base packages..
+ℹ If you haven't documented "llm_compare" yet, or just changed its name, this
+  is normal. Once "llm_compare" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ directions.R:46: @seealso Could not resolve link to topic "llm_timeline" in
+  the dependencies or base packages..
+ℹ If you haven't documented "llm_timeline" yet, or just changed its name, this
+  is normal. Once "llm_timeline" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ directions.R:103: @param Could not resolve link to topic "llm_direction" in
+  the dependencies or base packages..
+ℹ If you haven't documented "llm_direction" yet, or just changed its name, this
+  is normal. Once "llm_direction" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ generate.R:32: @section Could not resolve link to topic "llm_cancel" in the
+  dependencies or base packages..
+ℹ If you haven't documented "llm_cancel" yet, or just changed its name, this is
+  normal. Once "llm_cancel" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ generate.R:130: @section Could not resolve link to topic "llm_cancel" in the
+  dependencies or base packages..
+ℹ If you haven't documented "llm_cancel" yet, or just changed its name, this is
+  normal. Once "llm_cancel" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-compare.R:112: @seealso Could not resolve link to topic
+  "llm_timeline" in the dependencies or base packages..
+ℹ If you haven't documented "llm_timeline" yet, or just changed its name, this
+  is normal. Once "llm_timeline" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-plots.R:69: @seealso Could not resolve link to topic "llm_timeline"
+  in the dependencies or base packages..
+ℹ If you haven't documented "llm_timeline" yet, or just changed its name, this
+  is normal. Once "llm_timeline" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-plots.R:69: @seealso Could not resolve link to topic "llm_compare"
+  in the dependencies or base packages..
+ℹ If you haven't documented "llm_compare" yet, or just changed its name, this
+  is normal. Once "llm_compare" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ graphics-timeline.R:42: @seealso Could not resolve link to topic
+  "llm_compare" in the dependencies or base packages..
+ℹ If you haven't documented "llm_compare" yet, or just changed its name, this
+  is normal. Once "llm_compare" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ probe.R:134: @seealso Could not resolve link to topic "activations" in the
+  dependencies or base packages..
+ℹ If you haven't documented "activations" yet, or just changed its name, this
+  is normal. Once "activations" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ probe.R:134: @seealso Could not resolve link to topic "predict.llm_probe" in
+  the dependencies or base packages..
+ℹ If you haven't documented "predict.llm_probe" yet, or just changed its name,
+  this is normal. Once "predict.llm_probe" is documented, this warning goes
+  away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ probe.R:197: @description Could not resolve link to topic "llm_probe" in the
+  dependencies or base packages..
+ℹ If you haven't documented "llm_probe" yet, or just changed its name, this is
+  normal. Once "llm_probe" is documented, this warning goes away.
+ℹ Make sure that the name of the topic is spelled correctly.
+ℹ Always list the linked package as a dependency.
+ℹ Alternatively, you can fully qualify the link with a package name.
+✖ async.R:420: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ directions.R:49: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ directions.R:124: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ directions.R:171: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ graphics-compare.R:123: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ graphics-plots.R:82: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ graphics-plots.R:133: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ graphics-plots.R:178: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ probe-methods.R:21: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ probe-methods.R:36: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ probe-methods.R:48: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ probe-methods.R:60: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ probe-methods.R:100: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ probe.R:148: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+✖ probe.R:204: Block must have a @name.
+ℹ Either document an existing object or manually specify with @name
+Writing 'NAMESPACE'
+Writing 'llm_generate.Rd'
+Writing 'llm_timeline.Rd'
+Writing 'probe-methods.Rd'
+Deleting 'activations.Rd', 'llm_apply_direction.Rd', 'llm_cancel.Rd',
+'llm_compare.Rd', 'llm_direction.Rd', 'llm_probe.Rd', 'plot.llm.Rd', and
+'predict.llm_probe.Rd'

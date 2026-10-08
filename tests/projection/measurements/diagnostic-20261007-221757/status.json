@@ -1,0 +1,73 @@
+{
+  "status": "awaiting_owner_diagnosis",
+  "pid": 37368,
+  "directory": "/private/tmp/relm-f6e/diagnostic-20261007-221757",
+  "started_at": 1791404277.782697,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "started_at": 1791404277.862865,
+      "pid": 37373,
+      "exit_code": 0,
+      "finished_at": 1791404278.014314,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "started_at": 1791404278.014752,
+      "pid": 37376,
+      "exit_code": 0,
+      "finished_at": 1791404278.8653991,
+      "log_sha256": "37956e9d20871ac482193a1c937cd7a6f16c09cd18564f52694214cb1c48b433"
+    },
+    {
+      "name": "diagnostic",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--lib",
+        "projection::tests::projection_long_prefill_schedule_diagnostic",
+        "--",
+        "--ignored",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "status": "passed",
+      "started_at": 1791404278.8658571,
+      "pid": 37383,
+      "exit_code": 0,
+      "finished_at": 1791404280.712567,
+      "log_sha256": "dfeb00c6c4f33d9b8736fccf4a82a20fdcf9aae76b48f262e82d7aad6f2c71e2"
+    }
+  ],
+  "acceptance_claim": false,
+  "source_manifest_sha256": "b57f951bab36cd5e1c023b56f67818101cfdd902a0419530169fa8d9bd05db63",
+  "stage": "diagnostic",
+  "source_drift": [],
+  "finished_at": 1791404280.7617679
+}

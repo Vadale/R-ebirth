@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "artifacts": {
+    "residual": {
+      "values": 896,
+      "maximum_absolute_error": 1.1102230246251565e-16,
+      "bound": "1e-12*(1+abs(expected))",
+      "digests": {
+        "target": "be9612084f1b755e88470bae198d71a7844c7030e0c54a468bfb11b832b9ad66",
+        "control": "12b96d067285cc35850299ae2b0c96946a65891181613d786e3ce73258c09d94",
+        "pairs": "cef24e6b5a3dbc19a8d5351a7b8a1729e00aa1b0d02a18df364cedd3c7ae3ea1",
+        "splits": "81d3965ce1c85dbb31d11e5dedae868877e4f689be4a7f0616569242aff7d025",
+        "values": "90a61da2ecde1cd9ce92b9c168f0cf9b1cb107ba07ea711e41924cc3e18bc10f",
+        "payload": "5627b4866f35f9bf4815e442f61f9716a5127ddca6fa6ab3e982f568ddcc55ea"
+      }
+    },
+    "mlp": {
+      "values": 896,
+      "maximum_absolute_error": 5.551115123125783e-17,
+      "bound": "1e-12*(1+abs(expected))",
+      "digests": {
+        "target": "4ded2fd933d94a714b29334ee20c53fc3b5799618fc70b66207838b1e4c0f6e6",
+        "control": "bc363fa946dfd1b6c9962ab68ca37c5a7319cfd83df6cb2537ad4daf27f90237",
+        "pairs": "5c3939490e86c149e0593a6f4ce0d5b620f95ad1171d932f0aad888a9db198e2",
+        "splits": "b80fd9bcb66d3d566f26ebdaf4dad669b5a16d00f5fd68dbd862e051e751b004",
+        "values": "5f97cf0c27afcc1452a7f6ccd1e175e7e8746334fc79610904caba7b52a1780c",
+        "payload": "12e755ef09db699a36d9cca9d694b753d52b0bd0e51535223fbfb53a14ae2fdf"
+      }
+    },
+    "random_mlp": {
+      "values": 896,
+      "maximum_absolute_error": 9.71445146547012e-17,
+      "bound": "1e-12*(1+abs(expected))",
+      "digests": {
+        "target": "5a832589062d2c95aeb48a6792eca67fdfb7bafaf0fd45574eb953ddff9b19b1",
+        "control": "9447333b9ca594b0a2ba36b14ecd3c0e3138e0830535c734cb94a78102b46da0",
+        "pairs": "3bd18e1a4ed06e6d0e04f6a390636406f79b5f663084fddaaadb5ece02a18054",
+        "splits": "b80fd9bcb66d3d566f26ebdaf4dad669b5a16d00f5fd68dbd862e051e751b004",
+        "values": "1cc5f35c888f550821820ecfbbf4d5b979ac3503e23f5015830af675bdf3b6ae",
+        "payload": "39dbc0b04132a0f164567062e3ce9abf7cfb243cc5977c743256614bb1927725"
+      }
+    }
+  },
+  "random_rows": 12,
+  "model_calls": 0,
+  "scope": "new captured-data arithmetic and canonical encoding; no reference fixtures regenerated or rerun"
+}

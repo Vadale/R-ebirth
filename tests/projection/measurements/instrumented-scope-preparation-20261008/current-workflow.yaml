@@ -1,0 +1,265 @@
+# Scheduled/manual native memory checks, download-free (D-019).
+# Valgrind keeps its normal baseline-ISA build. The separate sanitizer job
+# instruments Rust/std with ASan and the linked C/C++ engine + native bridge
+# with ASan/UBSan. Both exercise the committed synthetic fixture only.
+# A job definition is not runtime acceptance: retain the actual control,
+# instrumentation and named executed-test evidence, including failed runs.
+# Scope excludes R/SEXP marshalling, unexecuted vision, GPUs and data races.
+# See tests/sanitizers/README.md for toolchain pins, controls and limitations.
+on:
+  schedule:
+    - cron: '0 3 * * *' # 03:00 UTC nightly (staggered before nightly-model-tolerance)
+  workflow_dispatch:
+    inputs:
+      sanitizers_only:
+        description: Run the scoped sanitizer job using separately retained Valgrind evidence
+        type: boolean
+        default: false
+      sanitizer_selection:
+        description: Full suite, F6a live, F6b steering, or F6e projection (includes scoped Memcheck)
+        type: choice
+        options:
+          - full
+          - live-only
+          - steering-only
+          - projection-only
+        default: full
+
+name: nightly-memory-safety.yaml
+
+permissions: read-all
+
+concurrency:
+  group: nightly-memory-safety
+  cancel-in-progress: false
+
+jobs:
+  valgrind-intervention:
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.sanitizers_only && inputs.sanitizer_selection != 'live-only' && inputs.sanitizer_selection != 'steering-only' && inputs.sanitizer_selection != 'projection-only') }}
+    runs-on: ubuntu-24.04
+    name: Valgrind memcheck — intervention path (steer/ablate/trace + OwnedContext)
+    timeout-minutes: 90
+
+    defaults:
+      run:
+        working-directory: rebirth/src/rust
+
+    env:
+      # D-037: controlled concurrency tests own their threads; other native tests serialize.
+      RUST_TEST_THREADS: "1"
+      # Force ggml to a baseline (no -march=native, no AVX) so Valgrind can decode
+      # every instruction (see header). A fixed, reproducible epoch value.
+      SOURCE_DATE_EPOCH: "1700000000"
+      # Run each target test binary UNDER Valgrind (cargo's per-target runner). Only
+      # applies to the x86_64-unknown-linux-gnu *target* artifacts (the test binaries),
+      # not to host build scripts — so build.rs / cmake are never wrapped. Folded to a
+      # single whitespace-separated line (cargo splits the runner on whitespace).
+      #   --error-exitcode=1        any memcheck error OR a gated leak -> exit 1 -> fail
+      #   --errors-for-leak-kinds=definite,indirect  fail on REAL losses only; ignore
+      #                             "possible" (interior pointers) + "reachable" (engine
+      #                             process-global singletons) to stay low-false-positive
+      #   --gen-suppressions=all    on any finding, print a ready-to-paste suppression
+      #   --suppressions=...        documented upstream-benign entries (starts empty)
+      CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUNNER: >-
+        valgrind
+        --error-exitcode=1
+        --leak-check=full
+        --errors-for-leak-kinds=definite,indirect
+        --show-leak-kinds=definite,indirect
+        --track-origins=yes
+        --gen-suppressions=all
+        --suppressions=${{ github.workspace }}/tests/valgrind/relm.supp
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Valgrind
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+          valgrind --version
+
+      # Build FIRST (no runner is consulted for --no-run), so a compile failure is
+      # distinct from a Valgrind finding. Baseline ISA via SOURCE_DATE_EPOCH; no
+      # sccache. Explicit --target so build scripts stay host-side (never wrapped).
+      - name: Build the intervention-path test binaries (baseline ISA, no sccache)
+        run: |
+          set -euo pipefail
+          cargo test -p rebirth-llm \
+            --test synthetic_intervene \
+            --test synthetic_trace \
+            --test synthetic_embed \
+            --test synthetic_generate \
+            --target x86_64-unknown-linux-gnu \
+            --no-run
+
+      # Run the SAME selection under Valgrind (the runner env wraps each test binary).
+      # --test-threads=1 keeps leak attribution deterministic; --nocapture surfaces the
+      # per-test markers we assert on below.
+      - name: Run the intervention path under Valgrind (fail loud on any finding)
+        run: |
+          set -uo pipefail
+          cargo test -p rebirth-llm \
+            --test synthetic_intervene \
+            --test synthetic_trace \
+            --test synthetic_embed \
+            --test synthetic_generate \
+            --target x86_64-unknown-linux-gnu \
+            -- --test-threads=1 --nocapture 2>&1 | tee run.log
+          run_status=${PIPESTATUS[0]}
+
+          # (1) Authoritative gate: cargo (hence valgrind --error-exitcode) succeeded.
+          if [ "$run_status" -ne 0 ]; then
+            echo "::error::Valgrind found a memory error/leak OR a test failed on the intervention path (exit $run_status). Inspect the ERROR SUMMARY / LEAK SUMMARY and the --gen-suppressions blocks in the log above. Per F-1: a REAL memory bug here is a CRITICAL finding — do not weaken this gate; report it."
+            exit 1
+          fi
+
+          # (2) Prove Valgrind ACTUALLY wrapped the binaries (a mis-set RUNNER would run
+          #     the tests uninstrumented and pass -> a false green). Valgrind prints one
+          #     "ERROR SUMMARY" per process; we launched four test binaries.
+          summaries=$(grep -c "ERROR SUMMARY:" run.log || true)
+          if [ "$summaries" -ne 4 ]; then
+            echo "::error::Expected 4 Valgrind ERROR SUMMARY lines (one per test binary); found $summaries. Valgrind may not have wrapped the tests (runner mis-set) — refusing a false green."
+            exit 1
+          fi
+          clean=$(grep -c "ERROR SUMMARY: 0 errors" run.log || true)
+          if [ "$clean" -ne 4 ]; then
+            echo "::error::A test binary reported Valgrind errors ($clean/4 clean)."
+            exit 1
+          fi
+
+          # (3) Prove the INTERVENTION PATH itself executed (not a silent skip): each
+          #     load-bearing test prints its marker only after the steer/ablate or trace
+          #     forward pass ran.
+          grep -q "intervene engine-vs-oracle max" run.log \
+            || { echo "::error::synthetic_intervene did not run the steer/ablate (build_cvec) path — no marker."; exit 1; }
+          grep -q "engine-vs-oracle activations max" run.log \
+            || { echo "::error::synthetic_trace did not run the activation-tap path — no marker."; exit 1; }
+
+          # (4) Prove all four binaries ran to a clean test result (no silent 0-test run).
+          oks=$(grep -c "test result: ok" run.log || true)
+          if [ "$oks" -ne 4 ]; then
+            echo "::error::Expected 4 'test result: ok' lines (one per test binary); found $oks."
+            exit 1
+          fi
+
+          echo "Memory-safety nightly OK: 4/4 intervention-path test binaries ran under Valgrind with 0 errors and 0 definite/indirect leaks (build_cvec patch + OwnedContext drop exercised)."
+
+  asan-ubsan-native:
+    runs-on: ubuntu-24.04
+    name: ASan Rust + ASan/UBSan native CPU (synthetic + async/live ownership)
+    timeout-minutes: 90
+    env:
+      # Exact Ubuntu package pin; compatibility controls fail before native build.
+      LLVM_PACKAGE_VERSION: '1:19.1.1-1ubuntu1~24.04.2'
+      # Only an explicit manual choice narrows the product allowlist.
+      SANITIZER_SELECTION: ${{ github.event_name == 'workflow_dispatch' && inputs.sanitizer_selection || 'full' }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Prepare retained evidence directory
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/relm-sanitizer-evidence"
+          echo "SANITIZER_EVIDENCE=$RUNNER_TEMP/relm-sanitizer-evidence" >> "$GITHUB_ENV"
+          echo "SANITIZER_TARGET=$RUNNER_TEMP/relm-sanitizer-target" >> "$GITHUB_ENV"
+
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-02-01
+          components: rust-src
+          targets: x86_64-unknown-linux-gnu
+
+      - name: Install pinned Clang and compiler runtimes
+        run: |
+          set -euo pipefail
+          {
+            sudo apt-get update
+            sudo apt-get install -y \
+              "clang-19=$LLVM_PACKAGE_VERSION" \
+              "llvm-19=$LLVM_PACKAGE_VERSION" \
+              "libclang-rt-19-dev=$LLVM_PACKAGE_VERSION"
+          } 2>&1 | tee "$SANITIZER_EVIDENCE/toolchain-install.log"
+
+      - name: Reject no-op and false-success harness controls
+        if: env.SANITIZER_SELECTION != 'projection-only'
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests/sanitizers -p 'test_*.py' -v \
+            2>&1 | tee "$SANITIZER_EVIDENCE/harness-controls.log"
+
+      - name: Graph sizing regression with the pinned Linux compiler
+        if: env.SANITIZER_SELECTION != 'projection-only'
+        run: |
+          set -euo pipefail
+          python3 tests/sanitizers/graph_size.py --cc clang-19 \
+            --evidence "$SANITIZER_EVIDENCE/graph-size-layout"
+
+      - name: CPU callback signatures and runtime rejection controls
+        if: env.SANITIZER_SELECTION != 'projection-only'
+        run: |
+          set -euo pipefail
+          python3 tests/sanitizers/cpu_callbacks.py --cc clang-19 --cxx clang++-19 \
+            --symbolizer llvm-symbolizer-19 --require-runtime \
+            --evidence "$SANITIZER_EVIDENCE/cpu-callbacks"
+
+      # No cache action. The harness requires a nonexistent target, disables
+      # compiler caches, controls the environment, and proves instrumentation
+      # before accepting the exact allowlist of real executed tests.
+      - name: Validate runtime, rebuild instrumented native code and execute required cases
+        if: env.SANITIZER_SELECTION != 'projection-only'
+        run: |
+          set -euo pipefail
+          python3 -u tests/sanitizers/run.py \
+            --selection "$SANITIZER_SELECTION" \
+            --evidence "$SANITIZER_EVIDENCE" --target "$SANITIZER_TARGET" \
+            2>&1 | tee "$SANITIZER_EVIDENCE/harness.log"
+
+      - name: Validate projection-only collector controls and retain source scope
+        if: env.SANITIZER_SELECTION == 'projection-only'
+        run: |
+          set -euo pipefail
+          cp .github/workflows/nightly-memory-safety.yaml "$SANITIZER_EVIDENCE/workflow.yaml"
+          cp tests/projection/instrumented-scope.json "$SANITIZER_EVIDENCE/projection-source-scope.json"
+          python3 tests/projection/instrumented_controls.py \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-controls.log"
+
+      - name: Build and execute the exact F6e ASan and UBSan cases
+        if: env.SANITIZER_SELECTION == 'projection-only'
+        run: |
+          set -euo pipefail
+          python3 -u tests/projection/instrumented.py --mode sanitizers \
+            --source-manifest tests/projection/instrumented-scope.json \
+            --evidence "$SANITIZER_EVIDENCE/projection-asan" \
+            --target "$RUNNER_TEMP/relm-f6e-asan-target" \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-asan.log"
+
+      - name: Install Valgrind for the separate F6e baseline build
+        if: env.SANITIZER_SELECTION == 'projection-only'
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y valgrind \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-valgrind-install.log"
+
+      - name: Build and execute the exact F6e Memcheck cases
+        if: env.SANITIZER_SELECTION == 'projection-only'
+        run: |
+          set -euo pipefail
+          python3 -u tests/projection/instrumented.py --mode valgrind \
+            --source-manifest tests/projection/instrumented-scope.json \
+            --evidence "$SANITIZER_EVIDENCE/projection-valgrind" \
+            --target "$RUNNER_TEMP/relm-f6e-valgrind-target" \
+            2>&1 | tee "$SANITIZER_EVIDENCE/projection-valgrind.log"
+
+      - name: Retain sanitizer logs and evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-sanitizers-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.SANITIZER_EVIDENCE }}
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,58 @@
+[
+  {
+    "test": "projection_profile_independent_new_site_equations",
+    "status": "passed",
+    "expected_cases": 3,
+    "executed_cases": 3,
+    "expected_rejections": 0,
+    "rejected_cases": 0
+  },
+  {
+    "test": "projection_profile_inheritance_shares_exact_owners",
+    "status": "passed",
+    "expected_cases": 4,
+    "executed_cases": 4,
+    "expected_rejections": 0,
+    "rejected_cases": 0
+  },
+  {
+    "test": "projection_profile_boundaries_are_checked_before_allocation",
+    "status": "passed",
+    "expected_cases": 12,
+    "executed_cases": 12,
+    "expected_rejections": 11,
+    "rejected_cases": 11
+  },
+  {
+    "test": "projection_profile_compiled_layout_and_live_charge",
+    "status": "passed",
+    "expected_cases": 12,
+    "executed_cases": 12,
+    "expected_rejections": 0,
+    "rejected_cases": 0
+  },
+  {
+    "test": "projection_profile_owned_capacities_refuse_hidden_spare_storage",
+    "status": "passed",
+    "expected_cases": 11,
+    "executed_cases": 11,
+    "expected_rejections": 10,
+    "rejected_cases": 10
+  },
+  {
+    "test": "projection_profile_error_grammar_owns_one_exact_copy",
+    "status": "passed",
+    "expected_cases": 6,
+    "executed_cases": 6,
+    "expected_rejections": 0,
+    "rejected_cases": 0
+  },
+  {
+    "test": "projection_profile_ffi_descriptors_and_schema_are_exact",
+    "status": "passed",
+    "expected_cases": 47,
+    "executed_cases": 47,
+    "expected_rejections": 19,
+    "rejected_cases": 19
+  }
+]

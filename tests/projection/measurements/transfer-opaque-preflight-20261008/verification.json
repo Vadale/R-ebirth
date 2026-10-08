@@ -1,0 +1,16 @@
+{
+  "driver_sha256": "06cec241db464ebf70d25afd2eeacfb84b93cbf9d06ea5bf02227abbf3172f67",
+  "opaque_source_sha256": "31583c7a27f4511bfb4f162648d5d544e1865ae44bf3b90cbe75ff8c9e848ba8",
+  "stage_names": [
+    "format",
+    "clippy-ffi",
+    "no-spill-compile",
+    "ffi-static-build",
+    "ffi-fresh-link",
+    "ffi-r-hosted"
+  ],
+  "loop_native_tests": 3,
+  "collector_unchanged": true,
+  "collector_controls_carried": 35,
+  "prelaunch_guard_correction": "Initial preparation incorrectly counted eight syntactic stage calls; source contains six literal stages plus one three-test loop. Replaced manual aggregate with exact stage-set and loop checks before launch. No pipeline executed during this correction."
+}

@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "stage": "synthetic first positive",
+  "error": "exact 71 synthetic receipts: synthetic selected_devices used MTL0: token, inconsistent with existing native backend receipt parser expecting MTL0 token",
+  "native_builds_or_models": 0,
+  "correction": "fix the synthetic selected-device fixture to MTL0 (Synthetic control); no collector relaxation"
+}

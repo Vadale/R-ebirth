@@ -1,0 +1,14 @@
+{
+  "status": "verified",
+  "cases": 4,
+  "expectations": 1405,
+  "source_hashes": 23,
+  "test_failures": 0,
+  "test_errors": 0,
+  "test_skips": 0,
+  "test_warnings": 0,
+  "external_warning": "testthat built under R4.5.2 retained in raw log",
+  "scope": "source-only R definitions, namespace lookups replaced only for source harness; installed acceptance remains pending",
+  "native_executions": 0,
+  "model_executions": 0
+}

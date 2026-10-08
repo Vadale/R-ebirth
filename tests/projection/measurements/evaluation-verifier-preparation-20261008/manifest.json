@@ -1,0 +1,9 @@
+{
+  "evaluation-verifier-controls-draft-syntax.log": "24f97234d45cc3f1600e252c2b99fdbab5d22ef3914b695a7788bd0a5632755f",
+  "evaluation-verifier-controls-frozen.log": "d235fcc3c985d51aeb0d919a1efcc11ded65da9da9219e2e996052a0d1f5fc30",
+  "evaluation-verifier-ready.json": "c32b220baa124e74db76ccacc4a175349b2201aec10a635034aa05ef84e7c190",
+  "evaluation-verifier-schema.json": "50043f47f5b329629f353c297b5a342a2f9e14651827b3577880646c42b86cc8",
+  "owner-verification.json": "b3c41ce8104deeee348e67d774dd511ec20ec2bc1b9f16a22e7b4744d0ec4f2f",
+  "sources/tests/projection/evaluation/test_verify_results.py": "e32359d91d9f2fb94441348d409375139cbdc1ae55bd228970fb6dab262b49ed",
+  "sources/tests/projection/evaluation/verify_results.py": "7a83c90a80c96ad6bec2ce1e8d94d68068607909d39bbf1c34aa6e6ad4130461"
+}

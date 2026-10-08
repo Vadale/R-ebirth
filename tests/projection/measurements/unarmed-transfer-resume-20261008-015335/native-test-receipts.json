@@ -1,0 +1,50 @@
+[
+  {
+    "test": "projection_transfer_residual_shapes_and_values",
+    "status": "passed",
+    "expected_cases": 17,
+    "executed_cases": 17,
+    "expected_rejections": 14,
+    "rejected_cases": 14
+  },
+  {
+    "test": "projection_transfer_residual_exact_capacities",
+    "status": "passed",
+    "expected_cases": 5,
+    "executed_cases": 5,
+    "expected_rejections": 4,
+    "rejected_cases": 4
+  },
+  {
+    "test": "projection_transfer_requires_cached_residual_capabilities",
+    "status": "passed",
+    "expected_cases": 14,
+    "executed_cases": 14,
+    "expected_rejections": 6,
+    "rejected_cases": 6
+  },
+  {
+    "test": "projection_transfer_source_registry_and_payload",
+    "status": "passed",
+    "expected_cases": 14,
+    "executed_cases": 14,
+    "expected_rejections": 10,
+    "rejected_cases": 10
+  },
+  {
+    "test": "projection_transfer_borrowed_residual_inputs",
+    "status": "passed",
+    "expected_cases": 12,
+    "executed_cases": 12,
+    "expected_rejections": 9,
+    "rejected_cases": 9
+  },
+  {
+    "test": "projection_transfer_r_state_facts",
+    "status": "passed",
+    "expected_cases": 16,
+    "executed_cases": 16,
+    "expected_rejections": 12,
+    "rejected_cases": 12
+  }
+]

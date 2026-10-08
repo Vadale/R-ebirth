@@ -1,0 +1,9 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 42047,
+  "directory": "/private/tmp/relm-f6e/schema2-source-20261007-232924",
+  "scope": "source-only schema2 tests; no native/model/installed acceptance",
+  "exit_code": 0,
+  "source_drift": [],
+  "log_sha256": "4ca6abc3d7397db327b0cf1e4dfe7d5e81740dc9c5f5ec73ff4d4cc4a039f3ca"
+}

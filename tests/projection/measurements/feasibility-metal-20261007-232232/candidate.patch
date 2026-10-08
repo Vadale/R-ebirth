@@ -1,0 +1,542 @@
+diff --git a/docs/f6e-implementation.md b/docs/f6e-implementation.md
+index be17d5e..dded85c 100644
+--- a/docs/f6e-implementation.md
++++ b/docs/f6e-implementation.md
+@@ -12,9 +12,9 @@ integrated F6d main6dd701beb128d267a9c5f7324ace04b2c043589c.
+ | --- | --- |
+ | D046/API14 decision | Approved; no pending API question for this contract |
+ | Native architecture | One source-only analysis complete; conditional route, no execution acceptance |
+-| Independent new reference | In preparation under tests/llm-golden/projection; must be separately frozen before native arithmetic |
+-| Compiled capacity/probe ledger | Concrete plan in preparation; no memory acceptance yet |
+-| Private native feasibility | Not implemented or run; actual CPU/Metal causality is required |
++| Independent new reference | PASSED191 controls and owner49-file/count/hash audit; separately frozen in d8a4800 before native arithmetic |
++| Compiled capacity/probe ledger | Concrete [ownership plan](f6e-memory-contract.md) complete; actual compiled capacities/memory acceptance remain unexecuted |
++| Private native feasibility | Nine exact tests and CPU release gate verified at retained sources; Metal buffer admission failed before timings, under focused diagnosis |
+ | Public R/native interface | Not implemented; default-add/schema1 compatibility remains required |
+ | Installed package/resource/lifecycle | Not run for F6e |
+ | New held-out experiment | Protocol frozen before any F6e inference; no result yet |
+@@ -90,3 +90,206 @@ the existing quiet20-minute monitor. Final all-nine ordinary checks and affected
+ native instrumented gates remain required. No tracked receipt-only CI loop;
+ mark the final PR ready after its gates pass. Specific merge permission is
+ separate from this implementation authorization.
++
++## Reference freeze
++
++[Reference receipts](../tests/projection/measurements/reference-20261007/scope.md)
++record13 arithmetic cases/11 refusals/52 values,11 schema2 byte vectors,15
++tiny-forward cases,21,888 activations/3,648 logits/2,944 site coordinate pairs
++and1,108 projection-row witnesses. All191 controls pass independently; this
++does not accept native behavior. The reference CSV manifest SHA256 is
++`78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959`;
++its JSON counterpart is
++`ab9e0361b5237bd89901854225f430a8492704cab8607c8ddc9b55dc9c7769b6`.
++No old model/golden bytes were changed.
++
++
++## Private prelaunch inspection
++
++The first native handoff froze14 source files and nine exact tests without
++compilation or model execution. Owner inspection found an unused fourth
++`Slot::begin` argument although the decode integration supplied the intended
++three arguments. The original frozen sources and handoff are retained under
++`tests/projection/measurements/native-prelaunch-20261007` before the narrow
++signature correction; this is a pre-execution integration finding, not a failed
++native test or accepted build.
++
++The inspection also required an explicit same-input-row check: retained actual
++producer before/after pairs must satisfy the independent scalar formula at the
++existing2e-6 bound, separately from the34748 whole-forward comparisons at0.01.
++The capability readback must use the actual pre-row without allocating another
++H-wide buffer. These checks do not regenerate references or change tolerances.
++
++The detached owner's benchmark collector has synthetic positive/negative
++controls for exact sample counts/order, source/model binding, actual backend
++log parsing, token counts, transfer volume, finite timings, independently
++recomputed medians, the unchanged5% dormant bound, and the Metal tiny-forward
++receipt. Collector controls are not native performance or numerical evidence.
++Public R/FFI application remains unavailable until actual private acceptance
++and the full configurable combined ledger pass.
++
++
++The prelaunch corrections are frozen in the final14-file handoff digest
++`d130df6ec25dcbd5e2cda56dd6f4e77debbe06190236473d8ab8a8af26f8e561`.
++All14 actual source hashes matched. The owner collector passed36 exact-test
++count controls and39 benchmark/same-row controls. These are parser checks only.
++The first detached private pipeline is launched; no native result is accepted
++from that launch. Its nine tests require unchanged whole-forward34748 and
++microbatch10042 comparisons, plus separate2944/704 same-input-row comparisons.
++Metal timing also requires the tiny Llama forward reference on actual Metal;
++CPU timing does not repeat the ordinary CPU forward test.
++
++
++## First private execution and affected resume
++
++The first run, `feasibility-20261007-212937`, is FAILED. Format, clippy and
++no-spill libtest compilation passed. Five exact tests passed and were separately
++verified:13 arithmetic cases/52 values with zero measured difference,17 boundary
++refusals,8 capacity cases,12 classifier cases and6 negative capability probes;
++32 total negative controls. All622 frozen source hashes and stage log hashes
++matched, with no warnings or ignored tests in the executed cases.
++
++The sixth test failed before forward numerical comparisons: its actual backend
++log was empty. Source inspection found that it installed its collector before
++the process's first backend initialization, whose one-time quiet-log setup
++replaced that collector. This is test instrumentation setup, not a measured
++projection numerical or GPU failure. The original sources, logs and partial
++verification are retained in
++[the first-run archive](../tests/projection/measurements/feasibility-20261007-212937/diagnosis.md).
++
++Only the private test helper changed: initialize available backends before
++installing the forward receipt logger. The same backend proof assertions,
++references, counts and tolerances remain. The detached resume executes affected
++checks6–9 and the previously unrun CPU/Metal benchmarks, with fresh source
++identity; it carries cases1–5 at their exact parent source. Collector functions
++are byte-identical to the controlled driver. No resume result is accepted merely
++from its launch; public application remains unavailable.
++
++
++## Pruning-path numerical diagnosis
++
++The affected resume `feasibility-resume-20261007-213532` is also FAILED. Its
++format/clippy/no-spill compilation passed; the full forward test now passed15
++cases/34748 values (maximum absolute error0.004728402942419052), plus2944
++same-input-row comparisons with zero measured difference. This separately
++verified acceptance retains source manifest
++`6c3c79a70d231648708d3285553c917df9b622269f55800866aa3e19d21e5b52`.
++
++The next test, microbatches/pruning/graph reuse, failed at the long-prefill final
++logit: native0.547000527381897 versus reference0.5585253461344721, exceeding
++the unchanged0.01 bound by a measured difference0.011524818752575161. The
++reference coordinate is position514/vocabulary1. The extra last-only branch
++executes512+2 tokens; the accepted full-forward fixture executes512+1+1.
++The numerical discrepancy is established; its cause is not. No tolerance,
++reference or runtime correction follows until bounded diagnostic comparison
++separates schedule/output policy and actual projection propagation.
++
++[The failed resume and partial verification](../tests/projection/measurements/feasibility-resume-20261007-213532/diagnosis.md)
++retain all original logs/source. Tests8–9, CPU/Metal benchmarks and the new
++behavioral evaluation remain unexecuted. The existing native owner is preparing
++one focused diagnostic fixture; the parent remains sole execution owner.
++
++
++The focused diagnostic is now frozen and launched as one ignored CPU/debug test
++on the same tiny model. It separates schedule, output policy and projection in16
++bounded executions, including zero/ordinary controls, observer presence,
++cleared-context replay and a common subsequent-token KV-history witness. It
++retains17 pair comparisons, final48+continuation48 logits per execution and
++bounded actual pre/post rows/all-position scalar witnesses for8 audited runs.
++Collection reports exceedances; it does not relabel the failed0.01 gate as passed.
++
++Only `projection_tests.rs` plus the new diagnostic include changed; all15 handoff
++hashes matched and runtime/reference/tolerances were independently unchanged.
++Ten synthetic collector controls passed before launch. The collector recomputes
++pair differences, fixed-reference differences and same-row scalar errors from
++retained values. Numerical results and diagnosis remain pending; a collected
++receipt or process exit0 is not feature acceptance.
++
++
++## Controlled schedule diagnosis
++
++The [single retained diagnostic](../tests/projection/measurements/diagnostic-20261007-221757/diagnosis.md)
++completed16 controlled CPU/debug executions and17 comparisons. All603source hashes,
++15 archived changed sources and stage logs matched. At fixed batch grouping,
++all-output/last-only, observer/no-observer and replay outputs are bit-identical,
++including a common next token using retained KV. Ordinary and zero paths are
++bit-identical. Every audited site position is present exactly once (8240witnesses);
++3072same-input coordinate comparisons have zero measured error.
++
++The discrepancy follows batch grouping among the tested factors:512+1+1 versus
++512+2. Active final logits differ by up to0.011423110961914062; the original
++grouped-versus-independent-reference comparison still has2outliers above0.01.
++The exact upstream kernel mechanism and universal harmlessness are not established.
++The frozen reference declares513prefill+1decode; the failed extra pruning branch
++ingested all514 as prompt. Any corrected test must separate these factors, retain
++the original failure and long/pruning/reuse coverage, and preserve both numerical
++bounds and the frozen reference. No runtime or vendor correction follows from
++these data. This diagnostic is not full native/public F6e acceptance.
++
++
++The scoped test correction preserves the declared phase boundary for the
++additional independent pruned comparison in all three microbatch cases, keeping
++10042 whole-forward comparisons and704 same-input comparisons. The actual grouped
++prompt path remains covered by a separate all-output versus last-only comparison
++with identical grouping and replay; its raw differences against the independent
++reference stay explicitly outside accepted cross-schedule accuracy. This is a
++separation of test protocols, not a claim that arbitrary grouped prompts meet the
++0.01 reference bound. Runtime and all frozen reference bytes remain unchanged.
++Execution of the correction is pending.
++
++
++The correction is frozen at test-support SHA
++`11504e25a58c570d55966446addc8249f85a08a2f95d6d82314ab8fca686b9fb`.
++Only that test include changed relative to the diagnostic snapshot; all15 source
++hashes and unchanged runtime/reference bytes were checked before launch. The
++new protocol collector passed28 positive/negative controls; the eight existing
++count/backend/benchmark verifier functions are unchanged.
++
++One detached scoped pipeline now runs format/clippy/no-spill compilation, the
++affected seventh case, unexecuted eighth/ninth cases and first CPU/Metal release
++measurements. The pruning receipt separates its144 independent final values
++(already within10042) from144fixed-schedule final,144history and576replay comparisons.
++It recomputes the raw cross-schedule errors without accepting their accuracy.
++No result from this launch is yet accepted. Earlier verified native1–6 retain
++their exact source scopes and are not repeated.
++
++
++## Corrected pruning and CPU pass; Metal admission failure
++
++The [scoped corrected run](../tests/projection/measurements/feasibility-pruning-20261007-224427/diagnosis.md)
++is **FAILED overall**, with successful stages independently verified at source
++manifest77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6.
++All623 source/log hashes matched with no warnings. Native7 passed3cases/10042
++independent values (max0.003909901715815067),704same-input values and separately
++verified pruning/history/replay checks. Native8 passed6cases/1negative; native9
++passed3cases/3negative. The two grouped long-prompt outliers remain explicit
++unaccepted cross-schedule observations.
++
++CPU release passed20samples of128tokens with actual CPU-only backend proof.
++Median times for callback-free/dormant/zero/one-site/multi-site were
++1.346264/1.350309750/1.350369667/1.362167250/1.370164250seconds; dormant ratio
++1.0030051684 meets the unchanged1.05bound. Active times are measurements only.
++These accepted results retain this source and do not certify a later correction.
++
++Metal failed in the first tiny-model derivation probe at native_status=-6, before
++any timing sample or completed forward case. The guard uses is_host, while the
++pinned backend reports false even for Metal's shared buffer type. Actual buffer
++mode is not recorded in the failure; source alone does not prove its storage
++kind or justify removing the guard. Exact shared-storage recognition, actual
++buffer proof and continued private/unknown rejection must precede a scoped
++Metal retry. No native/vendor/budget correction has yet been applied.
++
++
++The focused source diagnosis identifies a bounded correction within D046: retain
++the CPU-host fast path, otherwise require actual buffer type identity with the
++registered Metal GPU device's default shared singleton and exact shared
++type/device naming. The pinned default selector and allocator read the same
++immutable initialized shared-buffer property; a private fallback cannot satisfy
++those joint checks. Name matching alone is insufficient. Mapped/private/unknown
++buffers remain refused; no environment, vendor or staging-policy change is planned.
++
++The native owner is implementing this private correction plus scoped negative
++controls and bounded actual-buffer receipts, with new fixed fields charged by
++compiled size. Actual first-ready tiny-model and Qwen producer proof is still
++required before copying. No corrected build or Metal run has been launched.
++The failed buffer's actual subtype is not retroactively inferred from source.
+diff --git a/rebirth/src/rust/rebirth-llm/build.rs b/rebirth/src/rust/rebirth-llm/build.rs
+index e7422d6..960beb2 100644
+--- a/rebirth/src/rust/rebirth-llm/build.rs
++++ b/rebirth/src/rust/rebirth-llm/build.rs
+@@ -36,6 +36,8 @@ fn main() {
+     println!("cargo:rerun-if-changed=native/grammar.cpp");
+     println!("cargo:rerun-if-changed=native/abi.cpp");
+     println!("cargo:rerun-if-changed=native/spill_lease.cpp");
++    println!("cargo:rerun-if-changed=native/projection.cpp");
++    println!("cargo:rerun-if-changed=native/projection.h");
+     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
+     println!(
+diff --git a/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt b/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt
+index 1f1268c..acbf216 100644
+--- a/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt
++++ b/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ cmake_minimum_required(VERSION 3.28)
+ project(relm_grammar_bridge LANGUAGES CXX)
+-add_library(relm-grammar STATIC grammar.cpp abi.cpp spill_lease.cpp)
++add_library(relm-grammar STATIC grammar.cpp abi.cpp spill_lease.cpp projection.cpp)
+ target_compile_features(relm-grammar PRIVATE cxx_std_17)
+ set_target_properties(relm-grammar PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ target_include_directories(relm-grammar PRIVATE
+diff --git a/rebirth/src/rust/rebirth-llm/src/engine.rs b/rebirth/src/rust/rebirth-llm/src/engine.rs
+index 6b4fbc2..aec0197 100644
+--- a/rebirth/src/rust/rebirth-llm/src/engine.rs
++++ b/rebirth/src/rust/rebirth-llm/src/engine.rs
+@@ -736,6 +736,12 @@ impl LoadedModel {
+         // mirrors `load()`'s generation context (only `n_ctx` is set).
+         let mut cparams = unsafe { ffi::llama_context_default_params() };
+         cparams.n_ctx = self.ctx.context_length;
++        #[cfg(test)]
++        {
++            cparams.n_batch = self.n_batch();
++            // SAFETY: the source owns this resolved live context.
++            cparams.n_ubatch = unsafe { ffi::llama_n_ubatch(self.ctx_ptr()) };
++        }
+         let mut live_capture = Box::new(crate::live_capture::LiveDispatcher::default());
+         live_capture.install(&mut cparams);
+ 
+diff --git a/rebirth/src/rust/rebirth-llm/src/ffi.rs b/rebirth/src/rust/rebirth-llm/src/ffi.rs
+index d0aae4b..cf97237 100644
+--- a/rebirth/src/rust/rebirth-llm/src/ffi.rs
++++ b/rebirth/src/rust/rebirth-llm/src/ffi.rs
+@@ -853,3 +853,59 @@ mod tests {
+         assert_eq!(actual, expected, "Rust/C layout or enum drift");
+     }
+ }
++
++// D046 private feasibility only. Tensor layout remains opaque in Rust.
++#[cfg(test)]
++#[repr(C)]
++#[derive(Default, Clone, Copy)]
++pub(crate) struct ProjectionBufferInfo {
++    pub kind: u32,
++    pub is_host: u32,
++    pub usage: u32,
++    pub device_type: u32,
++    pub flags: u32,
++    pub device_index: u32,
++    pub type_name: [u8; 32],
++    pub device_name: [u8; 32],
++    pub registry_name: [u8; 16],
++}
++#[cfg(test)]
++#[repr(C)]
++#[derive(Default, Clone, Copy)]
++pub(crate) struct ProjectionInfo {
++    pub rows: u64,
++    pub bytes: u64,
++    pub wrappers: u32,
++    pub access: u32,
++    pub buffer: ProjectionBufferInfo,
++}
++#[cfg(test)]
++extern "C" {
++    pub(crate) fn relm_projection_classify(
++        t: *const ggml_tensor,
++        layer: u32,
++        component: u32,
++        width: usize,
++        ready: bool,
++        out: *mut ProjectionInfo,
++    ) -> i32;
++    pub(crate) fn relm_projection_row(
++        t: *mut ggml_tensor,
++        width: usize,
++        row: usize,
++        data: *mut f32,
++        write: bool,
++    ) -> i32;
++    pub(crate) fn relm_projection_consumer(
++        t: *const ggml_tensor,
++        layer: u32,
++        component: u32,
++        width: usize,
++    ) -> i32;
++    pub(crate) fn relm_projection_classifier_controls() -> u64;
++    pub(crate) fn relm_projection_info_size() -> usize;
++    pub(crate) fn relm_projection_name_frame_size() -> usize;
++    pub(crate) fn relm_projection_access_frame_size() -> usize;
++    pub(crate) fn relm_projection_buffer_controls() -> u64;
++    pub(crate) fn llama_n_ubatch(ctx: *const llama_context) -> u32;
++}
+diff --git a/rebirth/src/rust/rebirth-llm/src/generate.rs b/rebirth/src/rust/rebirth-llm/src/generate.rs
+index 311d880..b2af8c8 100644
+--- a/rebirth/src/rust/rebirth-llm/src/generate.rs
++++ b/rebirth/src/rust/rebirth-llm/src/generate.rs
+@@ -519,8 +519,24 @@ impl LoadedModel {
+         // SAFETY: `ctx_ptr` is live; `batch.raw` is a fully-populated batch whose
+         // arrays outlive the call (dropped after it). `llama_decode` reads the
+         // batch by value; we keep ownership of the backing arrays in `batch`.
++        #[cfg(test)]
++        self.projection()
++            .begin(start_pos, tokens.len(), logits_last_only)?;
+         self.live_capture().begin_decode(start_pos, tokens, self)?;
++        #[cfg(test)]
++        let projection_clock = std::time::Instant::now();
+         let status = unsafe { ffi::llama_decode(self.ctx_ptr(), std::ptr::read(&batch.raw)) };
++        #[cfg(test)]
++        self.projection().time_decode(
++            start_pos == 0 || tokens.len() > 1,
++            projection_clock.elapsed().as_secs_f64(),
++        );
++        #[cfg(test)]
++        if let Err(error) = self.projection().end() {
++            // Reuse the worker's existing unusable-context ownership flag.
++            self.steering_restore_failed.set(true);
++            return Err(error);
++        }
+         self.live_capture().end_decode()?;
+         if status != 0 {
+             return Err(RebirthError::Generation {
+@@ -576,6 +592,17 @@ impl LoadedModel {
+         Ok(())
+     }
+ 
++    #[cfg(test)]
++    pub(crate) fn decode_projection_tokens(
++        &self,
++        tokens: &[i32],
++        start: i32,
++        last: bool,
++    ) -> Result<(), RebirthError> {
++        let _native = crate::NativeGuard::try_acquire("private projection decode")?;
++        self.decode(tokens, start, last)
++    }
++
+     /// Copy the logit row the engine stored for output slot `ith`. A negative
+     /// index reads in reverse (`-1` = the last output row, llama.h L1025) — the
+     /// multimodal ingest uses that to fetch the whole-prompt distribution after
+diff --git a/rebirth/src/rust/rebirth-llm/src/intervene.rs b/rebirth/src/rust/rebirth-llm/src/intervene.rs
+index 281bd7d..ec9aea0 100644
+--- a/rebirth/src/rust/rebirth-llm/src/intervene.rs
++++ b/rebirth/src/rust/rebirth-llm/src/intervene.rs
+@@ -59,6 +59,37 @@ pub struct InterventionSpec {
+ }
+ 
+ impl InterventionSpec {
++    #[cfg(test)]
++    pub(crate) fn projection_allocation_bytes(&self) -> Option<usize> {
++        // Existing spec buffers plus the independently cloned candidate baseline.
++        let mut bytes = std::mem::size_of::<Self>()
++            + std::mem::size_of::<crate::live_steering::SteeringBaseline>();
++        for values in [&self.steer, &self.ablate_mask, &self.ablate_add]
++            .into_iter()
++            .flatten()
++        {
++            bytes = bytes.checked_add(values.capacity().checked_mul(4)?)?;
++        }
++        bytes.checked_add(
++            self.steer
++                .as_ref()
++                .map_or(Some(0), |v| v.len().checked_mul(4))?,
++        )
++    }
++    #[cfg(test)]
++    pub(crate) fn projection_apply(&self, model: &mut LoadedModel) -> Result<(), RebirthError> {
++        self.apply_to_context(model.ctx_ptr())?;
++        model.steering_baseline =
++            self.steer
++                .as_ref()
++                .zip(self.steer_il_range)
++                .map(|(values, range)| crate::live_steering::SteeringBaseline {
++                    values: values.clone(),
++                    range,
++                });
++        Ok(())
++    }
++
+     /// An empty spec for a model of `n_embd` hidden size and `n_layer` blocks.
+     pub fn new(n_embd: usize, n_layer: usize) -> Self {
+         InterventionSpec {
+@@ -270,6 +301,8 @@ impl LoadedModel {
+ 
+         let mut derived = self.clone_with_fresh_context()?;
+         spec.apply_to_context(derived.ctx_ptr())?;
++        #[cfg(test)]
++        derived.inherit_projection(self)?;
+         derived.steering_baseline =
+             spec.steer
+                 .as_ref()
+diff --git a/rebirth/src/rust/rebirth-llm/src/lib.rs b/rebirth/src/rust/rebirth-llm/src/lib.rs
+index b8b7e3b..b5b897f 100644
+--- a/rebirth/src/rust/rebirth-llm/src/lib.rs
++++ b/rebirth/src/rust/rebirth-llm/src/lib.rs
+@@ -34,6 +34,8 @@ mod live_spill;
+ mod live_state;
+ mod live_steering;
+ mod probe;
++#[cfg(test)]
++mod projection;
+ mod schema;
+ #[cfg(feature = "spill")]
+ mod spill;
+diff --git a/rebirth/src/rust/rebirth-llm/src/live_capture.rs b/rebirth/src/rust/rebirth-llm/src/live_capture.rs
+index 7477899..639560e 100644
+--- a/rebirth/src/rust/rebirth-llm/src/live_capture.rs
++++ b/rebirth/src/rust/rebirth-llm/src/live_capture.rs
+@@ -12,6 +12,8 @@ const LIVE_CAPTURE_BYTES: usize = crate::LIVE_TRANSPORT_BYTES as usize;
+ 
+ #[derive(Default)]
+ pub(crate) struct LiveDispatcher {
++    #[cfg(test)]
++    pub(crate) projection: crate::projection::Slot,
+     enabled: AtomicBool,
+     capturing: AtomicBool,
+     state: Mutex<Option<Capture>>,
+@@ -461,14 +463,36 @@ extern "C" fn live_trampoline(t: *mut ffi::ggml_tensor, ask: bool, user: *mut c_
+     }
+     // SAFETY: boxed dispatcher outlives the context and its synchronous scheduler.
+     let dispatcher = unsafe { &*user.cast::<LiveDispatcher>() };
+-    if !dispatcher.capturing.load(Ordering::Acquire) {
++    #[cfg(test)]
++    let projecting = dispatcher.projection.enabled();
++    #[cfg(not(test))]
++    let projecting = false;
++    if !dispatcher.capturing.load(Ordering::Acquire) && !projecting {
+         return !ask;
+     }
+-    let result =
+-        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| dispatcher.on_node(t, ask)));
++    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++        #[cfg(test)]
++        let projected = dispatcher.projection.node(t, ask);
++        #[cfg(not(test))]
++        let projected = !ask;
++        #[cfg(test)]
++        if dispatcher.projection.failed() {
++            return Ok(false);
++        }
++        let captured = dispatcher.on_node(t, ask)?;
++        Ok(if ask {
++            projected || captured
++        } else {
++            projected && captured
++        })
++    }));
+     match result {
+         Ok(Ok(value)) => value,
+         failure => {
++            #[cfg(test)]
++            if projecting {
++                dispatcher.projection.panic();
++            }
+             if let Some(state) = dispatcher.lock().as_mut() {
+                 state.error = Some(match failure {
+                     Ok(Err(error)) => error,
+@@ -491,7 +515,7 @@ impl Drop for LiveSession<'_> {
+ }
+ impl crate::LoadedModel {
+     #[cfg(test)]
+-    fn generate_observed(
++    pub(crate) fn generate_observed(
+         &self,
+         prompt: &[i32],
+         params: &crate::GenerateParams,
+@@ -579,7 +603,7 @@ impl crate::LoadedModel {
+     }
+ }
+ #[cfg(test)]
+-mod tests {
++pub(crate) mod tests {
+     use super::*;
+     use crate::engine::load_for_live_feasibility;
+     use crate::{BackendKind, GenerateParams, LoadRequest};
+@@ -990,7 +1014,7 @@ mod tests {
+         });
+     }
+ 
+-    struct LoadLog;
++    pub(crate) struct LoadLog;
+     impl Drop for LoadLog {
+         fn drop(&mut self) {
+             // SAFETY: restore static quiet callback; no borrowed logger storage.
+@@ -1000,7 +1024,7 @@ mod tests {
+         }
+     }
+ 
+-    fn start_load_log() -> LoadLog {
++    pub(crate) fn start_load_log() -> LoadLog {
+         LOAD_LOG
+             .lock()
+             .unwrap_or_else(PoisonError::into_inner)
+@@ -1070,7 +1094,10 @@ mod tests {
+         assert!(!selected_metal_compute(&devices, &[]));
+     }
+ 
+-    fn backend_receipt(model: &crate::LoadedModel, backend: BackendKind) -> serde_json::Value {
++    pub(crate) fn backend_receipt(
++        model: &crate::LoadedModel,
++        backend: BackendKind,
++    ) -> serde_json::Value {
+         let log = std::mem::take(&mut *LOAD_LOG.lock().unwrap_or_else(PoisonError::into_inner));
+         let metadata = model.metadata();
+         let offload: Vec<_> = log

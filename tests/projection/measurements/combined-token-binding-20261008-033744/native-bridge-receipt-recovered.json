@@ -1,0 +1,10 @@
+{
+  "test": "projection_bridge_compiled_frame",
+  "status": "passed",
+  "expected_cases": 2,
+  "executed_cases": 2,
+  "expected_rejections": 0,
+  "rejected_cases": 0,
+  "bridge_frame_bytes": 320,
+  "ffi_command_bytes": 744
+}

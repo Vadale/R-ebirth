@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "scope": "model-free collector controls only; no native build, model or instrumentation execution",
+  "tests": 40,
+  "exit_code": 0,
+  "source_hashes": {
+    "tests/projection/instrumented.py": "9ee6b5d4453c0c07e1e720412159d7c6d706f1bbecac2ccfee424258ac67ab82",
+    "tests/projection/instrumented_controls.py": "e466917499cb850b11df6a9a4dfef9145f6a8a690cf1cc240b0ec2b004f5effc",
+    "tests/projection/instrumented_memcheck_probe.c": "023ff185599b373ca8f34d0e8472af46c9d9cc627d57b0650897a7f2f7fdabb2",
+    "tests/projection/instrumented-scope.json": "f54771e80fef090551a4dfc39c2cfff6294f66500f34f0c9a3972bf620f3c3c2",
+    "tests/sanitizers/run.py": "5a6265a7139a250999da97f582132eda78e8d52d74f1ee6a3667a1a9e42ba2f8",
+    "docs/f6e-instrumented-plan.md": "06d7c7a751949533b26fcb1462b028073b8db3fcbe825485538601e39b78c913"
+  },
+  "source_drift": [],
+  "raw_log_sha256": "36642a68c1667e6a04db147b6527bc0932b30b7399c9d37a16d285706a6ccb16",
+  "ready_sha256": "f8e47ce0f90e36cd06d1723f7741ed443f696b7462dc5acc9b065182cd4a5937"
+}

@@ -1,0 +1,9 @@
+{
+  "status": "failed",
+  "stage": "diagnose_before_retry",
+  "pid": 88868,
+  "run_dir": "/private/tmp/relm-f6e/evaluation-tokenizer-20261008-120800",
+  "updated_unix": 1791454089.532151,
+  "error": "experiment exit 1",
+  "traceback_file": "/private/tmp/relm-f6e/evaluation-tokenizer-20261008-120800/failure.txt"
+}

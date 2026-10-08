@@ -1,0 +1,5 @@
+"setting","tasks","required","mean_characters","mean_tokens","truncated"
+"baseline",8,6,1209.625,256,8
+"selected_add",8,7,483.125,102.75,3
+"selected_project",8,6,1102.25,234.875,7
+"random_project_1",8,6,1205,256,8

@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "scope": "independent reference acceptance, no native runtime execution",
+  "checked_files": 49,
+  "bytes": 1859807,
+  "counts": {
+    "arithmetic_accepted": 13,
+    "arithmetic_refused": 11,
+    "arithmetic_values": 52,
+    "controls": 191,
+    "encoding_nodes": 364,
+    "encoding_vectors": 11,
+    "forward_activation_values": 21888,
+    "forward_cases": 15,
+    "forward_input_tokens": 584,
+    "forward_logit_values": 3648,
+    "forward_projected_rows": 1108,
+    "forward_site_values": 2944,
+    "pure_site_cases": 3,
+    "pure_site_values": 6
+  },
+  "producer_sha256": "328660be8f80c96ce1b2ad41ce831bff1b5e017505f6a895c6cb875131b49f41",
+  "manifest_csv_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "manifest_json_sha256": "ab9e0361b5237bd89901854225f430a8492704cab8607c8ddc9b55dc9c7769b6",
+  "hash_name_difference": "The native plan recorded manifest.json; the producer marker records manifest.csv. Both exact hashes are verified; no fixture drift.",
+  "source_import_review": "Only independent NumPy/typed fixture modules; no product engine/R imports",
+  "previous_tracked_goldens_runtime_workflows_unchanged": true,
+  "producer_write_and_check_logs_verified": true
+}

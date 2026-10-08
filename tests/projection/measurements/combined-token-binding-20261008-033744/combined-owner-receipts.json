@@ -1,0 +1,18 @@
+{
+  "cases": 27,
+  "refusals": 4,
+  "constructor_calls": 5,
+  "model_loads": 1,
+  "materialization": {
+    "exact_budget": 1273947.0,
+    "actual_R_bytes": 1210312.0,
+    "R_bound_bytes": 1245080.0,
+    "workspace_bytes": 12432.0,
+    "model_skeleton_bytes": 1206688.0,
+    "state_extra_bytes": 1272.0,
+    "flat_bytes": 864.0,
+    "mixed_flat_bytes": 1160.0,
+    "construct_calls": 5.0,
+    "model_loads": 1.0
+  }
+}

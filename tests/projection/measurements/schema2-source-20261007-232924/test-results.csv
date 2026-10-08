@@ -1,0 +1,5 @@
+"file","context","test","nb","failed","skipped","error","warning","user","system","real","passed"
+".projection-source-a44065c50ab2.R",".projection-source-a44065c50ab2","schema2 canonical streams match all eleven independent vectors",1359,0,FALSE,FALSE,0,0.505,0.034,0.542,1359
+".projection-source-a44065c50ab2.R",".projection-source-a44065c50ab2","both independent schema2 artifacts validate without product construction",10,0,FALSE,FALSE,0,0.09,0.003,0.092,10
+".projection-source-a44065c50ab2.R",".projection-source-a44065c50ab2","component construction preserves paired arithmetic at first and last layers",29,0,FALSE,FALSE,0,0.112,0.013,0.124,29
+".projection-source-a44065c50ab2.R",".projection-source-a44065c50ab2","schema2 retains full-width and capture bounds and schema1 layer rules",7,0,FALSE,FALSE,0,0.016,0.001,0.0169999999999999,7

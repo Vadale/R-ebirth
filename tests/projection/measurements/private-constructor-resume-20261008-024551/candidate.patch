@@ -1,0 +1,1803 @@
+diff --git a/.github/workflows/rust.yaml b/.github/workflows/rust.yaml
+index 82c092d..63230aa 100644
+--- a/.github/workflows/rust.yaml
++++ b/.github/workflows/rust.yaml
+@@ -149,7 +149,7 @@ jobs:
+ 
+       - uses: actions/setup-python@v7
+         with:
+-          # Exact interpreter recorded by the independent D045 byte reference.
++          # Exact interpreter recorded by the independent D045/D046 references.
+           python-version: '3.13.5'
+ 
+       - name: install pinned golden tooling (test-only, not a package dep)
+@@ -166,6 +166,12 @@ jobs:
+           python tests/llm-golden/directions/reference_directions.py --check
+           python tests/directions/check-fixture-mirror.py
+ 
++      - name: Projection arithmetic, forward and schema-2 references (no engine)
++        run: |
++          python tests/llm-golden/projection/reference_projection.py --check
++          python tests/projection/test_fixture_mirror.py
++          python tests/projection/check-fixture-mirror.py
++
+       - name: Service contract consistency (planning only)
+         run: python tests/service-contract/verify.py --self-test
+ 
+diff --git a/docs/f6e-implementation.md b/docs/f6e-implementation.md
+index be17d5e..1df8c09 100644
+--- a/docs/f6e-implementation.md
++++ b/docs/f6e-implementation.md
+@@ -12,10 +12,10 @@ integrated F6d main6dd701beb128d267a9c5f7324ace04b2c043589c.
+ | --- | --- |
+ | D046/API14 decision | Approved; no pending API question for this contract |
+ | Native architecture | One source-only analysis complete; conditional route, no execution acceptance |
+-| Independent new reference | In preparation under tests/llm-golden/projection; must be separately frozen before native arithmetic |
+-| Compiled capacity/probe ledger | Concrete plan in preparation; no memory acceptance yet |
+-| Private native feasibility | Not implemented or run; actual CPU/Metal causality is required |
+-| Public R/native interface | Not implemented; default-add/schema1 compatibility remains required |
++| Independent new reference | PASSED191 controls and owner49-file/count/hash audit; separately frozen in d8a4800 before native arithmetic |
++| Compiled capacity/probe ledger | Configurable arithmetic/boundary profile verified:95 cases/40 refusals,12 native/R twins/156 terms/exact and minus-one budgets. R owner inventory7 source cases/70 expectations and unarmed transfer6 outcomes/78 controls/55 refusals plus2 actual R empty-handle bindings verified. Actual loaded-model constructor/combined-budget gate remains pending |
++| Private native feasibility | Nine exact tests plus CPU and corrected Metal numerical/release gates independently verified at preserved source scopes; earlier failures retained |
++| Public R/native interface | Schema2 constructors/graphics passed scoped source checks; public operator and constructor remain unavailable pending full resource admission |
+ | Installed package/resource/lifecycle | Not run for F6e |
+ | New held-out experiment | Protocol frozen before any F6e inference; no result yet |
+ | Integrated implementation review | Not started; one review after complete implementation |
+@@ -90,3 +90,497 @@ the existing quiet20-minute monitor. Final all-nine ordinary checks and affected
+ native instrumented gates remain required. No tracked receipt-only CI loop;
+ mark the final PR ready after its gates pass. Specific merge permission is
+ separate from this implementation authorization.
++
++## Reference freeze
++
++[Reference receipts](../tests/projection/measurements/reference-20261007/scope.md)
++record13 arithmetic cases/11 refusals/52 values,11 schema2 byte vectors,15
++tiny-forward cases,21,888 activations/3,648 logits/2,944 site coordinate pairs
++and1,108 projection-row witnesses. All191 controls pass independently; this
++does not accept native behavior. The reference CSV manifest SHA256 is
++`78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959`;
++its JSON counterpart is
++`ab9e0361b5237bd89901854225f430a8492704cab8607c8ddc9b55dc9c7769b6`.
++No old model/golden bytes were changed.
++
++
++## Private prelaunch inspection
++
++The first native handoff froze14 source files and nine exact tests without
++compilation or model execution. Owner inspection found an unused fourth
++`Slot::begin` argument although the decode integration supplied the intended
++three arguments. The original frozen sources and handoff are retained under
++`tests/projection/measurements/native-prelaunch-20261007` before the narrow
++signature correction; this is a pre-execution integration finding, not a failed
++native test or accepted build.
++
++The inspection also required an explicit same-input-row check: retained actual
++producer before/after pairs must satisfy the independent scalar formula at the
++existing2e-6 bound, separately from the34748 whole-forward comparisons at0.01.
++The capability readback must use the actual pre-row without allocating another
++H-wide buffer. These checks do not regenerate references or change tolerances.
++
++The detached owner's benchmark collector has synthetic positive/negative
++controls for exact sample counts/order, source/model binding, actual backend
++log parsing, token counts, transfer volume, finite timings, independently
++recomputed medians, the unchanged5% dormant bound, and the Metal tiny-forward
++receipt. Collector controls are not native performance or numerical evidence.
++Public R/FFI application remains unavailable until actual private acceptance
++and the full configurable combined ledger pass.
++
++
++The prelaunch corrections are frozen in the final14-file handoff digest
++`d130df6ec25dcbd5e2cda56dd6f4e77debbe06190236473d8ab8a8af26f8e561`.
++All14 actual source hashes matched. The owner collector passed36 exact-test
++count controls and39 benchmark/same-row controls. These are parser checks only.
++The first detached private pipeline is launched; no native result is accepted
++from that launch. Its nine tests require unchanged whole-forward34748 and
++microbatch10042 comparisons, plus separate2944/704 same-input-row comparisons.
++Metal timing also requires the tiny Llama forward reference on actual Metal;
++CPU timing does not repeat the ordinary CPU forward test.
++
++
++## First private execution and affected resume
++
++The first run, `feasibility-20261007-212937`, is FAILED. Format, clippy and
++no-spill libtest compilation passed. Five exact tests passed and were separately
++verified:13 arithmetic cases/52 values with zero measured difference,17 boundary
++refusals,8 capacity cases,12 classifier cases and6 negative capability probes;
++32 total negative controls. All622 frozen source hashes and stage log hashes
++matched, with no warnings or ignored tests in the executed cases.
++
++The sixth test failed before forward numerical comparisons: its actual backend
++log was empty. Source inspection found that it installed its collector before
++the process's first backend initialization, whose one-time quiet-log setup
++replaced that collector. This is test instrumentation setup, not a measured
++projection numerical or GPU failure. The original sources, logs and partial
++verification are retained in
++[the first-run archive](../tests/projection/measurements/feasibility-20261007-212937/diagnosis.md).
++
++Only the private test helper changed: initialize available backends before
++installing the forward receipt logger. The same backend proof assertions,
++references, counts and tolerances remain. The detached resume executes affected
++checks6–9 and the previously unrun CPU/Metal benchmarks, with fresh source
++identity; it carries cases1–5 at their exact parent source. Collector functions
++are byte-identical to the controlled driver. No resume result is accepted merely
++from its launch; public application remains unavailable.
++
++
++## Pruning-path numerical diagnosis
++
++The affected resume `feasibility-resume-20261007-213532` is also FAILED. Its
++format/clippy/no-spill compilation passed; the full forward test now passed15
++cases/34748 values (maximum absolute error0.004728402942419052), plus2944
++same-input-row comparisons with zero measured difference. This separately
++verified acceptance retains source manifest
++`6c3c79a70d231648708d3285553c917df9b622269f55800866aa3e19d21e5b52`.
++
++The next test, microbatches/pruning/graph reuse, failed at the long-prefill final
++logit: native0.547000527381897 versus reference0.5585253461344721, exceeding
++the unchanged0.01 bound by a measured difference0.011524818752575161. The
++reference coordinate is position514/vocabulary1. The extra last-only branch
++executes512+2 tokens; the accepted full-forward fixture executes512+1+1.
++The numerical discrepancy is established; its cause is not. No tolerance,
++reference or runtime correction follows until bounded diagnostic comparison
++separates schedule/output policy and actual projection propagation.
++
++[The failed resume and partial verification](../tests/projection/measurements/feasibility-resume-20261007-213532/diagnosis.md)
++retain all original logs/source. Tests8–9, CPU/Metal benchmarks and the new
++behavioral evaluation remain unexecuted. The existing native owner is preparing
++one focused diagnostic fixture; the parent remains sole execution owner.
++
++
++The focused diagnostic is now frozen and launched as one ignored CPU/debug test
++on the same tiny model. It separates schedule, output policy and projection in16
++bounded executions, including zero/ordinary controls, observer presence,
++cleared-context replay and a common subsequent-token KV-history witness. It
++retains17 pair comparisons, final48+continuation48 logits per execution and
++bounded actual pre/post rows/all-position scalar witnesses for8 audited runs.
++Collection reports exceedances; it does not relabel the failed0.01 gate as passed.
++
++Only `projection_tests.rs` plus the new diagnostic include changed; all15 handoff
++hashes matched and runtime/reference/tolerances were independently unchanged.
++Ten synthetic collector controls passed before launch. The collector recomputes
++pair differences, fixed-reference differences and same-row scalar errors from
++retained values. Numerical results and diagnosis remain pending; a collected
++receipt or process exit0 is not feature acceptance.
++
++
++## Controlled schedule diagnosis
++
++The [single retained diagnostic](../tests/projection/measurements/diagnostic-20261007-221757/diagnosis.md)
++completed16 controlled CPU/debug executions and17 comparisons. All603source hashes,
++15 archived changed sources and stage logs matched. At fixed batch grouping,
++all-output/last-only, observer/no-observer and replay outputs are bit-identical,
++including a common next token using retained KV. Ordinary and zero paths are
++bit-identical. Every audited site position is present exactly once (8240witnesses);
++3072same-input coordinate comparisons have zero measured error.
++
++The discrepancy follows batch grouping among the tested factors:512+1+1 versus
++512+2. Active final logits differ by up to0.011423110961914062; the original
++grouped-versus-independent-reference comparison still has2outliers above0.01.
++The exact upstream kernel mechanism and universal harmlessness are not established.
++The frozen reference declares513prefill+1decode; the failed extra pruning branch
++ingested all514 as prompt. Any corrected test must separate these factors, retain
++the original failure and long/pruning/reuse coverage, and preserve both numerical
++bounds and the frozen reference. No runtime or vendor correction follows from
++these data. This diagnostic is not full native/public F6e acceptance.
++
++
++The scoped test correction preserves the declared phase boundary for the
++additional independent pruned comparison in all three microbatch cases, keeping
++10042 whole-forward comparisons and704 same-input comparisons. The actual grouped
++prompt path remains covered by a separate all-output versus last-only comparison
++with identical grouping and replay; its raw differences against the independent
++reference stay explicitly outside accepted cross-schedule accuracy. This is a
++separation of test protocols, not a claim that arbitrary grouped prompts meet the
++0.01 reference bound. Runtime and all frozen reference bytes remain unchanged.
++Execution of the correction is pending.
++
++
++The correction is frozen at test-support SHA
++`11504e25a58c570d55966446addc8249f85a08a2f95d6d82314ab8fca686b9fb`.
++Only that test include changed relative to the diagnostic snapshot; all15 source
++hashes and unchanged runtime/reference bytes were checked before launch. The
++new protocol collector passed28 positive/negative controls; the eight existing
++count/backend/benchmark verifier functions are unchanged.
++
++One detached scoped pipeline now runs format/clippy/no-spill compilation, the
++affected seventh case, unexecuted eighth/ninth cases and first CPU/Metal release
++measurements. The pruning receipt separates its144 independent final values
++(already within10042) from144fixed-schedule final,144history and576replay comparisons.
++It recomputes the raw cross-schedule errors without accepting their accuracy.
++No result from this launch is yet accepted. Earlier verified native1–6 retain
++their exact source scopes and are not repeated.
++
++
++## Corrected pruning and CPU pass; Metal admission failure
++
++The [scoped corrected run](../tests/projection/measurements/feasibility-pruning-20261007-224427/diagnosis.md)
++is **FAILED overall**, with successful stages independently verified at source
++manifest77fa1433ad624e0505895f519a9d8df651e88e5708b4fbfe07dc7968da3547c6.
++All623 source/log hashes matched with no warnings. Native7 passed3cases/10042
++independent values (max0.003909901715815067),704same-input values and separately
++verified pruning/history/replay checks. Native8 passed6cases/1negative; native9
++passed3cases/3negative. The two grouped long-prompt outliers remain explicit
++unaccepted cross-schedule observations.
++
++CPU release passed20samples of128tokens with actual CPU-only backend proof.
++Median times for callback-free/dormant/zero/one-site/multi-site were
++1.346264/1.350309750/1.350369667/1.362167250/1.370164250seconds; dormant ratio
++1.0030051684 meets the unchanged1.05bound. Active times are measurements only.
++These accepted results retain this source and do not certify a later correction.
++
++Metal failed in the first tiny-model derivation probe at native_status=-6, before
++any timing sample or completed forward case. The guard uses is_host, while the
++pinned backend reports false even for Metal's shared buffer type. Actual buffer
++mode is not recorded in the failure; source alone does not prove its storage
++kind or justify removing the guard. Exact shared-storage recognition, actual
++buffer proof and continued private/unknown rejection must precede a scoped
++Metal retry. No native/vendor/budget correction has yet been applied.
++
++
++The focused source diagnosis identifies a bounded correction within D046: retain
++the CPU-host fast path, otherwise require actual buffer type identity with the
++registered Metal GPU device's default shared singleton and exact shared
++type/device naming. The pinned default selector and allocator read the same
++immutable initialized shared-buffer property; a private fallback cannot satisfy
++those joint checks. Name matching alone is insufficient. Mapped/private/unknown
++buffers remain refused; no environment, vendor or staging-policy change is planned.
++
++The native owner is implementing this private correction plus scoped negative
++controls and bounded actual-buffer receipts, with new fixed fields charged by
++compiled size. Actual first-ready tiny-model and Qwen producer proof is still
++required before copying. No corrected build or Metal run has been launched.
++The failed buffer's actual subtype is not retroactively inferred from source.
++
++
++### Scoped shared-Metal correction launched (2026-10-07)
++
++The source-only diagnosis above led to a narrow relm-owned buffer predicate:
++keep the generic host fast path, otherwise require actual registered MTL registry,
++GPU device and default buffer-type pointer identity plus canonical whole names.
++Private/mapped/unknown modes remain unsupported. The classifier, row access and
++immediate consumer use the same predicate. Fixed first-ready metadata is retained
++before access and emitted outside callbacks; enlarged runtime slots and two info
++frames plus the compiled access frame are charged explicitly. The memory contract
++now describes these actual fields. No vendor, dependency or public API changed.
++
++The owner froze 15 source hashes (map `db35cdc00ff04c8d06b6da1499e0d5bc248a706abd01fef0e0219995d4a1a38e`), verified 62 synthetic collector controls, and launched
++one detached affected pipeline. It runs the three buffer/capacity/classifier cases
++and the incomplete Metal release leg, preserving all accepted CPU/native evidence
++at its original sources. Native correctness, actual buffer identity and timing
++acceptance are **pending**. Expected raw receipts, strict collector and original
++sources are in `tests/projection/measurements/metal-preflight-20261007`.
++The first synthetic collector fixture had an incorrect fake device-name token;
++its failure and source are retained separately, corrected before any new native
++execution. This is not a product failure or native acceptance.
++
++
++### Private Metal acceptance independently verified (2026-10-07)
++
++`feasibility-metal-20261007-232232` completed the three affected tests, format,
++clippy and no-spill compilation, then the Metal leg. Independent owner verification
++matched 623 source hashes, 14 archived source members, seven log hashes and zero
++warnings. The exact source manifest is
++`31a68e040cd179e8c8120e0adeaafebef0685ba5d6902339c7ef9aa98420ea38`.
++The driver retains `awaiting_owner_verification`; the separate owner result is
++`verified`, preserving the two distinct stages.
++
++The guard/capacity/classifier tests completed 21/8/12 cases and rejected 17/1/8
++negative controls. Actual compiled buffer/info PODs are 104/128 bytes; all 32
++152-byte proof slots are charged in the 5,072-byte runtime, plus two info frames
++and the 77-byte compiled access frame. The maximum private example totals
++18,633,740 bytes. This is not the still-pending combined public R/FFI ledger.
++
++Actual MTL0 shared-buffer receipts total 71: 57 tiny-Llama and 14 Qwen probe/
++projected-context records. All require exact native registry/device/default-type
++identity, canonical complete names, GPU type, nonweight usage, extent and layout.
++The tiny reference passed 15 cases/34,748 values (maximum absolute error
++0.0032854005694389343, bound0.01), with 2,944 actual same-row comparisons and zero
++error at that boundary. Tiny offload was 4/4; Qwen offload was 25/25 with a
++75.06 MiB MTL0 compute buffer.
++
++Twenty release Qwen samples completed 128 tokens each. The five median elapsed
++times (callback-free, dormant, zero, one active site, three active sites) were
++1.196870416 / 1.231477208 / 1.234167583 / 1.276123875 / 1.368325542 seconds.
++The dormant ratio was 1.0289144017074612, below the unchanged1.05 bound. Active
++cost is measured without a new acceptance threshold. CPU and earlier numerical
++results retain their exact separately recorded parent scopes; none was rerun.
++The cross-batch-grouping discrepancy remains explicitly unaccepted accuracy,
++with its earlier diagnostics unchanged. No arbitrary batching invariance claim.
++
++All 21 raw/verification files (657,647 bytes before the archive manifest) are
++retained in `tests/projection/measurements/feasibility-metal-20261007-232232`.
++Private feasibility is now accepted within these source/site/backend scopes.
++Public projection remains unavailable. Work proceeds to the compiled combined
++allocation profile/R twin before production arming, schema2 artifacts and the
++remaining installed/resource/evaluation/instrumented/review gates.
++
++
++### Source-only R artifact and presentation extension (2026-10-07)
++
++The parent implemented component schema2 construction, full-width first/last-layer
++validation and version2 prefixes for every canonical domain. Residual schema1
++keeps its original arithmetic and prefix. Artifact validation rejects component/
++capture/schema mismatches. Default additive application explicitly refuses new
++component artifacts; public projection application is still unavailable pending
++the combined ledger and native boundary.
++
++Four new source-only cases passed1,405 expectations, including all11 independent
++schema2 byte vectors and both independently produced artifacts. Two affected
++schema1 compatibility cases passed1,074 expectations (19 frozen typed streams and
++artifact validation); no prior arithmetic/model suite was rerun. All23/40 source
++hashes respectively matched. The internal source harness substitutes only namespace
++lookups with the exact sourced R definitions; this is not installed acceptance.
++All test failures/errors/skips/warnings were zero; the external testthat patch-version
++warning remains in raw logs. Evidence is archived under schema2-source-20261007-232924
++and schema1-compatibility-20261007-233126 in projection measurements.
++
++The map appends integer configured_projections at each configured component,
++including zero coefficients, and labels static P counts separately from residual
++S/A. Model print/summary identify fixed component projections without vectors.
++Two source-only table/description/history-filter cases passed13 expectations,
++with27source hashes matched. Additive live history remains unchanged. Rendering,
++installed tests and real projected handles remain pending. No visual or public
++feature acceptance is inferred from these table cases.
++
++The pre-integration source audit also replaces the old rejected `attn_out`
++capture fixture with still-unsupported `attn_heads`, because D046 now admits
++full-width attention components. The nine refusal assertions remain; that one
++affected legacy case is queued for the next targeted/installed test batch.
++
++## Configurable admission verification in progress (2026-10-08)
++
++The compiled profile now enumerates26 fields,15 admission inputs and13 terms.
++The independent R twin checks exact arithmetic, per-field response parity and
++strict command/profile shapes. The queued model-free pipeline combines seven
++R cases (including one affected existing negative case), six native profile
++tests and one FFI test, then12 actual compiled admission receipts/156terms.
++It includes exact-budget and budget-minus-one controls and actual R pointer-tag
++measurements using closed empty handles. The39 parser controls are synthetic
++collector acceptance, not native results. Full execution remains pending.
++
++The measured R transport prototype is not the complete constructor bound.
++Source/candidate state environments/finalizers, residual construction working
++copies, exact reservations, source-identity and cached-proof validation, dynamic
++weak-registry capacity revalidation and the handle-only return must all be bound
++to the eventual implementation before production arming. No public resource
++acceptance or feature completion is claimed from arithmetic parity alone.
++
++The first configurable-ledger attempt (public-ledger-20261008-003048) passed
++seven R cases/229 expectations, format and engine clippy, then FAILED FFI test
++compilation before any native case: `extendr_api::test!` requires undeclared
++`extendr_engine`. A test-only correction using existing R linkage is being
++prepared; no new dependency is approved. Complete failed sources/logs and the
++separate partial verification are retained. The R source scope stays accepted;
++actual compiled native/R parity is still unexecuted.
++
++The affected harness correction now executes the internal FFI selftest on the
++real R main thread. A fresh scratch DLL is linked from the current static
++archives with the package entrypoint and exact Makevars library order; no old
++accepted DLL, installation or wrapper generation is used. The source review
++verified all13 frozen hashes and the link flags. Fourteen new hosted-result
++parser controls passed; six unchanged parser functions retain39 earlier controls.
++The corrected background run carries the accepted R source checks/engine clippy
++and executes only the affected FFI compilation plus previously unexecuted
++native/hosted/parity gates. Results at launch remained pending; the following
++record supersedes that pending status without relabelling either failed driver.
++
++### Native results and collector recovery
++
++`public-ledger-resume-20261008-010121` completed all12 execution stages, including
++six exact llm libtests (48 cases/21 refusals) and one actual R-hosted FFI outcome
++(47 cases/19 refusals). The fresh scratch DLL, its actual Cargo static artifact,
++all nine linked archives, entrypoint,12 logs,101 source hashes and29 source-archive
++members were independently verified. No models or compiler/linker warnings.
++The driver nevertheless **FAILED** its collector: the populated external pointers
++measured184 bytes each, whereas the collector incorrectly expected empty64-byte
++pointers. Raw tag measurements and the original collector are preserved.
++
++`ledger-tag-recovery-20261008` corrects only that measurement interpretation:
++28 focused controls, including27 refusals, passed against the retained actual
++receipt; the other six parser functions are AST-identical. No native execution
++was repeated. The previously unexecuted independent R step then matched all156
++terms across12 native admissions, accepted12 exact budgets and refused12 budgets
++minus one. This is a separate verified result, not a successful original run.
++The [R ownership contract](f6e-r-ownership-contract.md) records the actual tags,
++pool sizes, environment and finalizer owners and the remaining constructor gate.
++
++### R constructor materialization, still unarmed
++
++The new scalar inventory and five preallocated residual arrays are source-tested,
++not installed acceptance. Seven cases/70 expectations pass across explicit scopes:
++27 unchanged expectations in four cases from `owners-source-20261008-013033`,
++10 corrected scan expectations,26 new candidate-wrapper expectations from
++`owners-constructor-20261008-013420`, and7 affected inventory expectations from
++`owners-rebox-20261008-013803`. The original source run remains FAILED (42 passing/
++one failed expectation): its negative fixture used `attr(names(x), ...) <-`,
++whose replacement strips that attribute. An explicit attributed names structure
++preserves the intended malformed input and the corrected case passes. Five
++carried helper bodies were compared as parsed R expressions; no old suite rerun.
++
++The wrapper shares old entries/metadata, creates one independent un-hashed state
++and retains explicit inheritance budget settings. Actual pool checks cover
++H1/2/3/16/17/65536 and mixed residual order. The last targeted source snapshot
++matched all8 hashes with no drift. All source test cases have zero failures,
++skips or test warnings at their accepted scopes; the external testthat build
++patch-version warning remains in the logs. No DLL/model/UI invocation occurred.
++
++The pending bounded native state query must reject active/promise/extra bindings
++without evaluation. Official ordinary-binding access may rebox at most two
++immediate scalars; the R workspace explicitly charges112 bytes. The accessor uses
++installed R headers, not a copied private SEXPREC layout. Its compiled frame and
++native transfer/cache/registry validation still require execution, followed by
++the actual combined constructor gate. Public projection remains unavailable.
++
++### Opaque pointer declaration correction
++
++`unarmed-transfer-20261008-014739` FAILED FFI clippy before any of the six
++planned native/hosted outcomes ran. Format and engine clippy passed. All107
++source hashes,36 archived source members and three stage-log hashes were
++independently verified; the complete failed attempt is retained. Rust rejected
++the accessor's `SEXP` declaration because extendr's pointee is non-exhaustive.
++
++The correction declares the two incoming object pointers as `*mut c_void` and
++casts the protected R object pointers at the call. The C implementation still
++uses the installed official `SEXP` definition. Rust does not inspect that
++layout; argument count, pointer representation, C checks and compiled ledger
++remain unchanged. No lint suppression, dependency or unsafe R initializer was
++added. The targeted resume carries engine clippy only with unchanged source
++hashes, then runs affected FFI checks and the unexecuted transfer/state gates.
++That resume is now independently verified below. Public constructor acceptance
++remains pending.
++
++### Verified unarmed transfer and R state boundary
++
++`unarmed-transfer-resume-20261008-015335` passed nine execution stages: format,
++FFI clippy, no-spill compile, three new exact libtests, current static build,
++fresh DLL link and the R-hosted fixture. Engine clippy retains its unchanged
++parent-source result. The six native/hosted outcomes contain78 controls and55
++refusals. All107 source hashes,36 archived members,42 installed R headers and
++nine log hashes match; there are no compiler/linker warnings or model calls.
++The independent verifier binds the C object's actual bytes inside both its
++private archive and the bundled production archive, all nine linked archives,
++the package entrypoint and fresh DLL digest
++`18609cd281c2530c88a6f47c79a635d44afc2788c420ef34bb029cc1e449fb7f`.
++
++Actual compiled-scalar, un-hashed and29-slot hashed state queries report two
++bindings and an8-byte C-finalizer pointer. Query workspace264 fits the unchanged
++1464-byte response workspace. Two cross-boundary R cases construct real wrappers
++around closed empty native pointers, validate independent candidate state,
++invoke close/finalizer handling and preserve source state. Extra state storage
++is992 and1272 bytes respectively. These fixtures do not load a model or prove
++actual projection construction/admission.
++
++The only profile changes are dynamic registry storage96→160 and the containing
++FFI term1720→1784. The compiled equation charges old capacity plus replacement
++capacity and a24-byte descriptor: `(2 * capacity + 1) * 8 + 24`. The fixture's
++capacity grows from4 to8; no layout/formula or reserve changed. The next actual
++constructor must revalidate this dynamic term, source ownership and full budget.
++The owner verifier initially assumed Cargo emitted only a static archive; actual
++Cargo configuration/output contains both `rlib` and `staticlib`. Its corrected
++exact two-kind/archive binding uses retained output, without native reexecution.
++The initial verifier is archived alongside the separate successful verification.
++
++The constructor is being implemented behind an internal default-off test
++activation feature. Public application stays unavailable until the actual
++loaded-model/combined-budget gates pass, including any newly charged residual
++capability probe and its independent R arithmetic.
++
++### CI fixture binding preparation
++
++The existing golden job now includes the frozen D046 reference check and the
++14-file installed schema-2 mirror check, with unchanged tooling pins/job names.
++Three local binding tests pass, including missing/extra/changed package files
++and matching corruption in both copies. This executes no numerical producer,
++engine or model. The new remote reference step has not run; the prior local
++reference acceptance retains its original source and scope.
++
++### Private constructor gate prepared
++
++The default-off `projection-private` feature now contains the actual constructor
++and an unregistered native/R transfer path. Its R shell, type tag, finalizer and
++complete handle-only result allocate while the pointer address is NULL. Rust
++owners are installed with a nonallocating official setter afterward. No R call
++occurs while holding the native source/registry transaction. Public construction
++is still unavailable.
++
++The compiled allocation profile advances to version2 (27 profile fields,
++15 inputs,14 terms). Uncached residual capabilities have an explicit sequential
++probe charge `8HD + 4H + residual_probe_fixed_bytes` when either residual kind is
++requested, zero otherwise. Actual constructor/shell/receipt descriptors enlarge
++their existing compiled terms. The independent R twin and measured transport
++schema are updated; earlier version1 acceptance remains scoped to its source.
++
++The next frozen run requires three new R cases/61 expectations, affected default
++and private-feature compilation, three native constructor tests and one R-hosted
++outcome:49 cases/35 refusals,240 frozen composition logits under the unchanged
++0.01 bound, and four compiled native/R admissions with56 terms and exact/minus-one
++budgets. It loads only the committed tiny model, three times. The45 planned
++decode calls are source-derived scheduling information, not an executed count.
++Twenty native source hashes, four reference/model hashes and42 installed R
++headers are bound;56 synthetic collector controls and five R syntax parses pass.
++No native/model result is claimed at preparation. Full R owner inventory at the
++public constructor, installed integration and subsequent acceptance remain open.
++
++The first run, `private-constructor-20261008-024059` (PID57108), failed private
++FFI compilation before any native test or model load. Three R source cases/61
++expectations, formatting and engine clippy passed. Independent retention checks
++matched115 source hashes,43 archived source members and four stage logs. The
++external testthat R4.5.2 patch-version warning remains explicit.
++
++The compiler found a malformed closing brace in the selftest's JSON receipt and
++an extra boundary validation calling crate-private dimension accessors. The
++narrow correction fixes the brace and removes that duplicate validation. The
++actual native constructor still derives authoritative dimensions and validates
++the same borrowed arrays immediately before its five exact copies, inside the
++existing source/registry transaction. No accessor visibility, memory formula,
++numerical tolerance, assertion, dependency or production activation changes.
++
++The affected resume carries the exact-source R61 and engine-clippy results,
++runs the interrupted FFI and previously unexecuted gates, and preserves the first
++run as failed. Its remaining execution/collector block is byte-identical;56
++synthetic collector controls retain their original scope. No constructor result
++has yet been accepted. See `constructor-correction-preflight-20261008` and the
++complete original failed run under `tests/projection/measurements/`.
+diff --git a/rebirth/R/direction-encoding.R b/rebirth/R/direction-encoding.R
+index 2faefb5..c8ca587 100644
+--- a/rebirth/R/direction-encoding.R
++++ b/rebirth/R/direction-encoding.R
+@@ -49,8 +49,11 @@ direction_encode <- function(x, emit, vector = FALSE) {
+   invisible(NULL)
+ }
+ 
+-direction_stream <- function(domain, x, emit, vector = FALSE) {
+-  emit(c(charToRaw("relm_direction/1"), as.raw(0)))
++direction_stream <- function(domain, x, emit, vector = FALSE, schema = "relm_direction/1") {
++  if (!identical(schema, "relm_direction/1") && !identical(schema, "relm_direction/2")) {
++    direction_fail("direction_schema", "Unsupported direction encoding schema.")
++  }
++  emit(c(charToRaw(schema), as.raw(0)))
+   direction_encode(domain, emit)
+   direction_encode(x, emit, vector)
+   invisible(NULL)
+@@ -58,7 +61,7 @@ direction_stream <- function(domain, x, emit, vector = FALSE) {
+ 
+ direction_write_bytes <- function(bytes, con) writeBin(bytes, con)
+ 
+-direction_hash <- function(domain, x, limit, vector = FALSE) {
++direction_hash <- function(domain, x, limit, vector = FALSE, schema = "relm_direction/1") {
+   path <- tempfile("relm-direction-", fileext = ".bin")
+   con <- NULL
+   on.exit({
+@@ -76,7 +79,7 @@ direction_hash <- function(domain, x, limit, vector = FALSE) {
+       direction_write_bytes(bytes, con)
+       count <<- count + length(bytes)
+     }
+-    direction_stream(domain, x, emit, vector)
++    direction_stream(domain, x, emit, vector, schema)
+     close(con); con <- NULL
+     size <- file.info(path)$size
+     if (length(size) != 1L || is.na(size) || size != count) {
+diff --git a/rebirth/R/direction-schema.R b/rebirth/R/direction-schema.R
+index 5b1993a..5a6b230 100644
+--- a/rebirth/R/direction-schema.R
++++ b/rebirth/R/direction-schema.R
+@@ -20,6 +20,13 @@ direction_digest <- function(x) {
+   direction_text(x, 64L) && grepl("^[0-9a-f]{64}$", x)
+ }
+ 
++direction_component_schema <- function(component) {
++  if (!direction_text(component) || !component %in% c("residual", "mlp_out", "attn_out")) {
++    abort_argument("context", "Use a full-width residual, mlp_out or attn_out capture component.")
++  }
++  if (component == "residual") "relm_direction/1" else "relm_direction/2"
++}
++
+ direction_record <- function(x, fields, argument = "context") {
+   if (!is.list(x) || is.object(x) || !identical(names(attributes(x)), "names") ||
+       length(x) != length(fields) || anyDuplicated(names(x)) ||
+@@ -110,12 +117,13 @@ direction_context <- function(x, pair_ids = NULL, h = NULL) {
+   }
+   cpt <- direction_record(x$capture, c("component", "positions", "input_format", "tokenizer",
+     "add_special", "parse_special", "template_sha256", "context_length", "backend", "relm_version"))
+-  fixed <- list(component = "residual", positions = "last", input_format = "raw_text",
++  direction_component_schema(cpt$component)
++  fixed <- list(positions = "last", input_format = "raw_text",
+     tokenizer = "gguf_embedded", add_special = TRUE, parse_special = FALSE, template_sha256 = NULL)
+   if (!identical(cpt[names(fixed)], fixed) ||
+       !direction_number(cpt$context_length, 1L) || !direction_text(cpt$backend) ||
+       !cpt$backend %in% c("cpu", "metal", "cuda") || !direction_text(cpt$relm_version)) {
+-    abort_argument("context", "Use the documented raw-text, last-position residual capture profile and explicit resolved backend.")
++    abort_argument("context", "Use the documented raw-text, last-position full-width capture profile and explicit resolved backend.")
+   }
+   cpt$context_length <- as.integer(cpt$context_length)
+   x$capture <- cpt
+diff --git a/rebirth/R/direction-validation.R b/rebirth/R/direction-validation.R
+index 1da0b79..8861688 100644
+--- a/rebirth/R/direction-validation.R
++++ b/rebirth/R/direction-validation.R
+@@ -52,7 +52,7 @@ direction_validate <- function(x, max_bytes = 64 * 1024^2, extra_bytes = 0) {
+         typeof(x$neuron) != "integer" || typeof(x$value) != "double" ||
+         !is.null(attributes(x$neuron)) || !is.null(attributes(x$value)) ||
+         length(x$neuron) != .row_names_info(x, 2L) || length(x$value) != length(x$neuron)) {
+-      direction_fail("direction_schema", "Use an unchanged relm_direction version-1 data frame with complete coordinates.")
++      direction_fail("direction_schema", "Use an unchanged relm_direction data frame with complete coordinates.")
+     }
+     meta <- direction_record(attr(x, "direction", exact = TRUE),
+       c("schema", "layer", "component", "context", "method", "diagnostics", "producer", "digests"), "direction")
+@@ -64,11 +64,13 @@ direction_validate <- function(x, max_bytes = 64 * 1024^2, extra_bytes = 0) {
+     n <- nrow(context$pairs); h <- length(x$value)
+     estimate <- direction_estimate(input_bytes, context_bytes, n, h)
+     direction_admit(estimate, budget)
+-    if (!identical(meta$schema, "relm_direction/1") || !identical(meta$component, "residual") ||
+-        typeof(meta$layer) != "integer" || !direction_number(meta$layer, 2L, context$model$layers) ||
++    schema <- direction_component_schema(context$capture$component)
++    first_layer <- if (context$capture$component == "residual") 2L else 1L
++    if (!identical(meta$schema, schema) || !identical(meta$component, context$capture$component) ||
++        typeof(meta$layer) != "integer" || !direction_number(meta$layer, first_layer, context$model$layers) ||
+         !identical(x$neuron, seq_len(h)) || anyNA(x$value) || any(!is.finite(x$value)) ||
+         abs(direction_norm(x$value) - 1) > 1e-12) {
+-      direction_fail("direction_coordinates", "The artifact's layer, full residual coordinates or unit values are invalid.")
++      direction_fail("direction_coordinates", "The artifact's schema, component, layer, full coordinates or unit values are invalid.")
+     }
+     method <- direction_record(meta$method, c("algorithm", "normalize_pairs", "orthogonalize"), "direction")
+     if (!identical(method$algorithm, "paired_difference_mean/1") ||
+@@ -96,10 +98,10 @@ direction_validate <- function(x, max_bytes = 64 * 1024^2, extra_bytes = 0) {
+       class = c("relm_direction", "data.frame"), direction = meta)
+     limit <- 2^20 + 4 * context_bytes + 64 * (n + h)
+     actual <- c(
+-      pairs = direction_hash("pairs", context$pairs, limit),
+-      splits = direction_hash("splits", context$splits, limit),
+-      values = direction_hash("values", list(neuron = x$neuron, value = x$value), limit),
+-      payload = direction_hash("artifact", direction_payload(canonical), limit))
++      pairs = direction_hash("pairs", context$pairs, limit, schema = schema),
++      splits = direction_hash("splits", context$splits, limit, schema = schema),
++      values = direction_hash("values", list(neuron = x$neuron, value = x$value), limit, schema = schema),
++      payload = direction_hash("artifact", direction_payload(canonical), limit, schema = schema))
+     if (!identical(unname(actual), unname(unlist(digests[names(actual)], use.names = FALSE)))) {
+       direction_fail("direction_integrity", "Direction data or provenance changed since construction. Reload the original verified artifact.")
+     }
+diff --git a/rebirth/R/directions.R b/rebirth/R/directions.R
+index 5de8e53..57064c0 100644
+--- a/rebirth/R/directions.R
++++ b/rebirth/R/directions.R
+@@ -1,6 +1,6 @@
+ #' Construct a recorded contrast direction
+ #'
+-#' Build a unit residual direction from paired, already collected activations.
++#' Build a unit full-width direction from paired, already collected activations.
+ #' The positive sign is target minus control. This function performs no inference.
+ #'
+ #' @param target,control Plain double matrices with identical named pairs as rows
+@@ -8,7 +8,8 @@
+ #' @param context For construction, a recorded list with `model`, `capture`,
+ #'   `pairs`, `splits` and `seed`; see Details and the contrast-directions vignette.
+ #'   For application, an independently recorded destination `model` record.
+-#' @param layer One whole layer from 2 through the recorded model's layer count.
++#' @param layer One whole layer: 2 through the recorded layer count for residual
++#'   captures; 1 through that count for `mlp_out` and `attn_out` captures.
+ #' @param normalize_pairs Whether to give each pair difference unit length before
+ #'   averaging. Defaults to FALSE, preserving relative pair magnitudes.
+ #' @param orthogonalize Whether to remove the component parallel to the mean
+@@ -20,7 +21,8 @@
+ #'   No model pointer, input matrix or trace is retained.
+ #' @details
+ #' Context records a model checksum, architecture, quantization, hidden width,
+-#' layer count and patched engine revision. Capture is full residual space at
++#' layer count and patched engine revision. Capture is full-width residual,
++#' `mlp_out` or `attn_out` space at
+ #' the last prompt position, raw text, embedded tokenizer, `add_special = TRUE`,
+ #' `parse_special = FALSE`, no external template, plus resolved backend, context
+ #' length and package version. Pairs record ordered IDs, exact UTF-8 prompt
+@@ -38,6 +40,9 @@
+ #' They detect modification but do not authenticate recorded provenance or
+ #' already-loaded weights. Caller deserialization and native model/context
+ #' memory are outside this budget. Never read untrusted RDS files.
++#' Residual artifacts retain schema 1. Component artifacts use schema 2, with
++#' component-specific identity and a versioned prefix in every checksum domain.
++#' Construction does not prove that a model supports editing the recorded site.
+ #' @seealso [llm_trace()], [llm_steer()], [llm_apply_direction()],
+ #'   [llm_compare()], [llm_timeline()]
+ #' @export
+@@ -56,7 +61,10 @@ llm_direction <- function(target, control, context, layer,
+   direction_admit(estimate, budget)
+   direction_matrix_names(target, "target")
+   context <- direction_context(context, rownames(target), dims[2L])
+-  if (!direction_number(layer, 2L, context$model$layers)) abort_argument("layer", "Use one whole supported layer, from 2 through the recorded layer count.")
++  component <- context$capture$component
++  schema <- direction_component_schema(component)
++  first_layer <- if (component == "residual") 2L else 1L
++  if (!direction_number(layer, first_layer, context$model$layers)) abort_argument("layer", "Use one whole layer in the component's supported range: residual 2:L, MLP/attention 1:L.")
+   for (arg in c("normalize_pairs", "orthogonalize")) {
+     value <- get(arg)
+     if (!is.logical(value) || !is.null(attributes(value)) || length(value) != 1L || is.na(value)) {
+@@ -67,19 +75,19 @@ llm_direction <- function(target, control, context, layer,
+   n <- dims[1L]; h <- dims[2L]
+   limit <- 2^20 + 4 * context_bytes + 64 * (n + h)
+   matrix_limit <- 8 * as.double(n) * h + 2^20 + 136 * n + 16 * h
+-  meta <- list(schema = "relm_direction/1", layer = as.integer(layer), component = "residual",
++  meta <- list(schema = schema, layer = as.integer(layer), component = component,
+     context = context,
+     method = list(algorithm = "paired_difference_mean/1", normalize_pairs = normalize_pairs, orthogonalize = orthogonalize),
+     diagnostics = fitted$diagnostics,
+     producer = list(relm_version = as.character(utils::packageVersion("relm")), r_version = as.character(getRversion())),
+-    digests = list(target = direction_hash("matrix", target, matrix_limit),
+-      control = direction_hash("matrix", control, matrix_limit),
+-      pairs = direction_hash("pairs", context$pairs, limit),
+-      splits = direction_hash("splits", context$splits, limit),
+-      values = direction_hash("values", list(neuron = seq_len(h), value = fitted$value), limit)))
++    digests = list(target = direction_hash("matrix", target, matrix_limit, schema = schema),
++      control = direction_hash("matrix", control, matrix_limit, schema = schema),
++      pairs = direction_hash("pairs", context$pairs, limit, schema = schema),
++      splits = direction_hash("splits", context$splits, limit, schema = schema),
++      values = direction_hash("values", list(neuron = seq_len(h), value = fitted$value), limit, schema = schema)))
+   result <- structure(list(neuron = seq_len(h), value = fitted$value),
+     row.names = .set_row_names(h), class = c("relm_direction", "data.frame"), direction = meta)
+-  meta$digests$payload <- direction_hash("artifact", direction_payload(result), limit)
++  meta$digests$payload <- direction_hash("artifact", direction_payload(result), limit, schema = schema)
+   attr(result, "direction") <- meta
+   direction_stage(estimate, target, control, context, fitted, meta, result, double(8L * h), raw(4096L))
+   result
+@@ -112,6 +120,10 @@ llm_apply_direction <- function(m, direction, context, coef = 1,
+   direction_admit(extra + as.double(utils::object.size(direction)) + 2^20, budget)
+   context <- direction_model(context)
+   validated <- direction_validate(direction, budget, extra_bytes = extra)
++  if (!identical(validated$metadata$schema, "relm_direction/1") ||
++      !identical(validated$metadata$component, "residual")) {
++    direction_fail("direction_operator", "Additive application requires a schema-1 residual direction; a component direction cannot be relabelled as residual.")
++  }
+   record <- validated$metadata$context$model
+   if (!identical(context, record) || !identical(m$architecture, record$architecture) ||
+       !identical(m$quantization, record$quantization) ||
+@@ -130,7 +142,7 @@ llm_apply_direction <- function(m, direction, context, coef = 1,
+ print.relm_direction <- function(x, ...) {
+   if (length(list(...))) abort_argument("...", "No additional print arguments are supported.")
+   valid <- direction_validate(x); meta <- valid$metadata
+-  cat(sprintf("<relm_direction> layer %d, %d residual coordinates, %d pairs\n", meta$layer, nrow(x), nrow(meta$context$pairs)))
++  cat(sprintf("<relm_direction> layer %d, %d %s coordinates, %d pairs\n", meta$layer, nrow(x), meta$component, nrow(meta$context$pairs)))
+   cat(sprintf("  pair normalization: %s; control orthogonalization: %s\n", meta$method$normalize_pairs, meta$method$orthogonalize))
+   cat(sprintf("  recorded model: %s / %s\n", meta$context$model$architecture, meta$context$model$quantization))
+   cat(sprintf("  recorded SHA-256: %s\n", meta$context$model$sha256))
+diff --git a/rebirth/R/graphics-plots.R b/rebirth/R/graphics-plots.R
+index 9924ebd..dfaf9d4 100644
+--- a/rebirth/R/graphics-plots.R
++++ b/rebirth/R/graphics-plots.R
+@@ -32,17 +32,22 @@ graphics_model_table <- function(x, layers) {
+   detailed <- x$architecture %in% c("llama", "qwen2")
+   sites <- if (detailed) c("attn_out", "mlp_out", "residual") else "block"
+   out <- data.frame(layer = rep(layers, each = length(sites)), site = rep(sites, length(layers)),
+-    detail = "", configured_steers = 0L, configured_ablations = 0L)
++    detail = "", configured_steers = 0L, configured_ablations = 0L,
++    configured_projections = 0L)
+   for (i in seq_len(nrow(out))) {
+     site <- out$site[i]
+     out$detail[i] <- switch(site, attn_out = if (x$architecture == "llama")
+       "Post-projection attention; observation site" else "Post-projection attention; capture unavailable for qwen2",
+       mlp_out = "MLP output; observation site", residual = "Post-intervention residual; steer before ablate",
+       block = "Generic block; internal topology not asserted")
+-    if (site %in% c("residual", "block")) for (iv in x$interventions) {
++    for (iv in x$interventions) {
+       if (identical(iv$layer, out$layer[i])) {
+-        if (identical(iv$kind, "steer")) out$configured_steers[i] <- out$configured_steers[i] + 1L
+-        if (identical(iv$kind, "ablate")) out$configured_ablations[i] <- out$configured_ablations[i] + 1L
++        if (site %in% c("residual", "block")) {
++          if (identical(iv$kind, "steer")) out$configured_steers[i] <- out$configured_steers[i] + 1L
++          if (identical(iv$kind, "ablate")) out$configured_ablations[i] <- out$configured_ablations[i] + 1L
++        }
++        if (identical(iv$kind, "project") && (identical(iv$component, site) || site == "block"))
++          out$configured_projections[i] <- out$configured_projections[i] + 1L
+       }
+     }
+   }
+@@ -58,7 +63,9 @@ graphics_model_table <- function(x, layers) {
+ #' @param x An open llm handle.
+ #' @param layers NULL for up to 32 blocks, or explicit unique 1-based indices.
+ #' @param ... Named main, cex or col (one or three colors).
+-#' @return Invisibly, the plain data frame of displayed sites and intervention counts.
++#' @return Invisibly, the plain data frame of displayed sites and intervention
++#'   counts. `configured_projections` counts static component projections,
++#'   including zero coefficients; it does not count additive live revisions.
+ #' @seealso [llm_timeline()], [llm_compare()]
+ #' @examples
+ #' # Optional local model; never downloads a model during examples.
+@@ -92,11 +99,15 @@ plot.llm <- function(x, layers = NULL, ...) {
+       xs <- left + (right - left) * c(0.28, 0.58, 0.86)
+       graphics::arrows(xs[1:2] + 0.055 / columns, y - h * 0.10,
+         xs[2:3] - 0.04 / columns, y - h * 0.10, length = 0.045, col = "#8995A3")
+-      graphics::text(xs, y - h * 0.10, c("Attn", "MLP", "R"), cex = 0.65, col = opts$col,
+-        font = c(1, 1, 2))
++      labels <- c("Attn", "MLP", "R")
++      projected <- part$configured_projections > 0L
++      labels[projected] <- sprintf("%s[P%d]", labels[projected], part$configured_projections[projected])
++      graphics::text(xs, y - h * 0.10, labels, cex = 0.65, col = opts$col,
++        font = ifelse(projected, 2, c(1, 1, 2)))
+     } else graphics::text((left + right) / 2, y - h * 0.12, "Generic block", cex = 0.65)
+     s <- sum(part$configured_steers); a <- sum(part$configured_ablations)
+-    label <- if (s + a) sprintf("S:%d  A:%d", s, a) else if (selected[i] == 1L) "Steer unavailable" else "No intervention"
++    p <- sum(part$configured_projections)
++    label <- if (p) sprintf("P:%d  S:%d  A:%d", p, s, a) else if (s + a) sprintf("S:%d  A:%d", s, a) else if (selected[i] == 1L) "Steer unavailable" else "No intervention"
+     graphics::text(right - 0.005, y + h * 0.31, label, adj = 1, cex = 0.48)
+     previous <- if (i == 1L) 0L else selected[i - 1L]
+     if (selected[i] > previous + 1L)
+@@ -109,7 +120,8 @@ plot.llm <- function(x, layers = NULL, ...) {
+     if (isTRUE(attr(tab, "vision_input"))) " | external vision input" else ""), side = 3, line = 0.15, cex = 0.68)
+   notice <- if (attr(tab, "architecture") == "qwen2") "Qwen2 attention output capture unavailable. " else ""
+   graphics::mtext(paste0(notice, "Metadata, not activity or causal edges."), side = 1, line = 0.8, cex = 0.65)
+-  graphics::mtext("Attn: attention output   MLP: feed-forward output   R: residual | S: steer, then A: ablate", side = 1, line = 1.9, cex = 0.61)
++  graphics::mtext("Attn: attention output   MLP: feed-forward output   R: residual", side = 1, line = 1.7, cex = 0.61)
++  graphics::mtext("P: static component projection | S: residual steer, then A: ablate", side = 1, line = 2.5, cex = 0.61)
+   invisible(tab)
+ }
+ 
+diff --git a/rebirth/R/llm.R b/rebirth/R/llm.R
+index 153780c..7d7b1ee 100644
+--- a/rebirth/R/llm.R
++++ b/rebirth/R/llm.R
+@@ -325,6 +325,9 @@ print.llm <- function(x, ...) {
+     cat(sprintf("  projector:       %s\n", basename(x$projector)))
+   }
+   cat(sprintf("  interventions:   %d active\n", length(x$interventions)))
++  for (iv in x$interventions) {
++    if (identical(iv$kind, "project")) cat(sprintf("    - %s\n", format_intervention(iv)))
++  }
+   invisible(x)
+ }
+ 
+@@ -407,6 +410,9 @@ format_intervention <- function(iv) {
+       "ablate layer %d  neurons %s -> %s  (%s)",
+       iv$layer, format_index_set(iv$neurons), format(iv$value), iv$component
+     )
++  } else if (identical(kind, "project")) {
++    sprintf("project layer %d  %s  (fixed coef %s, all executed positions)",
++      iv$layer, iv$component, format(iv$coef))
+   } else {
+     "intervention (unrecognized)"
+   }
+diff --git a/rebirth/src/rust/rebirth-ffi/Cargo.toml b/rebirth/src/rust/rebirth-ffi/Cargo.toml
+index b5ba7f9..ab3ff67 100644
+--- a/rebirth/src/rust/rebirth-ffi/Cargo.toml
++++ b/rebirth/src/rust/rebirth-ffi/Cargo.toml
+@@ -27,6 +27,8 @@ path = "document.rs"
+ # `--no-default-features` build drops spill in both crates (no Arrow), keeping the
+ # no-spill configuration coherent end to end.
+ default = ["spill"]
++# Internal constructor gate; never enabled by the public package build.
++projection-private = ["rebirth-llm/projection-private"]
+ spill = ["rebirth-llm/spill"]
+ 
+ [dependencies]
+diff --git a/rebirth/src/rust/rebirth-ffi/src/lib.rs b/rebirth/src/rust/rebirth-ffi/src/lib.rs
+index 9a36965..2fd737a 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/lib.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/lib.rs
+@@ -34,6 +34,9 @@ use rebirth_llm::{
+ // R-main-thread handle registry and async boundary (D-037).
+ include!("async_boundary.rs");
+ include!("live_boundary.rs");
++include!("projection_boundary.rs");
++include!("projection_transfer_boundary.rs");
++include!("projection_constructor_boundary.rs");
+ 
+ // --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
+ 
+@@ -1166,6 +1169,9 @@ extendr_api::extendr_module! {
+     fn rebirth_async_submit;
+     fn rebirth_live_submit;
+     fn rebirth_live_preflight;
++    fn rebirth_projection_allocation_profile;
++    fn rebirth_projection_preflight;
++    fn rebirth_projection_state_facts;
+     fn rebirth_async_state_ack;
+     fn rebirth_async_poll;
+     fn rebirth_async_ack;
+@@ -1182,6 +1188,9 @@ extendr_api::extendr_module! {
+     fn rebirth_spill_cleanup;
+     fn rebirth_spill_sweep;
+     fn rebirth_intervene;
++    fn rebirth_selftest_projection_ledger;
++    fn rebirth_selftest_projection_transfer;
++    fn rebirth_selftest_projection_constructor;
+     fn rebirth_selftest_new_handle;
+     fn rebirth_selftest_validate_image;
+     fn rebirth_selftest_panic;
+diff --git a/rebirth/src/rust/rebirth-llm/Cargo.toml b/rebirth/src/rust/rebirth-llm/Cargo.toml
+index 94fe7bd..b12fe0b 100644
+--- a/rebirth/src/rust/rebirth-llm/Cargo.toml
++++ b/rebirth/src/rust/rebirth-llm/Cargo.toml
+@@ -17,6 +17,8 @@ rust-version.workspace = true
+ # build.rs maps it to -DGGML_CUDA=ON. Default off: WP1 builds Metal (macOS arm64)
+ # or CPU only.
+ default = ["spill"]
++# Internal constructor gate; never enabled by the public package build.
++projection-private = []
+ cuda = []
+ spill = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
+ 
+diff --git a/rebirth/src/rust/rebirth-llm/build.rs b/rebirth/src/rust/rebirth-llm/build.rs
+index e7422d6..960beb2 100644
+--- a/rebirth/src/rust/rebirth-llm/build.rs
++++ b/rebirth/src/rust/rebirth-llm/build.rs
+@@ -36,6 +36,8 @@ fn main() {
+     println!("cargo:rerun-if-changed=native/grammar.cpp");
+     println!("cargo:rerun-if-changed=native/abi.cpp");
+     println!("cargo:rerun-if-changed=native/spill_lease.cpp");
++    println!("cargo:rerun-if-changed=native/projection.cpp");
++    println!("cargo:rerun-if-changed=native/projection.h");
+     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
+     println!(
+diff --git a/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt b/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt
+index 1f1268c..acbf216 100644
+--- a/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt
++++ b/rebirth/src/rust/rebirth-llm/native/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ cmake_minimum_required(VERSION 3.28)
+ project(relm_grammar_bridge LANGUAGES CXX)
+-add_library(relm-grammar STATIC grammar.cpp abi.cpp spill_lease.cpp)
++add_library(relm-grammar STATIC grammar.cpp abi.cpp spill_lease.cpp projection.cpp)
+ target_compile_features(relm-grammar PRIVATE cxx_std_17)
+ set_target_properties(relm-grammar PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ target_include_directories(relm-grammar PRIVATE
+diff --git a/rebirth/src/rust/rebirth-llm/src/engine.rs b/rebirth/src/rust/rebirth-llm/src/engine.rs
+index 6b4fbc2..8a7634a 100644
+--- a/rebirth/src/rust/rebirth-llm/src/engine.rs
++++ b/rebirth/src/rust/rebirth-llm/src/engine.rs
+@@ -505,6 +505,33 @@ impl LoadedModel {
+         self.ctx.ptr.as_ptr()
+     }
+ 
++    /// Allocation-free architecture/backend facts for the unarmed D046 admission.
++    /// A projection derive returns only a handle: immutable metadata is reused by
++    /// R, so this path must not call metadata()/ok_payload() and copy Strings.
++    pub(crate) fn projection_model_facts(&self, component: crate::Component) -> (bool, u64) {
++        assert_current();
++        let mut architecture = [0u8; 7];
++        // SAFETY: live immutable model; a fixed seven-byte destination admits
++        // only the exact supported dense architecture identifiers and NUL.
++        let len = unsafe {
++            ffi::llama_model_meta_val_str(
++                self.ctx.model.ptr.as_ptr(),
++                c"general.architecture".as_ptr(),
++                architecture.as_mut_ptr().cast(),
++                architecture.len(),
++            )
++        };
++        let supported = len == 5
++            && (&architecture[..6] == b"llama\0"
++                || (&architecture[..6] == b"qwen2\0" && component == crate::Component::MlpOut));
++        let backend = match self.ctx.model.resolved_backend {
++            BackendKind::Cpu => 0,
++            BackendKind::Metal => 1,
++            BackendKind::Cuda => 2,
++        };
++        (supported, backend)
++    }
++
+     pub(crate) fn live_capture(&self) -> &crate::live_capture::LiveDispatcher {
+         &self.ctx.live_capture
+     }
+@@ -567,6 +594,8 @@ impl LoadedModel {
+         n_ctx: u32,
+     ) -> Result<EmbeddingContext, RebirthError> {
+         assert_current();
++        #[cfg(any(test, feature = "projection-private"))]
++        self.projection_reject_separate_context()?;
+         let model = self.ctx.model.clone();
+ 
+         // SAFETY: default params are a plain by-value C struct we only tweak. The
+@@ -729,6 +758,13 @@ impl LoadedModel {
+     /// interventions live on the per-context adapters, not the shared weights, so
+     /// a fresh context is a clean slate regardless of what the source carried.
+     pub(crate) fn clone_with_fresh_context(&self) -> Result<LoadedModel, RebirthError> {
++        self.clone_context_config(cfg!(test))
++    }
++    #[cfg(any(test, feature = "projection-private"))]
++    pub(crate) fn clone_projection_context(&self) -> Result<LoadedModel, RebirthError> {
++        self.clone_context_config(true)
++    }
++    fn clone_context_config(&self, preserve_batches: bool) -> Result<LoadedModel, RebirthError> {
+         assert_current();
+         let model = self.ctx.model.clone();
+ 
+@@ -736,6 +772,11 @@ impl LoadedModel {
+         // mirrors `load()`'s generation context (only `n_ctx` is set).
+         let mut cparams = unsafe { ffi::llama_context_default_params() };
+         cparams.n_ctx = self.ctx.context_length;
++        if preserve_batches {
++            cparams.n_batch = self.n_batch();
++            // SAFETY: the source owns this resolved live context.
++            cparams.n_ubatch = unsafe { ffi::llama_n_ubatch(self.ctx_ptr()) };
++        }
+         let mut live_capture = Box::new(crate::live_capture::LiveDispatcher::default());
+         live_capture.install(&mut cparams);
+ 
+@@ -1024,6 +1065,28 @@ fn ftype_name(ftype: i32) -> String {
+     name.to_string()
+ }
+ 
++impl LoadedModel {
++    #[cfg(any(test, feature = "projection-private"))]
++    pub(crate) fn projection_reject_separate_context(&self) -> Result<(), RebirthError> {
++        if self
++            .live_capture()
++            .projection
++            .active
++            .load(std::sync::atomic::Ordering::Acquire)
++        {
++            return Err(crate::projection_profile::bounded_intervention_error(format_args!("Projection requires the owning generation context; trace/embed are unavailable.")));
++        }
++        Ok(())
++    }
++}
++
++#[cfg(test)]
++impl LoadedModel {
++    pub(crate) fn projection_shared_model_owners(&self) -> usize {
++        std::sync::Arc::strong_count(&self.ctx.model)
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+diff --git a/rebirth/src/rust/rebirth-llm/src/ffi.rs b/rebirth/src/rust/rebirth-llm/src/ffi.rs
+index d0aae4b..a40ccc7 100644
+--- a/rebirth/src/rust/rebirth-llm/src/ffi.rs
++++ b/rebirth/src/rust/rebirth-llm/src/ffi.rs
+@@ -853,3 +853,64 @@ mod tests {
+         assert_eq!(actual, expected, "Rust/C layout or enum drift");
+     }
+ }
++
++// D046 compiled profile; tensor mutation remains private and unarmed.
++#[repr(C)]
++#[derive(Default, Clone, Copy)]
++pub(crate) struct ProjectionBufferInfo {
++    pub kind: u32,
++    pub is_host: u32,
++    pub usage: u32,
++    pub device_type: u32,
++    pub flags: u32,
++    pub device_index: u32,
++    pub type_name: [u8; 32],
++    pub device_name: [u8; 32],
++    pub registry_name: [u8; 16],
++}
++#[repr(C)]
++#[derive(Default, Clone, Copy)]
++pub(crate) struct ProjectionInfo {
++    pub rows: u64,
++    pub bytes: u64,
++    pub wrappers: u32,
++    pub access: u32,
++    pub buffer: ProjectionBufferInfo,
++}
++#[cfg(any(test, feature = "projection-private"))]
++extern "C" {
++    pub(crate) fn relm_projection_classify(
++        t: *const ggml_tensor,
++        layer: u32,
++        component: u32,
++        width: usize,
++        ready: bool,
++        out: *mut ProjectionInfo,
++    ) -> i32;
++    pub(crate) fn relm_projection_row(
++        t: *mut ggml_tensor,
++        width: usize,
++        row: usize,
++        data: *mut f32,
++        write: bool,
++    ) -> i32;
++    pub(crate) fn relm_projection_consumer(
++        t: *const ggml_tensor,
++        layer: u32,
++        component: u32,
++        width: usize,
++    ) -> i32;
++    #[cfg(test)]
++    pub(crate) fn relm_projection_classifier_controls() -> u64;
++    #[cfg(test)]
++    pub(crate) fn relm_projection_info_size() -> usize;
++
++    #[cfg(test)]
++    pub(crate) fn relm_projection_buffer_controls() -> u64;
++}
++
++extern "C" {
++    pub(crate) fn llama_n_ubatch(ctx: *const llama_context) -> u32;
++    pub(crate) fn relm_projection_name_frame_size() -> usize;
++    pub(crate) fn relm_projection_access_frame_size() -> usize;
++}
+diff --git a/rebirth/src/rust/rebirth-llm/src/generate.rs b/rebirth/src/rust/rebirth-llm/src/generate.rs
+index 311d880..641e8a0 100644
+--- a/rebirth/src/rust/rebirth-llm/src/generate.rs
++++ b/rebirth/src/rust/rebirth-llm/src/generate.rs
+@@ -519,12 +519,30 @@ impl LoadedModel {
+         // SAFETY: `ctx_ptr` is live; `batch.raw` is a fully-populated batch whose
+         // arrays outlive the call (dropped after it). `llama_decode` reads the
+         // batch by value; we keep ownership of the backing arrays in `batch`.
++        #[cfg(any(test, feature = "projection-private"))]
++        self.projection()
++            .begin(start_pos, tokens.len(), logits_last_only)?;
+         self.live_capture().begin_decode(start_pos, tokens, self)?;
++        #[cfg(test)]
++        let projection_clock = std::time::Instant::now();
+         let status = unsafe { ffi::llama_decode(self.ctx_ptr(), std::ptr::read(&batch.raw)) };
++        #[cfg(test)]
++        self.projection().time_decode(
++            start_pos == 0 || tokens.len() > 1,
++            projection_clock.elapsed().as_secs_f64(),
++        );
++        #[cfg(any(test, feature = "projection-private"))]
++        if let Err(error) = self.projection().end() {
++            // Reuse the worker's existing unusable-context ownership flag.
++            self.steering_restore_failed.set(true);
++            return Err(error);
++        }
+         self.live_capture().end_decode()?;
+         if status != 0 {
+             return Err(RebirthError::Generation {
+-                reason: format!("llama_decode returned {status}"),
++                reason: crate::projection_profile::bounded_error_reason(format_args!(
++                    "llama_decode returned {status}"
++                )),
+             });
+         }
+         Ok(())
+@@ -576,6 +594,17 @@ impl LoadedModel {
+         Ok(())
+     }
+ 
++    #[cfg(any(test, feature = "projection-private"))]
++    pub(crate) fn decode_projection_tokens(
++        &self,
++        tokens: &[i32],
++        start: i32,
++        last: bool,
++    ) -> Result<(), RebirthError> {
++        let _native = crate::NativeGuard::try_acquire("private projection decode")?;
++        self.decode(tokens, start, last)
++    }
++
+     /// Copy the logit row the engine stored for output slot `ith`. A negative
+     /// index reads in reverse (`-1` = the last output row, llama.h L1025) — the
+     /// multimodal ingest uses that to fetch the whole-prompt distribution after
+diff --git a/rebirth/src/rust/rebirth-llm/src/intervene.rs b/rebirth/src/rust/rebirth-llm/src/intervene.rs
+index 281bd7d..439ee6c 100644
+--- a/rebirth/src/rust/rebirth-llm/src/intervene.rs
++++ b/rebirth/src/rust/rebirth-llm/src/intervene.rs
+@@ -59,6 +59,133 @@ pub struct InterventionSpec {
+ }
+ 
+ impl InterventionSpec {
++    // Transfer validation is allocation-free on success. Supplied accumulated
++    // values are not authenticated against discarded source ablation inputs;
++    // only their shape, ownership and mathematical representation are checked.
++    pub(crate) fn projection_validate_residual(
++        &self,
++        width: usize,
++        depth: usize,
++        steer_entries: u64,
++        ablate_entries: u64,
++    ) -> Result<(), RebirthError> {
++        let fail = crate::projection_profile::admission_error;
++        let n = width.checked_mul(depth).ok_or_else(fail)?;
++        if width == 0 || depth == 0 || self.n_embd != width || self.n_layer != depth {
++            return Err(fail());
++        }
++        for (values, range, expected, steering) in [
++            (&self.steer, self.steer_il_range, steer_entries > 0, true),
++            (
++                &self.ablate_mask,
++                self.ablate_il_range,
++                ablate_entries > 0,
++                false,
++            ),
++            (
++                &self.ablate_add,
++                self.ablate_il_range,
++                ablate_entries > 0,
++                false,
++            ),
++        ] {
++            if values.is_some() != expected || range.is_some() != expected {
++                return Err(fail());
++            }
++            if let (Some(values), Some((first, last))) = (values, range) {
++                if values.len() != n
++                    || values.capacity() != n
++                    || first < i32::from(steering)
++                    || last < first
++                    || last as usize >= depth
++                    || values.iter().any(|x| !x.is_finite())
++                {
++                    return Err(fail());
++                }
++            }
++        }
++        for layer in 0..depth {
++            let (steer, ablate) = self.projection_layer_flags(layer);
++            if steer
++                && !self
++                    .steer_il_range
++                    .is_some_and(|(a, b)| layer >= a as usize && layer <= b as usize)
++                || ablate
++                    && !self
++                        .ablate_il_range
++                        .is_some_and(|(a, b)| layer >= a as usize && layer <= b as usize)
++            {
++                return Err(fail());
++            }
++        }
++        if self
++            .ablate_mask
++            .as_ref()
++            .is_some_and(|m| m.iter().any(|&x| x != 0. && x != 1.))
++        {
++            return Err(fail());
++        }
++        Ok(())
++    }
++    pub(crate) fn projection_layer_flags(&self, layer: usize) -> (bool, bool) {
++        let start = layer * self.n_embd;
++        let end = start + self.n_embd;
++        let steer = self
++            .steer
++            .as_ref()
++            .is_some_and(|v| v[start..end].iter().any(|&x| x != 0.));
++        let ablate = self
++            .ablate_mask
++            .as_ref()
++            .zip(self.ablate_add.as_ref())
++            .is_some_and(|(mask, add)| {
++                mask[start..end]
++                    .iter()
++                    .zip(&add[start..end])
++                    .any(|(&m, &a)| m != 1. || a != 0.)
++            });
++        (steer, ablate)
++    }
++    #[cfg(test)]
++    pub(crate) fn projection_allocation_bytes(&self) -> Option<usize> {
++        // Existing spec buffers plus the independently cloned candidate baseline.
++        let mut bytes = std::mem::size_of::<Self>()
++            + std::mem::size_of::<crate::live_steering::SteeringBaseline>();
++        for values in [&self.steer, &self.ablate_mask, &self.ablate_add]
++            .into_iter()
++            .flatten()
++        {
++            bytes = bytes.checked_add(values.capacity().checked_mul(4)?)?;
++        }
++        bytes.checked_add(
++            self.steer
++                .as_ref()
++                .map_or(Some(0), |v| v.len().checked_mul(4))?,
++        )
++    }
++    #[cfg(any(test, feature = "projection-private"))]
++    pub(crate) fn projection_apply(&self, model: &mut LoadedModel) -> Result<(), RebirthError> {
++        let baseline = if let Some((values, range)) = self.steer.as_ref().zip(self.steer_il_range) {
++            let mut copied = Vec::new();
++            copied
++                .try_reserve_exact(values.len())
++                .map_err(|_| crate::projection_profile::admission_error())?;
++            if copied.capacity() != values.len() {
++                return Err(crate::projection_profile::admission_error());
++            }
++            copied.extend_from_slice(values);
++            Some(crate::live_steering::SteeringBaseline {
++                values: copied,
++                range,
++            })
++        } else {
++            None
++        };
++        self.apply_to_context(model.ctx_ptr())?;
++        model.steering_baseline = baseline;
++        Ok(())
++    }
++
+     /// An empty spec for a model of `n_embd` hidden size and `n_layer` blocks.
+     pub fn new(n_embd: usize, n_layer: usize) -> Self {
+         InterventionSpec {
+@@ -183,13 +310,9 @@ impl InterventionSpec {
+                 )
+             };
+             if status != 0 {
+-                return Err(RebirthError::Intervention {
+-                    reason: format!(
+-                        "The engine rejected the ablation mask (intervention setter \
+-                         returned {status}); its width must equal the model's hidden \
+-                         size ({n_embd})."
+-                    ),
+-                });
++                return Err(crate::projection_profile::bounded_intervention_error(format_args!(
++                    "The engine rejected the ablation mask (intervention setter returned {status}); its width must equal the model's hidden size ({n_embd})."
++                )));
+             }
+         }
+ 
+@@ -219,7 +342,9 @@ pub(crate) fn apply_steering_buffer(
+         )
+     };
+     if status != 0 {
+-        return Err(RebirthError::Intervention {reason:format!("The engine rejected the steering adapter (setter status {status}, hidden width {width}).")});
++        return Err(crate::projection_profile::bounded_intervention_error(format_args!(
++            "The engine rejected the steering adapter (setter status {status}, hidden width {width})."
++        )));
+     }
+     Ok(())
+ }
+@@ -250,6 +375,10 @@ impl LoadedModel {
+         spec: &InterventionSpec,
+     ) -> Result<LoadedModel, RebirthError> {
+         let _native = crate::domain::NativeGuard::try_acquire("derive_with_interventions")?;
++        // Private-feature callers must inherit through the bounded constructor.
++        // Existing cfg(test) feasibility helpers retain their accepted test scope.
++        #[cfg(all(feature = "projection-private", not(test)))]
++        self.projection_reject_separate_context()?;
+         // Defensive: the R layer builds the spec from this model's metadata, so a
+         // dimension mismatch here is an internal error, not a user error.
+         let n_embd = self.hidden_size().max(0) as usize;
+@@ -270,6 +399,8 @@ impl LoadedModel {
+ 
+         let mut derived = self.clone_with_fresh_context()?;
+         spec.apply_to_context(derived.ctx_ptr())?;
++        #[cfg(test)]
++        derived.inherit_projection(self)?;
+         derived.steering_baseline =
+             spec.steer
+                 .as_ref()
+@@ -282,6 +413,68 @@ impl LoadedModel {
+     }
+ }
+ 
++#[cfg(any(test, feature = "projection-private"))]
++impl InterventionSpec {
++    pub(crate) fn projection_buffer_capacities(&self) -> [usize; 3] {
++        [&self.steer, &self.ablate_mask, &self.ablate_add]
++            .map(|v| v.as_ref().map_or(0, Vec::capacity))
++    }
++    pub(crate) fn projection_from_arrays(
++        h: usize,
++        d: usize,
++        a: crate::ProjectionResidualArrays<'_>,
++    ) -> Result<(Self, usize), RebirthError> {
++        let fail = crate::projection_profile::admission_error;
++        a.validate(
++            h,
++            d,
++            a.steer_layers.len() as u64,
++            a.ablate_layers.len() as u64,
++        )?;
++        fn fill(n: usize, value: f32) -> Result<Vec<f32>, RebirthError> {
++            let mut v = Vec::new();
++            v.try_reserve_exact(n)
++                .map_err(|_| crate::projection_profile::admission_error())?;
++            if v.capacity() != n {
++                return Err(crate::projection_profile::admission_error());
++            }
++            v.resize(n, value);
++            Ok(v)
++        }
++        let n = h.checked_mul(d).ok_or_else(fail)?;
++        let mut spec = Self::new(h, d);
++        let mut row = fill(if a.steer_layers.is_empty() { 0 } else { h }, 0.)?;
++        if !a.steer_layers.is_empty() {
++            spec.steer = Some(fill(n, 0.)?);
++        }
++        if !a.ablate_layers.is_empty() {
++            spec.ablate_mask = Some(fill(n, 1.)?);
++            spec.ablate_add = Some(fill(n, 0.)?);
++        }
++        for (i, &layer) in a.steer_layers.iter().enumerate() {
++            for (dst, &value) in row.iter_mut().zip(&a.steer_vectors[i * h..(i + 1) * h]) {
++                *dst = value as f32;
++            }
++            spec.add_steer((layer - 1) as usize, &row);
++        }
++        for ((&layer, &neuron), &value) in a
++            .ablate_layers
++            .iter()
++            .zip(a.ablate_neurons)
++            .zip(a.ablate_values)
++        {
++            spec.add_ablation((layer - 1) as usize, &[(neuron - 1) as usize], value as f32);
++        }
++        spec.projection_validate_residual(
++            h,
++            d,
++            a.steer_layers.len() as u64,
++            a.ablate_layers.len() as u64,
++        )?;
++        Ok((spec, row.capacity()))
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+@@ -396,3 +589,7 @@ mod tests {
+         assert_eq!(add[base + 1], -2.0); // last write wins
+     }
+ }
++
++#[cfg(test)]
++#[path = "intervene_projection_tests.rs"]
++mod projection_transfer_tests;
+diff --git a/rebirth/src/rust/rebirth-llm/src/lib.rs b/rebirth/src/rust/rebirth-llm/src/lib.rs
+index b8b7e3b..985b78d 100644
+--- a/rebirth/src/rust/rebirth-llm/src/lib.rs
++++ b/rebirth/src/rust/rebirth-llm/src/lib.rs
+@@ -34,6 +34,10 @@ mod live_spill;
+ mod live_state;
+ mod live_steering;
+ mod probe;
++#[cfg(any(test, feature = "projection-private"))]
++mod projection;
++mod projection_layout;
++mod projection_profile;
+ mod schema;
+ #[cfg(feature = "spill")]
+ mod spill;
+@@ -70,6 +74,12 @@ pub use live_state::{
+     LIVE_VECTOR_HEADER_BYTES,
+ };
+ pub use live_steering::{LiveCoefficient, LiveReply, LiveSteer, LiveSteeringRow};
++pub use projection_profile::{
++    ProjectionAdmission, ProjectionAdmissionMode, ProjectionAllocationProfile, ProjectionCommand,
++    ProjectionConstructionReceipt, ProjectionEstimate, ProjectionFfiProfile,
++    ProjectionResidualArrays, PROJECTION_ESTIMATE_FIELDS, PROJECTION_INPUT_FIELDS,
++    PROJECTION_PROFILE_FIELDS, PROJECTION_PROFILE_VERSION,
++};
+ pub use schema::CompiledSchema;
+ pub use spill_lease::{cleanup_managed_spill, prepare_managed_spill, sweep_managed_spill};
+ pub use structured::{
+diff --git a/rebirth/src/rust/rebirth-llm/src/live_capture.rs b/rebirth/src/rust/rebirth-llm/src/live_capture.rs
+index 7477899..33dbe6c 100644
+--- a/rebirth/src/rust/rebirth-llm/src/live_capture.rs
++++ b/rebirth/src/rust/rebirth-llm/src/live_capture.rs
+@@ -12,6 +12,7 @@ const LIVE_CAPTURE_BYTES: usize = crate::LIVE_TRANSPORT_BYTES as usize;
+ 
+ #[derive(Default)]
+ pub(crate) struct LiveDispatcher {
++    pub(crate) projection: crate::projection_layout::Slot,
+     enabled: AtomicBool,
+     capturing: AtomicBool,
+     state: Mutex<Option<Capture>>,
+@@ -461,14 +462,36 @@ extern "C" fn live_trampoline(t: *mut ffi::ggml_tensor, ask: bool, user: *mut c_
+     }
+     // SAFETY: boxed dispatcher outlives the context and its synchronous scheduler.
+     let dispatcher = unsafe { &*user.cast::<LiveDispatcher>() };
+-    if !dispatcher.capturing.load(Ordering::Acquire) {
++    #[cfg(any(test, feature = "projection-private"))]
++    let projecting = dispatcher.projection.enabled();
++    #[cfg(not(any(test, feature = "projection-private")))]
++    let projecting = false;
++    if !dispatcher.capturing.load(Ordering::Acquire) && !projecting {
+         return !ask;
+     }
+-    let result =
+-        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| dispatcher.on_node(t, ask)));
++    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++        #[cfg(any(test, feature = "projection-private"))]
++        let projected = dispatcher.projection.node(t, ask);
++        #[cfg(not(any(test, feature = "projection-private")))]
++        let projected = !ask;
++        #[cfg(any(test, feature = "projection-private"))]
++        if dispatcher.projection.failed() {
++            return Ok(false);
++        }
++        let captured = dispatcher.on_node(t, ask)?;
++        Ok(if ask {
++            projected || captured
++        } else {
++            projected && captured
++        })
++    }));
+     match result {
+         Ok(Ok(value)) => value,
+         failure => {
++            #[cfg(any(test, feature = "projection-private"))]
++            if projecting {
++                dispatcher.projection.panic();
++            }
+             if let Some(state) = dispatcher.lock().as_mut() {
+                 state.error = Some(match failure {
+                     Ok(Err(error)) => error,
+@@ -491,7 +514,7 @@ impl Drop for LiveSession<'_> {
+ }
+ impl crate::LoadedModel {
+     #[cfg(test)]
+-    fn generate_observed(
++    pub(crate) fn generate_observed(
+         &self,
+         prompt: &[i32],
+         params: &crate::GenerateParams,
+@@ -578,8 +601,14 @@ impl crate::LoadedModel {
+         self.generate_live_tokens(&tokens, params, request)
+     }
+ }
++impl LiveDispatcher {
++    pub(crate) fn projection_capture_active(&self) -> bool {
++        self.enabled.load(Ordering::Acquire)
++    }
++}
++
+ #[cfg(test)]
+-mod tests {
++pub(crate) mod tests {
+     use super::*;
+     use crate::engine::load_for_live_feasibility;
+     use crate::{BackendKind, GenerateParams, LoadRequest};
+@@ -990,7 +1019,7 @@ mod tests {
+         });
+     }
+ 
+-    struct LoadLog;
++    pub(crate) struct LoadLog;
+     impl Drop for LoadLog {
+         fn drop(&mut self) {
+             // SAFETY: restore static quiet callback; no borrowed logger storage.
+@@ -1000,7 +1029,7 @@ mod tests {
+         }
+     }
+ 
+-    fn start_load_log() -> LoadLog {
++    pub(crate) fn start_load_log() -> LoadLog {
+         LOAD_LOG
+             .lock()
+             .unwrap_or_else(PoisonError::into_inner)
+@@ -1070,7 +1099,10 @@ mod tests {
+         assert!(!selected_metal_compute(&devices, &[]));
+     }
+ 
+-    fn backend_receipt(model: &crate::LoadedModel, backend: BackendKind) -> serde_json::Value {
++    pub(crate) fn backend_receipt(
++        model: &crate::LoadedModel,
++        backend: BackendKind,
++    ) -> serde_json::Value {
+         let log = std::mem::take(&mut *LOAD_LOG.lock().unwrap_or_else(PoisonError::into_inner));
+         let metadata = model.metadata();
+         let offload: Vec<_> = log
+diff --git a/rebirth/src/rust/rebirth-llm/src/probe.rs b/rebirth/src/rust/rebirth-llm/src/probe.rs
+index 76ecd8b..25983e1 100644
+--- a/rebirth/src/rust/rebirth-llm/src/probe.rs
++++ b/rebirth/src/rust/rebirth-llm/src/probe.rs
+@@ -87,6 +87,30 @@ pub(crate) struct ProbeCache {
+ }
+ 
+ impl ProbeCache {
++    pub(crate) fn projection_validate_cached(
++        &self,
++        spec: &InterventionSpec,
++    ) -> Result<(), RebirthError> {
++        // No todo Vec, sentinel context, cache insertion or BTree allocation.
++        // A new used kind/layer needs a separately admitted probe before a
++        // future constructor may call this gate; this helper never runs one.
++        for layer in 0..spec.n_layer {
++            let (steer, ablate) = spec.projection_layer_flags(layer);
++            if (steer && !self.steer_proven(layer as u32))
++                || (ablate && !self.ablate_ok.contains(&(layer as u32)))
++            {
++                let kind = if steer && !self.steer_proven(layer as u32) {
++                    "steering"
++                } else {
++                    "ablation"
++                };
++                return Err(crate::projection_profile::bounded_intervention_error(format_args!(
++                    "Residual {kind} capability is not cached for layer {layer}; a separately admitted probe is required."
++                )));
++            }
++        }
++        Ok(())
++    }
+     pub(crate) fn new(layers: usize) -> Self {
+         Self {
+             steer_ok: vec![false; layers].into_boxed_slice(),
+@@ -356,6 +380,24 @@ impl LoadedModel {
+         Ok(())
+     }
+ 
++    /// Query only; never populates the cache or creates a probe context. The FFI
++    /// uses this while validating borrowed residual arrays before copying them.
++    pub fn projection_residual_layer_is_cached(&self, layer: u32, steering: bool) -> bool {
++        let cache = self.lock_probe_cache();
++        if steering {
++            cache.steer_proven(layer)
++        } else {
++            cache.ablate_ok.contains(&layer)
++        }
++    }
++
++    pub(crate) fn projection_validate_cached_residual(
++        &self,
++        spec: &InterventionSpec,
++    ) -> Result<(), RebirthError> {
++        self.lock_probe_cache().projection_validate_cached(spec)
++    }
++
+     /// Live commands can activate an originally-zero coefficient. Probe every
+     /// requested nonzero direction's layer before prefill, using the same cache.
+     pub(crate) fn verify_steering_layers(&self, layers: &[u32]) -> Result<(), RebirthError> {
+@@ -602,6 +644,72 @@ impl LoadedModel {
+     }
+ }
+ 
++/// Scalar residual proof path used only after constructor admission. It retains
++/// no activation map and inserts no BTree nodes; existing cached results can
++/// skip work, while new legitimate layers can be proved again on later derives.
++pub(crate) fn projection_residual_probe_fixed_bytes() -> usize {
++    std::mem::size_of::<InterventionSpec>()
++        + std::mem::size_of::<Vec<f32>>()
++        + std::mem::size_of::<crate::ProjectionResidualArrays<'static>>()
++        + 2 * (std::mem::size_of::<LiveProbeCapture>()
++            + std::mem::size_of::<crate::engine::TraceContext>()
++            + std::mem::size_of::<crate::generate::Batch>()
++            + 4 * std::mem::size_of::<i32>()
++            + 2 * std::mem::size_of::<*mut i32>()
++            + std::mem::size_of::<i8>())
++        + std::mem::size_of::<std::sync::MutexGuard<'static, ProbeCache>>()
++}
++#[cfg(any(test, feature = "projection-private"))]
++impl LoadedModel {
++    pub(crate) fn projection_prove_residual(
++        &self,
++        spec: &InterventionSpec,
++    ) -> Result<usize, RebirthError> {
++        let h = spec.n_embd;
++        let d = spec.n_layer;
++        let mut decodes = 0;
++        for layer in 0..d {
++            let (steering, ablation) = spec.projection_layer_flags(layer);
++            if steering && !self.projection_residual_layer_is_cached(layer as u32, true) {
++                let neuron = usize::from(h > 1);
++                let baseline =
++                    self.live_probe_scalar(&InterventionSpec::new(h, d), layer as u32, neuron)?;
++                let mut sentinel = InterventionSpec::new(h, d);
++                let mut row = Vec::new();
++                row.try_reserve_exact(h)
++                    .map_err(|_| crate::projection_profile::admission_error())?;
++                if row.capacity() != h {
++                    return Err(crate::projection_profile::admission_error());
++                }
++                row.resize(h, 0f32);
++                row[neuron] = SENTINEL_STEER;
++                sentinel.add_steer(layer, &row);
++                if sentinel.projection_buffer_capacities() != [h * d, 0, 0] {
++                    return Err(crate::projection_profile::admission_error());
++                }
++                let shifted = self.live_probe_scalar(&sentinel, layer as u32, neuron)?;
++                if !steer_shift_ok(baseline, shifted, SENTINEL_STEER) {
++                    return Err(crate::projection_profile::admission_error());
++                }
++                decodes += 2;
++            }
++            if ablation && !self.projection_residual_layer_is_cached(layer as u32, false) {
++                let mut sentinel = InterventionSpec::new(h, d);
++                sentinel.add_ablation(layer, &[0], SENTINEL_ABLATE);
++                if sentinel.projection_buffer_capacities() != [0, h * d, h * d] {
++                    return Err(crate::projection_profile::admission_error());
++                }
++                let value = self.live_probe_scalar(&sentinel, layer as u32, 0)?;
++                if !ablation_pin_ok(value, SENTINEL_ABLATE) {
++                    return Err(crate::projection_profile::admission_error());
++                }
++                decodes += 1;
++            }
++        }
++        Ok(decodes)
++    }
++}
++
+ #[cfg(test)]
+ mod tests {
+     use super::*;
+@@ -668,3 +776,46 @@ mod tests {
+         );
+     }
+ }
++
++#[cfg(test)]
++mod projection_transfer_tests {
++    use super::*;
++    #[test]
++    fn projection_transfer_requires_cached_residual_capabilities() {
++        let mut cache = ProbeCache::new(3);
++        let mut spec = InterventionSpec::new(2, 3);
++        assert!(cache.projection_validate_cached(&spec).is_ok());
++        spec.add_steer(1, &[0., 0.]);
++        assert!(cache.projection_validate_cached(&spec).is_ok());
++        spec.add_steer(1, &[1., 0.]);
++        assert!(cache.projection_validate_cached(&spec).is_err());
++        cache.mark(&[], &[1]);
++        assert!(cache.projection_validate_cached(&spec).is_err());
++        cache.mark(&[1], &[]);
++        assert!(cache.projection_validate_cached(&spec).is_ok());
++        spec.add_ablation(0, &[1], 0.25);
++        assert!(cache.projection_validate_cached(&spec).is_err());
++        cache.mark(&[0], &[]);
++        assert!(cache.projection_validate_cached(&spec).is_err());
++        cache.mark(&[], &[0]);
++        assert!(cache.projection_validate_cached(&spec).is_ok());
++        spec.add_steer(2, &[1., 0.]);
++        assert!(cache.projection_validate_cached(&spec).is_err());
++        cache.mark(&[2], &[]);
++        assert!(cache.projection_validate_cached(&spec).is_ok());
++        spec.add_ablation(2, &[0], 0.);
++        assert!(cache.projection_validate_cached(&spec).is_err());
++        cache.mark(&[], &[2]);
++        assert!(cache.projection_validate_cached(&spec).is_ok());
++        let before = (cache.steer_ok.len(), cache.ablate_ok.len());
++        assert!(cache.projection_validate_cached(&spec).is_ok());
++        assert_eq!(before, (cache.steer_ok.len(), cache.ablate_ok.len()));
++        assert!(
++            std::mem::size_of::<std::sync::MutexGuard<'_, ProbeCache>>()
++                <= std::mem::size_of::<
++                    std::sync::MutexGuard<'_, Option<Box<crate::projection_layout::Runtime>>>,
++                >()
++        );
++        println!("F6E_PROJECTION_TRANSFER_TEST {{\"test\":\"projection_transfer_requires_cached_residual_capabilities\",\"status\":\"passed\",\"expected_cases\":14,\"executed_cases\":14,\"expected_rejections\":6,\"rejected_cases\":6}}");
++    }
++}
+diff --git a/rebirth/src/rust/rebirth-llm/src/trace.rs b/rebirth/src/rust/rebirth-llm/src/trace.rs
+index 4d77e39..b402078 100644
+--- a/rebirth/src/rust/rebirth-llm/src/trace.rs
++++ b/rebirth/src/rust/rebirth-llm/src/trace.rs
+@@ -996,6 +996,8 @@ impl LoadedModel {
+         ids: &[i32],
+         spec: &CaptureSpec,
+     ) -> Result<Vec<CaptureRow>, RebirthError> {
++        #[cfg(any(test, feature = "projection-private"))]
++        self.projection_reject_separate_context()?;
+         let _native = crate::domain::NativeGuard::try_acquire("activations")?;
+         self.capture_in_memory(&[ids], &[], spec)
+     }
+@@ -1010,6 +1012,8 @@ impl LoadedModel {
+         spec: &CaptureSpec,
+         plan: &SpillPlan,
+     ) -> Result<TraceOutput, RebirthError> {
++        #[cfg(any(test, feature = "projection-private"))]
++        self.projection_reject_separate_context()?;
+         let _native = crate::domain::NativeGuard::try_acquire("trace_token_batch_spill")?;
+         self.trace_capture_planned(batches, &[], spec, plan)
+     }
+@@ -1027,6 +1031,8 @@ impl LoadedModel {
+         spec: &CaptureSpec,
+         plan: &SpillPlan,
+     ) -> Result<TraceOutput, RebirthError> {
++        #[cfg(any(test, feature = "projection-private"))]
++        self.projection_reject_separate_context()?;
+         let _native = crate::domain::NativeGuard::try_acquire("trace_texts_spill")?;
+         self.require_tokenizer()?;
+         if texts.is_empty() {
+diff --git a/rebirth/tests/testthat/helper-direction-goldens.R b/rebirth/tests/testthat/helper-direction-goldens.R
+index 9452933..96b1110 100644
+--- a/rebirth/tests/testthat/helper-direction-goldens.R
++++ b/rebirth/tests/testthat/helper-direction-goldens.R
+@@ -10,8 +10,9 @@ direction_hex <- function(x) {
+   as.raw(strtoi(substring(x, starts, starts + 1L), base = 16L))
+ }
+ 
+-direction_fixture_nodes <- function(case) {
+-  nodes <- direction_csv("encoding-fields.csv")
++direction_fixture_nodes <- function(case, fixture = "directions") {
++  nodes <- read.csv(testthat::test_path("fixtures", fixture, "encoding-fields.csv"),
++    colClasses = "character", check.names = FALSE, stringsAsFactors = FALSE)
+   nodes <- nodes[nodes$case == case, , drop = FALSE]
+   read_node <- function(path) {
+     row <- nodes[nodes$path == path, , drop = FALSE]
+diff --git a/rebirth/tests/testthat/test-directions-boundaries.R b/rebirth/tests/testthat/test-directions-boundaries.R
+index cbf8a7d..5614be7 100644
+--- a/rebirth/tests/testthat/test-directions-boundaries.R
++++ b/rebirth/tests/testthat/test-directions-boundaries.R
+@@ -24,7 +24,8 @@ test_that("recorded capture and splits fail closed without silent reconciliation
+     if (kind == "missing") bad$context$splits$split[7] <- "evaluation"
+     if (kind == "order") bad$context$pairs <- bad$context$pairs[3:1, ]
+     if (kind == "width") bad$context$model$hidden_size <- 3L
+-    if (kind == "capture") bad$context$capture$component <- "attn_out"
++    # D046 admits full-width attn_out; head-space captures remain unsupported.
++    if (kind == "capture") bad$context$capture$component <- "attn_heads"
+     if (kind == "special") bad$context$capture$parse_special <- TRUE
+     if (kind == "position") bad$context$pairs$target_pos[1] <- 0L
+     if (kind == "unknown") bad$context$extra <- 1

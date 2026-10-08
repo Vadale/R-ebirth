@@ -1,0 +1,169 @@
+F6E_EVALUATION_STAGE load_cpu
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+F6E_EVALUATION_STAGE construction
+F6E_EVALUATION_STAGE selection/s001
+F6E_EVALUATION_RUN s001 error
+F6E_EVALUATION_STAGE selection/s002
+F6E_EVALUATION_RUN s002 error
+F6E_EVALUATION_STAGE selection/s003
+F6E_EVALUATION_RUN s003 error
+F6E_EVALUATION_STAGE selection/s004
+F6E_EVALUATION_RUN s004 error
+F6E_EVALUATION_STAGE selection/s005
+F6E_EVALUATION_RUN s005 error
+F6E_EVALUATION_STAGE selection/s006
+F6E_EVALUATION_RUN s006 error
+F6E_EVALUATION_STAGE selection/s007
+F6E_EVALUATION_RUN s007 error
+F6E_EVALUATION_STAGE selection/s008
+F6E_EVALUATION_RUN s008 error
+F6E_EVALUATION_STAGE selection/s009
+F6E_EVALUATION_RUN s009 error
+F6E_EVALUATION_STAGE selection/s010
+F6E_EVALUATION_RUN s010 error
+F6E_EVALUATION_STAGE selection/s011
+F6E_EVALUATION_RUN s011 error
+F6E_EVALUATION_STAGE selection/s012
+F6E_EVALUATION_RUN s012 error
+F6E_EVALUATION_STAGE selection/s013
+F6E_EVALUATION_RUN s013 error
+F6E_EVALUATION_STAGE selection/s014
+F6E_EVALUATION_RUN s014 error
+F6E_EVALUATION_STAGE selection/s015
+F6E_EVALUATION_RUN s015 error
+F6E_EVALUATION_STAGE selection/s016
+F6E_EVALUATION_RUN s016 error
+F6E_EVALUATION_STAGE selection/s017
+F6E_EVALUATION_RUN s017 error
+F6E_EVALUATION_STAGE selection/s018
+F6E_EVALUATION_RUN s018 error
+F6E_EVALUATION_STAGE selection/s019
+F6E_EVALUATION_RUN s019 error
+F6E_EVALUATION_STAGE selection/s020
+F6E_EVALUATION_RUN s020 error
+F6E_EVALUATION_STAGE selection/s021
+F6E_EVALUATION_RUN s021 error
+F6E_EVALUATION_STAGE selection/s022
+F6E_EVALUATION_RUN s022 error
+F6E_EVALUATION_STAGE selection/s023
+F6E_EVALUATION_RUN s023 error
+F6E_EVALUATION_STAGE selection/s024
+F6E_EVALUATION_RUN s024 error
+F6E_EVALUATION_STAGE selection/s025
+F6E_EVALUATION_RUN s025 error
+F6E_EVALUATION_STAGE selection/s026
+F6E_EVALUATION_RUN s026 error
+F6E_EVALUATION_STAGE selection/s027
+F6E_EVALUATION_RUN s027 error
+F6E_EVALUATION_STAGE selection/s028
+F6E_EVALUATION_RUN s028 error
+F6E_EVALUATION_STAGE selection/s029
+F6E_EVALUATION_RUN s029 error
+F6E_EVALUATION_STAGE selection/s030
+F6E_EVALUATION_RUN s030 error
+F6E_EVALUATION_STAGE selection/s031
+F6E_EVALUATION_RUN s031 error
+F6E_EVALUATION_STAGE selection/s032
+F6E_EVALUATION_RUN s032 error
+F6E_EVALUATION_STAGE selection/s033
+F6E_EVALUATION_RUN s033 error
+F6E_EVALUATION_STAGE selection/s034
+F6E_EVALUATION_RUN s034 error
+F6E_EVALUATION_STAGE selection/s035
+F6E_EVALUATION_RUN s035 error
+F6E_EVALUATION_STAGE selection/s036
+F6E_EVALUATION_RUN s036 error
+F6E_EVALUATION_STAGE selection/s037
+F6E_EVALUATION_RUN s037 error
+F6E_EVALUATION_STAGE selection/s038
+F6E_EVALUATION_RUN s038 error
+F6E_EVALUATION_STAGE selection/s039
+F6E_EVALUATION_RUN s039 error
+F6E_EVALUATION_STAGE selection/s040
+F6E_EVALUATION_RUN s040 error
+F6E_EVALUATION_STAGE selection/s041
+F6E_EVALUATION_RUN s041 error
+F6E_EVALUATION_STAGE selection/s042
+F6E_EVALUATION_RUN s042 error
+F6E_EVALUATION_STAGE selection/s043
+F6E_EVALUATION_RUN s043 error
+F6E_EVALUATION_STAGE selection/s044
+F6E_EVALUATION_RUN s044 error
+F6E_EVALUATION_STAGE selection/s045
+F6E_EVALUATION_RUN s045 error
+F6E_EVALUATION_STAGE selection/s046
+F6E_EVALUATION_RUN s046 error
+F6E_EVALUATION_STAGE selection/s047
+F6E_EVALUATION_RUN s047 error
+F6E_EVALUATION_STAGE selection/s048
+F6E_EVALUATION_RUN s048 error
+F6E_EVALUATION_STAGE selection/s049
+F6E_EVALUATION_RUN s049 error
+F6E_EVALUATION_STAGE selection/s050
+F6E_EVALUATION_RUN s050 error
+F6E_EVALUATION_STAGE selection/s051
+F6E_EVALUATION_RUN s051 error
+F6E_EVALUATION_STAGE selection/s052
+F6E_EVALUATION_RUN s052 error
+F6E_EVALUATION_STAGE selection/s053
+F6E_EVALUATION_RUN s053 error
+F6E_EVALUATION_STAGE selection/s054
+F6E_EVALUATION_RUN s054 error
+F6E_EVALUATION_STAGE selection/s055
+F6E_EVALUATION_RUN s055 error
+F6E_EVALUATION_STAGE selection/s056
+F6E_EVALUATION_RUN s056 error
+F6E_EVALUATION_STAGE selection/s057
+F6E_EVALUATION_RUN s057 error
+F6E_EVALUATION_STAGE selection/s058
+F6E_EVALUATION_RUN s058 error
+F6E_EVALUATION_STAGE selection/s059
+F6E_EVALUATION_RUN s059 error
+F6E_EVALUATION_STAGE selection/s060
+F6E_EVALUATION_RUN s060 error
+F6E_EVALUATION_STAGE selection/s061
+F6E_EVALUATION_RUN s061 error
+F6E_EVALUATION_STAGE selection/s062
+F6E_EVALUATION_RUN s062 error
+F6E_EVALUATION_STAGE selection/s063
+F6E_EVALUATION_RUN s063 error
+F6E_EVALUATION_STAGE selection/s064
+F6E_EVALUATION_RUN s064 error
+F6E_EVALUATION_STAGE selection/s065
+F6E_EVALUATION_RUN s065 error
+F6E_EVALUATION_STAGE selection/s066
+F6E_EVALUATION_RUN s066 error
+F6E_EVALUATION_STAGE selection/s067
+F6E_EVALUATION_RUN s067 error
+F6E_EVALUATION_STAGE selection/s068
+F6E_EVALUATION_RUN s068 error
+F6E_EVALUATION_STAGE selection/s069
+F6E_EVALUATION_RUN s069 error
+F6E_EVALUATION_STAGE selection/s070
+F6E_EVALUATION_RUN s070 error
+F6E_EVALUATION_STAGE selection/s071
+F6E_EVALUATION_RUN s071 error
+F6E_EVALUATION_STAGE selection/s072
+F6E_EVALUATION_RUN s072 error
+Traceback (most recent call last):
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/collect_run.py", line 175, in <module>
+    require(len(sys.argv)==3,'stage and bundle required');main(sys.argv[1],sys.argv[2])
+                                                          ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/collect_run.py", line 163, in main
+    result=v.verify_bundle(root,stage,cfg['rscript']);write_json(report,result)
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/verify_results.py", line 496, in verify_bundle
+    check_zeros(selection)
+    ~~~~~~~~~~~^^^^^^^^^^^
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/verify_results.py", line 412, in check_zeros
+    require(zero["status"] == baseline["status"] == "ok" and zero["text"] == baseline["text"] and
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            zero["signature"] == baseline["signature"], "zero identity engineering failure: " + task + "/" + setting)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/evaluation/verify_results.py", line 86, in require
+    if not ok: raise VerificationError(message)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+f6e_verifier.VerificationError: zero identity engineering failure: f6e-s01/zero_add
+Error in helper("selection") : 
+  Independent evidence stage failed: selection
+Calls: f6e_main -> withCallingHandlers -> helper
+Execution halted

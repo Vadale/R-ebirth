@@ -1,0 +1,33 @@
+{
+  "status": "failed",
+  "pid": 84773,
+  "directory": "/private/tmp/relm-f6e/installed-public-resume-20261008-101336",
+  "stages": [
+    {
+      "name": "documentation",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "roxygen2::roxygenise('rebirth',load_code=roxygen2::load_source)"
+      ],
+      "status": "passed",
+      "pid": 84775,
+      "exit_code": 0,
+      "log_sha256": "fef3e3979d1675e94ead2ba7cd43f8e39780c388d05ca0876be57862370a53aa"
+    }
+  ],
+  "scope": "Fresh R installation with exact current accepted default F6e DLL; new public CPU/Metal operational checks, not behavioral evaluation",
+  "native": {
+    "path": "/private/tmp/relm-f6e/production-activation-20261008-041846/default-ffi/relm.so",
+    "sha256": "9ef7c51c2848768984490a4bc794e60b10d81c840d3534db2b103e58a7516998",
+    "source_manifest": "18ebedbbf3469f2ae7358e8044836f51e866372c3af2e84fc9107070aa0ab31e",
+    "scope": "Reuse freshly accepted default F6e DLL exactly; no renewed build/native suite"
+  },
+  "stage": "documentation",
+  "error": "",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-installed-public-resume.py\", line 33, in main\n    assert 'Could not resolve link' not in log and 'Block must have a @name' not in log\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "source_drift": [],
+  "installed_drift": [],
+  "finished_at": 1791447217.683014
+}

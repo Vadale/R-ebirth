@@ -1,0 +1,16 @@
+{
+  "collector_verified": true,
+  "collector_controls": 39,
+  "models": 0,
+  "files": {
+    "/private/tmp/relm-f6e/verify-public-ledger.py": "9c80a0f71dd0ab4cf53e9fcfdd85482155e76d4f351d8e0357f5ea1fe28363b7",
+    "/private/tmp/relm-f6e/ledger-collector.py": "f20c22596fdadc0be95699cce70111fe6408701b8f7ad5d268d944fa1db364ec",
+    "/private/tmp/relm-f6e/test-ledger-collector.py": "c9ee34dcaaf29a54df5aed4e3420ebcbf534ce5a97c21747df20539f58c5aaa8",
+    "/private/tmp/relm-f6e/check-ledger-source.R": "823037cd937edff6a9df8a3561408ec74344c20829afad0b9d93945563c9cfb7",
+    "/private/tmp/relm-f6e/check-ledger-twins.R": "9a0ed2ca34b954bf90d0d8581f904485b415e46f3323b3af70f8caa8bd97264d",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/R/projection-memory.R": "8dabf5766046fe44ba5076890245df68094a1f4e16bd90af7bec2a9ca1fff129",
+    "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/tests/testthat/test-projection-memory.R": "8ca28f9e00e9fc71fd678a18a93426cfe514a61be106a9927c41e5a3ca364d2a"
+  },
+  "production_arming_permitted": false,
+  "remaining": "Complete and bind actual R source/candidate state/finalizer/adapter ownership and exact constructor reservations before arming."
+}

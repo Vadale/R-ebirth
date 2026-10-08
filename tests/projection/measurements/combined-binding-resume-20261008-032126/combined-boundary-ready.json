@@ -1,0 +1,283 @@
+{
+  "status": "ready",
+  "scope": "Registered internal private-feature bridge to parent-accepted constructor; no public R operator/default production activation",
+  "source_hashes": {
+    "docs/f6e-memory-contract.md": "d3160a76a3601dcde3de8add9088b0f79f02825eb76a8017efa950ee5b00c72c",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs": "f428ee6483d2c243b03d72f4a6ff115b3f61a7832e714c7bb71162f0b40562fe",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "6727456fc2fb342cb530c5e5e137e828283674f05058cd81bcb18edfc97ea2f8",
+    "rebirth/src/rust/rebirth-ffi/src/projection_bridge.rs": "1fffb87166da8c74d8915ecfe6271855f704f4d5b857f068436a803ef03104b3"
+  },
+  "owned_files": [
+    "docs/f6e-memory-contract.md",
+    "rebirth/src/rust/rebirth-ffi/src/lib.rs",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs",
+    "rebirth/src/rust/rebirth-ffi/src/projection_bridge.rs"
+  ],
+  "preserved_native_source_hashes": {
+    "rebirth/src/rust/rebirth-llm/Cargo.toml": "172e43bf2326b6b895b2bd2904fb41c8493ba56ffa5328ca9f59c9bd7596c45e",
+    "rebirth/src/rust/rebirth-ffi/Cargo.toml": "2847beacc07ea97a6e19ef42309555f626d81fcc62ff9baaea2c277805b7dfc0",
+    "rebirth/src/rust/rebirth-ffi/native/projection_state.c": "5cbb782ea0e957e9899143d10a3b151d4e84b592efe435c83f51cd97705272a0",
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "c87f53fe912bab19120bbb28dd2ceba90f037df33a8bb5d5f631acee95b576a5",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor.rs": "f549f670968240a7d00e6f0537792ca95360652baf521fdd5a6b6775dfe98bff",
+    "rebirth/src/rust/rebirth-llm/src/projection_constructor_tests.rs": "26efc42fc11d61b460e1f679835c2fa2c7b871fe437c697606239c4376a3de19",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "4f1a0b81a8b680c194f2a6919c7b4cc27547b56b56de76758803411f585d6df1",
+    "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "05259c00287bc6b8e07608f81f55bfc68d2637a1320400a3ab819d5b625bc523",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "5c848d144b0103b9b152b3c4e1f0277eab2bd69d7a6be03dfd3f3be2b2d42805",
+    "rebirth/src/rust/rebirth-llm/src/ffi.rs": "0fd5fffe1e4624d54fb132746612f76843e39103f6defacb462c6b8b363f841d",
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "56c88408bc86d2c9e947a3ca813c1daa6de05acbd5d27fe5236f5a06dce12236",
+    "rebirth/src/rust/rebirth-llm/src/generate.rs": "a08feacb22a44fa997dee7e52cab39ef472d78d05cbe94a73449027cfc3ae037",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "a9915e2718faa2fa57a51f8d668dfa8b6a0e4d3288b2c6ae9af76740d09a681f",
+    "rebirth/src/rust/rebirth-llm/src/intervene.rs": "1b1af381021dc84fc00e672d7f3e0845d70cc6cc5b35e0f179028578deb1646c",
+    "rebirth/src/rust/rebirth-llm/src/probe.rs": "9f1d0f5f1b515e11391857338bee6ae795f81764835351fe3c9c8e975639a2f3",
+    "rebirth/src/rust/rebirth-llm/src/trace.rs": "bcdf63a7d51b60eae0276c3f3603bc2925f967efe0961d53852a6936eb777655"
+  },
+  "preserved_parent_constructor_helper": {
+    "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs": "2d07138d7e288cbecffb7e97cd7664db89e043875567376d784149e854225752"
+  },
+  "accepted_parent_scope": "tests/projection/measurements/private-constructor-resume-20261008-024551/owner-verification.json",
+  "interface": {
+    "entrypoint": "rebirth_projection_construct",
+    "symbol": "wrap__rebirth_projection_construct",
+    "arity": 7,
+    "arguments": [
+      "ptr",
+      "config",
+      "steer_layers",
+      "steer_vectors",
+      "ablate_layers",
+      "ablate_neurons",
+      "ablate_values"
+    ],
+    "types": [
+      "externalptr",
+      "exact11fieldlist",
+      "plain integer[]",
+      "plain double[]",
+      "plain integer[]",
+      "plain integer[]",
+      "plain double[]"
+    ],
+    "indices": "one-based residual layer/neuron; native validates before exact copies",
+    "config_fields": [
+      "mode",
+      "layer",
+      "component",
+      "coef",
+      "direction",
+      "steer_entries",
+      "ablate_entries",
+      "existing_direction_estimate",
+      "r_projection_fixed_bytes",
+      "r_adapter_bytes",
+      "max_bytes"
+    ],
+    "success": "exactly list(ok=TRUE,ptr=<externalptr>)",
+    "errors": "existing projection_resolve classed payload: ok,class,message,fields",
+    "private_feature": "projection-private",
+    "default_error": {
+      "class": "relm_error_intervention",
+      "message": "Projection construction is unavailable in this build."
+    },
+    "fault_seam_exposed": false
+  },
+  "profile": {
+    "version": 2,
+    "profile_fields": [
+      "version",
+      "direction_arc_header_bytes",
+      "plan_arc_bytes",
+      "site_bytes",
+      "runtime_bytes",
+      "probe_state_bytes",
+      "model_owner_bytes",
+      "derive_frame_bytes",
+      "callback_frame_bytes",
+      "probe_frame_bytes",
+      "residual_probe_fixed_bytes",
+      "ffi_fixed_bytes",
+      "adapter_fixed_bytes",
+      "error_format_bytes",
+      "metadata_owner_bytes",
+      "slot_bytes",
+      "proof_bytes",
+      "projection_info_bytes",
+      "cpp_access_frame_bytes",
+      "cpp_name_frame_bytes",
+      "ffi_command_bytes",
+      "ffi_response_bytes",
+      "ffi_registry_bytes",
+      "ffi_handle_tag_bytes",
+      "layout_checksum",
+      "max_sites",
+      "max_width"
+    ],
+    "profile_field_count": 27,
+    "input_fields": [
+      "mode",
+      "hidden_size",
+      "layers",
+      "previous_sites",
+      "steer_entries",
+      "ablate_entries",
+      "source_baseline_values",
+      "metadata_bytes",
+      "metadata_scratch_bytes",
+      "existing_direction_estimate",
+      "r_projection_fixed_bytes",
+      "r_adapter_bytes",
+      "max_bytes",
+      "backend",
+      "production_armed"
+    ],
+    "input_field_count": 15,
+    "term_fields": [
+      "direction_bytes",
+      "plan_bytes",
+      "context_bytes",
+      "frame_bytes",
+      "probe_bytes",
+      "projection_bytes",
+      "residual_probe_bytes",
+      "adapter_data_bytes",
+      "adapter_fixed_bytes",
+      "metadata_bytes",
+      "r_projection_bytes",
+      "r_adapter_bytes",
+      "existing_direction_estimate",
+      "total_bytes"
+    ],
+    "term_field_count": 14,
+    "new_fields": [],
+    "changed_compiled_fields": [
+      "ffi_command_bytes",
+      "derive_frame_bytes"
+    ],
+    "changed_terms": [
+      "frame_bytes",
+      "projection_bytes",
+      "total_bytes"
+    ],
+    "addition": "sizeof([SEXP;7])+2*sizeof([Robj;7])+sizeof([&Robj;7])+sizeof(Result<Result<Robj,Box<dyn Error>>,Box<dyn Any+Send>>)+sizeof(thread::Result<Result<Robj,RebirthError>>)",
+    "native_implementation": "projection_bridge_frame_bytes(); added to accepted constructor command frame before ProjectionAllocationProfile::compiled",
+    "additional_vector_payload_bytes": 0,
+    "retained_types_changed": false,
+    "r_twin": "Same27/15/14 equations; fetch fresh compiled profile. R argument roots share existing SEXPs; parent actual inventory/config/response validation remains authoritative."
+  },
+  "tests": [
+    {
+      "execution": "cargo_libtest",
+      "crate": "rebirth-ffi",
+      "id": "tests::projection_bridge_compiled_frame",
+      "expected_cases": 2,
+      "expected_rejections": 0,
+      "models": 0,
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "tests::projection_bridge_compiled_frame",
+        "--",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ]
+    }
+  ],
+  "marker": {
+    "prefix": "F6E_PROJECTION_BRIDGE_TEST",
+    "fields": [
+      "test",
+      "status",
+      "expected_cases",
+      "executed_cases",
+      "expected_rejections",
+      "rejected_cases",
+      "bridge_frame_bytes",
+      "ffi_command_bytes"
+    ],
+    "status": "passed",
+    "compiled_values": "actual size_of values, not guessed in this source handoff"
+  },
+  "r_hosted_gate": {
+    "source": "args <- commandArgs(trailingOnly=TRUE)\nstopifnot(length(args)==2L, args[[2L]] %in% c(\"default\",\"private\"))\npath <- normalizePath(args[[1L]],mustWork=TRUE)\nstopifnot(!\"relm\" %in% names(getLoadedDLLs()))\ndll <- dyn.load(path,local=TRUE,now=TRUE)\ns <- getNativeSymbolInfo(\"wrap__rebirth_projection_construct\",PACKAGE=dll)\nstopifnot(identical(s$numParameters,7L), identical(normalizePath(s$dll[[\"path\"]],mustWork=TRUE),path))\nz <- .Call(s,NULL,NULL,NULL,NULL,NULL,NULL,NULL)\nstopifnot(identical(names(z),c(\"ok\",\"class\",\"message\",\"fields\")),identical(z$ok,FALSE),identical(z$class,\"relm_error_intervention\"))\nexpected <- if(args[[2L]]==\"default\") \"Projection construction is unavailable in this build.\" else \"Invalid projection admission configuration.\"\nstopifnot(identical(z$message,expected), identical(z$fields,list(reason=expected)))\ncat(sprintf('F6E_PROJECTION_BRIDGE_R {\"mode\":\"%s\",\"status\":\"passed\",\"expected_cases\":2,\"executed_cases\":2,\"expected_rejections\":1,\"rejected_cases\":1,\"model_count\":0}\\n',args[[2L]]))\n",
+    "modes": [
+      "default",
+      "private"
+    ],
+    "models": 0,
+    "cases_per_build": 2,
+    "refusals_per_build": 1,
+    "symbol_identity_required": true,
+    "registration_arity": 7,
+    "purpose": "default classed refusal before parsing/model access; private invalid-input refusal proves forwarding; parent separately owns actual combined-budget model/construction fixtures"
+  },
+  "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+  "default_build_command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "rebirth-ffi",
+    "--lib"
+  ],
+  "private_build_command": [
+    "cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "-p",
+    "rebirth-ffi",
+    "--lib",
+    "--features",
+    "projection-private"
+  ],
+  "fresh_dll_contract": {
+    "platform": "accepted primary macOS arm64; use fresh scratch directory under this owner run",
+    "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+    "static_archive": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a",
+    "entrypoint_source": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/entrypoint.c",
+    "entrypoint_sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+    "scratch_preparation": "copy exact entrypoint.c into a NEW empty scratch directory in owner run; preserve hash; no installed/accepted relm.so reuse",
+    "link_cwd": "new scratch directory containing copied entrypoint.c only",
+    "link_environment": {
+      "PKG_LIBS": "-L/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug -lrelm -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-metal -lggml-base -framework Metal -framework MetalKit -framework Foundation -framework Accelerate -lc++"
+    },
+    "link_command": [
+      "R",
+      "CMD",
+      "SHLIB",
+      "-o",
+      "relm.so",
+      "entrypoint.c"
+    ],
+    "link_scope": "same ordered native archives/system flags as current src/Makevars, no Makevars recipe/document generation/cache cleaning; relm-grammar already contains projection.cpp",
+    "dll_name_requirement": "relm.so basename invokes existing R_init_relm and its real extendr registration/panic hook",
+    "retention_requirement": "retain fresh static archive/DLL/entrypoint hashes and raw link/Rscript logs bound to corrected source snapshot",
+    "feature_artifact_order": "Build/link/snapshot default and private in separate fresh scratch directories; never load two relm DLLs in the same R process. Invoke only the seven-argument bridge registration recipe and parent new combined-boundary cases, no accepted constructor selftest."
+  },
+  "parent_combined_call_recipe": ".Call(getNativeSymbolInfo(\"wrap__rebirth_projection_construct\", PACKAGE=fresh_private_dll), source_ptr, validated_config, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values)",
+  "ordering": "The wrapper forwards borrowed references to the unchanged accepted helper with refuse_transfer=false. It introduces no R call into source/model/registry critical phases and returns the helper's preallocated handle-only payload.",
+  "static_validation": [
+    "rustfmt --edition2021 --check --config skip_children=true on3 owned Rust files passed",
+    "git diff --check passed on tracked modified files/document",
+    "16 prior native/C/Cargo source hashes remain exact; parent constructor-helper correction retained"
+  ],
+  "production_armed": false,
+  "public_r_operator_enabled": false,
+  "no_builds_tests_models_executed_by_agent": true,
+  "remaining_before_default_arming": [
+    "Parent validates actual complete R source/candidate/config/response/finalizer inventory against current compiled profile",
+    "Parent tests exact/minus-one combined construction budget and R wrapper failure cleanup through this bridge",
+    "Default feature and public R operator remain gated until parent accepts that evidence"
+  ],
+  "do_not_rerun": [
+    "accepted three native constructor tests",
+    "accepted18/10 R constructor selftest",
+    "old native1-9/CPU/Metal/Qwen/performance/diagnostic/reference suites"
+  ]
+}

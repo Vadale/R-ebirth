@@ -1,0 +1,17 @@
+{
+  "status": "partial_verified",
+  "overall_attempt": "failed_collector",
+  "native_outcomes": 7,
+  "native_cases": 95,
+  "native_rejections": 40,
+  "libtest_outcomes": 6,
+  "R_hosted_outcomes": 1,
+  "source_count": 101,
+  "archived_source_members": 29,
+  "source_manifest_sha256": "08cffc5bf0fac267f8caa25a44fddcab0cebab88f86679d5abc8157f212b4459",
+  "stage_logs": 12,
+  "compiler_linker_warnings": 0,
+  "model_runs": 0,
+  "native_reexecution": false,
+  "pending": "Correct tag-size collector assumption and run previously unexecuted independent R156terms; full constructor ownership still pending"
+}

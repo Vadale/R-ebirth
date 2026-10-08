@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "stages": 4,
+  "original_output_hashes": 823,
+  "package_source_hashes": 206,
+  "accepted_source_hashes": 172,
+  "installed_hashes": 28,
+  "source_tar_files": 782,
+  "source_tar_exact_matches": 781,
+  "source_tar_sha256": "51a23d61f5bf004a0b08117e3955fa8df1ff70aef5ed4b4b10ecc85437790736",
+  "description_delta": "DCF wrapping plus NeedsCompilation/Packaged/Author/Maintainer from R CMD build; original fields unchanged",
+  "documents": {
+    "contrast-directions": {
+      "local_references": 82,
+      "images": 1,
+      "missing_references": 0,
+      "source_sha256": "b0654f0f1dbc3e2ebe0aa391dc6670b51eb1c2a517b19cf21d74525fbafbed17"
+    },
+    "model-interventions": {
+      "local_references": 66,
+      "images": 2,
+      "missing_references": 0,
+      "source_sha256": "66e6ebf50e9a9003993cc4ce585df1172c614f46136726267960a451c095dc83"
+    }
+  },
+  "visual_inspection": "Three emitted PNGs individually inspected, legible synthetic labels/axes and retained-history notices. HTML contents and all local references checked; no browser interaction claim.",
+  "errors": 0,
+  "warnings": 2,
+  "notes": 0,
+  "warning_scope": "Only deliberately omitted bundled-vignette warnings; both changed documents executed separately",
+  "models": 0,
+  "native_builds": 0,
+  "installed_package": "Existing exact accepted library; no reinstall",
+  "tests": "Accepted suites not rerun; R CMD check examples passed with model environment variables removed",
+  "original_status_preserved": "awaiting_owner_verification"
+}

@@ -1,0 +1,10 @@
+   Compiling rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.19s
+     Running tests/projection_production.rs (target/debug/deps/projection_production-5dd6e6f4a29abcb9)
+
+running 1 test
+test default_constructor_routes_and_owned_lifecycle ... F6E_PROJECTION_PRODUCTION_TEST {"test":"default_constructor_routes_and_owned_lifecycle","status":"passed","expected_cases":13,"executed_cases":13,"expected_rejections":9,"rejected_cases":9,"expected_values":288,"compared_values":288,"model_loads":1,"constructor_calls":2,"library_cfg_test":false,"private_feature":false}
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+

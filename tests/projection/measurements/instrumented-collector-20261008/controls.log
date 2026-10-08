@@ -1,0 +1,46 @@
+test_01_exact_integration_positive (__main__.Controls.test_01_exact_integration_positive) ... ok
+test_02_exact_worker_positive (__main__.Controls.test_02_exact_worker_positive) ... ok
+test_03_zero_tests (__main__.Controls.test_03_zero_tests) ... ok
+test_04_ignored (__main__.Controls.test_04_ignored) ... ok
+test_05_failed (__main__.Controls.test_05_failed) ... ok
+test_06_wrong_test (__main__.Controls.test_06_wrong_test) ... ok
+test_07_duplicate_success (__main__.Controls.test_07_duplicate_success) ... ok
+test_08_missing_capture (__main__.Controls.test_08_missing_capture) ... ok
+test_09_missing_marker (__main__.Controls.test_09_missing_marker) ... ok
+test_10_duplicate_marker (__main__.Controls.test_10_duplicate_marker) ... ok
+test_11_wrong_cases (__main__.Controls.test_11_wrong_cases) ... ok
+test_12_wrong_refusals (__main__.Controls.test_12_wrong_refusals) ... ok
+test_13_wrong_values (__main__.Controls.test_13_wrong_values) ... ok
+test_14_false_expected_count (__main__.Controls.test_14_false_expected_count) ... ok
+test_15_private_feature (__main__.Controls.test_15_private_feature) ... ok
+test_16_cfg_test_library (__main__.Controls.test_16_cfg_test_library) ... ok
+test_17_bool_as_integer (__main__.Controls.test_17_bool_as_integer) ... ok
+test_18_float_as_integer (__main__.Controls.test_18_float_as_integer) ... ok
+test_19_extra_marker_field (__main__.Controls.test_19_extra_marker_field) ... ok
+test_20_nan_marker (__main__.Controls.test_20_nan_marker) ... ok
+test_21_duplicate_json_field (__main__.Controls.test_21_duplicate_json_field) ... ok
+test_22_sanitizer_stderr (__main__.Controls.test_22_sanitizer_stderr) ... ok
+test_23_sanitizer_captured (__main__.Controls.test_23_sanitizer_captured) ... ok
+test_24_positive_artifacts (__main__.Controls.test_24_positive_artifacts) ... ok
+test_25_no_production_rlib (__main__.Controls.test_25_no_production_rlib) ... ok
+test_26_private_artifact (__main__.Controls.test_26_private_artifact) ... ok
+test_27_no_spill_artifact (__main__.Controls.test_27_no_spill_artifact) ... ok
+test_28_duplicate_binary (__main__.Controls.test_28_duplicate_binary) ... ok
+test_29_artifact_outside_target (__main__.Controls.test_29_artifact_outside_target) ... ok
+test_30_build_failed (__main__.Controls.test_30_build_failed) ... ok
+test_31_memcheck_positive (__main__.Controls.test_31_memcheck_positive) ... ok
+test_32_memcheck_fault_positive (__main__.Controls.test_32_memcheck_fault_positive) ... ok
+test_33_memcheck_finding (__main__.Controls.test_33_memcheck_finding) ... ok
+test_34_memcheck_unfinished (__main__.Controls.test_34_memcheck_unfinished) ... ok
+test_35_memcheck_wrong_tool (__main__.Controls.test_35_memcheck_wrong_tool) ... ok
+test_36_memcheck_wrong_binary (__main__.Controls.test_36_memcheck_wrong_binary) ... ok
+test_37_memcheck_missing_fault (__main__.Controls.test_37_memcheck_missing_fault) ... ok
+test_38_memcheck_error_count (__main__.Controls.test_38_memcheck_error_count) ... ok
+test_39_memcheck_suppression (__main__.Controls.test_39_memcheck_suppression) ... ok
+test_40_exact_build_scope (__main__.Controls.test_40_exact_build_scope) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.002s
+
+OK
+F6E_PROJECTION_INSTRUMENTED_CONTROLS {"status":"passed","executed_tests":40}

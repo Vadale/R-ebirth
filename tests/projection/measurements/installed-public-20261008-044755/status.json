@@ -1,0 +1,92 @@
+{
+  "status": "failed",
+  "pid": 78820,
+  "directory": "/private/tmp/relm-f6e/installed-public-20261008-044755",
+  "stages": [
+    {
+      "name": "wrappers",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/generate-wrappers.R",
+        "/private/tmp/relm-f6e/production-activation-20261008-041846/default-ffi/relm.so",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/R/extendr-wrappers.R"
+      ],
+      "status": "passed",
+      "pid": 78821,
+      "exit_code": 0,
+      "log_sha256": "f8b8367addea8317b02c7106134ab3705c97964491ae01ea57105b8001417626"
+    },
+    {
+      "name": "documentation",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "roxygen2::roxygenise('rebirth',load_code=roxygen2::load_installed)"
+      ],
+      "status": "passed",
+      "pid": 78830,
+      "exit_code": 0,
+      "log_sha256": "c4610bcdc612848d6f2de8dd15b5a5448c3ba4c26295491663497dda836e8371"
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-f6e/public-library",
+        "/private/tmp/relm-f6e/installed-public-20261008-044755/r-install-source"
+      ],
+      "status": "passed",
+      "pid": 78856,
+      "exit_code": 0,
+      "log_sha256": "6b75b19105fd9764c6c4a7fb41127547f876b78ba1540fe112eb16957161f652"
+    },
+    {
+      "name": "installed-source-usage",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "library(relm);stopifnot(normalizePath(find.package('relm'))==normalizePath(Sys.getenv('F6E_EXPECT_LIBRARY')));e<-new.env(parent=baseenv());for(f in list.files('rebirth/R',full.names=TRUE,pattern='[.]R$')) sys.source(f,e);n<-ls(e,all.names=TRUE);for(k in n) if(is.function(e[[k]])) {a<-get(k,asNamespace('relm'),inherits=FALSE);stopifnot(identical(formals(a),formals(e[[k]])),identical(body(a),body(e[[k]])))};codetools::checkUsagePackage('relm');cat('F6E_INSTALLED_SOURCE_FORMALS_BODIES_MATCH functions=',sum(vapply(mget(n,e),is.function,logical(1))), '\\n',sep='')"
+      ],
+      "status": "passed",
+      "pid": 78920,
+      "exit_code": 0,
+      "log_sha256": "3d00e25cb5682bf01a0dfa4fbf39eb29017da625afb23186cddaf41383225f00"
+    },
+    {
+      "name": "public-model",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-f6e/check-installed-public.R",
+        "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+        "/private/tmp/relm-f6e/installed-public-20261008-044755"
+      ],
+      "status": "failed",
+      "pid": 78933,
+      "exit_code": 1,
+      "log_sha256": "1f465cfa6eec23c1933d16bddec576492eddb086ab77d43858db63a173f68a1d"
+    }
+  ],
+  "scope": "Fresh R installation with exact current accepted default F6e DLL; new public CPU/Metal operational checks, not behavioral evaluation",
+  "native": {
+    "path": "/private/tmp/relm-f6e/production-activation-20261008-041846/default-ffi/relm.so",
+    "sha256": "9ef7c51c2848768984490a4bc794e60b10d81c840d3534db2b103e58a7516998",
+    "source_manifest": "18ebedbbf3469f2ae7358e8044836f51e866372c3af2e84fc9107070aa0ab31e",
+    "scope": "Reuse freshly accepted default F6e DLL exactly; no renewed build/native suite"
+  },
+  "stage": "public-model",
+  "source_manifest_sha256": "bbe43f6d18fe058717bb3107d7ffe5ad667fa7a5416323419559f5082513b40a",
+  "source_count": 107,
+  "error": "public-model failed; preserve and diagnose before affected-only correction",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-f6e/verify-installed-public.py\", line 53, in main\n    log=stage('public-model',['Rscript','--vanilla',str(ROOT/'check-installed-public.R'),str(model),str(run)],timeout=900)\n  File \"/private/tmp/relm-f6e/verify-installed-public.py\", line 21, in stage\n    row.update(status='passed' if code==0 else 'failed',exit_code=code,log_sha256=sha(run/(name+'.log')));save();assert code==0,name+' failed; preserve and diagnose before affected-only correction'\n                                                                                                                        ^^^^^^^\nAssertionError: public-model failed; preserve and diagnose before affected-only correction\n",
+  "source_drift": [],
+  "installed_drift": [],
+  "finished_at": 1791427681.7878242
+}

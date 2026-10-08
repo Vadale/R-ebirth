@@ -1,0 +1,70 @@
+{
+  "candidate.patch": {
+    "bytes": 73239,
+    "sha256": "a176aeecd6432542ebef9db398945e1a984cff565ac3ae904b1728461809f209"
+  },
+  "changed-source.tar.gz": {
+    "bytes": 199446,
+    "sha256": "7ab8d7010cdd79e55e30d7b12615a7adfe8c300b829d9484a1b732e798f84014"
+  },
+  "check-transfer-hosted.R": {
+    "bytes": 3351,
+    "sha256": "a02dbcd43b1fa862ac6bb10d3d98f89ae4c0143e2776e4db94a700478390646c"
+  },
+  "clippy-ffi.log": {
+    "bytes": 1096,
+    "sha256": "89825e8877dcf2aa610492967a68d2d9057c5d522b146601ca2276313cdc1bf8"
+  },
+  "clippy-llm.log": {
+    "bytes": 177,
+    "sha256": "54e94c41467b7e4c48483931863b34976e432d408efccd03ece6f780c1807e68"
+  },
+  "format.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "owner-binding.json": {
+    "bytes": 6919,
+    "sha256": "9c2d3deca382365b86ec477f0482792aa722db833a6b3185f658dba7fc98bb9a"
+  },
+  "owner-verification.json": {
+    "bytes": 871,
+    "sha256": "7b664606946dac65fbe9238d8a19f5fb687b29b1f5be814ed2dbba530dc80817"
+  },
+  "r-owners-ready.json": {
+    "bytes": 699,
+    "sha256": "be47d632004795be5da47919bfeb4ee57e42f661d3a10a2de443a6eec9030b2d"
+  },
+  "ready.json": {
+    "bytes": 15783,
+    "sha256": "a7520ebdc56432e9b55aa9720fc260922838c823cb1b0557775b1bd08f8595bb"
+  },
+  "revision-ready.json": {
+    "bytes": 15783,
+    "sha256": "a7520ebdc56432e9b55aa9720fc260922838c823cb1b0557775b1bd08f8595bb"
+  },
+  "source-manifest.json": {
+    "bytes": 12305,
+    "sha256": "3a42e51b3eb34967de4b5448085f3da769beb9029cbc01b33588e8e108304b24"
+  },
+  "status.json": {
+    "bytes": 2909,
+    "sha256": "a2353091754a5632c1e09b72421029924cda1eed87d476e0ecb778e602aac72c"
+  },
+  "test-transfer-collector.py": {
+    "bytes": 2630,
+    "sha256": "dea2d0ea2741912674f4cb74383a04c85297f6ceb05bd59156b7909afa7f6100"
+  },
+  "transfer-collector.py": {
+    "bytes": 2017,
+    "sha256": "9660e2a5c7b32ab9b85b76646bf22ab40e99535319181c7b909ec2272791dd40"
+  },
+  "transfer-ready.json": {
+    "bytes": 15783,
+    "sha256": "a7520ebdc56432e9b55aa9720fc260922838c823cb1b0557775b1bd08f8595bb"
+  },
+  "verify-transfer.py": {
+    "bytes": 10264,
+    "sha256": "bd35531ec11670dd372ced5165e55faff8d414d7c69f19eb897a411ad06b3bee"
+  }
+}

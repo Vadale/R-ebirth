@@ -1,0 +1,182 @@
+//! `rebirth-llm` — the safe inference-engine wrapper for R-ebirth.
+//!
+//! This crate wraps the vendored llama.cpp engine (built by `build.rs`, D-006)
+//! behind safe Rust APIs. It must never contain R types: staying R-free is what
+//! keeps it independently testable with `cargo test` and reusable under a
+//! permissive licence (ARCHITECTURE.md §2, §13).
+//!
+//! Layout:
+//! - [`ffi`] — the hand-written `extern "C"` surface + `#[repr(C)]` param structs.
+//! - [`error`] — [`RebirthError`], mirroring `API-GRAMMAR.md` §6.
+//! - [`engine`] — the safe `Backend`/`Model`/`Context` lifecycle and [`load`].
+//! - [`embed`] — text/token embeddings pooled in Rust (WP3, D-011).
+//! - [`trace`] — activation tracing via the scheduler eval callback (WP4, D-012).
+//! - [`intervene`] — steering + ablation on a fresh context (WP5, D-012/D-016).
+//! - `probe` — the runtime sentinel intervention probe (WP7.5a, D-021) that proves
+//!   interventions take effect on a model, superseding the hard arch allow-list.
+//! - `spill` — Arrow-IPC disk spill for over-budget traces (WP4 Step 5, D-013),
+//!   behind the default-on `spill` feature (a `--no-default-features` build omits
+//!   it and the Arrow crates entirely).
+
+use std::ffi::CStr;
+
+mod async_job;
+mod domain;
+mod embed;
+mod engine;
+mod error;
+mod ffi;
+mod generate;
+mod intervene;
+mod live_capture;
+#[cfg(feature = "spill")]
+mod live_spill;
+mod live_state;
+mod live_steering;
+mod probe;
+#[cfg(test)]
+mod projection;
+mod schema;
+#[cfg(feature = "spill")]
+mod spill;
+mod spill_lease;
+mod structured;
+mod text_stream;
+mod trace;
+mod vision;
+
+pub use async_job::{
+    restore_async_panic_hook, AsyncCompletion, AsyncFixtureMode, AsyncJob, AsyncRequest,
+    AsyncStartFailure, ProgressSnapshot, StreamEvent, ASYNC_IMAGE_ROW_BYTES,
+    ASYNC_IMAGE_ROW_OVERHEAD, ASYNC_MAX_ARGUMENT_BYTES, ASYNC_MAX_DESCRIPTOR_BYTES,
+    ASYNC_MAX_OUTPUT_BYTES, ASYNC_MAX_PROMPTS, ASYNC_MAX_PROMPT_BYTES, ASYNC_MAX_STORAGE_BYTES,
+    ASYNC_MAX_TOKENS, ASYNC_STRING_DESCRIPTOR_BYTES, ASYNC_STRING_OVERHEAD, STREAM_BATCH_BYTES,
+    STREAM_BATCH_ROWS, STREAM_CHUNK_BYTES, STREAM_QUEUE_BYTES, STREAM_QUEUE_ROWS,
+};
+pub use domain::{ExecutionGuard, ExecutionPermit, NativeGuard};
+pub use embed::{Embeddings, Pooling};
+pub use engine::{
+    available_backends, load, load_with_batch, BackendKind, LoadRequest, LoadedModel, ModelMetadata,
+};
+pub use error::RebirthError;
+pub use generate::{
+    top_k_logits, ChatMessage, Encoding, GenerateParams, Generation, Logits, StopReason, TokenLogit,
+};
+pub use intervene::InterventionSpec;
+#[cfg(feature = "spill")]
+pub use live_state::LiveSpillReport;
+pub use live_state::{
+    live_r_vector_bytes, LiveEstimate, LiveRequest, LiveState, LiveTrace,
+    LIVE_ALLOCATION_ALIGNMENT, LIVE_BATCH_BYTES, LIVE_BATCH_ROWS, LIVE_MATERIALIZED_BYTES,
+    LIVE_MAX_STATES, LIVE_SPILL_BYTES, LIVE_TRANSPORT_BYTES, LIVE_VECTOR_BYTES,
+    LIVE_VECTOR_HEADER_BYTES,
+};
+pub use live_steering::{LiveCoefficient, LiveReply, LiveSteer, LiveSteeringRow};
+pub use schema::CompiledSchema;
+pub use spill_lease::{cleanup_managed_spill, prepare_managed_spill, sweep_managed_spill};
+pub use structured::{
+    STRUCTURED_MAX_OUTPUT_BYTES, STRUCTURED_MAX_PROMPTS, STRUCTURED_MAX_PROMPT_BYTES,
+    STRUCTURED_MAX_SCHEMA_BYTES, STRUCTURED_MAX_TOKENS, STRUCTURED_MAX_TOTAL_OUTPUT_BYTES,
+    STRUCTURED_MAX_TOTAL_PROMPT_BYTES,
+};
+#[cfg(feature = "spill")]
+pub use trace::SpillReport;
+pub use trace::{
+    parse_tensor_name, CaptureRow, CaptureSpec, Component, Positions, SpillPlan, TraceOutput,
+    TRACE_MATERIALIZED_EXPANSION,
+};
+pub use vision::{validate_image_file, IMAGE_HARD_MAX_BYTES, IMAGE_MAX_DIM, IMAGE_MAX_PIXELS};
+
+/// Initialize the process-global llama.cpp + ggml backend.
+///
+/// Low-level: prefer [`engine::available_backends`] / [`load`], which manage a
+/// reference-counted backend for you. Pairs with [`backend_free`].
+pub fn backend_init() {
+    let _native = NativeGuard::acquire("backend_init");
+    // SAFETY: takes no arguments; only sets up global engine state.
+    unsafe { ffi::llama_backend_init() }
+}
+
+/// Free the process-global backend. Pairs with [`backend_init`].
+pub fn backend_free() {
+    let _native = NativeGuard::acquire("backend_free");
+    // SAFETY: takes no arguments; only tears down global engine state.
+    unsafe { ffi::llama_backend_free() }
+}
+
+/// Engine build/system info: which backends and CPU features are compiled in.
+///
+/// Returns an owned copy of the engine's static string (empty if unavailable).
+pub fn system_info() -> String {
+    let _native = NativeGuard::acquire("system_info");
+    // SAFETY: llama_print_system_info returns a pointer to a static, NUL-
+    // terminated C string owned by the engine; we only read and copy it.
+    let ptr = unsafe { ffi::llama_print_system_info() };
+    if ptr.is_null() {
+        return String::new();
+    }
+    // SAFETY: `ptr` is non-null and points at a NUL-terminated engine string.
+    unsafe { CStr::from_ptr(ptr) }
+        .to_string_lossy()
+        .into_owned()
+}
+
+/// Whether this build can offload compute to a GPU backend (e.g. Metal).
+pub fn supports_gpu_offload() -> bool {
+    let _native = NativeGuard::acquire("supports_gpu_offload");
+    // SAFETY: takes no arguments; pure query into the ggml backend registry.
+    unsafe { ffi::llama_supports_gpu_offload() }
+}
+
+/// Whether this build supports memory-mapping model files.
+pub fn supports_mmap() -> bool {
+    let _native = NativeGuard::acquire("supports_mmap");
+    // SAFETY: takes no arguments; pure capability query.
+    unsafe { ffi::llama_supports_mmap() }
+}
+
+/// Whether this build supports locking model pages in RAM.
+pub fn supports_mlock() -> bool {
+    let _native = NativeGuard::acquire("supports_mlock");
+    // SAFETY: takes no arguments; pure capability query.
+    unsafe { ffi::llama_supports_mlock() }
+}
+
+/// Maximum number of devices this build can address.
+pub fn max_devices() -> usize {
+    let _native = NativeGuard::acquire("max_devices");
+    // SAFETY: takes no arguments; pure capability query.
+    unsafe { ffi::llama_max_devices() }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Linkage gate (WP1 Step 2): proves the vendored engine compiles, links, and
+    /// the backend initializes with NO model file — catching any C-API
+    /// symbol-name mismatch at the pinned tag. A single test keeps the
+    /// process-global `llama_backend_init`/`llama_backend_free` calls serial.
+    #[test]
+    fn backend_initializes_and_reports_system_info() {
+        backend_init();
+
+        let info = system_info();
+        assert!(!info.is_empty(), "engine system info should be populated");
+
+        // Capability queries are callable with no model loaded.
+        let _ = supports_mmap();
+        let _ = supports_mlock();
+        let _ = max_devices();
+
+        // On the macOS arm64 Metal build, GPU offload must be available.
+        if cfg!(all(target_os = "macos", target_arch = "aarch64")) {
+            assert!(
+                supports_gpu_offload(),
+                "Metal build should report GPU offload support; system info: {info}"
+            );
+        }
+
+        backend_free();
+    }
+}

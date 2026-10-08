@@ -1,0 +1,148 @@
+{
+  "status": "diagnosis_ready_no_source_edits",
+  "failure": {
+    "log": "/private/tmp/relm-f6e/feasibility-pruning-20261007-224427/benchmark-metal.log",
+    "sha256": "07b90729bb00c4690a405812269d256cc12387cef0addb2ff04a9e45eeaf02db",
+    "site_native": [
+      0,
+      0
+    ],
+    "native_status": -6,
+    "stage": "tiny Llama projection derivation/capability probe, before cached-Qwen timing"
+  },
+  "conclusion": "The generic is_host predicate is insufficient in this pinned engine: shared, private and mapped Metal buffer types all explicitly return false. The current guard therefore necessarily rejects a nonempty shared Metal producer. This proves missing explicit shared-buffer recognition, not that the actual failing buffer was private.",
+  "actual_buffer_uncertainty": "The retained failure reports neither buffer/type/device names nor the individual -6 predicates. -6 also includes null data or weight usage. Shared default on unified-memoryM4 is source-supported but the failed producer type and environment overrides must be recorded, not assumed.",
+  "default_policy": "Metal device initialization sets use_shared_buffers from unified memory (or externalGPU), with GGML_METAL_SHARED_BUFFERS_DISABLE/ENABLE overrides. Device default chooses shared or private type from that property. Thus private is not the unconditional default.",
+  "supported_no_staging_route": [
+    "Keep ordinary ggml_backend_buffer_is_host(buffer) as the unchanged CPU/host fast path.",
+    "Otherwise use only public opaque backend APIs: buft=ggml_backend_buffer_get_type(buffer); dev=ggml_backend_buft_get_device(buft); reg=ggml_backend_dev_backend_reg(dev). Require all nonnull, reg identity equal to ggml_backend_reg_by_name(\"MTL\"), and GPU device type.",
+    "Require buft pointer identity equal to ggml_backend_dev_buffer_type(dev). Require buffer/type name equal to ggml_backend_dev_name(dev), and that whole name exactly matches MTL followed by one or more decimal digits with no suffix. In this pinned source the exact default shared name is MTL<index>; private is MTL<index>_Private and mapped is MTL<index>_Mapped. Reject both suffixes and every unknown backend/type. Registry/device/default-type identity is essential; a name alone is not proof.",
+    "The shared default factory passes shared=true; it is selected only while the immutable initialized device property use_shared_buffers is true. Allocation ANDs the same property and chooses the shared interface from the actual is_shared flag. This closed pinned-source chain proves that accepted default shared types dispatch to shared memcpy accessors, without inspecting opaque Metal context memory or requiring new symbols.",
+    "Continue ggml_backend_tensor_get/set on the accepted buffer, after existing scheduler synchronization; their shared Metal implementation uses synchronous memcpy and no MTL staging object, command buffer or H-sized allocation. Preserve all shape/stride/extent/alias/usage/data checks and exactly one admitted H-f32row.",
+    "Use the same direct-access predicate for classifier ready checks, row access and the one-index attention-probe GET_ROWS read. Keep private/mapped/unknown buffers unsupported. Change the existing POD host flag semantics/name to explicit direct-access kind or boolean consistently in C++/Rust; the Rust info.host==1 check must not reintroduce rejection. If adding diagnostics, charge actual compiled fixed fields through existing sizeof ledger."
+  ],
+  "source_proof_limits": [
+    "This is pinned-source recognition, not a generic future GGML guarantee; a vendor bump requires requalification.",
+    "No blanket !is_host bypass, no recognition by buffer-name prefix alone, no implicit Metal-private staging and no env override or buffer-policy change.",
+    "A real actual-buffer receipt is still required on the next affected Metal execution, even though a separate model-only diagnostic run is unnecessary once the precise guard correction and negative controls are authorized."
+  ],
+  "minimal_next_proposal": [
+    "After parent authorization, narrowly implement direct-access recognition in relm-owned projection.cpp and matching POD semantics only; no vendor/API/dependency change.",
+    "Add one private native predicate test covering host/shared positive paths and private/mapped/wrong-registry/wrong-default-type/malformed-name/null refusals; preserve existing12 structural controls rather than rerun unchanged numericalCPU suite.",
+    "Retain a fixed scalar classification receipt for the actual ready producer (original host predicate, accepted kind, registry/device/default-type matches, nonnull data, usage, parsed device index). Emit from outside callback alongside existing failure/probe receipts; if strings are retained, use fixed capped arrays with compiled ledger charge, never unbounded callback formatting.",
+    "Parent runs only affected guard controls and the previously incomplete Metal release path. TinyLlama independent causal/same-row proof precedes cached-Qwen timings as already required. Private or unknown actual storage stays a classed refusal, not a fallback. CPU benchmark and native7/8/9 evidence remain retained at their exact source."
+  ],
+  "source_sites": [
+    [
+      "rebirth/src/rust/rebirth-llm/native/projection.cpp",
+      73,
+      "-6 union: missing data, not generic host, or weight usage; row line79 and attention index line95 repeat host-only guard."
+    ],
+    [
+      "rebirth/src/rust/rebirth-llm/src/projection.rs",
+      351,
+      "Rust additionally demands info.host==1 at ready."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-backend.cpp",
+      183,
+      "buffer_is_host simply forwards to buffer type is_host."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal.cpp",
+      283,
+      "Shared type returnsfalse; private359 and mapped435 also returnfalse."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal.cpp",
+      302,
+      "Shared default name MTL+device index; private378suffix_Private; mapped454suffix_Mapped."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal.cpp",
+      723,
+      "Default type chosen from device use_shared_buffers."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal-device.m",
+      1251,
+      "Unified-memory/external default and explicit env overrides1256-1260; device name MTL+index1277."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal.cpp",
+      263,
+      "Shared allocator passestrue; common allocation203-216 selects actualshared/private interface by actualbuffer predicate."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal-device.m",
+      2082,
+      "Allocation combines requestedshared with initializeddevice policy; shared allocateshostmemory, private usesvirtualaddress."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal.cpp",
+      54,
+      "Shared setters/getters assert actualshared and call device helpers."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal-device.m",
+      2293,
+      "Shared setter memcpy+return; private creates MTLBuffer/command/semaphore and lacks completed-error checking."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal-device.m",
+      2347,
+      "Shared getter memcpy+return; private creates MTL staging wrapper and blitcommand."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/include/ggml-backend.h",
+      181,
+      "Public device/registry/default-buffer APIs; registry lookup by name238."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-metal/ggml-metal.cpp",
+      852,
+      "Actual registry name is MTL, not Metal."
+    ],
+    [
+      "rebirth/src/llama.cpp/ggml/src/ggml-backend.cpp",
+      1809,
+      "Scheduler computes subgraph then synchronizes split backend before ready callback1829-1832."
+    ]
+  ],
+  "repo_source_edits": false,
+  "builds_tests_models_executed_by_agent": false,
+  "acceptance_claim": false,
+  "shared_to_private_fallback_proof": {
+    "selection": "ggml_backend_metal_device_get_buffer_type reads props_dev->use_shared_buffers; true selects the shared-type singleton, false the distinct private-type singleton.",
+    "allocation": "Shared singleton passes shared=true into allocator; device.m2084 applies true&&the same initialized property. Default shared-type pointer equality therefore excludes thefalseproperty branch, because that branch would return the different private-type singleton and its_Private name.",
+    "immutability": "All assignments to use_shared_buffers are inside device initialization1251-1260. Environment is read there once; this pinned source supplies no post-initialization setter. Ready callbacks occur after device/context/buffer initialization. No assumption about current getenv is used.",
+    "required_joint_predicates": "Actual buft identity == current owning device default buft; owning device belongs to registeredMTL registry by pointer identity; owning device GPU; whole shared buffer/type name exactly equals whole device MTL<digits> name. Any failure rejects. Names alone never authorize a copy.",
+    "mapped": "Mapped is rejected even though mapped buffers may be shared: it is not the owning device default type and its_Mapped suffix fails exact shared-name check."
+  },
+  "required_actual_buffer_receipt": {
+    "when": [
+      "first selected tinyLlama producer ready before probe row access",
+      "first selected cachedQwen producer ready before active timing; retain kind proof with benchmark metadata"
+    ],
+    "fields": [
+      "kind(host,metal_default_shared,unsupported)",
+      "original_is_host",
+      "buffer_type_name",
+      "device_name",
+      "registry_name",
+      "matches_device_default_type",
+      "matches_registered_metal_registry",
+      "type_device_matches_registry_device",
+      "device_type",
+      "buffer_usage",
+      "data_nonnull",
+      "dtype",
+      "width",
+      "rows",
+      "contiguous",
+      "view_offset",
+      "no_staging_supported"
+    ],
+    "constraints": "No raw pointers published. Copy only fixed bounded names/scalar descriptors, charge actual compiled sizeof and any copying fields. An unknown/overlong name must remain unsupported with explicit truncated diagnostic status. Never invoke tensor_get/set for unsupported/private to generate the receipt. Log outside callback. CPU host fast path returns immediately before Metal registry/type/name inspection."
+  }
+}
