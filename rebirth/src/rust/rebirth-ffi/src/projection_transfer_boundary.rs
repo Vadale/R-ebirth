@@ -15,6 +15,7 @@ extern "C" {
         out: *mut ProjectionStateFacts,
     ) -> i32;
     fn relm_r_state_frame_size() -> usize;
+    fn relm_r_state_create(ptr: *mut std::ffi::c_void) -> *mut std::ffi::c_void;
 }
 fn projection_state_workspace_bytes() -> u64 {
     use std::mem::size_of;
@@ -26,6 +27,19 @@ fn projection_state_workspace_bytes() -> u64 {
             + size_of::<List>()
             + size_of::<[(&str, u64); 3]>()
             + size_of::<std::slice::Iter<'static, (&'static str, u64)>>()) as u64
+}
+#[extendr]
+fn rebirth_model_state(ptr: Robj) -> Robj {
+    projection_resolve(catch_unwind(AssertUnwindSafe(|| {
+        // SAFETY: this boundary is on R's main thread, ptr is rooted by Robj,
+        // and C returns the new environment without an intervening R allocation.
+        // Robj immediately protects it (the weak proof itself is not a root).
+        let state = unsafe { Robj::from_sexp(relm_r_state_create(ptr.get().cast()).cast()) };
+        if !state.is_environment() {
+            return Err(projection_argument());
+        }
+        Ok(state)
+    })))
 }
 #[extendr]
 fn rebirth_projection_state_facts(state: Robj, ptr: Robj) -> Robj {
@@ -295,63 +309,45 @@ mod projection_transfer_selftest {
         marker("projection_transfer_borrowed_residual_inputs", 12, 9);
     }
     fn state_facts() {
-        let ptr: Robj = ExternalPtr::new(LlmHandle::empty()).into();
-        let make = |code: &str| eval_string_with_params(code, &[&ptr]).unwrap();
-        let unhashed = make(
-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; e})",
-        );
-        let hashed = make("local({e<-new.env(hash=TRUE,size=29L,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; e})");
-        let compiled = make("local({f<-compiler::cmpfun(function(p){ptr<-p; closed<-FALSE; rm(p); environment()}); e<-f(param.0); parent.env(e)<-emptyenv(); e})");
-        for (name, state, expected) in [
-            ("compiled_scalar", compiled, 0.),
-            ("unhashed", unhashed.clone(), 0.),
-            ("hashed", hashed.clone(), 29.),
+        for (name, code) in [
+            ("factory_open", "param.1"),
+            ("factory_closed", "local({param.1$closed<-TRUE; param.1})"),
+            ("compiled_assignment", "local({f<-compiler::cmpfun(function(e){e$closed<-FALSE;e}); f(param.1)})"),
         ] {
-            let facts = rebirth_projection_state_facts(state, ptr.clone())
-                .as_list()
-                .unwrap();
+            let ptr: Robj = ExternalPtr::new(LlmHandle::empty()).into();
+            let created = rebirth_model_state(ptr.clone());
+            let state = eval_string_with_params(code, &[&ptr, &created]).unwrap();
+            let facts = rebirth_projection_state_facts(state, ptr).as_list().unwrap();
             assert_eq!(facts.len(), 3);
-            assert_eq!(facts.elt(0).unwrap().as_real(), Some(expected));
+            assert_eq!(facts.elt(0).unwrap().as_real(), Some(0.));
             assert_eq!(facts.elt(1).unwrap().as_real(), Some(2.));
-            assert_eq!(
-                facts.elt(2).unwrap().as_real(),
-                Some(std::mem::size_of::<unsafe extern "C" fn(extendr_api::SEXP)>() as f64)
-            );
-            println!("F6E_PROJECTION_STATE_FACTS {{\"fixture\":\"{name}\",\"hash_slots\":{expected},\"bindings\":2,\"c_finalizer_bytes\":{},\"query_workspace_bytes\":{},\"ffi_response_bytes\":{}}}",facts.elt(2).unwrap().as_real().unwrap(),projection_state_workspace_bytes(),projection_native_profile().unwrap().response_bytes);
+            assert_eq!(facts.elt(2).unwrap().as_real(), Some(std::mem::size_of::<unsafe extern "C" fn(extendr_api::SEXP)>() as f64));
+            println!("F6E_PROJECTION_STATE_FACTS {{\"fixture\":\"{name}\",\"hash_slots\":0,\"bindings\":2,\"c_finalizer_bytes\":{},\"query_workspace_bytes\":{},\"ffi_response_bytes\":{}}}",facts.elt(2).unwrap().as_real().unwrap(),projection_state_workspace_bytes(),projection_native_profile().unwrap().response_bytes);
         }
         for code in [
-            "local({e<-new.env(hash=FALSE,parent=globalenv()); e$ptr<-param.0; e$closed<-FALSE; e})",
-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; attr(e,'x')<-1L; e})",
+            "local({e<-param.1; parent.env(e)<-globalenv(); e})",
+            "local({e<-param.1; attr(e,'x')<-1L; e})",
             "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; e$x<-1L; e})",
             "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e})",
-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-NA; e})",
-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-0L; e})",
-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-structure(FALSE,x=1L); e})",
-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; delayedAssign('closed',stop('PROMISE EVALUATED'),assign.env=e); e})",
+            "local({e<-param.1; e$closed<-NA; e})",
+            "local({e<-param.1; e$closed<-0L; e})",
+            "local({e<-param.1; e$closed<-structure(FALSE,x=1L); e})",
+            "local({e<-param.1; delayedAssign('closed',stop('PROMISE EVALUATED'),assign.env=e); e})",
             "local({e<-new.env(hash=TRUE,parent=emptyenv()); e$closed<-FALSE; makeActiveBinding('ptr',function()stop('ACTIVE EVALUATED'),e); e})",
-            "local({f<-compiler::cmpfun(function(p){ptr<-p; closed<-0.5; rm(p); environment()}); e<-f(param.0); parent.env(e)<-emptyenv(); e})",
-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$closed<-FALSE; delayedAssign('ptr',stop('POINTER PROMISE EVALUATED'),assign.env=e); e})",
+            "local({e<-new.env(hash=TRUE,size=29L,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; lockEnvironment(e); e})",
+            "local({e<-param.1; delayedAssign('ptr',stop('POINTER PROMISE EVALUATED'),assign.env=e); e})",
+            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; lockEnvironment(e); e})",
         ] {
-            let state = make(code);
-            let result = rebirth_projection_state_facts(state,ptr.clone()).as_list().unwrap();
+            let ptr: Robj = ExternalPtr::new(LlmHandle::empty()).into();
+            let created = rebirth_model_state(ptr.clone());
+            let state = eval_string_with_params(code, &[&ptr, &created]).unwrap();
+            let result = rebirth_projection_state_facts(state,ptr).as_list().unwrap();
             assert_eq!(result.elt(0).unwrap().as_bool(),Some(false));
         }
-        let other: Robj = ExternalPtr::new(LlmHandle::empty()).into();
-        assert_eq!(
-            rebirth_projection_state_facts(unhashed, other)
-                .as_list()
-                .unwrap()
-                .elt(0)
-                .unwrap()
-                .as_bool(),
-            Some(false)
-        );
-        assert!(
-            projection_native_profile().unwrap().response_bytes
-                >= projection_state_workspace_bytes()
-        );
+        assert!(projection_native_profile().unwrap().response_bytes >= projection_state_workspace_bytes());
         marker("projection_transfer_r_state_facts", 16, 12);
     }
+
 }
 
 #[cfg(test)]

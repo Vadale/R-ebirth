@@ -1,29 +1,3 @@
-# Model-free D046 admission controls. Synthetic layouts are deliberate test data,
-# not measurements of this machine. The execution collector separately binds
-# this R twin to native receipts carrying the actual compiled FFI profile.
-projection_test_profile <- function() {
-  p <- setNames(as.list(rep(64, length(relm:::projection_profile_fields))),
-    relm:::projection_profile_fields)
-  p$version <- 2; p$direction_arc_header_bytes <- 16; p$runtime_bytes <- 8192
-  p$derive_frame_bytes <- 1024; p$callback_frame_bytes <- 512; p$ffi_fixed_bytes <- 1024
-  p$metadata_owner_bytes <- 0; p$ffi_handle_tag_bytes <- 24
-  p$layout_checksum <- 1234; p$max_sites <- 32; p$max_width <- 65536
-  p
-}
-projection_test_inputs <- function(mode = 1, h = 32, old = 0) {
-  list(mode = mode, hidden_size = h, layers = 3, previous_sites = old,
-    steer_entries = 2, ablate_entries = 3, source_baseline_values = h * 3,
-    metadata_bytes = 0, metadata_scratch_bytes = 0, existing_direction_estimate = 1000,
-    r_projection_fixed_bytes = 2000, r_adapter_bytes = 3000,
-    max_bytes = 512 * 2^20, backend = 0, production_armed = 1)
-}
-projection_test_config <- function() {
-  list(mode = "new_site", layer = 1, component = "mlp_out", coef = 1,
-    direction = c(1, rep(0, 31)), steer_entries = 2, ablate_entries = 3,
-    existing_direction_estimate = 1000, r_projection_fixed_bytes = 2000,
-    r_adapter_bytes = 3000, max_bytes = 512 * 2^20)
-}
-
 test_that("projection R profile rejects hidden owners and incompatible compiled fields", {
   p <- projection_test_profile()
   expect_identical(relm:::projection_profile_validate(p), p)

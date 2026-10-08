@@ -8,10 +8,10 @@
 # Sum their lifetimes conservatively; this is not an allocator/RSS reserve.
 projection_binding_workspace <- function(profile) {
   projection_profile_validate(profile)
-  numeric_record <- function(fields) setNames(as.list(rep(0, length(fields))), fields)
-  model <- structure(setNames(vector("list", length(projection_model_fields)),
+  numeric_record <- function(fields) stats::setNames(as.list(rep(0, length(fields))), fields)
+  model <- structure(stats::setNames(vector("list", length(projection_model_fields)),
     projection_model_fields), class = "llm")
-  model$ptr <- new("externalptr")
+  model$ptr <- methods::new("externalptr")
   model$state <- new.env(hash = FALSE, parent = emptyenv())
   attr(model, "projection") <- list(max_bytes = 0, existing_direction_estimate = 0)
   owners <- list(
@@ -19,7 +19,7 @@ projection_binding_workspace <- function(profile) {
     input_match = numeric_record(projection_input_fields),
     preparation = list(config = NULL, inventory = NULL, profile = NULL,
       response = NULL, workspace_bytes = 0),
-    result = list(ok = TRUE, ptr = new("externalptr")),
+    result = list(ok = TRUE, ptr = methods::new("externalptr")),
     source_measurement = model, candidate_measurement = model,
     scan_entry = list(kind = "project", layer = 0L, component = "attn_out",
       direction = double(), coef = 0))

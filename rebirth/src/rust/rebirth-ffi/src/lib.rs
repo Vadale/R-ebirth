@@ -1175,6 +1175,7 @@ extendr_api::extendr_module! {
     fn rebirth_projection_allocation_profile;
     fn rebirth_projection_preflight;
     fn rebirth_projection_construct;
+    fn rebirth_model_state;
     fn rebirth_projection_state_facts;
     fn rebirth_async_state_ack;
     fn rebirth_async_poll;

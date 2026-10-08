@@ -15,6 +15,9 @@
   ordinary trace and embeddings on projected handles are refused. Model maps
   mark configured projection sites; these marks do not imply measured effects.
   Recorded artifact provenance does not authenticate loaded weights.
+* Handle state uses a bounded native factory and the R 4.6 binding API when
+  available. The additional weak provenance reference is charged explicitly;
+  state names are locked while close/synchronization values remain mutable.
 
 ## Recorded contrast directions (F6d)
 

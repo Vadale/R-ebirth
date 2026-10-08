@@ -17,7 +17,9 @@ test_that("print.llm renders one screen of metadata and returns invisibly", {
 })
 
 test_that("print.llm reports the active-intervention count", {
-  m <- stub_llm(interventions = list(a = 1, b = 2))
+  m <- stub_llm(interventions = list(
+    list(kind = "steer", layer = 12L, direction = rep(0, 896L), coef = 1, positions = "all"),
+    list(kind = "ablate", layer = 12L, neurons = 1L, value = 0, component = "residual")))
   out <- capture.output(print(m))
   expect_true(any(grepl("interventions:\\s+2 active", out)))
 })

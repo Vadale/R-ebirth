@@ -21,13 +21,15 @@ projection_state_bytes <- function(facts) {
   projection_r_fingerprint()
   # R's NewWeakRef allocates a four-slot vector; MakeCFinalizer allocates a
   # raw vector of sizeof(R_CFinalizer_t). Shared package finalizer closures
-  # are not duplicated per handle. Binding cells and symbols are conservative.
+  # are not duplicated per handle. The third weak reference is the native
+  # state provenance key; it has no finalizer/value and does not extend lifetime.
+  # Binding cells and symbols are conservative.
   node <- projection_owner_size(pairlist(NULL))
   weak <- projection_owner_size(vector("list", 4L))
   if (node != 56 || weak != live_r_vector_bytes(32)) projection_memory_fail()
   hash <- if (facts$hash_slots == 0) 0 else live_r_vector_bytes(projection_mul(8, facts$hash_slots))
   projection_add(hash, 2 * node, 2 * projection_owner_size(as.name("ptr")),
-    projection_owner_size(FALSE), 2 * weak, live_r_vector_bytes(facts$c_finalizer_bytes))
+    projection_owner_size(FALSE), 3 * weak, live_r_vector_bytes(facts$c_finalizer_bytes))
 }
 
 projection_entry_validate <- function(iv, h, depth) {
@@ -174,7 +176,7 @@ projection_owner_inventory <- function(m, entry, facts, profile, max_bytes,
   # Metadata is shared, but measured twice conservatively. Environments are
   # replaced by empty un-hashed skeletons; their missing storage is added below.
   skeleton <- m
-  skeleton$ptr <- new("externalptr")
+  skeleton$ptr <- methods::new("externalptr")
   skeleton$state <- new.env(hash = FALSE, parent = emptyenv())
   skeleton$interventions <- list()
   candidate <- skeleton
@@ -216,8 +218,7 @@ projection_new_llm <- function(m, ptr, entry, max_bytes, existing_direction_esti
   on.exit(if (!complete) try(rebirth_handle_close(ptr), silent = TRUE), add = TRUE)
   settings <- list(max_bytes = direction_budget(max_bytes),
     existing_direction_estimate = projection_uint(existing_direction_estimate))
-  state <- new.env(hash = FALSE, parent = emptyenv())
-  state$closed <- FALSE; state$ptr <- ptr
+  state <- relm_check(rebirth_model_state(ptr))
   interventions <- vector("list", length(m$interventions) + 1L)
   for (at in seq_along(m$interventions)) interventions[[at]] <- m$interventions[[at]]
   interventions[[length(interventions)]] <- entry

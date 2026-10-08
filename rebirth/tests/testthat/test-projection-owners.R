@@ -1,15 +1,3 @@
-projection_owner_model <- function(h = 3L, interventions = list()) {
-  structure(list(ptr = new("externalptr"), state = new.env(parent = emptyenv()),
-    path = "model.gguf", architecture = "llama", parameters = 1000,
-    quantization = "f32", layers = 4L, hidden_size = h, context_length = 64L,
-    backend = "cpu", projector = NULL, vision = FALSE, interventions = interventions,
-    .context_train = 64L, .size_bytes = 1024, .vocab_size = 48L, .description = "tiny"), class = "llm")
-}
-projection_owner_entry <- function(h = 3L, layer = 1L, component = "mlp_out") {
-  list(kind = "project", layer = layer, component = component,
-    direction = c(1, rep(0, h - 1L)), coef = 1)
-}
-
 test_that("projection state inventory adds hash bindings and both finalizer types", {
   plain <- list(hash_slots = 0, bindings = 2, c_finalizer_bytes = 8)
   hashed <- plain; hashed$hash_slots <- 29
@@ -78,7 +66,7 @@ test_that("projection inventory binds actual metadata and accumulated residual o
   entry <- projection_owner_entry()
   got <- relm:::projection_owner_inventory(m, entry, facts, p, 64 * 2^20, 2^20)
   expect_gt(got$r_projection_fixed_bytes, 2 * as.double(object.size(m)))
-  expect_identical(got$state_extra_bytes, 1272)
+  expect_identical(got$state_extra_bytes, 1432)
   expect_identical(got$scan_bytes, 2 * as.double(object.size(integer(32L))) +
     as.double(object.size(got$counts)) + as.double(object.size(facts)) +
     2 * as.double(object.size(0)) + as.double(object.size(got)))
@@ -117,7 +105,7 @@ test_that("projection candidate wraps an independent un-hashed state and shares 
   m <- projection_owner_model()
   m$state$closed <- TRUE; m$state$ptr <- m$ptr
   entry <- projection_owner_entry()
-  ptr <- new("externalptr")
+  ptr <- relm:::rebirth_selftest_new_handle()
   derived <- relm:::projection_new_llm(m, ptr, entry, 64 * 2^20, 2^20)
   # Empty native pointer fixtures never call the engine during finalization.
   derived$state$closed <- TRUE
@@ -138,7 +126,7 @@ test_that("projection candidate wraps an independent un-hashed state and shares 
   inventory <- relm:::projection_owner_inventory(derived, next_entry, facts,
     projection_test_profile(), 64 * 2^20, 2^20)
   expect_identical(inventory$counts$previous_sites, 1)
-  expect_identical(inventory$state_extra_bytes, 992)
+  expect_identical(inventory$state_extra_bytes, 1152)
   bad <- derived; attr(bad, "projection")$hidden <- raw(100)
   expect_error(relm:::projection_owner_settings(bad), class = "relm_error_intervention")
 })

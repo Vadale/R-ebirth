@@ -214,9 +214,7 @@ llm <- function(path,
 # source's — the native vision context lives on the shared model, so the
 # projector carries over structurally (WP-V2, D-026).
 new_llm <- function(payload, path, interventions = list(), projector = NULL) {
-  state <- new.env(parent = emptyenv())
-  state$closed <- FALSE
-  state$ptr <- payload$ptr
+  state <- relm_check(rebirth_model_state(payload$ptr))
 
   obj <- structure(
     list(

@@ -88,7 +88,7 @@ projection_memory_bound <- function(profile, inputs) {
       i$max_bytes < 1 || i$max_bytes > 512 * 2^20) projection_memory_fail()
   h <- i$hidden_size; depth <- i$layers; old <- i$previous_sites; new <- i$mode
   sites <- old + new
-  out <- setNames(as.list(rep(0, length(projection_term_fields))), projection_term_fields)
+  out <- stats::setNames(as.list(rep(0, length(projection_term_fields))), projection_term_fields)
   if (sites > 0) {
     directions <- projection_mul(sites, projection_add(projection_mul(h, 8), p$direction_arc_header_bytes))
     plan_owners <- if (new == 0) 1 else 1 + (old > 0)
@@ -196,7 +196,7 @@ projection_r_fingerprint <- function() {
   ns <- c(0L, 1L, 2L, 3L, 4L, 5L, 8L, 9L, 16L, 17L, 33L)
   actual <- vapply(ns, function(n) as.double(utils::object.size(double(n))), numeric(1))
   if (.Machine$sizeof.pointer != 8L || !identical(actual, live_r_vector_bytes(8 * ns)) ||
-      as.double(utils::object.size(new("externalptr"))) != 64 ||
+      as.double(utils::object.size(methods::new("externalptr"))) != 64 ||
       as.double(utils::object.size(new.env(hash = FALSE, parent = emptyenv()))) != 56 ||
       as.double(utils::object.size(pairlist(a = 0, b = 0))) != 336) projection_memory_fail()
   actual
@@ -208,7 +208,7 @@ projection_r_fingerprint <- function() {
 projection_transport_bytes <- function(profile) {
   projection_profile_validate(profile)
   projection_r_fingerprint()
-  zeros <- function(fields) setNames(as.list(rep(0, length(fields))), fields)
+  zeros <- function(fields) stats::setNames(as.list(rep(0, length(fields))), fields)
   response <- list(ok = TRUE, armed = FALSE, profile = profile,
     inputs = zeros(projection_input_fields), terms = zeros(projection_term_fields))
   command <- list(mode = "new_site", layer = 0, component = "attn_out", coef = 0,

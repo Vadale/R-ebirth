@@ -1,26 +1,3 @@
-# D046 public routing checks with real artifact validation and isolated boundaries.
-projection_application_env <- function() {
-  e <- new.env(parent = environment(llm_apply_direction))
-  for (name in c("llm_apply_direction", "derive_intervened")) {
-    f <- get(name, envir = parent.env(e)); environment(f) <- e; e[[name]] <- f
-  }
-  e$seen <- NULL; e$calls <- 0L
-  e$projection_derive <- function(m, entry, max_bytes, existing_direction_estimate,
-                                 direction_application = FALSE) {
-    e$calls <- e$calls + 1L
-    e$seen <- list(m = m, entry = entry, budget = max_bytes,
-      estimate = existing_direction_estimate, application = direction_application)
-    structure(list(marker = TRUE), class = "llm")
-  }
-  e
-}
-
-projection_application_artifact <- function(component = "mlp_out", layer = 2L) {
-  f <- direction_test_fixture(); f$context$capture$component <- component
-  x <- llm_direction(f$target, f$control, f$context, layer)
-  list(x = x, context = f$context$model, m = direction_test_handle(f$context$model))
-}
-
 test_that("direction operators are exact plain strings before artifact work", {
   e <- projection_application_env(); touched <- 0L
   e$direction_validate <- function(...) { touched <<- touched + 1L; stop("unexpected validation") }

@@ -37,6 +37,8 @@ rebirth_projection_preflight <- function(ptr, config) .Call(wrap__rebirth_projec
 
 rebirth_projection_construct <- function(ptr, config, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values) .Call(wrap__rebirth_projection_construct, ptr, config, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values)
 
+rebirth_model_state <- function(ptr) .Call(wrap__rebirth_model_state, ptr)
+
 rebirth_projection_state_facts <- function(state, ptr) .Call(wrap__rebirth_projection_state_facts, state, ptr)
 
 rebirth_async_state_ack <- function(ptr, job_id, state_id, updates) .Call(wrap__rebirth_async_state_ack, ptr, job_id, state_id, updates)
@@ -72,6 +74,8 @@ rebirth_spill_sweep <- function(path, cutoff) .Call(wrap__rebirth_spill_sweep, p
 rebirth_intervene <- function(ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values) .Call(wrap__rebirth_intervene, ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values)
 
 rebirth_selftest_projection_ledger <- function() .Call(wrap__rebirth_selftest_projection_ledger)
+
+rebirth_selftest_projection_budget_error <- function() .Call(wrap__rebirth_selftest_projection_budget_error)
 
 rebirth_selftest_projection_transfer <- function() .Call(wrap__rebirth_selftest_projection_transfer)
 
