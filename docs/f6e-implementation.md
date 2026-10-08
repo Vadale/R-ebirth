@@ -19,7 +19,7 @@ integrated F6d main6dd701beb128d267a9c5f7324ace04b2c043589c.
 | Installed package/resource/lifecycle | 27 new public cases/six refusals plus ten parent cases accepted; exact memory and CPU/Metal text/live/lifecycle checks pass. Scoped package check passes0 errors/two known omitted-vignette warnings at7d63e8a9; final cross-platform PR matrix remains pending |
 | New held-out experiment | F6e-v1 independently verified atf0a014c4:120 successful generations plus two expected cancelled views; modest projection result, seven/eight final outputs truncated. No general efficacy claim |
 | Saved-state rendering | Five PDF/PNG figures verified at a5d6369a; 1,792 comparison coordinates and four timeline states match retained observations. Actual configured-handle map also passes7 cases/one refusal at4c97b6da |
-| Integrated implementation review | Completed at e2081b4 with two P2 findings; both corrections now pass independent local native verification (86 cases/seven refusals/224 identity values). Fresh installed and affected Linux gates, then same-reviewer closure, remain pending |
+| Integrated implementation review | Completed at e2081b4 with two P2 findings; both corrections now pass independent local native verification (86 cases/seven refusals/224 identity values). Fresh installed correction acceptance also passes10 cases/1,792 coordinate pairs; affected Linux gates and same-reviewer closure remain pending |
 | F6e final CI/integration | Implementation/evidence published through e2081b4. Parent instrumented run partially verified below; no feature PR or final nine-check matrix yet |
 
 ## Native decision and required boundaries
@@ -1244,3 +1244,55 @@ covers zero/live capture and actual R GC registry reuse using the saved
 operational direction, with no efficacy recapture or old public suite replay.
 Current-source Linux instrumentation and same-reviewer correction closure
 remain separate gates. The full feature is not yet complete.
+
+
+## Installed correction acceptance and Linux preflight correction (2026-10-08)
+
+Fresh installation96301 succeeded with the corrected DLL, but its verification
+script called `packageVersion("later")` before loading that namespace. An empty
+`later` directory in the earlier service library shadows `packageDescription`,
+which chooses the first accessible directory. `find.package` and namespace
+loading correctly resolve the existing complete user-library package. The
+failure occurred after the body/formals loop and before codetools or any model
+load. Its229 source/28 installed hashes, two logs and151 source archive members
+are retained at manifest
+`83ba911540751b5ee6b64902f620fd7255ff0811753433da658774805403e2f6`.
+The library search path and all998 dependency files remain unchanged. The
+continuation explicitly loads the existing namespaces before version checks;
+no installation or successful source loop was repeated.
+
+Continuation96718 independently passes all10 named affected cases with the
+same new DLL: two live states supply1,792 bitwise equal coordinate pairs,
+original/zero text and sampled tokens match, and the original survives actual
+R GC. Thirteen registry profiles prove sequential capacity two, simultaneous
+capacities2/3/4 and compaction to two. All325 fixed profile values match the
+compiled parent profile. The executed recipe invokes11 actual GC calls,
+including four open candidates finalized by GC, with three simultaneous derived
+owners. Attempts are one model load,13 derives and three generations; there
+are no ordinary trace/logit/tokenizer calls. Constructor probes are separate.
+The exact diagnosed tokenizer warning and actual CPU0/25 placement receipts
+remain explicit; no new native/R warning or error occurred.
+
+The [owner receipt](../tests/projection/measurements/installed-review-resume-20261008-151830/owner-verification.json)
+and all saved observations are retained. Owner verification uses RDS only, with
+no model replay. Two inspector drafts are preserved: one syntax error and an
+initial equality check that incorrectly included elapsed time. Numerical/token
+identity excludes elapsed time; every other step field matches. No timing claim
+is made. The original driver status remains unchanged beside owner PASS.
+
+[Linux run37782783888](https://github.com/Vadale/R-ebirth/actions/runs/37782783888)
+failed before any native build or execution on26eff2c. The unchanged source
+guard rejects environment-variable reads in a selected test body. The new
+regression used exactly one such read in its terminal source-provenance JSON
+field, not in a skip branch. Its1001 source bindings and original logs are
+retained with manifest
+`a047ce3d2dca65afd2221a5e4981b38bb25968bfdb9005182daad82ca2ad50a1`.
+
+The test-only correction extracts that exact expression into a helper outside
+the body. Inlining it reconstructs the previous test byte-for-byte. Runtime,
+assertions and the generic unconditional guard are unchanged. One new model-free
+control accepts the actual source and rejects six early-return/environment/skip
+mutations, including the original inline provenance read. Formatting passes.
+The revised1001-file scope changes only this test and its new source control;
+999 files stay byte-identical. Corrected affected Linux execution remains
+pending; no accepted business test or experiment is replayed.

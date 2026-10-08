@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "driver_sha256": "885f98301c312dab6634543f53fe258c046d866e3de925f3afa59195d0c33175",
+  "binding_sha256": "9f09443e2c6f43c172ec32cf178d7fc7ff448130ce6dc377c6692b9403102e83",
+  "source_hashes": 229,
+  "installed_hashes": 28,
+  "dependencies": 998,
+  "models": 0,
+  "preflight_output": "F6E_INSTALLED_REVIEW_RUNTIME dependencies=2 usage=ok\n",
+  "scope": "Only dependency namespace/version resolution and previously unrun codetools. Fresh install and body/formals loop carried; external binary and dependency hashes unchanged. No product/harness R edits."
+}

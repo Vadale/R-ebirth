@@ -1,0 +1,10 @@
+{
+  "model": "/Users/alessandrovadala/Library/Caches/org.R-project.R/R/relm/qwen2.5-0.5b-instruct-q8_0.gguf",
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "logger": "/private/tmp/relm-f6e/evaluation-dependencies-20261008-123712/f6e_log_capture.dylib",
+  "logger_sha256": "08940819d736dd1674351cafa0bae8aaf5e7542f361610bfb612baad17611310",
+  "direction": "/private/tmp/relm-f6e/installed-public-docs-20261008-101706/public-direction.rds",
+  "captures": "/private/tmp/relm-f6e/installed-public-docs-20261008-101706/public-captures.rds",
+  "library": "/private/tmp/relm-f6e/public-library-review/relm",
+  "dll_sha256": "e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d"
+}

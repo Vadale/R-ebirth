@@ -662,7 +662,7 @@
     "rebirth/src/rust/rebirth-llm/src/projection_production_worker_tests.rs": "de6d15aa0f09c701a1ba4c7b3168beeab22c60b96196e6fa563c13be30887ee6",
     "rebirth/src/rust/rebirth-llm/src/projection_profile.rs": "2962115b711346b384b4c63e70b39e90f34ab91b408a4d5cd1fc8eee6d383212",
     "rebirth/src/rust/rebirth-llm/src/projection_profile_tests.rs": "144afa91e27ac986dd843cabb1a95bc1c6fac866aafc0b0d2f8daf665c139bfc",
-    "rebirth/src/rust/rebirth-llm/src/projection_review_tests.rs": "c73bdbc206d897c4d868b9e7eb8c3f748cf904012125655eea3f06769fba8fb2",
+    "rebirth/src/rust/rebirth-llm/src/projection_review_tests.rs": "3b7e80cbaac257d132f2c901e3895b67a64c5ede18ece8cd951e671242982f55",
     "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "36119db9111fe954cfbf87eb1291cd1c319b868915c02a4e7891c541bcb6b36c",
     "rebirth/src/rust/rebirth-llm/src/projection_tests.rs": "0518a9eb9b76938a4841b7d0e3045db71f25b3506f74b9b63897c6ea20745ad1",
     "rebirth/src/rust/rebirth-llm/src/schema.rs": "2a7548e59f8a3e9fd37c889ba19a22d9f9d53ae1eb568fa02c4ec400c96f07d6",
@@ -758,7 +758,7 @@
     "tests/projection/instrumented_memcheck_probe.c": "023ff185599b373ca8f34d0e8472af46c9d9cc627d57b0650897a7f2f7fdabb2",
     "tests/projection/instrumented_path_controls.py": "0b77199131027e3df2ed7ff5cb6e95874cb4d4c714ab3102784ebe4d02548560",
     "tests/projection/instrumented_review.py": "bf6ef158a171a732e0fca7398cbfb668a8f7fdc72106ba6345db31e503b0ffc7",
-    "tests/projection/instrumented_review_controls.py": "bfe43505acd6d43818b60beb9f5a74c7825bf228a6cdf6c787d99657a5f0fd49",
+    "tests/projection/instrumented_review_controls.py": "de365c4272373b29e9b883e47ff76331323fd26940df6d79272f6b977ddfe31f",
     "tests/sanitizers/README.md": "f30afe3fd6f08fb82932ab4808a8a3f0661bbe1ea91cb481446b2f4214453e3e",
     "tests/sanitizers/cpu_callbacks.py": "0e7f6a270baadc9e48b2edac3961bf95ef54fa426a426d7939c26b8c0edab401",
     "tests/sanitizers/cpu_callbacks_main.c": "9e85988e527f25abbf88834de53a3bf3f3b8229922a94d7bc5e6edd7fa37ff2e",
@@ -1062,21 +1062,5 @@
     "tests/sanitizers/test_cpu_callbacks.py": "2acf83f6d85cd3cb343231ad72261f20fc9561e6a2fde5780ed293e18992581d",
     "tests/sanitizers/test_harness.py": "4ecd20ff849c67e139d01eeca9fdc7488ed38127c8810a2932aef42515a26e11",
     "tests/valgrind/relm.supp": "9374ef21c21d9dc267c78fff4db6331763707f96aa78e9ebd1a986c5784265b1"
-  },
-  "source_stamp_extraction": {
-    "changed": {
-      "rebirth/src/rust/rebirth-llm/src/projection_review_tests.rs": {
-        "after": "c73bdbc206d897c4d868b9e7eb8c3f748cf904012125655eea3f06769fba8fb2",
-        "before": "3b7e80cbaac257d132f2c901e3895b67a64c5ede18ece8cd951e671242982f55"
-      },
-      "tests/projection/instrumented_review_controls.py": {
-        "after": "bfe43505acd6d43818b60beb9f5a74c7825bf228a6cdf6c787d99657a5f0fd49",
-        "before": "de365c4272373b29e9b883e47ff76331323fd26940df6d79272f6b977ddfe31f"
-      }
-    },
-    "parent_failed_run": 37782783888,
-    "parent_scope_sha256": "357c430dda4aedb523b8a26dcef6ce020c0a2ebacb3716d0abdcf6a04af7346c",
-    "semantic_scope": "Exact source-stamp expression moved to a helper. Test body reconstructs byte-for-byte; no product or assertion change. Generic unconditional guard unchanged.",
-    "unchanged_source_files": 999
   }
 }

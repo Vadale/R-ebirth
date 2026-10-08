@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "observed_command": "python3 -m unittest discover -s tests/projection -p instrumented_review_controls.py -k actual_source_is_unconditional -v",
+  "exit_code": 0,
+  "methods": 1,
+  "source_positive": 1,
+  "source_negatives": 6,
+  "format_command": "cargo fmt --all -- --check",
+  "format_exit_code": 0,
+  "format_output": "",
+  "native_builds": 0,
+  "models": 0,
+  "output_provenance": "Command results observed through the execution tool; this JSON summarizes them and is not a native receipt. Test-only helper reconstructs the exact parent test body; generic unconditional guard unchanged."
+}

@@ -1,0 +1,424 @@
+{
+  "backend": "cpu",
+  "n_gpu_layers": 0,
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "actual_offload_layers": 0,
+  "actual_total_layers": 25,
+  "buffers": [
+    {
+      "name": "CPU_Mapped",
+      "kind": "model",
+      "MiB": 500.79
+    },
+    {
+      "name": "CPU_REPACK",
+      "kind": "model",
+      "MiB": 500.52
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    },
+    {
+      "name": "CPU",
+      "kind": "KV",
+      "MiB": 6.0
+    },
+    {
+      "name": "CPU",
+      "kind": "compute",
+      "MiB": 300.25
+    }
+  ],
+  "retained_warnings": [
+    "[3] load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden"
+  ],
+  "tokenizer_caveat": "Pinned GGUF stores zero-based token 128247 </s> as NORMAL (1). The unchanged loader adds it to EOG and ORs CONTROL, emitting this warning. This is runtime tokenizer semantics, not a compiler warning or projection defect; no claim of no output effect.",
+  "scope": "actual load-time native buffer/offload messages; not loaded-weight authentication"
+}

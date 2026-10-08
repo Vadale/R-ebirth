@@ -1,0 +1,47 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 96718,
+  "directory": "/private/tmp/relm-f6e/installed-review-resume-20261008-151830",
+  "stages": [
+    {
+      "name": "installed-affected",
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth/tests/projection/installed_review.R",
+        "/private/tmp/relm-f6e/installed-review-resume-20261008-151830/config.json",
+        "/private/tmp/relm-f6e/installed-review-resume-20261008-151830"
+      ],
+      "status": "passed",
+      "pid": 96720,
+      "exit_code": 0,
+      "log_sha256": "66836049a3547e5efba018c05994fea5d19291be88dbc3940194b1ad9dde85c5"
+    }
+  ],
+  "scope": "Fresh corrected installed library: zero/live capture and real R GC registry reuse only; no efficacy or old public suite",
+  "runtime_preflight_carried": true,
+  "stage": "installed-affected",
+  "receipt": {
+    "status": "awaiting_owner_verification",
+    "cases": 10,
+    "coordinates": 1792,
+    "attempts": {
+      "load": 1,
+      "derive": 13,
+      "generate": 3,
+      "trace": 0,
+      "logits": 0,
+      "tokenize": 0
+    },
+    "actual_gc_calls": 11,
+    "gc_finalized_open_candidates": 4,
+    "max_simultaneous_derived": 3,
+    "scope": "Installed zero plus live capture and real GC registry reuse; no efficacy, timing or new independent numerical accuracy"
+  },
+  "native_sha256": "e3182fb2260256afb95d15a6c7019b6285a251ff6a045fe7150b07a872e9f07d",
+  "source_drift": [],
+  "installed_drift": [],
+  "dependency_drift": [],
+  "input_drift": [],
+  "finished_at": 1791465513.5956259
+}

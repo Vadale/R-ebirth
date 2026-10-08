@@ -1,0 +1,1 @@
+RuntimeError: selected test contains a possible early-return/model skip: projection::review_tests::projection_zero_live_capture_preserves_identity_without_row_work

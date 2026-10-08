@@ -14,10 +14,6 @@ fn exact_values(actual: &[f32], expected: &[f32], compared: &mut usize) {
     }
 }
 
-fn review_source_stamp() -> String {
-    std::env::var("F6E_SOURCE").unwrap_or_default()
-}
-
 #[test]
 fn projection_zero_live_capture_preserves_identity_without_row_work() {
     let _native = crate::NativeGuard::acquire("projection zero/live review fixture");
@@ -230,7 +226,7 @@ fn projection_zero_live_capture_preserves_identity_without_row_work() {
             "zero_read_bytes":zero_stats.read_bytes, "zero_write_bytes":zero_stats.write_bytes,
             "zero_barriers":zero_stats.barriers, "audit_rows":audit_stats.rows,
             "refused_deliveries":refused_deliveries,
-            "source":review_source_stamp()
+            "source":std::env::var("F6E_SOURCE").unwrap_or_default()
         })
     );
 }

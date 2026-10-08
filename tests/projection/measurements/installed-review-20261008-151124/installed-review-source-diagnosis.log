@@ -1,0 +1,8 @@
+PRE_DEPENDENCY
+[1] "/private/tmp/relm-f6e/public-library-review"                         
+[2] "/private/tmp/relm-service/library"                                   
+[3] "/Users/alessandrovadala/Library/R/arm64/4.5/library"                 
+[4] "/Library/Frameworks/R.framework/Versions/4.5-arm64/Resources/library"
+Error in packageVersion("later") : there is no package called ‘later’
+Calls: stopifnot -> packageVersion
+Execution halted
