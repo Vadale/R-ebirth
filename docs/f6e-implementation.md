@@ -19,8 +19,8 @@ integrated F6d main6dd701beb128d267a9c5f7324ace04b2c043589c.
 | Installed package/resource/lifecycle | 27 new public cases/six refusals plus ten parent cases accepted; exact memory and CPU/Metal text/live/lifecycle checks pass. Scoped package check passes0 errors/two known omitted-vignette warnings at7d63e8a9; final cross-platform PR matrix remains pending |
 | New held-out experiment | F6e-v1 independently verified atf0a014c4:120 successful generations plus two expected cancelled views; modest projection result, seven/eight final outputs truncated. No general efficacy claim |
 | Saved-state rendering | Five PDF/PNG figures verified at a5d6369a; 1,792 comparison coordinates and four timeline states match retained observations. Actual configured-handle map also passes7 cases/one refusal at4c97b6da |
-| Integrated implementation review | Completed at e2081b4 with two P2 findings; both corrections now pass independent local native verification (86 cases/seven refusals/224 identity values). Fresh installed correction acceptance also passes10 cases/1,792 coordinate pairs; affected Linux gates and same-reviewer closure remain pending |
-| F6e final CI/integration | Implementation/evidence published through e2081b4. Parent instrumented run partially verified below; no feature PR or final nine-check matrix yet |
+| Integrated implementation review | Completed at e2081b4 with two P2 findings; both corrections now pass independent local native verification (86 cases/seven refusals/224 identity values). Fresh installed correction acceptance also passes10 cases/1,792 coordinate pairs; affected Linux gates independently pass on1a9ec09; the same reviewer has closed both findings at that exact head |
+| F6e final CI/integration | Implementation/corrections published through1a9ec09. Affected Linux instrumentation and review closure independently verified; candidate is ready for the feature PR and final nine-check matrix, which remain pending |
 
 ## Native decision and required boundaries
 
@@ -1296,3 +1296,65 @@ mutations, including the original inline provenance read. Formatting passes.
 The revised1001-file scope changes only this test and its new source control;
 999 files stay byte-identical. Corrected affected Linux execution remains
 pending; no accepted business test or experiment is replayed.
+
+
+## Final affected Linux instrumentation (2026-10-08)
+
+[Run 37784612697](https://github.com/Vadale/R-ebirth/actions/runs/37784612697)
+succeeded on exact published 1a9ec091f43c6d869f9184f95af2ce3a89bbb850. The
+[parent owner verification](../tests/projection/measurements/instrumented-review-37784612697/owner-verification.json)
+independently checks all 1,001 source hashes against that Git tree, 629 ASan
+artifact hashes and 56 Memcheck artifact hashes. The retained archive has
+manifest `6433bf9dede74ba863e047d0641431918db4859b1a1f4b4333e1546eb3a609dd`.
+All 697 raw-file hashes remain available; seven compiled control binaries stay
+local and are explicitly excluded from the published text archive.
+
+The new zero/live regression passes under ASan/UBSan: 8 cases, two refusals and
+224 exact identity values. Separate baseline Memcheck passes the previously
+unexecuted worker plus zero/live: 18 cases, four refusals and 227 values. These
+are mode-specific totals, not distinct new golden cases. Both Memcheck XMLs
+contain zero findings and zero applied suppressions. The actual safe control
+creates the literal `%3A` and `%p` filename, and the invalid-write/leak controls
+fail with their expected diagnostic kinds. Rust/C/C++ ASan and C++ UBSan fault
+controls, plain-control rejection and safe controls also pass.
+
+All 270 native objects have the required compiler flags and instrumented
+symbols. The projection access functions contain both ASan and UBSan calls.
+The production rebirth_llm, arrow_array and rebuilt Rust std archives have
+actual address-sanitizer instrumentation; the ordinary Memcheck binary lacks
+sanitizer runtime symbols. The integration binary is built for production-rlib
+auditing but is not executed by this affected selection. No accepted parent
+business test or consumed efficacy experiment is replayed.
+
+There are 17 external compiler warnings in the ASan build and 10 in Memcheck.
+Every structured diagnostic and package identity exactly matches the preserved
+parent 37773468792 output: pinned libc/ahash/Arrow/FlatBuffers and rebuilt Rust
+standard-library diagnostics, with zero own-package compiler warnings/errors.
+The earlier parent owner's `compiler_warnings: 0` checked only plain text in
+build.err and did not count structured Cargo diagnostics in build.out. The
+[addendum](../tests/projection/measurements/instrumented-review-37784612697/parent-warning-addendum.json)
+corrects that limitation without overwriting the original receipt. All warnings
+remain visible; no suppression, dependency update or build replay was used.
+The current owner inspector's initial refusal and syntax draft are retained.
+
+This closes the affected CPU instrumentation gate, not R/SEXP or FFI-registry
+instrumentation, GPU safety, universal absence of UB, numerical accuracy or
+performance. The real installed R/GC and other parent scopes remain separate.
+The same reviewer has now closed both findings on 1a9ec09; the final PR matrix remains pending.
+
+## Integrated review closure (2026-10-08)
+
+The [same-reviewer closure](../tests/projection/measurements/review-closure-20261008/review-closure.md)
+closes exactly the two original P2 findings on 1a9ec09. The reviewer checked the
+corrected source, local native and installed R evidence, actual Linux markers
+and finished Memcheck XMLs. Parent verification separately matched all eight
+source hashes, 19 evidence hashes, nine raw-receipt hashes and 1,001 instrumented
+source bindings. This was read-only closure; no additional tests, builds or
+model calls were performed.
+
+The reviewer authored the reference and efficacy verifier, so no independent
+authorship review of those artifacts is claimed. The parent independently
+verified actual results. All numerical limits, external warnings and exact
+parent-source scopes remain unchanged. The candidate can proceed to its nine
+final PR checks; F6e integration and specific founder merge consent remain
+pending.

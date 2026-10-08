@@ -1,0 +1,13 @@
+{
+  "parent_run": 37773468792,
+  "original_owner_receipt_preserved": true,
+  "correction": "The original compiler_warnings:0 field checked text diagnostics in build.err only. Cargo build.out contains17 ASan and10 Memcheck compiler warnings from pinned external dependencies/standard library. Every original diagnostic and package identity matches the new run exactly. No own-package compiler warning/error is present. Do not interpret the old field as a warning-free whole build.",
+  "new_run": 37784612697,
+  "external_warnings": {
+    "sanitizers": 17,
+    "valgrind": 10
+  },
+  "suppression_added": false,
+  "dependency_vendor_changes": false,
+  "reruns": 0
+}

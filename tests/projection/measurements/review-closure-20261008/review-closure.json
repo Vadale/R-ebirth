@@ -1,0 +1,215 @@
+{
+  "status": "passed",
+  "scope": "Same-reviewer closure ONLY of the two P2 findings; not a second integrated review",
+  "original_review_head": "e2081b43ebc7108c7bdc7b96fc2203b679d222a7",
+  "candidate_head": "1a9ec091f43c6d869f9184f95af2ce3a89bbb850",
+  "completed_utc": "2026-10-08T14:02:22.802130+00:00",
+  "findings": [
+    {
+      "id": "P2-zero-live",
+      "status": "closed",
+      "file": "rebirth/src/rust/rebirth-llm/src/projection.rs",
+      "line": 336
+    },
+    {
+      "id": "P2-registry-growth",
+      "status": "closed",
+      "file": "rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs",
+      "line": 81
+    }
+  ],
+  "source_sha256": {
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": "44b77be2e93e0770c3b51343bd9bb62c78b595fd29cf02e978a8fc9271e48be0",
+    "rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs": "8acb17b70db5a60c232e01ae189dc565321b68b70a33c9b6d68d1d2dc61e64c1",
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": "3294fbe4c809df97b2af257135643dbfcc5204ebd0ffb3bc1f20283a2cbc5cae",
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": "7412cfe9523f315e43bd4510a09ab22dc26ff2dbb76484d47b6b837b973762da",
+    "rebirth/src/rust/rebirth-llm/src/projection_review_tests.rs": "c73bdbc206d897c4d868b9e7eb8c3f748cf904012125655eea3f06769fba8fb2",
+    "rebirth/src/rust/rebirth-ffi/src/projection_review_registry_tests.rs": "f879b93f2cfa87d21711837ecb7cb736b6ac72330a14b0a1316ac81b75a01274",
+    "tests/projection/installed_review.R": "48701041058f78cde6f322955e8d90bdef1c13b289e0142107e7432b1cf83464",
+    "tests/projection/instrumented-review-scope.json": "4fc29cbff9883bafa8be57004cd7048e199450c690cce0bd9358a6f84dbf2c5d"
+  },
+  "source_evidence_bindings": {
+    "rebirth/src/rust/rebirth-llm/src/projection.rs": {
+      "local": {
+        "recorded_sha256": "44b77be2e93e0770c3b51343bd9bb62c78b595fd29cf02e978a8fc9271e48be0",
+        "current_matches": true
+      },
+      "installed": {
+        "recorded_sha256": "44b77be2e93e0770c3b51343bd9bb62c78b595fd29cf02e978a8fc9271e48be0",
+        "current_matches": true
+      },
+      "linux": {
+        "recorded_sha256": "44b77be2e93e0770c3b51343bd9bb62c78b595fd29cf02e978a8fc9271e48be0",
+        "current_matches": true
+      }
+    },
+    "rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs": {
+      "local": {
+        "recorded_sha256": "8acb17b70db5a60c232e01ae189dc565321b68b70a33c9b6d68d1d2dc61e64c1",
+        "current_matches": true
+      },
+      "installed": {
+        "recorded_sha256": "8acb17b70db5a60c232e01ae189dc565321b68b70a33c9b6d68d1d2dc61e64c1",
+        "current_matches": true
+      },
+      "linux": {
+        "recorded_sha256": "8acb17b70db5a60c232e01ae189dc565321b68b70a33c9b6d68d1d2dc61e64c1",
+        "current_matches": true
+      }
+    },
+    "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": {
+      "local": {
+        "recorded_sha256": "3294fbe4c809df97b2af257135643dbfcc5204ebd0ffb3bc1f20283a2cbc5cae",
+        "current_matches": true
+      },
+      "installed": {
+        "recorded_sha256": "3294fbe4c809df97b2af257135643dbfcc5204ebd0ffb3bc1f20283a2cbc5cae",
+        "current_matches": true
+      },
+      "linux": {
+        "recorded_sha256": "3294fbe4c809df97b2af257135643dbfcc5204ebd0ffb3bc1f20283a2cbc5cae",
+        "current_matches": true
+      }
+    },
+    "rebirth/src/rust/rebirth-llm/src/live_capture.rs": {
+      "local": {
+        "recorded_sha256": "7412cfe9523f315e43bd4510a09ab22dc26ff2dbb76484d47b6b837b973762da",
+        "current_matches": true
+      },
+      "installed": {
+        "recorded_sha256": "7412cfe9523f315e43bd4510a09ab22dc26ff2dbb76484d47b6b837b973762da",
+        "current_matches": true
+      },
+      "linux": {
+        "recorded_sha256": "7412cfe9523f315e43bd4510a09ab22dc26ff2dbb76484d47b6b837b973762da",
+        "current_matches": true
+      }
+    },
+    "rebirth/src/rust/rebirth-llm/src/projection_review_tests.rs": {
+      "local": {
+        "recorded_sha256": "3b7e80cbaac257d132f2c901e3895b67a64c5ede18ece8cd951e671242982f55",
+        "current_matches": false
+      },
+      "installed": {
+        "recorded_sha256": "3b7e80cbaac257d132f2c901e3895b67a64c5ede18ece8cd951e671242982f55",
+        "current_matches": false
+      },
+      "linux": {
+        "recorded_sha256": "c73bdbc206d897c4d868b9e7eb8c3f748cf904012125655eea3f06769fba8fb2",
+        "current_matches": true
+      }
+    },
+    "rebirth/src/rust/rebirth-ffi/src/projection_review_registry_tests.rs": {
+      "local": {
+        "recorded_sha256": "f879b93f2cfa87d21711837ecb7cb736b6ac72330a14b0a1316ac81b75a01274",
+        "current_matches": true
+      },
+      "installed": {
+        "recorded_sha256": "f879b93f2cfa87d21711837ecb7cb736b6ac72330a14b0a1316ac81b75a01274",
+        "current_matches": true
+      },
+      "linux": {
+        "recorded_sha256": "f879b93f2cfa87d21711837ecb7cb736b6ac72330a14b0a1316ac81b75a01274",
+        "current_matches": true
+      }
+    },
+    "tests/projection/installed_review.R": {
+      "installed": {
+        "recorded_sha256": "48701041058f78cde6f322955e8d90bdef1c13b289e0142107e7432b1cf83464",
+        "current_matches": true
+      }
+    }
+  },
+  "provenance_helper_inlined_sha256": "3b7e80cbaac257d132f2c901e3895b67a64c5ede18ece8cd951e671242982f55",
+  "evidence_sha256": {
+    "tests/projection/measurements/integrated-review-20261008/integrated-review.md": "cc15cddc8a9a0420be2d27c94cc607dd62f02e16f5c7739cd5065606e4933e8b",
+    "tests/projection/measurements/review-fix-counter-20261008-150046/manifest.json": "0c370dd74309665058f447a18d5daffef86ee475a57d9e2b6a7f2e9853dd0bf1",
+    "tests/projection/measurements/review-fix-counter-20261008-150046/source-manifest.json": "ef2eeacbe62d10259516e7358f16a408246df9d9ad35863fbbba22a811e9272f",
+    "tests/projection/measurements/review-fix-counter-20261008-150046/owner-verification.json": "aefbb720bdb1ea6b0350b7e7affcc5494b6b41436d55c912223d659daccdb498",
+    "tests/projection/measurements/review-fix-counter-20261008-150046/native-receipts.json": "5b3548e3ce040fb7990284cdb847a9b0e4ba3c2578a88c5050533a3d3a947199",
+    "tests/projection/measurements/installed-review-resume-20261008-151830/manifest.json": "ee3d2589f171731d6a07e04f72f4961fe9cf840bf91ae2fca0139c91e415bddf",
+    "tests/projection/measurements/installed-review-resume-20261008-151830/source-manifest.json": "f9564223e10f10275802b291abc1cdde04c3c75a101ae2d4ca83da7a341e2cdb",
+    "tests/projection/measurements/installed-review-resume-20261008-151830/owner-verification.json": "176bb0beeb8b6214204adf078788988fb0b3be85ff4904fe4bd2dc776b85bbe9",
+    "tests/projection/measurements/installed-review-resume-20261008-151830/owner-observation-verification.json": "b0ef1b258fe66bac6585edd20967d3325f724a276d83140a8b40ea07d052718c",
+    "tests/projection/measurements/installed-review-resume-20261008-151830/receipt.json": "b4315af83a6472e1dd8649559033714486cfdd115c8e9690d216ae88a62e6384",
+    "tests/projection/measurements/installed-review-resume-20261008-151830/cases.csv": "7fcd37cbe6098699f0a6e1d672f7932da98c30ea8e152907a5cb3560dbe57b01",
+    "tests/projection/measurements/installed-review-resume-20261008-151830/zero-live-coordinates.csv": "8cd5df045b94e64c695e71c26484f81c2ac8eb3f072e8c3b07137365bf03d6d0",
+    "tests/projection/measurements/instrumented-review-37784612697/manifest.json": "6433bf9dede74ba863e047d0641431918db4859b1a1f4b4333e1546eb3a609dd",
+    "tests/projection/measurements/instrumented-review-37784612697/owner-verification.json": "31afdca1b1779246e2b82515478ea951fb6fa9f1fc65ced5080fd47156a348b4",
+    "tests/projection/measurements/instrumented-review-37784612697/parent-warning-addendum.json": "a7c48a5dd523cec8499e5a70d8cc76ee166bc6551798a7b9d15c95536803fa47",
+    "tests/projection/measurements/instrumented-review-37784612697/compiler-warning-inventory.json": "1bec5bc4949fff55a31444905b7e17e897d14f0749cd44b847f1d2d606a26eb8",
+    "tests/projection/measurements/instrumented-review-37784612697/raw-file-hashes.json": "f605dec35fe8f178bfec0cbb59b2c1f6d0f004ba9277a276d0db7703e289a32d",
+    "tests/projection/measurements/instrumented-review-37784612697/run.json": "6ea1fefa434a913e8b8b93f82eab1a595629ce4aee7188a6c470204878cde97c",
+    "tests/projection/measurements/instrumented-review-37784612697/instrumented-source-stamp-dispatch.json": "3b6b740540d33dd24c8735099afcc3a37f07da6b8b1b6cd06c288eeb4538cbcf"
+  },
+  "raw_receipts_inspected_sha256": {
+    "projection-review-asan/projection-review-summary.json": "252edcd3ca9129d4c692212c1dff751434f90c4ba22a39076f85a5bdaf415fac",
+    "projection-review-asan/executed-tests.json": "7463a8226ba26bb6f46d587e946c6e18b454775393c6ec78ae0f7f169c3062d6",
+    "projection-review-asan/test-projection%3A%3Areview_tests%3A%3Aprojection_zero_live_capture_preserves_identity_without_row_work.out": "76571f4bde156590399492048a5817e1a9f9baa912f0ca2df8b0062649718fad",
+    "projection-review-valgrind/projection-review-summary.json": "792e70c71004d276ca174668470b3e3be168b301dc5a90f6bb07cb2069107a3d",
+    "projection-review-valgrind/executed-tests.json": "7e49af0cdbe3b4fee349d189ae49766ec326e423c79b9978b193bfeed0717bc3",
+    "projection-review-valgrind/test-async_job%3A%3Atests%3A%3Aprojection_static_live_restore_cancel_and_poison.out": "9028d2087a3d5d914b393d8fd06b2d0e455f58c173ee0d3d936ba564fb4b2c45",
+    "projection-review-valgrind/test-projection%3A%3Areview_tests%3A%3Aprojection_zero_live_capture_preserves_identity_without_row_work.out": "d44353cb8df91704fa6cf13a2ecdabba2281775338eef8bca27405a2ee063d1e",
+    "projection-review-valgrind/test-async_job%3A%3Atests%3A%3Aprojection_static_live_restore_cancel_and_poison.xml": "74a2ada05d9718ed8e1488f45215ae42c80d65b06b2e4b268e1c754030d1abd7",
+    "projection-review-valgrind/test-projection%3A%3Areview_tests%3A%3Aprojection_zero_live_capture_preserves_identity_without_row_work.xml": "838fec9ae784317abd999403409fc51af15d53585aa70d1854fd5136848c4c82"
+  },
+  "raw_summaries": {
+    "projection-review-asan": {
+      "status": "passed",
+      "mode": "sanitizers",
+      "selection": "projection-review-fixes",
+      "executed_tests": 1,
+      "executed_cases": 8,
+      "rejected_cases": 2,
+      "compared_values": 224,
+      "model_loads": 1,
+      "constructor_calls": 1,
+      "default_features": [
+        "default",
+        "spill"
+      ],
+      "source_manifest_sha256": "4fc29cbff9883bafa8be57004cd7048e199450c690cce0bd9358a6f84dbf2c5d",
+      "production_integration_built_not_executed": true,
+      "registry_r_gc_or_ffi_acceptance": false
+    },
+    "projection-review-valgrind": {
+      "status": "passed",
+      "mode": "valgrind",
+      "selection": "projection-review-fixes",
+      "executed_tests": 2,
+      "executed_cases": 18,
+      "rejected_cases": 4,
+      "compared_values": 227,
+      "model_loads": 2,
+      "constructor_calls": 2,
+      "default_features": [
+        "default",
+        "spill"
+      ],
+      "source_manifest_sha256": "4fc29cbff9883bafa8be57004cd7048e199450c690cce0bd9358a6f84dbf2c5d",
+      "production_integration_built_not_executed": true,
+      "registry_r_gc_or_ffi_acceptance": false
+    }
+  },
+  "read_only_checks": [
+    "named HEAD binding",
+    "focused source comparison and test inspection",
+    "selected local/installed source and receipt hashes",
+    "all12 remote archive manifest entries",
+    "raw libtest captured markers and zero row counters",
+    "raw Memcheck FINISHED plus0 errors/0 suppressions",
+    "1792 unique finite equal CSV coordinate pairs",
+    "test provenance helper inlines byte-for-byte to prior test source"
+  ],
+  "new_tests_builds_models_run": 0,
+  "product_or_test_edits": false,
+  "authorship_limit": "Reviewer authored projection references and efficacy verifier; no independent authorship review of those artifacts claimed. Parent separately validated actual outputs.",
+  "retained_limits": [
+    "Linux selected unit regression uses default features; production integration binary built, not executed in this affected run.",
+    "Linux scope does not execute R/SEXP/FFI registry or GPU; actual R GC is covered by the separately bound installed receipt.",
+    "External compiler warnings17 ASan/10 Memcheck retained;0 own-package warnings/errors; no globally warning-free claim.",
+    "Two grouped cross-schedule accuracy outliers, maximum0.0115248 above0.01, remain unaccepted; no tolerance or efficacy claim change."
+  ],
+  "report": "/private/tmp/relm-f6e/review-closure.md",
+  "report_sha256": "2d72c57f405f3a82437b6dce5687d7e5636d943bd734a2541e336d604befd6b3"
+}
