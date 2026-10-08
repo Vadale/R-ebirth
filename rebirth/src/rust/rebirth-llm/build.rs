@@ -36,6 +36,8 @@ fn main() {
     println!("cargo:rerun-if-changed=native/grammar.cpp");
     println!("cargo:rerun-if-changed=native/abi.cpp");
     println!("cargo:rerun-if-changed=native/spill_lease.cpp");
+    println!("cargo:rerun-if-changed=native/projection.cpp");
+    println!("cargo:rerun-if-changed=native/projection.h");
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
     println!(

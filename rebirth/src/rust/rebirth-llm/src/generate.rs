@@ -519,12 +519,28 @@ impl LoadedModel {
         // SAFETY: `ctx_ptr` is live; `batch.raw` is a fully-populated batch whose
         // arrays outlive the call (dropped after it). `llama_decode` reads the
         // batch by value; we keep ownership of the backing arrays in `batch`.
+        self.projection()
+            .begin(start_pos, tokens.len(), logits_last_only)?;
         self.live_capture().begin_decode(start_pos, tokens, self)?;
+        #[cfg(test)]
+        let projection_clock = std::time::Instant::now();
         let status = unsafe { ffi::llama_decode(self.ctx_ptr(), std::ptr::read(&batch.raw)) };
+        #[cfg(test)]
+        self.projection().time_decode(
+            start_pos == 0 || tokens.len() > 1,
+            projection_clock.elapsed().as_secs_f64(),
+        );
+        if let Err(error) = self.projection().end() {
+            // Reuse the worker's existing unusable-context ownership flag.
+            self.steering_restore_failed.set(true);
+            return Err(error);
+        }
         self.live_capture().end_decode()?;
         if status != 0 {
             return Err(RebirthError::Generation {
-                reason: format!("llama_decode returned {status}"),
+                reason: crate::projection_profile::bounded_error_reason(format_args!(
+                    "llama_decode returned {status}"
+                )),
             });
         }
         Ok(())
@@ -574,6 +590,16 @@ impl LoadedModel {
             start = end;
         }
         Ok(())
+    }
+
+    pub(crate) fn decode_projection_tokens(
+        &self,
+        tokens: &[i32],
+        start: i32,
+        last: bool,
+    ) -> Result<(), RebirthError> {
+        let _native = crate::NativeGuard::try_acquire("private projection decode")?;
+        self.decode(tokens, start, last)
     }
 
     /// Copy the logit row the engine stored for output slot `ith`. A negative

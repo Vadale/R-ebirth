@@ -818,6 +818,24 @@ impl AsyncJob {
                 error,
             }));
         }
+        if let Some(model_ref) = model.as_ref().filter(|_| {
+            request
+                .images
+                .as_ref()
+                .is_some_and(|rows| rows.iter().any(|row| !row.is_empty()))
+        }) {
+            let checked = {
+                let _bound = permit.enter();
+                model_ref.projection_reject_images()
+            };
+            if let Err(error) = checked {
+                return Err(Box::new(AsyncStartFailure {
+                    model,
+                    permit,
+                    error,
+                }));
+            }
+        }
         if fixture
             .as_ref()
             .is_some_and(|fixture| matches!(fixture.mode, AsyncFixtureMode::StartError))
@@ -900,8 +918,13 @@ impl AsyncJob {
                 };
                 let model_invalidated=model.as_ref().is_some_and(|model|model.steering_restore_failed.get());
                 if model_invalidated {
+                    let projected_failure = model.as_ref().is_some_and(|model|model.projection().failed());
                     model.take();
-                    result=Err(RebirthError::Intervention {reason:"Restoring the original steering adapter failed; the affected handle was closed.".into()});
+                    result=Err(RebirthError::Intervention {reason: if projected_failure {
+                        "Projection failed during decode; the affected handle was closed."
+                    } else {
+                        "Restoring the original steering adapter failed; the affected handle was closed."
+                    }.into()});
                 }
                 worker_control.publish(&mut result, panicked || model_invalidated);
                 CONTROL.with(|slot| slot.borrow_mut().take());
@@ -1258,6 +1281,7 @@ mod tests {
     }
 
     include!("live_steering_tests.rs");
+    include!("projection_production_worker_tests.rs");
 
     fn request() -> AsyncRequest {
         AsyncRequest {

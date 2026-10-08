@@ -14,7 +14,9 @@
 \item{...}{Named main, cex or col (one or three colors).}
 }
 \value{
-Invisibly, the plain data frame of displayed sites and intervention counts.
+Invisibly, the plain data frame of displayed sites and intervention
+counts. \code{configured_projections} counts static component projections,
+including zero coefficients; it does not count additive live revisions.
 }
 \description{
 The schematic describes architecture metadata, not measured activity, causal

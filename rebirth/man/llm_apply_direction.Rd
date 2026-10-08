@@ -4,7 +4,14 @@
 \alias{llm_apply_direction}
 \title{Apply a compatible recorded direction}
 \usage{
-llm_apply_direction(m, direction, context, coef = 1, max_bytes = 64 * 1024^2)
+llm_apply_direction(
+  m,
+  direction,
+  context,
+  coef = 1,
+  max_bytes = 64 * 1024^2,
+  operator = "add"
+)
 }
 \arguments{
 \item{m}{A live \code{llm} handle. Its metadata is checked for compatibility, not
@@ -16,25 +23,35 @@ treated as authenticated weight identity.}
 \code{pairs}, \code{splits} and \code{seed}; see Details and the contrast-directions vignette.
 For application, an independently recorded destination \code{model} record.}
 
-\item{coef}{One finite coefficient. Zero and negative coefficients retain
-the existing \code{\link[=llm_steer]{llm_steer()}} semantics.}
+\item{coef}{One finite coefficient. For projection, zero is an exact no-op,
+one removes the direction's component, and negative values amplify it.}
 
 \item{max_bytes}{Whole materialization budget, 1 MiB through 512 MiB; default
 64 MiB. Includes input matrices and metadata, working arrays and output.}
+
+\item{operator}{Exactly \code{"add"} (default) for schema-1 residual directions or
+\code{"project"} for schema-2 MLP/attention directions; no partial matching.}
 }
 \value{
 A new \code{llm} handle; \code{m} is unchanged. Close the derived handle when done.
 }
 \description{
-Validate a trusted direction artifact, then derive an additive steering
-handle using the existing native capability checks.
+Validate a trusted direction artifact, then derive an additive residual or
+static component-projection handle using native capability checks.
 }
 \details{
 The independently recorded destination context must match all six
 fields of the construction model record exactly. Verify the model file and
 keep it unchanged while loading and experimenting. Same path or width alone
 is insufficient. This check cannot authenticate already-loaded weights.
-Steering is additive residual editing at all positions, not runtime
-projection. Extracting \code{direction$value} and calling \code{\link[=llm_steer]{llm_steer()}} directly
+Projection edits each executed component row as \code{h - coef * v * sum(v * h)}.
+It is static for the derived handle; live replies still update only existing
+additive steering. Supported sites are dense Llama MLP/post-output-projection
+attention and Qwen2 MLP on CPU/Metal. Projected handles accept text generation
+and logits; image requests, ordinary trace and embedding calls are refused.
+The combined budget includes the current artifact's validation and all
+accumulated projection/residual owners. Direct steer/ablate inheritance uses
+the projected handle's recorded budget; a checked direction application uses
+its explicit \code{max_bytes}. Extracting \code{direction$value} and calling \code{\link[=llm_steer]{llm_steer()}} directly
 deliberately bypasses artifact checks. Native busy/closed errors propagate.
 }

@@ -149,7 +149,7 @@ jobs:
 
       - uses: actions/setup-python@v7
         with:
-          # Exact interpreter recorded by the independent D045 byte reference.
+          # Exact interpreter recorded by the independent D045/D046 references.
           python-version: '3.13.5'
 
       - name: install pinned golden tooling (test-only, not a package dep)
@@ -165,6 +165,12 @@ jobs:
         run: |
           python tests/llm-golden/directions/reference_directions.py --check
           python tests/directions/check-fixture-mirror.py
+
+      - name: Projection arithmetic, forward and schema-2 references (no engine)
+        run: |
+          python tests/llm-golden/projection/reference_projection.py --check
+          python tests/projection/test_fixture_mirror.py
+          python tests/projection/check-fixture-mirror.py
 
       - name: Service contract consistency (planning only)
         run: python tests/service-contract/verify.py --self-test

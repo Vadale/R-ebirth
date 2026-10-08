@@ -275,6 +275,7 @@ impl LoadedModel {
     /// post-final-norm embeddings for a raw id sequence (no tokenizer needed).
     pub fn token_embeddings(&self, ids: &[i32]) -> Result<Vec<Vec<f32>>, RebirthError> {
         let _native = crate::domain::NativeGuard::try_acquire("token_embeddings")?;
+        self.projection_reject_separate_context()?;
         self.validate_ids(ids)?;
         self.check_embed_fits(ids.len())?;
         let ctx = self.create_embedding_context(self.embedding_n_ctx(ids.len()))?;
@@ -290,6 +291,7 @@ impl LoadedModel {
         normalize: bool,
     ) -> Result<Embeddings, RebirthError> {
         let _native = crate::domain::NativeGuard::try_acquire("embed_token_batch")?;
+        self.projection_reject_separate_context()?;
         let reduction = self.resolve_reduction(pooling)?;
         let mut longest = 0usize;
         for ids in batches {
@@ -317,6 +319,7 @@ impl LoadedModel {
         normalize: bool,
     ) -> Result<Embeddings, RebirthError> {
         let _native = crate::domain::NativeGuard::try_acquire("embed_texts")?;
+        self.projection_reject_separate_context()?;
         self.require_tokenizer()?;
         let reduction = self.resolve_reduction(pooling)?;
 

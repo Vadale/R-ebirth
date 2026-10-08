@@ -20,6 +20,13 @@ direction_digest <- function(x) {
   direction_text(x, 64L) && grepl("^[0-9a-f]{64}$", x)
 }
 
+direction_component_schema <- function(component) {
+  if (!direction_text(component) || !component %in% c("residual", "mlp_out", "attn_out")) {
+    abort_argument("context", "Use a full-width residual, mlp_out or attn_out capture component.")
+  }
+  if (component == "residual") "relm_direction/1" else "relm_direction/2"
+}
+
 direction_record <- function(x, fields, argument = "context") {
   if (!is.list(x) || is.object(x) || !identical(names(attributes(x)), "names") ||
       length(x) != length(fields) || anyDuplicated(names(x)) ||
@@ -110,12 +117,13 @@ direction_context <- function(x, pair_ids = NULL, h = NULL) {
   }
   cpt <- direction_record(x$capture, c("component", "positions", "input_format", "tokenizer",
     "add_special", "parse_special", "template_sha256", "context_length", "backend", "relm_version"))
-  fixed <- list(component = "residual", positions = "last", input_format = "raw_text",
+  direction_component_schema(cpt$component)
+  fixed <- list(positions = "last", input_format = "raw_text",
     tokenizer = "gguf_embedded", add_special = TRUE, parse_special = FALSE, template_sha256 = NULL)
   if (!identical(cpt[names(fixed)], fixed) ||
       !direction_number(cpt$context_length, 1L) || !direction_text(cpt$backend) ||
       !cpt$backend %in% c("cpu", "metal", "cuda") || !direction_text(cpt$relm_version)) {
-    abort_argument("context", "Use the documented raw-text, last-position residual capture profile and explicit resolved backend.")
+    abort_argument("context", "Use the documented raw-text, last-position full-width capture profile and explicit resolved backend.")
   }
   cpt$context_length <- as.integer(cpt$context_length)
   x$capture <- cpt

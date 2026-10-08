@@ -315,6 +315,11 @@ validate_intervention_layer <- function(m, layer, call = sys.call(-1L)) {
 # already-derived handle -- the whole accumulated spec is re-sent, and the engine
 # builds ONE fresh context from the original weights (never a chain).
 derive_intervened <- function(m, entry, call = sys.call(-1L)) {
+  if (projection_has(m)) {
+    settings <- projection_owner_settings(m)
+    if (is.null(settings)) projection_memory_fail()
+    return(projection_derive(m, entry, settings$max_bytes, settings$existing_direction_estimate))
+  }
   interventions <- c(m$interventions, list(entry))
   flat <- flatten_interventions(interventions, m$hidden_size)
   payload <- relm_check(

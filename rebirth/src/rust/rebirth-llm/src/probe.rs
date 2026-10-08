@@ -87,6 +87,30 @@ pub(crate) struct ProbeCache {
 }
 
 impl ProbeCache {
+    pub(crate) fn projection_validate_cached(
+        &self,
+        spec: &InterventionSpec,
+    ) -> Result<(), RebirthError> {
+        // No todo Vec, sentinel context, cache insertion or BTree allocation.
+        // A new used kind/layer needs a separately admitted probe before a
+        // future constructor may call this gate; this helper never runs one.
+        for layer in 0..spec.n_layer {
+            let (steer, ablate) = spec.projection_layer_flags(layer);
+            if (steer && !self.steer_proven(layer as u32))
+                || (ablate && !self.ablate_ok.contains(&(layer as u32)))
+            {
+                let kind = if steer && !self.steer_proven(layer as u32) {
+                    "steering"
+                } else {
+                    "ablation"
+                };
+                return Err(crate::projection_profile::bounded_intervention_error(format_args!(
+                    "Residual {kind} capability is not cached for layer {layer}; a separately admitted probe is required."
+                )));
+            }
+        }
+        Ok(())
+    }
     pub(crate) fn new(layers: usize) -> Self {
         Self {
             steer_ok: vec![false; layers].into_boxed_slice(),
@@ -356,6 +380,24 @@ impl LoadedModel {
         Ok(())
     }
 
+    /// Query only; never populates the cache or creates a probe context. The FFI
+    /// uses this while validating borrowed residual arrays before copying them.
+    pub fn projection_residual_layer_is_cached(&self, layer: u32, steering: bool) -> bool {
+        let cache = self.lock_probe_cache();
+        if steering {
+            cache.steer_proven(layer)
+        } else {
+            cache.ablate_ok.contains(&layer)
+        }
+    }
+
+    pub(crate) fn projection_validate_cached_residual(
+        &self,
+        spec: &InterventionSpec,
+    ) -> Result<(), RebirthError> {
+        self.lock_probe_cache().projection_validate_cached(spec)
+    }
+
     /// Live commands can activate an originally-zero coefficient. Probe every
     /// requested nonzero direction's layer before prefill, using the same cache.
     pub(crate) fn verify_steering_layers(&self, layers: &[u32]) -> Result<(), RebirthError> {
@@ -602,6 +644,71 @@ impl LoadedModel {
     }
 }
 
+/// Scalar residual proof path used only after constructor admission. It retains
+/// no activation map and inserts no BTree nodes; existing cached results can
+/// skip work, while new legitimate layers can be proved again on later derives.
+pub(crate) fn projection_residual_probe_fixed_bytes() -> usize {
+    std::mem::size_of::<InterventionSpec>()
+        + std::mem::size_of::<Vec<f32>>()
+        + std::mem::size_of::<crate::ProjectionResidualArrays<'static>>()
+        + 2 * (std::mem::size_of::<LiveProbeCapture>()
+            + std::mem::size_of::<crate::engine::TraceContext>()
+            + std::mem::size_of::<crate::generate::Batch>()
+            + 4 * std::mem::size_of::<i32>()
+            + 2 * std::mem::size_of::<*mut i32>()
+            + std::mem::size_of::<i8>())
+        + std::mem::size_of::<std::sync::MutexGuard<'static, ProbeCache>>()
+}
+impl LoadedModel {
+    pub(crate) fn projection_prove_residual(
+        &self,
+        spec: &InterventionSpec,
+    ) -> Result<usize, RebirthError> {
+        let h = spec.n_embd;
+        let d = spec.n_layer;
+        let mut decodes = 0;
+        for layer in 0..d {
+            let (steering, ablation) = spec.projection_layer_flags(layer);
+            if steering && !self.projection_residual_layer_is_cached(layer as u32, true) {
+                let neuron = usize::from(h > 1);
+                let baseline =
+                    self.live_probe_scalar(&InterventionSpec::new(h, d), layer as u32, neuron)?;
+                let mut sentinel = InterventionSpec::new(h, d);
+                let mut row = Vec::new();
+                row.try_reserve_exact(h)
+                    .map_err(|_| crate::projection_profile::admission_error())?;
+                if row.capacity() != h {
+                    return Err(crate::projection_profile::admission_error());
+                }
+                row.resize(h, 0f32);
+                row[neuron] = SENTINEL_STEER;
+                sentinel.add_steer(layer, &row);
+                if sentinel.projection_buffer_capacities() != [h * d, 0, 0] {
+                    return Err(crate::projection_profile::admission_error());
+                }
+                let shifted = self.live_probe_scalar(&sentinel, layer as u32, neuron)?;
+                if !steer_shift_ok(baseline, shifted, SENTINEL_STEER) {
+                    return Err(crate::projection_profile::admission_error());
+                }
+                decodes += 2;
+            }
+            if ablation && !self.projection_residual_layer_is_cached(layer as u32, false) {
+                let mut sentinel = InterventionSpec::new(h, d);
+                sentinel.add_ablation(layer, &[0], SENTINEL_ABLATE);
+                if sentinel.projection_buffer_capacities() != [0, h * d, h * d] {
+                    return Err(crate::projection_profile::admission_error());
+                }
+                let value = self.live_probe_scalar(&sentinel, layer as u32, 0)?;
+                if !ablation_pin_ok(value, SENTINEL_ABLATE) {
+                    return Err(crate::projection_profile::admission_error());
+                }
+                decodes += 1;
+            }
+        }
+        Ok(decodes)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -666,5 +773,48 @@ mod tests {
             vec![2],
             "layer 2 is steer-proven but not ablate-proven"
         );
+    }
+}
+
+#[cfg(test)]
+mod projection_transfer_tests {
+    use super::*;
+    #[test]
+    fn projection_transfer_requires_cached_residual_capabilities() {
+        let mut cache = ProbeCache::new(3);
+        let mut spec = InterventionSpec::new(2, 3);
+        assert!(cache.projection_validate_cached(&spec).is_ok());
+        spec.add_steer(1, &[0., 0.]);
+        assert!(cache.projection_validate_cached(&spec).is_ok());
+        spec.add_steer(1, &[1., 0.]);
+        assert!(cache.projection_validate_cached(&spec).is_err());
+        cache.mark(&[], &[1]);
+        assert!(cache.projection_validate_cached(&spec).is_err());
+        cache.mark(&[1], &[]);
+        assert!(cache.projection_validate_cached(&spec).is_ok());
+        spec.add_ablation(0, &[1], 0.25);
+        assert!(cache.projection_validate_cached(&spec).is_err());
+        cache.mark(&[0], &[]);
+        assert!(cache.projection_validate_cached(&spec).is_err());
+        cache.mark(&[], &[0]);
+        assert!(cache.projection_validate_cached(&spec).is_ok());
+        spec.add_steer(2, &[1., 0.]);
+        assert!(cache.projection_validate_cached(&spec).is_err());
+        cache.mark(&[2], &[]);
+        assert!(cache.projection_validate_cached(&spec).is_ok());
+        spec.add_ablation(2, &[0], 0.);
+        assert!(cache.projection_validate_cached(&spec).is_err());
+        cache.mark(&[], &[2]);
+        assert!(cache.projection_validate_cached(&spec).is_ok());
+        let before = (cache.steer_ok.len(), cache.ablate_ok.len());
+        assert!(cache.projection_validate_cached(&spec).is_ok());
+        assert_eq!(before, (cache.steer_ok.len(), cache.ablate_ok.len()));
+        assert!(
+            std::mem::size_of::<std::sync::MutexGuard<'_, ProbeCache>>()
+                <= std::mem::size_of::<
+                    std::sync::MutexGuard<'_, Option<Box<crate::projection_layout::Runtime>>>,
+                >()
+        );
+        println!("F6E_PROJECTION_TRANSFER_TEST {{\"test\":\"projection_transfer_requires_cached_residual_capabilities\",\"status\":\"passed\",\"expected_cases\":14,\"executed_cases\":14,\"expected_rejections\":6,\"rejected_cases\":6}}");
     }
 }

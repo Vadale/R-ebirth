@@ -25,7 +25,8 @@ and complete, ordered neuron names \code{"1"} through the hidden width as column
 \code{pairs}, \code{splits} and \code{seed}; see Details and the contrast-directions vignette.
 For application, an independently recorded destination \code{model} record.}
 
-\item{layer}{One whole layer from 2 through the recorded model's layer count.}
+\item{layer}{One whole layer: 2 through the recorded layer count for residual
+captures; 1 through that count for \code{mlp_out} and \code{attn_out} captures.}
 
 \item{normalize_pairs}{Whether to give each pair difference unit length before
 averaging. Defaults to FALSE, preserving relative pair magnitudes.}
@@ -46,12 +47,13 @@ original control vector before final normalization. Defaults to FALSE.}
 No model pointer, input matrix or trace is retained.
 }
 \description{
-Build a unit residual direction from paired, already collected activations.
+Build a unit full-width direction from paired, already collected activations.
 The positive sign is target minus control. This function performs no inference.
 }
 \details{
 Context records a model checksum, architecture, quantization, hidden width,
-layer count and patched engine revision. Capture is full residual space at
+layer count and patched engine revision. Capture is full-width residual,
+\code{mlp_out} or \code{attn_out} space at
 the last prompt position, raw text, embedded tokenizer, \code{add_special = TRUE},
 \code{parse_special = FALSE}, no external template, plus resolved backend, context
 length and package version. Pairs record ordered IDs, exact UTF-8 prompt
@@ -69,6 +71,9 @@ Checksums use one bounded temporary file at a time, removed even on error.
 They detect modification but do not authenticate recorded provenance or
 already-loaded weights. Caller deserialization and native model/context
 memory are outside this budget. Never read untrusted RDS files.
+Residual artifacts retain schema 1. Component artifacts use schema 2, with
+component-specific identity and a versioned prefix in every checksum domain.
+Construction does not prove that a model supports editing the recorded site.
 }
 \seealso{
 \code{\link[=llm_trace]{llm_trace()}}, \code{\link[=llm_steer]{llm_steer()}}, \code{\link[=llm_apply_direction]{llm_apply_direction()}},

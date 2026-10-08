@@ -137,6 +137,9 @@ check_images_usable <- function(m, image_sets, call = sys.call(-1L)) {
   if (is.null(image_sets) || !any(lengths(image_sets) > 0L)) {
     return(invisible(NULL))
   }
+  if (projection_has(m)) {
+    abort_image("Projected handles support text-only generation; use the original handle for image input.", call = call)
+  }
   if (!isTRUE(m$vision)) {
     abort_image(
       paste0(

@@ -49,8 +49,11 @@ direction_encode <- function(x, emit, vector = FALSE) {
   invisible(NULL)
 }
 
-direction_stream <- function(domain, x, emit, vector = FALSE) {
-  emit(c(charToRaw("relm_direction/1"), as.raw(0)))
+direction_stream <- function(domain, x, emit, vector = FALSE, schema = "relm_direction/1") {
+  if (!identical(schema, "relm_direction/1") && !identical(schema, "relm_direction/2")) {
+    direction_fail("direction_schema", "Unsupported direction encoding schema.")
+  }
+  emit(c(charToRaw(schema), as.raw(0)))
   direction_encode(domain, emit)
   direction_encode(x, emit, vector)
   invisible(NULL)
@@ -58,7 +61,7 @@ direction_stream <- function(domain, x, emit, vector = FALSE) {
 
 direction_write_bytes <- function(bytes, con) writeBin(bytes, con)
 
-direction_hash <- function(domain, x, limit, vector = FALSE) {
+direction_hash <- function(domain, x, limit, vector = FALSE, schema = "relm_direction/1") {
   path <- tempfile("relm-direction-", fileext = ".bin")
   con <- NULL
   on.exit({
@@ -76,7 +79,7 @@ direction_hash <- function(domain, x, limit, vector = FALSE) {
       direction_write_bytes(bytes, con)
       count <<- count + length(bytes)
     }
-    direction_stream(domain, x, emit, vector)
+    direction_stream(domain, x, emit, vector, schema)
     close(con); con <- NULL
     size <- file.info(path)$size
     if (length(size) != 1L || is.na(size) || size != count) {

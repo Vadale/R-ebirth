@@ -32,17 +32,22 @@ graphics_model_table <- function(x, layers) {
   detailed <- x$architecture %in% c("llama", "qwen2")
   sites <- if (detailed) c("attn_out", "mlp_out", "residual") else "block"
   out <- data.frame(layer = rep(layers, each = length(sites)), site = rep(sites, length(layers)),
-    detail = "", configured_steers = 0L, configured_ablations = 0L)
+    detail = "", configured_steers = 0L, configured_ablations = 0L,
+    configured_projections = 0L)
   for (i in seq_len(nrow(out))) {
     site <- out$site[i]
     out$detail[i] <- switch(site, attn_out = if (x$architecture == "llama")
       "Post-projection attention; observation site" else "Post-projection attention; capture unavailable for qwen2",
       mlp_out = "MLP output; observation site", residual = "Post-intervention residual; steer before ablate",
       block = "Generic block; internal topology not asserted")
-    if (site %in% c("residual", "block")) for (iv in x$interventions) {
+    for (iv in x$interventions) {
       if (identical(iv$layer, out$layer[i])) {
-        if (identical(iv$kind, "steer")) out$configured_steers[i] <- out$configured_steers[i] + 1L
-        if (identical(iv$kind, "ablate")) out$configured_ablations[i] <- out$configured_ablations[i] + 1L
+        if (site %in% c("residual", "block")) {
+          if (identical(iv$kind, "steer")) out$configured_steers[i] <- out$configured_steers[i] + 1L
+          if (identical(iv$kind, "ablate")) out$configured_ablations[i] <- out$configured_ablations[i] + 1L
+        }
+        if (identical(iv$kind, "project") && (identical(iv$component, site) || site == "block"))
+          out$configured_projections[i] <- out$configured_projections[i] + 1L
       }
     }
   }
@@ -58,7 +63,9 @@ graphics_model_table <- function(x, layers) {
 #' @param x An open llm handle.
 #' @param layers NULL for up to 32 blocks, or explicit unique 1-based indices.
 #' @param ... Named main, cex or col (one or three colors).
-#' @return Invisibly, the plain data frame of displayed sites and intervention counts.
+#' @return Invisibly, the plain data frame of displayed sites and intervention
+#'   counts. `configured_projections` counts static component projections,
+#'   including zero coefficients; it does not count additive live revisions.
 #' @seealso [llm_timeline()], [llm_compare()]
 #' @examples
 #' # Optional local model; never downloads a model during examples.
@@ -92,11 +99,15 @@ plot.llm <- function(x, layers = NULL, ...) {
       xs <- left + (right - left) * c(0.28, 0.58, 0.86)
       graphics::arrows(xs[1:2] + 0.055 / columns, y - h * 0.10,
         xs[2:3] - 0.04 / columns, y - h * 0.10, length = 0.045, col = "#8995A3")
-      graphics::text(xs, y - h * 0.10, c("Attn", "MLP", "R"), cex = 0.65, col = opts$col,
-        font = c(1, 1, 2))
+      labels <- c("Attn", "MLP", "R")
+      projected <- part$configured_projections > 0L
+      labels[projected] <- sprintf("%s[P%d]", labels[projected], part$configured_projections[projected])
+      graphics::text(xs, y - h * 0.10, labels, cex = 0.65, col = opts$col,
+        font = ifelse(projected, 2, c(1, 1, 2)))
     } else graphics::text((left + right) / 2, y - h * 0.12, "Generic block", cex = 0.65)
     s <- sum(part$configured_steers); a <- sum(part$configured_ablations)
-    label <- if (s + a) sprintf("S:%d  A:%d", s, a) else if (selected[i] == 1L) "Steer unavailable" else "No intervention"
+    p <- sum(part$configured_projections)
+    label <- if (p) sprintf("P:%d  S:%d  A:%d", p, s, a) else if (s + a) sprintf("S:%d  A:%d", s, a) else if (selected[i] == 1L) "Steer unavailable" else "No intervention"
     graphics::text(right - 0.005, y + h * 0.31, label, adj = 1, cex = 0.48)
     previous <- if (i == 1L) 0L else selected[i - 1L]
     if (selected[i] > previous + 1L)
@@ -109,7 +120,8 @@ plot.llm <- function(x, layers = NULL, ...) {
     if (isTRUE(attr(tab, "vision_input"))) " | external vision input" else ""), side = 3, line = 0.15, cex = 0.68)
   notice <- if (attr(tab, "architecture") == "qwen2") "Qwen2 attention output capture unavailable. " else ""
   graphics::mtext(paste0(notice, "Metadata, not activity or causal edges."), side = 1, line = 0.8, cex = 0.65)
-  graphics::mtext("Attn: attention output   MLP: feed-forward output   R: residual | S: steer, then A: ablate", side = 1, line = 1.9, cex = 0.61)
+  graphics::mtext("Attn: attention output   MLP: feed-forward output   R: residual", side = 1, line = 1.7, cex = 0.61)
+  graphics::mtext("P: static component projection | S: residual steer, then A: ablate", side = 1, line = 2.5, cex = 0.61)
   invisible(tab)
 }
 

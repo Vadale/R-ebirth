@@ -17,6 +17,8 @@ rust-version.workspace = true
 # build.rs maps it to -DGGML_CUDA=ON. Default off: WP1 builds Metal (macOS arm64)
 # or CPU only.
 default = ["spill"]
+# Internal constructor gate; never enabled by the public package build.
+projection-private = []
 cuda = []
 spill = ["dep:arrow-array", "dep:arrow-schema", "dep:arrow-ipc"]
 

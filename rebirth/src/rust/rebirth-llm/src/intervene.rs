@@ -59,6 +59,132 @@ pub struct InterventionSpec {
 }
 
 impl InterventionSpec {
+    // Transfer validation is allocation-free on success. Supplied accumulated
+    // values are not authenticated against discarded source ablation inputs;
+    // only their shape, ownership and mathematical representation are checked.
+    pub(crate) fn projection_validate_residual(
+        &self,
+        width: usize,
+        depth: usize,
+        steer_entries: u64,
+        ablate_entries: u64,
+    ) -> Result<(), RebirthError> {
+        let fail = crate::projection_profile::admission_error;
+        let n = width.checked_mul(depth).ok_or_else(fail)?;
+        if width == 0 || depth == 0 || self.n_embd != width || self.n_layer != depth {
+            return Err(fail());
+        }
+        for (values, range, expected, steering) in [
+            (&self.steer, self.steer_il_range, steer_entries > 0, true),
+            (
+                &self.ablate_mask,
+                self.ablate_il_range,
+                ablate_entries > 0,
+                false,
+            ),
+            (
+                &self.ablate_add,
+                self.ablate_il_range,
+                ablate_entries > 0,
+                false,
+            ),
+        ] {
+            if values.is_some() != expected || range.is_some() != expected {
+                return Err(fail());
+            }
+            if let (Some(values), Some((first, last))) = (values, range) {
+                if values.len() != n
+                    || values.capacity() != n
+                    || first < i32::from(steering)
+                    || last < first
+                    || last as usize >= depth
+                    || values.iter().any(|x| !x.is_finite())
+                {
+                    return Err(fail());
+                }
+            }
+        }
+        for layer in 0..depth {
+            let (steer, ablate) = self.projection_layer_flags(layer);
+            if steer
+                && !self
+                    .steer_il_range
+                    .is_some_and(|(a, b)| layer >= a as usize && layer <= b as usize)
+                || ablate
+                    && !self
+                        .ablate_il_range
+                        .is_some_and(|(a, b)| layer >= a as usize && layer <= b as usize)
+            {
+                return Err(fail());
+            }
+        }
+        if self
+            .ablate_mask
+            .as_ref()
+            .is_some_and(|m| m.iter().any(|&x| x != 0. && x != 1.))
+        {
+            return Err(fail());
+        }
+        Ok(())
+    }
+    pub(crate) fn projection_layer_flags(&self, layer: usize) -> (bool, bool) {
+        let start = layer * self.n_embd;
+        let end = start + self.n_embd;
+        let steer = self
+            .steer
+            .as_ref()
+            .is_some_and(|v| v[start..end].iter().any(|&x| x != 0.));
+        let ablate = self
+            .ablate_mask
+            .as_ref()
+            .zip(self.ablate_add.as_ref())
+            .is_some_and(|(mask, add)| {
+                mask[start..end]
+                    .iter()
+                    .zip(&add[start..end])
+                    .any(|(&m, &a)| m != 1. || a != 0.)
+            });
+        (steer, ablate)
+    }
+    #[cfg(test)]
+    pub(crate) fn projection_allocation_bytes(&self) -> Option<usize> {
+        // Existing spec buffers plus the independently cloned candidate baseline.
+        let mut bytes = std::mem::size_of::<Self>()
+            + std::mem::size_of::<crate::live_steering::SteeringBaseline>();
+        for values in [&self.steer, &self.ablate_mask, &self.ablate_add]
+            .into_iter()
+            .flatten()
+        {
+            bytes = bytes.checked_add(values.capacity().checked_mul(4)?)?;
+        }
+        bytes.checked_add(
+            self.steer
+                .as_ref()
+                .map_or(Some(0), |v| v.len().checked_mul(4))?,
+        )
+    }
+    pub(crate) fn projection_apply(&self, model: &mut LoadedModel) -> Result<(), RebirthError> {
+        let baseline = if let Some((values, range)) = self.steer.as_ref().zip(self.steer_il_range) {
+            let mut copied = Vec::new();
+            copied
+                .try_reserve_exact(values.len())
+                .map_err(|_| crate::projection_profile::admission_error())?;
+            if copied.capacity() != values.len() {
+                return Err(crate::projection_profile::admission_error());
+            }
+            copied.extend_from_slice(values);
+            Some(crate::live_steering::SteeringBaseline {
+                values: copied,
+                range,
+            })
+        } else {
+            None
+        };
+        self.apply_to_context(model.ctx_ptr())?;
+        model.steering_baseline = baseline;
+        Ok(())
+    }
+
     /// An empty spec for a model of `n_embd` hidden size and `n_layer` blocks.
     pub fn new(n_embd: usize, n_layer: usize) -> Self {
         InterventionSpec {
@@ -183,13 +309,9 @@ impl InterventionSpec {
                 )
             };
             if status != 0 {
-                return Err(RebirthError::Intervention {
-                    reason: format!(
-                        "The engine rejected the ablation mask (intervention setter \
-                         returned {status}); its width must equal the model's hidden \
-                         size ({n_embd})."
-                    ),
-                });
+                return Err(crate::projection_profile::bounded_intervention_error(format_args!(
+                    "The engine rejected the ablation mask (intervention setter returned {status}); its width must equal the model's hidden size ({n_embd})."
+                )));
             }
         }
 
@@ -219,7 +341,9 @@ pub(crate) fn apply_steering_buffer(
         )
     };
     if status != 0 {
-        return Err(RebirthError::Intervention {reason:format!("The engine rejected the steering adapter (setter status {status}, hidden width {width}).")});
+        return Err(crate::projection_profile::bounded_intervention_error(format_args!(
+            "The engine rejected the steering adapter (setter status {status}, hidden width {width})."
+        )));
     }
     Ok(())
 }
@@ -250,6 +374,14 @@ impl LoadedModel {
         spec: &InterventionSpec,
     ) -> Result<LoadedModel, RebirthError> {
         let _native = crate::domain::NativeGuard::try_acquire("derive_with_interventions")?;
+        // Product callers must inherit through the bounded constructor.
+        // Existing cfg(test) feasibility helpers retain their accepted test scope.
+        #[cfg(not(test))]
+        if self.projection().enabled() {
+            return Err(crate::projection_profile::bounded_intervention_error(
+                format_args!("Projection residual changes require the bounded constructor."),
+            ));
+        }
         // Defensive: the R layer builds the spec from this model's metadata, so a
         // dimension mismatch here is an internal error, not a user error.
         let n_embd = self.hidden_size().max(0) as usize;
@@ -270,6 +402,8 @@ impl LoadedModel {
 
         let mut derived = self.clone_with_fresh_context()?;
         spec.apply_to_context(derived.ctx_ptr())?;
+        #[cfg(test)]
+        derived.inherit_projection(self)?;
         derived.steering_baseline =
             spec.steer
                 .as_ref()
@@ -279,6 +413,67 @@ impl LoadedModel {
                     range,
                 });
         Ok(derived)
+    }
+}
+
+impl InterventionSpec {
+    pub(crate) fn projection_buffer_capacities(&self) -> [usize; 3] {
+        [&self.steer, &self.ablate_mask, &self.ablate_add]
+            .map(|v| v.as_ref().map_or(0, Vec::capacity))
+    }
+    pub(crate) fn projection_from_arrays(
+        h: usize,
+        d: usize,
+        a: crate::ProjectionResidualArrays<'_>,
+    ) -> Result<(Self, usize), RebirthError> {
+        let fail = crate::projection_profile::admission_error;
+        a.validate(
+            h,
+            d,
+            a.steer_layers.len() as u64,
+            a.ablate_layers.len() as u64,
+        )?;
+        fn fill(n: usize, value: f32) -> Result<Vec<f32>, RebirthError> {
+            let mut v = Vec::new();
+            v.try_reserve_exact(n)
+                .map_err(|_| crate::projection_profile::admission_error())?;
+            if v.capacity() != n {
+                return Err(crate::projection_profile::admission_error());
+            }
+            v.resize(n, value);
+            Ok(v)
+        }
+        let n = h.checked_mul(d).ok_or_else(fail)?;
+        let mut spec = Self::new(h, d);
+        let mut row = fill(if a.steer_layers.is_empty() { 0 } else { h }, 0.)?;
+        if !a.steer_layers.is_empty() {
+            spec.steer = Some(fill(n, 0.)?);
+        }
+        if !a.ablate_layers.is_empty() {
+            spec.ablate_mask = Some(fill(n, 1.)?);
+            spec.ablate_add = Some(fill(n, 0.)?);
+        }
+        for (i, &layer) in a.steer_layers.iter().enumerate() {
+            for (dst, &value) in row.iter_mut().zip(&a.steer_vectors[i * h..(i + 1) * h]) {
+                *dst = value as f32;
+            }
+            spec.add_steer((layer - 1) as usize, &row);
+        }
+        for ((&layer, &neuron), &value) in a
+            .ablate_layers
+            .iter()
+            .zip(a.ablate_neurons)
+            .zip(a.ablate_values)
+        {
+            spec.add_ablation((layer - 1) as usize, &[(neuron - 1) as usize], value as f32);
+        }
+        spec.projection_validate_residual(
+            h,
+            d,
+            a.steer_layers.len() as u64,
+            a.ablate_layers.len() as u64,
+        )?;
+        Ok((spec, row.capacity()))
     }
 }
 
@@ -396,3 +591,7 @@ mod tests {
         assert_eq!(add[base + 1], -2.0); // last write wins
     }
 }
+
+#[cfg(test)]
+#[path = "intervene_projection_tests.rs"]
+mod projection_transfer_tests;

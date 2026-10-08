@@ -52,7 +52,7 @@ direction_validate <- function(x, max_bytes = 64 * 1024^2, extra_bytes = 0) {
         typeof(x$neuron) != "integer" || typeof(x$value) != "double" ||
         !is.null(attributes(x$neuron)) || !is.null(attributes(x$value)) ||
         length(x$neuron) != .row_names_info(x, 2L) || length(x$value) != length(x$neuron)) {
-      direction_fail("direction_schema", "Use an unchanged relm_direction version-1 data frame with complete coordinates.")
+      direction_fail("direction_schema", "Use an unchanged relm_direction data frame with complete coordinates.")
     }
     meta <- direction_record(attr(x, "direction", exact = TRUE),
       c("schema", "layer", "component", "context", "method", "diagnostics", "producer", "digests"), "direction")
@@ -64,11 +64,13 @@ direction_validate <- function(x, max_bytes = 64 * 1024^2, extra_bytes = 0) {
     n <- nrow(context$pairs); h <- length(x$value)
     estimate <- direction_estimate(input_bytes, context_bytes, n, h)
     direction_admit(estimate, budget)
-    if (!identical(meta$schema, "relm_direction/1") || !identical(meta$component, "residual") ||
-        typeof(meta$layer) != "integer" || !direction_number(meta$layer, 2L, context$model$layers) ||
+    schema <- direction_component_schema(context$capture$component)
+    first_layer <- if (context$capture$component == "residual") 2L else 1L
+    if (!identical(meta$schema, schema) || !identical(meta$component, context$capture$component) ||
+        typeof(meta$layer) != "integer" || !direction_number(meta$layer, first_layer, context$model$layers) ||
         !identical(x$neuron, seq_len(h)) || anyNA(x$value) || any(!is.finite(x$value)) ||
         abs(direction_norm(x$value) - 1) > 1e-12) {
-      direction_fail("direction_coordinates", "The artifact's layer, full residual coordinates or unit values are invalid.")
+      direction_fail("direction_coordinates", "The artifact's schema, component, layer, full coordinates or unit values are invalid.")
     }
     method <- direction_record(meta$method, c("algorithm", "normalize_pairs", "orthogonalize"), "direction")
     if (!identical(method$algorithm, "paired_difference_mean/1") ||
@@ -96,10 +98,10 @@ direction_validate <- function(x, max_bytes = 64 * 1024^2, extra_bytes = 0) {
       class = c("relm_direction", "data.frame"), direction = meta)
     limit <- 2^20 + 4 * context_bytes + 64 * (n + h)
     actual <- c(
-      pairs = direction_hash("pairs", context$pairs, limit),
-      splits = direction_hash("splits", context$splits, limit),
-      values = direction_hash("values", list(neuron = x$neuron, value = x$value), limit),
-      payload = direction_hash("artifact", direction_payload(canonical), limit))
+      pairs = direction_hash("pairs", context$pairs, limit, schema = schema),
+      splits = direction_hash("splits", context$splits, limit, schema = schema),
+      values = direction_hash("values", list(neuron = x$neuron, value = x$value), limit, schema = schema),
+      payload = direction_hash("artifact", direction_payload(canonical), limit, schema = schema))
     if (!identical(unname(actual), unname(unlist(digests[names(actual)], use.names = FALSE)))) {
       direction_fail("direction_integrity", "Direction data or provenance changed since construction. Reload the original verified artifact.")
     }

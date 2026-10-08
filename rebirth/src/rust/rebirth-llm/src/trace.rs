@@ -996,6 +996,7 @@ impl LoadedModel {
         ids: &[i32],
         spec: &CaptureSpec,
     ) -> Result<Vec<CaptureRow>, RebirthError> {
+        self.projection_reject_separate_context()?;
         let _native = crate::domain::NativeGuard::try_acquire("activations")?;
         self.capture_in_memory(&[ids], &[], spec)
     }
@@ -1010,6 +1011,7 @@ impl LoadedModel {
         spec: &CaptureSpec,
         plan: &SpillPlan,
     ) -> Result<TraceOutput, RebirthError> {
+        self.projection_reject_separate_context()?;
         let _native = crate::domain::NativeGuard::try_acquire("trace_token_batch_spill")?;
         self.trace_capture_planned(batches, &[], spec, plan)
     }
@@ -1027,6 +1029,7 @@ impl LoadedModel {
         spec: &CaptureSpec,
         plan: &SpillPlan,
     ) -> Result<TraceOutput, RebirthError> {
+        self.projection_reject_separate_context()?;
         let _native = crate::domain::NativeGuard::try_acquire("trace_texts_spill")?;
         self.require_tokenizer()?;
         if texts.is_empty() {

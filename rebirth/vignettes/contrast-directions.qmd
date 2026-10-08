@@ -8,7 +8,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-A contrast direction summarizes how paired residual activations differ. Its
+A contrast direction summarizes how paired activations at a declared site differ. Its
 positive sign is **target minus control**. Adding it during inference is an
 experiment, not a guarantee that the desired behavior will improve. Keep
 construction, coefficient selection and final evaluation separate.
@@ -143,7 +143,8 @@ The six destination fields must match the artifact; available handle metadata
 must also match. The native steering capability and busy/closed checks still
 apply. The original handle is unchanged. Negative coefficients reverse the
 addition and zero retains existing zero-steering semantics. This is additive
-residual steering at every position, not F6e's prospective runtime projection.
+residual steering at every position. The explicit `operator = "project"` mode
+uses a separately constructed component artifact, as shown below.
 Copying the artifact's record into an unrelated same-width handle does **not**
 authenticate that handle. relm does not have a native loaded-weight checksum.
 
@@ -152,6 +153,71 @@ generation. `llm_timeline()` records the actually applied coefficients, while
 `llm_compare()` withholds differences after input histories diverge. Returning a
 coefficient to zero cannot erase its earlier effect on KV history. Extracting
 `direction$value` and calling `llm_steer()` directly bypasses artifact checks.
+
+## Project a component direction
+
+Residual artifacts use schema 1 and the default `operator = "add"`. A full-width
+`mlp_out` or `attn_out` capture produces schema 2; its component is part of the
+checksummed identity. Construct it from paired observations at that component.
+Changing a residual artifact's label does not make it a component direction.
+
+For this **synthetic arithmetic example only**, reuse the four-coordinate inputs
+and declare a synthetic MLP capture. This is not evidence of a real MLP capture
+or of model compatibility.
+
+```{r}
+mlp_context <- context
+mlp_context$capture$component <- "mlp_out"
+mlp_direction <- llm_direction(target, control, mlp_context, layer = 2)
+stopifnot(identical(attr(mlp_direction, "direction")$schema, "relm_direction/2"),
+          identical(attr(direction, "direction")$schema, "relm_direction/1"))
+
+# Unit direction v; a single synthetic component row h.
+v <- mlp_direction$value
+h <- c(3, 2, -1, 0.5)
+project <- function(coef) h - coef * v * sum(v * h)
+stopifnot(identical(project(0), h),
+          max(abs(project(1) - c(-0.2, 0.4, -1, 0.5))) < 1e-12,
+          abs(sum(v * project(1))) < 1e-12,
+          abs(sum(v * project(-1)) - 2 * sum(v * h)) < 1e-12)
+data.frame(neuron = 1:4, original = h, removed = project(1),
+           amplified = project(-1))
+```
+
+Projection applies `h - coef * v * sum(v * h)` before the component is added to
+the residual. Zero is a no-op, one removes the parallel component within floating
+point bounds, and minus one doubles it. Negating `v` leaves the projection
+unchanged. It changes activations, not weights, and does not imply better answers.
+
+```{r}
+#| eval: false
+# real_mlp_direction was built from actual full-width mlp_out observations.
+projected <- llm_apply_direction(m, real_mlp_direction, destination_record,
+  coef = 1, operator = "project", max_bytes = 64 * 1024^2)
+plot(projected, layers = c(1L, 12L, m$layers))
+answer <- llm_generate(projected, held_out_prompt, temperature = 0, seed = 101)
+close(projected)
+```
+
+This increment supports dense Llama attention/MLP output and dense Qwen2 MLP
+output on CPU and Metal. Qwen2 attention, MoE, CUDA, Windows and other graph/site
+combinations are not supported by projection. Component layers may be `1:L`;
+residual addition retains `2:L`. Native checks reject unsupported producers and
+duplicate `(layer, component)` projections before returning a usable handle.
+
+The application budget includes retained directions, the native row buffer and
+compiled ownership/transport storage, plus admitted R materialization. Adding a
+projection accounts for existing entries too. Derived steering/ablation retains
+the projection and its budget; insufficient budget raises `relm_error_oom`.
+Base model/KV memory, separately requested capture/spill and total process RSS
+remain outside this projection-specific bound.
+
+Projection coefficients are fixed for a derived handle. Live `on_state` replies
+can still update additive steering entries; they cannot update a projection ID.
+`llm_timeline()` audits additive live coefficients, so a static projection alone
+has no live revision entries. Use generation's live capture for post-edit states:
+ordinary tracing and embedding reject intervened handles, and projected image
+requests are unsupported. The original handle remains unchanged.
 
 ## Evaluate separately from construction
 
@@ -172,3 +238,24 @@ The repository's F6d protocol records 12 construction pairs, six selection tasks
 eight final tasks, fixed quality guards and a zero fallback before model execution.
 Its implementation report records actual results and limitations separately;
 this vignette's executable example claims only its synthetic arithmetic.
+
+The separate F6e-v1 experiment froze new construction, selection and final data.
+After 72 selection settings it locked residual addition at 2 and MLP projection
+at 1, then ran all 48 final settings once. On its eight fixed final tasks:
+
+| Setting | Mean characters | Mean tokens | Literal required answer included | Reached 256-token cap |
+| --- | ---: | ---: | ---: | ---: |
+| Original | 1209.625 | 256 | 6/8 | 8/8 |
+| Addition, coefficient 2 | 483.125 | 102.75 | 7/8 | 3/8 |
+| Projection, coefficient 1 | 1102.25 | 234.875 | 6/8 | 7/8 |
+| Balanced pair-sign random projection | 1205 | 256 | 6/8 | 8/8 |
+
+Projection minus original was -107.375 characters, with a descriptive paired
+95% bootstrap interval of [-350.925, 68.3875], conditional on these eight tasks.
+The result is modest. Length-limited outputs do not measure complete-answer
+brevity, and literal inclusion is not general correctness. Different sites and
+directions prevent an isolated operator comparison. The pinned Qwen tokenizer
+also reclassified a control-looking token from its stored normal type; its
+possible stopping effect is retained as a limitation. These are recorded results,
+not computations repeated while rendering this document. The final set is
+consumed and must not be used to retune the coefficients.

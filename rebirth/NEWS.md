@@ -1,5 +1,21 @@
 # relm (development)
 
+## Component projection steering (F6e)
+
+* `llm_apply_direction(operator = "project")` applies a recorded unit component
+  direction as `h - coef * v * sum(v * h)`. Schema-2 artifacts distinguish MLP
+  and attention outputs; existing residual artifacts and additive calls retain
+  their schema and default behavior.
+* Native admission checks the actual producer and supported CPU/Metal storage.
+  Initial sites are dense Llama MLP/post-output-projection attention and Qwen2
+  MLP. A combined R/native materialization budget covers accumulated projection
+  and residual owners; model weights and context storage remain outside it.
+* Projection is static for the derived handle and precedes live observation.
+  Live replies still change only additive steering coefficients. Images,
+  ordinary trace and embeddings on projected handles are refused. Model maps
+  mark configured projection sites; these marks do not imply measured effects.
+  Recorded artifact provenance does not authenticate loaded weights.
+
 ## Recorded contrast directions (F6d)
 
 * `llm_direction()` constructs one full-width, unit residual direction from

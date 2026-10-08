@@ -853,3 +853,63 @@ mod tests {
         assert_eq!(actual, expected, "Rust/C layout or enum drift");
     }
 }
+
+// D046 compiled profile; tensor mutation remains private and unarmed.
+#[repr(C)]
+#[derive(Default, Clone, Copy)]
+pub(crate) struct ProjectionBufferInfo {
+    pub kind: u32,
+    pub is_host: u32,
+    pub usage: u32,
+    pub device_type: u32,
+    pub flags: u32,
+    pub device_index: u32,
+    pub type_name: [u8; 32],
+    pub device_name: [u8; 32],
+    pub registry_name: [u8; 16],
+}
+#[repr(C)]
+#[derive(Default, Clone, Copy)]
+pub(crate) struct ProjectionInfo {
+    pub rows: u64,
+    pub bytes: u64,
+    pub wrappers: u32,
+    pub access: u32,
+    pub buffer: ProjectionBufferInfo,
+}
+extern "C" {
+    pub(crate) fn relm_projection_classify(
+        t: *const ggml_tensor,
+        layer: u32,
+        component: u32,
+        width: usize,
+        ready: bool,
+        out: *mut ProjectionInfo,
+    ) -> i32;
+    pub(crate) fn relm_projection_row(
+        t: *mut ggml_tensor,
+        width: usize,
+        row: usize,
+        data: *mut f32,
+        write: bool,
+    ) -> i32;
+    pub(crate) fn relm_projection_consumer(
+        t: *const ggml_tensor,
+        layer: u32,
+        component: u32,
+        width: usize,
+    ) -> i32;
+    #[cfg(test)]
+    pub(crate) fn relm_projection_classifier_controls() -> u64;
+    #[cfg(test)]
+    pub(crate) fn relm_projection_info_size() -> usize;
+
+    #[cfg(test)]
+    pub(crate) fn relm_projection_buffer_controls() -> u64;
+}
+
+extern "C" {
+    pub(crate) fn llama_n_ubatch(ctx: *const llama_context) -> u32;
+    pub(crate) fn relm_projection_name_frame_size() -> usize;
+    pub(crate) fn relm_projection_access_frame_size() -> usize;
+}

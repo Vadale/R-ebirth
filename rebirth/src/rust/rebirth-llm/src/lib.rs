@@ -34,6 +34,11 @@ mod live_spill;
 mod live_state;
 mod live_steering;
 mod probe;
+mod projection;
+#[cfg(feature = "projection-private")]
+mod projection_combined_test;
+mod projection_layout;
+mod projection_profile;
 mod schema;
 #[cfg(feature = "spill")]
 mod spill;
@@ -70,6 +75,12 @@ pub use live_state::{
     LIVE_VECTOR_HEADER_BYTES,
 };
 pub use live_steering::{LiveCoefficient, LiveReply, LiveSteer, LiveSteeringRow};
+pub use projection_profile::{
+    ProjectionAdmission, ProjectionAdmissionMode, ProjectionAllocationProfile, ProjectionCommand,
+    ProjectionConstructionReceipt, ProjectionEstimate, ProjectionFfiProfile,
+    ProjectionResidualArrays, PROJECTION_ESTIMATE_FIELDS, PROJECTION_INPUT_FIELDS,
+    PROJECTION_PROFILE_FIELDS, PROJECTION_PROFILE_VERSION,
+};
 pub use schema::CompiledSchema;
 pub use spill_lease::{cleanup_managed_spill, prepare_managed_spill, sweep_managed_spill};
 pub use structured::{

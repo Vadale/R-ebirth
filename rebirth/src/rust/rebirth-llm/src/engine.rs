@@ -505,6 +505,33 @@ impl LoadedModel {
         self.ctx.ptr.as_ptr()
     }
 
+    /// Allocation-free architecture/backend facts for the unarmed D046 admission.
+    /// A projection derive returns only a handle: immutable metadata is reused by
+    /// R, so this path must not call metadata()/ok_payload() and copy Strings.
+    pub(crate) fn projection_model_facts(&self, component: crate::Component) -> (bool, u64) {
+        assert_current();
+        let mut architecture = [0u8; 7];
+        // SAFETY: live immutable model; a fixed seven-byte destination admits
+        // only the exact supported dense architecture identifiers and NUL.
+        let len = unsafe {
+            ffi::llama_model_meta_val_str(
+                self.ctx.model.ptr.as_ptr(),
+                c"general.architecture".as_ptr(),
+                architecture.as_mut_ptr().cast(),
+                architecture.len(),
+            )
+        };
+        let supported = len == 5
+            && (&architecture[..6] == b"llama\0"
+                || (&architecture[..6] == b"qwen2\0" && component == crate::Component::MlpOut));
+        let backend = match self.ctx.model.resolved_backend {
+            BackendKind::Cpu => 0,
+            BackendKind::Metal => 1,
+            BackendKind::Cuda => 2,
+        };
+        (supported, backend)
+    }
+
     pub(crate) fn live_capture(&self) -> &crate::live_capture::LiveDispatcher {
         &self.ctx.live_capture
     }
@@ -567,6 +594,7 @@ impl LoadedModel {
         n_ctx: u32,
     ) -> Result<EmbeddingContext, RebirthError> {
         assert_current();
+        self.projection_reject_separate_context()?;
         let model = self.ctx.model.clone();
 
         // SAFETY: default params are a plain by-value C struct we only tweak. The
@@ -729,6 +757,12 @@ impl LoadedModel {
     /// interventions live on the per-context adapters, not the shared weights, so
     /// a fresh context is a clean slate regardless of what the source carried.
     pub(crate) fn clone_with_fresh_context(&self) -> Result<LoadedModel, RebirthError> {
+        self.clone_context_config(cfg!(test))
+    }
+    pub(crate) fn clone_projection_context(&self) -> Result<LoadedModel, RebirthError> {
+        self.clone_context_config(true)
+    }
+    fn clone_context_config(&self, preserve_batches: bool) -> Result<LoadedModel, RebirthError> {
         assert_current();
         let model = self.ctx.model.clone();
 
@@ -736,6 +770,11 @@ impl LoadedModel {
         // mirrors `load()`'s generation context (only `n_ctx` is set).
         let mut cparams = unsafe { ffi::llama_context_default_params() };
         cparams.n_ctx = self.ctx.context_length;
+        if preserve_batches {
+            cparams.n_batch = self.n_batch();
+            // SAFETY: the source owns this resolved live context.
+            cparams.n_ubatch = unsafe { ffi::llama_n_ubatch(self.ctx_ptr()) };
+        }
         let mut live_capture = Box::new(crate::live_capture::LiveDispatcher::default());
         live_capture.install(&mut cparams);
 
@@ -1022,6 +1061,35 @@ fn ftype_name(ftype: i32) -> String {
         _ => return format!("ftype_{base}"),
     };
     name.to_string()
+}
+
+impl LoadedModel {
+    pub(crate) fn projection_reject_images(&self) -> Result<(), RebirthError> {
+        if self.projection().enabled() {
+            return Err(crate::projection_profile::bounded_intervention_error(
+                format_args!("Projection does not support requests with images."),
+            ));
+        }
+        Ok(())
+    }
+    pub(crate) fn projection_reject_separate_context(&self) -> Result<(), RebirthError> {
+        if self
+            .live_capture()
+            .projection
+            .active
+            .load(std::sync::atomic::Ordering::Acquire)
+        {
+            return Err(crate::projection_profile::bounded_intervention_error(format_args!("Projection requires the owning generation context; trace/embed are unavailable.")));
+        }
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+impl LoadedModel {
+    pub(crate) fn projection_shared_model_owners(&self) -> usize {
+        std::sync::Arc::strong_count(&self.ctx.model)
+    }
 }
 
 #[cfg(test)]

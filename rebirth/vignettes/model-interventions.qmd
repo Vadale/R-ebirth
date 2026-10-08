@@ -133,6 +133,17 @@ currently applying. Detailed llama/qwen2 maps label attention, MLP and residual
 sites; Qwen2 attention-output capture is unavailable and is labelled accordingly.
 Other architectures use generic blocks. Gaps and configured steering/ablation are
 explicit. The diagram is schematic metadata, not a graph inferred from correlation.
+Static component projections are marked `P` at their configured attention or MLP
+site. The returned table adds integer `configured_projections` after the existing
+columns; `S` and `A` remain residual steering and ablation counts. A zero
+projection coefficient still counts as configured. The map does not measure
+causal effects or show a worker's changing additive coefficient.
+
+For observations from a projected handle, request that component in generation's
+live capture and pass the same component to `llm_compare()`. Prefix-alignment
+requirements still apply. Static projection does not create additive steering
+revisions: an empty coefficient panel in `llm_timeline()` does not mean that the
+handle had no static projection. Label the configured intervention separately.
 For more than 32 layers select a subset explicitly; timeline plots admit at most
 16 interventions, so select the relevant rows before rendering a larger audit.
 

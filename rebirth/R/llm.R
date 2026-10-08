@@ -325,6 +325,9 @@ print.llm <- function(x, ...) {
     cat(sprintf("  projector:       %s\n", basename(x$projector)))
   }
   cat(sprintf("  interventions:   %d active\n", length(x$interventions)))
+  for (iv in x$interventions) {
+    if (identical(iv$kind, "project")) cat(sprintf("    - %s\n", format_intervention(iv)))
+  }
   invisible(x)
 }
 
@@ -407,6 +410,9 @@ format_intervention <- function(iv) {
       "ablate layer %d  neurons %s -> %s  (%s)",
       iv$layer, format_index_set(iv$neurons), format(iv$value), iv$component
     )
+  } else if (identical(kind, "project")) {
+    sprintf("project layer %d  %s  (fixed coef %s, all executed positions)",
+      iv$layer, iv$component, format(iv$coef))
   } else {
     "intervention (unrecognized)"
   }

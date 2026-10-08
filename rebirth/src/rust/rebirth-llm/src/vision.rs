@@ -801,6 +801,7 @@ impl LoadedModel {
             // Text-only: byte-identical behavior, zero mtmd involvement.
             return self.generate_prompt(prompt, chat, params);
         }
+        self.projection_reject_images()?;
         self.require_tokenizer()?;
         let Some(mctx) = self.vision_ptr() else {
             return Err(no_projector_error());
@@ -910,6 +911,7 @@ impl LoadedModel {
         image_max_bytes: u64,
     ) -> Result<(Vec<f32>, usize, usize), RebirthError> {
         let _native = crate::domain::NativeGuard::try_acquire("image_encoder_output")?;
+        self.projection_reject_images()?;
         let Some(mctx) = self.vision_ptr() else {
             return Err(RebirthError::Image {
                 reason: "This model was loaded without a projector, so it has no \
@@ -1000,6 +1002,7 @@ impl LoadedModel {
         image_max_bytes: u64,
     ) -> Result<Embeddings, RebirthError> {
         let _native = crate::domain::NativeGuard::try_acquire("embed_texts_with_images")?;
+        self.projection_reject_separate_context()?;
         // A real check, not a debug_assert (reviewer finding, WP-V3 round): in
         // release a shorter `image_sets` would silently truncate the zip below
         // while `n_rows` stayed `texts.len()`, so R's matrix() would recycle

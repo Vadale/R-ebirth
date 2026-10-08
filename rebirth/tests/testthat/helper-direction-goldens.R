@@ -10,8 +10,9 @@ direction_hex <- function(x) {
   as.raw(strtoi(substring(x, starts, starts + 1L), base = 16L))
 }
 
-direction_fixture_nodes <- function(case) {
-  nodes <- direction_csv("encoding-fields.csv")
+direction_fixture_nodes <- function(case, fixture = "directions") {
+  nodes <- read.csv(testthat::test_path("fixtures", fixture, "encoding-fields.csv"),
+    colClasses = "character", check.names = FALSE, stringsAsFactors = FALSE)
   nodes <- nodes[nodes$case == case, , drop = FALSE]
   read_node <- function(path) {
     row <- nodes[nodes$path == path, , drop = FALSE]

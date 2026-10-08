@@ -12,6 +12,7 @@ const LIVE_CAPTURE_BYTES: usize = crate::LIVE_TRANSPORT_BYTES as usize;
 
 #[derive(Default)]
 pub(crate) struct LiveDispatcher {
+    pub(crate) projection: crate::projection_layout::Slot,
     enabled: AtomicBool,
     capturing: AtomicBool,
     state: Mutex<Option<Capture>>,
@@ -461,14 +462,28 @@ extern "C" fn live_trampoline(t: *mut ffi::ggml_tensor, ask: bool, user: *mut c_
     }
     // SAFETY: boxed dispatcher outlives the context and its synchronous scheduler.
     let dispatcher = unsafe { &*user.cast::<LiveDispatcher>() };
-    if !dispatcher.capturing.load(Ordering::Acquire) {
+    let projecting = dispatcher.projection.enabled();
+    if !dispatcher.capturing.load(Ordering::Acquire) && !projecting {
         return !ask;
     }
-    let result =
-        std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| dispatcher.on_node(t, ask)));
+    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let projected = dispatcher.projection.node(t, ask);
+        if dispatcher.projection.failed() {
+            return Ok(false);
+        }
+        let captured = dispatcher.on_node(t, ask)?;
+        Ok(if ask {
+            projected || captured
+        } else {
+            projected && captured
+        })
+    }));
     match result {
         Ok(Ok(value)) => value,
         failure => {
+            if projecting {
+                dispatcher.projection.panic();
+            }
             if let Some(state) = dispatcher.lock().as_mut() {
                 state.error = Some(match failure {
                     Ok(Err(error)) => error,
@@ -491,7 +506,7 @@ impl Drop for LiveSession<'_> {
 }
 impl crate::LoadedModel {
     #[cfg(test)]
-    fn generate_observed(
+    pub(crate) fn generate_observed(
         &self,
         prompt: &[i32],
         params: &crate::GenerateParams,
@@ -578,8 +593,14 @@ impl crate::LoadedModel {
         self.generate_live_tokens(&tokens, params, request)
     }
 }
+impl LiveDispatcher {
+    pub(crate) fn projection_capture_active(&self) -> bool {
+        self.enabled.load(Ordering::Acquire)
+    }
+}
+
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use crate::engine::load_for_live_feasibility;
     use crate::{BackendKind, GenerateParams, LoadRequest};
@@ -990,7 +1011,7 @@ mod tests {
         });
     }
 
-    struct LoadLog;
+    pub(crate) struct LoadLog;
     impl Drop for LoadLog {
         fn drop(&mut self) {
             // SAFETY: restore static quiet callback; no borrowed logger storage.
@@ -1000,7 +1021,7 @@ mod tests {
         }
     }
 
-    fn start_load_log() -> LoadLog {
+    pub(crate) fn start_load_log() -> LoadLog {
         LOAD_LOG
             .lock()
             .unwrap_or_else(PoisonError::into_inner)
@@ -1070,7 +1091,10 @@ mod tests {
         assert!(!selected_metal_compute(&devices, &[]));
     }
 
-    fn backend_receipt(model: &crate::LoadedModel, backend: BackendKind) -> serde_json::Value {
+    pub(crate) fn backend_receipt(
+        model: &crate::LoadedModel,
+        backend: BackendKind,
+    ) -> serde_json::Value {
         let log = std::mem::take(&mut *LOAD_LOG.lock().unwrap_or_else(PoisonError::into_inner));
         let metadata = model.metadata();
         let offload: Vec<_> = log
