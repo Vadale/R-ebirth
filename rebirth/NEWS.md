@@ -1,5 +1,8 @@
 # relm 0.4.0
 
+* The batch and service examples accept 0.4.0 as well as 0.3.0 while preserving
+  exact prepared-package hashes and existing dependency pins.
+
 ## Maintenance and research workflow
 
 * A complete research walkthrough connects paired activation captures, fixed

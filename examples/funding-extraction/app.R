@@ -15,6 +15,13 @@ app_require_json <- function() {
   }
 }
 
+# Each prepared environment still pins its exact version and package bytes.
+# This closed set permits the maintenance release without admitting future APIs.
+app_relm_version_supported <- function(version) {
+  is.character(version) && length(version) == 1L && !is.na(version) &&
+    version %in% c("0.3.0", "0.4.0")
+}
+
 app_string <- function(x, name, empty = FALSE, limit = 1048576L) {
   if (!is.character(x) || length(x) != 1L || is.na(x) ||
       (!empty && !nzchar(x)) || is.na(iconv(x, from = "UTF-8", to = "UTF-8")) ||
@@ -191,8 +198,8 @@ app_setup <- function(environment_dir, model = NULL, model_alias = NULL,
   packages <- c("relm", "nanoarrow", "jsonlite")
   sources <- setNames(lapply(packages, function(pkg) find.package(pkg, quiet = FALSE)), packages)
   versions <- lapply(sources, function(path) unname(read.dcf(file.path(path, "DESCRIPTION"), "Version")[[1L]]))
-  if (versions$relm != "0.3.0" || versions$jsonlite != "2.0.0")
-    app_abort("This recipe requires relm 0.3.0 and jsonlite 2.0.0; select the checked library.", "environment")
+  if (!app_relm_version_supported(versions$relm) || versions$jsonlite != "2.0.0")
+    app_abort("This recipe requires relm 0.3.0 or 0.4.0 and jsonlite 2.0.0; select the checked library.", "environment")
   if (!requireNamespace("relm", quietly = TRUE) || !"schema" %in% names(formals(relm::llm_generate)))
     app_abort("The selected relm build lacks constrained generation.", "environment")
   if (!is.null(model_alias)) {
@@ -267,7 +274,8 @@ app_environment <- function(dir) {
         unname(read.dcf(file.path(path, "DESCRIPTION"), "Version")[[1L]]) != pin$version)
       app_abort(paste("Prepared package changed:", pkg), "integrity")
   }
-  if (manifest$packages$jsonlite$version != "2.0.0" || manifest$packages$relm$version != "0.3.0")
+  if (manifest$packages$jsonlite$version != "2.0.0" ||
+      !app_relm_version_supported(manifest$packages$relm$version))
     app_abort("Unsupported prepared package versions.", "environment")
   app_object(manifest$model, c("path", "sha256", "size_bytes", "alias"), "model pin")
   model <- app_string(manifest$model$path, "model path")

@@ -255,10 +255,11 @@ jobs:
 
       - name: D2 process interruption and identity acceptance (model-free)
         if: steps.scope.outputs.full_checks != 'false'
-        run: >-
-          python3 tests/funding-extraction/test_restart.py
-          --relm-library rebirth/check/relm.Rcheck
-          --work-dir "${{ runner.temp }}/d2-process"
+        run: |
+          Rscript --vanilla tests/funding-extraction/test_versions.R
+          python3 tests/funding-extraction/test_restart.py \
+            --relm-library rebirth/check/relm.Rcheck \
+            --work-dir "${{ runner.temp }}/d2-process"
 
 
       - name: Service source prerequisites (Linux)
