@@ -115,14 +115,13 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked -p rebirth-llm
 
-      # D048 investigation only: collect the first512-prefix observations from
-      # this maintenance candidate. The test stays ignored in ordinary suites.
-      # Remove this temporary branch-scoped execution after its retained result
-      # has supplied the diagnosis; do not replay it merely for final reporting.
-      - name: Retain maintenance prefix diagnosis
+      # The first-prefix observation is retained from run38155585020. Isolate
+      # cache/fused-attention precision once; do not replay the seven old runs.
+      # Remove this temporary invocation after collecting its actual result.
+      - name: Retain cache precision isolation
         if: ${{ !cancelled() && steps.scope.outputs.full_checks != 'false' && github.head_ref == 'codex/maintenance-release-0.4.0' }}
         run: |
-          out="$RUNNER_TEMP/maintenance-prefix-diagnosis"
+          out="$RUNNER_TEMP/maintenance-cache-precision"
           mkdir -p "$out"
           git rev-parse HEAD > "$out/source-sha.txt"
           git rev-parse HEAD^{tree} > "$out/source-tree.txt"
@@ -130,15 +129,15 @@ jobs:
           rustc -Vv > "$out/rustc.txt"
           find target/debug/build -name CMakeCache.txt -exec sh -c 'echo "$1"; cat "$1"' sh {} \; > "$out/cmake-caches.txt"
           F6E_SOURCE="$(git rev-parse HEAD)" cargo test --locked -p rebirth-llm --lib \
-            projection::tests::projection_long_prefill_debt_diagnostic \
+            projection::tests::projection_cache_precision_debt_diagnostic \
             -- --ignored --exact --nocapture --test-threads=1 > "$out/diagnostic.log" 2>&1
 
-      - name: Upload maintenance prefix observations
+      - name: Upload cache precision observations
         if: ${{ always() && steps.scope.outputs.full_checks != 'false' && github.head_ref == 'codex/maintenance-release-0.4.0' }}
         uses: actions/upload-artifact@v7
         with:
-          name: maintenance-prefix-diagnosis-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/maintenance-prefix-diagnosis
+          name: maintenance-cache-precision-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/maintenance-cache-precision
           if-no-files-found: error
 
       # The native tests retain the observations computed by the failing call.

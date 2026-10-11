@@ -14,6 +14,58 @@ struct PrefixDebtOutput {
     witnesses: Vec<Witness>,
 }
 
+#[test]
+#[ignore = "Isolate cache precision after the retained first-prefix observation"]
+fn projection_cache_precision_debt_diagnostic() {
+    reference();
+    let _guard = crate::NativeGuard::try_acquire("projection cache precision diagnosis").unwrap();
+    let _ = crate::available_backends();
+    let log = crate::live_capture::tests::start_load_log();
+    let base = tiny();
+    let backend = crate::live_capture::tests::backend_receipt(&base, crate::BackendKind::Cpu);
+    drop(log);
+    let fixture = PrefixDebtReference {
+        ids: csv("forward-tokens.csv")
+            .into_iter()
+            .filter(|r| r[0] == "long_prefill")
+            .take(512)
+            .map(|r| r[2].parse().unwrap())
+            .collect(),
+        activations: csv("forward-activations.csv")
+            .into_iter().filter(|r| r[0] == "long_prefill").collect(),
+        sites: csv("forward-sites.csv")
+            .into_iter().filter(|r| r[0] == "long_prefill").collect(),
+        logits: csv("forward-logits.csv")
+            .into_iter().filter(|r| r[0] == "long_prefill" && r[1] == "512")
+            .map(|r| number(&r[3])).collect(),
+    };
+    let mut model = base.derive_projection(sites_for("long_prefill"), &empty(), Fault::None).unwrap();
+    println!("F6E_CACHE_PRECISION_START {}", serde_json::json!({
+        "source":std::env::var("F6E_SOURCE").unwrap_or_else(|_|"local-unreceipted".into()),
+        "reference_manifest_sha256":REFERENCE,"backend":backend,
+        "acceptance_claim":false,"production_policy_changed":false
+    }));
+    for (id, cache_type, flash_attn) in [
+        ("f16/flash_disabled", 1, 0),
+        ("f32/flash_disabled", 0, 0),
+        ("f32/flash_auto", 0, -1),
+    ] {
+        let log = crate::live_capture::tests::start_load_log();
+        model.recreate_for_precision_diagnostic(cache_type, flash_attn).unwrap();
+        let native_log = crate::live_capture::tests::backend_receipt(&model, crate::BackendKind::Cpu);
+        drop(log);
+        println!("F6E_CACHE_PRECISION_CONTEXT {}", serde_json::json!({
+            "id":id,"cache_type":cache_type,"flash_attn":flash_attn,"native_log":native_log
+        }));
+        prefix_debt_run(&model, id, true, 512, true, &fixture);
+    }
+    println!("F6E_CACHE_PRECISION_COMPLETE {}", serde_json::json!({
+        "status":"collected","runs":3,"prefix_decode_calls":3,"prefix_tokens":1536,
+        "same_row_values":768,"tiny_loads":1,"derived_handles":1,
+        "acceptance_claim":false,"production_policy_changed":false
+    }));
+}
+
 fn prefix_debt_row(rows: &[Observation], position: usize, layer: u32, c: Component) -> &[f32] {
     let mut matching = rows
         .iter()

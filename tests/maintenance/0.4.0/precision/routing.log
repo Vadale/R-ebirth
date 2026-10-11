@@ -1,0 +1,17 @@
+Warning messages:
+1: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+2: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+Warning messages:
+1: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+2: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+3: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+4: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+5: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+AFFECTED_WORKFLOW_ROUTING_OK

@@ -1,0 +1,133 @@
+{
+  "status": "observations_verified",
+  "scope": "New Mac CPU cache precision contrast; Linux pending; no production correction/accuracy acceptance",
+  "tiny_loads": 1,
+  "derived_handles": 1,
+  "new_test_contexts": 3,
+  "prefix_decode_calls": 3,
+  "prefix_tokens": 1536,
+  "same_row_comparisons": 768,
+  "results": [
+    {
+      "id": "f16/flash_disabled",
+      "actual_cache_type": "f16",
+      "projection_values": 256,
+      "projection_scaled_error": 0.0,
+      "max_activation_reference_error": 0.003360047936439514,
+      "max_logit_reference_error": 0.0011873725293987114,
+      "addends": {
+        "columns": [
+          "previous_residual",
+          "attn_out",
+          "mlp_out",
+          "residual"
+        ],
+        "layer": 2,
+        "native_addition_bitwise_equal": true,
+        "native_f32_sum": -0.011954635381698608,
+        "neuron": 13,
+        "reference_values": [
+          0.1484757363796234,
+          -0.1600678712129593,
+          0.0008154283277690411,
+          -0.010776706505566835
+        ],
+        "signed_errors": [
+          -0.0006798505783081055,
+          -0.00023572146892547607,
+          -0.00026235682889819145,
+          -0.001177928876131773
+        ],
+        "source_pos": 512,
+        "values": [
+          0.1477958858013153,
+          -0.16030359268188477,
+          0.0005530714988708496,
+          -0.011954635381698608
+        ]
+      }
+    },
+    {
+      "id": "f32/flash_disabled",
+      "actual_cache_type": "f32",
+      "projection_values": 256,
+      "projection_scaled_error": 0.0,
+      "max_activation_reference_error": 1.225154846906662e-06,
+      "max_logit_reference_error": 6.236613699917015e-07,
+      "addends": {
+        "columns": [
+          "previous_residual",
+          "attn_out",
+          "mlp_out",
+          "residual"
+        ],
+        "layer": 2,
+        "native_addition_bitwise_equal": true,
+        "native_f32_sum": -0.010776609182357788,
+        "neuron": 13,
+        "reference_values": [
+          0.1484757363796234,
+          -0.1600678712129593,
+          0.0008154283277690411,
+          -0.010776706505566835
+        ],
+        "signed_errors": [
+          0.0,
+          4.470348358154297e-08,
+          5.2619725465774536e-08,
+          9.73232090473175e-08
+        ],
+        "source_pos": 512,
+        "values": [
+          0.1484757363796234,
+          -0.1600678265094757,
+          0.0008154809474945068,
+          -0.010776609182357788
+        ]
+      }
+    },
+    {
+      "id": "f32/flash_auto",
+      "actual_cache_type": "f32",
+      "projection_values": 256,
+      "projection_scaled_error": 0.0,
+      "max_activation_reference_error": 0.002391672693192959,
+      "max_logit_reference_error": 0.0003756032317131508,
+      "addends": {
+        "columns": [
+          "previous_residual",
+          "attn_out",
+          "mlp_out",
+          "residual"
+        ],
+        "layer": 2,
+        "native_addition_bitwise_equal": true,
+        "native_f32_sum": -0.010909035801887512,
+        "neuron": 13,
+        "reference_values": [
+          0.1484757363796234,
+          -0.1600678712129593,
+          0.0008154283277690411,
+          -0.010776706505566835
+        ],
+        "signed_errors": [
+          0.00013624131679534912,
+          -0.000184670090675354,
+          -8.390052244067192e-05,
+          -0.0001323292963206768
+        ],
+        "source_pos": 512,
+        "values": [
+          0.14861197769641876,
+          -0.16025254130363464,
+          0.0007315278053283691,
+          -0.010909035801887512
+        ]
+      }
+    }
+  ],
+  "source_sha256": {
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "f869ac7f229285d7b0f7deadc1e71d0f0346b093a1e7f058cefaaa541f32cb2f",
+    "rebirth/src/rust/rebirth-llm/src/projection_prefix_debt_diagnostic.rs": "f5ff6873fda73b505c8ac038f4699307cb1f3bb7d298dca26b71768a30d76e00"
+  }
+}

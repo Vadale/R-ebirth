@@ -1,0 +1,149 @@
+diff --git a/.github/workflows/rust.yaml b/.github/workflows/rust.yaml
+index e47c6c0..57d460b 100644
+--- a/.github/workflows/rust.yaml
++++ b/.github/workflows/rust.yaml
+@@ -115,14 +115,13 @@ jobs:
+         if: steps.scope.outputs.full_checks != 'false'
+         run: cargo test --locked -p rebirth-llm
+ 
+-      # D048 investigation only: collect the first512-prefix observations from
+-      # this maintenance candidate. The test stays ignored in ordinary suites.
+-      # Remove this temporary branch-scoped execution after its retained result
+-      # has supplied the diagnosis; do not replay it merely for final reporting.
+-      - name: Retain maintenance prefix diagnosis
++      # The first-prefix observation is retained from run38155585020. Isolate
++      # cache/fused-attention precision once; do not replay the seven old runs.
++      # Remove this temporary invocation after collecting its actual result.
++      - name: Retain cache precision isolation
+         if: ${{ !cancelled() && steps.scope.outputs.full_checks != 'false' && github.head_ref == 'codex/maintenance-release-0.4.0' }}
+         run: |
+-          out="$RUNNER_TEMP/maintenance-prefix-diagnosis"
++          out="$RUNNER_TEMP/maintenance-cache-precision"
+           mkdir -p "$out"
+           git rev-parse HEAD > "$out/source-sha.txt"
+           git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+@@ -130,15 +129,15 @@ jobs:
+           rustc -Vv > "$out/rustc.txt"
+           find target/debug/build -name CMakeCache.txt -exec sh -c 'echo "$1"; cat "$1"' sh {} \; > "$out/cmake-caches.txt"
+           F6E_SOURCE="$(git rev-parse HEAD)" cargo test --locked -p rebirth-llm --lib \
+-            projection::tests::projection_long_prefill_debt_diagnostic \
++            projection::tests::projection_cache_precision_debt_diagnostic \
+             -- --ignored --exact --nocapture --test-threads=1 > "$out/diagnostic.log" 2>&1
+ 
+-      - name: Upload maintenance prefix observations
++      - name: Upload cache precision observations
+         if: ${{ always() && steps.scope.outputs.full_checks != 'false' && github.head_ref == 'codex/maintenance-release-0.4.0' }}
+         uses: actions/upload-artifact@v7
+         with:
+-          name: maintenance-prefix-diagnosis-${{ github.run_id }}-${{ github.run_attempt }}
+-          path: ${{ runner.temp }}/maintenance-prefix-diagnosis
++          name: maintenance-cache-precision-${{ github.run_id }}-${{ github.run_attempt }}
++          path: ${{ runner.temp }}/maintenance-cache-precision
+           if-no-files-found: error
+ 
+       # The native tests retain the observations computed by the failing call.
+diff --git a/rebirth/src/rust/rebirth-llm/src/engine.rs b/rebirth/src/rust/rebirth-llm/src/engine.rs
+index 8960c43..c0aa5b3 100644
+--- a/rebirth/src/rust/rebirth-llm/src/engine.rs
++++ b/rebirth/src/rust/rebirth-llm/src/engine.rs
+@@ -762,6 +762,37 @@ impl LoadedModel {
+     pub(crate) fn clone_projection_context(&self) -> Result<LoadedModel, RebirthError> {
+         self.clone_context_config(true)
+     }
++
++    /// Isolate cache/fused-attention precision in the ignored numerical probe.
++    /// This replaces only an idle test context; production policy is unchanged.
++    #[cfg(test)]
++    pub(crate) fn recreate_for_precision_diagnostic(
++        &mut self,
++        cache_type: i32,
++        flash_attn: i32,
++    ) -> Result<(), RebirthError> {
++        assert_current();
++        assert!(matches!(cache_type, 0 | 1)); // official GGML F32 / F16
++        assert!(matches!(flash_attn, -1 | 0)); // official AUTO / DISABLED
++        assert!(self.steering_baseline.is_none());
++        let mut params = unsafe { ffi::llama_context_default_params() };
++        params.n_ctx = self.ctx.context_length;
++        params.n_batch = self.n_batch();
++        params.n_ubatch = unsafe { ffi::llama_n_ubatch(self.ctx_ptr()) };
++        params.type_k = cache_type;
++        params.type_v = cache_type;
++        params.flash_attn_type = flash_attn;
++        self.ctx.live_capture.install(&mut params);
++        let fresh = OwnedContext::create(&self.ctx.model, params, || RebirthError::ModelLoad {
++            failing_check: "precision_diagnostic_context".to_string(),
++        })?;
++        let old = std::mem::replace(&mut self.ctx.ptr, fresh.into_raw());
++        // SAFETY: exclusive idle owner, same live model/boxed dispatcher. The
++        // replacement succeeded before ownership of the old context is released.
++        unsafe { ffi::llama_free(old.as_ptr()) };
++        Ok(())
++    }
++
+     fn clone_context_config(&self, preserve_batches: bool) -> Result<LoadedModel, RebirthError> {
+         assert_current();
+         let model = self.ctx.model.clone();
+diff --git a/rebirth/src/rust/rebirth-llm/src/projection_prefix_debt_diagnostic.rs b/rebirth/src/rust/rebirth-llm/src/projection_prefix_debt_diagnostic.rs
+index c268d35..c7f44cc 100644
+--- a/rebirth/src/rust/rebirth-llm/src/projection_prefix_debt_diagnostic.rs
++++ b/rebirth/src/rust/rebirth-llm/src/projection_prefix_debt_diagnostic.rs
+@@ -14,6 +14,58 @@ struct PrefixDebtOutput {
+     witnesses: Vec<Witness>,
+ }
+ 
++#[test]
++#[ignore = "Isolate cache precision after the retained first-prefix observation"]
++fn projection_cache_precision_debt_diagnostic() {
++    reference();
++    let _guard = crate::NativeGuard::try_acquire("projection cache precision diagnosis").unwrap();
++    let _ = crate::available_backends();
++    let log = crate::live_capture::tests::start_load_log();
++    let base = tiny();
++    let backend = crate::live_capture::tests::backend_receipt(&base, crate::BackendKind::Cpu);
++    drop(log);
++    let fixture = PrefixDebtReference {
++        ids: csv("forward-tokens.csv")
++            .into_iter()
++            .filter(|r| r[0] == "long_prefill")
++            .take(512)
++            .map(|r| r[2].parse().unwrap())
++            .collect(),
++        activations: csv("forward-activations.csv")
++            .into_iter().filter(|r| r[0] == "long_prefill").collect(),
++        sites: csv("forward-sites.csv")
++            .into_iter().filter(|r| r[0] == "long_prefill").collect(),
++        logits: csv("forward-logits.csv")
++            .into_iter().filter(|r| r[0] == "long_prefill" && r[1] == "512")
++            .map(|r| number(&r[3])).collect(),
++    };
++    let mut model = base.derive_projection(sites_for("long_prefill"), &empty(), Fault::None).unwrap();
++    println!("F6E_CACHE_PRECISION_START {}", serde_json::json!({
++        "source":std::env::var("F6E_SOURCE").unwrap_or_else(|_|"local-unreceipted".into()),
++        "reference_manifest_sha256":REFERENCE,"backend":backend,
++        "acceptance_claim":false,"production_policy_changed":false
++    }));
++    for (id, cache_type, flash_attn) in [
++        ("f16/flash_disabled", 1, 0),
++        ("f32/flash_disabled", 0, 0),
++        ("f32/flash_auto", 0, -1),
++    ] {
++        let log = crate::live_capture::tests::start_load_log();
++        model.recreate_for_precision_diagnostic(cache_type, flash_attn).unwrap();
++        let native_log = crate::live_capture::tests::backend_receipt(&model, crate::BackendKind::Cpu);
++        drop(log);
++        println!("F6E_CACHE_PRECISION_CONTEXT {}", serde_json::json!({
++            "id":id,"cache_type":cache_type,"flash_attn":flash_attn,"native_log":native_log
++        }));
++        prefix_debt_run(&model, id, true, 512, true, &fixture);
++    }
++    println!("F6E_CACHE_PRECISION_COMPLETE {}", serde_json::json!({
++        "status":"collected","runs":3,"prefix_decode_calls":3,"prefix_tokens":1536,
++        "same_row_values":768,"tiny_loads":1,"derived_handles":1,
++        "acceptance_claim":false,"production_policy_changed":false
++    }));
++}
++
+ fn prefix_debt_row(rows: &[Observation], position: usize, layer: u32, c: Component) -> &[f32] {
+     let mut matching = rows
+         .iter()

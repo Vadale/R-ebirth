@@ -66,3 +66,13 @@ package acceptance and the numerical-debt disposition remain outstanding.
   against the actual built candidate. Do not call a warning-bearing check clean.
 - Long operations run in the background. Reuse the existing sparse monitor,
   report meaningful changes only, and stop waiting turns rather than polling.
+
+## First candidate CI follow-up
+
+Candidate `27ea3c5` reproduces the numerical failure; the retained diagnostic and
+new precision contrast are described in [the numerical investigation](maintenance-0.4.0-numerics.md).
+The first Linux R jobs passed package checks but the D2 application refused the
+new package version. Batch and service preparation now share a closed supported
+version set (0.3.0 and 0.4.0), preserving exact package fingerprints and dependency
+pins. Twelve version predicates and five service metadata cases pass without
+model activity; actual application execution on 0.4.0 remains part of CI.
