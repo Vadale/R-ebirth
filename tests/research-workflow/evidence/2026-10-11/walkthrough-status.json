@@ -1,0 +1,10 @@
+{
+  "started": "2026-10-11T14:28:36.748577+00:00",
+  "status": "awaiting_owner_verification",
+  "source_sha256": "829c7f5d4880449c83075937199360e1782c7a9c130d791e35744d98e1cef0f4",
+  "installed_scope": "carried Phase6 R-state build; not a fresh installation",
+  "exit_code": 0,
+  "elapsed_seconds": 8.492227250011638,
+  "source_unchanged": true,
+  "log_sha256": "74751b2af345387a35f5ff3ad3934341327d72cbc8c8f92bd940a3e7a5a7b681"
+}

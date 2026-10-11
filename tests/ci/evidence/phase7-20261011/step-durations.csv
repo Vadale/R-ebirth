@@ -1,0 +1,185 @@
+run_id,job,step,conclusion,seconds
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Set up job,success,5.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Run actions/checkout@v7,success,3.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Classify changed files (fail closed),success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Run dtolnay/rust-toolchain@master,success,7.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",sccache (compiler cache),success,1.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Run r-lib/actions/setup-pandoc@v2,success,3.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Run r-lib/actions/setup-r@v2,success,31.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)","Vision test runner controls (base R, no models)",success,1.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)","External statistical skill artifact runner (base R, no models)",success,1.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Assistant installation and packaging boundaries (no model/network),success,1.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",toolchain declarations and configure MSRV regression (model-free),success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Run r-lib/actions/setup-r-dependencies@v2,success,41.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",demo-utils self-test (model-free),success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Probe statistical references and split audit (no model),success,1.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",demo-B plot self-test (model-free),success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",committed golden sidecars (model-free),success,1.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)","clippy (rebirth-ffi, the R boundary crate)",success,24.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Managed spill lease process and path controls (no model),success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)","cargo test (rebirth-ffi, the R boundary crate)",success,19.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",CPU backend isolation (including Metal-enabled builds),success,18.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Run r-lib/actions/check-r-package@v2,success,337.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Probe product agreement with independent references (no model),success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Prepare the pinned D2 application parser,success,1.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",D2 process interruption and identity acceptance (model-free),success,24.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Service source prerequisites (Linux),success,3.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Prepare exact D-034 application pins (isolated library),success,89.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)","Service HTTP, overload, process recovery and persistence",success,265.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Preserve service process acceptance evidence,success,2.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Post Run r-lib/actions/setup-r-dependencies@v2,success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Post sccache (compiler cache),success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Post Run actions/checkout@v7,success,0.0
+37810685919,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",Complete job,success,0.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Set up job,success,4.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Run actions/checkout@v7,success,5.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Classify changed files (fail closed),success,0.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Run dtolnay/rust-toolchain@master,success,10.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",sccache (compiler cache),success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Run r-lib/actions/setup-pandoc@v2,success,4.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Run r-lib/actions/setup-r@v2,success,28.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)","Vision test runner controls (base R, no models)",success,0.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)","External statistical skill artifact runner (base R, no models)",success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Assistant installation and packaging boundaries (no model/network),success,2.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",toolchain declarations and configure MSRV regression (model-free),success,0.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Run r-lib/actions/setup-r-dependencies@v2,success,91.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",demo-utils self-test (model-free),success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Probe statistical references and split audit (no model),success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",demo-B plot self-test (model-free),success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",committed golden sidecars (model-free),success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)","clippy (rebirth-ffi, the R boundary crate)",success,78.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Managed spill lease process and path controls (no model),success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)","cargo test (rebirth-ffi, the R boundary crate)",success,62.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",CPU backend isolation (including Metal-enabled builds),success,90.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Run r-lib/actions/check-r-package@v2,success,735.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Probe product agreement with independent references (no model),success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Prepare the pinned D2 application parser,success,0.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",D2 process interruption and identity acceptance (model-free),success,42.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Service source prerequisites (Linux),skipped,0.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Prepare exact D-034 application pins (isolated library),success,9.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)","Service HTTP, overload, process recovery and persistence",success,367.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Preserve service process acceptance evidence,success,3.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Post Run r-lib/actions/setup-r-dependencies@v2,success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Post sccache (compiler cache),success,0.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Post Run actions/checkout@v7,success,1.0
+37810685919,"macos-15 (R oldrel-1, Rust stable)",Complete job,success,5.0
+37810685919,"macos-15 (R release, Rust stable)",Set up job,success,6.0
+37810685919,"macos-15 (R release, Rust stable)",Run actions/checkout@v7,success,7.0
+37810685919,"macos-15 (R release, Rust stable)",Classify changed files (fail closed),success,0.0
+37810685919,"macos-15 (R release, Rust stable)",Run dtolnay/rust-toolchain@master,success,9.0
+37810685919,"macos-15 (R release, Rust stable)",sccache (compiler cache),success,1.0
+37810685919,"macos-15 (R release, Rust stable)",Run r-lib/actions/setup-pandoc@v2,success,5.0
+37810685919,"macos-15 (R release, Rust stable)",Run r-lib/actions/setup-r@v2,success,30.0
+37810685919,"macos-15 (R release, Rust stable)","Vision test runner controls (base R, no models)",success,0.0
+37810685919,"macos-15 (R release, Rust stable)","External statistical skill artifact runner (base R, no models)",success,1.0
+37810685919,"macos-15 (R release, Rust stable)",Assistant installation and packaging boundaries (no model/network),success,2.0
+37810685919,"macos-15 (R release, Rust stable)",toolchain declarations and configure MSRV regression (model-free),success,0.0
+37810685919,"macos-15 (R release, Rust stable)",Run r-lib/actions/setup-r-dependencies@v2,success,79.0
+37810685919,"macos-15 (R release, Rust stable)",demo-utils self-test (model-free),success,1.0
+37810685919,"macos-15 (R release, Rust stable)",Probe statistical references and split audit (no model),success,2.0
+37810685919,"macos-15 (R release, Rust stable)",demo-B plot self-test (model-free),success,1.0
+37810685919,"macos-15 (R release, Rust stable)",committed golden sidecars (model-free),success,0.0
+37810685919,"macos-15 (R release, Rust stable)","clippy (rebirth-ffi, the R boundary crate)",success,66.0
+37810685919,"macos-15 (R release, Rust stable)",Managed spill lease process and path controls (no model),success,1.0
+37810685919,"macos-15 (R release, Rust stable)","cargo test (rebirth-ffi, the R boundary crate)",success,50.0
+37810685919,"macos-15 (R release, Rust stable)",CPU backend isolation (including Metal-enabled builds),success,69.0
+37810685919,"macos-15 (R release, Rust stable)",Run r-lib/actions/check-r-package@v2,success,675.0
+37810685919,"macos-15 (R release, Rust stable)",Probe product agreement with independent references (no model),success,1.0
+37810685919,"macos-15 (R release, Rust stable)",Prepare the pinned D2 application parser,success,1.0
+37810685919,"macos-15 (R release, Rust stable)",D2 process interruption and identity acceptance (model-free),success,46.0
+37810685919,"macos-15 (R release, Rust stable)",Service source prerequisites (Linux),skipped,0.0
+37810685919,"macos-15 (R release, Rust stable)",Prepare exact D-034 application pins (isolated library),success,5.0
+37810685919,"macos-15 (R release, Rust stable)","Service HTTP, overload, process recovery and persistence",success,370.0
+37810685919,"macos-15 (R release, Rust stable)",Preserve service process acceptance evidence,success,2.0
+37810685919,"macos-15 (R release, Rust stable)",Post Run r-lib/actions/setup-r-dependencies@v2,success,0.0
+37810685919,"macos-15 (R release, Rust stable)",Post sccache (compiler cache),success,1.0
+37810685919,"macos-15 (R release, Rust stable)",Post Run actions/checkout@v7,success,0.0
+37810685919,"macos-15 (R release, Rust stable)",Complete job,success,3.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Set up job,success,5.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Run actions/checkout@v7,success,4.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Classify changed files (fail closed),success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Run dtolnay/rust-toolchain@master,success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",sccache (compiler cache),success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Run r-lib/actions/setup-pandoc@v2,success,2.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Run r-lib/actions/setup-r@v2,success,49.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)","Vision test runner controls (base R, no models)",success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)","External statistical skill artifact runner (base R, no models)",success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Assistant installation and packaging boundaries (no model/network),success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",toolchain declarations and configure MSRV regression (model-free),success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Run r-lib/actions/setup-r-dependencies@v2,success,52.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",demo-utils self-test (model-free),success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Probe statistical references and split audit (no model),success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",demo-B plot self-test (model-free),success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",committed golden sidecars (model-free),success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)","clippy (rebirth-ffi, the R boundary crate)",success,43.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Managed spill lease process and path controls (no model),success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)","cargo test (rebirth-ffi, the R boundary crate)",success,33.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",CPU backend isolation (including Metal-enabled builds),success,20.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Run r-lib/actions/check-r-package@v2,success,382.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Probe product agreement with independent references (no model),success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Prepare the pinned D2 application parser,success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",D2 process interruption and identity acceptance (model-free),success,29.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Service source prerequisites (Linux),success,3.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Prepare exact D-034 application pins (isolated library),success,16.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)","Service HTTP, overload, process recovery and persistence",success,280.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Preserve service process acceptance evidence,success,2.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Post Run r-lib/actions/setup-r-dependencies@v2,success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Post sccache (compiler cache),success,0.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Post Run actions/checkout@v7,success,1.0
+37810685919,"ubuntu-24.04 (R release, Rust stable)",Complete job,success,0.0
+37810685971,harness B golden self-check,Set up job,success,2.0
+37810685971,harness B golden self-check,Run actions/checkout@v7,success,11.0
+37810685971,harness B golden self-check,CI change routing controls (no dependencies or models),success,1.0
+37810685971,harness B golden self-check,Run actions/setup-python@v7,success,10.0
+37810685971,harness B golden self-check,"install pinned golden tooling (test-only, not a package dep)",success,5.0
+37810685971,harness B golden self-check,reference forward self-check (determinism + goldens + GGUF),success,0.0
+37810685971,harness B golden self-check,Probe statistical reference artifact check (no model),success,3.0
+37810685971,harness B golden self-check,Contrast-direction arithmetic and canonical reference (no model),success,0.0
+37810685971,harness B golden self-check,"Projection arithmetic, forward and schema-2 references (no engine)",success,3.0
+37810685971,harness B golden self-check,Retain strict projection reference failure bytes,skipped,0.0
+37810685971,harness B golden self-check,Service contract consistency (planning only),success,0.0
+37810685971,harness B golden self-check,Structured-output offline contract checks (no model),success,1.0
+37810685971,harness B golden self-check,Post Run actions/setup-python@v7,success,0.0
+37810685971,harness B golden self-check,Post Run actions/checkout@v7,success,0.0
+37810685971,harness B golden self-check,Complete job,success,0.0
+37810685971,cargo fmt / clippy / test,Set up job,success,1.0
+37810685971,cargo fmt / clippy / test,Run actions/checkout@v7,success,41.0
+37810685971,cargo fmt / clippy / test,Classify changed files (fail closed),success,0.0
+37810685971,cargo fmt / clippy / test,Vision reference manifest corruption controls (no model or native build),success,1.0
+37810685971,cargo fmt / clippy / test,Graph sizing regression from current source (ASan/UBSan),success,11.0
+37810685971,cargo fmt / clippy / test,Retain graph sizing regression evidence,success,1.0
+37810685971,cargo fmt / clippy / test,Run dtolnay/rust-toolchain@stable,success,3.0
+37810685971,cargo fmt / clippy / test,sccache (compiler cache),success,1.0
+37810685971,cargo fmt / clippy / test,cargo fmt --check (whole workspace),success,4.0
+37810685971,cargo fmt / clippy / test,cargo clippy (R-free engine crate; deny warnings),success,47.0
+37810685971,cargo fmt / clippy / test,cargo test (R-free engine crate),success,31.0
+37810685971,cargo fmt / clippy / test,Retain output-policy failure diagnosis,skipped,0.0
+37810685971,cargo fmt / clippy / test,Upload output-policy failure observations,skipped,0.0
+37810685971,cargo fmt / clippy / test,async ownership and cancellation (release profile),success,69.0
+37810685971,cargo fmt / clippy / test,async synthetic handoff golden (release profile),success,20.0
+37810685971,cargo fmt / clippy / test,"cargo test (R-free engine crate, no-spill config)",success,32.0
+37810685971,cargo fmt / clippy / test,Post sccache (compiler cache),success,0.0
+37810685971,cargo fmt / clippy / test,Post Run actions/checkout@v7,success,0.0
+37810685971,cargo fmt / clippy / test,Complete job,success,0.0
+37810685971,supply-chain (cargo-deny licenses/bans/sources),Set up job,success,1.0
+37810685971,supply-chain (cargo-deny licenses/bans/sources),Run actions/checkout@v7,success,4.0
+37810685971,supply-chain (cargo-deny licenses/bans/sources),Run taiki-e/install-action@v2,success,0.0
+37810685971,supply-chain (cargo-deny licenses/bans/sources),cargo deny — licenses / bans / sources,success,4.0
+37810685971,supply-chain (cargo-deny licenses/bans/sources),Post Run actions/checkout@v7,success,0.0
+37810685971,supply-chain (cargo-deny licenses/bans/sources),Complete job,success,0.0
+37810685971,vendored tree integrity (G4 + patch coherence),Set up job,success,1.0
+37810685971,vendored tree integrity (G4 + patch coherence),Run actions/checkout@v7,success,4.0
+37810685971,vendored tree integrity (G4 + patch coherence),verify vendored llama.cpp tree SHA256 + patch coherence,success,0.0
+37810685971,vendored tree integrity (G4 + patch coherence),Post Run actions/checkout@v7,success,0.0
+37810685971,vendored tree integrity (G4 + patch coherence),Complete job,success,0.0
+37810685971,macOS x86_64 cross engine link,Set up job,success,2.0
+37810685971,macOS x86_64 cross engine link,Run actions/checkout@v7,success,6.0
+37810685971,macOS x86_64 cross engine link,Classify changed files (fail closed),success,0.0
+37810685971,macOS x86_64 cross engine link,Run dtolnay/rust-toolchain@stable,success,12.0
+37810685971,macOS x86_64 cross engine link,Graph sizing regression on the native Mac host (ASan/UBSan),success,4.0
+37810685971,macOS x86_64 cross engine link,Retain native Mac graph sizing evidence,success,2.0
+37810685971,macOS x86_64 cross engine link,sccache (compiler cache),success,1.0
+37810685971,macOS x86_64 cross engine link,cargo test --no-run for x86_64-apple-darwin (link is the gate),success,77.0
+37810685971,macOS x86_64 cross engine link,Post sccache (compiler cache),success,1.0
+37810685971,macOS x86_64 cross engine link,Post Run actions/checkout@v7,success,1.0
+37810685971,macOS x86_64 cross engine link,Complete job,success,1.0

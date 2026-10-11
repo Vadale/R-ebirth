@@ -80,6 +80,10 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript --vanilla tests/ci/test-vision-runner.R
 
+      - name: Research walkthrough preflight (base R, no models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/research-workflow/test-preflight.R
+
       - name: External statistical skill artifact runner (base R, no models)
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript --vanilla tests/skills/r-statistical-analysis/test-runner.R .

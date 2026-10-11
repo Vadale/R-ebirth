@@ -1554,3 +1554,27 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
 - **Next action:** freeze independent
   numerical/encoding references and execute the private native feasibility gate.
   Approval alone is not numerical/resource/behavioral acceptance.
+
+---
+
+## D-047 — Phase 7 maintainer validation and deferred external feedback
+
+- **Date/status:** 2026-10-11, APPROVED by the founder while starting Phase 7.
+  Asked about the real external-researcher gate, the founder requested that the
+  implementation agent test the workflow now and that actual users test it after
+  publication. This is a specific amendment to D-043's completion requirement.
+- **Decision:** Phase 7 closes with recorded maintainer execution of the complete
+  research workflow, relevant functional/failure checks, a maintainability and
+  test-cost inventory, documented capabilities/debt and the ordinary review/CI
+  gates. External-user participation no longer blocks this phase.
+- **Evidence labels:** an agent or maintainer run is functional acceptance, not
+  independent user research. Record the environment, actual outputs, assistance
+  implicit in maintainer knowledge, failures and limits. Do not claim that a new
+  researcher has used the product successfully or found it easy to learn.
+- **Follow-up:** provide a concise feedback procedure for voluntary actual users
+  after publication. Do not fabricate participation, schedule outreach, send
+  messages or publish a release as part of this amendment.
+- **Unchanged:** D-043's focused scope, compatibility and resource/numerical gates;
+  no new API, dependency, vendor edit, general framework or blanket rewrite.
+  This amendment supersedes only the external-participant completion condition
+  in the historical roadmap/phase plan; those original decisions remain recorded.
