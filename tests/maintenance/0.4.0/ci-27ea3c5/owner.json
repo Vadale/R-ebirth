@@ -1,0 +1,57 @@
+{
+  "status": "observations_verified",
+  "acceptance": false,
+  "head": "27ea3c523e72dab29204ae394fef2a67ab89ab83",
+  "tree": "a84fc0081b3e31b7cc6589a36d8bf70e75bbccb0",
+  "native_test_result": "170 passed, 2 failed, 5 ignored; release/no-spill stages skipped",
+  "source_merge": "4e23ad6a5761906cf7a568c9a9e690a3b02ce1dc",
+  "counts": {
+    "runs": 7,
+    "decode_calls": 521,
+    "prefix_tokens": 3584,
+    "audited_rows": 220,
+    "audit_values": 7040,
+    "witnesses": 5120,
+    "same_row_comparisons": 1280
+  },
+  "default_addends": {
+    "columns": [
+      "previous_residual",
+      "attn_out",
+      "mlp_out",
+      "residual"
+    ],
+    "layer": 2,
+    "native_addition_bitwise_equal": true,
+    "native_f32_sum": -0.02155396342277527,
+    "neuron": 13,
+    "reference_values": [
+      0.1484757363796234,
+      -0.1600678712129593,
+      0.0008154283277690411,
+      -0.010776706505566835
+    ],
+    "signed_errors": [
+      -0.0019116699695587158,
+      -0.00237216055393219,
+      -0.006493426393717527,
+      -0.010777256917208433
+    ],
+    "source_pos": 512,
+    "values": [
+      0.1465640664100647,
+      -0.16244003176689148,
+      -0.005677998065948486,
+      -0.02155396342277527
+    ]
+  },
+  "same_input_projection_error": 0,
+  "default_repeat_four_calls_noaudit_logits_identical": true,
+  "zero_ordinary_logits_identical": true,
+  "default_tokenwise_logit_delta": 0.008478403091430664,
+  "default_reference_max_activation_error": 0.014189586043357849,
+  "tokenwise_reference_max_activation_error": 0.0051439255475997925,
+  "cpu": "AMD EPYC 9V74; actual lscpu retained",
+  "cause": "Unresolved; upstream signed errors accumulate before residual publication. Cache/fused-attention precision is the next controlled contrast, not an established cause.",
+  "next_scope": "Three new cache/attention configurations; no replay of the seven retained runs and no changed production policy/reference/tolerance"
+}

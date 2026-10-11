@@ -35,10 +35,12 @@ use rebirth_llm::{
 include!("async_boundary.rs");
 include!("live_boundary.rs");
 include!("projection_boundary.rs");
+#[cfg(feature = "selftest")]
 include!("projection_budget_error_selftest.rs");
 include!("projection_transfer_boundary.rs");
 include!("projection_constructor_boundary.rs");
 include!("projection_bridge.rs");
+#[cfg(feature = "selftest")]
 include!("projection_combined_test_boundary.rs");
 
 // --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
@@ -1075,6 +1077,7 @@ fn rebirth_intervene(
 
 // Test-only: a real, already-closed handle for exercising the close /
 // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_selftest_new_handle() -> Robj {
     ExternalPtr::new(LlmHandle::empty()).into()
@@ -1088,6 +1091,7 @@ fn rebirth_selftest_new_handle() -> Robj {
 // adversarial rejection of audit req 4 (audio magics, GIF, garbage, truncated,
 // over-dims) through the real classed-condition plumbing. Internal (never in
 // NAMESPACE).
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_selftest_validate_image(path: &str, max_bytes: f64) -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(
@@ -1106,6 +1110,7 @@ fn rebirth_selftest_validate_image(path: &str, max_bytes: f64) -> Robj {
 // Test-only: force a panic inside the `catch_unwind` path and return the
 // resulting `relm_error_internal` payload — proves a panic maps to a classed
 // condition instead of reaching R raw. Internal (never in NAMESPACE).
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_selftest_panic() -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(
@@ -1121,6 +1126,7 @@ fn rebirth_selftest_panic() -> Robj {
 // (all layers, all positions, all three components) to keep the surface small; the
 // R test authors the matching `spec_key`. Internal (never in NAMESPACE).
 #[allow(clippy::too_many_arguments)]
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_selftest_trace_tokens_spill(
     ptr: Robj,
@@ -1157,52 +1163,64 @@ fn rebirth_selftest_trace_tokens_spill(
 
 // Macro to generate exports. The functions above are internal `.Call` targets;
 // the user-facing surface is the R `llm()` and its S3 methods.
-extendr_api::extendr_module! {
-    mod relm;
-    fn rebirth_model_load;
-    fn rebirth_handle_close;
-    fn rebirth_handle_is_closed;
-    fn rebirth_available_backends;
-    fn rebirth_tokenize;
-    fn rebirth_detokenize;
-    fn rebirth_generate;
-    fn rebirth_generate_structured;
-    fn rebirth_async_ready;
-    fn rebirth_stream_regular_file;
-    fn rebirth_async_submit;
-    fn rebirth_live_submit;
-    fn rebirth_live_preflight;
-    fn rebirth_projection_allocation_profile;
-    fn rebirth_projection_preflight;
-    fn rebirth_projection_construct;
-    fn rebirth_model_state;
-    fn rebirth_projection_state_facts;
-    fn rebirth_async_state_ack;
-    fn rebirth_async_poll;
-    fn rebirth_async_ack;
-    fn rebirth_async_discard;
-    fn rebirth_async_cancel;
-    fn rebirth_async_shutdown;
-    fn rebirth_async_test_handle;
-    fn rebirth_async_test_config;
-    fn rebirth_async_test_stats;
-    fn rebirth_logits;
-    fn rebirth_embed;
-    fn rebirth_trace;
-    fn rebirth_spill_prepare;
-    fn rebirth_spill_cleanup;
-    fn rebirth_spill_sweep;
-    fn rebirth_intervene;
-    fn rebirth_selftest_projection_ledger;
-    fn rebirth_selftest_projection_budget_error;
-    fn rebirth_selftest_projection_transfer;
-    fn rebirth_selftest_projection_constructor;
-    fn rebirth_selftest_projection_combined_logits;
-    fn rebirth_selftest_new_handle;
-    fn rebirth_selftest_validate_image;
-    fn rebirth_selftest_panic;
-    fn rebirth_selftest_trace_tokens_spill;
+// extendr 0.9 does not accept cfg attributes inside its registration list.
+// Keep production entries in one place and select only the extra test exports.
+macro_rules! register_relm {
+    ($($selftest:ident),* $(,)?) => {
+        extendr_api::extendr_module! {
+            mod relm;
+            fn rebirth_model_load;
+            fn rebirth_handle_close;
+            fn rebirth_handle_is_closed;
+            fn rebirth_available_backends;
+            fn rebirth_tokenize;
+            fn rebirth_detokenize;
+            fn rebirth_generate;
+            fn rebirth_generate_structured;
+            fn rebirth_async_ready;
+            fn rebirth_stream_regular_file;
+            fn rebirth_async_submit;
+            fn rebirth_live_submit;
+            fn rebirth_live_preflight;
+            fn rebirth_projection_allocation_profile;
+            fn rebirth_projection_preflight;
+            fn rebirth_projection_construct;
+            fn rebirth_model_state;
+            fn rebirth_projection_state_facts;
+            fn rebirth_async_state_ack;
+            fn rebirth_async_poll;
+            fn rebirth_async_ack;
+            fn rebirth_async_discard;
+            fn rebirth_async_cancel;
+            fn rebirth_async_shutdown;
+            fn rebirth_logits;
+            fn rebirth_embed;
+            fn rebirth_trace;
+            fn rebirth_spill_prepare;
+            fn rebirth_spill_cleanup;
+            fn rebirth_spill_sweep;
+            fn rebirth_intervene;
+            $(fn $selftest;)*
+        }
+    };
 }
+#[cfg(not(feature = "selftest"))]
+register_relm!();
+#[cfg(feature = "selftest")]
+register_relm!(
+    rebirth_async_test_handle,
+    rebirth_async_test_config,
+    rebirth_async_test_stats,
+    rebirth_selftest_projection_ledger,
+    rebirth_selftest_projection_budget_error,
+    rebirth_selftest_projection_transfer,
+    rebirth_selftest_projection_constructor,
+    rebirth_selftest_projection_combined_logits,
+    rebirth_selftest_new_handle,
+    rebirth_selftest_validate_image,
+    rebirth_selftest_panic,
+    rebirth_selftest_trace_tokens_spill,
+);
 
 #[cfg(test)]
 mod tests {

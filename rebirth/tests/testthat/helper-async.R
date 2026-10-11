@@ -2,6 +2,8 @@
 # No model is loaded until a test explicitly calls these helpers.
 
 async_test_handle <- function(mode = "success", steps = 20L, delay_ms = 10L) {
+  require_relm_selftest(c("rebirth_async_test_handle", "rebirth_async_test_config",
+    "rebirth_async_test_stats"))
   m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()),
     "<async-controlled-fixture>")
   relm:::relm_check(relm:::rebirth_async_test_config(m$ptr, mode, steps, delay_ms))
@@ -67,7 +69,7 @@ async_test_wait <- function(result, timeout = 10, promise = NULL) {
       wall_started, units = "secs")), polls = polls, max_poll_seconds = max_poll_seconds,
       current_loop = later::current_loop()$id, global_loop = later::global_loop()$id,
       transitions = transitions, last_polls = samples, queue_at_boundary = queue,
-      native = relm:::rebirth_async_test_stats(), observer_done = result$done,
+      native = async_test_native_stats(), observer_done = result$done,
       R = R.version.string, later = as.character(packageVersion("later")),
       promises = as.character(packageVersion("promises")),
       testthat = as.character(packageVersion("testthat")),
@@ -83,7 +85,7 @@ async_test_wait <- function(result, timeout = 10, promise = NULL) {
   if (!result$done) {
     # Distinguish a still-running worker from a terminal result whose R callback
     # was not delivered. Read-only counters do not collect or cancel the job.
-    counters <- relm:::rebirth_async_test_stats()
+    counters <- async_test_native_stats()
     diagnostic <- paste(diagnostic,
       paste(capture.output(str(counters)), collapse = "\n"), sep = "\n")
   }

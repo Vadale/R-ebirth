@@ -7,7 +7,8 @@ fn assert_charge_covers(registry: &Vec<Weak<u8>>, admitted_capacity: usize, byte
     assert!(registry.capacity() <= admitted_capacity + 1);
     assert_eq!(size_of::<Weak<u8>>(), size_of::<Weak<HandleState>>());
     let actual = (size_of::<Vec<Weak<u8>>>()
-        + (admitted_capacity + registry.capacity()) * size_of::<Weak<u8>>()) as u64;
+        + (admitted_capacity + registry.capacity()) * size_of::<Weak<u8>>())
+        as u64;
     assert!(actual <= bytes);
 }
 
@@ -82,20 +83,10 @@ fn projection_registry_reuses_expired_slots_without_weakening_admission() {
                 capacity,
                 bytes - 1,
             ),
-            2 => projection_reserve_registration(
-                &mut registry,
-                &absent,
-                &candidate,
-                capacity,
-                bytes,
-            ),
-            3 => projection_reserve_registration(
-                &mut registry,
-                &source,
-                &source,
-                capacity,
-                bytes,
-            ),
+            2 => {
+                projection_reserve_registration(&mut registry, &absent, &candidate, capacity, bytes)
+            }
+            3 => projection_reserve_registration(&mut registry, &source, &source, capacity, bytes),
             _ => projection_reserve_registration(
                 &mut registry,
                 &source,
@@ -122,8 +113,7 @@ fn projection_registry_reuses_expired_slots_without_weakening_admission() {
     drop(simultaneous);
     let capacity = registry.capacity();
     let bytes = projection_registry_charge(capacity).unwrap();
-    projection_reserve_registration(&mut registry, &source, &candidate, capacity, bytes)
-        .unwrap();
+    projection_reserve_registration(&mut registry, &source, &candidate, capacity, bytes).unwrap();
     assert_eq!(registry.len(), 2);
     assert_eq!(registry.capacity(), 2);
     assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&source));

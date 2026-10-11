@@ -22,39 +22,32 @@ Python, model server or API key is required. relm runs on stock R >= 4.5.
 relm embeddings with optional UMAP and HDBSCAN packages, then asks the model to
 name each cluster.*
 
-## relm 0.3.0
+## relm 0.4.0
 
-**Version 0.3.0** adds structured output, statistical probes and operational
-application examples. See the [release notes](rebirth/NEWS.md#relm-030).
-Binary availability follows r-universe builds; check the installed version
-before using the new features.
+Version 0.4.0 brings the model-research workflow together with code maintenance:
 
-The new release brings together:
+- **Observe:** capture selected activations or receive bounded live observations
+  while text generation runs on a native worker.
+- **Compare:** build reusable directions from paired captures and inspect recorded
+  conditions with `llm_compare()` and `llm_timeline()`.
+- **Intervene:** apply fixed additions, ablations or component projections on
+  supported sites. Live coefficient updates are additive; projection is static.
+- **Export:** keep text, token events, plain R tables, provenance and plots in one
+  [reproducible walkthrough](examples/research-workflow/README.md).
 
-- **Structured output:** `llm_generate(schema = ...)` returns complete JSON
-  matching a supported bounded schema, or a classed R error.
-- **Native Spark support:** Spark-X2.5-4B generation through llama.cpp b10828,
-  including its official non-thinking opener for constrained chat. Spark
-  activation tracing remains unsupported.
-- **Statistical probes:** `llm_probe()` fits binary ridge models to activations
-  with grouped cross-validation, development-only selection and optional held-out
-  evaluation. A probe measures how readily a label can be predicted from a model's
-  internal values; predictive success alone does not establish causal use.
-- **Operational examples:** an [offline, resumable batch application](examples/funding-extraction/README.md)
-  and a [loopback service template](examples/funding-service/README.md) with a
-  persistent model worker, durable tickets and bounded resources. Their optional
-  application dependencies stay outside the relm core.
-
-Generation, tokenization, embeddings, text-and-image input, activation tracing,
-steering and ablation remain available. Activations are the numerical values
-inside a model; steering adds a chosen direction to those values, while ablation
-sets selected units to a fixed value to investigate their effect.
+Structured JSON, embeddings, probes, supported image input and the existing
+[batch](examples/funding-extraction/README.md) and
+[service](examples/funding-service/README.md) examples remain available.
+The [release notes](rebirth/NEWS.md#relm-040) describe the changes;
+[the release record](docs/release-0.4.0.md) distinguishes preparation from verified
+publication. These tools support experiments; they do not guarantee better or
+safer model answers.
 
 ## Install and start
 
 [r-universe](https://vadale.r-universe.dev/relm) distributes macOS and Linux builds
 and tracks the repository's `main` branch. Check the installed version before
-using the 0.3.0 additions:
+using the 0.4.0 research interfaces:
 
 ```r
 install.packages(
@@ -73,14 +66,13 @@ For the primary research path, follow the
 [complete experiment walkthrough](examples/research-workflow/README.md): load a
 cached model, capture paired activations, construct directions, compare fixed
 interventions and export texts, provenance and plots. It uses the integrated
-Phase 6 APIs, which postdate the 0.3.0 tag, and checks installed capabilities
+research APIs and checks installed capabilities
 before loading the model. See the [support matrix](docs/supported-workflow.md)
 for sites, backends, optional dependencies and interpretation limits.
 
-## Development: background generation and token streaming
+## Background generation and token streaming
 
-WP9 adds background generation; WP10 adds streaming data on the same worker.
-These are development features after the 0.3.0 tag. Check that your installed
+Background generation and token streaming share one native worker. Check that your installed
 `llm_generate()` has `on_token` before trying the streaming example:
 
 ```r
@@ -101,16 +93,16 @@ binary file connection can receive the event CSV instead. See the
 [live token-statistics demo](tests/demos/demo-streaming.R) and
 [implementation status](docs/wp10-implementation.md).
 
-## Development: reusable model and intervention graphics
+## Model and intervention graphics
 
-F6c adds three views using base R: `plot(model)` maps model blocks and configured
+Three views use base R: `plot(model)` maps model blocks and configured
 interventions, `llm_compare()` compares recorded live observations, and
 `llm_timeline()` retains the coefficients the worker actually applied. Plotting
 these plain-data results returns the plotted table invisibly for export.
 The [graphics guide](rebirth/vignettes/model-interventions.qmd) includes a
 download-free example and a bounded real-model workflow.
 
-These are development features after the 0.3.0 tag; check that your installation
+Check that your installation
 exports `llm_compare` and `llm_timeline`. Caller-recorded provenance is validated,
 not authenticated. Divergent input histories withhold differences, and the map
 does not portray measured activity or causal edges. The
@@ -139,8 +131,8 @@ of safety or bias removal.
 
 Windows/CUDA, tracing inside the vision encoder, and several larger-model
 hardware checks remain open. The [public execution plan](docs/structured-production-plan.md)
-records the completed increment and later work. WP9 and WP10 are integrated in
-development; I1 external-assistant integration is the current companion work.
+records completed work and remaining limits. Phase 7 maintainer acceptance is
+complete; independent external-user feedback follows publication.
 
 ## Statistical analysis with an external assistant
 
@@ -173,7 +165,9 @@ results can enter model context. Public marketplace acceptance is separate.
 | `docs/` | Design, acceptance evidence and installation guide |
 
 For builds and contributions, read the [architecture](ARCHITECTURE.md) and
-[development workflow](docs/development-workflow.md). The public specifications
+[development workflow](docs/development-workflow.md). The
+[simplifier compendium](docs/simplifier-compendium.md) explains the cleanup rules
+and current debt dispositions. The public specifications
 are [SOLO-PHASE-PLAN.md](SOLO-PHASE-PLAN.md), the
 [execution plan](docs/structured-production-plan.md), [API-GRAMMAR.md](API-GRAMMAR.md)
 and [DECISIONS.md](DECISIONS.md).

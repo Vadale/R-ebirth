@@ -1,0 +1,17 @@
+{
+  "rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs": {
+    "extracted": "rebirth/src/rust/rebirth-ffi/src/projection_boundary_selftest.rs",
+    "module_lines": 181,
+    "body_unchanged_except_indent": true
+  },
+  "rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs": {
+    "extracted": "rebirth/src/rust/rebirth-ffi/src/projection_transfer_selftest.rs",
+    "module_lines": 157,
+    "body_unchanged_except_indent": true
+  },
+  "rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs": {
+    "extracted": "rebirth/src/rust/rebirth-ffi/src/projection_constructor_selftest.rs",
+    "module_lines": 162,
+    "body_unchanged_except_indent": true
+  }
+}

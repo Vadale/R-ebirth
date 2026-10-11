@@ -364,6 +364,7 @@ vlm_mmproj_path <- function() {
 # no model file, so the native free is a safe no-op. The metadata values are
 # placeholders — the close tests assert on lifecycle, not on metadata.
 empty_handle_llm <- function() {
+  require_relm_selftest("rebirth_selftest_new_handle")
   ptr <- relm:::rebirth_selftest_new_handle()
   payload <- list(
     ok = TRUE, ptr = ptr, architecture = "x", parameters = 1,

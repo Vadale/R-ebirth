@@ -35,6 +35,7 @@ test_that("the boundary maps an unavailable backend to a backend payload", {
 })
 
 test_that("a forced panic maps to relm_error_internal, never reaching R raw", {
+  require_relm_selftest("rebirth_selftest_panic")
   p <- relm:::rebirth_selftest_panic()
   expect_false(p$ok)
   expect_identical(p$class, "relm_error_internal")

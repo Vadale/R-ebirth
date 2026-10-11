@@ -1578,3 +1578,31 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
   no new API, dependency, vendor edit, general framework or blanket rewrite.
   This amendment supersedes only the external-participant completion condition
   in the historical roadmap/phase plan; those original decisions remain recorded.
+
+
+## D-048 — Maintenance and release before Windows/CUDA (APPROVED)
+
+- **Date:** 2026-10-11.
+- **Founder instruction:** correct existing technical debt, simplify and clean
+  the code using the simplifier's instructions, update documentation and the
+  GitHub Markdown entry point, and publish another release before Phases 8/9.
+- **Decision:** execute the single maintenance/release plan in
+  [maintenance-0.4.0-plan.md](docs/maintenance-0.4.0-plan.md). Internal cross-module
+  cleanup and concrete bug corrections are authorized. Version 0.4.0 collects
+  the features since 0.3.0 and the accepted maintenance changes.
+- **Verification:** apply D029, retain actual failures and source-specific
+  evidence, use focused affected checks and one final integration/review cycle.
+  Numerical anomalies require diagnosis; a passing retry is not a correction.
+- **Unchanged:** public API approval, dependency/vendor-change gates, numerical
+  and resource bounds, consumed evaluations, and D047's deferred external-user
+  feedback. Windows/CUDA and CRAN submission are not part of this work.
+
+**Numerical investigation disposition (2026-10-11):** retained Mac/Linux
+cache/attention contrasts isolate the long-prefix discrepancy to the precision
+and execution policy used for attention. The CPU long-prefix independent-oracle
+test now explicitly uses F32 cache and unfused attention; the oracle uses F64.
+Keep the existing0.01 and2e-6 bounds and unchanged frozen data. A separate
+default-context guard retains actual-input projection arithmetic, complete site
+writes and exact original/zero output coverage. Production cache/attention policy
+is unchanged; no default whole-forward F64 equivalence or universal kernel
+correctness is claimed. See [the observations and exact test scopes](docs/maintenance-0.4.0-numerics.md).

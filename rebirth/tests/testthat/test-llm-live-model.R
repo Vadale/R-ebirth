@@ -286,6 +286,7 @@ test_that("[MODEL] live chat coordinates include the exact template over a prefi
 })
 
 test_that("[MODEL] close inside on_state abandons delivery and drains owned native work", {
+  require_relm_selftest("rebirth_async_test_stats")
   m <- llm(qwen_model_path(), backend = "cpu", context_length = 1024)
   on.exit(close(m), add = TRUE)
   states <- batches <- list()

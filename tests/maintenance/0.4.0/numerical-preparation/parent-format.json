@@ -1,0 +1,5 @@
+{
+  "scope": "Parent rustfmt and clippy compilation after source-only handoff; no execution",
+  "formatted_source_sha256": "ba6d49a918ff4c6f79935b7cbc9ef50d1d1724227dcb44be5effad667da0a60b",
+  "execution": "pending Linux candidate"
+}

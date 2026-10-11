@@ -111,11 +111,6 @@ async_validate_inputs <- function(prompt, stop, schema, images, max_tokens,
     schema = arguments$schema, images = images)
 }
 
-async_condition <- function(class, message, fields = list()) {
-  structure(c(list(message = message, call = NULL), fields),
-    class = c(class, "relm_error", "error", "condition"))
-}
-
 async_payload_condition <- function(payload) {
   valid_text <- function(x) is.character(x) && length(x) == 1L && !is.na(x)
   malformed <- !is.list(payload) || !valid_text(payload$class) ||
@@ -126,10 +121,10 @@ async_payload_condition <- function(payload) {
     malformed <- !all(c("reason", "seed", "prompt_id", "generated_tokens") %in% names(fields))
   }
   if (malformed) {
-    return(async_condition("relm_error_internal",
+    return(relm_condition("relm_error_internal",
       "The native async failure payload was incomplete.", list(reason = "async_protocol")))
   }
-  async_condition(payload$class, payload$message,
+  relm_condition(payload$class, payload$message,
     if (is.null(payload$fields)) list() else payload$fields)
 }
 
@@ -208,7 +203,7 @@ async_transport_failure <- function(job, error) {
   if (is.function(job$timer)) job$timer()
   rebirth_async_shutdown()
   job$model$state$closed <- TRUE
-  async_settle(job, error = async_condition("relm_error_internal",
+  async_settle(job, error = relm_condition("relm_error_internal",
     "Async result delivery failed; the native worker was shut down safely.",
     list(parent = error)))
   .relm_async$stopping <- FALSE
@@ -230,7 +225,7 @@ async_progress <- function(job, progress, terminal = FALSE) {
     max_tokens = as.integer(progress$max_tokens), phase = as.character(progress$phase),
     stringsAsFactors = FALSE)
   fail <- function(error) {
-    async_consumer_failure(job, async_condition("relm_error_callback",
+    async_consumer_failure(job, relm_condition("relm_error_callback",
       "The async progress callback failed; no generation result was returned.",
       list(callback = "on_progress", parent = error)), terminal)
   }
@@ -317,7 +312,7 @@ async_poll <- function(job) {
       async_payload_condition(payload$error)
     if (!is.null(job$live) && is.null(job$callback_error) &&
       identical(error$argument, "on_state_reply")) {
-      error <- async_condition("relm_error_callback",
+      error <- relm_condition("relm_error_callback",
         "The live state reply was rejected; no generation result was returned.",
         list(callback = "on_state", reason = "state_reply", parent = error,
           job_id = job$id, state_id = job$live_state_id, prompt_id = 1L))
@@ -357,7 +352,7 @@ async_shutdown <- function() {
   payload <- relm_check(rebirth_async_shutdown())
   if (!is.null(job)) {
     job$model$state$closed <- TRUE
-    async_settle(job, error = async_condition("relm_error_cancelled",
+    async_settle(job, error = relm_condition("relm_error_cancelled",
       "Async generation stopped because relm is shutting down.",
       list(reason = "shutdown", seed = job$seed, prompt_id = 1L,
         generated_tokens = 0L)))
@@ -418,10 +413,7 @@ async_transport_peak_bound <- function(context_length,
 #' @seealso [llm_generate()], [close.llm()]
 #' @export
 llm_cancel <- function(m) {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
   payload <- relm_check(rebirth_async_cancel(m$ptr))
   job <- .relm_async$job
   if (isTRUE(payload$cancelled) && !is.null(job) && !is.null(job$live) &&

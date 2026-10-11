@@ -1,0 +1,24 @@
+{
+  "platform": "accepted primary macOS arm64; use fresh scratch directory under this owner run",
+  "cargo_cwd": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust",
+  "static_archive": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a",
+  "entrypoint_source": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/entrypoint.c",
+  "entrypoint_sha256": "ef0360f9e11df776f18a901b9f2241b64eee1576694462782ff80c4f792c9596",
+  "scratch_preparation": "copy exact entrypoint.c into a NEW empty scratch directory in owner run; preserve hash; no installed/accepted relm.so reuse",
+  "link_cwd": "new scratch directory containing copied entrypoint.c only",
+  "link_environment": {
+    "PKG_LIBS": "-L/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug -lrelm -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-metal -lggml-base -framework Metal -framework MetalKit -framework Foundation -framework Accelerate -lc++"
+  },
+  "link_command": [
+    "R",
+    "CMD",
+    "SHLIB",
+    "-o",
+    "relm.so",
+    "entrypoint.c"
+  ],
+  "link_scope": "same ordered native archives/system flags as current src/Makevars, no Makevars recipe/document generation/cache cleaning; relm-grammar already contains projection.cpp",
+  "dll_name_requirement": "relm.so basename invokes existing R_init_relm and its real extendr registration/panic hook",
+  "retention_requirement": "retain fresh static archive/DLL/entrypoint hashes and raw link/Rscript logs bound to corrected source snapshot",
+  "feature_artifact_order": "Default build only for this registration gate; fresh scratch relm.so, never old/private DLL reuse. Retain current archive/Cobject/9linkedarchives/entrypoint/installed-R-header binding as before."
+}

@@ -117,6 +117,8 @@ jobs:
           echo "RELM_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
 
       - name: Build relm and run the [MODEL] tolerance suite
+        env:
+          RELM_ENABLE_SELFTESTS: "1"
         working-directory: rebirth
         run: |
           Rscript -e '

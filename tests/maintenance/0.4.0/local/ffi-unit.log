@@ -1,0 +1,17 @@
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.19s
+     Running unittests src/lib.rs (target/debug/deps/relm-54ae96d5df0f3ff2)
+
+running 9 tests
+test projection_review_registry_tests::projection_registry_reuses_expired_slots_without_weakening_admission ... ok
+test tests::checked_budget_bytes_rejects_negative_and_nan_but_passes_inf ... ok
+test tests::checked_count_rejects_below_one_and_passes_positive ... ok
+test tests::checked_image_max_bytes_rejects_non_positive_and_nan ... ok
+test tests::engine_index_round_trips_over_the_valid_range ... ok
+test tests::projection_bridge_compiled_frame ... ok
+test tests::split_image_sets_rebuilds_the_per_text_sets_and_rejects_inconsistency ... ok
+test tests::tensor_name_layer_surfaces_as_one_based_api_layer ... ok
+test tests::to_engine_index_rejects_out_of_contract_indices ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

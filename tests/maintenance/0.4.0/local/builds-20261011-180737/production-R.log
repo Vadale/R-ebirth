@@ -1,0 +1,9 @@
+INSTALLED_FUNCTIONS 250 
+package: .................
+selftest-registration: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Nice code.
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+MAINTENANCE_R_OK cases=6 expectations=19 skips=0

@@ -66,3 +66,4 @@ include!("projection_test_support.rs");
 include!("projection_diagnostic.rs");
 
 include!("projection_policy_diagnostic.rs");
+include!("projection_prefix_debt_diagnostic.rs");

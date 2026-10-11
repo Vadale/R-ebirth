@@ -53,12 +53,6 @@ rebirth_async_cancel <- function(ptr) .Call(wrap__rebirth_async_cancel, ptr)
 
 rebirth_async_shutdown <- function() .Call(wrap__rebirth_async_shutdown)
 
-rebirth_async_test_handle <- function() .Call(wrap__rebirth_async_test_handle)
-
-rebirth_async_test_config <- function(ptr, mode, steps, delay_ms) .Call(wrap__rebirth_async_test_config, ptr, mode, steps, delay_ms)
-
-rebirth_async_test_stats <- function() .Call(wrap__rebirth_async_test_stats)
-
 rebirth_logits <- function(ptr, prompt, top) .Call(wrap__rebirth_logits, ptr, prompt, top)
 
 rebirth_embed <- function(ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes) .Call(wrap__rebirth_embed, ptr, texts, pooling, normalize, images_flat, images_lens, image_max_bytes)
@@ -72,23 +66,5 @@ rebirth_spill_cleanup <- function(path) .Call(wrap__rebirth_spill_cleanup, path)
 rebirth_spill_sweep <- function(path, cutoff) .Call(wrap__rebirth_spill_sweep, path, cutoff)
 
 rebirth_intervene <- function(ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values) .Call(wrap__rebirth_intervene, ptr, n_embd, n_layer, steer_layers, steer_vectors, ablate_layers, ablate_neurons, ablate_values)
-
-rebirth_selftest_projection_ledger <- function() .Call(wrap__rebirth_selftest_projection_ledger)
-
-rebirth_selftest_projection_budget_error <- function() .Call(wrap__rebirth_selftest_projection_budget_error)
-
-rebirth_selftest_projection_transfer <- function() .Call(wrap__rebirth_selftest_projection_transfer)
-
-rebirth_selftest_projection_constructor <- function(path) .Call(wrap__rebirth_selftest_projection_constructor, path)
-
-rebirth_selftest_projection_combined_logits <- function(ptr) .Call(wrap__rebirth_selftest_projection_combined_logits, ptr)
-
-rebirth_selftest_new_handle <- function() .Call(wrap__rebirth_selftest_new_handle)
-
-rebirth_selftest_validate_image <- function(path, max_bytes) .Call(wrap__rebirth_selftest_validate_image, path, max_bytes)
-
-rebirth_selftest_panic <- function() .Call(wrap__rebirth_selftest_panic)
-
-rebirth_selftest_trace_tokens_spill <- function(ptr, tokens, spill, budget_bytes, spill_path, model_id, trace_id, spec_key) .Call(wrap__rebirth_selftest_trace_tokens_spill, ptr, tokens, spill, budget_bytes, spill_path, model_id, trace_id, spec_key)
 
 # nolint end

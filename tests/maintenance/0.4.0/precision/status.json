@@ -1,0 +1,15 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 70357,
+  "stages": [
+    {
+      "name": "clippy",
+      "exit_code": 0
+    },
+    {
+      "name": "precision",
+      "exit_code": 0
+    }
+  ],
+  "stage": "precision"
+}

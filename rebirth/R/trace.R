@@ -88,10 +88,7 @@
 #' @export
 llm_trace <- function(m, prompts, layers = NULL, positions = "last",
                       components = "residual", spill = TRUE, spill_dir = NULL) {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
   guard_not_intervened(
     m, "relm_error_trace",
     "Tracing an intervened handle is not yet supported"
@@ -637,9 +634,8 @@ as.matrix.relm_trace <- function(x, layer, component = "residual", ...) {
   # Structural invariant: the slice must be a full (prompt_id, token_pos) x neuron
   # grid, i.e. exactly one value per cell. If it is not, matrix(byrow = TRUE) would
   # silently recycle/mis-assemble the values under correct row/column labels (the
-  # M-1 duplicate-row failure). Positions and components are de-duplicated upstream,
-  # so a mismatch here means an unexpected duplicate reached the frame -- fail loud
-  # rather than return a wrong matrix.
+  # M-1 duplicate-row failure). Check both cardinality and uniqueness: replacing
+  # one missing cell with a duplicate preserves the total row count.
   if (nrow(sub) != nrow(pts) * n_neuron) {
     relm_abort(
       "relm_error_trace",
@@ -651,6 +647,15 @@ as.matrix.relm_trace <- function(x, layer, component = "residual", ...) {
           "llm_trace()."
         ),
         layer, component, nrow(sub), nrow(pts) * n_neuron, nrow(pts), n_neuron
+      )
+    )
+  }
+  if (anyDuplicated(sub[c("prompt_id", "token_pos", "neuron")])) {
+    relm_abort(
+      "relm_error_trace",
+      sprintf(
+        "This trace slice (layer %s, component \"%s\") holds duplicate (position, neuron) entries and cannot be reshaped to a matrix. Re-run llm_trace().",
+        layer, component
       )
     )
   }

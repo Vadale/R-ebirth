@@ -1,0 +1,141 @@
+{
+  "status": "observations_verified",
+  "scope": "New Linux CPU cache precision contrast; observations, not production correction/accuracy acceptance",
+  "tiny_loads": 1,
+  "derived_handles": 1,
+  "new_test_contexts": 3,
+  "prefix_decode_calls": 3,
+  "prefix_tokens": 1536,
+  "same_row_comparisons": 768,
+  "results": [
+    {
+      "id": "f16/flash_disabled",
+      "actual_cache_type": "f16",
+      "projection_values": 256,
+      "projection_scaled_error": 0.0,
+      "max_activation_reference_error": 0.00323273241519928,
+      "max_logit_reference_error": 0.0005664573042839516,
+      "addends": {
+        "columns": [
+          "previous_residual",
+          "attn_out",
+          "mlp_out",
+          "residual"
+        ],
+        "layer": 2,
+        "native_addition_bitwise_equal": true,
+        "native_f32_sum": -0.010898496955633163,
+        "neuron": 13,
+        "reference_values": [
+          0.1484757363796234,
+          -0.1600678712129593,
+          0.0008154283277690411,
+          -0.010776706505566835
+        ],
+        "signed_errors": [
+          0.0001414865255355835,
+          -0.00021304190158843994,
+          -5.0235074013471603e-05,
+          -0.00012179045006632805
+        ],
+        "source_pos": 512,
+        "values": [
+          0.148617222905159,
+          -0.16028091311454773,
+          0.0007651932537555695,
+          -0.010898496955633163
+        ]
+      }
+    },
+    {
+      "id": "f32/flash_disabled",
+      "actual_cache_type": "f32",
+      "projection_values": 256,
+      "projection_scaled_error": 1.263514647432537e-08,
+      "max_activation_reference_error": 1.16066075861454e-06,
+      "max_logit_reference_error": 4.913796488592581e-07,
+      "addends": {
+        "columns": [
+          "previous_residual",
+          "attn_out",
+          "mlp_out",
+          "residual"
+        ],
+        "layer": 2,
+        "native_addition_bitwise_equal": true,
+        "native_f32_sum": -0.01077662780880928,
+        "neuron": 13,
+        "reference_values": [
+          0.1484757363796234,
+          -0.1600678712129593,
+          0.0008154283277690411,
+          -0.010776706505566835
+        ],
+        "signed_errors": [
+          -5.960464477539063e-08,
+          4.470348358154297e-08,
+          9.359791874885559e-08,
+          7.869675755500793e-08
+        ],
+        "source_pos": 512,
+        "values": [
+          0.14847567677497864,
+          -0.1600678265094757,
+          0.0008155219256877899,
+          -0.01077662780880928
+        ]
+      }
+    },
+    {
+      "id": "f32/flash_auto",
+      "actual_cache_type": "f32",
+      "projection_values": 256,
+      "projection_scaled_error": 0.0,
+      "max_activation_reference_error": 0.014189586043357849,
+      "max_logit_reference_error": 0.007684701904548286,
+      "addends": {
+        "columns": [
+          "previous_residual",
+          "attn_out",
+          "mlp_out",
+          "residual"
+        ],
+        "layer": 2,
+        "native_addition_bitwise_equal": true,
+        "native_f32_sum": -0.02155396342277527,
+        "neuron": 13,
+        "reference_values": [
+          0.1484757363796234,
+          -0.1600678712129593,
+          0.0008154283277690411,
+          -0.010776706505566835
+        ],
+        "signed_errors": [
+          -0.0019116699695587158,
+          -0.00237216055393219,
+          -0.006493426393717527,
+          -0.010777256917208433
+        ],
+        "source_pos": 512,
+        "values": [
+          0.1465640664100647,
+          -0.16244003176689148,
+          -0.005677998065948486,
+          -0.02155396342277527
+        ]
+      }
+    }
+  ],
+  "source_sha256": {
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "f869ac7f229285d7b0f7deadc1e71d0f0346b093a1e7f058cefaaa541f32cb2f",
+    "rebirth/src/rust/rebirth-llm/src/projection_prefix_debt_diagnostic.rs": "f5ff6873fda73b505c8ac038f4699307cb1f3bb7d298dca26b71768a30d76e00"
+  },
+  "independent_frozen_reference_coordinates": 4224,
+  "run": 38156888528,
+  "job": 114521597143,
+  "head": "c6b831e1b3068de69ed8c074755747aa66d58556",
+  "actual_merge": "33e3da5df009623ead297b1c25ee81fc5f8ef3ba",
+  "tree": "320557d63fee0ac49c46764a0af4a6f7b8b1e258",
+  "cpu": "Intel Xeon 6973P-C",
+  "original_engine_outcome": "failed: 170 passed, 2 failed, 6 ignored; release/no-spill skipped"
+}

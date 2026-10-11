@@ -1,0 +1,256 @@
+{
+  "status": "failed",
+  "pid": 66807,
+  "directory": "/private/tmp/relm-maintenance-040/builds-20261011-180737",
+  "stages": [
+    {
+      "name": "production-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "e85938eeae9005f3a40289cb9b99d0d584399d2d7d757ef5928743ce963f6ab0"
+    },
+    {
+      "name": "production-no-spill",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "b287abce2360de48cd413661030ad57d7b9a85b04ecddca32fd737a31f692505"
+    },
+    {
+      "name": "production-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--message-format=json"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "1cf4fb4521bdc1edf75f2004960989fdcc423fb83b8c18cad2f384dede92bfef"
+    },
+    {
+      "name": "production-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "production-profile",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance-040/check-profile.R",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/relm.so",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "18a7a0e54543624887308bfa95f7464a2c1873f917fe475fc3416ffa53254937"
+    },
+    {
+      "name": "production-wrappers",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance-040/generate-wrappers.R",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/relm.so",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/package/R/extendr-wrappers.R"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "f8b8367addea8317b02c7106134ab3705c97964491ae01ea57105b8001417626"
+    },
+    {
+      "name": "production-install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-maintenance-040/builds-20261011-180737/production/library",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/package"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "6b75b19105fd9764c6c4a7fb41127547f876b78ba1540fe112eb16957161f652"
+    },
+    {
+      "name": "production-R",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance-040/check-installed.R",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/library/relm",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/package",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "25e6d03d47ea6251bd8ce6223713c34a54ba6a3f66b0d038ed3c5eba7f38c73e"
+    },
+    {
+      "name": "selftest-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "selftest",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "cc91517b4e0908b7221455bd1ae7a34126149fc864c79f06d24189754af3f3c3"
+    },
+    {
+      "name": "selftest-no-spill",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features",
+        "--features",
+        "selftest"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "7abc5f939c631f3b27ec22715c58c85e648095bc21ded3693dfccaedd54049a6"
+    },
+    {
+      "name": "selftest-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--lib",
+        "--message-format=json",
+        "--features",
+        "selftest"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "5496c926d3c5ad214e8714b9c538ba1f58f1d6e54162d8d680a29b30dfa81df2"
+    },
+    {
+      "name": "selftest-link",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "-o",
+        "relm.so",
+        "entrypoint.c"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "4a4bd58836153197bdf64dcd3a697c4bb3f36be0b0c527b2c2f0dbd25a85107a"
+    },
+    {
+      "name": "selftest-profile",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance-040/check-profile.R",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest/relm.so",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "18a7a0e54543624887308bfa95f7464a2c1873f917fe475fc3416ffa53254937"
+    },
+    {
+      "name": "selftest-wrappers",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance-040/generate-wrappers.R",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest/relm.so",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest/package/R/extendr-wrappers.R"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "f8b8367addea8317b02c7106134ab3705c97964491ae01ea57105b8001417626"
+    },
+    {
+      "name": "selftest-install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--no-configure",
+        "--no-libs",
+        "--library=/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest/library",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest/package"
+      ],
+      "status": "passed",
+      "exit_code": 0,
+      "log_sha256": "6b75b19105fd9764c6c4a7fb41127547f876b78ba1540fe112eb16957161f652"
+    },
+    {
+      "name": "selftest-R",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-maintenance-040/check-installed.R",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest/library/relm",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest/package",
+        "/Users/alessandrovadala/DOCUDESK/R-ebirth",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/selftest"
+      ],
+      "status": "failed",
+      "exit_code": 1,
+      "log_sha256": "7a2beacd0cda6a8ed9cdc82bdfc733820b5b25a741350cbde6810fea8f05366c"
+    }
+  ],
+  "started": 1791734857.5809221,
+  "stage": "selftest-R",
+  "error": "selftest-R failed: inspect retained log",
+  "traceback": "Traceback (most recent call last):\n  File \"/private/tmp/relm-maintenance-040/verify-builds.py\", line 47, in <module>\n    stage(mode+'-R',['Rscript','--vanilla',str(root/'check-installed.R'),str(library/'relm'),str(package),str(repo),str(dest)],repo,runenv)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/private/tmp/relm-maintenance-040/verify-builds.py\", line 17, in stage\n    if r.returncode:raise RuntimeError(name+' failed: inspect retained log')\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: selftest-R failed: inspect retained log\n",
+  "finished": 1791734919.120536
+}

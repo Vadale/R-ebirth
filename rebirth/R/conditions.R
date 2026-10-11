@@ -1,3 +1,12 @@
+# Thrown failures and asynchronous rejections share the same hierarchy and
+# structured fields. Async callers have no active public call to report.
+relm_condition <- function(class, message, fields = list(), call = NULL) {
+  structure(
+    c(list(message = message, call = call), fields),
+    class = c(class, "relm_error", "error", "condition")
+  )
+}
+
 #' Raise a classed relm condition
 #'
 #' The single place the package turns a `(class, message, fields)` decision into
@@ -18,11 +27,7 @@
 #' @keywords internal
 #' @noRd
 relm_abort <- function(class, message, fields = list(), call = sys.call(-1L)) {
-  cond <- structure(
-    c(list(message = message, call = call), fields),
-    class = c(class, "relm_error", "error", "condition")
-  )
-  stop(cond)
+  stop(relm_condition(class, message, fields, call = call))
 }
 
 #' Raise a `relm_error_argument` for a specific argument

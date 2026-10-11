@@ -1,0 +1,21 @@
+{
+  "files": {
+    "run.py": "3bcae65c34baf61df5741ff3fcfa1239ebf73637c8e2a945baec12bea62c3022",
+    "source-hashes.json": "12148b8a7be0f02b7bd8e2424c631bdd187bf39b3712bb5b1c145734c4f6e17b",
+    "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source.patch": "2b576f81f0cd15eed81312f1478f7f794851a51f8b9894ce7136f2d19a53fd3c",
+    "owner.json": "39414e35a567698c55a747d5ae2da5aeeb00b9b78f33e00be444231137465a31",
+    "forward.log": "97347cd63b9d128190a7c84ad8c5394770f423ee1c4d5d07edcab9acb82b21c0",
+    "clippy.log": "0317d9f76cf2ff17408bcb6fe58ea922e1dd115fd6fb8bcb010477adbdc015dc",
+    "bootstrap.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "launch.json": "6b2f5fa3d5d44f40541c25ecfb633357f904e1295a77f0a127e78e237ff18496",
+    "verify.py": "64d7314b9e81d45a3cf74d79649ebf8908193873696b79e6c5267b95ed186538",
+    "microbatches.log": "4bcd26d51e13588612cb53f21570bc41aebca0a9453fd9175b42d4f4adbd2b14",
+    "status.json": "0e17d5dae6419bf7a885e9a7739c230cc56586ffa9c5de966665efa6ff68c586",
+    "originals/projection_prefix_debt_diagnostic.rs": "f5ff6873fda73b505c8ac038f4699307cb1f3bb7d298dca26b71768a30d76e00",
+    "originals/rust.yaml": "d86130d5a74fec498e6b1c002d75f78292904d6360e5d0b9d8b03a01f2881978",
+    "originals/projection_test_support.rs": "6a8076bac4ce7402edc94e502aa061a77a4b2cad008d27831762d7b1acda0247",
+    "originals/engine.rs": "f869ac7f229285d7b0f7deadc1e71d0f0346b093a1e7f058cefaaa541f32cb2f"
+  },
+  "scope": "Affected explicit-precision correction; original status preserved, independent owner result separate"
+}

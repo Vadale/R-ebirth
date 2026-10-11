@@ -37,6 +37,7 @@ test_that("the closed tag is shared across copies of a handle (env semantics)", 
 })
 
 test_that("the boundary closed tag: is_closed TRUE on an empty handle, close a no-op", {
+  require_relm_selftest("rebirth_selftest_new_handle")
   ptr <- relm:::rebirth_selftest_new_handle()
   expect_true(relm:::rebirth_handle_is_closed(ptr))
   expect_null(relm:::rebirth_handle_close(ptr)) # no-op, no crash

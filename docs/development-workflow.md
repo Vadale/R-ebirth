@@ -77,3 +77,23 @@ Use those timings to identify the next real bottleneck. Do not promise a new
 wall-clock duration from a reduced test selection alone. A new runner does not
 invalidate unchanged numerical evidence, but its prior source remains explicit;
 changed runtime or reference inputs still require the affected acceptance.
+
+## Native fixtures versus production builds
+
+A normal install omits the R-hosted fixture entry points. The non-default Cargo
+feature `selftest` enables them; `RELM_ENABLE_SELFTESTS=1 R CMD INSTALL rebirth`
+selects it for an R build. Use the same flag when running its R tests. The required
+R CI matrix sets this flag and checks that all 12 registrations exist; missing
+registrations fail rather than silently skip. Production checks require none of
+those entries and explicitly skip only cases that require the omitted fixtures.
+Public validation and real-model tests that do not require fixtures remain active.
+
+Release artifacts use the default production build. Never publish a selftest DLL
+or claim a test-build registration receipt proves the production surface. The
+same `selftest` feature reaches the static library and generated wrappers, so a
+package cannot accidentally pair production native registration with test wrappers.
+Run the R-free Rust suite normally; use `--features selftest` for R-hosted boundary
+regressions. `projection-private` includes `selftest` for its existing private gate.
+
+For code cleanup, follow [the simplifier compendium](simplifier-compendium.md)
+and its current dispositions instead of reopening historical punchlists.

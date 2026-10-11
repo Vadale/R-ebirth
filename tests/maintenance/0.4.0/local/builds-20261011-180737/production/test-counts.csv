@@ -1,0 +1,7 @@
+"file","test","nb","failed","skipped","error","warning","passed"
+"test-package.R","the relm namespace loads with its compiled library",1,0,FALSE,FALSE,0,1
+"test-package.R","only API-GRAMMAR-approved functions are exported (spec-first gate)",1,0,FALSE,FALSE,0,1
+"test-package.R","the WP4 relm_trace S3 methods are registered (API-GRAMMAR section 2/4)",7,0,FALSE,FALSE,0,7
+"test-package.R","the WP1 S3 methods are registered (API-GRAMMAR section 3)",8,0,FALSE,FALSE,0,8
+"test-selftest-registration.R","native fixture registration matches the requested build mode",1,0,FALSE,FALSE,0,1
+"test-selftest-registration.R","a required missing native fixture fails instead of skipping",1,0,FALSE,FALSE,0,1

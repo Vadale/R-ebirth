@@ -1,0 +1,1754 @@
+diff --git a/.github/workflows/R-CMD-check.yaml b/.github/workflows/R-CMD-check.yaml
+index 06f42c4..218a396 100644
+--- a/.github/workflows/R-CMD-check.yaml
++++ b/.github/workflows/R-CMD-check.yaml
+@@ -31,6 +31,8 @@ jobs:
+     env:
+       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+       R_KEEP_PKG_SOURCE: yes
++      # Exercise the non-shipping R/native fixture hooks in this test build.
++      RELM_ENABLE_SELFTESTS: "1"
+       # Override the repository's floating stable channel even inside the
+       # R CMD check build subprocess, so the MSRV leg actually uses the floor.
+       RUSTUP_TOOLCHAIN: ${{ matrix.config.rust }}
+@@ -186,7 +188,7 @@ jobs:
+       # the R-free rebirth-llm.
+       - name: clippy (rebirth-ffi, the R boundary crate)
+         if: steps.scope.outputs.full_checks != 'false'
+-        run: cargo clippy --locked -p rebirth-ffi --all-targets -- -D warnings
++        run: cargo clippy --locked -p rebirth-ffi --features selftest --all-targets -- -D warnings
+         working-directory: rebirth/src/rust
+ 
+       # Run rebirth-ffi's own tests here too (R on the PATH links the crate): the
+@@ -214,7 +216,7 @@ jobs:
+           if [[ "$RUNNER_OS" == "Linux" ]]; then
+             export LD_LIBRARY_PATH="$(R RHOME)/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+           fi
+-          cargo test --locked -p rebirth-ffi
++          cargo test --locked -p rebirth-ffi --features selftest
+         working-directory: rebirth/src/rust
+ 
+       # Linux's CPU-only build cannot detect accidental Metal initialization.
+diff --git a/.github/workflows/nightly-model-tolerance.yaml b/.github/workflows/nightly-model-tolerance.yaml
+index a56cc1f..fc98901 100644
+--- a/.github/workflows/nightly-model-tolerance.yaml
++++ b/.github/workflows/nightly-model-tolerance.yaml
+@@ -117,6 +117,8 @@ jobs:
+           echo "RELM_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
+ 
+       - name: Build relm and run the [MODEL] tolerance suite
++        env:
++          RELM_ENABLE_SELFTESTS: "1"
+         working-directory: rebirth
+         run: |
+           Rscript -e '
+diff --git a/DECISIONS.md b/DECISIONS.md
+index 8f65d13..8f652bb 100644
+--- a/DECISIONS.md
++++ b/DECISIONS.md
+@@ -1578,3 +1578,21 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
+   no new API, dependency, vendor edit, general framework or blanket rewrite.
+   This amendment supersedes only the external-participant completion condition
+   in the historical roadmap/phase plan; those original decisions remain recorded.
++
++
++## D-048 — Maintenance and release before Windows/CUDA (APPROVED)
++
++- **Date:** 2026-10-11.
++- **Founder instruction:** correct existing technical debt, simplify and clean
++  the code using the simplifier's instructions, update documentation and the
++  GitHub Markdown entry point, and publish another release before Phases 8/9.
++- **Decision:** execute the single maintenance/release plan in
++  [maintenance-0.4.0-plan.md](docs/maintenance-0.4.0-plan.md). Internal cross-module
++  cleanup and concrete bug corrections are authorized. Version 0.4.0 collects
++  the features since 0.3.0 and the accepted maintenance changes.
++- **Verification:** apply D029, retain actual failures and source-specific
++  evidence, use focused affected checks and one final integration/review cycle.
++  Numerical anomalies require diagnosis; a passing retry is not a correction.
++- **Unchanged:** public API approval, dependency/vendor-change gates, numerical
++  and resource bounds, consumed evaluations, and D047's deferred external-user
++  feedback. Windows/CUDA and CRAN submission are not part of this work.
+diff --git a/rebirth/R/async.R b/rebirth/R/async.R
+index 3f434f9..64c6c94 100644
+--- a/rebirth/R/async.R
++++ b/rebirth/R/async.R
+@@ -111,11 +111,6 @@ async_validate_inputs <- function(prompt, stop, schema, images, max_tokens,
+     schema = arguments$schema, images = images)
+ }
+ 
+-async_condition <- function(class, message, fields = list()) {
+-  structure(c(list(message = message, call = NULL), fields),
+-    class = c(class, "relm_error", "error", "condition"))
+-}
+-
+ async_payload_condition <- function(payload) {
+   valid_text <- function(x) is.character(x) && length(x) == 1L && !is.na(x)
+   malformed <- !is.list(payload) || !valid_text(payload$class) ||
+@@ -126,10 +121,10 @@ async_payload_condition <- function(payload) {
+     malformed <- !all(c("reason", "seed", "prompt_id", "generated_tokens") %in% names(fields))
+   }
+   if (malformed) {
+-    return(async_condition("relm_error_internal",
++    return(relm_condition("relm_error_internal",
+       "The native async failure payload was incomplete.", list(reason = "async_protocol")))
+   }
+-  async_condition(payload$class, payload$message,
++  relm_condition(payload$class, payload$message,
+     if (is.null(payload$fields)) list() else payload$fields)
+ }
+ 
+@@ -208,7 +203,7 @@ async_transport_failure <- function(job, error) {
+   if (is.function(job$timer)) job$timer()
+   rebirth_async_shutdown()
+   job$model$state$closed <- TRUE
+-  async_settle(job, error = async_condition("relm_error_internal",
++  async_settle(job, error = relm_condition("relm_error_internal",
+     "Async result delivery failed; the native worker was shut down safely.",
+     list(parent = error)))
+   .relm_async$stopping <- FALSE
+@@ -230,7 +225,7 @@ async_progress <- function(job, progress, terminal = FALSE) {
+     max_tokens = as.integer(progress$max_tokens), phase = as.character(progress$phase),
+     stringsAsFactors = FALSE)
+   fail <- function(error) {
+-    async_consumer_failure(job, async_condition("relm_error_callback",
++    async_consumer_failure(job, relm_condition("relm_error_callback",
+       "The async progress callback failed; no generation result was returned.",
+       list(callback = "on_progress", parent = error)), terminal)
+   }
+@@ -317,7 +312,7 @@ async_poll <- function(job) {
+       async_payload_condition(payload$error)
+     if (!is.null(job$live) && is.null(job$callback_error) &&
+       identical(error$argument, "on_state_reply")) {
+-      error <- async_condition("relm_error_callback",
++      error <- relm_condition("relm_error_callback",
+         "The live state reply was rejected; no generation result was returned.",
+         list(callback = "on_state", reason = "state_reply", parent = error,
+           job_id = job$id, state_id = job$live_state_id, prompt_id = 1L))
+@@ -357,7 +352,7 @@ async_shutdown <- function() {
+   payload <- relm_check(rebirth_async_shutdown())
+   if (!is.null(job)) {
+     job$model$state$closed <- TRUE
+-    async_settle(job, error = async_condition("relm_error_cancelled",
++    async_settle(job, error = relm_condition("relm_error_cancelled",
+       "Async generation stopped because relm is shutting down.",
+       list(reason = "shutdown", seed = job$seed, prompt_id = 1L,
+         generated_tokens = 0L)))
+@@ -418,10 +413,7 @@ async_transport_peak_bound <- function(context_length,
+ #' @seealso [llm_generate()], [close.llm()]
+ #' @export
+ llm_cancel <- function(m) {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+   payload <- relm_check(rebirth_async_cancel(m$ptr))
+   job <- .relm_async$job
+   if (isTRUE(payload$cancelled) && !is.null(job) && !is.null(job$live) &&
+diff --git a/rebirth/R/conditions.R b/rebirth/R/conditions.R
+index 8da0272..37e5fe9 100644
+--- a/rebirth/R/conditions.R
++++ b/rebirth/R/conditions.R
+@@ -1,3 +1,12 @@
++# Thrown failures and asynchronous rejections share the same hierarchy and
++# structured fields. Async callers have no active public call to report.
++relm_condition <- function(class, message, fields = list(), call = NULL) {
++  structure(
++    c(list(message = message, call = call), fields),
++    class = c(class, "relm_error", "error", "condition")
++  )
++}
++
+ #' Raise a classed relm condition
+ #'
+ #' The single place the package turns a `(class, message, fields)` decision into
+@@ -18,11 +27,7 @@
+ #' @keywords internal
+ #' @noRd
+ relm_abort <- function(class, message, fields = list(), call = sys.call(-1L)) {
+-  cond <- structure(
+-    c(list(message = message, call = call), fields),
+-    class = c(class, "relm_error", "error", "condition")
+-  )
+-  stop(cond)
++  stop(relm_condition(class, message, fields, call = call))
+ }
+ 
+ #' Raise a `relm_error_argument` for a specific argument
+diff --git a/rebirth/R/embed.R b/rebirth/R/embed.R
+index 1b43a45..491af08 100644
+--- a/rebirth/R/embed.R
++++ b/rebirth/R/embed.R
+@@ -93,10 +93,7 @@
+ #' @export
+ llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TRUE,
+                       images = NULL) {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+   guard_not_intervened(
+     m, "relm_error_embed",
+     "Embedding an intervened handle is not yet supported"
+diff --git a/rebirth/R/generate.R b/rebirth/R/generate.R
+index 10ed55f..8f3c586 100644
+--- a/rebirth/R/generate.R
++++ b/rebirth/R/generate.R
+@@ -343,10 +343,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
+                          on_progress = NULL, on_token = NULL, on_state = NULL,
+                          layers = integer(), components = "residual", top = 20L,
+                          spill = TRUE, spill_dir = NULL) {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+ 
+   if (!is.logical(async) || length(async) != 1L || is.na(async)) {
+     abort_argument("async", "`async` must be one nonmissing logical value.")
+diff --git a/rebirth/R/intervene.R b/rebirth/R/intervene.R
+index 4d95aad..1bf536e 100644
+--- a/rebirth/R/intervene.R
++++ b/rebirth/R/intervene.R
+@@ -95,10 +95,7 @@ INTERVENTION_VALIDATED_ARCHS <- c("llama", "qwen2")
+ #' close(m)
+ #' @export
+ llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+   layer <- validate_intervention_layer(m, layer)
+ 
+   # The native control vector reserves engine index 0 (the first block), so it
+@@ -223,10 +220,7 @@ llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
+ #' close(m)
+ #' @export
+ llm_ablate <- function(m, layer, neurons, value = 0, component = "residual") {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+   layer <- validate_intervention_layer(m, layer)
+ 
+   if (!is.numeric(neurons) || length(neurons) == 0L || anyNA(neurons) ||
+diff --git a/rebirth/R/live-state.R b/rebirth/R/live-state.R
+index c7b24c1..4704a08 100644
+--- a/rebirth/R/live-state.R
++++ b/rebirth/R/live-state.R
+@@ -212,7 +212,7 @@ live_deliver <- function(job, payload) {
+     job$model$state$closed) return(invisible(NULL))
+   state <- live_payload_state(job, payload)
+   fail <- function(error, reason = NULL) {
+-    async_consumer_failure(job, async_condition("relm_error_callback",
++    async_consumer_failure(job, relm_condition("relm_error_callback",
+       "The live state callback failed; no generation result was returned.",
+       list(callback = "on_state", reason = reason, parent = error,
+         job_id = job$id, state_id = state$step$state_id, prompt_id = 1L)))
+diff --git a/rebirth/R/llm.R b/rebirth/R/llm.R
+index 0ae53dc..1302eea 100644
+--- a/rebirth/R/llm.R
++++ b/rebirth/R/llm.R
+@@ -258,6 +258,15 @@ finalize_llm_state <- function(state) {
+   invisible(NULL)
+ }
+ 
++# Public operations validate the handle before forcing their other arguments.
++# Forward the public call through both guards so errors retain their origin.
++validate_llm <- function(m, call = sys.call(-1L)) {
++  if (!inherits(m, "llm")) {
++    abort_argument("m", "`m` must be an `llm` handle returned by llm().", call = call)
++  }
++  ensure_open(m, call = call)
++}
++
+ # Raise `relm_error_closed` if the handle has been closed. Native shutdown/panic
+ # can close a handle without an R close() call, so synchronize its native tag.
+ # This reads only wrapper state (no engine permit/C access), preserving metadata
+diff --git a/rebirth/R/logits.R b/rebirth/R/logits.R
+index 9023cb9..bd267cb 100644
+--- a/rebirth/R/logits.R
++++ b/rebirth/R/logits.R
+@@ -48,10 +48,7 @@
+ #' close(m)
+ #' @export
+ llm_logits <- function(m, prompt, top = 20) {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+ 
+   if (!is.character(prompt) || length(prompt) == 0L || anyNA(prompt)) {
+     abort_argument(
+diff --git a/rebirth/R/stream.R b/rebirth/R/stream.R
+index 6e86897..0786188 100644
+--- a/rebirth/R/stream.R
++++ b/rebirth/R/stream.R
+@@ -40,7 +40,7 @@ stream_validate_sink <- function(on_token, async) {
+ 
+ stream_condition <- function(reason, message, parent = NULL,
+                              prompt_id = NA_integer_, event_id = NA_integer_) {
+-  async_condition("relm_error_stream", message,
++  relm_condition("relm_error_stream", message,
+     list(reason = reason, prompt_id = as.integer(prompt_id),
+       event_id = as.integer(event_id), parent = parent))
+ }
+@@ -156,7 +156,7 @@ stream_deliver <- function(job, batch) {
+   if (!valid) return(invisible(NULL))
+   if (identical(job$stream$kind, "file")) return(stream_file_delivery(job, batch))
+   fail <- function(error) async_consumer_failure(job,
+-    async_condition("relm_error_callback", "The token stream callback failed; no generation result was returned.",
++    relm_condition("relm_error_callback", "The token stream callback failed; no generation result was returned.",
+       list(callback = "on_token", parent = error)))
+   tryCatch(job$stream$consumer(batch), error = fail, interrupt = fail)
+   invisible(NULL)
+diff --git a/rebirth/R/tokens.R b/rebirth/R/tokens.R
+index d4e1a9f..92fb95a 100644
+--- a/rebirth/R/tokens.R
++++ b/rebirth/R/tokens.R
+@@ -41,10 +41,7 @@
+ #' close(m)
+ #' @export
+ llm_tokens <- function(m, x, decode = FALSE) {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+   if (!is.logical(decode) || length(decode) != 1L || is.na(decode)) {
+     abort_argument(
+       "decode",
+diff --git a/rebirth/R/trace.R b/rebirth/R/trace.R
+index 0f41b50..01186dd 100644
+--- a/rebirth/R/trace.R
++++ b/rebirth/R/trace.R
+@@ -88,10 +88,7 @@
+ #' @export
+ llm_trace <- function(m, prompts, layers = NULL, positions = "last",
+                       components = "residual", spill = TRUE, spill_dir = NULL) {
+-  if (!inherits(m, "llm")) {
+-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
+-  }
+-  ensure_open(m)
++  validate_llm(m)
+   guard_not_intervened(
+     m, "relm_error_trace",
+     "Tracing an intervened handle is not yet supported"
+@@ -637,9 +634,8 @@ as.matrix.relm_trace <- function(x, layer, component = "residual", ...) {
+   # Structural invariant: the slice must be a full (prompt_id, token_pos) x neuron
+   # grid, i.e. exactly one value per cell. If it is not, matrix(byrow = TRUE) would
+   # silently recycle/mis-assemble the values under correct row/column labels (the
+-  # M-1 duplicate-row failure). Positions and components are de-duplicated upstream,
+-  # so a mismatch here means an unexpected duplicate reached the frame -- fail loud
+-  # rather than return a wrong matrix.
++  # M-1 duplicate-row failure). Check both cardinality and uniqueness: replacing
++  # one missing cell with a duplicate preserves the total row count.
+   if (nrow(sub) != nrow(pts) * n_neuron) {
+     relm_abort(
+       "relm_error_trace",
+@@ -654,6 +650,15 @@ as.matrix.relm_trace <- function(x, layer, component = "residual", ...) {
+       )
+     )
+   }
++  if (anyDuplicated(sub[c("prompt_id", "token_pos", "neuron")])) {
++    relm_abort(
++      "relm_error_trace",
++      sprintf(
++        "This trace slice (layer %s, component \"%s\") holds duplicate (position, neuron) entries and cannot be reshaped to a matrix. Re-run llm_trace().",
++        layer, component
++      )
++    )
++  }
+   mat <- matrix(sub$value, nrow = nrow(pts), ncol = n_neuron, byrow = TRUE)
+   rownames(mat) <- sprintf("%d.%d", pts$prompt_id, pts$token_pos)
+   mat
+diff --git a/rebirth/src/Makevars.in b/rebirth/src/Makevars.in
+index 1268095..a58c67c 100644
+--- a/rebirth/src/Makevars.in
++++ b/rebirth/src/Makevars.in
+@@ -46,11 +46,11 @@ $(STATLIB):
+ 
+ 	export CARGO_HOME=$(CARGOTMP) && \
+ 	export PATH="$(PATH):$(HOME)/.cargo/bin" && \
+-	@PANIC_EXPORTS@RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ -p rebirth-ffi --lib @PROFILE@ --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) @TARGET@
++	@PANIC_EXPORTS@RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ @SELFTEST_FEATURE@ -p rebirth-ffi --lib @PROFILE@ --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) @TARGET@
+ 
+ 	export CARGO_HOME=$(CARGOTMP) && \
+ 	export PATH="$(PATH):$(HOME)/.cargo/bin" && \
+-	cargo run @CRAN_FLAGS@ -p rebirth-ffi --bin document --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) @TARGET@
++	cargo run @CRAN_FLAGS@ @SELFTEST_FEATURE@ -p rebirth-ffi --bin document --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) @TARGET@
+ 
+ 	# Always clean up CARGOTMP
+ 	rm -Rf $(CARGOTMP);
+diff --git a/rebirth/src/Makevars.win.in b/rebirth/src/Makevars.win.in
+index be144ae..b7cba71 100644
+--- a/rebirth/src/Makevars.win.in
++++ b/rebirth/src/Makevars.win.in
+@@ -43,12 +43,12 @@ $(STATLIB):
+ 	# Build the project using Cargo with additional flags
+ 	export CARGO_HOME=$(CARGOTMP) && \
+ 	export LIBRARY_PATH="$(LIBRARY_PATH);$(CURDIR)/$(TARGET_DIR)/libgcc_mock" && \
+-	RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ -p rebirth-ffi --target=$(TARGET) --lib @PROFILE@ --manifest-path=rust/Cargo.toml --target-dir=$(TARGET_DIR)
++	RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ @SELFTEST_FEATURE@ -p rebirth-ffi --target=$(TARGET) --lib @PROFILE@ --manifest-path=rust/Cargo.toml --target-dir=$(TARGET_DIR)
+ 
+ 	# Generate wrappers
+ 	export CARGO_HOME=$(CARGOTMP) && \
+ 	export PATH="$(PATH):$(HOME)/.cargo/bin" && \
+-	cargo run @CRAN_FLAGS@ -p rebirth-ffi --bin document --target $(TARGET) --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR)
++	cargo run @CRAN_FLAGS@ @SELFTEST_FEATURE@ -p rebirth-ffi --bin document --target $(TARGET) --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR)
+ 
+ 	# Always clean up CARGOTMP
+ 	rm -Rf $(CARGOTMP);
+diff --git a/rebirth/src/rust/rebirth-ffi/Cargo.toml b/rebirth/src/rust/rebirth-ffi/Cargo.toml
+index ab3ff67..7b8a0b6 100644
+--- a/rebirth/src/rust/rebirth-ffi/Cargo.toml
++++ b/rebirth/src/rust/rebirth-ffi/Cargo.toml
+@@ -27,8 +27,10 @@ path = "document.rs"
+ # `--no-default-features` build drops spill in both crates (no Arrow), keeping the
+ # no-spill configuration coherent end to end.
+ default = ["spill"]
++# Internal R-hosted regression hooks; omitted from distributed production builds.
++selftest = []
+ # Internal constructor gate; never enabled by the public package build.
+-projection-private = ["rebirth-llm/projection-private"]
++projection-private = ["selftest", "rebirth-llm/projection-private"]
+ spill = ["rebirth-llm/spill"]
+ 
+ [dependencies]
+diff --git a/rebirth/src/rust/rebirth-ffi/native/projection_state.c b/rebirth/src/rust/rebirth-ffi/native/projection_state.c
+index f152267..d58ca0b 100644
+--- a/rebirth/src/rust/rebirth-ffi/native/projection_state.c
++++ b/rebirth/src/rust/rebirth-ffi/native/projection_state.c
+@@ -53,11 +53,12 @@ static SEXP relm_state_unforced_value(SEXP env, SEXP symbol) {
+     if (R_GetBindingType(symbol, env) != R_BindingTypeValue) return R_UnboundValue;
+     return R_getVar(symbol, env, FALSE);
+ #else
+-    /* R <= 4.5 has no public binding-type query. Its declared legacy accessor
+-     * returns promises unforced and can rebox at most one immediate scalar.
+-     * This branch is not compiled or linked against R 4.6. */
++    /* R 4.5's public frame lookup returns a promise without forcing it.
++     * Reject active bindings first: the factory guarantees a plain fixed-name
++     * environment, so lookup cannot invoke a user-database callback either.
++     * At most one immediate scalar is reboxed, as in the R 4.6 branch. */
+     if (R_BindingIsActive(symbol, env)) return R_UnboundValue;
+-    return Rf_findVarInFrame3(env, symbol, FALSE);
++    return Rf_findVarInFrame(env, symbol);
+ #endif
+ }
+ 
+diff --git a/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs
+index 90cd447..ca1f1d2 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/async_boundary.rs
+@@ -58,6 +58,7 @@ impl LlmHandle {
+     fn new(model: LoadedModel) -> Self {
+         Self::register(Some(model), false, None)
+     }
++    #[cfg(feature = "selftest")]
+     fn empty() -> Self {
+         Self::register(None, true, None)
+     }
+@@ -744,6 +745,7 @@ fn close_all_handles() {
+ }
+ 
+ // Internal scheduler seams; no model download and no inference-quality claim.
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_async_test_handle() -> Robj {
+     let handle = LlmHandle::register(
+@@ -775,6 +777,7 @@ fn rebirth_async_test_handle() -> Robj {
+         },
+     )
+ }
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_async_test_config(ptr: Robj, mode: &str, steps: i32, delay_ms: i32) -> Robj {
+     resolve(catch_unwind(AssertUnwindSafe(|| {
+@@ -813,6 +816,7 @@ fn rebirth_async_test_config(ptr: Robj, mode: &str, steps: i32, delay_ms: i32) -
+     })))
+ }
+ 
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_async_test_stats() -> Robj {
+     let (active_jobs, worker_threads, terminal_slots) = ACTIVE_JOB.with(|slot| {
+diff --git a/rebirth/src/rust/rebirth-ffi/src/lib.rs b/rebirth/src/rust/rebirth-ffi/src/lib.rs
+index 35457d4..28d36ed 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/lib.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/lib.rs
+@@ -35,10 +35,12 @@ use rebirth_llm::{
+ include!("async_boundary.rs");
+ include!("live_boundary.rs");
+ include!("projection_boundary.rs");
++#[cfg(feature = "selftest")]
+ include!("projection_budget_error_selftest.rs");
+ include!("projection_transfer_boundary.rs");
+ include!("projection_constructor_boundary.rs");
+ include!("projection_bridge.rs");
++#[cfg(feature = "selftest")]
+ include!("projection_combined_test_boundary.rs");
+ 
+ // --- index conversion (the single 1-based <-> 0-based boundary, §4) ---------
+@@ -1075,6 +1077,7 @@ fn rebirth_intervene(
+ 
+ // Test-only: a real, already-closed handle for exercising the close /
+ // is-closed boundary without a GGUF file. Internal (never in NAMESPACE).
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_new_handle() -> Robj {
+     ExternalPtr::new(LlmHandle::empty()).into()
+@@ -1088,6 +1091,7 @@ fn rebirth_selftest_new_handle() -> Robj {
+ // adversarial rejection of audit req 4 (audio magics, GIF, garbage, truncated,
+ // over-dims) through the real classed-condition plumbing. Internal (never in
+ // NAMESPACE).
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_validate_image(path: &str, max_bytes: f64) -> Robj {
+     resolve(catch_unwind(AssertUnwindSafe(
+@@ -1106,6 +1110,7 @@ fn rebirth_selftest_validate_image(path: &str, max_bytes: f64) -> Robj {
+ // Test-only: force a panic inside the `catch_unwind` path and return the
+ // resulting `relm_error_internal` payload — proves a panic maps to a classed
+ // condition instead of reaching R raw. Internal (never in NAMESPACE).
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_panic() -> Robj {
+     resolve(catch_unwind(AssertUnwindSafe(
+@@ -1121,6 +1126,7 @@ fn rebirth_selftest_panic() -> Robj {
+ // (all layers, all positions, all three components) to keep the surface small; the
+ // R test authors the matching `spec_key`. Internal (never in NAMESPACE).
+ #[allow(clippy::too_many_arguments)]
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_trace_tokens_spill(
+     ptr: Robj,
+@@ -1157,52 +1163,64 @@ fn rebirth_selftest_trace_tokens_spill(
+ 
+ // Macro to generate exports. The functions above are internal `.Call` targets;
+ // the user-facing surface is the R `llm()` and its S3 methods.
+-extendr_api::extendr_module! {
+-    mod relm;
+-    fn rebirth_model_load;
+-    fn rebirth_handle_close;
+-    fn rebirth_handle_is_closed;
+-    fn rebirth_available_backends;
+-    fn rebirth_tokenize;
+-    fn rebirth_detokenize;
+-    fn rebirth_generate;
+-    fn rebirth_generate_structured;
+-    fn rebirth_async_ready;
+-    fn rebirth_stream_regular_file;
+-    fn rebirth_async_submit;
+-    fn rebirth_live_submit;
+-    fn rebirth_live_preflight;
+-    fn rebirth_projection_allocation_profile;
+-    fn rebirth_projection_preflight;
+-    fn rebirth_projection_construct;
+-    fn rebirth_model_state;
+-    fn rebirth_projection_state_facts;
+-    fn rebirth_async_state_ack;
+-    fn rebirth_async_poll;
+-    fn rebirth_async_ack;
+-    fn rebirth_async_discard;
+-    fn rebirth_async_cancel;
+-    fn rebirth_async_shutdown;
+-    fn rebirth_async_test_handle;
+-    fn rebirth_async_test_config;
+-    fn rebirth_async_test_stats;
+-    fn rebirth_logits;
+-    fn rebirth_embed;
+-    fn rebirth_trace;
+-    fn rebirth_spill_prepare;
+-    fn rebirth_spill_cleanup;
+-    fn rebirth_spill_sweep;
+-    fn rebirth_intervene;
+-    fn rebirth_selftest_projection_ledger;
+-    fn rebirth_selftest_projection_budget_error;
+-    fn rebirth_selftest_projection_transfer;
+-    fn rebirth_selftest_projection_constructor;
+-    fn rebirth_selftest_projection_combined_logits;
+-    fn rebirth_selftest_new_handle;
+-    fn rebirth_selftest_validate_image;
+-    fn rebirth_selftest_panic;
+-    fn rebirth_selftest_trace_tokens_spill;
++// extendr 0.9 does not accept cfg attributes inside its registration list.
++// Keep production entries in one place and select only the extra test exports.
++macro_rules! register_relm {
++    ($($selftest:ident),* $(,)?) => {
++        extendr_api::extendr_module! {
++            mod relm;
++            fn rebirth_model_load;
++            fn rebirth_handle_close;
++            fn rebirth_handle_is_closed;
++            fn rebirth_available_backends;
++            fn rebirth_tokenize;
++            fn rebirth_detokenize;
++            fn rebirth_generate;
++            fn rebirth_generate_structured;
++            fn rebirth_async_ready;
++            fn rebirth_stream_regular_file;
++            fn rebirth_async_submit;
++            fn rebirth_live_submit;
++            fn rebirth_live_preflight;
++            fn rebirth_projection_allocation_profile;
++            fn rebirth_projection_preflight;
++            fn rebirth_projection_construct;
++            fn rebirth_model_state;
++            fn rebirth_projection_state_facts;
++            fn rebirth_async_state_ack;
++            fn rebirth_async_poll;
++            fn rebirth_async_ack;
++            fn rebirth_async_discard;
++            fn rebirth_async_cancel;
++            fn rebirth_async_shutdown;
++            fn rebirth_logits;
++            fn rebirth_embed;
++            fn rebirth_trace;
++            fn rebirth_spill_prepare;
++            fn rebirth_spill_cleanup;
++            fn rebirth_spill_sweep;
++            fn rebirth_intervene;
++            $(fn $selftest;)*
++        }
++    };
+ }
++#[cfg(not(feature = "selftest"))]
++register_relm!();
++#[cfg(feature = "selftest")]
++register_relm!(
++    rebirth_async_test_handle,
++    rebirth_async_test_config,
++    rebirth_async_test_stats,
++    rebirth_selftest_projection_ledger,
++    rebirth_selftest_projection_budget_error,
++    rebirth_selftest_projection_transfer,
++    rebirth_selftest_projection_constructor,
++    rebirth_selftest_projection_combined_logits,
++    rebirth_selftest_new_handle,
++    rebirth_selftest_validate_image,
++    rebirth_selftest_panic,
++    rebirth_selftest_trace_tokens_spill,
++);
+ 
+ #[cfg(test)]
+ mod tests {
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs
+index 16d7ab4..addd3c7 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_boundary.rs
+@@ -306,6 +306,7 @@ fn rebirth_projection_preflight(ptr: Robj, config: Robj) -> Robj {
+ // Internal model-free fixture, invoked only by the owner-controlled Rscript
+ // harness. R owns initialization and executes this on its main thread; no
+ // embedded initializer or additional dependency is needed. Never in NAMESPACE.
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_projection_ledger() -> Robj {
+     projection_resolve(catch_unwind(AssertUnwindSafe(|| {
+@@ -313,186 +314,6 @@ fn rebirth_selftest_projection_ledger() -> Robj {
+         Ok(list!(ok = true).into())
+     })))
+ }
+-mod projection_boundary_selftest {
+-    use super::*;
+-
+-    fn numeric_json<const N: usize>(fields: [(&str, u64); N]) -> String {
+-        fields
+-            .iter()
+-            .map(|(key, value)| format!("\"{key}\":{value}"))
+-            .collect::<Vec<_>>()
+-            .join(",")
+-    }
+-    fn r_size(value: &Robj) -> u64 {
+-        let bytes = eval_string_with_params("as.numeric(utils::object.size(param.0))", &[value])
+-            .expect("bounded R size measurement")
+-            .as_real()
+-            .expect("numeric object.size");
+-        assert!(
+-            bytes.is_finite() && bytes >= 0. && bytes.fract() == 0. && bytes < 9007199254740992.
+-        );
+-        bytes as u64
+-    }
+-    fn tag_receipt(
+-        a: &ExternalPtr<LlmHandle>,
+-        b: &ExternalPtr<LlmHandle>,
+-        profile: &ProjectionAllocationProfile,
+-    ) {
+-        assert!(a.is_closed() && b.is_closed());
+-        assert!(a.state.model.borrow().is_none() && b.state.model.borrow().is_none());
+-        let tag_a = a.tag();
+-        let tag_b = b.tag();
+-        let name = std::any::type_name::<LlmHandle>();
+-        assert_eq!(tag_a.len(), 1);
+-        assert_eq!(tag_b.len(), 1);
+-        assert_eq!(tag_a.as_str(), Some(name));
+-        assert_eq!(tag_b.as_str(), Some(name));
+-        assert_eq!(profile.ffi_handle_tag_bytes, name.len() as u64);
+-        let tag_type = eval_string_with_params("typeof(param.0)", &[&tag_a]).unwrap();
+-        assert_eq!(tag_type.as_str(), Some("character"));
+-        // ASCII type-name bytes point into the actual interned CHARSXP. Compare
+-        // identity but never print addresses; two models are not constructed.
+-        let shared_character_payload =
+-            tag_a.as_str().unwrap().as_ptr() == tag_b.as_str().unwrap().as_ptr();
+-        assert!(
+-            shared_character_payload,
+-            "tag ledger counts one interned character payload"
+-        );
+-        let ptr_a: Robj = a.clone().into();
+-        let ptr_b: Robj = b.clone().into();
+-        let pointer_type = eval_string_with_params("typeof(param.0)", &[&ptr_a]).unwrap();
+-        assert_eq!(pointer_type.as_str(), Some("externalptr"));
+-        let protected_is_null = a.protected().is_null() && b.protected().is_null();
+-        assert!(protected_is_null);
+-        let pair: Robj = List::from_values([ptr_a.clone(), ptr_b.clone()]).into();
+-        let tags: Robj = List::from_values([tag_a.clone(), tag_b.clone()]).into();
+-        let combined: Robj =
+-            List::from_values([ptr_a.clone(), ptr_b.clone(), tag_a.clone(), tag_b.clone()]).into();
+-        let empty_pair: Robj = List::from_values([Robj::from(()), Robj::from(())]).into();
+-        let empty_quad: Robj = List::from_values([
+-            Robj::from(()),
+-            Robj::from(()),
+-            Robj::from(()),
+-            Robj::from(()),
+-        ])
+-        .into();
+-        let charged_tag_bytes = 2 * rebirth_llm::live_r_vector_bytes(8).unwrap()
+-            + rebirth_llm::live_r_vector_bytes(profile.ffi_handle_tag_bytes + 1).unwrap();
+-        println!("F6E_PROJECTION_R_TAG {{\"fixture\":\"two_closed_llm_handles\",\"model_count\":0,\"externalptr_r_type\":\"externalptr\",\"protected_is_null\":true,\"tag_r_type\":\"character\",\"tag_length\":1,\"tag_utf8_bytes\":{},\"externalptr_bytes\":[{},{}],\"tag_bytes\":[{},{}],\"pointer_pair_bytes\":{},\"tag_pair_bytes\":{},\"combined_bytes\":{},\"empty_pair_bytes\":{},\"empty_quad_bytes\":{},\"charged_tag_bytes\":{},\"shared_character_payload\":{}}}",
+-            name.len(),r_size(&ptr_a),r_size(&ptr_b),r_size(&tag_a),r_size(&tag_b),r_size(&pair),r_size(&tags),r_size(&combined),r_size(&empty_pair),r_size(&empty_quad),charged_tag_bytes,shared_character_payload);
+-    }
+-    fn twin_receipts(profile: &ProjectionAllocationProfile) {
+-        use rebirth_llm::{
+-            ProjectionAdmission,
+-            ProjectionAdmissionMode::{Inherit, NewSite},
+-        };
+-        // Shape arithmetic only: no direction, dense adapter, model or context is
+-        // allocated, including the maximum-width/count fixtures.
+-        let cases = [
+-            ("new_empty_h1_cpu", NewSite, 1, 0, 0, 0, 0),
+-            ("new_steer_h32_metal", NewSite, 32, 1, 2, 0, 1),
+-            ("new_ablate_h65536_cuda", NewSite, 65536, 31, 0, 3, 2),
+-            ("new_both_h1_metal", NewSite, 1, 31, 2, 3, 1),
+-            ("new_both_h32_cuda", NewSite, 32, 0, 2, 3, 2),
+-            ("new_empty_h65536_cpu", NewSite, 65536, 1, 0, 0, 0),
+-            ("inherit_empty_h1_cpu", Inherit, 1, 0, 0, 0, 0),
+-            ("inherit_steer_h32_cuda", Inherit, 32, 1, 2, 0, 2),
+-            ("inherit_ablate_h65536_metal", Inherit, 65536, 32, 0, 3, 1),
+-            ("inherit_both_h1_cuda", Inherit, 1, 31, 2, 3, 2),
+-            ("inherit_empty_h32_metal", Inherit, 32, 32, 0, 0, 1),
+-            ("inherit_both_h65536_cpu", Inherit, 65536, 1, 2, 3, 0),
+-        ];
+-        assert_eq!(cases.len(), 12);
+-        for (case_index, (case, mode, h, previous_sites, steer_entries, ablate_entries, backend)) in
+-            cases.into_iter().enumerate()
+-        {
+-            let mut inputs = ProjectionAdmission {
+-                mode,
+-                hidden_size: h,
+-                layers: 3,
+-                previous_sites,
+-                steer_entries,
+-                ablate_entries,
+-                source_baseline_values: if steer_entries > 0 { 3 * h } else { 0 },
+-                metadata_bytes: 0,
+-                metadata_scratch_bytes: 0,
+-                backend,
+-                existing_direction_estimate: 4097,
+-                r_projection_fixed_bytes: 4096 + case_index as u64,
+-                r_adapter_bytes: if steer_entries > 0 || ablate_entries > 0 {
+-                    1537
+-                } else {
+-                    0
+-                },
+-                max_bytes: 512 * 1024 * 1024,
+-            };
+-            let terms = profile
+-                .estimate(&inputs)
+-                .expect("synthetic admission within cap");
+-            assert!(terms.total_bytes > 0);
+-            inputs.max_bytes = terms.total_bytes;
+-            let exact = profile
+-                .estimate(&inputs)
+-                .expect("exact combined budget admits");
+-            assert_eq!(exact.fields(), terms.fields());
+-            let mut under = inputs;
+-            under.max_bytes -= 1;
+-            assert!(
+-                profile.estimate(&under).is_err(),
+-                "budget minus one must refuse {case}"
+-            );
+-            // These are actual native results, not a hand-assembled expected
+-            // profile. The parent independently recomputes all13 terms in R.
+-            println!("F6E_PROJECTION_LEDGER_TWIN {{\"case\":\"{case}\",\"profile\":{{{}}},\"inputs\":{{{}}},\"terms\":{{{}}}}}",
+-                numeric_json(profile.fields()),numeric_json(inputs.fields()),numeric_json(terms.fields()));
+-        }
+-    }
+-    pub(super) fn projection_profile_ffi_descriptors_and_schema_are_exact() {
+-        // Empty closed handles retain the real ExternalPtr<LlmHandle> type
+-        // and tag, but contain no model and cannot enter the native engine.
+-        let pointer_a = ExternalPtr::new(LlmHandle::empty());
+-        let pointer_b = ExternalPtr::new(LlmHandle::empty());
+-        let ffi = projection_native_profile().unwrap();
+-        assert_eq!(
+-            ffi.adapter_fixed_bytes,
+-            3 * std::mem::size_of::<Vec<i32>>() as u64 + 2 * std::mem::size_of::<Vec<f64>>() as u64
+-        );
+-        let p = ProjectionAllocationProfile::compiled(ffi);
+-        let list = rebirth_projection_allocation_profile().as_list().unwrap();
+-        assert_eq!(list.len(), PROJECTION_PROFILE_FIELDS);
+-        for (key, value) in p.fields() {
+-            assert_eq!(
+-                list.iter().find(|(k, _)| *k == key).unwrap().1.as_real(),
+-                Some(value as f64)
+-            );
+-        }
+-        let bad = list!(
+-            mode = "new_site",
+-            layer = 1.,
+-            component = "mlp_out",
+-            coef = 1.,
+-            direction = vec![1.],
+-            steer_entries = 0.,
+-            ablate_entries = 0.,
+-            existing_direction_estimate = 0.,
+-            r_projection_fixed_bytes = 0.,
+-            r_adapter_bytes = 0.,
+-            max_bytes = 67108864.
+-        );
+-        assert!(projection_scalars(&bad).is_ok());
+-        for x in [-1., f64::INFINITY, f64::NAN, 1.5, 9007199254740992.] {
+-            assert!(projection_uint(&Robj::from(x)).is_err());
+-        }
+-        let mut duplicated = bad.clone();
+-        duplicated.set_names(["mode"; 11]).unwrap();
+-        assert!(projection_scalars(&duplicated).is_err());
+-        assert!(projection_registry_charge(usize::MAX).is_err());
+-        println!(
+-            "F6E_PROJECTION_ALLOCATION_PROFILE {{{}}}",
+-            numeric_json(p.fields())
+-        );
+-        tag_receipt(&pointer_a, &pointer_b, &p);
+-        twin_receipts(&p);
+-        println!("F6E_PROJECTION_LEDGER_TEST {{\"test\":\"projection_profile_ffi_descriptors_and_schema_are_exact\",\"status\":\"passed\",\"expected_cases\":47,\"executed_cases\":47,\"expected_rejections\":19,\"rejected_cases\":19}}");
+-    }
+-}
++#[cfg(feature = "selftest")]
++#[path = "projection_boundary_selftest.rs"]
++mod projection_boundary_selftest;
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_budget_error_selftest.rs b/rebirth/src/rust/rebirth-ffi/src/projection_budget_error_selftest.rs
+index f02e8ca..4e46a67 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_budget_error_selftest.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_budget_error_selftest.rs
+@@ -1,5 +1,6 @@
+ // Internal model-free R-hosted regression. Use an initialized main-thread R
+ // process; no model handle, tokenizer, backend initialization or inference.
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_projection_budget_error() -> Robj {
+     projection_resolve(catch_unwind(AssertUnwindSafe(|| {
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_combined_test_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/projection_combined_test_boundary.rs
+index 8063ae5..cf12057 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_combined_test_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_combined_test_boundary.rs
+@@ -1,5 +1,6 @@
+ // Private test support for the no_vocab fixture, outside construction/admission.
+ // The fixed token sequence and vocabulary are never supplied by R.
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_projection_combined_logits(ptr: Robj) -> Robj {
+     projection_resolve(catch_unwind(AssertUnwindSafe(|| {
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs
+index 30f4642..58ea891 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_constructor_boundary.rs
+@@ -143,6 +143,7 @@ fn projection_construct_boundary(
+     Ok(output)
+ }
+ 
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_projection_constructor(path: &str) -> Robj {
+     projection_resolve(catch_unwind(AssertUnwindSafe(|| {
+@@ -159,167 +160,5 @@ fn rebirth_selftest_projection_constructor(path: &str) -> Robj {
+     })))
+ }
+ #[cfg(feature = "projection-private")]
+-mod projection_constructor_selftest {
+-    use super::*;
+-    fn config(budget: u64, mode: &str) -> Robj {
+-        let mut direction = vec![0.; 32];
+-        direction[1] = 1.;
+-        list!(
+-            mode = mode,
+-            layer = if mode == "inherit" { 0. } else { 2. },
+-            component = "mlp_out",
+-            coef = if mode == "inherit" { 0. } else { 1. },
+-            direction = if mode == "inherit" {
+-                Vec::<f64>::new()
+-            } else {
+-                direction
+-            },
+-            steer_entries = 0.,
+-            ablate_entries = 0.,
+-            existing_direction_estimate = 0.,
+-            r_projection_fixed_bytes = 4096.,
+-            r_adapter_bytes = 0.,
+-            max_bytes = budget as f64
+-        )
+-        .into()
+-    }
+-    pub(super) fn run(path: &str) -> Result<(), RebirthError> {
+-        // R allocation/finalizer controls have no model/context and run outside
+-        // native borrows. The actual C finalizer releases exactly one Any owner.
+-        let (empty_state, empty_output) = projection_empty_payload()?;
+-        assert_eq!(Rc::strong_count(&empty_state), 2);
+-        drop(empty_output);
+-        eval_string("invisible(gc())").expect("R-hosted shell collection");
+-        assert_eq!(Rc::strong_count(&empty_state), 1);
+-        assert!(empty_state.closed.get() && empty_state.model.borrow().is_none());
+-        let tag = Robj::from(std::any::type_name::<LlmHandle>());
+-        // SAFETY: same protected official empty-shell allocator; null finalizer
+-        // is intentional and must never attempt Box::from_raw(NULL).
+-        let null_shell =
+-            unsafe { Robj::from_sexp(relm_r_projection_shell(tag.get().cast()).cast()) };
+-        drop(null_shell);
+-        eval_string("invisible(gc())").expect("R-hosted null shell collection");
+-        let source = ExternalPtr::new(LlmHandle::new(rebirth_llm::load(LoadRequest {
+-            path: PathBuf::from(path),
+-            context_length: 768,
+-            gpu_layers: Some(0),
+-            backend: BackendKind::Cpu,
+-            mmap: true,
+-            projector: None,
+-        })?));
+-        let ptr: Robj = source.clone().into();
+-        let ints = Robj::from(Vec::<i32>::new());
+-        let doubles = Robj::from(Vec::<f64>::new());
+-        let arrays = [&ints, &doubles, &ints, &ints, &doubles];
+-        let before = source.run(|m| m.prompt_last_logits(&[1, 7, 13], 48))?;
+-        let mut cfg = config(64 * 1024 * 1024, "new_site");
+-        let preflight = rebirth_projection_preflight(ptr.clone(), cfg.clone());
+-        let preflight = preflight.as_list().unwrap();
+-        assert_eq!(preflight.elt(0).unwrap().as_bool(), Some(true));
+-        let terms = projection_field(&preflight, "terms")?.as_list().unwrap();
+-        let exact = projection_uint(&projection_field(&terms, "total_bytes")?)?;
+-        let old = HANDLES.with(|v| (v.borrow().len(), v.borrow().capacity()));
+-        assert!(
+-            projection_construct_boundary(&ptr, &config(exact - 1, "new_site"), arrays, false)
+-                .is_err()
+-        );
+-        assert_eq!(
+-            HANDLES.with(|v| (v.borrow().len(), v.borrow().capacity())),
+-            old
+-        );
+-        // Mirrors the asynchronous loan boundary: an open source with its
+-        // model owned by a worker must not derive a context from stale metadata.
+-        let loan = source.state.model.borrow_mut().take();
+-        assert!(projection_construct_boundary(&ptr, &cfg, arrays, false).is_err());
+-        *source.state.model.borrow_mut() = loan;
+-        // A refused post-construction transfer destroys the candidate context,
+-        // leaves registry/source unchanged, and never opens its preallocated shell.
+-        assert!(projection_construct_boundary(&ptr, &cfg, arrays, true).is_err());
+-        assert_eq!(
+-            HANDLES.with(|v| (v.borrow().len(), v.borrow().capacity())),
+-            old
+-        );
+-        assert_eq!(
+-            source.run(|m| m.prompt_last_logits(&[1, 7, 13], 48))?,
+-            before
+-        );
+-        cfg = config(exact, "new_site");
+-        let result = projection_construct_boundary(&ptr, &cfg, arrays, false)?;
+-        let result = result.as_list().unwrap();
+-        assert_eq!(result.len(), 2);
+-        assert_eq!(result.names().unwrap().collect::<Vec<_>>(), ["ok", "ptr"]);
+-        let candidate_ptr = projection_field(&result, "ptr")?;
+-        let candidate = checked_handle(&candidate_ptr)?;
+-        assert!(!candidate.is_closed());
+-        assert_eq!(HANDLES.with(|v| v.borrow().capacity()), old.1 + 1);
+-        let projected = candidate.run(|m| m.prompt_last_logits(&[1, 7, 13], 48))?;
+-        assert!(projected
+-            .iter()
+-            .zip(&before)
+-            .any(|(a, b)| a.to_bits() != b.to_bits()));
+-        assert!(projection_construct_boundary(&candidate_ptr, &cfg, arrays, false).is_err());
+-        assert!(candidate
+-            .run(|m| m.derive_with_interventions(&InterventionSpec::new(32, 3)))
+-            .is_err());
+-        let inherited = projection_construct_boundary(
+-            &candidate_ptr,
+-            &config(64 * 1024 * 1024, "inherit"),
+-            arrays,
+-            false,
+-        )?;
+-        let inherited_ptr = projection_field(&inherited.as_list().unwrap(), "ptr")?;
+-        let inherited = checked_handle(&inherited_ptr)?;
+-        assert_eq!(
+-            inherited.run(|m| m.prompt_last_logits(&[1, 7, 13], 48))?,
+-            projected
+-        );
+-        assert!(candidate.close());
+-        assert_eq!(
+-            inherited.run(|m| m.prompt_last_logits(&[1, 7, 13], 48))?,
+-            projected
+-        );
+-        assert!(projection_construct_boundary(&candidate_ptr, &cfg, arrays, false).is_err());
+-        assert!(inherited.close());
+-        assert_eq!(
+-            source.run(|m| m.prompt_last_logits(&[1, 7, 13], 48))?,
+-            before
+-        );
+-        assert!(source.close());
+-        // Fresh compiled profile and actual inputs/terms for the independent R
+-        // twin; output rows are bounded schema arrays, not constructor metadata.
+-        let profile = ProjectionAllocationProfile::compiled(projection_native_profile()?);
+-        for (s, a) in [(0, 0), (1, 0), (0, 1), (1, 1)] {
+-            let input = rebirth_llm::ProjectionAdmission {
+-                mode: ProjectionAdmissionMode::NewSite,
+-                hidden_size: 32,
+-                layers: 3,
+-                previous_sites: 1,
+-                steer_entries: s,
+-                ablate_entries: a,
+-                source_baseline_values: 0,
+-                metadata_bytes: 0,
+-                metadata_scratch_bytes: 0,
+-                backend: 0,
+-                existing_direction_estimate: 0,
+-                r_projection_fixed_bytes: 4096,
+-                r_adapter_bytes: 0,
+-                max_bytes: 64 * 1024 * 1024,
+-            };
+-            let e = profile.estimate(&input)?;
+-            let mut exact = input;
+-            exact.max_bytes = e.total_bytes;
+-            assert_eq!(profile.estimate(&exact)?.fields(), e.fields());
+-            exact.max_bytes -= 1;
+-            assert!(profile.estimate(&exact).is_err());
+-            fn fields<const N: usize>(v: [(&str, u64); N]) -> String {
+-                v.into_iter()
+-                    .map(|(k, x)| format!("\"{k}\":{x}"))
+-                    .collect::<Vec<_>>()
+-                    .join(",")
+-            }
+-            println!("F6E_PROJECTION_CONSTRUCTOR_TWIN {{\"case\":\"s{s}a{a}\",\"profile\":{{{}}},\"inputs\":{{{}}},\"terms\":{{{}}}}}",fields(profile.fields()),fields(input.fields()),fields(e.fields()));
+-        }
+-        println!("F6E_PROJECTION_CONSTRUCTOR_TEST {{\"test\":\"projection_constructor_rhost_transfer\",\"status\":\"passed\",\"expected_cases\":18,\"executed_cases\":18,\"expected_rejections\":10,\"rejected_cases\":10,\"expected_values\":0,\"compared_values\":0,\"max_abs_error\":0,\"model_loads\":1,\"twin_cases\":4}}");
+-        Ok(())
+-    }
+-}
++#[path = "projection_constructor_selftest.rs"]
++mod projection_constructor_selftest;
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_review_registry_tests.rs b/rebirth/src/rust/rebirth-ffi/src/projection_review_registry_tests.rs
+index e8e2b6b..63e52c5 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_review_registry_tests.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_review_registry_tests.rs
+@@ -7,7 +7,8 @@ fn assert_charge_covers(registry: &Vec<Weak<u8>>, admitted_capacity: usize, byte
+     assert!(registry.capacity() <= admitted_capacity + 1);
+     assert_eq!(size_of::<Weak<u8>>(), size_of::<Weak<HandleState>>());
+     let actual = (size_of::<Vec<Weak<u8>>>()
+-        + (admitted_capacity + registry.capacity()) * size_of::<Weak<u8>>()) as u64;
++        + (admitted_capacity + registry.capacity()) * size_of::<Weak<u8>>())
++        as u64;
+     assert!(actual <= bytes);
+ }
+ 
+@@ -82,20 +83,10 @@ fn projection_registry_reuses_expired_slots_without_weakening_admission() {
+                 capacity,
+                 bytes - 1,
+             ),
+-            2 => projection_reserve_registration(
+-                &mut registry,
+-                &absent,
+-                &candidate,
+-                capacity,
+-                bytes,
+-            ),
+-            3 => projection_reserve_registration(
+-                &mut registry,
+-                &source,
+-                &source,
+-                capacity,
+-                bytes,
+-            ),
++            2 => {
++                projection_reserve_registration(&mut registry, &absent, &candidate, capacity, bytes)
++            }
++            3 => projection_reserve_registration(&mut registry, &source, &source, capacity, bytes),
+             _ => projection_reserve_registration(
+                 &mut registry,
+                 &source,
+@@ -122,8 +113,7 @@ fn projection_registry_reuses_expired_slots_without_weakening_admission() {
+     drop(simultaneous);
+     let capacity = registry.capacity();
+     let bytes = projection_registry_charge(capacity).unwrap();
+-    projection_reserve_registration(&mut registry, &source, &candidate, capacity, bytes)
+-        .unwrap();
++    projection_reserve_registration(&mut registry, &source, &candidate, capacity, bytes).unwrap();
+     assert_eq!(registry.len(), 2);
+     assert_eq!(registry.capacity(), 2);
+     assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&source));
+diff --git a/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs b/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
+index d28f788..84d9676 100644
+--- a/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
++++ b/rebirth/src/rust/rebirth-ffi/src/projection_transfer_boundary.rs
+@@ -113,10 +113,12 @@ fn projection_reserve_registration<T>(
+     *registry = replacement;
+     Ok(())
+ }
++#[cfg(feature = "selftest")]
+ fn projection_handle_only(ptr: ExternalPtr<LlmHandle>) -> Robj {
+     // No LoadedModel::metadata() or cloned path/display fields in this result.
+     list!(ok = true, ptr = Robj::from(ptr)).into()
+ }
++#[cfg(feature = "selftest")]
+ struct ProjectionResidualInput<'a> {
+     steer_layers: &'a [i32],
+     steer_vectors: &'a [f64],
+@@ -124,6 +126,7 @@ struct ProjectionResidualInput<'a> {
+     ablate_neurons: &'a [i32],
+     ablate_values: &'a [f64],
+ }
++#[cfg(feature = "selftest")]
+ impl ProjectionResidualInput<'_> {
+     fn validate(
+         &self,
+@@ -182,6 +185,7 @@ impl ProjectionResidualInput<'_> {
+     }
+ }
+ 
++#[cfg(feature = "selftest")]
+ #[extendr]
+ fn rebirth_selftest_projection_transfer() -> Robj {
+     projection_resolve(catch_unwind(AssertUnwindSafe(|| {
+@@ -189,166 +193,9 @@ fn rebirth_selftest_projection_transfer() -> Robj {
+         Ok(list!(ok = true).into())
+     })))
+ }
+-mod projection_transfer_selftest {
+-    use super::*;
+-    fn marker(test: &str, cases: usize, rejected: usize) {
+-        println!("F6E_PROJECTION_TRANSFER_TEST {{\"test\":\"{test}\",\"status\":\"passed\",\"expected_cases\":{cases},\"executed_cases\":{cases},\"expected_rejections\":{rejected},\"rejected_cases\":{rejected}}}");
+-    }
+-    pub(super) fn run() {
+-        source_registry_payload();
+-        borrowed_residual();
+-        state_facts();
+-    }
+-    fn source_registry_payload() {
+-        let source = ExternalPtr::new(LlmHandle::register(None, false, None));
+-        let same: Robj = source.clone().into();
+-        assert!(projection_same_source(&source, &same).is_ok());
+-        let other: Robj = ExternalPtr::new(LlmHandle::register(None, false, None)).into();
+-        assert!(projection_same_source(&source, &other).is_err());
+-        assert!(projection_same_source(&source, &Robj::from("foreign")).is_err());
+-        source.state.closed.set(true);
+-        assert!(projection_same_source(&source, &same).is_err());
+-        source.state.closed.set(false);
+-        // A shape/identity fixture cannot masquerade as an actual native model.
+-        assert!(source.run(|_| Ok(())).is_err());
+-        let a = Rc::new(1u8);
+-        let b = Rc::new(2u8);
+-        let absent = Rc::new(3u8);
+-        let mut registry = Vec::with_capacity(2);
+-        registry.push(Rc::downgrade(&a));
+-        let capacity = registry.capacity();
+-        let bytes = projection_registry_charge(capacity).unwrap();
+-        assert!(
+-            projection_reserve_registration(&mut registry, &a, &b, capacity + 1, bytes).is_err()
+-        );
+-        assert!(
+-            projection_reserve_registration(&mut registry, &a, &b, capacity, bytes - 1).is_err()
+-        );
+-        assert!(
+-            projection_reserve_registration(&mut registry, &absent, &b, capacity, bytes).is_err()
+-        );
+-        assert_eq!(registry.len(), 1);
+-        assert_eq!(registry.capacity(), capacity);
+-        assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
+-        projection_reserve_registration(&mut registry, &a, &b, capacity, bytes).unwrap();
+-        assert_eq!(registry.len(), 2);
+-        assert_eq!(registry.capacity(), registry.len());
+-        assert_eq!(registry[0].as_ptr(), Rc::as_ptr(&a));
+-        assert_eq!(registry[1].as_ptr(), Rc::as_ptr(&b));
+-        let new_capacity = registry.capacity();
+-        let new_bytes = projection_registry_charge(new_capacity).unwrap();
+-        assert!(
+-            projection_reserve_registration(&mut registry, &a, &a, new_capacity, new_bytes)
+-                .is_err()
+-        );
+-        assert!(
+-            projection_reserve_registration(&mut registry, &a, &b, new_capacity, new_bytes)
+-                .is_err()
+-        );
+-        let stale_capacity = new_capacity + 1;
+-        assert!(projection_reserve_registration(
+-            &mut registry,
+-            &a,
+-            &absent,
+-            stale_capacity,
+-            projection_registry_charge(stale_capacity).unwrap(),
+-        )
+-        .is_err());
+-        drop(b);
+-        let capacity = registry.capacity();
+-        projection_reserve_registration(
+-            &mut registry,
+-            &a,
+-            &absent,
+-            capacity,
+-            projection_registry_charge(capacity).unwrap(),
+-        )
+-        .unwrap();
+-        assert_eq!(registry.len(), 2);
+-        assert_eq!(registry.capacity(), registry.len());
+-        let output = projection_handle_only(ExternalPtr::new(LlmHandle::empty()));
+-        let list = output.as_list().unwrap();
+-        assert_eq!(list.names().unwrap().collect::<Vec<_>>(), vec!["ok", "ptr"]);
+-        assert_eq!(list.elt(0).unwrap().as_bool(), Some(true));
+-        assert!(checked_handle(&list.elt(1).unwrap()).unwrap().is_closed());
+-        marker("projection_transfer_source_registry_and_payload", 14, 10);
+-    }
+-    fn borrowed_residual() {
+-        let mut input = ProjectionResidualInput {
+-            steer_layers: &[2],
+-            steer_vectors: &[1., -1.],
+-            ablate_layers: &[1],
+-            ablate_neurons: &[2],
+-            ablate_values: &[0.25],
+-        };
+-        assert!(input.validate(2, 3, |_, _| true).is_ok());
+-        assert!(input.validate(2, 3, |_, _| false).is_err());
+-        assert!(input.validate(3, 3, |_, _| true).is_err());
+-        input.steer_layers = &[1];
+-        assert!(input.validate(2, 3, |_, _| true).is_err());
+-        input.steer_layers = &[4];
+-        assert!(input.validate(2, 3, |_, _| true).is_err());
+-        input.steer_layers = &[2];
+-        input.steer_vectors = &[f64::INFINITY, 0.];
+-        assert!(input.validate(2, 3, |_, _| true).is_err());
+-        input.steer_vectors = &[f32::MAX as f64 * 2., 0.];
+-        assert!(input.validate(2, 3, |_, _| true).is_err());
+-        input.steer_vectors = &[0., 0.];
+-        assert!(input.validate(2, 3, |_, steer| !steer).is_ok());
+-        input.ablate_neurons = &[3];
+-        assert!(input.validate(2, 3, |_, _| true).is_err());
+-        input.ablate_neurons = &[2];
+-        input.ablate_values = &[f64::NAN];
+-        assert!(input.validate(2, 3, |_, _| true).is_err());
+-        input.ablate_values = &[];
+-        assert!(input.validate(2, 3, |_, _| true).is_err());
+-        assert!(
+-            std::mem::size_of::<ProjectionResidualInput<'_>>()
+-                <= 3 * std::mem::size_of::<Vec<i32>>() + 2 * std::mem::size_of::<Vec<f64>>()
+-        );
+-        marker("projection_transfer_borrowed_residual_inputs", 12, 9);
+-    }
+-    fn state_facts() {
+-        for (name, code) in [
+-            ("factory_open", "param.1"),
+-            ("factory_closed", "local({param.1$closed<-TRUE; param.1})"),
+-            ("compiled_assignment", "local({f<-compiler::cmpfun(function(e){e$closed<-FALSE;e}); f(param.1)})"),
+-        ] {
+-            let ptr: Robj = ExternalPtr::new(LlmHandle::empty()).into();
+-            let created = rebirth_model_state(ptr.clone());
+-            let state = eval_string_with_params(code, &[&ptr, &created]).unwrap();
+-            let facts = rebirth_projection_state_facts(state, ptr).as_list().unwrap();
+-            assert_eq!(facts.len(), 3);
+-            assert_eq!(facts.elt(0).unwrap().as_real(), Some(0.));
+-            assert_eq!(facts.elt(1).unwrap().as_real(), Some(2.));
+-            assert_eq!(facts.elt(2).unwrap().as_real(), Some(std::mem::size_of::<unsafe extern "C" fn(extendr_api::SEXP)>() as f64));
+-            println!("F6E_PROJECTION_STATE_FACTS {{\"fixture\":\"{name}\",\"hash_slots\":0,\"bindings\":2,\"c_finalizer_bytes\":{},\"query_workspace_bytes\":{},\"ffi_response_bytes\":{}}}",facts.elt(2).unwrap().as_real().unwrap(),projection_state_workspace_bytes(),projection_native_profile().unwrap().response_bytes);
+-        }
+-        for code in [
+-            "local({e<-param.1; parent.env(e)<-globalenv(); e})",
+-            "local({e<-param.1; attr(e,'x')<-1L; e})",
+-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; e$x<-1L; e})",
+-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e})",
+-            "local({e<-param.1; e$closed<-NA; e})",
+-            "local({e<-param.1; e$closed<-0L; e})",
+-            "local({e<-param.1; e$closed<-structure(FALSE,x=1L); e})",
+-            "local({e<-param.1; delayedAssign('closed',stop('PROMISE EVALUATED'),assign.env=e); e})",
+-            "local({e<-new.env(hash=TRUE,parent=emptyenv()); e$closed<-FALSE; makeActiveBinding('ptr',function()stop('ACTIVE EVALUATED'),e); e})",
+-            "local({e<-new.env(hash=TRUE,size=29L,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; lockEnvironment(e); e})",
+-            "local({e<-param.1; delayedAssign('ptr',stop('POINTER PROMISE EVALUATED'),assign.env=e); e})",
+-            "local({e<-new.env(hash=FALSE,parent=emptyenv()); e$ptr<-param.0; e$closed<-FALSE; lockEnvironment(e); e})",
+-        ] {
+-            let ptr: Robj = ExternalPtr::new(LlmHandle::empty()).into();
+-            let created = rebirth_model_state(ptr.clone());
+-            let state = eval_string_with_params(code, &[&ptr, &created]).unwrap();
+-            let result = rebirth_projection_state_facts(state,ptr).as_list().unwrap();
+-            assert_eq!(result.elt(0).unwrap().as_bool(),Some(false));
+-        }
+-        assert!(projection_native_profile().unwrap().response_bytes >= projection_state_workspace_bytes());
+-        marker("projection_transfer_r_state_facts", 16, 12);
+-    }
+-
+-}
++#[cfg(feature = "selftest")]
++#[path = "projection_transfer_selftest.rs"]
++mod projection_transfer_selftest;
+ 
+ #[cfg(test)]
+ #[path = "projection_review_registry_tests.rs"]
+diff --git a/rebirth/src/rust/rebirth-llm/src/projection_tests.rs b/rebirth/src/rust/rebirth-llm/src/projection_tests.rs
+index 9224a73..4cc6833 100644
+--- a/rebirth/src/rust/rebirth-llm/src/projection_tests.rs
++++ b/rebirth/src/rust/rebirth-llm/src/projection_tests.rs
+@@ -66,3 +66,4 @@ include!("projection_test_support.rs");
+ include!("projection_diagnostic.rs");
+ 
+ include!("projection_policy_diagnostic.rs");
++include!("projection_prefix_debt_diagnostic.rs");
+diff --git a/rebirth/tests/testthat/helper-async.R b/rebirth/tests/testthat/helper-async.R
+index cff0ec1..df196d4 100644
+--- a/rebirth/tests/testthat/helper-async.R
++++ b/rebirth/tests/testthat/helper-async.R
+@@ -2,6 +2,8 @@
+ # No model is loaded until a test explicitly calls these helpers.
+ 
+ async_test_handle <- function(mode = "success", steps = 20L, delay_ms = 10L) {
++  require_relm_selftest(c("rebirth_async_test_handle", "rebirth_async_test_config",
++    "rebirth_async_test_stats"))
+   m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()),
+     "<async-controlled-fixture>")
+   relm:::relm_check(relm:::rebirth_async_test_config(m$ptr, mode, steps, delay_ms))
+@@ -67,7 +69,7 @@ async_test_wait <- function(result, timeout = 10, promise = NULL) {
+       wall_started, units = "secs")), polls = polls, max_poll_seconds = max_poll_seconds,
+       current_loop = later::current_loop()$id, global_loop = later::global_loop()$id,
+       transitions = transitions, last_polls = samples, queue_at_boundary = queue,
+-      native = relm:::rebirth_async_test_stats(), observer_done = result$done,
++      native = async_test_native_stats(), observer_done = result$done,
+       R = R.version.string, later = as.character(packageVersion("later")),
+       promises = as.character(packageVersion("promises")),
+       testthat = as.character(packageVersion("testthat")),
+@@ -83,7 +85,7 @@ async_test_wait <- function(result, timeout = 10, promise = NULL) {
+   if (!result$done) {
+     # Distinguish a still-running worker from a terminal result whose R callback
+     # was not delivered. Read-only counters do not collect or cancel the job.
+-    counters <- relm:::rebirth_async_test_stats()
++    counters <- async_test_native_stats()
+     diagnostic <- paste(diagnostic,
+       paste(capture.output(str(counters)), collapse = "\n"), sep = "\n")
+   }
+diff --git a/rebirth/tests/testthat/helper-llm.R b/rebirth/tests/testthat/helper-llm.R
+index 98f76ef..17666ff 100644
+--- a/rebirth/tests/testthat/helper-llm.R
++++ b/rebirth/tests/testthat/helper-llm.R
+@@ -364,6 +364,7 @@ vlm_mmproj_path <- function() {
+ # no model file, so the native free is a safe no-op. The metadata values are
+ # placeholders — the close tests assert on lifecycle, not on metadata.
+ empty_handle_llm <- function() {
++  require_relm_selftest("rebirth_selftest_new_handle")
+   ptr <- relm:::rebirth_selftest_new_handle()
+   payload <- list(
+     ok = TRUE, ptr = ptr, architecture = "x", parameters = 1,
+diff --git a/rebirth/tests/testthat/helper-projection.R b/rebirth/tests/testthat/helper-projection.R
+index b2ec14e..bf543f2 100644
+--- a/rebirth/tests/testthat/helper-projection.R
++++ b/rebirth/tests/testthat/helper-projection.R
+@@ -56,6 +56,7 @@ projection_binding_fixture <- function() {
+       terms = relm:::projection_memory_bound(e$profile, i))
+   }
+   e$rebirth_projection_construct <- function(ptr, config, sl, sv, al, an, av) {
++    require_relm_selftest("rebirth_selftest_new_handle")
+     e$events <- c(e$events, "construct"); e$last_config <- config
+     e$flat <- list(sl, sv, al, an, av)
+     list(ok = TRUE, ptr = relm:::rebirth_selftest_new_handle())
+diff --git a/rebirth/tests/testthat/helper-stream.R b/rebirth/tests/testthat/helper-stream.R
+index 89a03c3..4a01d9a 100644
+--- a/rebirth/tests/testthat/helper-stream.R
++++ b/rebirth/tests/testthat/helper-stream.R
+@@ -1,6 +1,7 @@
+ # WP10 controlled-worker helpers. All fixture tests run on every R CI matrix leg;
+ # tests marked [MODEL] require the existing cached model environment variables.
+ stream_test_handle <- function(mode = "success", steps = 6L, delay_ms = 0L) {
++  require_relm_selftest(c("rebirth_async_test_handle", "rebirth_async_test_config"))
+   m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()),
+     "<stream-controlled-fixture>")
+   relm:::relm_check(relm:::rebirth_async_test_config(m$ptr, mode, steps, delay_ms))
+diff --git a/rebirth/tests/testthat/test-boundary.R b/rebirth/tests/testthat/test-boundary.R
+index 4bffc2e..392c5b4 100644
+--- a/rebirth/tests/testthat/test-boundary.R
++++ b/rebirth/tests/testthat/test-boundary.R
+@@ -35,6 +35,7 @@ test_that("the boundary maps an unavailable backend to a backend payload", {
+ })
+ 
+ test_that("a forced panic maps to relm_error_internal, never reaching R raw", {
++  require_relm_selftest("rebirth_selftest_panic")
+   p <- relm:::rebirth_selftest_panic()
+   expect_false(p$ok)
+   expect_identical(p$class, "relm_error_internal")
+diff --git a/rebirth/tests/testthat/test-conditions.R b/rebirth/tests/testthat/test-conditions.R
+index 87c19c1..f4e86b4 100644
+--- a/rebirth/tests/testthat/test-conditions.R
++++ b/rebirth/tests/testthat/test-conditions.R
+@@ -43,3 +43,24 @@ test_that("relm_check raises the classed condition described by a failure payloa
+   expect_identical(cnd$available, "cpu")
+   expect_identical(conditionMessage(cnd), "Backend 'cuda' is not available.")
+ })
++
++# No engine or optional async dependency; runs in every ordinary R CI job.
++test_that("thrown and async payload errors retain the same fields and hierarchy", {
++  parent <- simpleError("original callback failure")
++  fields <- list(callback = "on_token", parent = parent, reason = "delivery")
++  payload <- list(ok = FALSE, class = "relm_error_callback",
++    message = "Callback failed.", fields = fields)
++  asynchronous <- relm:::async_payload_condition(payload)
++  thrown <- tryCatch(relm:::relm_check(payload, call = NULL), error = identity)
++  expect_identical(asynchronous, thrown)
++  expect_identical(names(asynchronous), c("message", "call", "callback", "parent", "reason"))
++  expect_identical(class(asynchronous), c("relm_error_callback", "relm_error", "error", "condition"))
++  expect_null(conditionCall(asynchronous))
++  expect_identical(asynchronous$parent, parent)
++
++  origin <- quote(llm_generate(m, "hello"))
++  thrown <- tryCatch(relm:::relm_check(payload, call = origin), error = identity)
++  expect_identical(conditionCall(thrown), origin)
++  thrown["call"] <- list(NULL)
++  expect_identical(thrown, asynchronous)
++})
+diff --git a/rebirth/tests/testthat/test-llm-async-lifecycle.R b/rebirth/tests/testthat/test-llm-async-lifecycle.R
+index 72c0c20..0b97f8f 100644
+--- a/rebirth/tests/testthat/test-llm-async-lifecycle.R
++++ b/rebirth/tests/testthat/test-llm-async-lifecycle.R
+@@ -3,7 +3,10 @@
+ # process package. The cached-Qwen ownership test is explicitly [MODEL]-gated.
+ # Child-process exit/panic-output assertions complement native drop counters.
+ 
+-async_lifecycle_process <- function(body, timeout = 30, setup = NULL, setup_timeout = 0) {
++async_lifecycle_process <- function(body, timeout = 30, setup = NULL, setup_timeout = 0,
++                                    selftest = TRUE) {
++  if (selftest) require_relm_selftest(c("rebirth_async_test_handle",
++    "rebirth_async_test_config", "rebirth_async_test_stats"))
+   script <- tempfile(fileext = ".R")
+   log <- tempfile(fileext = ".log")
+   on.exit(unlink(c(script, log)), add = TRUE)
+@@ -30,6 +33,9 @@ async_lifecycle_process <- function(body, timeout = 30, setup = NULL, setup_time
+     ".relm_lifecycle_step('begin', 'load namespaces')",
+     paste0(".libPaths(", libraries, ")"),
+     "library(relm)", "stopifnot(requireNamespace('later'), requireNamespace('promises'))",
++    if (selftest) paste0("stopifnot(all(c('wrap__rebirth_async_test_handle', ",
++      "'wrap__rebirth_async_test_config', 'wrap__rebirth_async_test_stats') %in% ",
++      "names(getDLLRegisteredRoutines('relm')$.Call)))"),
+     ".relm_lifecycle_step('end', 'load namespaces')",
+     "new_fixture <- function(mode = 'success', steps = 100L, delay = 2L) {",
+     "  m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()), '<fixture>')",
+@@ -253,7 +259,7 @@ test_that("foreign external pointers fail safely before an extendr downcast", {
+     "  relm:::rebirth_handle_close(ptr)",
+     "}",
+     "gc()"
+-  ))
++  ), selftest = FALSE)
+ })
+ 
+ test_that("session exit joins an active job without an event-loop drain", {
+diff --git a/rebirth/tests/testthat/test-llm-close.R b/rebirth/tests/testthat/test-llm-close.R
+index 567963c..cef993d 100644
+--- a/rebirth/tests/testthat/test-llm-close.R
++++ b/rebirth/tests/testthat/test-llm-close.R
+@@ -37,6 +37,7 @@ test_that("the closed tag is shared across copies of a handle (env semantics)",
+ })
+ 
+ test_that("the boundary closed tag: is_closed TRUE on an empty handle, close a no-op", {
++  require_relm_selftest("rebirth_selftest_new_handle")
+   ptr <- relm:::rebirth_selftest_new_handle()
+   expect_true(relm:::rebirth_handle_is_closed(ptr))
+   expect_null(relm:::rebirth_handle_close(ptr)) # no-op, no crash
+diff --git a/rebirth/tests/testthat/test-llm-live-model.R b/rebirth/tests/testthat/test-llm-live-model.R
+index 66aa3f7..9feb9c1 100644
+--- a/rebirth/tests/testthat/test-llm-live-model.R
++++ b/rebirth/tests/testthat/test-llm-live-model.R
+@@ -286,6 +286,7 @@ test_that("[MODEL] live chat coordinates include the exact template over a prefi
+ })
+ 
+ test_that("[MODEL] close inside on_state abandons delivery and drains owned native work", {
++  require_relm_selftest("rebirth_async_test_stats")
+   m <- llm(qwen_model_path(), backend = "cpu", context_length = 1024)
+   on.exit(close(m), add = TRUE)
+   states <- batches <- list()
+diff --git a/rebirth/tests/testthat/test-llm-live-steering.R b/rebirth/tests/testthat/test-llm-live-steering.R
+index 40b2d57..4a74420 100644
+--- a/rebirth/tests/testthat/test-llm-live-steering.R
++++ b/rebirth/tests/testthat/test-llm-live-steering.R
+@@ -245,6 +245,7 @@ test_that("[MODEL] live steering restores adapters after cancel callback and rep
+ })
+ 
+ test_that("[MODEL] close after an applied live update discards the outstanding reply", {
++  require_relm_selftest("rebirth_async_test_stats")
+   m <- llm(qwen_model_path(), backend = "cpu", context_length = 1024)
+   on.exit(close(m), add = TRUE)
+   d <- llm_steer(m, 2L, rep(0.02, m$hidden_size), coef = 0)
+diff --git a/rebirth/tests/testthat/test-llm-trace-spill-ownership.R b/rebirth/tests/testthat/test-llm-trace-spill-ownership.R
+index 323daaa..c1dd422 100644
+--- a/rebirth/tests/testthat/test-llm-trace-spill-ownership.R
++++ b/rebirth/tests/testthat/test-llm-trace-spill-ownership.R
+@@ -10,6 +10,7 @@ lease_wait <- function(predicate, seconds) {
+ }
+ 
+ lease_child <- function(mode) {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   root <- normalizePath(tempdir())
+   work <- tempfile("relm-owner-", tmpdir = root)
+   dir.create(work)
+@@ -25,6 +26,7 @@ lease_child <- function(mode) {
+   writeLines(c(
+     "cfg <- readRDS(commandArgs(TRUE)[[1L]])",
+     ".libPaths(cfg$lib); library(relm)",
++    "stopifnot('wrap__rebirth_selftest_trace_tokens_spill' %in% names(getDLLRegisteredRoutines('relm')$.Call))",
+     "saveRDS(Sys.getpid(), cfg$pid)",
+     "ns <- asNamespace('relm'); state <- get('.relm_state', ns)",
+     "state$session_dir <- cfg$dir",
+diff --git a/rebirth/tests/testthat/test-llm-trace-spill.R b/rebirth/tests/testthat/test-llm-trace-spill.R
+index f1a2db5..407a05c 100644
+--- a/rebirth/tests/testthat/test-llm-trace-spill.R
++++ b/rebirth/tests/testthat/test-llm-trace-spill.R
+@@ -22,6 +22,7 @@ synthetic_tokens <- function() c(1, 7, 13, 22, 5, 31, 44, 2) + 1L
+ # wrapping the boundary payload with the same constructors llm_trace() uses, so the
+ # resulting object is byte-identical to a user's. `spill_dir` isolates the files.
+ selftest_trace_tokens <- function(m, tokens, spill, budget, spill_dir = NULL) {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   components <- c("residual", "attn_out", "mlp_out")
+   # Mirror llm_trace()'s spec key + nonce trace id (M-2). The raw-token path has no
+   # text prompts, so a fixed placeholder stands in for the prompts digest; it is
+@@ -41,6 +42,7 @@ selftest_trace_tokens <- function(m, tokens, spill, budget, spill_dir = NULL) {
+ }
+ 
+ test_that("a spilled trace's slices equal the in-memory slices exactly", {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   # ACCEPTANCE (WP4 Step 5): an over-budget capture with spill = TRUE streams to an
+   # Arrow-IPC file, and as.matrix() read back via nanoarrow equals the same capture
+   # held in memory -- neuron for neuron. Defect this catches: any writer/reader
+@@ -90,6 +92,7 @@ test_that("a spilled trace's slices equal the in-memory slices exactly", {
+ })
+ 
+ test_that("a materialized trace fits K x its f32-activation bytes (D-017 pins the factor)", {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   # ACCEPTANCE (D-017): the trace budget is measured on the peak resident cost of the
+   # materialized data.frame the caller receives, estimated as
+   # TRACE_MATERIALIZED_EXPANSION x the f32 activation bytes. This pins that factor
+@@ -112,6 +115,7 @@ test_that("a materialized trace fits K x its f32-activation bytes (D-017 pins th
+ })
+ 
+ test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spill path)", {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   # REV-3: the synthetic model is no_vocab, so a captured row carries no token
+   # piece. The in-memory boundary payload must surface `token` as NA_character_
+   # (not ""), agreeing with the spill path -- which writes append_null (NA) -- and
+@@ -127,6 +131,7 @@ test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spi
+ })
+ 
+ test_that("the trace payload carries the positions_recycled signal (Rust->R wiring)", {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   # REV-2: guards the field the API-GRAMMAR section 4 recycling warning reads. The
+   # payload must carry a logical `positions_recycled` (FALSE for the fixed
+   # all-positions selftest spec). A rename on either side of the boundary would
+@@ -143,6 +148,7 @@ test_that("the trace payload carries the positions_recycled signal (Rust->R wiri
+ })
+ 
+ test_that("print() and summary() on a spilled trace never read the file", {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   # ACCEPTANCE: print/summary report a spilled trace from its attributes alone.
+   # Proof: delete the spill file, then print/summary still succeed (they would
+   # error if they touched it), while as.matrix -- which must read -- fails cleanly.
+@@ -180,6 +186,7 @@ test_that("print() and summary() on a spilled trace never read the file", {
+ })
+ 
+ test_that("a spill file whose footer disagrees with the object is rejected", {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   # ACCEPTANCE (ARCHITECTURE section 6): the staleness fail-safe. A reopened file
+   # whose capture-spec footer differs from the object's attributes (a file
+   # overwritten by a later trace, or from another session) must raise
+@@ -231,6 +238,7 @@ test_that("the spec key varies with prompts and the trace id is a nonce (M-2)",
+ })
+ 
+ test_that("a spill file with a truncated/corrupt body fails as a classed condition", {
++  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
+   # SEC-MEDIUM: a readable header/schema does NOT guarantee readable record-batch
+   # bodies. A spill file whose batches are truncated must raise relm_error_trace
+   # (with the re-run guidance), never a raw nanoarrow error. Defect this catches:
+diff --git a/rebirth/tests/testthat/test-llm-trace.R b/rebirth/tests/testthat/test-llm-trace.R
+index b6083ba..eda5eb2 100644
+--- a/rebirth/tests/testthat/test-llm-trace.R
++++ b/rebirth/tests/testthat/test-llm-trace.R
+@@ -412,9 +412,9 @@ test_that("as.matrix.relm_trace extracts one (layer, component) slice as a matri
+ test_that("as.matrix.relm_trace fails loud on a mis-shaped (duplicated) slice (M-1)", {
+   # Defect (M-1): duplicate (prompt_id, token_pos, neuron) rows in a slice would make
+   # matrix(byrow = TRUE) silently recycle/interleave values under correct row and
+-  # column labels -- a wrong matrix, no error. The structural invariant
+-  # nrow(sub) == n_points * n_neuron must instead raise a classed relm_error_trace,
+-  # catching any duplication source (a future one, or a defeated upstream dedupe).
++  # column labels -- a wrong matrix, no error. A row-count mismatch must instead
++  # raise a classed relm_error_trace. The equal-cardinality regression below
++  # covers duplicates that replace a missing cell rather than add rows.
+   x <- make_trace()
+   base <- as.data.frame(x)
+   # Duplicate the layer-1/residual slice's rows: same coordinates, so the unique
+@@ -438,6 +438,29 @@ test_that("as.matrix.relm_trace fails loud on a mis-shaped (duplicated) slice (M
+   expect_identical(dim(clean), c(2L, 4L))
+ })
+ 
++# No model or download: ordinary R CI covers both matrix reader branches.
++test_that("as.matrix rejects duplicate-plus-missing cells with unchanged dimensions", {
++  clean <- make_trace()
++  damaged <- clean
++  selected <- which(damaged$layer == 1L & damaged$component == "residual")
++  damaged[selected[1L], ] <- damaged[selected[2L], ]
++  rows <- as.data.frame(damaged)[selected, c("prompt_id", "token_pos", "neuron", "value")]
++  # The old cardinality-only guard accepted this incomplete grid.
++  expect_identical(nrow(rows),
++    nrow(unique(rows[c("prompt_id", "token_pos")])) * length(unique(rows$neuron)))
++  expect_error(as.matrix(damaged, layer = 1L), class = "relm_error_trace",
++    regexp = "duplicate \\(position, neuron\\)")
++  expect_identical(as.matrix(damaged, layer = 2L, component = "attn_out"),
++    as.matrix(clean, layer = 2L, component = "attn_out"))
++
++  # A corrupt spill slice must encounter the same post-read grid guard.
++  local_mocked_bindings(read_spill_slice = function(x, layer, component) rows,
++    .package = "relm")
++  attr(damaged, "spilled") <- TRUE
++  expect_error(as.matrix(damaged, layer = 1L), class = "relm_error_trace",
++    regexp = "duplicate \\(position, neuron\\)")
++})
++
+ # --- [MODEL] real-model trace (Qwen: tokenizer + hidden_size = 896) ----------
+ 
+ test_that("llm_trace() on a real model returns the relm_trace schema and slices [MODEL]", {
+diff --git a/rebirth/tests/testthat/test-llm-vision.R b/rebirth/tests/testthat/test-llm-vision.R
+index 37338e9..0e1879b 100644
+--- a/rebirth/tests/testthat/test-llm-vision.R
++++ b/rebirth/tests/testthat/test-llm-vision.R
+@@ -27,6 +27,7 @@
+ # --- [CI] the pre-decode gate: allow-list --------------------------------------
+ 
+ test_that("the image gate accepts exactly JPEG, PNG, and BMP", {
++  require_relm_selftest("rebirth_selftest_validate_image")
+   for (case in list(
+     c("red-square.png", "png"),
+     c("red-square.jpg", "jpeg"),
+@@ -41,6 +42,7 @@ test_that("the image gate accepts exactly JPEG, PNG, and BMP", {
+ })
+ 
+ test_that("the image gate rejects audio magics, GIF, and garbage at the magic stage", {
++  require_relm_selftest("rebirth_selftest_validate_image")
+   # The audio-gate mutation proof (audit req 4): every magic miniaudio's loose
+   # sniff would route to the audio decoder — RIFF/WAVE, MP3 frame sync, the
+   # loosest 0xFF/0xE0 MPEG sync, ID3, fLaC — plus a REAL GIF (dropped from the
+@@ -67,6 +69,7 @@ test_that("the image gate rejects audio magics, GIF, and garbage at the magic st
+ })
+ 
+ test_that("the image gate rejects a truncated file of each allowed format", {
++  require_relm_selftest("rebirth_selftest_validate_image")
+   for (name in c("truncated.png", "truncated.jpg", "truncated.bmp")) {
+     cnd <- tryCatch(
+       relm_check(relm:::rebirth_selftest_validate_image(
+@@ -83,6 +86,7 @@ test_that("the image gate rejects a truncated file of each allowed format", {
+ })
+ 
+ test_that("the image gate rejects over-cap dimensions before any decode", {
++  require_relm_selftest("rebirth_selftest_validate_image")
+   # overdims.png CLAIMS 100000 x 4 in a valid header: over the per-dimension
+   # cap. overpixels.png claims 16000 x 16000 (256 Mpx, ~768 MB decoded):
+   # each side within the dimension cap, so it is provably the PIXEL cap that
+@@ -107,6 +111,7 @@ test_that("the image gate rejects over-cap dimensions before any decode", {
+ })
+ 
+ test_that("the image gate enforces the byte cap and names the override", {
++  require_relm_selftest("rebirth_selftest_validate_image")
+   cnd <- tryCatch(
+     relm_check(relm:::rebirth_selftest_validate_image(
+       vision_fixture("red-square.png"), 100
+@@ -119,6 +124,7 @@ test_that("the image gate enforces the byte cap and names the override", {
+ })
+ 
+ test_that("the image gate accepts the degenerate-but-legal dimension fixtures", {
++  require_relm_selftest("rebirth_selftest_validate_image")
+   # 1x1 and the two 16384-long thin strips are WITHIN the caps: the gate must
+   # pass them (the model-side behavior — classed error or success, never an
+   # abort — is the [MODEL] test below, audit req 4).
+@@ -131,6 +137,7 @@ test_that("the image gate accepts the degenerate-but-legal dimension fixtures",
+ })
+ 
+ test_that("a missing image file is a classed image error with the path field", {
++  require_relm_selftest("rebirth_selftest_validate_image")
+   cnd <- tryCatch(
+     relm_check(relm:::rebirth_selftest_validate_image(
+       "/nonexistent/nope.png", 64 * 1024^2
+diff --git a/rebirth/tests/testthat/test-projection-owners.R b/rebirth/tests/testthat/test-projection-owners.R
+index f40aa6f..f3c78b6 100644
+--- a/rebirth/tests/testthat/test-projection-owners.R
++++ b/rebirth/tests/testthat/test-projection-owners.R
+@@ -102,6 +102,7 @@ test_that("projection site count refuses thirty-third entry before new materiali
+ })
+ 
+ test_that("projection candidate wraps an independent un-hashed state and shares unchanged entries", {
++  require_relm_selftest("rebirth_selftest_new_handle")
+   m <- projection_owner_model()
+   m$state$closed <- TRUE; m$state$ptr <- m$ptr
+   entry <- projection_owner_entry()
+diff --git a/rebirth/tests/testthat/test-projection-public-binding.R b/rebirth/tests/testthat/test-projection-public-binding.R
+index 5d8eb05..5790e7a 100644
+--- a/rebirth/tests/testthat/test-projection-public-binding.R
++++ b/rebirth/tests/testthat/test-projection-public-binding.R
+@@ -37,6 +37,7 @@ test_that("projection preparation rejects altered native scope and charges befor
+ })
+ 
+ test_that("projection derivation carries admitted arrays and creates independent R state", {
++  require_relm_selftest("rebirth_selftest_new_handle")
+   e <- projection_binding_fixture(); m <- projection_owner_model(); iv <- projection_owner_entry()
+   m$interventions <- list(list(kind = "steer", layer = 2L,
+     direction = c(2, 4, 6), coef = .5, positions = "all"))
+@@ -52,6 +53,7 @@ test_that("projection derivation carries admitted arrays and creates independent
+ })
+ 
+ test_that("projection derivation closes delivered handle if R wrapping fails", {
++  require_relm_selftest("rebirth_selftest_new_handle")
+   e <- projection_binding_fixture()
+   e$projection_new_llm <- function(...) stop("forced R wrapper failure")
+   expect_error(e$projection_derive(projection_owner_model(), projection_owner_entry(), 64 * 2^20, 0),
+diff --git a/rebirth/tests/testthat/test-projection-state-api.R b/rebirth/tests/testthat/test-projection-state-api.R
+index 185719f..2bbca07 100644
+--- a/rebirth/tests/testthat/test-projection-state-api.R
++++ b/rebirth/tests/testthat/test-projection-state-api.R
+@@ -1,4 +1,5 @@
+ test_that("projection state provenance uses a weak fixed-name environment", {
++  require_relm_selftest("rebirth_selftest_new_handle")
+   ptr <- relm:::rebirth_selftest_new_handle()
+   state <- relm:::relm_check(relm:::rebirth_model_state(ptr))
+   expect_true(environmentIsLocked(state))
+@@ -20,6 +21,7 @@ test_that("projection state provenance uses a weak fixed-name environment", {
+ })
+ 
+ test_that("projection state query refuses forged and lazy bindings before evaluation", {
++  require_relm_selftest("rebirth_selftest_new_handle")
+   ptr <- relm:::rebirth_selftest_new_handle()
+   state <- relm:::relm_check(relm:::rebirth_model_state(ptr))
+   refuse <- function(e, p = ptr) expect_error(
+diff --git a/rebirth/tools/config.R b/rebirth/tools/config.R
+index 8c710c9..747ed9a 100644
+--- a/rebirth/tools/config.R
++++ b/rebirth/tools/config.R
+@@ -36,6 +36,13 @@ if (!is_not_cran) {
+   ""
+ )
+ 
++# Only explicit maintainer/CI builds expose native fixture entry points.
++selftest <- Sys.getenv("RELM_ENABLE_SELFTESTS", "0")
++if (!selftest %in% c("0", "1")) {
++  stop("RELM_ENABLE_SELFTESTS must be 0 or 1", call. = FALSE)
++}
++.selftest_feature <- if (identical(selftest, "1")) "--features selftest" else ""
++
+ # when DEBUG env var is present we use `--debug` build
+ .profile <- ifelse(is_debug, "", "--release")
+ .clean_targets <- ifelse(is_debug, "", "$(TARGET_DIR)")
+@@ -143,6 +150,7 @@ mv_txt <- readLines(mv_fp)
+ # replace placeholder values
+ new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
+   gsub("@PROFILE@", .profile, x = _) |>
++  gsub("@SELFTEST_FEATURE@", .selftest_feature, x = _) |>
+   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
+   gsub("@LIBDIR@", .libdir, x = _) |>
+   gsub("@TARGET@", .target, x = _) |>

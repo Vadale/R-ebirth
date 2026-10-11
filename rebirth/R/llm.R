@@ -258,6 +258,15 @@ finalize_llm_state <- function(state) {
   invisible(NULL)
 }
 
+# Public operations validate the handle before forcing their other arguments.
+# Forward the public call through both guards so errors retain their origin.
+validate_llm <- function(m, call = sys.call(-1L)) {
+  if (!inherits(m, "llm")) {
+    abort_argument("m", "`m` must be an `llm` handle returned by llm().", call = call)
+  }
+  ensure_open(m, call = call)
+}
+
 # Raise `relm_error_closed` if the handle has been closed. Native shutdown/panic
 # can close a handle without an R close() call, so synchronize its native tag.
 # This reads only wrapper state (no engine permit/C access), preserving metadata

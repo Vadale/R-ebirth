@@ -3,7 +3,7 @@
 Updated 2026-10-11. Start with the [installation guide](getting-started.md), then
 the [complete walkthrough](../examples/research-workflow/README.md). It uses
 existing public APIs and exports ordinary R objects, CSV and base-R graphics.
-Phase 6 is integrated; its APIs postdate the 0.3.0 tag. Check installed functions,
+The integrated research APIs are included in 0.4.0. Check installed functions,
 not only the version string. This matrix describes recorded support, not every
 combination accepted by the underlying engine.
 

@@ -762,6 +762,37 @@ impl LoadedModel {
     pub(crate) fn clone_projection_context(&self) -> Result<LoadedModel, RebirthError> {
         self.clone_context_config(true)
     }
+
+    /// Set explicit precision for an independent-reference test or diagnostic.
+    /// This replaces only an idle test context; production policy is unchanged.
+    #[cfg(test)]
+    pub(crate) fn recreate_test_context(
+        &mut self,
+        cache_type: i32,
+        flash_attn: i32,
+    ) -> Result<(), RebirthError> {
+        assert_current();
+        assert!(matches!(cache_type, 0 | 1)); // official GGML F32 / F16
+        assert!(matches!(flash_attn, -1 | 0)); // official AUTO / DISABLED
+        assert!(self.steering_baseline.is_none());
+        let mut params = unsafe { ffi::llama_context_default_params() };
+        params.n_ctx = self.ctx.context_length;
+        params.n_batch = self.n_batch();
+        params.n_ubatch = unsafe { ffi::llama_n_ubatch(self.ctx_ptr()) };
+        params.type_k = cache_type;
+        params.type_v = cache_type;
+        params.flash_attn_type = flash_attn;
+        self.ctx.live_capture.install(&mut params);
+        let fresh = OwnedContext::create(&self.ctx.model, params, || RebirthError::ModelLoad {
+            failing_check: "precision_diagnostic_context".to_string(),
+        })?;
+        let old = std::mem::replace(&mut self.ctx.ptr, fresh.into_raw());
+        // SAFETY: exclusive idle owner, same live model/boxed dispatcher. The
+        // replacement succeeded before ownership of the old context is released.
+        unsafe { ffi::llama_free(old.as_ptr()) };
+        Ok(())
+    }
+
     fn clone_context_config(&self, preserve_batches: bool) -> Result<LoadedModel, RebirthError> {
         assert_current();
         let model = self.ctx.model.clone();

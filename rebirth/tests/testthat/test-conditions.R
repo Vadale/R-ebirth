@@ -43,3 +43,24 @@ test_that("relm_check raises the classed condition described by a failure payloa
   expect_identical(cnd$available, "cpu")
   expect_identical(conditionMessage(cnd), "Backend 'cuda' is not available.")
 })
+
+# No engine or optional async dependency; runs in every ordinary R CI job.
+test_that("thrown and async payload errors retain the same fields and hierarchy", {
+  parent <- simpleError("original callback failure")
+  fields <- list(callback = "on_token", parent = parent, reason = "delivery")
+  payload <- list(ok = FALSE, class = "relm_error_callback",
+    message = "Callback failed.", fields = fields)
+  asynchronous <- relm:::async_payload_condition(payload)
+  thrown <- tryCatch(relm:::relm_check(payload, call = NULL), error = identity)
+  expect_identical(asynchronous, thrown)
+  expect_identical(names(asynchronous), c("message", "call", "callback", "parent", "reason"))
+  expect_identical(class(asynchronous), c("relm_error_callback", "relm_error", "error", "condition"))
+  expect_null(conditionCall(asynchronous))
+  expect_identical(asynchronous$parent, parent)
+
+  origin <- quote(llm_generate(m, "hello"))
+  thrown <- tryCatch(relm:::relm_check(payload, call = origin), error = identity)
+  expect_identical(conditionCall(thrown), origin)
+  thrown["call"] <- list(NULL)
+  expect_identical(thrown, asynchronous)
+})

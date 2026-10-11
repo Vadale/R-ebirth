@@ -1,5 +1,6 @@
 // Private test support for the no_vocab fixture, outside construction/admission.
 // The fixed token sequence and vocabulary are never supplied by R.
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_selftest_projection_combined_logits(ptr: Robj) -> Robj {
     projection_resolve(catch_unwind(AssertUnwindSafe(|| {

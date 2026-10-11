@@ -22,6 +22,7 @@ synthetic_tokens <- function() c(1, 7, 13, 22, 5, 31, 44, 2) + 1L
 # wrapping the boundary payload with the same constructors llm_trace() uses, so the
 # resulting object is byte-identical to a user's. `spill_dir` isolates the files.
 selftest_trace_tokens <- function(m, tokens, spill, budget, spill_dir = NULL) {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   components <- c("residual", "attn_out", "mlp_out")
   # Mirror llm_trace()'s spec key + nonce trace id (M-2). The raw-token path has no
   # text prompts, so a fixed placeholder stands in for the prompts digest; it is
@@ -41,6 +42,7 @@ selftest_trace_tokens <- function(m, tokens, spill, budget, spill_dir = NULL) {
 }
 
 test_that("a spilled trace's slices equal the in-memory slices exactly", {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   # ACCEPTANCE (WP4 Step 5): an over-budget capture with spill = TRUE streams to an
   # Arrow-IPC file, and as.matrix() read back via nanoarrow equals the same capture
   # held in memory -- neuron for neuron. Defect this catches: any writer/reader
@@ -90,6 +92,7 @@ test_that("a spilled trace's slices equal the in-memory slices exactly", {
 })
 
 test_that("a materialized trace fits K x its f32-activation bytes (D-017 pins the factor)", {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   # ACCEPTANCE (D-017): the trace budget is measured on the peak resident cost of the
   # materialized data.frame the caller receives, estimated as
   # TRACE_MATERIALIZED_EXPANSION x the f32 activation bytes. This pins that factor
@@ -112,6 +115,7 @@ test_that("a materialized trace fits K x its f32-activation bytes (D-017 pins th
 })
 
 test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spill path)", {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   # REV-3: the synthetic model is no_vocab, so a captured row carries no token
   # piece. The in-memory boundary payload must surface `token` as NA_character_
   # (not ""), agreeing with the spill path -- which writes append_null (NA) -- and
@@ -127,6 +131,7 @@ test_that("a no_vocab in-memory trace surfaces NA token pieces (matching the spi
 })
 
 test_that("the trace payload carries the positions_recycled signal (Rust->R wiring)", {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   # REV-2: guards the field the API-GRAMMAR section 4 recycling warning reads. The
   # payload must carry a logical `positions_recycled` (FALSE for the fixed
   # all-positions selftest spec). A rename on either side of the boundary would
@@ -143,6 +148,7 @@ test_that("the trace payload carries the positions_recycled signal (Rust->R wiri
 })
 
 test_that("print() and summary() on a spilled trace never read the file", {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   # ACCEPTANCE: print/summary report a spilled trace from its attributes alone.
   # Proof: delete the spill file, then print/summary still succeed (they would
   # error if they touched it), while as.matrix -- which must read -- fails cleanly.
@@ -180,6 +186,7 @@ test_that("print() and summary() on a spilled trace never read the file", {
 })
 
 test_that("a spill file whose footer disagrees with the object is rejected", {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   # ACCEPTANCE (ARCHITECTURE section 6): the staleness fail-safe. A reopened file
   # whose capture-spec footer differs from the object's attributes (a file
   # overwritten by a later trace, or from another session) must raise
@@ -231,6 +238,7 @@ test_that("the spec key varies with prompts and the trace id is a nonce (M-2)", 
 })
 
 test_that("a spill file with a truncated/corrupt body fails as a classed condition", {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   # SEC-MEDIUM: a readable header/schema does NOT guarantee readable record-batch
   # bodies. A spill file whose batches are truncated must raise relm_error_trace
   # (with the re-run guidance), never a raw nanoarrow error. Defect this catches:

@@ -1,6 +1,7 @@
 # WP10 controlled-worker helpers. All fixture tests run on every R CI matrix leg;
 # tests marked [MODEL] require the existing cached model environment variables.
 stream_test_handle <- function(mode = "success", steps = 6L, delay_ms = 0L) {
+  require_relm_selftest(c("rebirth_async_test_handle", "rebirth_async_test_config"))
   m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()),
     "<stream-controlled-fixture>")
   relm:::relm_check(relm:::rebirth_async_test_config(m$ptr, mode, steps, delay_ms))

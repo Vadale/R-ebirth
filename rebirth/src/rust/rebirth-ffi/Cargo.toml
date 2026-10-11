@@ -27,8 +27,10 @@ path = "document.rs"
 # `--no-default-features` build drops spill in both crates (no Arrow), keeping the
 # no-spill configuration coherent end to end.
 default = ["spill"]
+# Internal R-hosted regression hooks; omitted from distributed production builds.
+selftest = []
 # Internal constructor gate; never enabled by the public package build.
-projection-private = ["rebirth-llm/projection-private"]
+projection-private = ["selftest", "rebirth-llm/projection-private"]
 spill = ["rebirth-llm/spill"]
 
 [dependencies]

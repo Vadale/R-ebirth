@@ -10,7 +10,7 @@ actually been tested. This is not a public network deployment or a new relm API.
 
 Use a trusted installed library containing the exact
 [23 application pins](../../tests/service-contract/dependencies.csv), the checked
-relm 0.3.0 build and nanoarrow. Prepare a new environment and store for this
+relm 0.3.0 or 0.4.0 build and nanoarrow. Prepare a new environment and store for this
 release; existing development snapshots and acceptance receipts keep their
 original package/source identities. Explicit dependency preparation can use:
 

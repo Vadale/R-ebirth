@@ -27,6 +27,7 @@
 # --- [CI] the pre-decode gate: allow-list --------------------------------------
 
 test_that("the image gate accepts exactly JPEG, PNG, and BMP", {
+  require_relm_selftest("rebirth_selftest_validate_image")
   for (case in list(
     c("red-square.png", "png"),
     c("red-square.jpg", "jpeg"),
@@ -41,6 +42,7 @@ test_that("the image gate accepts exactly JPEG, PNG, and BMP", {
 })
 
 test_that("the image gate rejects audio magics, GIF, and garbage at the magic stage", {
+  require_relm_selftest("rebirth_selftest_validate_image")
   # The audio-gate mutation proof (audit req 4): every magic miniaudio's loose
   # sniff would route to the audio decoder — RIFF/WAVE, MP3 frame sync, the
   # loosest 0xFF/0xE0 MPEG sync, ID3, fLaC — plus a REAL GIF (dropped from the
@@ -67,6 +69,7 @@ test_that("the image gate rejects audio magics, GIF, and garbage at the magic st
 })
 
 test_that("the image gate rejects a truncated file of each allowed format", {
+  require_relm_selftest("rebirth_selftest_validate_image")
   for (name in c("truncated.png", "truncated.jpg", "truncated.bmp")) {
     cnd <- tryCatch(
       relm_check(relm:::rebirth_selftest_validate_image(
@@ -83,6 +86,7 @@ test_that("the image gate rejects a truncated file of each allowed format", {
 })
 
 test_that("the image gate rejects over-cap dimensions before any decode", {
+  require_relm_selftest("rebirth_selftest_validate_image")
   # overdims.png CLAIMS 100000 x 4 in a valid header: over the per-dimension
   # cap. overpixels.png claims 16000 x 16000 (256 Mpx, ~768 MB decoded):
   # each side within the dimension cap, so it is provably the PIXEL cap that
@@ -107,6 +111,7 @@ test_that("the image gate rejects over-cap dimensions before any decode", {
 })
 
 test_that("the image gate enforces the byte cap and names the override", {
+  require_relm_selftest("rebirth_selftest_validate_image")
   cnd <- tryCatch(
     relm_check(relm:::rebirth_selftest_validate_image(
       vision_fixture("red-square.png"), 100
@@ -119,6 +124,7 @@ test_that("the image gate enforces the byte cap and names the override", {
 })
 
 test_that("the image gate accepts the degenerate-but-legal dimension fixtures", {
+  require_relm_selftest("rebirth_selftest_validate_image")
   # 1x1 and the two 16384-long thin strips are WITHIN the caps: the gate must
   # pass them (the model-side behavior — classed error or success, never an
   # abort — is the [MODEL] test below, audit req 4).
@@ -131,6 +137,7 @@ test_that("the image gate accepts the degenerate-but-legal dimension fixtures", 
 })
 
 test_that("a missing image file is a classed image error with the path field", {
+  require_relm_selftest("rebirth_selftest_validate_image")
   cnd <- tryCatch(
     relm_check(relm:::rebirth_selftest_validate_image(
       "/nonexistent/nope.png", 64 * 1024^2

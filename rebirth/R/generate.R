@@ -343,10 +343,7 @@ llm_generate <- function(m, prompt, max_tokens = 256, temperature = 0.8,
                          on_progress = NULL, on_token = NULL, on_state = NULL,
                          layers = integer(), components = "residual", top = 20L,
                          spill = TRUE, spill_dir = NULL) {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
 
   if (!is.logical(async) || length(async) != 1L || is.na(async)) {
     abort_argument("async", "`async` must be one nonmissing logical value.")

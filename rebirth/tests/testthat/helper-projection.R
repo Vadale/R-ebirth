@@ -56,6 +56,7 @@ projection_binding_fixture <- function() {
       terms = relm:::projection_memory_bound(e$profile, i))
   }
   e$rebirth_projection_construct <- function(ptr, config, sl, sv, al, an, av) {
+    require_relm_selftest("rebirth_selftest_new_handle")
     e$events <- c(e$events, "construct"); e$last_config <- config
     e$flat <- list(sl, sv, al, an, av)
     list(ok = TRUE, ptr = relm:::rebirth_selftest_new_handle())

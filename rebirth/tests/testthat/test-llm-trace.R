@@ -412,9 +412,9 @@ test_that("as.matrix.relm_trace extracts one (layer, component) slice as a matri
 test_that("as.matrix.relm_trace fails loud on a mis-shaped (duplicated) slice (M-1)", {
   # Defect (M-1): duplicate (prompt_id, token_pos, neuron) rows in a slice would make
   # matrix(byrow = TRUE) silently recycle/interleave values under correct row and
-  # column labels -- a wrong matrix, no error. The structural invariant
-  # nrow(sub) == n_points * n_neuron must instead raise a classed relm_error_trace,
-  # catching any duplication source (a future one, or a defeated upstream dedupe).
+  # column labels -- a wrong matrix, no error. A row-count mismatch must instead
+  # raise a classed relm_error_trace. The equal-cardinality regression below
+  # covers duplicates that replace a missing cell rather than add rows.
   x <- make_trace()
   base <- as.data.frame(x)
   # Duplicate the layer-1/residual slice's rows: same coordinates, so the unique
@@ -436,6 +436,29 @@ test_that("as.matrix.relm_trace fails loud on a mis-shaped (duplicated) slice (M
   clean <- as.matrix(dup, layer = 2L, component = "attn_out")
   expect_true(is.matrix(clean))
   expect_identical(dim(clean), c(2L, 4L))
+})
+
+# No model or download: ordinary R CI covers both matrix reader branches.
+test_that("as.matrix rejects duplicate-plus-missing cells with unchanged dimensions", {
+  clean <- make_trace()
+  damaged <- clean
+  selected <- which(damaged$layer == 1L & damaged$component == "residual")
+  damaged[selected[1L], ] <- damaged[selected[2L], ]
+  rows <- as.data.frame(damaged)[selected, c("prompt_id", "token_pos", "neuron", "value")]
+  # The old cardinality-only guard accepted this incomplete grid.
+  expect_identical(nrow(rows),
+    nrow(unique(rows[c("prompt_id", "token_pos")])) * length(unique(rows$neuron)))
+  expect_error(as.matrix(damaged, layer = 1L), class = "relm_error_trace",
+    regexp = "duplicate \\(position, neuron\\)")
+  expect_identical(as.matrix(damaged, layer = 2L, component = "attn_out"),
+    as.matrix(clean, layer = 2L, component = "attn_out"))
+
+  # A corrupt spill slice must encounter the same post-read grid guard.
+  local_mocked_bindings(read_spill_slice = function(x, layer, component) rows,
+    .package = "relm")
+  attr(damaged, "spilled") <- TRUE
+  expect_error(as.matrix(damaged, layer = 1L), class = "relm_error_trace",
+    regexp = "duplicate \\(position, neuron\\)")
 })
 
 # --- [MODEL] real-model trace (Qwen: tokenizer + hidden_size = 896) ----------

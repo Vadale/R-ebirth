@@ -1,0 +1,97 @@
+   Compiling rebirth-ffi v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi)
+    Checking rebirth-llm v0.0.0 (/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+error: associated function `empty` is never used
+  --> rebirth-ffi/src/async_boundary.rs:61:8
+   |
+44 | impl LlmHandle {
+   | -------------- associated function in this implementation
+...
+61 |     fn empty() -> Self {
+   |        ^^^^^
+   |
+   = note: `-D dead-code` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`
+
+error: function `projection_handle_only` is never used
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:116:4
+    |
+116 | fn projection_handle_only(ptr: ExternalPtr<LlmHandle>) -> Robj {
+    |    ^^^^^^^^^^^^^^^^^^^^^^
+
+error: struct `ProjectionResidualInput` is never constructed
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:120:8
+    |
+120 | struct ProjectionResidualInput<'a> {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: method `validate` is never used
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:128:8
+    |
+127 | impl ProjectionResidualInput<'_> {
+    | -------------------------------- method in this implementation
+128 |     fn validate(
+    |        ^^^^^^^^
+
+error: function `numeric_json` is never used
+   --> rebirth-ffi/src/projection_boundary.rs:321:8
+    |
+321 |     fn numeric_json<const N: usize>(fields: [(&str, u64); N]) -> String {
+    |        ^^^^^^^^^^^^
+
+error: function `r_size` is never used
+   --> rebirth-ffi/src/projection_boundary.rs:328:8
+    |
+328 |     fn r_size(value: &Robj) -> u64 {
+    |        ^^^^^^
+
+error: function `tag_receipt` is never used
+   --> rebirth-ffi/src/projection_boundary.rs:338:8
+    |
+338 |     fn tag_receipt(
+    |        ^^^^^^^^^^^
+
+error: function `twin_receipts` is never used
+   --> rebirth-ffi/src/projection_boundary.rs:386:8
+    |
+386 |     fn twin_receipts(profile: &ProjectionAllocationProfile) {
+    |        ^^^^^^^^^^^^^
+
+error: function `projection_profile_ffi_descriptors_and_schema_are_exact` is never used
+   --> rebirth-ffi/src/projection_boundary.rs:452:19
+    |
+452 |     pub(super) fn projection_profile_ffi_descriptors_and_schema_are_exact() {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error: function `marker` is never used
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:196:8
+    |
+196 |     fn marker(test: &str, cases: usize, rejected: usize) {
+    |        ^^^^^^
+
+error: function `run` is never used
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:199:19
+    |
+199 |     pub(super) fn run() {
+    |                   ^^^
+
+error: function `source_registry_payload` is never used
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:204:8
+    |
+204 |     fn source_registry_payload() {
+    |        ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: function `borrowed_residual` is never used
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:278:8
+    |
+278 |     fn borrowed_residual() {
+    |        ^^^^^^^^^^^^^^^^^
+
+error: function `state_facts` is never used
+   --> rebirth-ffi/src/projection_transfer_boundary.rs:313:8
+    |
+313 |     fn state_facts() {
+    |        ^^^^^^^^^^^
+
+error: could not compile `rebirth-ffi` (lib) due to 4 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `rebirth-ffi` (lib test) due to 14 previous errors

@@ -40,7 +40,7 @@ stream_validate_sink <- function(on_token, async) {
 
 stream_condition <- function(reason, message, parent = NULL,
                              prompt_id = NA_integer_, event_id = NA_integer_) {
-  async_condition("relm_error_stream", message,
+  relm_condition("relm_error_stream", message,
     list(reason = reason, prompt_id = as.integer(prompt_id),
       event_id = as.integer(event_id), parent = parent))
 }
@@ -156,7 +156,7 @@ stream_deliver <- function(job, batch) {
   if (!valid) return(invisible(NULL))
   if (identical(job$stream$kind, "file")) return(stream_file_delivery(job, batch))
   fail <- function(error) async_consumer_failure(job,
-    async_condition("relm_error_callback", "The token stream callback failed; no generation result was returned.",
+    relm_condition("relm_error_callback", "The token stream callback failed; no generation result was returned.",
       list(callback = "on_token", parent = error)))
   tryCatch(job$stream$consumer(batch), error = fail, interrupt = fail)
   invisible(NULL)

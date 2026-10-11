@@ -1,0 +1,32 @@
+STATE_API_CASE plain_fixed_names 
+STATE_API_CASE unhashed_and_empty_parent 
+STATE_API_CASE actual_state_facts 
+STATE_API_CASE duplicate_pointer_refused 
+STATE_API_CASE non_pointer_refused 
+STATE_API_CASE cannot_add_name 
+STATE_API_CASE cannot_remove_name 
+STATE_API_CASE closed_value_mutable 
+STATE_API_CASE invalid_closed_9 
+STATE_API_CASE invalid_closed_10 
+STATE_API_CASE invalid_closed_11 
+STATE_API_CASE invalid_closed_12 
+STATE_API_CASE invalid_closed_13 
+STATE_API_CASE unforced_closed 
+STATE_API_CASE unforced_ptr 
+STATE_API_CASE wrong_binding_pointer 
+STATE_API_CASE state_attributes 
+STATE_API_CASE wrong_parent 
+STATE_API_CASE forged_FALSE 
+STATE_API_CASE forged_TRUE 
+STATE_API_CASE wrong_proof_pointer 
+NULL
+         used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)
+Ncells 368078 19.7     715771 38.3         NA   715771 38.3
+Vcells 684912  5.3    8388608 64.0      16384  2011829 15.4
+         used (Mb) gc trigger (Mb) limit (Mb) max used (Mb)
+Ncells 368060 19.7     715771 38.3         NA   715771 38.3
+Vcells 684914  5.3    8388608 64.0      16384  2011829 15.4
+STATE_API_CASE weak_proof_does_not_retain_state 
+STATE_API_CASE factory_gc_protection 
+STATE_API_CASE conservative_frame 
+STATE_API_OK cases=24 model_calls=0

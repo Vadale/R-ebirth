@@ -36,6 +36,13 @@ if (!is_not_cran) {
   ""
 )
 
+# Only explicit maintainer/CI builds expose native fixture entry points.
+selftest <- Sys.getenv("RELM_ENABLE_SELFTESTS", "0")
+if (!selftest %in% c("0", "1")) {
+  stop("RELM_ENABLE_SELFTESTS must be 0 or 1", call. = FALSE)
+}
+.selftest_feature <- if (identical(selftest, "1")) "--features selftest" else ""
+
 # when DEBUG env var is present we use `--debug` build
 .profile <- ifelse(is_debug, "", "--release")
 .clean_targets <- ifelse(is_debug, "", "$(TARGET_DIR)")
@@ -143,6 +150,7 @@ mv_txt <- readLines(mv_fp)
 # replace placeholder values
 new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@PROFILE@", .profile, x = _) |>
+  gsub("@SELFTEST_FEATURE@", .selftest_feature, x = _) |>
   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>
