@@ -1,0 +1,8 @@
+Inspect every answer for correctness, relevance and completeness.
+Length and token-cap indicators do not measure answer quality.
+Two construction pairs and two prompts are a usability exercise, not an efficacy study.
+The practice prompt is labelled selection for split provenance; no coefficient was selected.
+Static projection and residual addition differ in site and direction as well as operator.
+Sampled-state counts are not necessarily committed output-token counts.
+RDS files are trusted local artifacts; CSV drops attributes. Keep both.
+CPU was requested and recorded from handle metadata; this script does not audit native device logs.

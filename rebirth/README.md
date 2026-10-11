@@ -39,7 +39,7 @@ Rust >= 1.85.0, CMake >= 3.28 and a C/C++ compiler. See the
 [installation guide](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)
 for source builds and troubleshooting. Windows/CUDA acceptance is still pending.
 
-The only required R dependency is `nanoarrow`, which reads spilled traces.
+Core imports are `methods` (included with R) and `nanoarrow`, which reads spilled traces.
 `glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.
 Optional `later` and `promises` enable development async/streaming generation.
 Application examples prepare their own separate dependency environments.
@@ -66,8 +66,20 @@ Load `m` as in the quickstart below and install optional `later`/`promises` firs
 Callbacks run on R's main thread; slow callbacks or storage can block R and
 backpressure the worker. `llm_cancel(m)` is cooperative. See the
 [token-streaming guide](https://github.com/Vadale/R-ebirth/blob/main/rebirth/vignettes/token-streaming.qmd)
-for the event schema, CSV and rolling statistics. Live activations and changing
-interventions during generation are separate future work.
+for the event schema, CSV and rolling statistics. Integrated Phase 6 also adds
+bounded `on_state` observations and additive coefficient updates during generation.
+Recorded directions can configure static projection on supported model sites;
+projection coefficients are not live updates.
+
+## Complete research workflow
+
+The [runnable walkthrough](https://github.com/Vadale/R-ebirth/blob/main/examples/research-workflow/README.md)
+joins load, observe, compare, intervene, evaluate and export using the existing
+public APIs. It checks installed capabilities before loading a cached model,
+records actual paired captures and fixed conditions, and saves texts, provenance,
+tables and plots. It is a short functional exercise, not evidence of improved
+answer quality. The [support matrix](https://github.com/Vadale/R-ebirth/blob/main/docs/supported-workflow.md)
+states model/site support, resource limits and optional dependencies.
 
 ## Quickstart
 

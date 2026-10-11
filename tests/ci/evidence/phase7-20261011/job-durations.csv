@@ -1,0 +1,10 @@
+run_id,head_sha,job,conclusion,seconds,url
+37810685919,435b31a420bafbe205e847c1ef1cee197101ae34,"ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",success,882.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685919/job/113426424813
+37810685919,435b31a420bafbe205e847c1ef1cee197101ae34,"macos-15 (R oldrel-1, Rust stable)",success,1549.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685919/job/113426424962
+37810685919,435b31a420bafbe205e847c1ef1cee197101ae34,"macos-15 (R release, Rust stable)",success,1436.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685919/job/113426425044
+37810685919,435b31a420bafbe205e847c1ef1cee197101ae34,"ubuntu-24.04 (R release, Rust stable)",success,933.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685919/job/113426425231
+37810685971,435b31a420bafbe205e847c1ef1cee197101ae34,harness B golden self-check,success,40.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685971/job/113426425179
+37810685971,435b31a420bafbe205e847c1ef1cee197101ae34,cargo fmt / clippy / test,success,265.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685971/job/113426425513
+37810685971,435b31a420bafbe205e847c1ef1cee197101ae34,supply-chain (cargo-deny licenses/bans/sources),success,13.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685971/job/113426425577
+37810685971,435b31a420bafbe205e847c1ef1cee197101ae34,vendored tree integrity (G4 + patch coherence),success,9.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685971/job/113426425603
+37810685971,435b31a420bafbe205e847c1ef1cee197101ae34,macOS x86_64 cross engine link,success,111.0,https://github.com/Vadale/R-ebirth/actions/runs/37810685971/job/113426425615

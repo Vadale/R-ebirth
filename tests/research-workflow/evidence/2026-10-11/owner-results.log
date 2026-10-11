@@ -1,0 +1,3 @@
+OWNER_RESULT_OK: 8 outputs, 4 captures/7168 values, 2 directions/1792 values, 2 zero identities, 1792 exact comparison differences
+Direction maximum independent errors: 4.163336342344337e-17 8.326672684688674e-17 
+No model loads, inference, RNG generation or plotting in this inspection.

@@ -292,7 +292,7 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 - [ ] Token streaming and bounded live observation/coefficient updates are usable with the console event loop
 - [ ] F6c reusable visual comparisons, F6d model-bound direction construction/evaluation and F6e independently verified projection steering are accepted
 - [ ] Phase 7 consolidation records justified simplifications, compatibility and distinct test coverage/cost
-- [ ] An external researcher completes a bounded observe/intervene/evaluate/export workflow; actual assistance and failures are recorded
+- [ ] A bounded observe/intervene/evaluate/export workflow passes maintainer functional acceptance (D-047, 2026-10-11); external-user feedback is deferred until after publication, never claimed by agent execution
 - [ ] Existing application service, topic examples and companion integration remain supported without requiring new general frameworks
 - [ ] Windows binaries on r-universe; CUDA green (WSL2 first, then native Windows)
 - [ ] CRAN submission of `relm` (Rust vendoring policy compliant)

@@ -1,0 +1,7 @@
+"id","split","text","sha256"
+"pair-a-target","construction","Explain why a bicycle needs brakes in one short sentence.","a8de2dc95caada587c8a3450b59bf3c65f939c59003f23f3bdac6e5bf09d0f20"
+"pair-a-control","construction","Explain why a bicycle needs brakes in a detailed paragraph.","cfc64dbbf7b790918bf7022815151c7bfe3979364cbaa472cd5ddaf31e9f20d1"
+"pair-b-target","construction","Explain what a kitchen thermometer measures in one short sentence.","b35811c311094aa958e28468789c8cf12d285468a173327342181e6229229ff4"
+"pair-b-control","construction","Explain what a kitchen thermometer measures in a detailed paragraph.","b7880e87d6c08fe0bf8940605ad121ec570706beddd55731dccd96695ad3d04c"
+"practice","selection","What does a rain gauge measure? Answer in one short sentence.","cf7cef0a525a1d322f4152020e611b11cf2a950e6150a99046f31c0e0181efa7"
+"evaluation","evaluation","Why do people use a map when visiting an unfamiliar town? Answer in one short sentence.","7c755204b958cff36f4c4e7f344e9c21bb19729e9a6edcce74b730d2c9957e17"

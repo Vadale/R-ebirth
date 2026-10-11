@@ -27,6 +27,27 @@ r-universe builds from `main`, so its version can differ from the latest tagged
 release. Check the installed version before using structured output or probes.
 Windows and CUDA remain deferred pending their own hardware acceptance.
 
+## Check development capabilities
+
+Phase 6 research APIs were integrated after the 0.3.0 tag. A development package
+can retain that version string, and binary builds can lag `main`; check the
+functions you will use after installation and restart R after upgrading:
+
+```r
+stopifnot(
+  all(c("llm_direction", "llm_apply_direction", "llm_compare", "llm_timeline") %in%
+      getNamespaceExports("relm")),
+  "operator" %in% names(formals(relm::llm_apply_direction)),
+  "on_state" %in% names(formals(relm::llm_generate))
+)
+```
+
+If this fails, install a current source build below or wait for its binary;
+the old release is not proof of support for the new interface. Then follow the
+[complete research walkthrough](../examples/research-workflow/README.md), which
+also checks optional async packages and the cached model before doing work.
+The [support matrix](supported-workflow.md) states the bounded supported route.
+
 ## Install from source
 
 You need R >= 4.5, Rust >= 1.85.0 (via [rustup](https://rustup.rs)),

@@ -69,6 +69,14 @@ Start with the [package quickstart](rebirth/README.md#quickstart) or the
 generation, structured output and a small activation trace. The guide covers
 source builds, image input and troubleshooting.
 
+For the primary research path, follow the
+[complete experiment walkthrough](examples/research-workflow/README.md): load a
+cached model, capture paired activations, construct directions, compare fixed
+interventions and export texts, provenance and plots. It uses the integrated
+Phase 6 APIs, which postdate the 0.3.0 tag, and checks installed capabilities
+before loading the model. See the [support matrix](docs/supported-workflow.md)
+for sites, backends, optional dependencies and interpretation limits.
+
 ## Development: background generation and token streaming
 
 WP9 adds background generation; WP10 adds streaming data on the same worker.
@@ -106,8 +114,8 @@ These are development features after the 0.3.0 tag; check that your installation
 exports `llm_compare` and `llm_timeline`. Caller-recorded provenance is validated,
 not authenticated. Divergent input histories withhold differences, and the map
 does not portray measured activity or causal edges. The
-[implementation report](docs/f6c-implementation.md) records local acceptance and
-remaining integration checks. For readable captions use a wide RStudio Plots
+[implementation report](docs/f6c-implementation.md) records source-specific acceptance;
+the [current ledger](docs/validation-status.md) records integration. For readable captions use a wide RStudio Plots
 pane and redraw after resizing, or export at 10 by 7 inches (7 by 5 was also
 checked); very narrow panes can clip labels.
 

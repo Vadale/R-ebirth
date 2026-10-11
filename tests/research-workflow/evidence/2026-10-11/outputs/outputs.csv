@@ -1,0 +1,17 @@
+"prompt_id","condition","characters","sampled_states","reached_token_cap","text"
+"practice","original",110,22,FALSE," A rain gauge measures the amount of rain that has fallen in a particular area over a specific period of time."
+"practice","zero",110,22,FALSE," A rain gauge measures the amount of rain that has fallen in a particular area over a specific period of time."
+"practice","addition",110,22,FALSE," A rain gauge measures the amount of rain that has fallen in a particular area over a specific period of time."
+"practice","projection",106,22,FALSE," A rain gauge measures the amount of rain that has fallen in a given area over a specified period of time."
+"evaluation","original",179,32,TRUE," Maps help people navigate unfamiliar towns, find directions, and plan their trips. 
+
+In the context of navigating unfamiliar towns, maps are essential tools that help people find"
+"evaluation","zero",179,32,TRUE," Maps help people navigate unfamiliar towns, find directions, and plan their trips. 
+
+In the context of navigating unfamiliar towns, maps are essential tools that help people find"
+"evaluation","addition",146,32,TRUE," Maps help people navigate unfamiliar towns. 
+
+Think of it like this: Imagine you're planning a trip to a new place, and you want to know where to"
+"evaluation","projection",161,32,TRUE," People use a map when visiting an unfamiliar town to navigate and find their way around. 
+
+A map is a tool used by people to navigate unfamiliar towns, allowing"

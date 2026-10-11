@@ -115,21 +115,23 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked -p rebirth-llm
 
-      # This new controlled observation runs only after an engine test failure.
-      # It does not replace, relax, retry or turn that failed test green.
-      - name: Retain output-policy failure diagnosis
+      # The native tests retain the observations computed by the failing call.
+      # Collect environment only; do not replay an unrelated model diagnostic.
+      - name: Retain native failure environment
         if: failure() && steps.engine_tests.outcome == 'failure'
         run: |
-          mkdir -p "$RUNNER_TEMP/projection-policy-diagnosis"
-          git rev-parse HEAD > "$RUNNER_TEMP/projection-policy-diagnosis/source-sha.txt"
-          cargo test --locked -p rebirth-llm --lib projection::tests::projection_output_policy_failure_diagnostic -- --exact --ignored --nocapture > "$RUNNER_TEMP/projection-policy-diagnosis/native.log" 2>&1
+          mkdir -p "$RUNNER_TEMP/native-failure-context"
+          git rev-parse HEAD > "$RUNNER_TEMP/native-failure-context/source-sha.txt"
+          # Preserve host/build context for numerical failures at unchanged source.
+          lscpu > "$RUNNER_TEMP/native-failure-context/cpu.txt"
+          find target/debug/build -name CMakeCache.txt -exec sh -c 'echo "$1"; cat "$1"' sh {} \; > "$RUNNER_TEMP/native-failure-context/cmake-caches.txt"
 
-      - name: Upload output-policy failure observations
+      - name: Upload native failure environment
         if: failure() && steps.engine_tests.outcome == 'failure'
         uses: actions/upload-artifact@v7
         with:
-          name: projection-policy-diagnosis-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/projection-policy-diagnosis
+          name: native-failure-context-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-failure-context
           if-no-files-found: error
 
       # Ownership assertions must remain active in optimized builds (D-037).

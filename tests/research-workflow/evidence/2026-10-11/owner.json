@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "scope": "maintainer functional walkthrough using an existing installed Phase6 library; not a clean installation or external user study",
+  "visual_review": {
+    "files": [
+      "configured-model.png",
+      "practice-comparison.png",
+      "evaluation-comparison.png"
+    ],
+    "result": "readable titles, axes and legends; no clipping; static configuration and sampled-token caveats visible"
+  },
+  "output_inspection": "owner-results.log",
+  "model_replays_during_inspection": 0,
+  "source_sha256": "829c7f5d4880449c83075937199360e1782c7a9c130d791e35744d98e1cef0f4"
+}

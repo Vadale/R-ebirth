@@ -1,7 +1,22 @@
 # Validation status and remaining acceptance gates
 
-Updated 2026-10-02 for integrated WP9/WP10/I1 and targeted maintenance. Historical
-maintenance, S1 and D1 results below retain their original scope.
+Updated 2026-10-11. Phase6/F6a–F6e is integrated: PR63 merged at
+`7bc688a2bfaf570db7498424a19854202185144c` with the accepted `435b31a` tree and
+all nine final checks successful ([R](https://github.com/Vadale/R-ebirth/actions/runs/37810685919),
+[Rust/integrity](https://github.com/Vadale/R-ebirth/actions/runs/37810685971)).
+See the [F6e report](f6e-implementation.md) and [portability corrections](f6e-ci-portability.md)
+for exact-source scope and retained limitations. Earlier F6a/b, F6c and F6d
+integration remains accepted; no generalized quality or safety claim follows.
+
+Phase 7's [maintainer walkthrough](phase7-implementation.md) has executed and
+its saved outputs/graphics have been inspected. Integrated review and its one documentation correction are closed; final PR
+CI found an inherited long-prefill numerical failure; the bounded diagnosis is
+recorded in the Phase7 report. D-047 defers independent user feedback until after publication.
+The [support matrix](supported-workflow.md) is the current user-facing summary.
+
+The following historical ledger was written on 2026-10-02 and subsequently
+extended for F6d/F6e. Statements of pending work below describe those recorded
+checkpoints, not a reason to rerun completed acceptances.
 This ledger describes implemented checks and their limits; a workflow definition
 alone is not evidence that its latest execution succeeded. Inspect the
 [current runs](https://github.com/Vadale/R-ebirth/actions) before integration.
