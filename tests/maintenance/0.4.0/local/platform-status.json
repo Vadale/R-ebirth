@@ -1,0 +1,8 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 68597,
+  "scope": "61 retained platform-access failures only; test_file desc selects exact original test bodies; same compiled installed DLL; no build",
+  "started": 1791735292.013154,
+  "exit_code": 0,
+  "finished": 1791735357.9895182
+}

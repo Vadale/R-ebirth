@@ -1,0 +1,537 @@
+INSTALLED_FUNCTIONS 262 
+boundary: ....gguf_init_from_reader: invalid magic characters: '????', expected 'GGUF'
+llama_model_load: error loading model: llama_model_loader: failed to load model from /var/folders/0g/w9qy3m615_9bn_8kslpcn87w0000gn/T//Rtmpd7Qfm6/file1081725843ee7.gguf
+llama_model_load_from_file_impl: failed to load model
+...............
+conditions: ...................
+directions-boundaries: .........................................................
+directions-goldens: ..........................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+directions-memory: .............................
+directions-model: S
+graphics-compare: ........................................
+graphics-memory: ...........
+graphics-plots: ....................
+graphics-spill: ..............
+graphics-timeline: ................................
+llm-async-lifecycle: ..................S......
+llm-async-memory: ....................
+llm-async: ..............................................ASYNC_RESPONSIVENESS_DIAGNOSTIC
+list(timeout = 10, elapsed = 2.03, wall_seconds = 2.02998614311218, 
+    polls = 36L, max_poll_seconds = 0.0610000000000017, current_loop = 0L, 
+    global_loop = 0L, transitions = list(list(elapsed = 0.0579999999999998, 
+        cpu = 0, poll_seconds = 0.0579999999999998, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 2.029, 
+        cpu = 0.0249999999999998, poll_seconds = 0.0519999999999996, 
+        job_present = FALSE, promise = "fulfilled", observed = FALSE), 
+        list(elapsed = 2.029, cpu = 0.0249999999999998, poll_seconds = 0, 
+            job_present = FALSE, promise = "fulfilled", observed = TRUE)), 
+    last_polls = list(list(elapsed = 1.689, cpu = 0.0190000000000005, 
+        poll_seconds = 0.0609999999999999, job_present = TRUE, 
+        promise = "pending", observed = FALSE), list(elapsed = 1.742, 
+        cpu = 0.0199999999999999, poll_seconds = 0.0519999999999996, 
+        job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 1.803, cpu = 0.0210000000000002, poll_seconds = 0.0610000000000017, 
+            job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 1.861, cpu = 0.0219999999999997, poll_seconds = 0.0589999999999993, 
+            job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 1.916, cpu = 0.0219999999999997, poll_seconds = 0.0540000000000003, 
+            job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 1.976, cpu = 0.023, poll_seconds = 0.0599999999999987, 
+            job_present = TRUE, promise = "pending", observed = FALSE), 
+        list(elapsed = 2.029, cpu = 0.0249999999999998, poll_seconds = 0.0519999999999996, 
+            job_present = FALSE, promise = "fulfilled", observed = FALSE), 
+        list(elapsed = 2.029, cpu = 0.0249999999999998, poll_seconds = 0, 
+            job_present = FALSE, promise = "fulfilled", observed = TRUE)), 
+    queue_at_boundary = list(list(id = 73, when = -0.000361), 
+        list(id = 71, when = 0.048164)), native = list(ok = TRUE, 
+        active_jobs = 0L, worker_threads = 0L, deferred_handles = 0L, 
+        snapshot_slots = 0L, terminal_slots = 0L, queued_jobs = 0L), 
+    observer_done = TRUE, R = "R version 4.5.1 (2025-06-13)", 
+    later = "1.4.8", promises = "1.5.0", testthat = "3.3.2", 
+    parent_status = "fulfilled", observer_status = "fulfilled")
+...................................................................................ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+1Sggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+2................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................S
+llm-close: .................
+llm-download: ...............................................................................S
+llm-embed: .ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+3.......................ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+4ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+5......SSSSS
+llm-generate: .ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+6ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+7ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+8SSSSSSSS
+llm-intervene: .....................................ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+9ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+aggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+bggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+cggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+dggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+eggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+fggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+g..ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+hSSSS
+llm-live-admission: ...........................................................................................................................................
+llm-live-helpers: ..................................................................................................................................
+llm-live-memory: ..............................................................
+llm-live-model: SSSSSSS
+llm-live-spill: .................................
+llm-live-steering: ................................................................SSS
+llm-load: ..........................................
+llm-logits: ..ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+iggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+jggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+kSSSSS
+llm-model: SSSS
+llm-print: ..................................
+llm-probe-memory: ..................
+llm-probe-statistics: ..................................................................
+llm-probe-validation: ....................................................................
+llm-probe: .................................................................................................................................................................
+llm-spark: S
+llm-steer-valence: ...........S
+llm-stream-helpers: ..............................................................................................
+llm-stream: ..................................................................................................................................................................................................SSS.........................................
+llm-synthetic: ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+l...ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+m
+llm-tokens: ............SSSSS
+llm-trace-golden: .......................S
+llm-trace-spill-ownership: ............
+llm-trace-spill-session: .........
+llm-trace-spill: ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+nggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+oggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+pggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+qggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+rggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+sggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+tggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+u.....
+llm-trace: ................ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+vggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+wggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+x..............ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+yggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+zggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+A........................................SSSSSSSS
+llm-validation: ..........................................................................
+llm-vision-async: S
+llm-vision-embed: ....B..............ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Cggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Dggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Eggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Fggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Gggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+HSggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Iggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Jggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+K
+llm-vision: ....................................................ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Lggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Mggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Nggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+O.ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Pggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Qggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Rggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+S.......ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+T....ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Uggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+VSllama_model_load: error loading model: CLIP cannot be used as main model, use it with --mmproj instead
+llama_model_load_from_file_impl: failed to load model
+.Sggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Wggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Xencoding image slice...
+image slice encoded in 1177 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 298 ms
+.
+package: .................
+projection-application: ..................................................................
+projection-constructor-memory: .............................................................
+projection-directions: .............................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................
+projection-graphics: .............
+projection-memory: .........................................................................................................................................................................................................................................
+projection-owners: ......................................................................
+projection-public-binding: .....................................
+projection-state-api: .......................
+selftest-registration: ..
+structured-output: .................................................ggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+Yggml_metal_init: error: failed to create command queue
+ggml_backend_metal_device_init_backend: error: failed to allocate context
+llama_init_from_model: failed to initialize the context: failed to initialize  backend
+ZSSS
+
+══ Skipped ═════════════════════════════════════════════════════════════════════
+1. [MODEL] checked direction preserves zero and original-handle seeded reset ('test-directions-model.R:6:3') - Reason: Set RELM_TEST_MODEL_QWEN to the cached Qwen file; no download.
+
+2. [MODEL] derived Qwen ownership survives parent sibling and unrelated close or GC ('test-llm-async-lifecycle.R:221:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+3. [MODEL] async matches sync for greedy sampled stop and structured generation ('test-llm-async.R:286:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+4. [MODEL] async preserves interventions and cancellation recovery ('test-llm-async.R:386:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+5. [MODEL] llm_download() fetches and verifies the pinned 0.5B end-to-end ('test-llm-download.R:374:3') - Reason: set RELM_DOWNLOAD_E2E=1 to run the real network download
+
+6. embedding dimensions match the model card ('test-llm-embed.R:108:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+7. embedding is vectorized and preserves names as row names ('test-llm-embed.R:118:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+8. normalize = TRUE yields unit rows; FALSE does not (no silent change) ('test-llm-embed.R:130:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+9. pooling = "model" on a generative model is a clean embed error ('test-llm-embed.R:141:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+10. related sentence pairs rank above unrelated ones (semantic similarity) ('test-llm-embed.R:158:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+11. greedy generation is deterministic ('test-llm-generate.R:73:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+12. a seed reproduces a sampled run and is attached to the result ('test-llm-generate.R:84:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+13. generation is vectorized over prompt and preserves names ('test-llm-generate.R:96:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+14. chat = TRUE differs from raw completion ('test-llm-generate.R:105:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+15. a stop string truncates the output before it ('test-llm-generate.R:113:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+16. a prompt longer than the batch size still generates (chunked decode) ('test-llm-generate.R:129:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+17. an over-long prompt raises relm_error_context_overflow ('test-llm-generate.R:140:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+18. chat = TRUE works on a Gemma 4 model via the arch template fallback [MODEL] ('test-llm-generate.R:159:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+19. steering measurably changes generated output ('test-llm-intervene.R:285:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+20. ablation measurably changes generated output ('test-llm-intervene.R:301:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+21. the original handle reproduces its output bit-for-bit after derivation ('test-llm-intervene.R:315:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+22. generation is derivation-order-independent (steer/ablate commute) ('test-llm-intervene.R:331:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+23. [MODEL] live no-op preserves seeded results and state-before-token order ('test-llm-live-model.R:62:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+24. [MODEL] logits-only defaults keep a typed empty trace ('test-llm-live-model.R:127:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+25. [MODEL] cancellation at state one samples no next token and delivers no token one ('test-llm-live-model.R:146:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+26. [MODEL] live callback failure returns ownership with its original condition ('test-llm-live-model.R:173:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+27. [MODEL] completed live spill slices survive cancellation and model close ('test-llm-live-model.R:192:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+28. [MODEL] live chat coordinates include the exact template over a prefill boundary ('test-llm-live-model.R:249:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+29. [MODEL] close inside on_state abandons delivery and drains owned native work ('test-llm-live-model.R:290:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+30. [MODEL] live steering audits partial zero and unchanged updates with ablation ('test-llm-live-steering.R:131:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+31. [MODEL] live steering restores adapters after cancel callback and reply failures ('test-llm-live-steering.R:188:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+32. [MODEL] close after an applied live update discards the outstanding reply ('test-llm-live-steering.R:249:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+33. llm_logits() returns the documented schema, top rows per prompt ('test-llm-logits.R:71:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+34. llm_logits() ranks by descending logit with a valid probability head ('test-llm-logits.R:100:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+35. llm_logits() is deterministic for a fixed prompt ('test-llm-logits.R:117:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+36. llm_logits() vectorizes over prompt with per-prompt ranks ('test-llm-logits.R:125:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+37. llm_logits() reflects an active intervention -- diverges from base [MODEL] ('test-llm-logits.R:155:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+38. llm() loads a real Qwen2.5-0.5B and reports card-accurate metadata ('test-llm-model.R:15:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+39. llm() honours a non-default context_length on a real model ('test-llm-model.R:34:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+40. summary() on a real model carries tokenizer and memory information ('test-llm-model.R:40:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+41. repeated load/unload of a real model does not leak native memory ('test-llm-model.R:50:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+42. Spark native generation and declared capabilities work [SPARK] ('test-llm-spark.R:6:3') - Reason: RELM_TEST_MODEL_SPARK not set (optional 4B acceptance)
+
+43. steering along the valence direction shifts generated valence (+ up, - down) [MODEL] ('test-llm-steer-valence.R:134:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+44. [MODEL] cached Qwen retains seeded sync async and stream equality ('test-llm-stream.R:230:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+45. [MODEL] cached Qwen ordinary structured and CSV streams preserve results ('test-llm-stream.R:252:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+46. [MODEL] cached vision over-batch prefill retains streaming parity ('test-llm-stream.R:290:3') - Reason: RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required
+
+47. encode returns a named integer vector of 1-based ids ('test-llm-tokens.R:71:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+48. encode/decode is an exact round-trip (ASCII) ('test-llm-tokens.R:82:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+49. encode/decode round-trips Italian accented text (UTF-8) ('test-llm-tokens.R:90:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+50. encode is vectorized: a list with names preserved ('test-llm-tokens.R:101:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+51. decode rejects an id outside the vocabulary (classed, not a crash) ('test-llm-tokens.R:115:3') - Reason: RELM_TEST_MODEL_QWEN not set
+
+52. llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8_0 tolerance) [MODEL] ('test-llm-trace-golden.R:253:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+53. llm_trace() on a real model returns the relm_trace schema and slices [MODEL] ('test-llm-trace.R:470:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+54. llm_trace() attn_out on a qwen2 model is a classed, honest error [MODEL] ('test-llm-trace.R:502:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+55. llm_trace() residual on a Gemma 4 model returns plausible activations [MODEL] ('test-llm-trace.R:516:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+56. llm_trace() attn_out on a Gemma 4 model is a classed error (name collision) [MODEL] ('test-llm-trace.R:546:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+57. llm_trace() mlp_out on a Gemma 4 model is a classed error (MoE layers) [MODEL] ('test-llm-trace.R:560:3') - Reason: RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file
+
+58. llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [MODEL] ('test-llm-trace.R:573:3') - Reason: RELM_TEST_MODEL_QWEN3 is not set to an existing GGUF file
+
+59. llm_trace() residual on a Qwen 3.5 model returns plausible activations [MODEL] ('test-llm-trace.R:597:3') - Reason: RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file
+
+60. llm_trace() warns when explicit positions are recycled across differing lengths [MODEL] ('test-llm-trace.R:617:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+61. [MODEL] async vision matches the existing image generation path ('test-llm-vision-async.R:7:3') - Reason: RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required
+
+62. [MODEL] the pooled multimodal embedding matches the committed pin ('test-llm-vision-embed.R:307:3') - Reason: exact float pin: recorded on [Darwin | arm64 | Apple M4], this is [Darwin | arm64 | unknown-cpu] -- different machines do not agree bit-for-bit
+
+63. [MODEL] a mismatched mmproj names both embedding sizes ('test-llm-vision.R:417:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+64. [MODEL] a text GGUF passed as the projector is a classed image error ('test-llm-vision.R:439:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+65. structured generation preserves names, scalar seeds and complete JSON [MODEL] ('test-structured-output.R:128:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+66. structured exhaustion carries bounded diagnostics and leaves the handle usable [MODEL] ('test-structured-output.R:147:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+67. structured prompt ingestion retains chunked decoding [MODEL] ('test-structured-output.R:171:3') - Reason: RELM_TEST_MODEL_QWEN is not set to an existing GGUF file
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Error ('test-llm-async.R:276:3'): async tokenizer failures reject classed 
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-async.R:276:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 2. Error ('test-llm-async.R:302:3'): schema compilation errors reject their e
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-async.R:302:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 3. Error ('test-llm-embed.R:28:3'): llm_embed() validates its arguments ─────
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-embed.R:28:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 4. Error ('test-llm-embed.R:71:3'): llm_embed() on a tokenizer-less model rai
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-embed.R:71:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 5. Error ('test-llm-embed.R:79:3'): llm_embed() rejects a closed handle ─────
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-embed.R:79:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 6. Error ('test-llm-generate.R:28:3'): llm_generate() validates its arguments
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-generate.R:28:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 7. Error ('test-llm-generate.R:54:3'): llm_generate() on a tokenizer-less mod
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-generate.R:54:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 8. Error ('test-llm-generate.R:65:3'): llm_generate() rejects a closed handle
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-generate.R:65:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 9. Error ('test-llm-intervene.R:128:3'): interventions reject a closed handle
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-intervene.R:128:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+
+── 10. Error ('test-llm-intervene.R:137:3'): llm_steer() returns a new handle an
+<relm_error_model_load/relm_error/error/condition>
+Error in `llm(synthetic_model_path())`: Failed to load the model (failing check: context_init). The file may be missing, truncated, or not a supported GGUF. Verify the path points to a complete GGUF file for a supported architecture.
+Backtrace:
+    ▆
+ 1. └─relm::llm(synthetic_model_path()) at test-llm-intervene.R:137:3
+ 2.   └─relm:::relm_check(payload)
+ 3.     └─relm:::relm_abort(payload$class, payload$message, fields, call = call)
+  ... and 51 more
+
+
+Maximum number of 10 failures reached, some test results may be missing.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+Error: !any(counts$failed > 0) is not TRUE
+Execution halted

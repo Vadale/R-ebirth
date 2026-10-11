@@ -1578,3 +1578,21 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
   no new API, dependency, vendor edit, general framework or blanket rewrite.
   This amendment supersedes only the external-participant completion condition
   in the historical roadmap/phase plan; those original decisions remain recorded.
+
+
+## D-048 — Maintenance and release before Windows/CUDA (APPROVED)
+
+- **Date:** 2026-10-11.
+- **Founder instruction:** correct existing technical debt, simplify and clean
+  the code using the simplifier's instructions, update documentation and the
+  GitHub Markdown entry point, and publish another release before Phases 8/9.
+- **Decision:** execute the single maintenance/release plan in
+  [maintenance-0.4.0-plan.md](docs/maintenance-0.4.0-plan.md). Internal cross-module
+  cleanup and concrete bug corrections are authorized. Version 0.4.0 collects
+  the features since 0.3.0 and the accepted maintenance changes.
+- **Verification:** apply D029, retain actual failures and source-specific
+  evidence, use focused affected checks and one final integration/review cycle.
+  Numerical anomalies require diagnosis; a passing retry is not a correction.
+- **Unchanged:** public API approval, dependency/vendor-change gates, numerical
+  and resource bounds, consumed evaluations, and D047's deferred external-user
+  feedback. Windows/CUDA and CRAN submission are not part of this work.

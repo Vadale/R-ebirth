@@ -95,10 +95,7 @@ INTERVENTION_VALIDATED_ARCHS <- c("llama", "qwen2")
 #' close(m)
 #' @export
 llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
   layer <- validate_intervention_layer(m, layer)
 
   # The native control vector reserves engine index 0 (the first block), so it
@@ -223,10 +220,7 @@ llm_steer <- function(m, layer, direction, coef = 1, positions = "all") {
 #' close(m)
 #' @export
 llm_ablate <- function(m, layer, neurons, value = 0, component = "residual") {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
   layer <- validate_intervention_layer(m, layer)
 
   if (!is.numeric(neurons) || length(neurons) == 0L || anyNA(neurons) ||

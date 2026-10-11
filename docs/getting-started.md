@@ -5,8 +5,9 @@ binary when one is available for your platform, or install from source with the
 toolchain below. The package name in R is **relm**; `rebirth/` is its directory
 inside the R-ebirth repository.
 
-Version **0.3.0** adds structured output and statistical probes; see the
-[release notes](../rebirth/NEWS.md#relm-030). Binary availability follows
+Version **0.4.0** brings together streaming, live observations, recorded directions,
+projection, graphics and the research walkthrough; see the
+[release notes](../rebirth/NEWS.md#relm-040). Binary availability follows
 r-universe builds, so check the installed version before using the new features.
 
 ## Install from r-universe
@@ -29,7 +30,7 @@ Windows and CUDA remain deferred pending their own hardware acceptance.
 
 ## Check development capabilities
 
-Phase 6 research APIs were integrated after the 0.3.0 tag. A development package
+The research APIs are included in 0.4.0. An installed package
 can retain that version string, and binary builds can lag `main`; check the
 functions you will use after installation and restart R after upgrading:
 
@@ -149,7 +150,7 @@ complete. The maintainer's local release checklist covers versioning, package
 checks, tagging and publication; the public
 [development workflow](development-workflow.md) defines review and CI requirements.
 
-For 0.3.0, verify the distribution build after integration, then install in a
+For each release, verify the distribution build after integration, then install in a
 clean library, check `packageVersion("relm")`, load the package and run the
 first-run example. A green GitHub matrix does not by itself verify that a new
 r-universe binary is available. Record the actual published version and platform

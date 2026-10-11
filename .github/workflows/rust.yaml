@@ -115,6 +115,32 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: cargo test --locked -p rebirth-llm
 
+      # D048 investigation only: collect the first512-prefix observations from
+      # this maintenance candidate. The test stays ignored in ordinary suites.
+      # Remove this temporary branch-scoped execution after its retained result
+      # has supplied the diagnosis; do not replay it merely for final reporting.
+      - name: Retain maintenance prefix diagnosis
+        if: ${{ !cancelled() && steps.scope.outputs.full_checks != 'false' && github.head_ref == 'codex/maintenance-release-0.4.0' }}
+        run: |
+          out="$RUNNER_TEMP/maintenance-prefix-diagnosis"
+          mkdir -p "$out"
+          git rev-parse HEAD > "$out/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$out/source-tree.txt"
+          lscpu > "$out/cpu.txt"
+          rustc -Vv > "$out/rustc.txt"
+          find target/debug/build -name CMakeCache.txt -exec sh -c 'echo "$1"; cat "$1"' sh {} \; > "$out/cmake-caches.txt"
+          F6E_SOURCE="$(git rev-parse HEAD)" cargo test --locked -p rebirth-llm --lib \
+            projection::tests::projection_long_prefill_debt_diagnostic \
+            -- --ignored --exact --nocapture --test-threads=1 > "$out/diagnostic.log" 2>&1
+
+      - name: Upload maintenance prefix observations
+        if: ${{ always() && steps.scope.outputs.full_checks != 'false' && github.head_ref == 'codex/maintenance-release-0.4.0' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: maintenance-prefix-diagnosis-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/maintenance-prefix-diagnosis
+          if-no-files-found: error
+
       # The native tests retain the observations computed by the failing call.
       # Collect environment only; do not replay an unrelated model diagnostic.
       - name: Retain native failure environment

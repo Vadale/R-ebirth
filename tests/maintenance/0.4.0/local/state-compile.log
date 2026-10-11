@@ -1,0 +1,11 @@
+using C compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+using SDK: ‘’
+clang -arch arm64 -std=gnu2x -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c state_api_test.c -o state_api_test.o
+In file included from state_api_test.c:1:
+In file included from /Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi/native/projection_state.c:7:
+In file included from /Library/Frameworks/R.framework/Resources/include/Rinternals.h:44:
+/Library/Frameworks/R.framework/Resources/include/R_ext/Boolean.h:62:36: warning: unknown warning group '-Wfixed-enum-extension', ignored [-Wunknown-warning-option]
+   62 | #  pragma clang diagnostic ignored "-Wfixed-enum-extension"
+      |                                    ^
+1 warning generated.
+clang -arch arm64 -std=gnu2x -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -L/Library/Frameworks/R.framework/Resources/lib -L/opt/R/arm64/lib -o state_api_test.so state_api_test.o -F/Library/Frameworks/R.framework/.. -framework R

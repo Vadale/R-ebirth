@@ -86,6 +86,8 @@ jobs:
     timeout-minutes: 120
 
     env:
+      # The required lifecycle preflight uses native fixture entry points.
+      RELM_ENABLE_SELFTESTS: "1"
       # D-037: controlled concurrency tests own their threads; other native tests serialize.
       RUST_TEST_THREADS: "1"
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,43 @@
+{
+  "artifact": {
+    "reason": "compiler-artifact",
+    "package_id": "path+file:///Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi#0.0.0",
+    "manifest_path": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi/Cargo.toml",
+    "target": {
+      "kind": [
+        "rlib",
+        "staticlib"
+      ],
+      "crate_types": [
+        "rlib",
+        "staticlib"
+      ],
+      "name": "relm",
+      "src_path": "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-ffi/src/lib.rs",
+      "edition": "2021",
+      "doc": true,
+      "doctest": true,
+      "test": true
+    },
+    "profile": {
+      "opt_level": "0",
+      "debuginfo": 2,
+      "debug_assertions": true,
+      "overflow_checks": true,
+      "test": false
+    },
+    "features": [
+      "default",
+      "selftest",
+      "spill"
+    ],
+    "filenames": [
+      "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.rlib",
+      "/Users/alessandrovadala/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/librelm.a"
+    ],
+    "executable": null,
+    "fresh": false
+  },
+  "archive_sha256": "5a3d8a769c39bc3cfb6557fb7fffc21db14f7d1d9adbd762c473f33d0fe76de9",
+  "dll_sha256": "01c6c9e7cf23beda000950a4e1a45da6f45a9ffc928f17f682e78aa4a3e2a909"
+}

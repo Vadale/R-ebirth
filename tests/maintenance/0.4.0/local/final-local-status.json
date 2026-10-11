@@ -1,0 +1,67 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 68719,
+  "stages": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "native-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-llm",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "private-check",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--features",
+        "projection-private"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "ffi-unit",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--features",
+        "selftest",
+        "--lib"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    }
+  ],
+  "stage": "ffi-unit",
+  "finished": 1791735461.383622
+}

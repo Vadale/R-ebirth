@@ -1,4 +1,19 @@
-# relm (development)
+# relm 0.4.0
+
+## Maintenance and research workflow
+
+* A complete research walkthrough connects paired activation captures, fixed
+  interventions, text comparison, provenance and plots using public APIs.
+* Trace-to-matrix conversion rejects duplicate coordinates even when a duplicate
+  replaces a missing cell and the total row count is unchanged.
+* Public handle checks and synchronous/asynchronous condition construction share
+  internal implementations while preserving error classes and public calls.
+* Native fixture entry points are omitted from production builds. Maintainer CI
+  enables them explicitly with `RELM_ENABLE_SELFTESTS=1`.
+* Older R state inspection uses the public frame accessor, retaining unforced
+  promise checks and weak provenance. The R4.6 public binding path is unchanged.
+* The current simplifier compendium documents code responsibilities, historical
+  debt dispositions and proportionate verification.
 
 ## Component projection steering (F6e)
 

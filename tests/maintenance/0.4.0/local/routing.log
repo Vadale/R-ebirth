@@ -1,0 +1,37 @@
+[1] TRUE
+[1] TRUE TRUE TRUE
+[1] TRUE TRUE
+Using cargo 1.96.0 (30a34c682 2026-05-25)
+Using rustc 1.96.0 (ac68faa20 2026-05-25)
+Using cmake 4.3.4
+Building for CRAN.
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+Using cargo 1.96.0 (30a34c682 2026-05-25)
+Using rustc 1.96.0 (ac68faa20 2026-05-25)
+Using cmake 4.3.4
+Building for CRAN.
+Cleaning previous `src/Makevars`.
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+Using cargo 1.96.0 (30a34c682 2026-05-25)
+Using rustc 1.96.0 (ac68faa20 2026-05-25)
+Using cmake 4.3.4
+Building for CRAN.
+Warning messages:
+1: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+2: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+Warning messages:
+1: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+2: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+3: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+4: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+5: In yaml.load(string, error.label = error.label, ...) :
+  NAs introduced by coercion: . is not a real
+MAINTENANCE_ROUTING_OK config=default,selftest,invalid workflows=4 models=0 builds=0

@@ -1,5 +1,6 @@
 // Internal model-free R-hosted regression. Use an initialized main-thread R
 // process; no model handle, tokenizer, backend initialization or inference.
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_selftest_projection_budget_error() -> Robj {
     projection_resolve(catch_unwind(AssertUnwindSafe(|| {

@@ -212,7 +212,7 @@ live_deliver <- function(job, payload) {
     job$model$state$closed) return(invisible(NULL))
   state <- live_payload_state(job, payload)
   fail <- function(error, reason = NULL) {
-    async_consumer_failure(job, async_condition("relm_error_callback",
+    async_consumer_failure(job, relm_condition("relm_error_callback",
       "The live state callback failed; no generation result was returned.",
       list(callback = "on_state", reason = reason, parent = error,
         job_id = job$id, state_id = state$step$state_id, prompt_id = 1L)))

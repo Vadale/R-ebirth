@@ -31,6 +31,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      # Exercise the non-shipping R/native fixture hooks in this test build.
+      RELM_ENABLE_SELFTESTS: "1"
       # Override the repository's floating stable channel even inside the
       # R CMD check build subprocess, so the MSRV leg actually uses the floor.
       RUSTUP_TOOLCHAIN: ${{ matrix.config.rust }}
@@ -186,7 +188,9 @@ jobs:
       # the R-free rebirth-llm.
       - name: clippy (rebirth-ffi, the R boundary crate)
         if: steps.scope.outputs.full_checks != 'false'
-        run: cargo clippy --locked -p rebirth-ffi --all-targets -- -D warnings
+        run: |
+          cargo clippy --locked -p rebirth-ffi --all-targets -- -D warnings
+          cargo clippy --locked -p rebirth-ffi --features selftest --all-targets -- -D warnings
         working-directory: rebirth/src/rust
 
       # Run rebirth-ffi's own tests here too (R on the PATH links the crate): the
@@ -214,7 +218,7 @@ jobs:
           if [[ "$RUNNER_OS" == "Linux" ]]; then
             export LD_LIBRARY_PATH="$(R RHOME)/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
           fi
-          cargo test --locked -p rebirth-ffi
+          cargo test --locked -p rebirth-ffi --features selftest
         working-directory: rebirth/src/rust
 
       # Linux's CPU-only build cannot detect accidental Metal initialization.

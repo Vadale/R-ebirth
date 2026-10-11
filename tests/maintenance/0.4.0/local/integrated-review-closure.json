@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-11T16:24:44.026796+00:00",
+  "status": "all_review_findings_closed",
+  "scope": "Affected-line closure only for R1 and R2; original integrated review preserved",
+  "findings": [
+    {
+      "id": "R1",
+      "priority": 2,
+      "status": "closed",
+      "file": ".github/workflows/nightly-vision-golden.yaml",
+      "line": 90,
+      "resolution": "Selftest flag is set in the shared job environment for installation and test processes"
+    },
+    {
+      "id": "R2",
+      "priority": 3,
+      "status": "closed",
+      "file": "docs/getting-started.md",
+      "line": 10,
+      "resolution": "Release-note anchor targets relm-040"
+    }
+  ],
+  "source_sha256": {
+    ".github/workflows/nightly-vision-golden.yaml": "9dfb458b40d09cd39791b0903374d46ad5a3d4655869aa2661d67f21dbd2a40f",
+    "docs/getting-started.md": "fe1236569edb8d52b88eaea53fa80072d69d9fe043f9f09cd7d355cd47fa8faf"
+  },
+  "original_report_sha256": "cacc962b1b85f2cb39785c6eebca3bac0ad7b476e9a897ecddc1d79322aa5941",
+  "original_status_sha256": "8f275d3b6182beb900bfad5aec86a7b459afed1c48fd07d5253c035dca423d20",
+  "closure_report_sha256": "78d72131aaea529ae70d01af519680345b16795101fe4a82056692f454cf6762",
+  "reviewer_executed_builds": 0,
+  "reviewer_executed_tests": 0,
+  "reviewer_executed_models": 0,
+  "limitations": "Original final CI, release acceptance and numerical-debt limitations remain unchanged"
+}

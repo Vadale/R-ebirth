@@ -1,0 +1,293 @@
+Warning message:
+package ‘testthat’ was built under R version 4.5.2 
+RESUME_CASE 1 test-llm-async.R async tokenizer failures reject classed conditions without model downloads 
+llm-async: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 2 test-llm-async.R schema compilation errors reject their existing class 
+llm-async: ........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 3 test-llm-embed.R llm_embed() validates its arguments 
+llm-embed: ..........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 4 test-llm-embed.R llm_embed() on a tokenizer-less model raises relm_error_tokenize 
+llm-embed: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 5 test-llm-embed.R llm_embed() rejects a closed handle 
+llm-embed: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 6 test-llm-generate.R llm_generate() validates its arguments 
+llm-generate: .................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🎯 Your tests hit the mark 🎯
+RESUME_CASE 7 test-llm-generate.R llm_generate() on a tokenizer-less model raises relm_error_tokenize 
+llm-generate: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 8 test-llm-generate.R llm_generate() rejects a closed handle 
+llm-generate: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 9 test-llm-intervene.R interventions reject a closed handle 
+llm-intervene: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 10 test-llm-intervene.R llm_steer() returns a new handle and never mutates the source 
+llm-intervene: ..........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🎯 Your tests hit the mark 🎯
+RESUME_CASE 11 test-llm-intervene.R llm_ablate() returns a new handle carrying the ablation spec 
+llm-intervene: ........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 12 test-llm-intervene.R summary() lists a derived handle's interventions; print() counts them 
+llm-intervene: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🎸 Your tests rock 🎸
+RESUME_CASE 13 test-llm-intervene.R interventions compose and are derivation-order-independent (spec level) 
+llm-intervene: ....
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 14 test-llm-intervene.R stacking steers on one layer keeps both entries in the spec 
+llm-intervene: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 15 test-llm-intervene.R a derived handle outlives the source it was derived from 
+llm-intervene: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 16 test-llm-intervene.R closing a derived handle does not close its source 
+llm-intervene: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 17 test-llm-intervene.R a real intervened handle blocks embed and trace 
+llm-intervene: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 18 test-llm-logits.R llm_logits() validates prompt and top before the engine 
+llm-logits: ...........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 19 test-llm-logits.R llm_logits() on a tokenizer-less model raises relm_error_tokenize 
+llm-logits: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Way to go!
+RESUME_CASE 20 test-llm-logits.R llm_logits() rejects a closed handle 
+llm-logits: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 21 test-llm-synthetic.R the synthetic GGUF loads and reports its tiny dimensions 
+llm-synthetic: .........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 22 test-llm-synthetic.R summary() on the synthetic model carries the tiny vocabulary 
+llm-synthetic: ....
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 23 test-llm-trace-spill.R a spilled trace's slices equal the in-memory slices exactly 
+llm-trace-spill: ...............................................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 24 test-llm-trace-spill.R a materialized trace fits K x its f32-activation bytes (D-017 pins the factor) 
+llm-trace-spill: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 25 test-llm-trace-spill.R a no_vocab in-memory trace surfaces NA token pieces (matching the spill path) 
+llm-trace-spill: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 26 test-llm-trace-spill.R the trace payload carries the positions_recycled signal (Rust->R wiring) 
+llm-trace-spill: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 27 test-llm-trace-spill.R print() and summary() on a spilled trace never read the file 
+llm-trace-spill: .........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 28 test-llm-trace-spill.R a spill file whose footer disagrees with the object is rejected 
+llm-trace-spill: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 29 test-llm-trace-spill.R the spec key varies with prompts and the trace id is a nonce (M-2) 
+llm-trace-spill: .....
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 30 test-llm-trace-spill.R a spill file with a truncated/corrupt body fails as a classed condition 
+llm-trace-spill: ....
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 31 test-llm-trace.R llm_trace() validates `prompts` 
+llm-trace: ......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 32 test-llm-trace.R llm_trace() validates `layers` (type and 1-based range) 
+llm-trace: ......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 33 test-llm-trace.R llm_trace() validates `positions` 
+llm-trace: .......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 34 test-llm-trace.R llm_trace() validates `components` (subset of the allowed set) 
+llm-trace: ......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 35 test-llm-trace.R llm_trace() validates `spill` and `spill_dir` 
+llm-trace: .......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 36 test-llm-trace.R llm_trace() rejects a closed handle 
+llm-trace: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 37 test-llm-vision-embed.R on macOS the fingerprint names the CPU, not just the platform 
+llm-vision-embed: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 38 test-llm-vision-embed.R llm_embed() applies the shared images pairing contract 
+llm-vision-embed: ........
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 39 test-llm-vision-embed.R llm_embed() images on a projector-less handle raise relm_error_image 
+llm-vision-embed: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 40 test-llm-vision-embed.R llm_embed() empty-string rules: text-only rejected, image-bearing allowed 
+llm-vision-embed: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 41 test-llm-vision-embed.R llm_embed() text path is untouched by the images plumbing 
+llm-vision-embed: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 42 test-llm-vision-embed.R [MODEL] multimodal embeddings: row contract, x = '', determinism 
+llm-vision-embed: encoding image slice...
+image slice encoded in 127 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 7 ms
+.....encoding image slice...
+image slice encoded in 128 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 3 ms
+..encoding image slice...
+image slice encoded in 126 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 4 ms
+...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 43 test-llm-vision-embed.R [MODEL] the cat image embeds closer to 'a cat' than to 'a car' 
+llm-vision-embed: encoding image slice...
+image slice encoded in 129 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 3 ms
+.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 44 test-llm-vision-embed.R [MODEL] multimodal embed over the context window is a classed error 
+llm-vision-embed: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 45 test-llm-vision-embed.R [MODEL] a multimodal prompt with a text portion over n_batch decodes (rule 8a) 
+llm-vision-embed: encoding image slice...
+image slice encoded in 126 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 64 ms
+..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 46 test-llm-vision-embed.R [MODEL] combined text+image tokens over the window raise context overflow 
+llm-vision-embed: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 47 test-llm-vision.R llm_generate() validates the images argument type and pairing 
+llm-vision: .......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 48 test-llm-vision.R a bare images vector recycles across prompts with a warning 
+llm-vision: ..
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 49 test-llm-vision.R images on a handle loaded without a projector raise relm_error_image 
+llm-vision: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+Way to go!
+RESUME_CASE 50 test-llm-vision.R an image-bearing prompt containing the media marker is rejected pre-boundary 
+llm-vision: ......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 51 test-llm-vision.R character(0) image sets mean no images and need no projector 
+llm-vision: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 52 test-llm-vision.R an empty bare images vector means no images and never warns 
+llm-vision: ....
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 53 test-llm-vision.R images = NULL leaves the text path byte-identical (same classed error) 
+llm-vision: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 54 test-llm-vision.R a broken relm.image_max_bytes option is a classed argument error 
+llm-vision: .
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 55 test-llm-vision.R a text-only handle has NULL projector and vision FALSE 
+llm-vision: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 56 test-llm-vision.R [MODEL] llm(projector=) loads a VLM and the handle reflects it 
+llm-vision: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 57 test-llm-vision.R [MODEL] the VLM answers a factual question about the committed image 
+llm-vision: encoding image slice...
+image slice encoded in 128 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 63 ms
+...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 58 test-llm-vision.R [MODEL] degenerate-but-legal dimensions never abort (audit req 4) 
+llm-vision: encoding image slice...
+image slice encoded in 34 ms
+decoding image batch 1/1, n_tokens_batch = 9
+image decoded (batch 1/1) in 37 ms
+.encoding image slice...
+image slice encoded in 1602 ms
+decoding image batch 1/1, n_tokens_batch = 585
+image decoded (batch 1/1) in 562 ms
+.encoding image slice...
+image slice encoded in 1605 ms
+decoding image batch 1/1, n_tokens_batch = 585
+image decoded (batch 1/1) in 562 ms
+.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 59 test-llm-vision.R [MODEL] an intervened handle derived from a vision handle keeps images working 
+llm-vision: ..encoding image slice...
+image slice encoded in 127 ms
+decoding image batch 1/1, n_tokens_batch = 64
+image decoded (batch 1/1) in 62 ms
+.
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 60 test-structured-output.R malformed and unsupported schemas fail before tokenization 
+structured-output: ............................
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+RESUME_CASE 61 test-structured-output.R valid structured bounds and empty collections reach tokenization 
+structured-output: ......
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+🐝 Your tests are the bee's knees 🐝
+MAINTENANCE_PLATFORM_RESUME_OK cases=61 expectations=319

@@ -1,0 +1,5 @@
+{
+  "pid": 68597,
+  "launched": 1791735291.9952698,
+  "scope": "exact 61 failed platform cases; existing current selftest DLL; unsandboxed Metal/sysctl access"
+}

@@ -1,0 +1,96 @@
+{
+  "status": "failed",
+  "pid": 65693,
+  "stages": [
+    {
+      "name": "state-compile",
+      "command": [
+        "R",
+        "CMD",
+        "SHLIB",
+        "state_api_test.c"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "state-controls",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "run.R",
+        "state_api_test.so"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "clippy-default",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "failed",
+      "exit_code": 101
+    },
+    {
+      "name": "clippy-selftest",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--all-targets",
+        "--features",
+        "selftest",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "check-no-spill",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--no-default-features"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "name": "check-private",
+      "command": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "rebirth-ffi",
+        "--features",
+        "projection-private"
+      ],
+      "status": "passed",
+      "exit_code": 0
+    }
+  ],
+  "started": 1791734591.247593,
+  "stage": "check-private",
+  "finished": 1791734596.951127
+}

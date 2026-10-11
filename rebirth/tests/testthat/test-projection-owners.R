@@ -102,6 +102,7 @@ test_that("projection site count refuses thirty-third entry before new materiali
 })
 
 test_that("projection candidate wraps an independent un-hashed state and shares unchanged entries", {
+  require_relm_selftest("rebirth_selftest_new_handle")
   m <- projection_owner_model()
   m$state$closed <- TRUE; m$state$ptr <- m$ptr
   entry <- projection_owner_entry()

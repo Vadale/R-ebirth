@@ -1,0 +1,444 @@
+"file","test","nb","failed","skipped","error","warning","passed"
+"test-boundary.R","the boundary maps a missing file to a model_load payload",4,0,FALSE,FALSE,0,4
+"test-boundary.R","the boundary maps garbage bytes to a model_load payload (no crash)",3,0,FALSE,FALSE,0,3
+"test-boundary.R","the boundary maps an unavailable backend to a backend payload",4,0,FALSE,FALSE,0,4
+"test-boundary.R","a forced panic maps to relm_error_internal, never reaching R raw",4,0,FALSE,FALSE,0,4
+"test-boundary.R","rebirth_available_backends reports cpu and never cuda in WP1",4,0,FALSE,FALSE,0,4
+"test-conditions.R","relm_abort raises the classed hierarchy with structured fields",6,0,FALSE,FALSE,0,6
+"test-conditions.R","relm_error is never raised bare (always has a specific leaf class)",1,0,FALSE,FALSE,0,1
+"test-conditions.R","relm_check returns success payloads unchanged",1,0,FALSE,FALSE,0,1
+"test-conditions.R","relm_check raises the classed condition described by a failure payload",4,0,FALSE,FALSE,0,4
+"test-conditions.R","thrown and async payload errors retain the same fields and hierarchy",7,0,FALSE,FALSE,0,7
+"test-directions-boundaries.R","paired matrices require exact complete coordinates and plain finite input",9,0,FALSE,FALSE,0,9
+"test-directions-boundaries.R","recorded capture and splits fail closed without silent reconciliation",9,0,FALSE,FALSE,0,9
+"test-directions-boundaries.R","direction construction preserves inputs and random state",8,0,FALSE,FALSE,0,8
+"test-directions-boundaries.R","record field order canonicalizes but coordinate order does not",1,0,FALSE,FALSE,0,1
+"test-directions-boundaries.R","trusted RDS preserves exact artifact values and validates on print",6,0,FALSE,FALSE,0,6
+"test-directions-boundaries.R","artifact tampering and incompatibility refuse before native derivation",10,0,FALSE,FALSE,0,10
+"test-directions-boundaries.R","checked application delegates exactly the approved existing intervention",3,0,FALSE,FALSE,0,3
+"test-directions-boundaries.R","admission refuses before checksumming oversized working sets",3,0,FALSE,FALSE,0,3
+"test-directions-boundaries.R","temporary checksum files close and disappear after failures",3,0,FALSE,FALSE,0,3
+"test-directions-boundaries.R","ignored row names cannot smuggle environments into retained artifacts",5,0,FALSE,FALSE,0,5
+"test-directions-goldens.R","directions match all independent accepted arithmetic and diagnostics",113,0,FALSE,FALSE,0,113
+"test-directions-goldens.R","independent degenerate and overflow cases refuse without dropping pairs",39,0,FALSE,FALSE,0,39
+"test-directions-goldens.R","canonical R bytes exactly match all independent typed streams",1072,0,FALSE,FALSE,0,1072
+"test-directions-goldens.R","independent binary artifact survives full validation and rejects edits",2,0,FALSE,FALSE,0,2
+"test-directions-memory.R","materialized direction stages fit the admitted independent envelope",4,0,FALSE,FALSE,0,4
+"test-directions-memory.R","wide canonical matrices stream in capped chunks without transposition",3,0,FALSE,FALSE,0,3
+"test-directions-memory.R","maximum-width arithmetic fits without copying neuron labels into temporaries",5,0,FALSE,FALSE,0,5
+"test-directions-memory.R","checksum byte caps precede writes and interrupt cleanup closes descriptors",6,0,FALSE,FALSE,0,6
+"test-directions-memory.R","application charges destination context before native allocation",2,0,FALSE,FALSE,0,2
+"test-directions-memory.R","warning-only canonical I/O fails closed with its original condition",5,0,FALSE,FALSE,0,5
+"test-directions-memory.R","silent partial canonical writes cannot validate a different file",4,0,FALSE,FALSE,0,4
+"test-directions-model.R","[MODEL] checked direction preserves zero and original-handle seeded reset",1,0,TRUE,FALSE,0,0
+"test-graphics-compare.R","paired values retain identity and exact signed differences",7,0,FALSE,FALSE,0,7
+"test-graphics-compare.R","all prior token IDs matter but the current sample does not align input",5,0,FALSE,FALSE,0,5
+"test-graphics-compare.R","top-k absence is missing rather than zero or an invented KL",4,0,FALSE,FALSE,0,4
+"test-graphics-compare.R","mismatched provenance and coordinates fail before pairing",4,0,FALSE,FALSE,0,4
+"test-graphics-compare.R","metadata cannot retain hidden environments or native owners",2,0,FALSE,FALSE,0,2
+"test-graphics-compare.R","selected coordinates and materialized budgets are independently checked",5,0,FALSE,FALSE,0,5
+"test-graphics-compare.R","malformed current token, source position and partial captures fail",4,0,FALSE,FALSE,0,4
+"test-graphics-compare.R","the last sampled state can exceed consumed context by one",2,0,FALSE,FALSE,0,2
+"test-graphics-compare.R","ragged step, logits and steering frames fail with classed conditions",7,0,FALSE,FALSE,0,7
+"test-graphics-memory.R","comparison ledger exceeds materialized simultaneous base-R shapes",4,0,FALSE,FALSE,0,4
+"test-graphics-memory.R","timeline ledger exceeds expanded history and replacement shapes",4,0,FALSE,FALSE,0,4
+"test-graphics-memory.R","wide selected vectors refuse before materialization under small budgets",3,0,FALSE,FALSE,0,3
+"test-graphics-plots.R","model map is metadata-only with explicit supported and generic detail",8,0,FALSE,FALSE,0,8
+"test-graphics-plots.R","comparison and timeline restore graphics state and return plotted data",6,0,FALSE,FALSE,0,6
+"test-graphics-plots.R","truncation preserves change timing without inventing a visible event",4,0,FALSE,FALSE,0,4
+"test-graphics-plots.R","a middle block selection labels both omitted boundary ranges",2,0,FALSE,FALSE,0,2
+"test-graphics-spill.R","selected spilled and in-memory observed values agree exactly",5,0,FALSE,FALSE,0,5
+"test-graphics-spill.R","mismatched and missing spill files remain classed failures",2,0,FALSE,FALSE,0,2
+"test-graphics-spill.R","live spill preparation supplies the managed lease filename prefix",7,0,FALSE,FALSE,0,7
+"test-graphics-timeline.R","timeline records applied revisions at the next decode boundary",5,0,FALSE,FALSE,0,5
+"test-graphics-timeline.R","rolling retention drops complete states and reports truncation",4,0,FALSE,FALSE,0,4
+"test-graphics-timeline.R","no steering retains one sampled-state row and failures preserve inputs",4,0,FALSE,FALSE,0,4
+"test-graphics-timeline.R","byte bound rolls whole multi-intervention states and preserves source audit",5,0,FALSE,FALSE,0,5
+"test-graphics-timeline.R","same revision cannot change coefficients and next revision must move boundary",3,0,FALSE,FALSE,0,3
+"test-graphics-timeline.R","corrupt missing history coordinates produce a classed failure",11,0,FALSE,FALSE,0,11
+"test-llm-async-lifecycle.R","close and forced GC during a native job are safe in a fresh process",3,0,FALSE,FALSE,0,3
+"test-llm-async-lifecycle.R","pending job roots survive dropped model and promise references",3,0,FALSE,FALSE,0,3
+"test-llm-async-lifecycle.R","normal failures cancel and panic release native ownership in subprocesses",3,0,FALSE,FALSE,0,3
+"test-llm-async-lifecycle.R","namespace shutdown joins work and retains the DLL for live finalizers",3,0,FALSE,FALSE,0,3
+"test-llm-async-lifecycle.R","real synthetic models defer close and GC while a fixture owns native execution",3,0,FALSE,FALSE,0,3
+"test-llm-async-lifecycle.R","lifecycle diagnostics do not deliver callbacks after the drain deadline",3,0,FALSE,FALSE,0,3
+"test-llm-async-lifecycle.R","[MODEL] derived Qwen ownership survives parent sibling and unrelated close or GC",1,0,TRUE,FALSE,0,0
+"test-llm-async-lifecycle.R","foreign external pointers fail safely before an extendr downcast",3,0,FALSE,FALSE,0,3
+"test-llm-async-lifecycle.R","session exit joins an active job without an event-loop drain",3,0,FALSE,FALSE,0,3
+"test-llm-async-memory.R","the R result estimate covers the full UTF-8 output bound and names",12,0,FALSE,FALSE,0,12
+"test-llm-async-memory.R","the full buffer accounting separates copies tokens and R materialization",7,0,FALSE,FALSE,0,7
+"test-llm-async-memory.R","prompt admission precedes image-list recycling",1,0,FALSE,FALSE,0,1
+"test-llm-async.R","async dependencies are present on required R CI legs",3,0,FALSE,FALSE,0,3
+"test-llm-async.R","async argument and admission failures preserve the RNG",19,0,FALSE,FALSE,0,19
+"test-llm-async.R","missing or outdated optional packages fail before admission or RNG",9,0,FALSE,FALSE,0,9
+"test-llm-async.R","async UTF-8 and aggregate limits include names stop schema and image paths",13,0,FALSE,FALSE,0,13
+"test-llm-async.R","native async promise is responsive and services independent R heartbeats",12,0,FALSE,FALSE,0,12
+"test-llm-async.R","progress is fresh coalesced data with exactly one final snapshot",14,0,FALSE,FALSE,0,14
+"test-llm-async.R","the omitted seed is drawn once on submission and callbacks do not draw it",4,0,FALSE,FALSE,0,4
+"test-llm-async.R","empty image sets remain ordinary text input",3,0,FALSE,FALSE,0,3
+"test-llm-async.R","callback cancellation and reentrancy leave one settlement and reusable handle",10,0,FALSE,FALSE,0,10
+"test-llm-async.R","callback failures retain the original condition and drain native work",7,0,FALSE,FALSE,0,7
+"test-llm-async.R","a callback failing on final completion rejects instead of resolving",5,0,FALSE,FALSE,0,5
+"test-llm-async.R","native fixture errors and panics become typed promise rejections",10,0,FALSE,FALSE,0,10
+"test-llm-async.R","cancel validates handles and targets only the submitting handle",9,0,FALSE,FALSE,0,9
+"test-llm-async.R","R handle state synchronizes after native-only close",5,0,FALSE,FALSE,0,5
+"test-llm-async.R","incomplete native error payloads remain classed internal failures",6,0,FALSE,FALSE,0,6
+"test-llm-async.R","async tokenizer failures reject classed conditions without model downloads",0,0,FALSE,TRUE,0,0
+"test-llm-async.R","[MODEL] async matches sync for greedy sampled stop and structured generation",1,0,TRUE,FALSE,0,0
+"test-llm-async.R","schema compilation errors reject their existing class",0,0,FALSE,TRUE,0,0
+"test-llm-async.R","terminal callbacks may start a subsequent job without losing its roots",7,0,FALSE,FALSE,0,7
+"test-llm-async.R","repeated small success cancel and error jobs release R roots",1133,0,FALSE,FALSE,0,1133
+"test-llm-async.R","a stalled event loop retains one snapshot and one terminal slot",6,0,FALSE,FALSE,0,6
+"test-llm-async.R","worker startup failure rejects without leaking admission or R roots",6,0,FALSE,FALSE,0,6
+"test-llm-async.R","[MODEL] async preserves interventions and cancellation recovery",1,0,TRUE,FALSE,0,0
+"test-llm-close.R","close.llm on an already-closed handle is an invisible NULL no-op",2,0,FALSE,FALSE,0,2
+"test-llm-close.R","any use of a closed handle raises relm_error_closed",2,0,FALSE,FALSE,0,2
+"test-llm-close.R","close.llm marks the handle closed and is idempotent (empty handle)",5,0,FALSE,FALSE,0,5
+"test-llm-close.R","the closed tag is shared across copies of a handle (env semantics)",2,0,FALSE,FALSE,0,2
+"test-llm-close.R","the boundary closed tag: is_closed TRUE on an empty handle, close a no-op",3,0,FALSE,FALSE,0,3
+"test-llm-close.R","is_closed treats a NULL or foreign object as closed (defensive)",3,0,FALSE,FALSE,0,3
+"test-llm-download.R","llm_download() rejects a non-string model",5,0,FALSE,FALSE,0,5
+"test-llm-download.R","llm_download() validates dir and quiet before touching the network",5,0,FALSE,FALSE,0,5
+"test-llm-download.R","the model registry is well-formed (https, 64-hex sha256, unique aliases)",7,0,FALSE,FALSE,0,7
+"test-llm-download.R","resolve_model() fails closed on a malformed registry SHA256",2,0,FALSE,FALSE,0,2
+"test-llm-download.R","the CI-integration alias pins the same SHA256 the nightly workflow uses",2,0,FALSE,FALSE,0,2
+"test-llm-download.R","the vision aliases pin the same SHA256s the nightly vision workflow uses",5,0,FALSE,FALSE,0,5
+"test-llm-download.R","resolve_model() maps a known alias to its pinned URL and checksum",4,0,FALSE,FALSE,0,4
+"test-llm-download.R","resolve_model() rejects an unknown alias and lists the known ones",3,0,FALSE,FALSE,0,3
+"test-llm-download.R","resolve_model() accepts an https URL but with no expected checksum",3,0,FALSE,FALSE,0,3
+"test-llm-download.R","resolve_model() rejects non-HTTPS URLs (http/ftp/file)",6,0,FALSE,FALSE,0,6
+"test-llm-download.R","basename_from_url() derives the filename and strips query/fragment",3,0,FALSE,FALSE,0,3
+"test-llm-download.R","download_verify() rejects a URL whose file name would escape the directory",2,0,FALSE,FALSE,0,2
+"test-llm-download.R","download_verify() verifies the checksum and returns the destination path",5,0,FALSE,FALSE,0,5
+"test-llm-download.R","download_verify() is fail-closed on a checksum mismatch: file deleted + classed error",6,0,FALSE,FALSE,0,6
+"test-llm-download.R","download_verify() skips the download on a verified cache hit",2,0,FALSE,FALSE,0,2
+"test-llm-download.R","download_verify() re-downloads when the cached file is corrupt",2,0,FALSE,FALSE,0,2
+"test-llm-download.R","download_verify() creates a missing (nested) destination directory",3,0,FALSE,FALSE,0,3
+"test-llm-download.R","download_verify() reports the hash for a bare URL and never claims it verified",3,0,FALSE,FALSE,0,3
+"test-llm-download.R","download_verify() re-fetches a bare URL even if a same-named file exists",2,0,FALSE,FALSE,0,2
+"test-llm-download.R","download_verify() surfaces a network failure as relm_error_download",3,0,FALSE,FALSE,0,3
+"test-llm-download.R","llm_download() returns the destination path invisibly",2,0,FALSE,FALSE,0,2
+"test-llm-download.R","llm_download() enforces the registry checksum through the public API (fail-closed)",4,0,FALSE,FALSE,0,4
+"test-llm-download.R","[MODEL] llm_download() fetches and verifies the pinned 0.5B end-to-end",1,0,TRUE,FALSE,0,0
+"test-llm-embed.R","llm_embed() rejects a non-llm handle",1,0,FALSE,FALSE,0,1
+"test-llm-embed.R","llm_embed() validates its arguments",0,0,FALSE,TRUE,0,0
+"test-llm-embed.R","llm_embed() keeps classed pooling validation and match.arg semantics",23,0,FALSE,FALSE,0,23
+"test-llm-embed.R","llm_embed() on a tokenizer-less model raises relm_error_tokenize",0,0,FALSE,TRUE,0,0
+"test-llm-embed.R","llm_embed() rejects a closed handle",0,0,FALSE,TRUE,0,0
+"test-llm-embed.R","the semantic-similarity fixture is well-formed and topic-separated",6,0,FALSE,FALSE,0,6
+"test-llm-embed.R","embedding dimensions match the model card",1,0,TRUE,FALSE,0,0
+"test-llm-embed.R","embedding is vectorized and preserves names as row names",1,0,TRUE,FALSE,0,0
+"test-llm-embed.R","normalize = TRUE yields unit rows; FALSE does not (no silent change)",1,0,TRUE,FALSE,0,0
+"test-llm-embed.R","pooling = ""model"" on a generative model is a clean embed error",1,0,TRUE,FALSE,0,0
+"test-llm-embed.R","related sentence pairs rank above unrelated ones (semantic similarity)",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","llm_generate() rejects a non-llm handle",1,0,FALSE,FALSE,0,1
+"test-llm-generate.R","llm_generate() validates its arguments",0,0,FALSE,TRUE,0,0
+"test-llm-generate.R","llm_generate() on a tokenizer-less model raises relm_error_tokenize",0,0,FALSE,TRUE,0,0
+"test-llm-generate.R","llm_generate() rejects a closed handle",0,0,FALSE,TRUE,0,0
+"test-llm-generate.R","greedy generation is deterministic",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","a seed reproduces a sampled run and is attached to the result",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","generation is vectorized over prompt and preserves names",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","chat = TRUE differs from raw completion",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","a stop string truncates the output before it",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","a prompt longer than the batch size still generates (chunked decode)",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","an over-long prompt raises relm_error_context_overflow",1,0,TRUE,FALSE,0,0
+"test-llm-generate.R","chat = TRUE works on a Gemma 4 model via the arch template fallback [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-intervene.R","llm_steer() / llm_ablate() reject a non-llm handle",2,0,FALSE,FALSE,0,2
+"test-llm-intervene.R","INTERVENTION_VALIDATED_ARCHS is documentation for the validated tier, not a gate",6,0,FALSE,FALSE,0,6
+"test-llm-intervene.R","llm_steer() validates layer / direction / coef / positions",17,0,FALSE,FALSE,0,17
+"test-llm-intervene.R","llm_ablate() validates layer / neurons / value / component",12,0,FALSE,FALSE,0,12
+"test-llm-intervene.R","interventions reject a closed handle",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","llm_steer() returns a new handle and never mutates the source",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","llm_ablate() returns a new handle carrying the ablation spec",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","summary() lists a derived handle's interventions; print() counts them",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","interventions compose and are derivation-order-independent (spec level)",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","stacking steers on one layer keeps both entries in the spec",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","a derived handle outlives the source it was derived from",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","closing a derived handle does not close its source",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","embedding / tracing an intervened handle is a classed error (stub)",2,0,FALSE,FALSE,0,2
+"test-llm-intervene.R","a real intervened handle blocks embed and trace",0,0,FALSE,TRUE,0,0
+"test-llm-intervene.R","steering measurably changes generated output",1,0,TRUE,FALSE,0,0
+"test-llm-intervene.R","ablation measurably changes generated output",1,0,TRUE,FALSE,0,0
+"test-llm-intervene.R","the original handle reproduces its output bit-for-bit after derivation",1,0,TRUE,FALSE,0,0
+"test-llm-intervene.R","generation is derivation-order-independent (steer/ablate commute)",1,0,TRUE,FALSE,0,0
+"test-llm-live-admission.R","live admission rejects malformed requests before native work or RNG",84,0,FALSE,FALSE,0,84
+"test-llm-live-admission.R","nondefault live capture arguments require an observer",14,0,FALSE,FALSE,0,14
+"test-llm-live-admission.R","live admission resolves filters using metadata without context access",14,0,FALSE,FALSE,0,14
+"test-llm-live-admission.R","F6a callback replies reserve the protocol by requiring NULL",11,0,FALSE,FALSE,0,11
+"test-llm-live-admission.R","public live metadata rejects an already full ordinary input before seed or submit",5,0,FALSE,FALSE,0,5
+"test-llm-live-admission.R","four live strings count toward retained input descriptors even when empty",6,0,FALSE,FALSE,0,6
+"test-llm-live-admission.R","the exact complete UTF-8 input boundary includes all four live strings",5,0,FALSE,FALSE,0,5
+"test-llm-live-helpers.R","empty live payload tables preserve their declared base-R schemas",14,0,FALSE,FALSE,0,14
+"test-llm-live-helpers.R","live payload source coordinates are checked before sequence advances",52,0,FALSE,FALSE,0,52
+"test-llm-live-helpers.R","live callbacks acknowledge only after successful NULL completion",6,0,FALSE,FALSE,0,6
+"test-llm-live-helpers.R","live worker steering audits reject inconsistent revisions before advancing",37,0,FALSE,FALSE,0,37
+"test-llm-live-helpers.R","live delivery uses its admitted audit and bounds reply rows by steer count",5,0,FALSE,FALSE,0,5
+"test-llm-live-helpers.R","live callback and reply failures preserve class and original parent",11,0,FALSE,FALSE,0,11
+"test-llm-live-helpers.R","live fixed allocation bound covers empty states and carried prompt text",5,0,FALSE,FALSE,0,5
+"test-llm-live-memory.R","live vector allocation covers the independently pinned R64 pools",13,0,FALSE,FALSE,0,13
+"test-llm-live-memory.R","live materialized bound covers actual small large and string-heavy states",16,0,FALSE,FALSE,0,16
+"test-llm-live-memory.R","live allocation rejects fractional nonfinite and overflowing dimensions",27,0,FALSE,FALSE,0,27
+"test-llm-live-memory.R","native memory disagreement is rejected during live preparation",6,0,FALSE,FALSE,0,6
+"test-llm-live-model.R","[MODEL] live no-op preserves seeded results and state-before-token order",1,0,TRUE,FALSE,0,0
+"test-llm-live-model.R","[MODEL] logits-only defaults keep a typed empty trace",1,0,TRUE,FALSE,0,0
+"test-llm-live-model.R","[MODEL] cancellation at state one samples no next token and delivers no token one",1,0,TRUE,FALSE,0,0
+"test-llm-live-model.R","[MODEL] live callback failure returns ownership with its original condition",1,0,TRUE,FALSE,0,0
+"test-llm-live-model.R","[MODEL] completed live spill slices survive cancellation and model close",1,0,TRUE,FALSE,0,0
+"test-llm-live-model.R","[MODEL] live chat coordinates include the exact template over a prefill boundary",1,0,TRUE,FALSE,0,0
+"test-llm-live-model.R","[MODEL] close inside on_state abandons delivery and drains owned native work",1,0,TRUE,FALSE,0,0
+"test-llm-live-spill.R","live Arrow batches enforce exact row and child-buffer byte boundaries",12,0,FALSE,FALSE,0,12
+"test-llm-live-spill.R","live spill metadata binds every coordinate and batch bound",18,0,FALSE,FALSE,0,18
+"test-llm-live-spill.R","oversized live record is rejected before data-frame materialization",3,0,FALSE,FALSE,0,3
+"test-llm-live-steering.R","live steering replies normalize partial updates without mutating specifications",7,0,FALSE,FALSE,0,7
+"test-llm-live-steering.R","live steering replies reject every extra or malformed shape",14,0,FALSE,FALSE,0,14
+"test-llm-live-steering.R","live steering indices address unique existing steering entries only",15,0,FALSE,FALSE,0,15
+"test-llm-live-steering.R","live steering coefficients reject nonfinite and unrepresentable scalars",16,0,FALSE,FALSE,0,16
+"test-llm-live-steering.R","live steering delivery validates the entire reply before acknowledgement",12,0,FALSE,FALSE,0,12
+"test-llm-live-steering.R","[MODEL] live steering audits partial zero and unchanged updates with ablation",1,0,TRUE,FALSE,0,0
+"test-llm-live-steering.R","[MODEL] live steering restores adapters after cancel callback and reply failures",1,0,TRUE,FALSE,0,0
+"test-llm-live-steering.R","[MODEL] close after an applied live update discards the outstanding reply",1,0,TRUE,FALSE,0,0
+"test-llm-load.R","llm() rejects a non-string path with relm_error_model_load",5,0,FALSE,FALSE,0,5
+"test-llm-load.R","llm() names the failing check for a missing file",2,0,FALSE,FALSE,0,2
+"test-llm-load.R","llm() rejects a directory path",2,0,FALSE,FALSE,0,2
+"test-llm-load.R","llm() validates context_length / gpu_layers / mmap with relm_error_argument",14,0,FALSE,FALSE,0,14
+"test-llm-load.R","llm() rejects invalid backend choices with classed argument errors",12,0,FALSE,FALSE,0,12
+"test-llm-load.R","llm() keeps match.arg defaults and unambiguous backend abbreviations",4,0,FALSE,FALSE,0,4
+"test-llm-load.R","llm() raises relm_error_backend for a backend the build lacks",3,0,FALSE,FALSE,0,3
+"test-llm-logits.R","llm_logits() rejects a non-llm handle",2,0,FALSE,FALSE,0,2
+"test-llm-logits.R","llm_logits() validates prompt and top before the engine",0,0,FALSE,TRUE,0,0
+"test-llm-logits.R","llm_logits() on a tokenizer-less model raises relm_error_tokenize",0,0,FALSE,TRUE,0,0
+"test-llm-logits.R","llm_logits() rejects a closed handle",0,0,FALSE,TRUE,0,0
+"test-llm-logits.R","llm_logits() returns the documented schema, top rows per prompt",1,0,TRUE,FALSE,0,0
+"test-llm-logits.R","llm_logits() ranks by descending logit with a valid probability head",1,0,TRUE,FALSE,0,0
+"test-llm-logits.R","llm_logits() is deterministic for a fixed prompt",1,0,TRUE,FALSE,0,0
+"test-llm-logits.R","llm_logits() vectorizes over prompt with per-prompt ranks",1,0,TRUE,FALSE,0,0
+"test-llm-logits.R","llm_logits() reflects an active intervention -- diverges from base [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-model.R","llm() loads a real Qwen2.5-0.5B and reports card-accurate metadata",1,0,TRUE,FALSE,0,0
+"test-llm-model.R","llm() honours a non-default context_length on a real model",1,0,TRUE,FALSE,0,0
+"test-llm-model.R","summary() on a real model carries tokenizer and memory information",1,0,TRUE,FALSE,0,0
+"test-llm-model.R","repeated load/unload of a real model does not leak native memory",1,0,TRUE,FALSE,0,0
+"test-llm-print.R","print.llm renders one screen of metadata and returns invisibly",9,0,FALSE,FALSE,0,9
+"test-llm-print.R","print.llm reports the active-intervention count",1,0,FALSE,FALSE,0,1
+"test-llm-print.R","summary.llm returns a classed list with footprint and tokenizer info",6,0,FALSE,FALSE,0,6
+"test-llm-print.R","print.summary.llm renders the richer view",5,0,FALSE,FALSE,0,5
+"test-llm-print.R","format helpers render human-readable magnitudes",6,0,FALSE,FALSE,0,6
+"test-llm-print.R","format_bytes twin-pins the Rust human_bytes formula",7,0,FALSE,FALSE,0,7
+"test-llm-probe-memory.R","probe memory refusal precedes dense layer allocation for both storage modes",8,0,FALSE,FALSE,0,8
+"test-llm-probe-memory.R","the estimate covers measured materialized input and concurrent fit objects",5,0,FALSE,FALSE,0,5
+"test-llm-probe-memory.R","a missing optional solver fails through the real classed dependency guard",3,0,FALSE,FALSE,0,3
+"test-llm-probe-memory.R","large Arrow string buffers count toward the slice read budget",2,0,FALSE,FALSE,0,2
+"test-llm-probe-statistics.R","ridge coefficients solve the mean-loss objective with an unpenalized intercept",10,0,FALSE,FALSE,0,10
+"test-llm-probe-statistics.R","train-only RMS preprocessing drops constants and handles one retained neuron",8,0,FALSE,FALSE,0,8
+"test-llm-probe-statistics.R","metric ties and threshold equality follow the frozen pair-count contract",5,0,FALSE,FALSE,0,5
+"test-llm-probe-statistics.R","cluster intervals preserve multiplicities, use type7 and fail closed",13,0,FALSE,FALSE,0,13
+"test-llm-probe-statistics.R","a validation-only extreme cannot affect its fold's training transformation",2,0,FALSE,FALSE,0,2
+"test-llm-probe-statistics.R","solver failures and incomplete paths cannot become partial probe fits",14,0,FALSE,FALSE,0,14
+"test-llm-probe-statistics.R","a deliberately leaky allocator is rejected before fitting",2,0,FALSE,FALSE,0,2
+"test-llm-probe-statistics.R","caller glmnet controls are restored and cannot silently change the objective path",2,0,FALSE,FALSE,0,2
+"test-llm-probe-statistics.R","the development refit warm-starts through the selected endpoint and retains it",10,0,FALSE,FALSE,0,10
+"test-llm-probe-validation.R","probe labels and group identities are checked without coercion or recycling",25,0,FALSE,FALSE,0,25
+"test-llm-probe-validation.R","probe formulas and fitting controls reject unsupported ambiguity",22,0,FALSE,FALSE,0,22
+"test-llm-probe-validation.R","balanced row counts cannot conceal duplicate or missing neuron coordinates",9,0,FALSE,FALSE,0,9
+"test-llm-probe-validation.R","long trace labels must be constant within prompt and prediction coordinates exact",4,0,FALSE,FALSE,0,4
+"test-llm-probe-validation.R","authentic Arrow spill, memory and shuffled rows yield identical fitted probes",8,0,FALSE,FALSE,0,8
+"test-llm-probe.R","probes keep source pairs isolated and choose using development data",121,0,FALSE,FALSE,0,121
+"test-llm-probe.R","holdout mutations cannot alter folds, preprocessing, fits or selection",9,0,FALSE,FALSE,0,9
+"test-llm-probe.R","trace row order and exact prompt-name matching leave predictions invariant",4,0,FALSE,FALSE,0,4
+"test-llm-probe.R","seeded fitting restores RNG state including its absence and error paths",8,0,FALSE,FALSE,0,8
+"test-llm-probe.R","S3 methods distinguish held-out and exploratory results",11,0,FALSE,FALSE,0,11
+"test-llm-probe.R","a whole-procedure paired-label control exposes perfect lexical confounding",5,0,FALSE,FALSE,0,5
+"test-llm-probe.R","selection diagnostics average unequal folds without observation weights",3,0,FALSE,FALSE,0,3
+"test-llm-spark.R","Spark native generation and declared capabilities work [SPARK]",1,0,TRUE,FALSE,0,0
+"test-llm-steer-valence.R","the valence lexicon is well-formed and two-sided",6,0,FALSE,FALSE,0,6
+"test-llm-steer-valence.R","the committed valence direction is well-formed and matches its SHA256",5,0,FALSE,FALSE,0,5
+"test-llm-steer-valence.R","steering along the valence direction shifts generated valence (+ up, - down) [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-stream-helpers.R","stream admission rejects invalid sinks before RNG submission or header",12,0,FALSE,FALSE,0,12
+"test-llm-stream-helpers.R","native file admission distinguishes regular files from devices and invalid paths",17,0,FALSE,FALSE,0,17
+"test-llm-stream-helpers.R","only caller-owned empty writable seekable binary regular files are admitted",18,0,FALSE,FALSE,0,18
+"test-llm-stream-helpers.R","closed and reused connection slots cannot redirect the stream",5,0,FALSE,FALSE,0,5
+"test-llm-stream-helpers.R","CSV preserves quoting newlines Unicode literal NA and typed missing fields",6,0,FALSE,FALSE,0,6
+"test-llm-stream-helpers.R","representation validation rejects malformed data before consumer execution",27,0,FALSE,FALSE,0,27
+"test-llm-stream-helpers.R","stream memory bounds cover materialized columns and CSV escaping copies",9,0,FALSE,FALSE,0,9
+"test-llm-stream.R","stream batches preserve exact schema sequence names seed and ownership phases",124,0,FALSE,FALSE,0,124
+"test-llm-stream.R","CSV and callback delivery have identical deterministic event content",10,0,FALSE,FALSE,0,10
+"test-llm-stream.R","consumer errors and interrupts stop callbacks and return ownership without joining",18,0,FALSE,FALSE,0,18
+"test-llm-stream.R","the first progress error suppresses future token delivery",6,0,FALSE,FALSE,0,6
+"test-llm-stream.R","native completion retains busy until delivery and model close abandons it",10,0,FALSE,FALSE,0,10
+"test-llm-stream.R","consumer error after native completion wins over close and native success",3,0,FALSE,FALSE,0,3
+"test-llm-stream.R","successful final progress can close the model after stream ownership release",5,0,FALSE,FALSE,0,5
+"test-llm-stream.R","sink closure is detected at an empty prefill poll and cannot reuse a slot",6,0,FALSE,FALSE,0,6
+"test-llm-stream.R","write and flush failure warnings preserve their parent and never retry",12,0,FALSE,FALSE,0,12
+"test-llm-stream.R","[MODEL] cached Qwen retains seeded sync async and stream equality",1,0,TRUE,FALSE,0,0
+"test-llm-stream.R","[MODEL] cached Qwen ordinary structured and CSV streams preserve results",1,0,TRUE,FALSE,0,0
+"test-llm-stream.R","[MODEL] cached vision over-batch prefill retains streaming parity",1,0,TRUE,FALSE,0,0
+"test-llm-stream.R","native failure discards queued rows and encoding rejection remains classed",16,0,FALSE,FALSE,0,16
+"test-llm-stream.R","a partial CSV write or final flush failure rejects without final progress",16,0,FALSE,FALSE,0,16
+"test-llm-stream.R","FFI representation failure follows nonblocking cancellation and preserves its condition",5,0,FALSE,FALSE,0,5
+"test-llm-stream.R","structured fixture rows stay provisional until each prompt ends",4,0,FALSE,FALSE,0,4
+"test-llm-synthetic.R","the synthetic GGUF loads and reports its tiny dimensions",0,0,FALSE,TRUE,0,0
+"test-llm-synthetic.R","the synthetic model loads on the CPU backend",3,0,FALSE,FALSE,0,3
+"test-llm-synthetic.R","summary() on the synthetic model carries the tiny vocabulary",0,0,FALSE,TRUE,0,0
+"test-llm-tokens.R","llm_tokens rejects a non-llm handle",1,0,FALSE,FALSE,0,1
+"test-llm-tokens.R","llm_tokens rejects a non-logical decode",3,0,FALSE,FALSE,0,3
+"test-llm-tokens.R","llm_tokens (encode) rejects non-character x",2,0,FALSE,FALSE,0,2
+"test-llm-tokens.R","llm_tokens (decode) rejects non-integer or non-positive ids",3,0,FALSE,FALSE,0,3
+"test-llm-tokens.R","llm_tokens on a closed handle raises relm_error_closed",1,0,FALSE,FALSE,0,1
+"test-llm-tokens.R","llm_tokens on a no_vocab model raises relm_error_tokenize",2,0,FALSE,FALSE,0,2
+"test-llm-tokens.R","encode returns a named integer vector of 1-based ids",1,0,TRUE,FALSE,0,0
+"test-llm-tokens.R","encode/decode is an exact round-trip (ASCII)",1,0,TRUE,FALSE,0,0
+"test-llm-tokens.R","encode/decode round-trips Italian accented text (UTF-8)",1,0,TRUE,FALSE,0,0
+"test-llm-tokens.R","encode is vectorized: a list with names preserved",1,0,TRUE,FALSE,0,0
+"test-llm-tokens.R","decode rejects an id outside the vocabulary (classed, not a crash)",1,0,TRUE,FALSE,0,0
+"test-llm-trace-golden.R","the committed HF activation golden fixture is well-formed and matches its SHA256",6,0,FALSE,FALSE,0,6
+"test-llm-trace-golden.R","golden gate is SATISFIED when a slice is compared to itself (no-op guard)",5,0,FALSE,FALSE,0,5
+"test-llm-trace-golden.R","golden gate CATCHES a +1 layer-shift mutation (off-by-one, ARCHITECTURE section 4)",4,0,FALSE,FALSE,0,4
+"test-llm-trace-golden.R","golden gate CATCHES a wrong-component swap (residual<->mlp_out)",3,0,FALSE,FALSE,0,3
+"test-llm-trace-golden.R","golden gate CATCHES a scalar blow-up that cosine/Spearman are BLIND to",5,0,FALSE,FALSE,0,5
+"test-llm-trace-golden.R","llm_trace() on Qwen2.5-0.5B matches the HF fp32 activation golden (Q8_0 tolerance) [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace-spill-ownership.R","a real live R owner keeps an aged spill readable and cleans on exit",5,0,FALSE,FALSE,0,5
+"test-llm-trace-spill-ownership.R","only an aged verifiably orphaned R spill is reclaimed after a crash",4,0,FALSE,FALSE,0,4
+"test-llm-trace-spill-ownership.R","R sweep retains unknown aged directories and caller-owned files",3,0,FALSE,FALSE,0,3
+"test-llm-trace-spill-session.R","custom spill paths remain distinct across live R sessions",5,0,FALSE,FALSE,0,5
+"test-llm-trace-spill-session.R","spill path allocation is lazy and does not alter the user's RNG",4,0,FALSE,FALSE,0,4
+"test-llm-trace-spill.R","a spilled trace's slices equal the in-memory slices exactly",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","a materialized trace fits K x its f32-activation bytes (D-017 pins the factor)",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","a no_vocab in-memory trace surfaces NA token pieces (matching the spill path)",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","the trace payload carries the positions_recycled signal (Rust->R wiring)",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","print() and summary() on a spilled trace never read the file",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","a spill file whose footer disagrees with the object is rejected",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","the spec key varies with prompts and the trace id is a nonce (M-2)",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","a spill file with a truncated/corrupt body fails as a classed condition",0,0,FALSE,TRUE,0,0
+"test-llm-trace-spill.R","a spill file with a tampered column type is rejected (schema check)",5,0,FALSE,FALSE,0,5
+"test-llm-trace.R","the constructed relm_trace fixture matches the API-GRAMMAR schema",14,0,FALSE,FALSE,0,14
+"test-llm-trace.R","llm_trace() rejects a non-llm handle",2,0,FALSE,FALSE,0,2
+"test-llm-trace.R","llm_trace() validates `prompts`",0,0,FALSE,TRUE,0,0
+"test-llm-trace.R","llm_trace() validates `layers` (type and 1-based range)",0,0,FALSE,TRUE,0,0
+"test-llm-trace.R","llm_trace() validates `positions`",0,0,FALSE,TRUE,0,0
+"test-llm-trace.R","validate_positions() de-duplicates explicit positions (M-1)",5,0,FALSE,FALSE,0,5
+"test-llm-trace.R","oversized trace positions are rejected before integer conversion",9,0,FALSE,FALSE,0,9
+"test-llm-trace.R","llm_trace() validates `components` (subset of the allowed set)",0,0,FALSE,TRUE,0,0
+"test-llm-trace.R","llm_trace() validates `spill` and `spill_dir`",0,0,FALSE,TRUE,0,0
+"test-llm-trace.R","llm_trace() rejects a closed handle",0,0,FALSE,TRUE,0,0
+"test-llm-trace.R","llm_trace(spill = FALSE) over budget raises relm_error_oom before allocation",4,0,FALSE,FALSE,0,4
+"test-llm-trace.R","the default trace budget is the D-017 materialized-bytes cap (2 GB)",3,0,FALSE,FALSE,0,3
+"test-llm-trace.R","TRACE_MATERIALIZED_EXPANSION matches the engine's pinned factor (twin pin)",1,0,FALSE,FALSE,0,1
+"test-llm-trace.R","print.relm_trace shows dims + capture spec and never dumps the data",7,0,FALSE,FALSE,0,7
+"test-llm-trace.R","summary.relm_trace digests per (layer, component): n and mean|value|",8,0,FALSE,FALSE,0,8
+"test-llm-trace.R","as.matrix.relm_trace extracts one (layer, component) slice as a matrix",10,0,FALSE,FALSE,0,10
+"test-llm-trace.R","as.matrix.relm_trace fails loud on a mis-shaped (duplicated) slice (M-1)",3,0,FALSE,FALSE,0,3
+"test-llm-trace.R","as.matrix rejects duplicate-plus-missing cells with unchanged dimensions",4,0,FALSE,FALSE,0,4
+"test-llm-trace.R","llm_trace() on a real model returns the relm_trace schema and slices [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace.R","llm_trace() attn_out on a qwen2 model is a classed, honest error [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace.R","llm_trace() residual on a Gemma 4 model returns plausible activations [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace.R","llm_trace() attn_out on a Gemma 4 model is a classed error (name collision) [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace.R","llm_trace() mlp_out on a Gemma 4 model is a classed error (MoE layers) [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace.R","llm_trace() residual + mlp_out on a Qwen 3 model returns the schema [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace.R","llm_trace() residual on a Qwen 3.5 model returns plausible activations [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-trace.R","llm_trace() warns when explicit positions are recycled across differing lengths [MODEL]",1,0,TRUE,FALSE,0,0
+"test-llm-validation.R","public handle guards retain argument error details and call sites",32,0,FALSE,FALSE,0,32
+"test-llm-validation.R","public handle guards retain closed errors before evaluating inputs",24,0,FALSE,FALSE,0,24
+"test-llm-validation.R","public guards synchronize native closure once without reaching model work",18,0,FALSE,FALSE,0,18
+"test-llm-vision-async.R","[MODEL] async vision matches the existing image generation path",1,0,TRUE,FALSE,0,0
+"test-llm-vision-embed.R","the machine fingerprint is derived, well-formed, and stable",4,0,FALSE,FALSE,0,4
+"test-llm-vision-embed.R","on macOS the fingerprint names the CPU, not just the platform",1,1,FALSE,FALSE,0,0
+"test-llm-vision-embed.R","the committed T2 sidecar names a real machine and matches its golden",4,0,FALSE,FALSE,0,4
+"test-llm-vision-embed.R","a sidecar that does not match its golden is a loud error, not a skip",1,0,FALSE,FALSE,0,1
+"test-llm-vision-embed.R","a matching digest returns the recorded machine",1,0,FALSE,FALSE,0,1
+"test-llm-vision-embed.R","a sidecar with no digest is refused rather than trusted",1,0,FALSE,FALSE,0,1
+"test-llm-vision-embed.R","an absent sidecar reports NA rather than crashing",2,0,FALSE,FALSE,0,2
+"test-llm-vision-embed.R","the CPU is parsed from both /proc/cpuinfo shapes",5,0,FALSE,FALSE,0,5
+"test-llm-vision-embed.R","llm_embed() applies the shared images pairing contract",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","llm_embed() images on a projector-less handle raise relm_error_image",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","llm_embed() empty-string rules: text-only rejected, image-bearing allowed",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","llm_embed() text path is untouched by the images plumbing",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","[MODEL] multimodal embeddings: row contract, x = '', determinism",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","[MODEL] the cat image embeds closer to 'a cat' than to 'a car'",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","[MODEL] the pooled multimodal embedding matches the committed pin",1,0,TRUE,FALSE,0,0
+"test-llm-vision-embed.R","[MODEL] multimodal embed over the context window is a classed error",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","[MODEL] a multimodal prompt with a text portion over n_batch decodes (rule 8a)",0,0,FALSE,TRUE,0,0
+"test-llm-vision-embed.R","[MODEL] combined text+image tokens over the window raise context overflow",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","the image gate accepts exactly JPEG, PNG, and BMP",6,0,FALSE,FALSE,0,6
+"test-llm-vision.R","the image gate rejects audio magics, GIF, and garbage at the magic stage",28,0,FALSE,FALSE,0,28
+"test-llm-vision.R","the image gate rejects a truncated file of each allowed format",6,0,FALSE,FALSE,0,6
+"test-llm-vision.R","the image gate rejects over-cap dimensions before any decode",4,0,FALSE,FALSE,0,4
+"test-llm-vision.R","the image gate enforces the byte cap and names the override",3,0,FALSE,FALSE,0,3
+"test-llm-vision.R","the image gate accepts the degenerate-but-legal dimension fixtures",3,0,FALSE,FALSE,0,3
+"test-llm-vision.R","a missing image file is a classed image error with the path field",2,0,FALSE,FALSE,0,2
+"test-llm-vision.R","llm_generate() validates the images argument type and pairing",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","a bare images vector recycles across prompts with a warning",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","images on a handle loaded without a projector raise relm_error_image",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","an image-bearing prompt containing the media marker is rejected pre-boundary",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","the R media-marker literal twin-pins the engine's marker",1,0,FALSE,FALSE,0,1
+"test-llm-vision.R","character(0) image sets mean no images and need no projector",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","an empty bare images vector means no images and never warns",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","images = NULL leaves the text path byte-identical (same classed error)",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","a broken relm.image_max_bytes option is a classed argument error",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","llm() validates the projector argument",5,0,FALSE,FALSE,0,5
+"test-llm-vision.R","a non-mmproj file as projector is a classed image error, not a crash",2,0,FALSE,FALSE,0,2
+"test-llm-vision.R","a text-only handle has NULL projector and vision FALSE",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","print.llm shows the projector on a vision handle",3,0,FALSE,FALSE,0,3
+"test-llm-vision.R","the committed fixture equals the canonical repo image byte-for-byte",1,0,FALSE,FALSE,0,1
+"test-llm-vision.R","[MODEL] llm(projector=) loads a VLM and the handle reflects it",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","[MODEL] the VLM answers a factual question about the committed image",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","[MODEL] a mismatched mmproj names both embedding sizes",1,0,TRUE,FALSE,0,0
+"test-llm-vision.R","[MODEL] an mmproj passed as the model is a classed error, not a crash",1,0,FALSE,FALSE,0,1
+"test-llm-vision.R","[MODEL] a text GGUF passed as the projector is a classed image error",1,0,TRUE,FALSE,0,0
+"test-llm-vision.R","[MODEL] degenerate-but-legal dimensions never abort (audit req 4)",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","[MODEL] an intervened handle derived from a vision handle keeps images working",0,0,FALSE,TRUE,0,0
+"test-llm-vision.R","[MODEL] the CPU greedy continuation matches the unpatched upstream reference",1,0,FALSE,FALSE,0,1
+"test-package.R","the relm namespace loads with its compiled library",1,0,FALSE,FALSE,0,1
+"test-package.R","only API-GRAMMAR-approved functions are exported (spec-first gate)",1,0,FALSE,FALSE,0,1
+"test-package.R","the WP4 relm_trace S3 methods are registered (API-GRAMMAR section 2/4)",7,0,FALSE,FALSE,0,7
+"test-package.R","the WP1 S3 methods are registered (API-GRAMMAR section 3)",8,0,FALSE,FALSE,0,8
+"test-projection-application.R","direction operators are exact plain strings before artifact work",9,0,FALSE,FALSE,0,9
+"test-projection-application.R","projection application routes validated first and last component sites",20,0,FALSE,FALSE,0,20
+"test-projection-application.R","operator mismatch tampering and foreign provenance precede derivation",5,0,FALSE,FALSE,0,5
+"test-projection-application.R","projection coefficients retain zero and reject hidden or non-f32 values",8,0,FALSE,FALSE,0,8
+"test-projection-application.R","additive application preserves old dispatch and charges new artifact on projected source",6,0,FALSE,FALSE,0,6
+"test-projection-application.R","ordinary residual derivation preserves the recorded projection admission",8,0,FALSE,FALSE,0,8
+"test-projection-application.R","projection image requests and live projection revisions refuse without execution",5,0,FALSE,FALSE,0,5
+"test-projection-application.R","explicit direction inheritance uses a new combined budget and production preflight",5,0,FALSE,FALSE,0,5
+"test-projection-constructor-memory.R","projection constructor schema 2 refuses old or missing probe ledgers",9,0,FALSE,FALSE,0,9
+"test-projection-constructor-memory.R","projection constructor counts one residual sentinel peak for either kind",48,0,FALSE,FALSE,0,48
+"test-projection-constructor-memory.R","projection constructor scalar probe charge reaches transport and owner inventory",4,0,FALSE,FALSE,0,4
+"test-projection-directions.R","schema2 canonical streams match all eleven independent vectors",1359,0,FALSE,FALSE,0,1359
+"test-projection-directions.R","both independent schema2 artifacts validate without product construction",10,0,FALSE,FALSE,0,10
+"test-projection-directions.R","component construction preserves paired arithmetic at first and last layers",29,0,FALSE,FALSE,0,29
+"test-projection-directions.R","schema2 retains full-width and capture bounds and schema1 layer rules",7,0,FALSE,FALSE,0,7
+"test-projection-graphics.R","projection maps append typed counts at configured component sites",6,0,FALSE,FALSE,0,6
+"test-projection-graphics.R","projection descriptions distinguish static component edits from live steering",7,0,FALSE,FALSE,0,7
+"test-projection-memory.R","projection R profile rejects hidden owners and incompatible compiled fields",15,0,FALSE,FALSE,0,15
+"test-projection-memory.R","projection R arithmetic shares inherited directions and enforces exact budgets",146,0,FALSE,FALSE,0,146
+"test-projection-memory.R","projection R exact arithmetic rejects overflow before multiplication",12,0,FALSE,FALSE,0,12
+"test-projection-memory.R","projection command validation refuses attributes nonunit and incompatible modes",13,0,FALSE,FALSE,0,13
+"test-projection-memory.R","projection responses bind every term and actual model fact before derivation",31,0,FALSE,FALSE,0,31
+"test-projection-memory.R","projection R transport accounts actual pool sizes and untraversed pointer tags",4,0,FALSE,FALSE,0,4
+"test-projection-memory.R","projection transport covers OOM fields and the bounded intervention alternative",12,0,FALSE,FALSE,0,12
+"test-projection-owners.R","projection state inventory adds hash bindings and both finalizer types",6,0,FALSE,FALSE,0,6
+"test-projection-owners.R","projection scalar scan refuses hidden owners duplicate sites and nonfinite scaling",10,0,FALSE,FALSE,0,10
+"test-projection-owners.R","projection boundary arrays preserve mixed residual order without changing inputs",7,0,FALSE,FALSE,0,7
+"test-projection-owners.R","projection inventory binds actual metadata and accumulated residual owners",7,0,FALSE,FALSE,0,7
+"test-projection-owners.R","projection flat capacity counts agree with real R vector pools at boundaries",12,0,FALSE,FALSE,0,12
+"test-projection-owners.R","projection site count refuses thirty-third entry before new materialization",2,0,FALSE,FALSE,0,2
+"test-projection-owners.R","projection candidate wraps an independent un-hashed state and shares unchanged entries",26,0,FALSE,FALSE,0,26
+"test-projection-public-binding.R","projection preparation charges workflow objects independently of vector width",3,0,FALSE,FALSE,0,3
+"test-projection-public-binding.R","projection preparation binds actual inventory and native response before arrays",7,0,FALSE,FALSE,0,7
+"test-projection-public-binding.R","projection preparation rejects altered native scope and charges before allocation",10,0,FALSE,FALSE,0,10
+"test-projection-public-binding.R","projection derivation carries admitted arrays and creates independent R state",7,0,FALSE,FALSE,0,7
+"test-projection-public-binding.R","projection derivation closes delivered handle if R wrapping fails",3,0,FALSE,FALSE,0,3
+"test-projection-public-binding.R","projection inherited residual uses recorded budget without a new site",7,0,FALSE,FALSE,0,7
+"test-projection-state-api.R","projection state provenance uses a weak fixed-name environment",10,0,FALSE,FALSE,0,10
+"test-projection-state-api.R","projection state query refuses forged and lazy bindings before evaluation",12,0,FALSE,FALSE,0,12
+"test-projection-state-api.R","projection state inventory charges all three actual weak references",1,0,FALSE,FALSE,0,1
+"test-selftest-registration.R","native fixture registration matches the requested build mode",1,0,FALSE,FALSE,0,1
+"test-selftest-registration.R","a required missing native fixture fails instead of skipping",1,0,FALSE,FALSE,0,1
+"test-structured-output.R","structured schema scalar errors identify the public argument",10,0,FALSE,FALSE,0,10
+"test-structured-output.R","structured schema byte and Unicode gates produce schema conditions",7,0,FALSE,FALSE,0,7
+"test-structured-output.R","structured prompt and token budgets fail before native copies",10,0,FALSE,FALSE,0,10
+"test-structured-output.R","structured sampling rejects non-finite values and overflowing casts",16,0,FALSE,FALSE,0,16
+"test-structured-output.R","structured requests reject stop strings and images before file or model checks",6,0,FALSE,FALSE,0,6
+"test-structured-output.R","malformed and unsupported schemas fail before tokenization",0,0,FALSE,TRUE,0,0
+"test-structured-output.R","valid structured bounds and empty collections reach tokenization",0,0,FALSE,TRUE,0,0
+"test-structured-output.R","structured generation preserves names, scalar seeds and complete JSON [MODEL]",1,0,TRUE,FALSE,0,0
+"test-structured-output.R","structured exhaustion carries bounded diagnostics and leaves the handle usable [MODEL]",1,0,TRUE,FALSE,0,0
+"test-structured-output.R","structured prompt ingestion retains chunked decoding [MODEL]",1,0,TRUE,FALSE,0,0

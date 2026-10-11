@@ -93,10 +93,7 @@
 #' @export
 llm_embed <- function(m, x, pooling = c("mean", "last", "model"), normalize = TRUE,
                       images = NULL) {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
   guard_not_intervened(
     m, "relm_error_embed",
     "Embedding an intervened handle is not yet supported"

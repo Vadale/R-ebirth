@@ -53,11 +53,12 @@ static SEXP relm_state_unforced_value(SEXP env, SEXP symbol) {
     if (R_GetBindingType(symbol, env) != R_BindingTypeValue) return R_UnboundValue;
     return R_getVar(symbol, env, FALSE);
 #else
-    /* R <= 4.5 has no public binding-type query. Its declared legacy accessor
-     * returns promises unforced and can rebox at most one immediate scalar.
-     * This branch is not compiled or linked against R 4.6. */
+    /* R 4.5's public frame lookup returns a promise without forcing it.
+     * Reject active bindings first: the factory guarantees a plain fixed-name
+     * environment, so lookup cannot invoke a user-database callback either.
+     * At most one immediate scalar is reboxed, as in the R 4.6 branch. */
     if (R_BindingIsActive(symbol, env)) return R_UnboundValue;
-    return Rf_findVarInFrame3(env, symbol, FALSE);
+    return Rf_findVarInFrame(env, symbol);
 #endif
 }
 

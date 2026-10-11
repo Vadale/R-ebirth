@@ -1,4 +1,5 @@
 test_that("projection state provenance uses a weak fixed-name environment", {
+  require_relm_selftest("rebirth_selftest_new_handle")
   ptr <- relm:::rebirth_selftest_new_handle()
   state <- relm:::relm_check(relm:::rebirth_model_state(ptr))
   expect_true(environmentIsLocked(state))
@@ -20,6 +21,7 @@ test_that("projection state provenance uses a weak fixed-name environment", {
 })
 
 test_that("projection state query refuses forged and lazy bindings before evaluation", {
+  require_relm_selftest("rebirth_selftest_new_handle")
   ptr <- relm:::rebirth_selftest_new_handle()
   state <- relm:::relm_check(relm:::rebirth_model_state(ptr))
   refuse <- function(e, p = ptr) expect_error(

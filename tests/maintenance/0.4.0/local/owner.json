@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "scope": "Local maintenance corrections; release and numerical debt remain pending",
+  "original_pipeline_status": "failed; retained unchanged",
+  "resumption": "Only 61 named failures caused by unavailable sandbox Metal/sysctl access; same installed DLL, no rebuild",
+  "R": {
+    "cases": 443,
+    "expectations": 6704,
+    "skips": 67,
+    "failures": 0,
+    "errors": 0,
+    "skip_scope": "66 optional model/network cases; one recording-machine VLM pin stopped first at sandbox CPU fingerprint. VLM environment was absent; no VLM acceptance claimed."
+  },
+  "production_registration": {
+    "cases": 6,
+    "expectations": 19,
+    "fixture_hooks": 0
+  },
+  "selftest_fixture_hooks": 12,
+  "C_controls": 24,
+  "FFI_unit_cases": 9,
+  "source_inventory": 118,
+  "post_build_delta": "Generated production wrappers match the exact production DLL; no other inventoried code drift",
+  "compiled_profile_fields_unchanged": 27,
+  "production_dll": "9312d8bf736ba73768c766be7c2482f2cdca4aada9f8627e32db8d88514e6473",
+  "selftest_dll": "01c6c9e7cf23beda000950a4e1a45da6f45a9ffc928f17f682e78aa4a3e2a909",
+  "version_scope": "Local installed libraries still carry 0.3.0 metadata; version/docs change followed this execution. Not final 0.4.0 package acceptance.",
+  "warnings": [
+    "Standalone C control compilation: installed R Boolean.h unknown warning group",
+    "External testthat built under R 4.5.2; local R is 4.5.1"
+  ],
+  "production_and_selftest_compiler_warnings": 0,
+  "review": "One integrated review; two findings closed in separate source-only closure",
+  "not_executed": [
+    "cached-Qwen/consumed efficacy replay",
+    "new ignored long-prefill diagnostic",
+    "final release package and distribution"
+  ]
+}

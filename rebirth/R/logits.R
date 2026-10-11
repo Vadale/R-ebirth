@@ -48,10 +48,7 @@
 #' close(m)
 #' @export
 llm_logits <- function(m, prompt, top = 20) {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
 
   if (!is.character(prompt) || length(prompt) == 0L || anyNA(prompt)) {
     abort_argument(

@@ -58,6 +58,7 @@ impl LlmHandle {
     fn new(model: LoadedModel) -> Self {
         Self::register(Some(model), false, None)
     }
+    #[cfg(feature = "selftest")]
     fn empty() -> Self {
         Self::register(None, true, None)
     }
@@ -744,6 +745,7 @@ fn close_all_handles() {
 }
 
 // Internal scheduler seams; no model download and no inference-quality claim.
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_async_test_handle() -> Robj {
     let handle = LlmHandle::register(
@@ -775,6 +777,7 @@ fn rebirth_async_test_handle() -> Robj {
         },
     )
 }
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_async_test_config(ptr: Robj, mode: &str, steps: i32, delay_ms: i32) -> Robj {
     resolve(catch_unwind(AssertUnwindSafe(|| {
@@ -813,6 +816,7 @@ fn rebirth_async_test_config(ptr: Robj, mode: &str, steps: i32, delay_ms: i32) -
     })))
 }
 
+#[cfg(feature = "selftest")]
 #[extendr]
 fn rebirth_async_test_stats() -> Robj {
     let (active_jobs, worker_threads, terminal_slots) = ACTIVE_JOB.with(|slot| {

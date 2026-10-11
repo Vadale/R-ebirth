@@ -41,10 +41,7 @@
 #' close(m)
 #' @export
 llm_tokens <- function(m, x, decode = FALSE) {
-  if (!inherits(m, "llm")) {
-    abort_argument("m", "`m` must be an `llm` handle returned by llm().")
-  }
-  ensure_open(m)
+  validate_llm(m)
   if (!is.logical(decode) || length(decode) != 1L || is.na(decode)) {
     abort_argument(
       "decode",

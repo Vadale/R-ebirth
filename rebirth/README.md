@@ -15,9 +15,10 @@ model's internal values using ordinary R vectors, data frames and matrices.
 Its Rust core embeds a pinned, patched llama.cpp; R remains your working
 environment for statistics, visualization and reproducible research.
 
-**Version 0.3.0** adds structured generation, native Spark support, statistical
-probes, and separate batch/service examples. See the
-[release notes](https://github.com/Vadale/R-ebirth/blob/main/rebirth/NEWS.md#relm-030).
+**Version 0.4.0** adds the complete research workflow: background generation,
+token events, live observations, recorded directions, component projections and
+base-R graphics, with code and trace-validation maintenance. See the
+[release notes](https://github.com/Vadale/R-ebirth/blob/main/rebirth/NEWS.md#relm-040).
 Binary availability follows r-universe builds; check `packageVersion("relm")`
 after installation.
 
@@ -33,7 +34,7 @@ install.packages(
 packageVersion("relm")
 ```
 
-r-universe tracks `main`; check the version before using the 0.3.0 features.
+r-universe tracks `main`; check the version before using the 0.4.0 research features.
 Prebuilt binaries need no native toolchain. Source installation needs R >= 4.5,
 Rust >= 1.85.0, CMake >= 3.28 and a C/C++ compiler. See the
 [installation guide](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)
@@ -41,13 +42,13 @@ for source builds and troubleshooting. Windows/CUDA acceptance is still pending.
 
 Core imports are `methods` (included with R) and `nanoarrow`, which reads spilled traces.
 `glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.
-Optional `later` and `promises` enable development async/streaming generation.
+Optional `later` and `promises` enable async/streaming generation.
 Application examples prepare their own separate dependency environments.
 
-## Development: asynchronous token data
+## Asynchronous token data
 
-After the 0.3.0 tag, `llm_generate(async = TRUE)` keeps generation on a native
-worker. The WP10 development interface adds `on_token`: short callbacks receive
+`llm_generate(async = TRUE)` keeps generation on a native worker.
+With `on_token`, short callbacks receive
 bounded plain-data-frame batches of token IDs, committed text and prompt-end
 events. The promise still resolves to the ordinary named text vector and seed.
 A caller-owned binary file connection can receive UTF-8 CSV instead.
@@ -110,7 +111,7 @@ next-token distribution as a data frame. Capture filters keep traces small;
 traces over the configured budget spill to disk and are read a slice at a time.
 The full 4B-model spill acceptance on a 16 GB Mac remains an open hardware check.
 
-## Structured output in 0.3.0
+## Structured output
 
 Pass JSON Schema text to the existing generation function. This example reuses
 the model loaded above and returns a JSON string:

@@ -3,7 +3,10 @@
 # process package. The cached-Qwen ownership test is explicitly [MODEL]-gated.
 # Child-process exit/panic-output assertions complement native drop counters.
 
-async_lifecycle_process <- function(body, timeout = 30, setup = NULL, setup_timeout = 0) {
+async_lifecycle_process <- function(body, timeout = 30, setup = NULL, setup_timeout = 0,
+                                    selftest = TRUE) {
+  if (selftest) require_relm_selftest(c("rebirth_async_test_handle",
+    "rebirth_async_test_config", "rebirth_async_test_stats"))
   script <- tempfile(fileext = ".R")
   log <- tempfile(fileext = ".log")
   on.exit(unlink(c(script, log)), add = TRUE)
@@ -30,6 +33,9 @@ async_lifecycle_process <- function(body, timeout = 30, setup = NULL, setup_time
     ".relm_lifecycle_step('begin', 'load namespaces')",
     paste0(".libPaths(", libraries, ")"),
     "library(relm)", "stopifnot(requireNamespace('later'), requireNamespace('promises'))",
+    if (selftest) paste0("stopifnot(all(c('wrap__rebirth_async_test_handle', ",
+      "'wrap__rebirth_async_test_config', 'wrap__rebirth_async_test_stats') %in% ",
+      "names(getDLLRegisteredRoutines('relm')$.Call)))"),
     ".relm_lifecycle_step('end', 'load namespaces')",
     "new_fixture <- function(mode = 'success', steps = 100L, delay = 2L) {",
     "  m <- relm:::new_llm(relm:::relm_check(relm:::rebirth_async_test_handle()), '<fixture>')",
@@ -253,7 +259,7 @@ test_that("foreign external pointers fail safely before an extendr downcast", {
     "  relm:::rebirth_handle_close(ptr)",
     "}",
     "gc()"
-  ))
+  ), selftest = FALSE)
 })
 
 test_that("session exit joins an active job without an event-loop drain", {

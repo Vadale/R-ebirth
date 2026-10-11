@@ -10,6 +10,7 @@ lease_wait <- function(predicate, seconds) {
 }
 
 lease_child <- function(mode) {
+  require_relm_selftest("rebirth_selftest_trace_tokens_spill")
   root <- normalizePath(tempdir())
   work <- tempfile("relm-owner-", tmpdir = root)
   dir.create(work)
@@ -25,6 +26,7 @@ lease_child <- function(mode) {
   writeLines(c(
     "cfg <- readRDS(commandArgs(TRUE)[[1L]])",
     ".libPaths(cfg$lib); library(relm)",
+    "stopifnot('wrap__rebirth_selftest_trace_tokens_spill' %in% names(getDLLRegisteredRoutines('relm')$.Call))",
     "saveRDS(Sys.getpid(), cfg$pid)",
     "ns <- asNamespace('relm'); state <- get('.relm_state', ns)",
     "state$session_dir <- cfg$dir",

@@ -245,6 +245,7 @@ test_that("[MODEL] live steering restores adapters after cancel callback and rep
 })
 
 test_that("[MODEL] close after an applied live update discards the outstanding reply", {
+  require_relm_selftest("rebirth_async_test_stats")
   m <- llm(qwen_model_path(), backend = "cpu", context_length = 1024)
   on.exit(close(m), add = TRUE)
   d <- llm_steer(m, 2L, rep(0.02, m$hidden_size), coef = 0)

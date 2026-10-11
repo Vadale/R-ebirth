@@ -37,6 +37,7 @@ test_that("projection preparation rejects altered native scope and charges befor
 })
 
 test_that("projection derivation carries admitted arrays and creates independent R state", {
+  require_relm_selftest("rebirth_selftest_new_handle")
   e <- projection_binding_fixture(); m <- projection_owner_model(); iv <- projection_owner_entry()
   m$interventions <- list(list(kind = "steer", layer = 2L,
     direction = c(2, 4, 6), coef = .5, positions = "all"))
@@ -52,6 +53,7 @@ test_that("projection derivation carries admitted arrays and creates independent
 })
 
 test_that("projection derivation closes delivered handle if R wrapping fails", {
+  require_relm_selftest("rebirth_selftest_new_handle")
   e <- projection_binding_fixture()
   e$projection_new_llm <- function(...) stop("forced R wrapper failure")
   expect_error(e$projection_derive(projection_owner_model(), projection_owner_entry(), 64 * 2^20, 0),
