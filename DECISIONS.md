@@ -1596,3 +1596,13 @@ Preserved verbatim in substance for the day Phase 21 triggers fire (≥ 3 sustai
 - **Unchanged:** public API approval, dependency/vendor-change gates, numerical
   and resource bounds, consumed evaluations, and D047's deferred external-user
   feedback. Windows/CUDA and CRAN submission are not part of this work.
+
+**Numerical investigation disposition (2026-10-11):** retained Mac/Linux
+cache/attention contrasts isolate the long-prefix discrepancy to the precision
+and execution policy used for attention. The CPU long-prefix independent-oracle
+test now explicitly uses F32 cache and unfused attention; the oracle uses F64.
+Keep the existing0.01 and2e-6 bounds and unchanged frozen data. A separate
+default-context guard retains actual-input projection arithmetic, complete site
+writes and exact original/zero output coverage. Production cache/attention policy
+is unchanged; no default whole-forward F64 equivalence or universal kernel
+correctness is claimed. See [the observations and exact test scopes](docs/maintenance-0.4.0-numerics.md).

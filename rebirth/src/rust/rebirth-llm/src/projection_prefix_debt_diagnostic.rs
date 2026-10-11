@@ -51,7 +51,7 @@ fn projection_cache_precision_debt_diagnostic() {
         ("f32/flash_auto", 0, -1),
     ] {
         let log = crate::live_capture::tests::start_load_log();
-        model.recreate_for_precision_diagnostic(cache_type, flash_attn).unwrap();
+        model.recreate_test_context(cache_type, flash_attn).unwrap();
         let native_log = crate::live_capture::tests::backend_receipt(&model, crate::BackendKind::Cpu);
         drop(log);
         println!("F6E_CACHE_PRECISION_CONTEXT {}", serde_json::json!({

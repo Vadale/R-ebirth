@@ -62,13 +62,14 @@ specific gap without rewriting the old report.
 
 ## Actual unresolved work
 
-The Phase 7 `long_prefill` activation mismatch and earlier cross-schedule limits
-are separate numerical observations. A later green run does not explain them.
-The native owner has localized the Phase 7 failure to the first 512-token decode;
-a bounded diagnostic must inspect upstream addends and write coverage before a
-fix is proposed. See [the current maintenance ledger](maintenance-0.4.0-plan.md).
-No reference regeneration, tolerance change or consumed evaluation replay follows
-from cleanup authorization.
+The Phase 7 `long_prefill` investigation isolated an attention precision-policy
+mismatch with the independent oracle. Its comparison now explicitly declares
+F32 cache/unfused attention, with separate default-context operator/write/zero
+identity guards. Focused local checks pass; final CI remains pending. Earlier
+cross-schedule limits are still separate, unaccepted observations. See
+[the retained diagnosis and comparison scopes](maintenance-0.4.0-numerics.md).
+No frozen reference, tolerance, production precision or consumed evaluation was
+changed to produce a passing result.
 
 One integrated review is complete; its workflow flag and release-link findings
 were corrected and closed separately. [Local evidence](../tests/maintenance/0.4.0/local/owner.json)
@@ -76,7 +77,7 @@ preserves the initial sandbox-access failures and the exact 61-case resumption,
 with no rebuild or repetition of passing cases. Local installed libraries retain
 0.3.0 metadata and do not constitute final 0.4.0 release acceptance.
 
-Final CI, numerical-debt disposition, release checks, publication and distribution
+Final CI, release checks, publication and distribution
 verification are pending. Windows/CUDA, CRAN submission and independent external-user feedback
 remain subsequent scopes. Model quality and supported-site limitations are not
 silently converted into maintenance success claims.

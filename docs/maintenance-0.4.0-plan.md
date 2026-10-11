@@ -33,7 +33,9 @@ profiles and 443 installed R cases with 6,704 passing expectations and 67 scoped
 skips. The original sandbox-access failure remains failed; only its 61 affected
 cases were resumed with actual Metal/sysctl access against the same installed DLL.
 The installed libraries still carry pre-version-bump metadata. Final release
-package acceptance and the numerical-debt disposition remain outstanding.
+package acceptance remains outstanding. The diagnosed long-prefix precision
+contract and focused correction are recorded in
+[the numerical report](maintenance-0.4.0-numerics.md); final CI is pending.
 
 ## Work and verification order
 

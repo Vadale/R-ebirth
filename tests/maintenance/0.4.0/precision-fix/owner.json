@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "scope": "Affected Mac CPU tests; only long_prefill oracle path uses F32/unfused; default operator guard remains separate; Linux final CI pending",
+  "results": {
+    "forward": {
+      "cases": 15,
+      "oracle_values": 34748,
+      "same_input_values": 2944,
+      "default_long_prefill_values": 384,
+      "default_independent_scaled_error": 0.0,
+      "oracle_max_abs": 0.004728402942419052,
+      "zero_policies": 0,
+      "zero_values": 0
+    },
+    "microbatches": {
+      "cases": 3,
+      "oracle_values": 10042,
+      "same_input_values": 704,
+      "default_long_prefill_values": 384,
+      "default_independent_scaled_error": 0.0,
+      "oracle_max_abs": 0.003909901715815067,
+      "zero_policies": 6,
+      "zero_values": 576
+    }
+  },
+  "source_sha256": {
+    "rebirth/src/rust/rebirth-llm/src/engine.rs": "e36c4b63db18d79cc9ef43159c1b20fd7ae266f218f88ada67458c027bf51d61",
+    "rebirth/src/rust/rebirth-llm/src/projection_test_support.rs": "44bedadba6a73a06be71bac7b6608fac0fbf0d6471136e69b7c0ff0b56291b10",
+    "rebirth/src/rust/rebirth-llm/src/projection_prefix_debt_diagnostic.rs": "13c102c13867a54d7b90441033c5b35a4e9d18a26616d0895d52fb68890ebbd4"
+  },
+  "reference_manifest_sha256": "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959",
+  "log_sha256": {
+    "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "forward.log": "97347cd63b9d128190a7c84ad8c5394770f423ee1c4d5d07edcab9acb82b21c0",
+    "clippy.log": "0317d9f76cf2ff17408bcb6fe58ea922e1dd115fd6fb8bcb010477adbdc015dc",
+    "bootstrap.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "microbatches.log": "4bcd26d51e13588612cb53f21570bc41aebca0a9453fd9175b42d4f4adbd2b14"
+  }
+}

@@ -23,7 +23,7 @@ and isolation of native test hooks. See [NEWS](../rebirth/NEWS.md#relm-040),
 
 The affected local corrections and one integrated review are complete; see
 [the source-bound local receipt](../tests/maintenance/0.4.0/local/owner.json).
-Final CI, numerical-debt disposition, built-package and distribution acceptance
+Final CI, built-package and distribution acceptance
 remain pending. Prior 0.3.0 or Phase 6/7 evidence is retained at its original source and cannot substitute
 for new release claims. No CRAN submission or Windows/CUDA acceptance is included.
 
@@ -31,9 +31,11 @@ for new release claims. No CRAN submission or Windows/CUDA acceptance is include
 
 The consumed F6e experiment found a modest fixed-corpus projection result, with
 truncated outputs and no general efficacy or pure-operator claim. Known pinned
-model-tokenizer behavior remains explicit. The Phase 7 long-prefill failure and
-separate earlier cross-schedule observations require honest disposition; later
-passes do not establish their cause. Existing model/site and optional-dependency
+model-tokenizer behavior remains explicit. The Phase 7 long-prefill comparison
+now has an explicit oracle precision contract following the retained Mac/Linux
+contrast; [default-context accuracy limits remain explicit](maintenance-0.4.0-numerics.md).
+Separate earlier cross-schedule outliers are not retrospectively accepted.
+Existing model/site and optional-dependency
 limits remain in the support matrix. External-user feedback is deferred under D047.
 
 The 0.3.0 D035 exception applied to that release only. Assess any current package

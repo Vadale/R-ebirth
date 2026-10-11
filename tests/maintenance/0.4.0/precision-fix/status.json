@@ -1,0 +1,23 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 71449,
+  "stages": [
+    {
+      "name": "fmt",
+      "exit_code": 0
+    },
+    {
+      "name": "clippy",
+      "exit_code": 0
+    },
+    {
+      "name": "forward",
+      "exit_code": 0
+    },
+    {
+      "name": "microbatches",
+      "exit_code": 0
+    }
+  ],
+  "stage": "microbatches"
+}

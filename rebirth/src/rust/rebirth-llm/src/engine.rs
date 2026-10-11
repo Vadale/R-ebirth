@@ -763,10 +763,10 @@ impl LoadedModel {
         self.clone_context_config(true)
     }
 
-    /// Isolate cache/fused-attention precision in the ignored numerical probe.
+    /// Set explicit precision for an independent-reference test or diagnostic.
     /// This replaces only an idle test context; production policy is unchanged.
     #[cfg(test)]
-    pub(crate) fn recreate_for_precision_diagnostic(
+    pub(crate) fn recreate_test_context(
         &mut self,
         cache_type: i32,
         flash_attn: i32,

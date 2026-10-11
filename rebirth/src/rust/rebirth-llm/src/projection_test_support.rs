@@ -457,6 +457,105 @@ fn pruning_reference(
     (receipt, independent_max)
 }
 
+// Use the actual input row, so this checks the operator independently of
+// accumulated attention/cache rounding and remains a gate on default contexts.
+fn same_row_arithmetic(model: &LoadedModel, observed: &[Observation], name: &str) -> (usize, (f64, f64)) {
+    let mut values = 0;
+    let mut maximum = (0.0f64, 0.0f64);
+    let plan = model.projection().lock().as_ref().unwrap().plan.clone();
+    for before in observed.iter().filter(|row| row.before) {
+        let site = plan
+            .sites
+            .iter()
+            .find(|s| s.layer == before.layer && s.component == before.component)
+            .unwrap();
+        let mut matching = observed.iter().filter(|after| {
+            !after.before
+                && after.position == before.position
+                && after.layer == before.layer
+                && after.component == before.component
+        });
+        let after = matching.next().unwrap();
+        assert!(matching.next().is_none());
+        assert_eq!(before.values.len(), site.direction.len());
+        assert_eq!(after.values.len(), site.direction.len());
+        // Independent scalar equation on the actual observed pre-row.
+        // The post-row is read back from tensor storage by the observer.
+        let mut dot = 0.0f64;
+        for (&input, &direction) in before.values.iter().zip(site.direction.iter()) {
+            dot += f64::from(input) * direction;
+        }
+        assert!(dot.is_finite());
+        for ((&input, &actual), &direction) in before
+            .values
+            .iter()
+            .zip(after.values.iter())
+            .zip(site.direction.iter())
+        {
+            let updated = if site.coef == 0.0 {
+                f64::from(input)
+            } else {
+                f64::from(input) - (site.coef * direction) * dot
+            };
+            assert!(updated.is_finite() && updated.abs() <= f64::from(f32::MAX));
+            let expected = f64::from(updated as f32);
+            let delta = (f64::from(actual) - expected).abs();
+            let scaled = delta / (1.0 + expected.abs());
+            assert!(
+                scaled.is_finite() && scaled <= 2e-6,
+                "{name}: same-row delta {delta}"
+            );
+            maximum.0 = maximum.0.max(delta);
+            maximum.1 = maximum.1.max(scaled);
+            values += 1;
+        }
+    }
+    (values, maximum)
+}
+
+// Keep production-default long-prefix coverage before the oracle comparison
+// switches to an explicit precision contract. No F64 whole-forward claim here.
+fn default_long_prefill_arithmetic(model: &LoadedModel, ids: &[i32], positions: &[usize]) {
+    assert_eq!(ids.len(), 514);
+    model.clear_memory();
+    model.projection_reset_stats();
+    model.projection_audit(positions);
+    let mut start = 0;
+    while start < ids.len() {
+        let end = if start < 513 { (start + 512).min(513) } else { start + 1 };
+        model.decode_projection_tokens(&ids[start..end], start as i32, false).unwrap();
+        start = end;
+    }
+    let logits = model.logits_ith(0, 48).unwrap();
+    assert!(logits.iter().all(|v| v.is_finite()));
+    let (observed, witnesses) = model.projection_take_audit();
+    let (values, maximum) = same_row_arithmetic(model, &observed, "default long_prefill");
+    assert_eq!(values, 384);
+    assert_eq!(observed.len(), 66);
+    assert!(observed.iter().all(|r| r.values.len() == 32 && r.values.iter().all(|v| v.is_finite())));
+    assert_eq!(witnesses.len(), 1028);
+    let plan = model.projection().lock().as_ref().unwrap().plan.clone();
+    assert_eq!(plan.sites.len(), 2);
+    for site in plan.sites.iter() {
+        for position in 0..514 {
+            let found: Vec<_> = witnesses.iter().filter(|w| w.layer == site.layer && w.component == site.component && w.position == position).collect();
+            assert_eq!(found.len(), 1);
+            assert!(found[0].write);
+            assert!(found[0].dot.is_finite() && found[0].before_norm.is_finite() && found[0].after_norm.is_finite());
+        }
+    }
+    let stats = model.projection_stats();
+    assert_eq!(stats.rows, 1028);
+    assert_eq!(stats.write_bytes, 1028 * 32 * 4);
+    println!("F6E_DEFAULT_LONG_PREFILL {}", serde_json::json!({
+        "status":"passed","cache":"default_f16","attention":"default_auto",
+        "tokens":514,"decode_calls":3,"rows":66,"witnesses":1028,
+        "same_row_values":values,"max_scaled_error":maximum.1,
+        "scaled_error_limit":2e-6,"whole_forward_reference_acceptance":false,
+        "observed":observed.iter().map(|r|serde_json::json!({"position":r.position,"layer":r.layer,"component":r.component.as_str(),"before":r.before,"values":r.values.as_ref()})).collect::<Vec<_>>()
+    }));
+}
+
 fn forward_reference_backend(
     micro_only: bool,
     backend: crate::BackendKind,
@@ -527,7 +626,7 @@ fn forward_reference_backend(
             println!("F6E_ZERO_POLICY_IDENTITY case={name} policies=2 values=192");
         }
         let spec = residual(case[5] == "1");
-        let model = base
+        let mut model = base
             .derive_projection(configured, &spec, Fault::None)
             .unwrap();
         let rows: Vec<_> = tokens.iter().filter(|r| &r[0] == name).collect();
@@ -537,6 +636,20 @@ fn forward_reference_backend(
             .filter(|r| &r[0] == name && r[2] == "1" && r[3] == "attn_out" && r[4] == "1")
             .map(|r| index(&r[1]) - 1)
             .collect();
+        if name == "long_prefill" && backend == crate::BackendKind::Cpu {
+            default_long_prefill_arithmetic(&model, &ids, &positions);
+            // The frozen oracle uses F64 K/V and attention. Explicit F32 cache
+            // with unfused attention avoids comparing a different F16/fused
+            // algorithm to that oracle. Bounds/reference bytes stay unchanged.
+            let receipt_log = crate::live_capture::tests::start_load_log();
+            model.recreate_test_context(0, 0).unwrap();
+            let context = crate::live_capture::tests::backend_receipt(&model, backend);
+            drop(receipt_log);
+            assert!(context["native_load_log"].as_str().unwrap().contains("K (f32)"));
+            assert!(context["native_load_log"].as_str().unwrap().contains("V (f32)"));
+            assert!(context["native_load_log"].as_str().unwrap().contains("flash_attn            = disabled"));
+            println!("F6E_REFERENCE_PRECISION {}", serde_json::json!({"case":name,"cache":"f32","attention":"disabled","absolute_bound":0.01,"context":context}));
+        }
         model.projection_audit(&positions);
         model.projection_reset_stats();
         model.clear_memory();
@@ -618,54 +731,10 @@ fn forward_reference_backend(
             }
         }
         if !dummy {
-            let plan = model.projection().lock().as_ref().unwrap().plan.clone();
-            for before in observed.iter().filter(|row| row.before) {
-                let site = plan
-                    .sites
-                    .iter()
-                    .find(|s| s.layer == before.layer && s.component == before.component)
-                    .unwrap();
-                let mut matching = observed.iter().filter(|after| {
-                    !after.before
-                        && after.position == before.position
-                        && after.layer == before.layer
-                        && after.component == before.component
-                });
-                let after = matching.next().unwrap();
-                assert!(matching.next().is_none());
-                assert_eq!(before.values.len(), site.direction.len());
-                assert_eq!(after.values.len(), site.direction.len());
-                // Independent scalar equation on the actual observed pre-row.
-                // The post-row is read back from tensor storage by the observer.
-                let mut dot = 0.0f64;
-                for (&input, &direction) in before.values.iter().zip(site.direction.iter()) {
-                    dot += f64::from(input) * direction;
-                }
-                assert!(dot.is_finite());
-                for ((&input, &actual), &direction) in before
-                    .values
-                    .iter()
-                    .zip(after.values.iter())
-                    .zip(site.direction.iter())
-                {
-                    let updated = if site.coef == 0.0 {
-                        f64::from(input)
-                    } else {
-                        f64::from(input) - (site.coef * direction) * dot
-                    };
-                    assert!(updated.is_finite() && updated.abs() <= f64::from(f32::MAX));
-                    let expected = f64::from(updated as f32);
-                    let delta = (f64::from(actual) - expected).abs();
-                    let scaled = delta / (1.0 + expected.abs());
-                    assert!(
-                        scaled.is_finite() && scaled <= 2e-6,
-                        "{name}: same-row delta {delta}"
-                    );
-                    same_row_maximum.0 = same_row_maximum.0.max(delta);
-                    same_row_maximum.1 = same_row_maximum.1.max(scaled);
-                    same_row_values += 1;
-                }
-            }
+            let (compared, maximum) = same_row_arithmetic(&model, &observed, name);
+            same_row_values += compared;
+            same_row_maximum.0 = same_row_maximum.0.max(maximum.0);
+            same_row_maximum.1 = same_row_maximum.1.max(maximum.1);
         }
         for r in activations.iter().filter(|r| &r[0] == name) {
             let found: Vec<_> = observed
@@ -755,7 +824,7 @@ fn forward_reference_backend(
     }
     let same_row = serde_json::json!({"schema":1,"status":"passed","source_manifest_sha256":std::env::var("F6E_SOURCE").unwrap_or_else(|_|"local-unreceipted".into()),"reference_manifest_sha256":REFERENCE,"test_id":if micro_only {"projection::tests::projection_microbatches_pruning_and_graph_reuse"} else {"projection::tests::projection_forward_matches_independent_reference"},"requested_backend":if backend == crate::BackendKind::Cpu {"cpu"} else {"metal"},"expected_values":if micro_only {704} else {2944},"compared_values":same_row_values,"max_abs_error":same_row_maximum.0,"max_scaled_error":same_row_maximum.1,"scaled_error_definition":"abs(actual-expected_f32)/(1+abs(expected_f32))","scaled_error_limit":2e-6});
     println!("F6E_PROJECTION_SAME_ROW {same_row}");
-    let result = serde_json::json!({"status":"passed","model_sha256":TINY_SHA,"expected_cases":executed,"executed_cases":executed,"expected_values":values,"compared_values":values,"max_abs_error":maximum.0,"max_rel_error":maximum.1,"same_row":same_row,"backend":backend_receipt});
+    let result = serde_json::json!({"status":"passed","model_sha256":TINY_SHA,"long_prefill_precision":if backend == crate::BackendKind::Cpu {"f32_cache_unfused_attention"} else {"unchanged_backend_default"},"default_long_prefill_operator_guard":backend == crate::BackendKind::Cpu,"expected_cases":executed,"executed_cases":executed,"expected_values":values,"compared_values":values,"max_abs_error":maximum.0,"max_rel_error":maximum.1,"same_row":same_row,"backend":backend_receipt});
     if marker {
         emit_relative(
             if micro_only {

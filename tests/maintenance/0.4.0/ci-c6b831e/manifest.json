@@ -1,0 +1,23 @@
+{
+  "files": {
+    "R-matrix.json": "9d1cb072afb3ea867ae97b460e8c7fdcae4eef303bb6fcce3d704f6e1fa60efb",
+    "verify-precision.py": "58d8c69836f8bedac7c74daec7dc035ea82b6394df51eca542a3677e635a9ba2",
+    "cargo-job.log": "ddeefb94e2bfe16abc5e7b2e035e7d602027ecb1143181539a1f0ff204085322",
+    "source.patch": "2b576f81f0cd15eed81312f1478f7f794851a51f8b9894ce7136f2d19a53fd3c",
+    "status-before-correction.json": "d8b4b59fb2fe42b811ad5f66c687623a7db215f4124b116eddb863e4c2f405f5",
+    "owner.json": "471a34e7f2ac4610b20e8edfc0da58325cc6babcdaab0b818f1d0ea4fd971781",
+    "merge-commit.json": "931f5ff966e8d28de97f1f27036e3fd7839e119ad81d116001135d32942fdc1f",
+    "cargo-job.json": "1ad2f745ef8e6aa20a33480261327ee2568db507f12cc1f5d6d59a3756bc1da4",
+    "artifacts.json": "444200886c5d0dfba6b845376c80d7ac19b62a1362024950a5f4378c9aa807c4",
+    "context/cmake-caches.txt": "c1001a48229f844b7330d733cd97eeaaf53f704565e96773da9717fc0338558e",
+    "context/cpu.txt": "48514cbd0697b6decfd37227fdc6ea88e1e13dac9a0a06f28edffb38f63887f7",
+    "context/source-sha.txt": "1b3dfe767d4757872dd2245a4e3b20bb5de926087570c0ffd7046d51e15fe8c9",
+    "precision/cmake-caches.txt": "c1001a48229f844b7330d733cd97eeaaf53f704565e96773da9717fc0338558e",
+    "precision/cpu.txt": "3331a7dae78a5fd9e7cfb11873976dddb229e96290afdeb85ba49d1f97ea0172",
+    "precision/source-sha.txt": "1b3dfe767d4757872dd2245a4e3b20bb5de926087570c0ffd7046d51e15fe8c9",
+    "precision/diagnostic.log": "d288500d4771ba1742ea2f818013423c16d9437b82e1cf740085d51f9f9890c7",
+    "precision/rustc.txt": "b569b0c98ea3133c7252b4b8ea6b39b7b353813df0dd5f5c412c355691424112",
+    "precision/source-tree.txt": "cb8d788a92b6cbe008124f63dc5395afd9034506204b3f6809edc07102bd6ad9"
+  },
+  "scope": "Retained original CI observations"
+}
