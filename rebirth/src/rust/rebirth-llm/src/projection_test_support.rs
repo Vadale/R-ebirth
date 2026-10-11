@@ -581,6 +581,12 @@ fn forward_reference_backend(
                     continue;
                 }
                 let native = model.logits_ith((position - start) as i32, 48).unwrap();
+                if name == "long_prefill" {
+                    println!(
+                        "F6E_LONG_PREFILL_LOGITS {}",
+                        serde_json::json!({"source_pos":position+1,"values":native})
+                    );
+                }
                 for r in logits
                     .iter()
                     .filter(|r| &r[0] == name && index(&r[1]) == position + 1)
@@ -595,6 +601,22 @@ fn forward_reference_backend(
             live.restore().unwrap();
         }
         let (observed, row_witnesses) = model.projection_take_audit();
+        if name == "long_prefill" {
+            // Retain already-computed observations before any scalar assertion
+            // can abort the comparison. No extra decode or changed acceptance.
+            for row in &observed {
+                println!(
+                    "F6E_LONG_PREFILL_ROW {}",
+                    serde_json::json!({"source_pos":row.position+1,"layer":row.layer+1,"component":row.component.as_str(),"before":row.before,"values":row.values.as_ref()})
+                );
+            }
+            for row in &row_witnesses {
+                println!(
+                    "F6E_LONG_PREFILL_WITNESS {}",
+                    serde_json::json!({"source_pos":row.position+1,"layer":row.layer+1,"component":row.component.as_str(),"dot":row.dot,"write":row.write,"before_norm":row.before_norm,"after_norm":row.after_norm})
+                );
+            }
+        }
         if !dummy {
             let plan = model.projection().lock().as_ref().unwrap().plan.clone();
             for before in observed.iter().filter(|row| row.before) {

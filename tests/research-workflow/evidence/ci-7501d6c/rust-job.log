@@ -1,0 +1,1140 @@
+﻿2026-10-11T14:39:13.0121916Z Current runner version: '2.337.0'
+2026-10-11T14:39:13.0146595Z ##[group]Runner Image Provisioner
+2026-10-11T14:39:13.0147369Z Hosted Compute Agent
+2026-10-11T14:39:13.0147994Z Version: 20261002.596
+2026-10-11T14:39:13.0148571Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-11T14:39:13.0149315Z Build Date: 2026-10-02T22:28:27Z
+2026-10-11T14:39:13.0149922Z Worker ID: {2365bbd6-3ce6-4e5e-b7dd-fbc578d9675b}
+2026-10-11T14:39:13.0150549Z Region: westus3
+2026-10-11T14:39:13.0151078Z Cloud: Azure
+2026-10-11T14:39:13.0151560Z ##[endgroup]
+2026-10-11T14:39:13.0152906Z ##[group]Operating System
+2026-10-11T14:39:13.0153478Z Ubuntu
+2026-10-11T14:39:13.0153952Z 24.04.5
+2026-10-11T14:39:13.0154454Z LTS
+2026-10-11T14:39:13.0154933Z ##[endgroup]
+2026-10-11T14:39:13.0155808Z ##[group]Runner Image
+2026-10-11T14:39:13.0156396Z Image: ubuntu-24.04
+2026-10-11T14:39:13.0156958Z Version: 20261004.327.1
+2026-10-11T14:39:13.0158124Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261004.327/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-11T14:39:13.0159521Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261004.327
+2026-10-11T14:39:13.0160386Z ##[endgroup]
+2026-10-11T14:39:13.0162872Z ##[group]GITHUB_TOKEN Permissions
+2026-10-11T14:39:13.0165024Z Actions: read
+2026-10-11T14:39:13.0165725Z ArtifactMetadata: read
+2026-10-11T14:39:13.0166348Z Attestations: read
+2026-10-11T14:39:13.0166850Z Checks: read
+2026-10-11T14:39:13.0167346Z CodeQuality: read
+2026-10-11T14:39:13.0167857Z Contents: read
+2026-10-11T14:39:13.0168365Z Deployments: read
+2026-10-11T14:39:13.0168887Z Discussions: read
+2026-10-11T14:39:13.0169386Z Drives: read
+2026-10-11T14:39:13.0169850Z Issues: read
+2026-10-11T14:39:13.0170354Z Metadata: read
+2026-10-11T14:39:13.0170963Z Models: read
+2026-10-11T14:39:13.0171460Z Packages: read
+2026-10-11T14:39:13.0171956Z Pages: read
+2026-10-11T14:39:13.0172438Z PullRequests: read
+2026-10-11T14:39:13.0173003Z RepositoryProjects: read
+2026-10-11T14:39:13.0173612Z SecurityEvents: read
+2026-10-11T14:39:13.0174149Z Statuses: read
+2026-10-11T14:39:13.0174687Z VulnerabilityAlerts: read
+2026-10-11T14:39:13.0175466Z ##[endgroup]
+2026-10-11T14:39:13.0177694Z Secret source: Actions
+2026-10-11T14:39:13.0178574Z Cache mode: write
+2026-10-11T14:39:13.0179263Z Prepare workflow directory
+2026-10-11T14:39:13.0568025Z Prepare all required actions
+2026-10-11T14:39:13.0618273Z Getting action download info
+2026-10-11T14:39:13.3836747Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-11T14:39:13.4551166Z Download action repository 'actions/upload-artifact@v7' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-10-11T14:39:14.2405628Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:686976e191b89faba57d3206551f0f330d8cb249)
+2026-10-11T14:39:14.4578153Z Download action repository 'mozilla-actions/sccache-action@v0.0.10' (SHA:9e7fa8a12102821edf02ca5dbea1acd0f89a2696)
+2026-10-11T14:39:15.1609927Z Complete job name: cargo fmt / clippy / test
+2026-10-11T14:39:15.2494492Z ##[group]Run actions/checkout@v7
+2026-10-11T14:39:15.2496305Z with:
+2026-10-11T14:39:15.2497269Z   fetch-depth: 2
+2026-10-11T14:39:15.2498267Z   repository: Vadale/R-ebirth
+2026-10-11T14:39:15.2505867Z   token: ***
+2026-10-11T14:39:15.2506800Z   ssh-strict: true
+2026-10-11T14:39:15.2507767Z   ssh-user: git
+2026-10-11T14:39:15.2508752Z   persist-credentials: true
+2026-10-11T14:39:15.2509822Z   clean: true
+2026-10-11T14:39:15.2510816Z   sparse-checkout-cone-mode: true
+2026-10-11T14:39:15.2511922Z   fetch-tags: false
+2026-10-11T14:39:15.2512880Z   show-progress: true
+2026-10-11T14:39:15.2513899Z   lfs: false
+2026-10-11T14:39:15.2514817Z   submodules: false
+2026-10-11T14:39:15.2515965Z   set-safe-directory: true
+2026-10-11T14:39:15.2517065Z   allow-unsafe-pr-checkout: false
+2026-10-11T14:39:15.2518473Z env:
+2026-10-11T14:39:15.2519432Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:15.2520462Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:15.2521532Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:15.2522984Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:15.2524162Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:15.2525415Z ##[endgroup]
+2026-10-11T14:39:15.3546426Z Syncing repository: Vadale/R-ebirth
+2026-10-11T14:39:15.3551217Z ##[group]Getting Git version info
+2026-10-11T14:39:15.3552850Z Working directory is '/home/runner/work/R-ebirth/R-ebirth'
+2026-10-11T14:39:15.3555069Z [command]/usr/bin/git version
+2026-10-11T14:39:15.3610559Z git version 2.55.0
+2026-10-11T14:39:15.3634601Z ##[endgroup]
+2026-10-11T14:39:15.3646660Z Temporarily overriding HOME='/home/runner/work/_temp/c6a09e49-c3d8-42e2-9ea1-288e826626fa' before making global git config changes
+2026-10-11T14:39:15.3651073Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-11T14:39:15.3653751Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/R-ebirth/R-ebirth
+2026-10-11T14:39:15.3704808Z Deleting the contents of '/home/runner/work/R-ebirth/R-ebirth'
+2026-10-11T14:39:15.3708912Z ##[group]Determining repository object format
+2026-10-11T14:39:15.3711987Z ##[endgroup]
+2026-10-11T14:39:15.3713630Z ##[group]Initializing the repository
+2026-10-11T14:39:15.3715925Z [command]/usr/bin/git init /home/runner/work/R-ebirth/R-ebirth
+2026-10-11T14:39:15.3810174Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-11T14:39:15.3812925Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-11T14:39:15.3816180Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-11T14:39:15.3817941Z hint: call:
+2026-10-11T14:39:15.3818875Z hint:
+2026-10-11T14:39:15.3820339Z hint: 	git config --global init.defaultBranch <name>
+2026-10-11T14:39:15.3822388Z hint:
+2026-10-11T14:39:15.3824150Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-11T14:39:15.3826365Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-11T14:39:15.3827974Z hint:
+2026-10-11T14:39:15.3829661Z hint: 	git branch -m <name>
+2026-10-11T14:39:15.3831202Z hint:
+2026-10-11T14:39:15.3833413Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-11T14:39:15.3836956Z Initialized empty Git repository in /home/runner/work/R-ebirth/R-ebirth/.git/
+2026-10-11T14:39:15.3842349Z [command]/usr/bin/git remote add origin https://github.com/Vadale/R-ebirth
+2026-10-11T14:39:15.3869470Z ##[endgroup]
+2026-10-11T14:39:15.3871430Z ##[group]Disabling automatic garbage collection
+2026-10-11T14:39:15.3873230Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-11T14:39:15.3901466Z ##[endgroup]
+2026-10-11T14:39:15.3903424Z ##[group]Setting up auth
+2026-10-11T14:39:15.3904946Z Removing SSH command configuration
+2026-10-11T14:39:15.3908049Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-11T14:39:15.3937718Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-11T14:39:15.4254894Z Removing HTTP extra header
+2026-10-11T14:39:15.4261237Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-11T14:39:15.4293785Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-11T14:39:15.4497644Z Removing includeIf entries pointing to credentials config files
+2026-10-11T14:39:15.4501672Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-11T14:39:15.4532235Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-11T14:39:15.4713039Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-11T14:39:15.4747480Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path /home/runner/work/_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:39:15.4777045Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:39:15.4806811Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:39:15.4834648Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:39:15.4875103Z ##[endgroup]
+2026-10-11T14:39:15.4877795Z ##[group]Fetching the repository
+2026-10-11T14:39:15.4891972Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin +9247fd2b3e06a6fb6b0fda00b5261f8a7ef480ac:refs/remotes/pull/64/merge
+2026-10-11T14:39:18.4118219Z From https://github.com/Vadale/R-ebirth
+2026-10-11T14:39:18.4119183Z  * [new ref]         9247fd2b3e06a6fb6b0fda00b5261f8a7ef480ac -> pull/64/merge
+2026-10-11T14:39:18.4122346Z ##[endgroup]
+2026-10-11T14:39:18.4123388Z ##[group]Determining the checkout info
+2026-10-11T14:39:18.4124566Z ##[endgroup]
+2026-10-11T14:39:18.4128670Z [command]/usr/bin/git sparse-checkout disable
+2026-10-11T14:39:18.4174352Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-11T14:39:18.4205664Z ##[group]Checking out the ref
+2026-10-11T14:39:18.4226279Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/64/merge
+2026-10-11T14:39:18.8976614Z Note: switching to 'refs/remotes/pull/64/merge'.
+2026-10-11T14:39:18.8977297Z 
+2026-10-11T14:39:18.8977853Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-11T14:39:18.8979233Z changes and commit them, and you can discard any commits you make in this
+2026-10-11T14:39:18.8980330Z state without impacting any branches by switching back to a branch.
+2026-10-11T14:39:18.8981042Z 
+2026-10-11T14:39:18.8981499Z If you want to create a new branch to retain commits you create, you may
+2026-10-11T14:39:18.8982146Z do so (now or later) by using -c with the switch command. Example:
+2026-10-11T14:39:18.8982516Z 
+2026-10-11T14:39:18.8982706Z   git switch -c <new-branch-name>
+2026-10-11T14:39:18.8982982Z 
+2026-10-11T14:39:18.8983194Z Or undo this operation with:
+2026-10-11T14:39:18.8983415Z 
+2026-10-11T14:39:18.8983587Z   git switch -
+2026-10-11T14:39:18.8983804Z 
+2026-10-11T14:39:18.8984131Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-11T14:39:18.8984556Z 
+2026-10-11T14:39:18.8985568Z HEAD is now at 9247fd2 Merge 7501d6c3ac7532925b2997786c5501f6a740db2a into 7bc688a2bfaf570db7498424a19854202185144c
+2026-10-11T14:39:18.9000507Z ##[endgroup]
+2026-10-11T14:39:18.9044813Z [command]/usr/bin/git log -1 --format=%H
+2026-10-11T14:39:18.9070108Z 9247fd2b3e06a6fb6b0fda00b5261f8a7ef480ac
+2026-10-11T14:39:18.9260592Z ##[group]Run python3 tests/ci/change_scope.py
+2026-10-11T14:39:18.9261228Z [36;1mpython3 tests/ci/change_scope.py[0m
+2026-10-11T14:39:18.9432351Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:39:18.9432758Z env:
+2026-10-11T14:39:18.9433061Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:18.9433494Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:18.9433808Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:18.9434180Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:18.9434530Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:18.9434878Z ##[endgroup]
+2026-10-11T14:39:18.9949025Z {"base": "7bc688a2bfaf570db7498424a19854202185144c", "full_checks": true, "head": "9247fd2b3e06a6fb6b0fda00b5261f8a7ef480ac", "paths": [".github/workflows/R-CMD-check.yaml", "DECISIONS.md", "README.md", "SOLO-PHASE-PLAN.md", "docs/README.md", "docs/getting-started.md", "docs/phase7-consolidation-plan.md", "docs/phase7-implementation.md", "docs/phase7-maintenance.md", "docs/phase7-user-feedback.md", "docs/supported-workflow.md", "docs/validation-status.md", "examples/research-workflow/README.md", "examples/research-workflow/run.R", "rebirth/README.md", "tests/ci/evidence/phase7-20261011/README.md", "tests/ci/evidence/phase7-20261011/job-durations.csv", "tests/ci/evidence/phase7-20261011/run-37810685919.json", "tests/ci/evidence/phase7-20261011/run-37810685971.json", "tests/ci/evidence/phase7-20261011/step-durations.csv", "tests/research-workflow/evidence/2026-10-11/inspect-results.R", "tests/research-workflow/evidence/2026-10-11/integrated-review.md", "tests/research-workflow/evidence/2026-10-11/outputs/INTERPRETATION.txt", "tests/research-workflow/evidence/2026-10-11/outputs/STATUS.txt", "tests/research-workflow/evidence/2026-10-11/outputs/conditions.csv", "tests/research-workflow/evidence/2026-10-11/outputs/configured-model.png", "tests/research-workflow/evidence/2026-10-11/outputs/construction.rds", "tests/research-workflow/evidence/2026-10-11/outputs/directions.rds", "tests/research-workflow/evidence/2026-10-11/outputs/evaluation-addition.rds", "tests/research-workflow/evidence/2026-10-11/outputs/evaluation-comparison.csv", "tests/research-workflow/evidence/2026-10-11/outputs/evaluation-comparison.png", "tests/research-workflow/evidence/2026-10-11/outputs/evaluation-comparison.rds", "tests/research-workflow/evidence/2026-10-11/outputs/evaluation-original.rds", "tests/research-workflow/evidence/2026-10-11/outputs/evaluation-projection.rds", "tests/research-workflow/evidence/2026-10-11/outputs/evaluation-zero.rds", "tests/research-workflow/evidence/2026-10-11/outputs/files.csv", "tests/research-workflow/evidence/2026-10-11/outputs/installed-dll.csv", "tests/research-workflow/evidence/2026-10-11/outputs/outputs.csv", "tests/research-workflow/evidence/2026-10-11/outputs/practice-addition.rds", "tests/research-workflow/evidence/2026-10-11/outputs/practice-comparison.csv", "tests/research-workflow/evidence/2026-10-11/outputs/practice-comparison.png", "tests/research-workflow/evidence/2026-10-11/outputs/practice-comparison.rds", "tests/research-workflow/evidence/2026-10-11/outputs/practice-original.rds", "tests/research-workflow/evidence/2026-10-11/outputs/practice-projection.rds", "tests/research-workflow/evidence/2026-10-11/outputs/practice-zero.rds", "tests/research-workflow/evidence/2026-10-11/outputs/prompts.csv", "tests/research-workflow/evidence/2026-10-11/outputs/provenance.rds", "tests/research-workflow/evidence/2026-10-11/outputs/session-info.txt", "tests/research-workflow/evidence/2026-10-11/outputs/settings.rds", "tests/research-workflow/evidence/2026-10-11/owner-results.log", "tests/research-workflow/evidence/2026-10-11/owner.json", "tests/research-workflow/evidence/2026-10-11/review-closure.md", "tests/research-workflow/evidence/2026-10-11/run-walkthrough.py", "tests/research-workflow/evidence/2026-10-11/sha256.json", "tests/research-workflow/evidence/2026-10-11/walkthrough-launch.json", "tests/research-workflow/evidence/2026-10-11/walkthrough-source.R", "tests/research-workflow/evidence/2026-10-11/walkthrough-status.json", "tests/research-workflow/evidence/2026-10-11/walkthrough.R", "tests/research-workflow/evidence/2026-10-11/walkthrough.log", "tests/research-workflow/test-preflight.R"], "reason": "Change outside the external documentation allowlist."}
+2026-10-11T14:39:19.0090220Z ##[group]Run python3 tests/llm-golden/vision/tools/test_reference_manifest.py
+2026-10-11T14:39:19.0090857Z [36;1mpython3 tests/llm-golden/vision/tools/test_reference_manifest.py[0m
+2026-10-11T14:39:19.0128523Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:39:19.0128937Z env:
+2026-10-11T14:39:19.0129231Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:19.0129577Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:19.0129918Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:19.0130234Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:19.0130569Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:19.0131055Z ##[endgroup]
+2026-10-11T14:39:19.1174870Z test_changed_header_even_with_updated_hash_is_rejected (__main__.ReferenceManifestTests.test_changed_header_even_with_updated_hash_is_rejected) ... ok
+2026-10-11T14:39:19.1356779Z test_child_failure_cannot_be_success_even_with_a_marker (__main__.ReferenceManifestTests.test_child_failure_cannot_be_success_even_with_a_marker) ... ok
+2026-10-11T14:39:19.1366678Z test_exact_test_binary_selection_rejects_missing_and_ambiguous_artifacts (__main__.ReferenceManifestTests.test_exact_test_binary_selection_rejects_missing_and_ambiguous_artifacts) ... ok
+2026-10-11T14:39:19.4514990Z test_full_cli_uses_independent_environment_and_exact_stdin_handoff (__main__.ReferenceManifestTests.test_full_cli_uses_independent_environment_and_exact_stdin_handoff) ... ok
+2026-10-11T14:39:19.4525887Z test_malformed_nonfinite_and_wrong_count_dumps_are_rejected (__main__.ReferenceManifestTests.test_malformed_nonfinite_and_wrong_count_dumps_are_rejected) ... ok
+2026-10-11T14:39:19.4796106Z test_matching_manifest_sends_verified_bytes_and_binds_final_receipt (__main__.ReferenceManifestTests.test_matching_manifest_sends_verified_bytes_and_binds_final_receipt) ... ok
+2026-10-11T14:39:19.4806010Z test_missing_manifest_is_rejected (__main__.ReferenceManifestTests.test_missing_manifest_is_rejected) ... ok
+2026-10-11T14:39:19.5075739Z test_path_replacement_after_verification_cannot_change_consumed_snapshot (__main__.ReferenceManifestTests.test_path_replacement_after_verification_cannot_change_consumed_snapshot) ... ok
+2026-10-11T14:39:19.5087540Z test_same_path_changed_bytes_are_rejected (__main__.ReferenceManifestTests.test_same_path_changed_bytes_are_rejected) ... ok
+2026-10-11T14:39:19.5412725Z test_skip_or_wrong_digest_marker_cannot_be_numerical_success (__main__.ReferenceManifestTests.test_skip_or_wrong_digest_marker_cannot_be_numerical_success) ... ok
+2026-10-11T14:39:19.5426047Z test_stale_dimensions_are_rejected (__main__.ReferenceManifestTests.test_stale_dimensions_are_rejected) ... ok
+2026-10-11T14:39:19.5465294Z test_stale_input_and_build_identities_are_rejected (__main__.ReferenceManifestTests.test_stale_input_and_build_identities_are_rejected) ... ok
+2026-10-11T14:39:19.5475333Z test_substituted_snapshot_is_rejected_before_child_start (__main__.ReferenceManifestTests.test_substituted_snapshot_is_rejected_before_child_start) ... ok
+2026-10-11T14:39:19.5503254Z test_wrong_run_nonce_source_runner_and_prior_attempt_are_rejected (__main__.ReferenceManifestTests.test_wrong_run_nonce_source_runner_and_prior_attempt_are_rejected) ... ok
+2026-10-11T14:39:19.5503870Z 
+2026-10-11T14:39:19.5504025Z ----------------------------------------------------------------------
+2026-10-11T14:39:19.5504353Z Ran 14 tests in 0.435s
+2026-10-11T14:39:19.5504496Z 
+2026-10-11T14:39:19.5504571Z OK
+2026-10-11T14:39:19.5619664Z ##[group]Run python3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"
+2026-10-11T14:39:19.5620320Z [36;1mpython3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"[0m
+2026-10-11T14:39:19.5657004Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:39:19.5657256Z env:
+2026-10-11T14:39:19.5657450Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:19.5657676Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:19.5657919Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:19.5658174Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:19.5658446Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:19.5658693Z ##[endgroup]
+2026-10-11T14:39:24.9992094Z GRAPH_SIZE_LAYOUT_PASSED cases=68 source=0a4c36c14a1ba15559d6a21f570bfabb478eb05058c45c97a84ce7108f3c6841
+2026-10-11T14:39:25.0147685Z ##[group]Run actions/upload-artifact@v7
+2026-10-11T14:39:25.0147971Z with:
+2026-10-11T14:39:25.0148206Z   name: graph-size-linux-38148048115-1
+2026-10-11T14:39:25.0148511Z   path: /home/runner/work/_temp/graph-size-layout
+2026-10-11T14:39:25.0148821Z   if-no-files-found: warn
+2026-10-11T14:39:25.0149054Z   compression-level: 6
+2026-10-11T14:39:25.0149262Z   overwrite: false
+2026-10-11T14:39:25.0149596Z   include-hidden-files: false
+2026-10-11T14:39:25.0149825Z   archive: true
+2026-10-11T14:39:25.0150009Z env:
+2026-10-11T14:39:25.0150184Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:25.0150393Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:25.0150619Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:25.0150854Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:25.0151113Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:25.0151361Z ##[endgroup]
+2026-10-11T14:39:25.1516508Z With the provided path, there will be 15 files uploaded
+2026-10-11T14:39:25.1521462Z Artifact name is valid!
+2026-10-11T14:39:25.1522666Z Root directory input is valid!
+2026-10-11T14:39:25.4970864Z Uploading artifact: graph-size-linux-38148048115-1.zip
+2026-10-11T14:39:25.5011951Z Beginning upload of artifact content to blob storage
+2026-10-11T14:39:26.0961018Z Uploaded bytes 591982
+2026-10-11T14:39:26.1567921Z Finished uploading artifact content to blob storage!
+2026-10-11T14:39:26.1569531Z SHA256 digest of uploaded artifact is 81cde9960b9e7ac1b65dd069d152bb0cd504fff54cb08d35acd6587322c0bb54
+2026-10-11T14:39:26.1570906Z Finalizing artifact upload
+2026-10-11T14:39:26.4894068Z Artifact graph-size-linux-38148048115-1 successfully finalized. Artifact ID 11705483064
+2026-10-11T14:39:26.4895693Z Artifact graph-size-linux-38148048115-1 has been successfully uploaded! Final size is 591982 bytes. Artifact ID is 11705483064
+2026-10-11T14:39:26.4899547Z Artifact download URL: https://github.com/Vadale/R-ebirth/actions/runs/38148048115/artifacts/11705483064
+2026-10-11T14:39:26.5164680Z ##[group]Run dtolnay/rust-toolchain@stable
+2026-10-11T14:39:26.5164981Z with:
+2026-10-11T14:39:26.5165379Z   components: rustfmt, clippy
+2026-10-11T14:39:26.5165630Z   toolchain: stable
+2026-10-11T14:39:26.5165838Z env:
+2026-10-11T14:39:26.5166025Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:26.5166248Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:26.5166492Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:26.5166734Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.5167019Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.5167266Z ##[endgroup]
+2026-10-11T14:39:26.5231793Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-10-11T14:39:26.5617399Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-10-11T14:39:26.5617744Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-10-11T14:39:26.5618255Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-10-11T14:39:26.5618823Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-10-11T14:39:26.5619114Z [36;1m  exit 1[0m
+2026-10-11T14:39:26.5619450Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-10-11T14:39:26.5619848Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-10-11T14:39:26.5620359Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-11T14:39:26.5620859Z [36;1m  else[0m
+2026-10-11T14:39:26.5621247Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-11T14:39:26.5621687Z [36;1m  fi[0m
+2026-10-11T14:39:26.5621987Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-10-11T14:39:26.5622496Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-10-11T14:39:26.5622947Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-10-11T14:39:26.5623457Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-10-11T14:39:26.5623923Z [36;1melse[0m
+2026-10-11T14:39:26.5624124Z [36;1m  delimiter=EOF[0m
+2026-10-11T14:39:26.5624425Z [36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done[0m
+2026-10-11T14:39:26.5624916Z [36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT[0m
+2026-10-11T14:39:26.5625536Z [36;1mfi[0m
+2026-10-11T14:39:26.5664400Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:26.5664873Z env:
+2026-10-11T14:39:26.5665098Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:26.5665422Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:26.5665659Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:26.5665897Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.5666185Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.5666460Z   toolchain: stable
+2026-10-11T14:39:26.5666666Z ##[endgroup]
+2026-10-11T14:39:26.5736493Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=50]
+2026-10-11T14:39:26.5739077Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-10-11T14:39:26.6115729Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+2026-10-11T14:39:26.6116210Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-10-11T14:39:26.6151534Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:26.6151871Z env:
+2026-10-11T14:39:26.6152067Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:26.6152287Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:26.6152525Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:26.6152760Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.6153025Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.6153272Z ##[endgroup]
+2026-10-11T14:39:26.6213041Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=47]
+2026-10-11T14:39:26.6215561Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-10-11T14:39:26.6571745Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-10-11T14:39:26.6572165Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-10-11T14:39:26.6572936Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-10-11T14:39:26.6573691Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-10-11T14:39:26.6573999Z [36;1mfi[0m
+2026-10-11T14:39:26.6610475Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:26.6610815Z env:
+2026-10-11T14:39:26.6611015Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:26.6611249Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:26.6611484Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:26.6611727Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.6612017Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.6612293Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:26.6612537Z ##[endgroup]
+2026-10-11T14:39:26.6670960Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=45]
+2026-10-11T14:39:26.6673183Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-10-11T14:39:26.6680819Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-11T14:39:26.6695597Z ##[start-action display=rustup toolchain install stable;id=__dtolnay_rust-toolchain.__run_4]
+2026-10-11T14:39:26.7188391Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+2026-10-11T14:39:26.7189042Z [36;1mset -f  # split targets and components on commas and whitespace, without glob expansion[0m
+2026-10-11T14:39:26.7189465Z [36;1mflags=()[0m
+2026-10-11T14:39:26.7189756Z [36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done[0m
+2026-10-11T14:39:26.7190146Z [36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done[0m
+2026-10-11T14:39:26.7190620Z [36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi[0m
+2026-10-11T14:39:26.7191024Z [36;1mlog=$(mktemp)[0m
+2026-10-11T14:39:26.7191259Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-10-11T14:39:26.7191526Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-10-11T14:39:26.7192185Z [36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-10-11T14:39:26.7192722Z [36;1m    break[0m
+2026-10-11T14:39:26.7192920Z [36;1m  else[0m
+2026-10-11T14:39:26.7193122Z [36;1m    status=$?[0m
+2026-10-11T14:39:26.7193329Z [36;1m  fi[0m
+2026-10-11T14:39:26.7193626Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-10-11T14:39:26.7194154Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-10-11T14:39:26.7194593Z [36;1m    exit "$status"[0m
+2026-10-11T14:39:26.7194824Z [36;1m  fi[0m
+2026-10-11T14:39:26.7195288Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-10-11T14:39:26.7195697Z [36;1m  sleep 30[0m
+2026-10-11T14:39:26.7195907Z [36;1mdone[0m
+2026-10-11T14:39:26.7231183Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:26.7231538Z env:
+2026-10-11T14:39:26.7231742Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:26.7232095Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:26.7232372Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:26.7232611Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.7232882Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:26.7233148Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:26.7233396Z   toolchain: stable
+2026-10-11T14:39:26.7233594Z   targets: 
+2026-10-11T14:39:26.7234022Z   components: rustfmt, clippy
+2026-10-11T14:39:26.7234274Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-10-11T14:39:26.7234511Z ##[endgroup]
+2026-10-11T14:39:26.9723283Z info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+2026-10-11T14:39:27.1536932Z info: latest update on 2026-10-01 for version 1.99.0 (b940084d7 2026-09-28)
+2026-10-11T14:39:27.1666637Z info: component clippy is up to date
+2026-10-11T14:39:27.1667113Z info: component rustfmt is up to date
+2026-10-11T14:39:27.1679814Z 
+2026-10-11T14:39:27.1750034Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0 (b940084d7 2026-09-28)
+2026-10-11T14:39:27.1750403Z 
+2026-10-11T14:39:27.1784763Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=508]
+2026-10-11T14:39:27.1790527Z ##[start-action display=rustup default stable;id=__dtolnay_rust-toolchain.__run_5]
+2026-10-11T14:39:27.1808252Z ##[group]Run rustup default "$toolchain" --force-non-host
+2026-10-11T14:39:27.1808726Z [36;1mrustup default "$toolchain" --force-non-host[0m
+2026-10-11T14:39:27.1844860Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:27.1845353Z env:
+2026-10-11T14:39:27.1845637Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.1845869Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.1846112Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.1846448Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.1876554Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.1876848Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.1877134Z   toolchain: stable
+2026-10-11T14:39:27.1877343Z ##[endgroup]
+2026-10-11T14:39:27.1971715Z info: using existing install for stable-x86_64-unknown-linux-gnu
+2026-10-11T14:39:27.1979642Z info: default toolchain set to stable-x86_64-unknown-linux-gnu
+2026-10-11T14:39:27.1979958Z 
+2026-10-11T14:39:27.2050071Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.0 (b940084d7 2026-09-28)
+2026-10-11T14:39:27.2050419Z 
+2026-10-11T14:39:27.2052999Z info: note that the toolchain 'stable-x86_64-unknown-linux-gnu' is currently in use (overridden by '/home/runner/work/R-ebirth/R-ebirth/rust-toolchain.toml')
+2026-10-11T14:39:27.2064639Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=27]
+2026-10-11T14:39:27.2068466Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-10-11T14:39:27.2084617Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-10-11T14:39:27.2085782Z [36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-10-11T14:39:27.2086419Z [36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-10-11T14:39:27.2086915Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-10-11T14:39:27.2122962Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:27.2123310Z env:
+2026-10-11T14:39:27.2123504Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.2123732Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.2123964Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.2124202Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2124467Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2124738Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.2124978Z   toolchain: stable
+2026-10-11T14:39:27.2125347Z ##[endgroup]
+2026-10-11T14:39:27.2439073Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=36]
+2026-10-11T14:39:27.2441358Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-10-11T14:39:27.2457912Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-10-11T14:39:27.2458298Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-10-11T14:39:27.2458625Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-10-11T14:39:27.2458899Z [36;1mfi[0m
+2026-10-11T14:39:27.2494311Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:27.2494655Z env:
+2026-10-11T14:39:27.2494868Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.2495088Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.2495517Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.2495757Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2496028Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2496305Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.2496569Z ##[endgroup]
+2026-10-11T14:39:27.2554381Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=11]
+2026-10-11T14:39:27.2556873Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-10-11T14:39:27.2572228Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-10-11T14:39:27.2572601Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-10-11T14:39:27.2572926Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-10-11T14:39:27.2573226Z [36;1mfi[0m
+2026-10-11T14:39:27.2606951Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:27.2607286Z env:
+2026-10-11T14:39:27.2607482Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.2607705Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.2607938Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.2608180Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2608444Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2608712Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.2608975Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:39:27.2609192Z ##[endgroup]
+2026-10-11T14:39:27.2665971Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=10]
+2026-10-11T14:39:27.2668918Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-10-11T14:39:27.2685057Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-10-11T14:39:27.2685761Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-10-11T14:39:27.2686423Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-10-11T14:39:27.2687130Z [36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-10-11T14:39:27.2687673Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-11T14:39:27.2688315Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-10-11T14:39:27.2688804Z [36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-10-11T14:39:27.2689345Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-11T14:39:27.2689831Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-10-11T14:39:27.2690165Z [36;1m  fi[0m
+2026-10-11T14:39:27.2690366Z [36;1mfi[0m
+2026-10-11T14:39:27.2723080Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:27.2723415Z env:
+2026-10-11T14:39:27.2723615Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.2723841Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.2724091Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.2724328Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2724596Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.2724863Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.2725127Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:39:27.2725587Z   CARGO_TERM_COLOR: always
+2026-10-11T14:39:27.2725812Z   toolchain: stable
+2026-10-11T14:39:27.2726018Z ##[endgroup]
+2026-10-11T14:39:27.3021541Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=35]
+2026-10-11T14:39:27.3027615Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-10-11T14:39:27.3053815Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-10-11T14:39:27.3055056Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-10-11T14:39:27.3056286Z [36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-10-11T14:39:27.3057086Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-10-11T14:39:27.3057581Z [36;1mfi[0m
+2026-10-11T14:39:27.3113693Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:27.3114215Z env:
+2026-10-11T14:39:27.3114512Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.3114889Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.3115434Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.3115833Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.3116289Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.3116736Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.3117146Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:39:27.3117510Z   CARGO_TERM_COLOR: always
+2026-10-11T14:39:27.3117879Z   toolchain: stable
+2026-10-11T14:39:27.3118219Z ##[endgroup]
+2026-10-11T14:39:27.3323037Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=29]
+2026-10-11T14:39:27.3329527Z ##[start-action display=rustc +stable --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-10-11T14:39:27.3354256Z ##[group]Run rustc +"$toolchain" --version --verbose
+2026-10-11T14:39:27.3354894Z [36;1mrustc +"$toolchain" --version --verbose[0m
+2026-10-11T14:39:27.3411270Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-11T14:39:27.3411853Z env:
+2026-10-11T14:39:27.3412171Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.3412560Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.3413067Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.3413484Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.3413974Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.3414454Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.3414909Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:39:27.3415518Z   CARGO_TERM_COLOR: always
+2026-10-11T14:39:27.3415910Z   toolchain: stable
+2026-10-11T14:39:27.3416252Z ##[endgroup]
+2026-10-11T14:39:27.3598009Z rustc 1.99.0 (b940084d7 2026-09-28)
+2026-10-11T14:39:27.3598593Z binary: rustc
+2026-10-11T14:39:27.3599089Z commit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4
+2026-10-11T14:39:27.3599672Z commit-date: 2026-09-28
+2026-10-11T14:39:27.3600060Z host: x86_64-unknown-linux-gnu
+2026-10-11T14:39:27.3600779Z release: 1.99.0
+2026-10-11T14:39:27.3601142Z LLVM version: 23.1.1
+2026-10-11T14:39:27.3617504Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=28]
+2026-10-11T14:39:27.3683408Z ##[group]Run mozilla-actions/sccache-action@v0.0.10
+2026-10-11T14:39:27.3683733Z with:
+2026-10-11T14:39:27.3686141Z   token: ***
+2026-10-11T14:39:27.3686357Z   disable_annotations: false
+2026-10-11T14:39:27.3686596Z env:
+2026-10-11T14:39:27.3686787Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:27.3687013Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:27.3687247Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:27.3687487Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.3687758Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:27.3688027Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:27.3688269Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:39:27.3688485Z   CARGO_TERM_COLOR: always
+2026-10-11T14:39:27.3688708Z ##[endgroup]
+2026-10-11T14:39:27.7931198Z try to setup sccache version: v0.18.0
+2026-10-11T14:39:27.7949031Z sccache download from url: https://github.com/mozilla/sccache/releases/download/v0.18.0/sccache-v0.18.0-x86_64-unknown-linux-musl.tar.gz
+2026-10-11T14:39:28.3260255Z Correct checksum: 45f1447fbe231e3037bde351ef70677dd212216c8d62ae7ca409fecc4d6acc89
+2026-10-11T14:39:28.3351028Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/e68672af-f9d0-4189-b720-e4aa1f9c0cee -f /home/runner/work/_temp/3d20cbdb-3338-4920-95ca-22c22af25a4c
+2026-10-11T14:39:28.4944126Z sccache extracted to: /home/runner/work/_temp/e68672af-f9d0-4189-b720-e4aa1f9c0cee
+2026-10-11T14:39:28.5064591Z sccache cached to: /opt/hostedtoolcache/sccache/0.18.0/x64
+2026-10-11T14:39:28.5162309Z ##[group]Run cargo fmt --all --check
+2026-10-11T14:39:28.5162635Z [36;1mcargo fmt --all --check[0m
+2026-10-11T14:39:28.5163018Z [36;1m# include! keeps extendr registration in one module; rustfmt does not[0m
+2026-10-11T14:39:28.5163425Z [36;1m# follow include files automatically.[0m
+2026-10-11T14:39:28.5163823Z [36;1mrustfmt --check --edition 2021 rebirth-ffi/src/async_boundary.rs[0m
+2026-10-11T14:39:28.5203837Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:39:28.5204118Z env:
+2026-10-11T14:39:28.5204318Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:28.5204545Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:28.5204785Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:28.5205034Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:28.5205508Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:28.5205776Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:28.5206031Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:39:28.5206260Z   CARGO_TERM_COLOR: always
+2026-10-11T14:39:28.5206605Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-11T14:39:28.5206957Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-11T14:39:28.5207358Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-11T14:39:28.5264828Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-11T14:39:28.5265102Z ##[endgroup]
+2026-10-11T14:39:28.9655901Z ##[group]Run cargo clippy --locked -p rebirth-llm --all-targets -- -D warnings
+2026-10-11T14:39:28.9656438Z [36;1mcargo clippy --locked -p rebirth-llm --all-targets -- -D warnings[0m
+2026-10-11T14:39:28.9692220Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:39:28.9692490Z env:
+2026-10-11T14:39:28.9692690Z   RUST_TEST_THREADS: 1
+2026-10-11T14:39:28.9692926Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:39:28.9693172Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:39:28.9693406Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:28.9693682Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:39:28.9693946Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:39:28.9694196Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:39:28.9694414Z   CARGO_TERM_COLOR: always
+2026-10-11T14:39:28.9694710Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-11T14:39:28.9695045Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-11T14:39:28.9695597Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-11T14:39:28.9749625Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-11T14:39:28.9749878Z ##[endgroup]
+2026-10-11T14:39:33.2976048Z [1m[92m    Updating[0m crates.io index
+2026-10-11T14:39:33.5791745Z [1m[92m Downloading[0m crates ...
+2026-10-11T14:39:33.6108148Z [1m[92m  Downloaded[0m ahash v0.8.12
+2026-10-11T14:39:33.6133368Z [1m[92m  Downloaded[0m arrow-buffer v59.0.0
+2026-10-11T14:39:33.6165625Z [1m[92m  Downloaded[0m arrow-data v59.0.0
+2026-10-11T14:39:33.6187627Z [1m[92m  Downloaded[0m cmake v0.1.58
+2026-10-11T14:39:33.6196790Z [1m[92m  Downloaded[0m num-integer v0.1.46
+2026-10-11T14:39:33.6208451Z [1m[92m  Downloaded[0m arrow-array v59.0.0
+2026-10-11T14:39:33.6272691Z [1m[92m  Downloaded[0m arrow-ipc v59.0.0
+2026-10-11T14:39:33.6302568Z [1m[92m  Downloaded[0m autocfg v1.5.1
+2026-10-11T14:39:33.6316633Z [1m[92m  Downloaded[0m const-random v0.1.18
+2026-10-11T14:39:33.6322967Z [1m[92m  Downloaded[0m itoa v1.0.18
+2026-10-11T14:39:33.6331752Z [1m[92m  Downloaded[0m rustc_version v0.4.1
+2026-10-11T14:39:33.6338801Z [1m[92m  Downloaded[0m cfg-if v1.0.4
+2026-10-11T14:39:33.6345783Z [1m[92m  Downloaded[0m const-random-macro v0.1.16
+2026-10-11T14:39:33.6350473Z [1m[92m  Downloaded[0m tiny-keccak v2.0.2
+2026-10-11T14:39:33.6369585Z [1m[92m  Downloaded[0m iana-time-zone v0.1.65
+2026-10-11T14:39:33.6386263Z [1m[92m  Downloaded[0m version_check v0.9.5
+2026-10-11T14:39:33.6393519Z [1m[92m  Downloaded[0m crunchy v0.2.4
+2026-10-11T14:39:33.6398310Z [1m[92m  Downloaded[0m find-msvc-tools v0.1.9
+2026-10-11T14:39:33.6409620Z [1m[92m  Downloaded[0m quote v1.0.46
+2026-10-11T14:39:33.6424301Z [1m[92m  Downloaded[0m getrandom v0.2.17
+2026-10-11T14:39:33.6441018Z [1m[92m  Downloaded[0m num-complex v0.4.6
+2026-10-11T14:39:33.6450279Z [1m[92m  Downloaded[0m ryu v1.0.23
+2026-10-11T14:39:33.6468627Z [1m[92m  Downloaded[0m shlex v2.0.1
+2026-10-11T14:39:33.6476528Z [1m[92m  Downloaded[0m cc v1.2.65
+2026-10-11T14:39:33.6495686Z [1m[92m  Downloaded[0m bitflags v2.13.0
+2026-10-11T14:39:33.6519946Z [1m[92m  Downloaded[0m flatbuffers v25.12.19
+2026-10-11T14:39:33.6529781Z [1m[92m  Downloaded[0m once_cell v1.21.4
+2026-10-11T14:39:33.6543875Z [1m[92m  Downloaded[0m semver v1.0.28
+2026-10-11T14:39:33.6557405Z [1m[92m  Downloaded[0m arrow-select v59.0.0
+2026-10-11T14:39:33.6577264Z [1m[92m  Downloaded[0m getrandom v0.3.4
+2026-10-11T14:39:33.6597374Z [1m[92m  Downloaded[0m serde_core v1.0.228
+2026-10-11T14:39:33.6614034Z [1m[92m  Downloaded[0m num-traits v0.2.19
+2026-10-11T14:39:33.6629372Z [1m[92m  Downloaded[0m unicode-ident v1.0.24
+2026-10-11T14:39:33.6646629Z [1m[92m  Downloaded[0m half v2.7.1
+2026-10-11T14:39:33.6665798Z [1m[92m  Downloaded[0m proc-macro2 v1.0.106
+2026-10-11T14:39:33.6683982Z [1m[92m  Downloaded[0m serde v1.0.228
+2026-10-11T14:39:33.6705349Z [1m[92m  Downloaded[0m zerocopy-derive v0.8.52
+2026-10-11T14:39:33.6755078Z [1m[92m  Downloaded[0m arrow-schema v59.0.0
+2026-10-11T14:39:33.6787106Z [1m[92m  Downloaded[0m bytes v1.12.0
+2026-10-11T14:39:33.6796001Z [1m[92m  Downloaded[0m memchr v2.8.3
+2026-10-11T14:39:33.6830213Z [1m[92m  Downloaded[0m num-bigint v0.4.8
+2026-10-11T14:39:33.6860727Z [1m[92m  Downloaded[0m chrono v0.4.45
+2026-10-11T14:39:33.6906813Z [1m[92m  Downloaded[0m libm v0.2.16
+2026-10-11T14:39:33.6965770Z [1m[92m  Downloaded[0m hashbrown v0.17.1
+2026-10-11T14:39:33.6999803Z [1m[92m  Downloaded[0m serde_json v1.0.145
+2026-10-11T14:39:33.7042141Z [1m[92m  Downloaded[0m zerocopy v0.8.52
+2026-10-11T14:39:33.7160070Z [1m[92m  Downloaded[0m syn v2.0.118
+2026-10-11T14:39:33.7228107Z [1m[92m  Downloaded[0m libc v0.2.186
+2026-10-11T14:39:33.8974512Z [1m[92m   Compiling[0m proc-macro2 v1.0.106
+2026-10-11T14:39:33.8976036Z [1m[92m   Compiling[0m libm v0.2.16
+2026-10-11T14:39:33.8976710Z [1m[92m   Compiling[0m autocfg v1.5.1
+2026-10-11T14:39:33.8977796Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-10-11T14:39:34.4555373Z [1m[92m   Compiling[0m quote v1.0.46
+2026-10-11T14:39:34.5486732Z [1m[92m   Compiling[0m num-traits v0.2.19
+2026-10-11T14:39:34.5656750Z [1m[92m   Compiling[0m zerocopy v0.8.52
+2026-10-11T14:39:34.6758999Z [1m[92m    Checking[0m cfg-if v1.0.4
+2026-10-11T14:39:34.7376250Z [1m[92m   Compiling[0m libc v0.2.186
+2026-10-11T14:39:34.8676931Z [1m[92m   Compiling[0m getrandom v0.3.4
+2026-10-11T14:39:34.9703578Z [1m[92m   Compiling[0m version_check v0.9.5
+2026-10-11T14:39:35.4711800Z [1m[92m   Compiling[0m ahash v0.8.12
+2026-10-11T14:39:35.5317022Z [1m[92m   Compiling[0m semver v1.0.28
+2026-10-11T14:39:35.8415042Z [1m[92m    Checking[0m bytes v1.12.0
+2026-10-11T14:39:35.8682337Z [1m[92m    Checking[0m num-integer v0.1.46
+2026-10-11T14:39:35.8951002Z [1m[92m   Compiling[0m rustc_version v0.4.1
+2026-10-11T14:39:36.2015606Z [1m[92m   Compiling[0m syn v2.0.118
+2026-10-11T14:39:36.3185488Z [1m[92m    Checking[0m num-bigint v0.4.8
+2026-10-11T14:39:36.3804889Z [1m[92m   Compiling[0m find-msvc-tools v0.1.9
+2026-10-11T14:39:36.4370210Z [1m[92m    Checking[0m iana-time-zone v0.1.65
+2026-10-11T14:39:36.7782523Z [1m[92m   Compiling[0m shlex v2.0.1
+2026-10-11T14:39:36.8257321Z [1m[92m    Checking[0m arrow-schema v59.0.0
+2026-10-11T14:39:36.9915638Z [1m[92m    Checking[0m once_cell v1.21.4
+2026-10-11T14:39:37.0018414Z [1m[92m   Compiling[0m zerocopy-derive v0.8.52
+2026-10-11T14:39:37.0354880Z [1m[92m   Compiling[0m serde_core v1.0.228
+2026-10-11T14:39:37.0916806Z [1m[92m   Compiling[0m cc v1.2.65
+2026-10-11T14:39:37.1561628Z [1m[92m    Checking[0m chrono v0.4.45
+2026-10-11T14:39:37.1683625Z [1m[92m   Compiling[0m flatbuffers v25.12.19
+2026-10-11T14:39:37.2526713Z [1m[92m    Checking[0m num-complex v0.4.6
+2026-10-11T14:39:37.5012113Z [1m[92m    Checking[0m hashbrown v0.17.1
+2026-10-11T14:39:37.7329378Z [1m[92m   Compiling[0m cmake v0.1.58
+2026-10-11T14:39:37.8398940Z [1m[92m   Compiling[0m serde v1.0.228
+2026-10-11T14:39:37.9420667Z [1m[92m    Checking[0m bitflags v2.13.0
+2026-10-11T14:39:38.1290118Z [1m[92m   Compiling[0m serde_json v1.0.145
+2026-10-11T14:39:38.1773768Z [1m[92m   Compiling[0m rebirth-llm v0.0.0 (/home/runner/work/R-ebirth/R-ebirth/rebirth/src/rust/rebirth-llm)
+2026-10-11T14:39:38.2856893Z [1m[92m    Checking[0m ryu v1.0.23
+2026-10-11T14:39:38.4704639Z [1m[92m    Checking[0m memchr v2.8.3
+2026-10-11T14:39:38.4812544Z [1m[92m    Checking[0m itoa v1.0.18
+2026-10-11T14:39:39.3009655Z [1m[92m    Checking[0m half v2.7.1
+2026-10-11T14:39:39.6185769Z [1m[92m    Checking[0m arrow-buffer v59.0.0
+2026-10-11T14:39:40.0880207Z [1m[92m    Checking[0m arrow-data v59.0.0
+2026-10-11T14:39:40.3055695Z [1m[92m    Checking[0m arrow-array v59.0.0
+2026-10-11T14:39:40.8194552Z [1m[92m    Checking[0m arrow-select v59.0.0
+2026-10-11T14:39:41.0721430Z [1m[92m    Checking[0m arrow-ipc v59.0.0
+2026-10-11T14:40:23.8424478Z [1m[92m    Finished[0m `dev` profile [unoptimized + debuginfo] target(s) in 54.77s
+2026-10-11T14:40:23.8688674Z ##[group]Run cargo test --locked -p rebirth-llm
+2026-10-11T14:40:23.8689315Z [36;1mcargo test --locked -p rebirth-llm[0m
+2026-10-11T14:40:23.8724918Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:40:23.8725308Z env:
+2026-10-11T14:40:23.8725531Z   RUST_TEST_THREADS: 1
+2026-10-11T14:40:23.8725761Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:40:23.8726012Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:40:23.8726257Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:40:23.8726529Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:40:23.8726799Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:40:23.8727053Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:40:23.8727275Z   CARGO_TERM_COLOR: always
+2026-10-11T14:40:23.8727581Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-11T14:40:23.8727922Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-11T14:40:23.8728331Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-11T14:40:23.8785019Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-11T14:40:23.8785408Z ##[endgroup]
+2026-10-11T14:40:23.9790430Z [1m[92m   Compiling[0m libm v0.2.16
+2026-10-11T14:40:23.9791226Z [1m[92m   Compiling[0m cfg-if v1.0.4
+2026-10-11T14:40:23.9792573Z [1m[92m   Compiling[0m zerocopy v0.8.52
+2026-10-11T14:40:23.9792906Z [1m[92m   Compiling[0m libc v0.2.186
+2026-10-11T14:40:24.1722180Z [1m[92m   Compiling[0m bytes v1.12.0
+2026-10-11T14:40:24.4526871Z [1m[92m   Compiling[0m num-traits v0.2.19
+2026-10-11T14:40:24.6337660Z [1m[92m   Compiling[0m arrow-schema v59.0.0
+2026-10-11T14:40:24.6456537Z [1m[92m   Compiling[0m getrandom v0.3.4
+2026-10-11T14:40:24.8198830Z [1m[92m   Compiling[0m once_cell v1.21.4
+2026-10-11T14:40:24.8474245Z [1m[92m   Compiling[0m num-integer v0.1.46
+2026-10-11T14:40:24.9953516Z [1m[92m   Compiling[0m iana-time-zone v0.1.65
+2026-10-11T14:40:25.0522869Z [1m[92m   Compiling[0m num-bigint v0.4.8
+2026-10-11T14:40:25.1824432Z [1m[92m   Compiling[0m chrono v0.4.45
+2026-10-11T14:40:25.2390731Z [1m[92m   Compiling[0m num-complex v0.4.6
+2026-10-11T14:40:25.3726941Z [1m[92m   Compiling[0m half v2.7.1
+2026-10-11T14:40:25.3743402Z [1m[92m   Compiling[0m ahash v0.8.12
+2026-10-11T14:40:25.4672991Z [1m[92m   Compiling[0m hashbrown v0.17.1
+2026-10-11T14:40:25.6867840Z [1m[92m   Compiling[0m serde_core v1.0.228
+2026-10-11T14:40:25.6927134Z [1m[92m   Compiling[0m bitflags v2.13.0
+2026-10-11T14:40:25.7060781Z [1m[92m   Compiling[0m arrow-buffer v59.0.0
+2026-10-11T14:40:25.8716727Z [1m[92m   Compiling[0m flatbuffers v25.12.19
+2026-10-11T14:40:26.0737782Z [1m[92m   Compiling[0m rebirth-llm v0.0.0 (/home/runner/work/R-ebirth/R-ebirth/rebirth/src/rust/rebirth-llm)
+2026-10-11T14:40:26.0874423Z [1m[92m   Compiling[0m arrow-data v59.0.0
+2026-10-11T14:40:26.1519297Z [1m[92m   Compiling[0m ryu v1.0.23
+2026-10-11T14:40:26.2098105Z [1m[92m   Compiling[0m memchr v2.8.3
+2026-10-11T14:40:26.2801526Z [1m[92m   Compiling[0m itoa v1.0.18
+2026-10-11T14:40:26.3449859Z [1m[92m   Compiling[0m serde v1.0.228
+2026-10-11T14:40:26.5979705Z [1m[92m   Compiling[0m arrow-array v59.0.0
+2026-10-11T14:40:26.8674114Z [1m[92m   Compiling[0m serde_json v1.0.145
+2026-10-11T14:40:27.2413432Z [1m[92m   Compiling[0m arrow-select v59.0.0
+2026-10-11T14:40:27.8500019Z [1m[92m   Compiling[0m arrow-ipc v59.0.0
+2026-10-11T14:40:51.1061015Z [1m[92m    Finished[0m `test` profile [unoptimized + debuginfo] target(s) in 27.19s
+2026-10-11T14:40:51.1099273Z [1m[92m     Running[0m unittests src/lib.rs (target/debug/deps/rebirth_llm-b4b8286a7dbb70c4)
+2026-10-11T14:40:51.1121789Z 
+2026-10-11T14:40:51.1121930Z running 176 tests
+2026-10-11T14:40:51.1134217Z test async_job::tests::async_admission_bounds_and_utf8_bytes ... ok
+2026-10-11T14:40:51.1135074Z test async_job::tests::async_cancel_after_computation_before_publication_wins ... ok
+2026-10-11T14:40:51.1135992Z test async_job::tests::async_cancel_busy_and_shutdown_return_ownership ... ok
+2026-10-11T14:40:51.1313962Z test async_job::tests::async_cancel_real_prefill_sample_and_prompt_boundaries_recover ... ok
+2026-10-11T14:40:51.1422610Z test async_job::tests::async_empty_strings_cannot_bypass_retained_descriptor_budget ... ok
+2026-10-11T14:40:51.1423443Z test async_job::tests::async_limits_are_twin_pinned_to_r_admission ... ok
+2026-10-11T14:40:51.1424459Z test async_job::tests::async_output_budget_accounts_for_prior_prompts ... ok
+2026-10-11T14:40:51.1425809Z test async_job::tests::async_start_failure_returns_reservation ... ok
+2026-10-11T14:40:51.1652403Z test async_job::tests::async_synthetic_failure_returns_original_context_and_shared_parent ... ok
+2026-10-11T14:40:51.1945900Z test async_job::tests::async_terminal_cancel_is_false_and_progress_is_coalesced ... ok
+2026-10-11T14:40:51.1946780Z test async_job::tests::async_vlm_cancel_and_drop_at_native_boundaries ... ok
+2026-10-11T14:40:51.1949728Z test async_job::tests::async_worker_panic_and_error_release_the_domain ... ok
+2026-10-11T14:40:51.2133805Z test async_job::tests::f6b_cancel_and_close_after_update_restore_original_adapter ... ok
+2026-10-11T14:40:51.4915837Z test async_job::tests::f6b_history_preserving_updates_match_independent_goldens ... ok
+2026-10-11T14:40:51.5570163Z test async_job::tests::f6b_invalid_reply_after_update_restores_original_adapter ... ok
+2026-10-11T14:40:51.5618482Z test async_job::tests::f6b_original_direction_mismatch_fails_before_publication ... ok
+2026-10-11T14:40:53.3942476Z test async_job::tests::f6b_partial_identical_and_terminal_replies_preserve_revision ... ok
+2026-10-11T14:40:54.5198897Z test async_job::tests::f6b_setter_reset_and_panic_failures_have_explicit_ownership ... ok
+2026-10-11T14:40:54.5309503Z test async_job::tests::f6b_zero_initial_coefficient_is_probed_before_activation ... ok
+2026-10-11T14:40:54.5317667Z test async_job::tests::job_id_allocation_is_unique_under_contention ... ok
+2026-10-11T14:40:54.5318536Z test async_job::tests::job_id_allocation_preserves_sequence_and_exhaustion ... ok
+2026-10-11T14:40:54.6436111Z test async_job::tests::live_async_synthetic_memory_and_spill_preserve_token_order ... ok
+2026-10-11T14:40:54.6437158Z test async_job::tests::live_control_allocations_cover_memory_and_spill_cancellation ... ok
+2026-10-11T14:40:54.6438098Z test async_job::tests::live_publication_signal_is_not_a_wait_wakeup ... ok
+2026-10-11T14:40:54.6442300Z test async_job::tests::live_state_cancel_and_discard_wake_without_current_token ... ok
+2026-10-11T14:40:54.6444005Z test async_job::tests::live_state_order_and_correlated_acknowledgement ... ok
+2026-10-11T14:40:54.6980284Z test async_job::tests::projection_static_live_restore_cancel_and_poison ... ok
+2026-10-11T14:40:54.7122377Z test async_job::tests::stream_cancel_wait_race_has_no_lost_wakeup ... ok
+2026-10-11T14:40:54.7124208Z test async_job::tests::stream_caps_and_lossless_bounded_drains ... ok
+2026-10-11T14:40:54.7131960Z test async_job::tests::stream_full_queue_cancel_discard_and_drain_wake_producer ... ok
+2026-10-11T14:40:54.7133248Z test async_job::tests::stream_full_queue_drain_observes_nonblocking_contention ... ok
+2026-10-11T14:40:54.7134334Z test async_job::tests::stream_limits_are_twin_pinned_to_r_delivery ... ok
+2026-10-11T14:40:54.7136700Z test async_job::tests::stream_native_completion_retains_permit_until_delivery_ack ... ok
+2026-10-11T14:40:54.7145009Z test async_job::tests::stream_shutdown_and_failures_after_backpressure_release_ownership ... ok
+2026-10-11T14:40:54.8948305Z test async_job::tests::stream_synthetic_token_parity_includes_context_exhaustion ... ok
+2026-10-11T14:40:54.8949783Z test async_job::tests::stream_utf8_chunks_schema_encoding_and_native_error ... ok
+2026-10-11T14:40:54.8950750Z test async_job::tests::stream_zero_tokens_and_nonstream_allocate_no_spurious_rows ... ok
+2026-10-11T14:40:54.8953166Z test domain::tests::async_domain_handoff_and_release_checks ... ok
+2026-10-11T14:40:54.8953984Z test embed::tests::l2_normalize_leaves_a_zero_vector_as_zeros_not_nan ... ok
+2026-10-11T14:40:54.8954728Z test embed::tests::l2_normalize_makes_a_unit_vector ... ok
+2026-10-11T14:40:54.8955979Z test embed::tests::mean_reduce_averages_each_column ... ok
+2026-10-11T14:40:54.8956761Z test embed::tests::model_pooling_maps_mean_cls_last_and_errors_on_none_rank_unknown ... ok
+2026-10-11T14:40:54.8957771Z test embed::tests::pooling_parses_the_three_modes_and_rejects_others ... ok
+2026-10-11T14:40:54.8958535Z test embed::tests::reduce_picks_the_right_row_per_mode ... ok
+2026-10-11T14:40:54.8959077Z test engine::tests::backend_kind_roundtrips_and_parses ... ok
+2026-10-11T14:40:54.8959448Z test engine::tests::cpu_is_always_available ... ok
+2026-10-11T14:40:54.8959816Z test engine::tests::ftype_name_maps_known_and_unknown ... ok
+2026-10-11T14:40:54.8964948Z test engine::tests::load_garbage_file_is_model_load_error_not_a_crash ... ok
+2026-10-11T14:40:54.8966473Z test engine::tests::load_nonexistent_path_is_model_load_error ... ok
+2026-10-11T14:40:54.8967229Z test engine::tests::load_unavailable_backend_is_backend_error ... ok
+2026-10-11T14:40:54.8967867Z test engine::tests::metal_available_only_on_macos_arm64 ... ok
+2026-10-11T14:40:54.8968294Z test error::tests::human_bytes_twin_pins_the_r_format_bytes ... ok
+2026-10-11T14:40:54.8968960Z test ffi::tests::context_params_embedding_fields_have_the_expected_abi ... ok
+2026-10-11T14:40:54.8969417Z test ffi::tests::mirrored_layouts_match_the_vendored_headers ... ok
+2026-10-11T14:40:54.8970022Z test ffi::tests::mtmd_context_params_defaults_have_the_expected_abi ... ok
+2026-10-11T14:40:54.8970446Z test generate::tests::apply_template_formats_chatml ... ok
+2026-10-11T14:40:54.8973224Z test generate::tests::apply_template_rejects_an_unsupported_template ... ok
+2026-10-11T14:40:54.8973973Z test generate::tests::arch_builtin_template_maps_the_known_families ... ok
+2026-10-11T14:40:54.8974831Z test generate::tests::async_output_sizing_rejects_before_allocating_over_budget ... ok
+2026-10-11T14:40:54.8975831Z test generate::tests::resolve_template_errors_when_the_model_has_no_template ... ok
+2026-10-11T14:40:54.8976696Z test generate::tests::resolve_template_falls_back_to_chatml_for_qwen ... ok
+2026-10-11T14:40:54.8977404Z test generate::tests::resolve_template_falls_back_to_gemma_for_a_gemma4_model ... ok
+2026-10-11T14:40:54.8978318Z test generate::tests::resolve_template_prefers_a_working_embedded_template_unchanged ... ok
+2026-10-11T14:40:54.8979288Z test generate::tests::resolve_template_surfaces_the_original_error_without_a_fallback ... ok
+2026-10-11T14:40:54.8980028Z test generate::tests::spark_loaded_model_matches_official_prompt_bytes_and_special_token_ids ... ok
+2026-10-11T14:40:54.8980989Z test generate::tests::spark_rejects_missing_modified_and_unknown_templates ... ok
+2026-10-11T14:40:54.8981677Z test generate::tests::spark_rejects_unsupported_message_shapes_and_nul_bytes ... ok
+2026-10-11T14:40:54.8984080Z test generate::tests::spark_templates_match_official_single_user_turn_fixtures ... ok
+2026-10-11T14:40:54.8985115Z test generate::tests::split_mix64_is_deterministic_and_advances ... ok
+2026-10-11T14:40:54.8986149Z test generate::tests::structured_context_boundary_and_masked_sampling_model ... ok
+2026-10-11T14:40:54.8986965Z test generate::tests::structured_formatting_preserves_non_spark_embedded_and_fallback_behavior ... ok
+2026-10-11T14:40:54.9324630Z test generate::tests::top_k_heap_matches_full_sort_bits_and_boundaries ... ok
+2026-10-11T14:40:54.9325599Z test generate::tests::top_k_logits_breaks_ties_by_ascending_id_and_clamps_top ... ok
+2026-10-11T14:40:54.9326447Z test generate::tests::top_k_logits_orders_by_descending_logit_with_full_vocab_softmax ... ok
+2026-10-11T14:40:54.9327395Z test intervene::projection_transfer_tests::projection_transfer_residual_exact_capacities ... ok
+2026-10-11T14:40:54.9328379Z test intervene::projection_transfer_tests::projection_transfer_residual_shapes_and_values ... ok
+2026-10-11T14:40:54.9329427Z test intervene::tests::ablation_layers_lists_only_genuinely_ablated_layers ... ok
+2026-10-11T14:40:54.9330272Z test intervene::tests::ablation_sets_mask_and_add_full_coverage_from_layer_zero ... ok
+2026-10-11T14:40:54.9337367Z test intervene::tests::ablation_union_is_last_write_wins_per_neuron ... ok
+2026-10-11T14:40:54.9338883Z test intervene::tests::new_spec_has_no_buffers ... ok
+2026-10-11T14:40:54.9339788Z test intervene::tests::nonzero_steer_layers_lists_only_layers_with_a_nonzero_vector ... ok
+2026-10-11T14:40:54.9340983Z test intervene::tests::repeated_steers_on_a_layer_sum_and_range_widens ... ok
+2026-10-11T14:40:54.9341885Z test intervene::tests::steer_lands_at_the_engine_layer_row_and_the_native_view_aligns ... ok
+2026-10-11T14:40:54.9342533Z test live_capture::tests::allocation_formula_covers_tiny_and_wide_capture_capacities ... ok
+2026-10-11T14:40:54.9561839Z test live_capture::tests::capture_filters_and_context_full_boundary ... ok
+2026-10-11T14:40:54.9562778Z test live_capture::tests::live_feasibility_model ... ignored, F6a.0 local cached-model benchmark; set F6_MODEL, F6_BACKEND, F6_SOURCE, F6_MODEL_SHA256
+2026-10-11T14:40:54.9563530Z test live_capture::tests::metal_receipt_matches_retained_pinned_device_name ... ok
+2026-10-11T14:40:54.9611948Z test live_capture::tests::observer_failure_detaches_capture ... ok
+2026-10-11T14:40:54.9687318Z test live_capture::tests::same_context_toggle_and_worker_move_preserve_generation ... ok
+2026-10-11T14:40:55.3549058Z test live_capture::tests::source_rows_and_logits_match_independent_prefix_goldens ... ok
+2026-10-11T14:40:55.3771844Z test live_spill::tests::live_spill_completed_fragments_and_delivery_ownership ... ok
+2026-10-11T14:40:55.3772956Z test live_spill::tests::live_spill_full_queue_cancel_wakes_producer ... ok
+2026-10-11T14:40:55.3798027Z test live_spill::tests::live_spill_long_label_uses_one_row_above_internal_target ... ok
+2026-10-11T14:40:55.4299091Z test live_spill::tests::live_spill_padding_boundary_preserves_per_file_and_call_bounds ... ok
+2026-10-11T14:40:55.4307476Z test live_spill::tests::live_spill_shorter_label_body_fits_reserved_workspace ... ok
+2026-10-11T14:40:55.4321020Z test live_spill::tests::live_spill_writer_failure_and_cancel_remove_unpublished_files ... ok
+2026-10-11T14:40:55.4322615Z test live_state::tests::f6b_shape_preflight_matches_owned_request_and_full_memory_ledger ... ok
+2026-10-11T14:40:55.4323699Z test live_state::tests::live_pool_and_checked_bounds ... ok
+2026-10-11T14:40:55.4329958Z test live_state::tests::live_spill_admission_uses_proxy_and_component_fragments ... ok
+2026-10-11T14:40:55.4330877Z test live_steering::tests::f6b_rebuild_preserves_original_order_and_f64_products ... ok
+2026-10-11T14:40:55.4331752Z test live_steering::tests::f6b_rebuild_rejects_scalar_product_and_sum_overflow ... ok
+2026-10-11T14:40:55.4332738Z test probe::projection_transfer_tests::projection_transfer_requires_cached_residual_capabilities ... ok
+2026-10-11T14:40:55.4333754Z test probe::tests::ablation_pin_check_discriminates_the_sentinel_from_a_natural_value ... ok
+2026-10-11T14:40:55.4334590Z test probe::tests::deliberately_wrong_sentinel_expectations_fail ... ok
+2026-10-11T14:40:55.4335525Z test probe::tests::probe_cache_reports_only_unproven_layers_and_records_passes ... ok
+2026-10-11T14:40:55.4336461Z test probe::tests::steer_shift_check_requires_the_exact_shift ... ok
+2026-10-11T14:40:55.4634367Z test projection::constructor_tests::constructor_composition_matches_frozen_reference ... ok
+2026-10-11T14:40:55.4635694Z test projection::constructor_tests::constructor_residual_probe_and_frame_equations ... ok
+2026-10-11T14:40:55.4821232Z test projection::constructor_tests::constructor_source_budget_inheritance_and_failure_ownership ... ok
+2026-10-11T14:40:55.5044596Z test projection::review_tests::projection_zero_live_capture_preserves_identity_without_row_work ... ok
+2026-10-11T14:40:55.5059908Z test projection::tests::projection_boundary_rejects_invalid_inputs ... ok
+2026-10-11T14:40:55.5073825Z test projection::tests::projection_buffer_identity_accepts_only_host_or_default_shared ... ok
+2026-10-11T14:40:55.5255001Z test projection::tests::projection_cancel_fault_and_owner_cleanup ... ok
+2026-10-11T14:40:55.5345880Z test projection::tests::projection_capacity_ledger_matches_owned_buffers ... ok
+2026-10-11T14:40:55.5618639Z test projection::tests::projection_capture_and_static_additive_composition ... ok
+2026-10-11T14:40:55.5631226Z test projection::tests::projection_classifier_accepts_only_declared_dense_sites ... ok
+2026-10-11T14:40:55.9700626Z test projection::tests::projection_feasibility_model ... ignored, D046 private release feasibility; owner sets F6E_MODEL/F6E_MODEL_SHA256/F6E_SOURCE/F6E_REFERENCE_MANIFEST_SHA256/F6E_BACKEND
+2026-10-11T14:40:55.9701898Z test projection::tests::projection_forward_matches_independent_reference ... FAILED
+2026-10-11T14:40:55.9702639Z test projection::tests::projection_long_prefill_schedule_diagnostic ... ignored, Focused retained native-07 failure diagnosis; owner execution only
+2026-10-11T14:40:56.3238511Z test projection::tests::projection_microbatches_pruning_and_graph_reuse ... FAILED
+2026-10-11T14:40:56.3239718Z test projection::tests::projection_output_policy_failure_diagnostic ... ignored, run explicitly after an output-policy failure; not ordinary acceptance
+2026-10-11T14:40:56.3741431Z test projection::tests::projection_probe_rejects_missing_noop_and_wrong_site ... ok
+2026-10-11T14:40:56.3768415Z test projection::tests::projection_row_matches_independent_reference ... ok
+2026-10-11T14:40:56.3769810Z test projection_profile::tests::projection_budget_oom_class_preserves_arithmetic_and_error_capacity ... ok
+2026-10-11T14:40:56.3770934Z test projection_profile::tests::projection_profile_boundaries_are_checked_before_allocation ... ok
+2026-10-11T14:40:56.3771839Z test projection_profile::tests::projection_profile_compiled_layout_and_live_charge ... ok
+2026-10-11T14:40:56.3772706Z test projection_profile::tests::projection_profile_error_grammar_owns_one_exact_copy ... ok
+2026-10-11T14:40:56.3773583Z test projection_profile::tests::projection_profile_independent_new_site_equations ... ok
+2026-10-11T14:40:56.3774326Z test projection_profile::tests::projection_profile_inheritance_shares_exact_owners ... ok
+2026-10-11T14:40:56.3774986Z test projection_profile::tests::projection_profile_owned_capacities_refuse_hidden_spare_storage ... ok
+2026-10-11T14:40:56.3776366Z test schema::tests::canonical_grammar_is_stable_when_schema_keys_reorder ... ok
+2026-10-11T14:40:56.3800532Z test schema::tests::frozen_pilot_labels_validate_against_the_frozen_schema ... ok
+2026-10-11T14:40:56.3806778Z test schema::tests::integer_lexemes_and_endpoints_are_exact ... ok
+2026-10-11T14:40:56.3820996Z test schema::tests::native_enum_grammar_accepts_equivalent_scalar_encodings ... ok
+2026-10-11T14:40:56.3895082Z test schema::tests::native_integer_grammar_matches_interval_boundaries ... ok
+2026-10-11T14:40:56.3943561Z test schema::tests::native_string_repetition_has_exact_scalar_bounds ... ok
+2026-10-11T14:40:56.3946692Z test schema::tests::nullable_branches_enums_and_null_are_distinct ... ok
+2026-10-11T14:40:56.4480298Z test schema::tests::parser_and_grammar_allocation_limits_fail_cleanly ... ok
+2026-10-11T14:40:56.4502148Z test schema::tests::property_and_enum_resource_limits_are_checked ... ok
+2026-10-11T14:40:56.4525839Z test schema::tests::resource_limits_are_inclusive ... ok
+2026-10-11T14:40:56.4528547Z test schema::tests::scalar_lengths_count_decoded_unicode ... ok
+2026-10-11T14:40:56.4529470Z test schema::tests::schema_paths_are_json_pointers ... ok
+2026-10-11T14:40:56.4531264Z test schema::tests::strict_objects_reject_duplicates_aliases_and_extra_keys ... ok
+2026-10-11T14:40:56.4538165Z test schema::tests::unsupported_or_incomplete_profiles_fail_before_generation ... ok
+2026-10-11T14:40:56.4543827Z test spill::tests::dropping_a_sink_joins_the_writer_thread ... ok
+2026-10-11T14:40:56.4549870Z test spill::tests::spill_sink_writes_all_rows_and_reports_the_count ... ok
+2026-10-11T14:40:56.4558040Z test structured::tests::native_grammar_accepts_only_complete_profile_values ... ok
+2026-10-11T14:40:56.4562299Z test structured::tests::structured_limits_twin_pin_r_validation ... ok
+2026-10-11T14:40:56.4563114Z test tests::backend_initializes_and_reports_system_info ... ok
+2026-10-11T14:40:56.4587736Z test text_stream::tests::actual_decoder_covers_cleanup_utf8_empty_special_and_stop_boundaries ... ok
+2026-10-11T14:40:59.9405950Z test text_stream::tests::cleanup_transducers_match_actual_pinned_decoder_exhaustively ... ok
+2026-10-11T14:40:59.9411522Z test text_stream::tests::pinned_detokenize_source_requires_revalidation_on_vendor_changes ... ok
+2026-10-11T14:40:59.9453355Z test text_stream::tests::stop_holdback_is_constant_work_for_a_maximum_size_near_match ... ok
+2026-10-11T14:40:59.9454506Z test text_stream::tests::stop_holdback_rounds_back_to_utf8_and_ignores_empty_stops ... ok
+2026-10-11T14:40:59.9455818Z test text_stream::tests::stream_storage_is_bounded_and_text_arrives_before_finish ... ok
+2026-10-11T14:40:59.9456876Z test text_stream::tests::structured_stream_preserves_raw_spaces_and_rejects_invalid_text ... ok
+2026-10-11T14:41:00.0104196Z test text_stream::tests::utf8_prefix_matches_rust_lossy_and_keeps_incomplete_characters ... ok
+2026-10-11T14:41:00.0105785Z test trace::tests::arch_allow_list_message_matches_the_matcher ... ok
+2026-10-11T14:41:00.0107476Z test trace::tests::component_names_are_per_architecture_never_a_union ... ok
+2026-10-11T14:41:00.0108477Z test trace::tests::component_parses_the_three_names_and_rejects_others ... ok
+2026-10-11T14:41:00.0109915Z test trace::tests::explicit_positions_recycling_signal_fires_only_on_a_dropped_position ... ok
+2026-10-11T14:41:00.0110880Z test trace::tests::gemma4_attn_out_name_collision_is_rejected ... ok
+2026-10-11T14:41:00.0111813Z test trace::tests::materialized_expansion_factor_is_the_pinned_value ... ok
+2026-10-11T14:41:00.0112792Z test trace::tests::parse_tensor_name_splits_base_and_zero_based_layer ... ok
+2026-10-11T14:41:00.0113711Z test trace::tests::positions_resolve_against_the_token_count ... ok
+2026-10-11T14:41:00.0114586Z test trace::tests::resolved_spec_matches_only_requested_names ... ok
+2026-10-11T14:41:00.0115941Z test vision::tests::a_top_down_bmp_negative_height_is_the_format_convention_not_degenerate ... ok
+2026-10-11T14:41:00.0117143Z test vision::tests::embd_mismatch_parse_pins_the_upstream_format_string ... ok
+2026-10-11T14:41:00.0118183Z test vision::tests::hard_byte_ceiling_is_the_stb_int_limit ... ok
+2026-10-11T14:41:00.0119136Z test vision::tests::magic_allow_list_accepts_exactly_jpeg_png_bmp ... ok
+2026-10-11T14:41:00.0119986Z test vision::tests::magic_allow_list_rejects_gif_audio_and_garbage ... ok
+2026-10-11T14:41:00.0120969Z test vision::tests::read_and_validate_maps_a_missing_file_to_a_classed_image_error ... ok
+2026-10-11T14:41:00.0122006Z test vision::tests::validate_enforces_the_byte_cap_after_the_magic_gate ... ok
+2026-10-11T14:41:00.0122966Z test vision::tests::validate_enforces_the_dimension_and_pixel_caps_in_u64 ... ok
+2026-10-11T14:41:00.0123960Z test vision::tests::validate_rejects_a_truncated_header_of_an_allowed_format ... ok
+2026-10-11T14:41:00.0124924Z test vision::tests::validate_rejects_disallowed_formats_at_stage_one ... ok
+2026-10-11T14:41:00.0125779Z 
+2026-10-11T14:41:00.0125945Z failures:
+2026-10-11T14:41:00.0126185Z 
+2026-10-11T14:41:00.0126682Z ---- projection::tests::projection_forward_matches_independent_reference stdout ----
+2026-10-11T14:41:00.0130181Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0136748Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0142919Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0149012Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0154586Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0158123Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0161168Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0164523Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0169112Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0172561Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0175741Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0179429Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0182754Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0185908Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0188679Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0191445Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0194303Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0197402Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0200230Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0203099Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0206024Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0208828Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0211718Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0214516Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0217502Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0219468Z [1m[91merror[0m: test failed, to rerun pass `-p rebirth-llm --lib`
+2026-10-11T14:41:00.0221212Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0224004Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0227113Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0230002Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0232767Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0235707Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0238497Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0241399Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0244148Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0247228Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0249998Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0252772Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0255744Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0258615Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0261370Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0264172Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0267123Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0269973Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":1,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0272744Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":1,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0275869Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0278642Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0281455Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":1,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0284219Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0287175Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0289935Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0292812Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0295747Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0298503Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0301381Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0304134Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0307157Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":128,"bytes":16384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0310031Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":128,"bytes":16384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0311461Z 
+2026-10-11T14:41:00.0311922Z thread 'projection::tests::projection_forward_matches_independent_reference' (14433) panicked at rebirth-llm/src/projection_test_support.rs:322:5:
+2026-10-11T14:41:00.0312646Z native -0.02155396342277527, reference -0.010776706505566835, delta 0.010777256917208433
+2026-10-11T14:41:00.0312951Z 
+2026-10-11T14:41:00.0313183Z ---- projection::tests::projection_microbatches_pruning_and_graph_reuse stdout ----
+2026-10-11T14:41:00.0314855Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0317873Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0319476Z F6E_ZERO_POLICY_IDENTITY case=mlp_out_last_c1 policies=2 values=192
+2026-10-11T14:41:00.0321082Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0323855Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0326802Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":2,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0371065Z F6E_PROJECTION_PRUNING_CASE {"aligned_history_logits":[-0.012448444962501526,0.6723081469535828,-1.3791346549987793,-0.030695324763655663,2.1366472244262695,1.4982503652572632,0.8485919833183289,-0.14946158230304718,1.393309235572815,-0.3266679644584656,0.06958432495594025,-0.5805647969245911,-0.4291646182537079,0.4969586133956909,0.06943406164646149,-1.259539246559143,-0.7871851921081543,-0.4136815369129181,-0.05713590979576111,-1.6871387958526611,-0.2675078511238098,-0.4850001335144043,1.2443101406097412,-0.3818749189376831,0.14874625205993652,-0.025730758905410767,1.2758393287658691,-0.0224592387676239,-0.6953182220458984,0.9002565145492554,1.0150573253631592,-2.1149563789367676,0.21957650780677795,-0.5323272943496704,-0.645568311214447,0.35513433814048767,0.6659000515937805,0.9243287444114685,-0.16648530960083008,0.686775803565979,0.6038936376571655,0.10246136784553528,2.2840919494628906,-0.2482565939426422,-1.6701843738555908,-1.8475024700164795,0.6416938304901123,0.7226828932762146],"aligned_history_replay_bitwise_equal":true,"aligned_logits":[0.10054410994052887,0.897212564945221,-0.9911834001541138,-0.18867847323417664,2.3861546516418457,1.1883313655853271,0.7062153220176697,-0.3017710745334625,1.196898102760315,-0.025525569915771484,-0.0075323134660720825,-0.5162554383277893,-0.1468474268913269,0.6300281882286072,0.6171761751174927,-0.9109710454940796,-0.7859864234924316,-0.6206352710723877,0.015408219769597054,-2.012328624725342,-0.07472819089889526,-0.6473467350006104,1.4371687173843384,-0.5022698640823364,-0.18605652451515198,0.19746547937393188,1.3899955749511719,-0.17437967658042908,-0.46950241923332214,1.292237401008606,1.1731027364730835,-2.194481134414673,0.7005823850631714,-0.6665776968002319,-0.5028862357139587,0.44004592299461365,0.8554444313049316,0.6991358995437622,-0.07077126204967499,1.153939127922058,0.8212358951568604,0.3532141447067261,2.5282974243164062,-0.04611608386039734,-1.420383334159851,-1.8472602367401123,0.8316221237182617,1.108555555343628],"aligned_replay_bitwise_equal":true,"aligned_replay_history_logits":[-0.012448444962501526,0.6723081469535828,-1.3791346549987793,-0.030695324763655663,2.1366472244262695,1.4982503652572632,0.8485919833183289,-0.14946158230304718,1.393309235572815,-0.3266679644584656,0.06958432495594025,-0.5805647969245911,-0.4291646182537079,0.4969586133956909,0.06943406164646149,-1.259539246559143,-0.7871851921081543,-0.4136815369129181,-0.05713590979576111,-1.6871387958526611,-0.2675078511238098,-0.4850001335144043,1.2443101406097412,-0.3818749189376831,0.14874625205993652,-0.025730758905410767,1.2758393287658691,-0.0224592387676239,-0.6953182220458984,0.9002565145492554,1.0150573253631592,-2.1149563789367676,0.21957650780677795,-0.5323272943496704,-0.645568311214447,0.35513433814048767,0.6659000515937805,0.9243287444114685,-0.16648530960083008,0.686775803565979,0.6038936376571655,0.10246136784553528,2.2840919494628906,-0.2482565939426422,-1.6701843738555908,-1.8475024700164795,0.6416938304901123,0.7226828932762146],"aligned_replay_logits":[0.10054410994052887,0.897212564945221,-0.9911834001541138,-0.18867847323417664,2.3861546516418457,1.1883313655853271,0.7062153220176697,-0.3017710745334625,1.196898102760315,-0.025525569915771484,-0.0075323134660720825,-0.5162554383277893,-0.1468474268913269,0.6300281882286072,0.6171761751174927,-0.9109710454940796,-0.7859864234924316,-0.6206352710723877,0.015408219769597054,-2.012328624725342,-0.07472819089889526,-0.6473467350006104,1.4371687173843384,-0.5022698640823364,-0.18605652451515198,0.19746547937393188,1.3899955749511719,-0.17437967658042908,-0.46950241923332214,1.292237401008606,1.1731027364730835,-2.194481134414673,0.7005823850631714,-0.6665776968002319,-0.5028862357139587,0.44004592299461365,0.8554444313049316,0.6991358995437622,-0.07077126204967499,1.153939127922058,0.8212358951568604,0.3532141447067261,2.5282974243164062,-0.04611608386039734,-1.420383334159851,-1.8472602367401123,0.8316221237182617,1.108555555343628],"case":"mlp_out_last_c1","continuation_position_native":5,"continuation_token_native":1,"cross_schedule_reference":{"abs_errors":[0.0003837334380729085,0.0010341418264214752,0.00019251500168582236,0.00016375991376338384,0.0001664544389941014,0.000054054430910666085,0.0004446595535394504,0.00009806650125016025,0.00027669457862167235,0.000012296893119545516,0.00011579615142864874,0.0002797286064697424,0.00032574975699262154,0.0002712797238639819,0.0006277143021948817,0.0004835351535323884,0.0002746545703312675,0.0001019544144756912,0.00018510482606592937,0.0003540243981694502,0.00021102771471900872,0.0007105632964008457,0.000051766855680090984,0.0006672542182591945,0.0005112793275809935,0.0005015909536074115,0.0008538239681743498,0.0009694336468455411,0.0002541196485977837,0.00038396143554519924,0.00007201403670609174,0.00019216387444398464,0.0005604636277547481,0.00017902005001479981,0.00048736724213305216,0.00005780158630230847,0.000365875148101269,0.0005401106427211921,0.00013085885363040006,0.0008193972197947375,0.000058786181507564095,0.00037832368322421317,0.0010269296780029968,0.000635458114695675,0.0008243511611980558,0.0005542362753774288,0.00017867157792128552,0.0002019091043976573],"max_abs_error":0.0010341418264214752,"outlier_native_tokens":[],"status":"unaccepted_cross_schedule_observation"},"decode_tokens":2,"fixed_schedule_final_abs_errors":[2.9802322387695312e-8,2.384185791015625e-7,2.384185791015625e-7,1.1920928955078125e-7,2.384185791015625e-7,1.1920928955078125e-7,1.1920928955078125e-7,8.940696716308594e-8,2.384185791015625e-7,1.4901161193847656e-8,1.043081283569336e-7,1.1920928955078125e-7,1.4901161193847656e-7,1.1920928955078125e-7,2.384185791015625e-7,0.0,5.960464477539063e-8,5.960464477539063e-8,8.568167686462402e-8,2.384185791015625e-7,2.384185791015625e-7,2.980232238769531e-7,0.0,5.960464477539063e-8,8.940696716308594e-8,5.960464477539063e-8,0.0,8.940696716308594e-8,2.9802322387695312e-8,1.1920928955078125e-7,0.0,2.384185791015625e-7,0.0,1.1920928955078125e-7,5.960464477539063e-8,2.9802322387695312e-8,2.384185791015625e-7,5.960464477539063e-8,2.9802322387695312e-8,2.384185791015625e-7,1.1920928955078125e-7,2.384185791015625e-7,2.384185791015625e-7,2.9802322387695312e-8,2.384185791015625e-7,1.1920928955078125e-7,0.0,0.0],"fixed_schedule_history_abs_errors":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"grouped_all_history_logits":[-0.012448444962501526,0.6723081469535828,-1.3791346549987793,-0.030695324763655663,2.1366472244262695,1.4982503652572632,0.8485919833183289,-0.14946158230304718,1.393309235572815,-0.3266679644584656,0.06958432495594025,-0.5805647969245911,-0.4291646182537079,0.4969586133956909,0.06943406164646149,-1.259539246559143,-0.7871851921081543,-0.4136815369129181,-0.05713590979576111,-1.6871387958526611,-0.2675078511238098,-0.4850001335144043,1.2443101406097412,-0.3818749189376831,0.14874625205993652,-0.025730758905410767,1.2758393287658691,-0.0224592387676239,-0.6953182220458984,0.9002565145492554,1.0150573253631592,-2.1149563789367676,0.21957650780677795,-0.5323272943496704,-0.645568311214447,0.35513433814048767,0.6659000515937805,0.9243287444114685,-0.16648530960083008,0.686775803565979,0.6038936376571655,0.10246136784553528,2.2840919494628906,-0.2482565939426422,-1.6701843738555908,-1.8475024700164795,0.6416938304901123,0.7226828932762146],"grouped_all_logits":[0.10054394602775574,0.8972123265266418,-0.9911829233169556,-0.18867838382720947,2.3861539363861084,1.1883312463760376,0.7062157392501831,-0.3017714023590088,1.1968982219696045,-0.025525838136672974,-0.00753253698348999,-0.5162556171417236,-0.14684763550758362,0.6300283670425415,0.6171756982803345,-0.9109707474708557,-0.7859862446784973,-0.620635449886322,0.015408426523208618,-2.0123281478881836,-0.0747281014919281,-0.6473472118377686,1.437169075012207,-0.5022698044776917,-0.1860564947128296,0.19746509194374084,1.3899953365325928,-0.17437958717346191,-0.46950235962867737,1.2922372817993164,1.173102855682373,-2.194481372833252,0.7005826234817505,-0.6665775179862976,-0.5028862357139587,0.44004589319229126,0.8554439544677734,0.6991356015205383,-0.07077109813690186,1.153939127922058,0.8212358951568604,0.35321444272994995,2.5282976627349854,-0.04611659049987793,-1.4203829765319824,-1.8472604751586914,0.831622302532196,1.1085551977157593],"grouped_history_replay_bitwise_equal":true,"grouped_last_history_logits":[-0.012448444962501526,0.6723081469535828,-1.3791346549987793,-0.030695324763655663,2.1366472244262695,1.4982503652572632,0.8485919833183289,-0.14946158230304718,1.393309235572815,-0.3266679644584656,0.06958432495594025,-0.5805647969245911,-0.4291646182537079,0.4969586133956909,0.06943406164646149,-1.259539246559143,-0.7871851921081543,-0.4136815369129181,-0.05713590979576111,-1.6871387958526611,-0.2675078511238098,-0.4850001335144043,1.2443101406097412,-0.3818749189376831,0.14874625205993652,-0.025730758905410767,1.2758393287658691,-0.0224592387676239,-0.6953182220458984,0.9002565145492554,1.0150573253631592,-2.1149563789367676,0.21957650780677795,-0.5323272943496704,-0.645568311214447,0.35513433814048767,0.6659000515937805,0.9243287444114685,-0.16648530960083008,0.686775803565979,0.6038936376571655,0.10246136784553528,2.2840919494628906,-0.2482565939426422,-1.6701843738555908,-1.8475024700164795,0.6416938304901123,0.7226828932762146],"grouped_last_logits":[0.10054391622543335,0.897212564945221,-0.9911831617355347,-0.18867826461791992,2.3861541748046875,1.1883313655853271,0.7062156200408936,-0.30177149176597595,1.1968979835510254,-0.02552582323551178,-0.007532641291618347,-0.5162557363510132,-0.14684748649597168,0.630028247833252,0.6171759366989136,-0.9109707474708557,-0.7859861850738525,-0.6206353902816772,0.015408512204885483,-2.0123283863067627,-0.0747283399105072,-0.6473469138145447,1.437169075012207,-0.5022697448730469,-0.18605658411979675,0.19746515154838562,1.3899953365325928,-0.17437949776649475,-0.46950238943099976,1.292237401008606,1.173102855682373,-2.194481134414673,0.7005826234817505,-0.6665776371955872,-0.502886176109314,0.44004592299461365,0.8554437160491943,0.6991356611251831,-0.07077112793922424,1.153938889503479,0.8212357759475708,0.35321420431137085,2.5282979011535645,-0.04611656069755554,-1.4203832149505615,-1.8472603559494019,0.831622302532196,1.1085551977157593],"grouped_repeat_history_logits":[-0.012448444962501526,0.6723081469535828,-1.3791346549987793,-0.030695324763655663,2.1366472244262695,1.4982503652572632,0.8485919833183289,-0.14946158230304718,1.393309235572815,-0.3266679644584656,0.06958432495594025,-0.5805647969245911,-0.4291646182537079,0.4969586133956909,0.06943406164646149,-1.259539246559143,-0.7871851921081543,-0.4136815369129181,-0.05713590979576111,-1.6871387958526611,-0.2675078511238098,-0.4850001335144043,1.2443101406097412,-0.3818749189376831,0.14874625205993652,-0.025730758905410767,1.2758393287658691,-0.0224592387676239,-0.6953182220458984,0.9002565145492554,1.0150573253631592,-2.1149563789367676,0.21957650780677795,-0.5323272943496704,-0.645568311214447,0.35513433814048767,0.6659000515937805,0.9243287444114685,-0.16648530960083008,0.686775803565979,0.6038936376571655,0.10246136784553528,2.2840919494628906,-0.2482565939426422,-1.6701843738555908,-1.8475024700164795,0.6416938304901123,0.7226828932762146],"grouped_repeat_logits":[0.10054391622543335,0.897212564945221,-0.9911831617355347,-0.18867826461791992,2.3861541748046875,1.1883313655853271,0.7062156200408936,-0.30177149176597595,1.1968979835510254,-0.02552582323551178,-0.007532641291618347,-0.5162557363510132,-0.14684748649597168,0.630028247833252,0.6171759366989136,-0.9109707474708557,-0.7859861850738525,-0.6206353902816772,0.015408512204885483,-2.0123283863067627,-0.0747283399105072,-0.6473469138145447,1.437169075012207,-0.5022697448730469,-0.18605658411979675,0.19746515154838562,1.3899953365325928,-0.17437949776649475,-0.46950238943099976,1.292237401008606,1.173102855682373,-2.194481134414673,0.7005826234817505,-0.6665776371955872,-0.502886176109314,0.44004592299461365,0.8554437160491943,0.6991356611251831,-0.07077112793922424,1.153938889503479,0.8212357759475708,0.35321420431137085,2.5282979011535645,-0.04611656069755554,-1.4203832149505615,-1.8472603559494019,0.831622302532196,1.1085551977157593],"grouped_replay_bitwise_equal":true,"grouped_schedule":[5],"history_bitwise_equal":true,"independent_abs_errors":[0.0003839271531684285,0.0010341418264214752,0.0001922765831067208,0.0001639685300200977,0.00016693127615230452,0.000054054430910666085,0.00044495757676332737,0.00009848373376358799,0.00027681378791122313,0.000012550212859840926,0.00011546832588238409,0.00028002662969361936,0.00032580936163739693,0.0002712201192192065,0.0006279527207739832,0.00048323713030851145,0.00027489298891036906,0.00010207362376524198,0.00018539726135435863,0.00035426281674855176,0.0002111767263309472,0.0007103844824665195,0.00005140922781143864,0.0006673734275487453,0.0005112197229362181,0.0005012631280611468,0.0008540623867534514,0.0009696124607798673,0.000254089846275396,0.00038396143554519924,0.00007189482741654096,0.00019216387444398464,0.0005602252091756466,0.00017896044537002442,0.00048730763748827677,0.00005780158630230847,0.0003651598923639643,0.0005398722241420906,0.00013072474317965543,0.000819635638373839,0.000058666972218013314,0.00037838328786898856,0.0010264528408447937,0.0006359349518538782,0.0008242319519085051,0.0005543554846669796,0.0001788503918556117,0.00020155147652900496],"n_batch":512,"n_ubatch":128,"phase_schedule":[3,1,1],"prefill_tokens":3,"pruning_bitwise_equal":false,"reference_logits":[0.10016018278736044,0.8961784231187995,-0.9913756767372205,-0.18851450470415654,2.3859877203656934,1.1883854200162378,0.706660279594433,-0.3018695582672261,1.1966212889724037,-0.025538120128631325,-0.007416845140189698,-0.5165354649574829,-0.1471732362529643,0.629756968109388,0.6165482223967187,-0.9114542826243881,-0.7857115305035213,-0.6207373446961529,0.015593617030951412,-2.0119743619085932,-0.07493936762522621,-0.6466363505181438,1.437117308156527,-0.5016024906547877,-0.18554530479221576,0.19796674250199303,1.3891415125644184,-0.1734100641196492,-0.46975650907959754,1.2926213624441512,1.173030841645667,-2.194288970540229,0.7000221598539957,-0.666756657245602,-0.503373543351447,0.44010372458091596,0.8558095911972956,0.6996757717679043,-0.07090198679285464,1.1531194922836843,0.8212945621290784,0.35359252799459506,2.5272709714755615,-0.04675201881225122,-1.4212075661117596,-1.8478145922247793,0.8318009741101173,1.108757106820157],"total_tokens":5}
+2026-10-11T14:41:00.0414628Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0417473Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0419067Z F6E_ZERO_POLICY_IDENTITY case=attn_out_last_c1 policies=2 values=192
+2026-10-11T14:41:00.0420747Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0423515Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0426430Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":2,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":3,"bytes":384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0469562Z F6E_PROJECTION_PRUNING_CASE {"aligned_history_logits":[0.2867588698863983,0.3151707053184509,-1.7780072689056396,0.1677781641483307,2.252389669418335,1.489331841468811,1.1477289199829102,0.03300231695175171,1.407696008682251,-0.24108527600765228,-0.05279374122619629,-0.47459539771080017,-0.6324570775032043,0.6900937557220459,-0.36258554458618164,-0.9943446516990662,-0.8095267415046692,-0.34820032119750977,-0.05511975288391113,-1.496209740638733,-0.19078285992145538,-0.3735198676586151,1.1403169631958008,-0.5195157527923584,0.30281466245651245,0.06173907220363617,1.1336067914962769,0.03502723574638367,-0.5640053749084473,0.8942567110061646,1.1238117218017578,-2.3128345012664795,0.720201849937439,-0.019352607429027557,-0.9123610854148865,0.34972989559173584,0.37520986795425415,1.1082864999771118,-0.07037532329559326,0.8548085689544678,0.6866459250450134,0.20306508243083954,2.2347331047058105,-0.10771198570728302,-1.6821696758270264,-1.8106518983840942,0.5406615138053894,0.28028517961502075],"aligned_history_replay_bitwise_equal":true,"aligned_logits":[0.3932492136955261,0.5512067675590515,-1.4159502983093262,0.019101880490779877,2.50832462310791,1.2246677875518799,1.0329372882843018,-0.11434899270534515,1.2308731079101562,0.05793517827987671,-0.14507997035980225,-0.4110491871833801,-0.3488088846206665,0.850590705871582,0.1810326874256134,-0.6222398281097412,-0.8026233911514282,-0.5320924520492554,0.0075635239481925964,-1.8071280717849731,-0.01136564090847969,-0.5425105690956116,1.3438235521316528,-0.6133822202682495,-0.02355966717004776,0.2883070111274719,1.2556681632995605,-0.12469211220741272,-0.3448895812034607,1.2844934463500977,1.2884042263031006,-2.391289710998535,1.2415157556533813,-0.09868615865707397,-0.7915126085281372,0.42749664187431335,0.5354984998703003,0.896223247051239,0.017358064651489258,1.358412742614746,0.8982394337654114,0.45301729440689087,2.4772579669952393,0.08915698528289795,-1.4271891117095947,-1.809082269668579,0.7373631596565247,0.6401992440223694],"aligned_replay_bitwise_equal":true,"aligned_replay_history_logits":[0.2867588698863983,0.3151707053184509,-1.7780072689056396,0.1677781641483307,2.252389669418335,1.489331841468811,1.1477289199829102,0.03300231695175171,1.407696008682251,-0.24108527600765228,-0.05279374122619629,-0.47459539771080017,-0.6324570775032043,0.6900937557220459,-0.36258554458618164,-0.9943446516990662,-0.8095267415046692,-0.34820032119750977,-0.05511975288391113,-1.496209740638733,-0.19078285992145538,-0.3735198676586151,1.1403169631958008,-0.5195157527923584,0.30281466245651245,0.06173907220363617,1.1336067914962769,0.03502723574638367,-0.5640053749084473,0.8942567110061646,1.1238117218017578,-2.3128345012664795,0.720201849937439,-0.019352607429027557,-0.9123610854148865,0.34972989559173584,0.37520986795425415,1.1082864999771118,-0.07037532329559326,0.8548085689544678,0.6866459250450134,0.20306508243083954,2.2347331047058105,-0.10771198570728302,-1.6821696758270264,-1.8106518983840942,0.5406615138053894,0.28028517961502075],"aligned_replay_logits":[0.3932492136955261,0.5512067675590515,-1.4159502983093262,0.019101880490779877,2.50832462310791,1.2246677875518799,1.0329372882843018,-0.11434899270534515,1.2308731079101562,0.05793517827987671,-0.14507997035980225,-0.4110491871833801,-0.3488088846206665,0.850590705871582,0.1810326874256134,-0.6222398281097412,-0.8026233911514282,-0.5320924520492554,0.0075635239481925964,-1.8071280717849731,-0.01136564090847969,-0.5425105690956116,1.3438235521316528,-0.6133822202682495,-0.02355966717004776,0.2883070111274719,1.2556681632995605,-0.12469211220741272,-0.3448895812034607,1.2844934463500977,1.2884042263031006,-2.391289710998535,1.2415157556533813,-0.09868615865707397,-0.7915126085281372,0.42749664187431335,0.5354984998703003,0.896223247051239,0.017358064651489258,1.358412742614746,0.8982394337654114,0.45301729440689087,2.4772579669952393,0.08915698528289795,-1.4271891117095947,-1.809082269668579,0.7373631596565247,0.6401992440223694],"case":"attn_out_last_c1","continuation_position_native":5,"continuation_token_native":1,"cross_schedule_reference":{"abs_errors":[0.000431262895794815,0.001023338288313469,0.00023347471911105977,0.0001596849852028015,0.00017382655776332356,0.00018409175999467564,0.0005452239768193312,0.00013232565684018205,0.00020891665416966632,0.00004415170334109986,0.000048594105155452816,0.0003504772742595197,0.0002386302520896999,0.0002461525455129676,0.000584394436856206,0.0004613387186909179,0.00024292166005268623,0.000034432560919950284,0.00019943107696263063,0.00034865923100024787,0.0002808498282691474,0.0006515836080994708,0.00002616837128077698,0.0008466821634900423,0.0005859124632151547,0.0005171593019927534,0.0007821157491731956,0.001014983333010644,0.0003233514851040953,0.0003921026741082745,0.00006894849384719848,0.00021084709488006226,0.0005919658204374123,0.00009102355566714682,0.0004839934478917396,0.000030400372910743823,0.00041377862294189605,0.00047549052747952736,0.00012306699868402937,0.00076044836021949,0.00007606963405026868,0.0004399369218226479,0.0010317243282247368,0.0006529563141083328,0.0007689567100106487,0.0005975969144711435,0.00023371955015405455,0.0003462006441548038],"max_abs_error":0.0010317243282247368,"outlier_native_tokens":[],"status":"unaccepted_cross_schedule_observation"},"decode_tokens":2,"fixed_schedule_final_abs_errors":[1.4901161193847656e-7,1.1920928955078125e-7,0.0,1.2852251529693604e-7,9.5367431640625e-7,3.5762786865234375e-7,4.76837158203125e-7,1.4901161193847656e-8,1.1920928955078125e-7,2.9802322387695312e-8,8.940696716308594e-8,1.7881393432617188e-7,1.1920928955078125e-7,1.7881393432617188e-7,1.7881393432617188e-7,5.960464477539063e-8,5.960464477539063e-8,1.1920928955078125e-7,1.043081283569336e-7,1.1920928955078125e-7,1.8998980522155762e-7,1.7881393432617188e-7,4.76837158203125e-7,0.0,1.564621925354004e-7,5.960464477539063e-8,1.1920928955078125e-7,2.9802322387695312e-8,5.960464477539063e-8,5.960464477539062e-7,0.0,2.384185791015625e-7,1.1920928955078125e-7,5.21540641784668e-8,1.7881393432617188e-7,2.086162567138672e-7,1.1920928955078125e-7,5.960464477539063e-8,1.1920928955078125e-7,2.384185791015625e-7,2.980232238769531e-7,1.1920928955078125e-7,4.76837158203125e-7,1.1920928955078125e-7,0.0,3.5762786865234375e-7,1.1920928955078125e-7,5.960464477539063e-8],"fixed_schedule_history_abs_errors":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"grouped_all_history_logits":[0.2867588698863983,0.3151707053184509,-1.7780072689056396,0.1677781641483307,2.252389669418335,1.489331841468811,1.1477289199829102,0.03300231695175171,1.407696008682251,-0.24108527600765228,-0.05279374122619629,-0.47459539771080017,-0.6324570775032043,0.6900937557220459,-0.36258554458618164,-0.9943446516990662,-0.8095267415046692,-0.34820032119750977,-0.05511975288391113,-1.496209740638733,-0.19078285992145538,-0.3735198676586151,1.1403169631958008,-0.5195157527923584,0.30281466245651245,0.06173907220363617,1.1336067914962769,0.03502723574638367,-0.5640053749084473,0.8942567110061646,1.1238117218017578,-2.3128345012664795,0.720201849937439,-0.019352607429027557,-0.9123610854148865,0.34972989559173584,0.37520986795425415,1.1082864999771118,-0.07037532329559326,0.8548085689544678,0.6866459250450134,0.20306508243083954,2.2347331047058105,-0.10771198570728302,-1.6821696758270264,-1.8106518983840942,0.5406615138053894,0.28028517961502075],"grouped_all_logits":[0.39324885606765747,0.551206648349762,-1.415950059890747,0.019101858139038086,2.50832462310791,1.2246676683425903,1.0329378843307495,-0.1143496036529541,1.2308733463287354,0.05793488025665283,-0.14508020877838135,-0.411049485206604,-0.3488088846206665,0.8505907654762268,0.1810321807861328,-0.6222397089004517,-0.8026232719421387,-0.5320925712585449,0.0075639039278030396,-1.8071281909942627,-0.011365890502929688,-0.5425112247467041,1.3438239097595215,-0.6133823990821838,-0.02355945110321045,0.28830671310424805,1.25566828250885,-0.12469172477722168,-0.34488964080810547,1.2844939231872559,1.2884042263031006,-2.3912901878356934,1.2415159940719604,-0.09868621826171875,-0.7915127873420715,0.42749667167663574,0.5354980230331421,0.8962230682373047,0.01735818386077881,1.358412742614746,0.8982397317886353,0.45301738381385803,2.4772584438323975,0.0891563892364502,-1.4271888732910156,-1.8090828657150269,0.7373635768890381,0.6401993632316589],"grouped_history_replay_bitwise_equal":true,"grouped_last_history_logits":[0.2867588698863983,0.3151707053184509,-1.7780072689056396,0.1677781641483307,2.252389669418335,1.489331841468811,1.1477289199829102,0.03300231695175171,1.407696008682251,-0.24108527600765228,-0.05279374122619629,-0.47459539771080017,-0.6324570775032043,0.6900937557220459,-0.36258554458618164,-0.9943446516990662,-0.8095267415046692,-0.34820032119750977,-0.05511975288391113,-1.496209740638733,-0.19078285992145538,-0.3735198676586151,1.1403169631958008,-0.5195157527923584,0.30281466245651245,0.06173907220363617,1.1336067914962769,0.03502723574638367,-0.5640053749084473,0.8942567110061646,1.1238117218017578,-2.3128345012664795,0.720201849937439,-0.019352607429027557,-0.9123610854148865,0.34972989559173584,0.37520986795425415,1.1082864999771118,-0.07037532329559326,0.8548085689544678,0.6866459250450134,0.20306508243083954,2.2347331047058105,-0.10771198570728302,-1.6821696758270264,-1.8106518983840942,0.5406615138053894,0.28028517961502075],"grouped_last_logits":[0.3932490050792694,0.5512065291404724,-1.415950059890747,0.019101986661553383,2.5083236694335938,1.2246673107147217,1.0329374074935913,-0.11434958875179291,1.230873465538025,0.05793491005897522,-0.14508011937141418,-0.4110493063926697,-0.34880876541137695,0.8505909442901611,0.18103235960006714,-0.6222397685050964,-0.8026233315467834,-0.5320924520492554,0.007563799619674683,-1.8071283102035522,-0.011365700513124466,-0.5425114035606384,1.3438234329223633,-0.6133823990821838,-0.023559607565402985,0.2883067727088928,1.2556681632995605,-0.12469175457954407,-0.3448895812034607,1.284493327140808,1.2884042263031006,-2.3912899494171143,1.241515874862671,-0.09868616610765457,-0.7915126085281372,0.42749646306037903,0.5354979038238525,0.8962230086326599,0.017358064651489258,1.358412504196167,0.8982394337654114,0.4530175030231476,2.4772579669952393,0.08915650844573975,-1.4271888732910156,-1.8090825080871582,0.7373634576797485,0.6401994228363037],"grouped_repeat_history_logits":[0.2867588698863983,0.3151707053184509,-1.7780072689056396,0.1677781641483307,2.252389669418335,1.489331841468811,1.1477289199829102,0.03300231695175171,1.407696008682251,-0.24108527600765228,-0.05279374122619629,-0.47459539771080017,-0.6324570775032043,0.6900937557220459,-0.36258554458618164,-0.9943446516990662,-0.8095267415046692,-0.34820032119750977,-0.05511975288391113,-1.496209740638733,-0.19078285992145538,-0.3735198676586151,1.1403169631958008,-0.5195157527923584,0.30281466245651245,0.06173907220363617,1.1336067914962769,0.03502723574638367,-0.5640053749084473,0.8942567110061646,1.1238117218017578,-2.3128345012664795,0.720201849937439,-0.019352607429027557,-0.9123610854148865,0.34972989559173584,0.37520986795425415,1.1082864999771118,-0.07037532329559326,0.8548085689544678,0.6866459250450134,0.20306508243083954,2.2347331047058105,-0.10771198570728302,-1.6821696758270264,-1.8106518983840942,0.5406615138053894,0.28028517961502075],"grouped_repeat_logits":[0.3932490050792694,0.5512065291404724,-1.415950059890747,0.019101986661553383,2.5083236694335938,1.2246673107147217,1.0329374074935913,-0.11434958875179291,1.230873465538025,0.05793491005897522,-0.14508011937141418,-0.4110493063926697,-0.34880876541137695,0.8505909442901611,0.18103235960006714,-0.6222397685050964,-0.8026233315467834,-0.5320924520492554,0.007563799619674683,-1.8071283102035522,-0.011365700513124466,-0.5425114035606384,1.3438234329223633,-0.6133823990821838,-0.023559607565402985,0.2883067727088928,1.2556681632995605,-0.12469175457954407,-0.3448895812034607,1.284493327140808,1.2884042263031006,-2.3912899494171143,1.241515874862671,-0.09868616610765457,-0.7915126085281372,0.42749646306037903,0.5354979038238525,0.8962230086326599,0.017358064651489258,1.358412504196167,0.8982394337654114,0.4530175030231476,2.4772579669952393,0.08915650844573975,-1.4271888732910156,-1.8090825080871582,0.7373634576797485,0.6401994228363037],"grouped_replay_bitwise_equal":true,"grouped_schedule":[5],"history_bitwise_equal":true,"independent_abs_errors":[0.0004314715120515289,0.0010235767068925705,0.0002332363005319582,0.00015979115597630766,0.00017478023207972981,0.00018361492283647252,0.000545343186108882,0.00013292170328793596,0.00020855902630101397,0.000044419924242589115,0.00004844509354351434,0.00035059648354907047,0.00023851104280014912,0.00024591412693386605,0.0005847222624024706,0.0004612791140461425,0.00024298126469746162,0.000034432560919950284,0.0001997067484447168,0.0003484208124211463,0.0002809094329139228,0.0006507491430726153,0.000026287580570327762,0.0008465033495557162,0.0005859720678599301,0.0005169208834136518,0.0007821157491731956,0.0010153409608792963,0.0003233514851040953,0.0003919834648187237,0.00006894849384719848,0.0002106086763009607,0.0005918466111478615,0.00009103100624774374,0.0004839934478917396,0.00003022155897641765,0.00041318257649414214,0.0004752521089004258,0.00012306699868402937,0.0007606867787985916,0.00007606963405026868,0.00044014553807936174,0.0010317243282247368,0.0006534331512665359,0.0007687182914315471,0.0005978353330502451,0.0002340175733779315,0.00034637945808912995],"n_batch":512,"n_ubatch":128,"phase_schedule":[3,1,1],"prefill_tokens":3,"pruning_bitwise_equal":false,"reference_logits":[0.3928177421834746,0.5501831908521589,-1.4161835346098581,0.019261671646756184,2.5081498428758304,1.2248514024747164,1.0334826314704106,-0.11448191440863309,1.2306645488838552,0.05789075835563412,-0.14503152526625873,-0.4113997836669292,-0.34904739566346665,0.8503447917446482,0.18044796516321093,-0.6227011072237874,-0.8023804098867308,-0.5321268846101753,0.007763230696637313,-1.806779650972552,-0.011646550341393613,-0.541859819952539,1.3437972645510825,-0.6125357169186938,-0.02297369510218783,0.2888239320108856,1.2548860475503874,-0.12367677124653342,-0.3452129326885648,1.2848854298149164,1.2883352778092534,-2.391079102322234,1.2409239090422335,-0.09877718966332172,-0.791996601976029,0.42752686343328977,0.5359116824467944,0.8966984991601394,0.01723499765280523,1.3576520558359475,0.8983155033994616,0.45345743994497023,2.4762262426670145,0.08850355213163141,-1.4279578300010263,-1.8096801050016293,0.7375971772299026,0.6405456234804585],"total_tokens":5}
+2026-10-11T14:41:00.0512050Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0514804Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0517679Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0520452Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0522033Z F6E_ZERO_POLICY_IDENTITY case=long_prefill policies=2 values=192
+2026-10-11T14:41:00.0523634Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0526488Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0529246Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0532000Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0534803Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":1,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":128,"bytes":16384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0537624Z F6E_PROJECTION_BUFFER {"schema":1,"phase":"projected","width":32,"depth":3,"layer_native":0,"component_code":0,"kind":1,"is_host":1,"usage":2,"device_type":0,"flags":192,"device_index":0,"type_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":128,"bytes":16384,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":true,"decode_failed":false}
+2026-10-11T14:41:00.0539044Z 
+2026-10-11T14:41:00.0539467Z thread 'projection::tests::projection_microbatches_pruning_and_graph_reuse' (16230) panicked at rebirth-llm/src/projection_test_support.rs:322:5:
+2026-10-11T14:41:00.0540177Z native -0.02155396342277527, reference -0.010776706505566835, delta 0.010777256917208433
+2026-10-11T14:41:00.0540486Z 
+2026-10-11T14:41:00.0540490Z 
+2026-10-11T14:41:00.0540572Z failures:
+2026-10-11T14:41:00.0540875Z     projection::tests::projection_forward_matches_independent_reference
+2026-10-11T14:41:00.0541313Z     projection::tests::projection_microbatches_pruning_and_graph_reuse
+2026-10-11T14:41:00.0541576Z 
+2026-10-11T14:41:00.0541825Z test result: FAILED. 170 passed; 2 failed; 4 ignored; 0 measured; 0 filtered out; finished in 8.90s
+2026-10-11T14:41:00.0542160Z 
+2026-10-11T14:41:00.0553436Z ##[error]Process completed with exit code 101.
+2026-10-11T14:41:00.0603413Z ##[group]Run mkdir -p "$RUNNER_TEMP/projection-policy-diagnosis"
+2026-10-11T14:41:00.0603885Z [36;1mmkdir -p "$RUNNER_TEMP/projection-policy-diagnosis"[0m
+2026-10-11T14:41:00.0604379Z [36;1mgit rev-parse HEAD > "$RUNNER_TEMP/projection-policy-diagnosis/source-sha.txt"[0m
+2026-10-11T14:41:00.0605460Z [36;1mcargo test --locked -p rebirth-llm --lib projection::tests::projection_output_policy_failure_diagnostic -- --exact --ignored --nocapture > "$RUNNER_TEMP/projection-policy-diagnosis/native.log" 2>&1[0m
+2026-10-11T14:41:00.0641457Z shell: /usr/bin/bash -e {0}
+2026-10-11T14:41:00.0641718Z env:
+2026-10-11T14:41:00.0641921Z   RUST_TEST_THREADS: 1
+2026-10-11T14:41:00.0642147Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:41:00.0642431Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:41:00.0642678Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:41:00.0642951Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:41:00.0643228Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:41:00.0643515Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:41:00.0643747Z   CARGO_TERM_COLOR: always
+2026-10-11T14:41:00.0644047Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-11T14:41:00.0644393Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-11T14:41:00.0644793Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-11T14:41:00.0697901Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-11T14:41:00.0698160Z ##[endgroup]
+2026-10-11T14:41:00.1928112Z ##[group]Run actions/upload-artifact@v7
+2026-10-11T14:41:00.1928417Z with:
+2026-10-11T14:41:00.1928670Z   name: projection-policy-diagnosis-38148048115-1
+2026-10-11T14:41:00.1929053Z   path: /home/runner/work/_temp/projection-policy-diagnosis
+2026-10-11T14:41:00.1929390Z   if-no-files-found: error
+2026-10-11T14:41:00.1929637Z   compression-level: 6
+2026-10-11T14:41:00.1929853Z   overwrite: false
+2026-10-11T14:41:00.1930066Z   include-hidden-files: false
+2026-10-11T14:41:00.1930297Z   archive: true
+2026-10-11T14:41:00.1930492Z env:
+2026-10-11T14:41:00.1930675Z   RUST_TEST_THREADS: 1
+2026-10-11T14:41:00.1930889Z   SCCACHE_GHA_ENABLED: true
+2026-10-11T14:41:00.1931115Z   RUSTC_WRAPPER: sccache
+2026-10-11T14:41:00.1931349Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-11T14:41:00.1931624Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-11T14:41:00.1931889Z   CARGO_HOME: /home/runner/.cargo
+2026-10-11T14:41:00.1932156Z   CARGO_INCREMENTAL: 0
+2026-10-11T14:41:00.1932415Z   CARGO_TERM_COLOR: always
+2026-10-11T14:41:00.1932722Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-11T14:41:00.1933053Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-11T14:41:00.1933451Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-11T14:41:00.1991356Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-11T14:41:00.1991626Z ##[endgroup]
+2026-10-11T14:41:00.3436396Z With the provided path, there will be 2 files uploaded
+2026-10-11T14:41:00.3437246Z Artifact name is valid!
+2026-10-11T14:41:00.3437623Z Root directory input is valid!
+2026-10-11T14:41:00.6906531Z Uploading artifact: projection-policy-diagnosis-38148048115-1.zip
+2026-10-11T14:41:00.6953597Z Beginning upload of artifact content to blob storage
+2026-10-11T14:41:00.9506596Z Uploaded bytes 7705
+2026-10-11T14:41:01.0126028Z Finished uploading artifact content to blob storage!
+2026-10-11T14:41:01.0127141Z SHA256 digest of uploaded artifact is 824e9a86830793987a94ce2f80cf10bae1a146f8c730fdfd70c02a0d704690e9
+2026-10-11T14:41:01.0128176Z Finalizing artifact upload
+2026-10-11T14:41:01.3925393Z Artifact projection-policy-diagnosis-38148048115-1 successfully finalized. Artifact ID 11704649737
+2026-10-11T14:41:01.3926391Z Artifact projection-policy-diagnosis-38148048115-1 has been successfully uploaded! Final size is 7705 bytes. Artifact ID is 11704649737
+2026-10-11T14:41:01.3929307Z Artifact download URL: https://github.com/Vadale/R-ebirth/actions/runs/38148048115/artifacts/11704649737
+2026-10-11T14:41:01.4097162Z Post job cleanup.
+2026-10-11T14:41:01.4858684Z ##[group]Get human-readable stats
+2026-10-11T14:41:01.4876114Z [command]/opt/hostedtoolcache/sccache/0.18.0/x64/sccache --show-stats
+2026-10-11T14:41:01.4937600Z Compile requests                     681
+2026-10-11T14:41:01.4953414Z Compile requests executed            624
+2026-10-11T14:41:01.4965546Z Cache hits                           607
+2026-10-11T14:41:01.4966365Z Cache hits (C/C++)                   532
+2026-10-11T14:41:01.4966995Z Cache hits (Rust)                     75
+2026-10-11T14:41:01.4967645Z Cache misses                          16
+2026-10-11T14:41:01.4968245Z Cache misses (C/C++)                  16
+2026-10-11T14:41:01.4968900Z Cache hits rate                    97.43 %
+2026-10-11T14:41:01.4969579Z Cache hits rate (C/C++)            97.08 %
+2026-10-11T14:41:01.4970261Z Cache hits rate (Rust)            100.00 %
+2026-10-11T14:41:01.4970827Z Cache timeouts                         0
+2026-10-11T14:41:01.4971439Z Cache read errors                      0
+2026-10-11T14:41:01.4971969Z Forced recaches                        0
+2026-10-11T14:41:01.4972554Z Cache write errors                     0
+2026-10-11T14:41:01.4973143Z Cache errors                           0
+2026-10-11T14:41:01.4973718Z Compilations                          16
+2026-10-11T14:41:01.4974325Z Compilation failures                   1
+2026-10-11T14:41:01.4974945Z Non-cacheable compilations             0
+2026-10-11T14:41:01.4975708Z Non-cacheable calls                   55
+2026-10-11T14:41:01.4976605Z Non-compilation calls                  2
+2026-10-11T14:41:01.4977181Z Unsupported compiler calls             0
+2026-10-11T14:41:01.4977756Z Average cache write                0.295 s
+2026-10-11T14:41:01.4978319Z Average compiler                   3.167 s
+2026-10-11T14:41:01.4978913Z Average cache read hit             0.164 s
+2026-10-11T14:41:01.4979503Z Failed distributed compilations        0
+2026-10-11T14:41:01.4979935Z 
+2026-10-11T14:41:01.4980183Z Non-cacheable reasons:
+2026-10-11T14:41:01.4980635Z crate-type                            29
+2026-10-11T14:41:01.4981164Z multiple input files                  17
+2026-10-11T14:41:01.4981710Z -                                      4
+2026-10-11T14:41:01.4982351Z missing input                          3
+2026-10-11T14:41:01.5006367Z missing output_dir                     2
+2026-10-11T14:41:01.5006725Z 
+2026-10-11T14:41:01.5007420Z Cache location                  ghac, name: fe6676c985fe452e4ec4e9acf9d8cae5f56b7fee7caa734482bc6e07b9a2ec16, prefix: /sccache/
+2026-10-11T14:41:01.5008459Z Base directories                (none)
+2026-10-11T14:41:01.5008959Z Version (client)                0.18.0
+2026-10-11T14:41:01.5009862Z ##[endgroup]
+2026-10-11T14:41:01.5010482Z ##[group]Get JSON stats
+2026-10-11T14:41:01.5011405Z [command]/opt/hostedtoolcache/sccache/0.18.0/x64/sccache --show-stats --stats-format=json
+2026-10-11T14:41:01.5018271Z {"stats":{"compile_requests":681,"requests_unsupported_compiler":0,"requests_not_compile":2,"requests_not_cacheable":55,"requests_executed":624,"cache_errors":{"counts":{},"adv_counts":{}},"cache_hits":{"counts":{"C/C++":532,"Rust":75},"adv_counts":{"c [gcc]":16,"c++ [gcc]":516,"rust":75}},"cache_misses":{"counts":{"C/C++":16},"adv_counts":{"c [gcc]":4,"c++ [gcc]":12}},"cache_timeouts":0,"cache_read_errors":0,"non_cacheable_compilations":0,"forced_recaches":0,"cache_write_errors":0,"cache_writes":16,"cache_write_duration":{"secs":4,"nanos":735991814},"cache_read_hit_duration":{"secs":99,"nanos":695925032},"compilations":16,"compiler_write_duration":{"secs":50,"nanos":681216934},"compile_fails":1,"not_cached":{"-":4,"missing output_dir":2,"crate-type":29,"missing input":3,"multiple input files":17},"dist_compiles":{},"dist_errors":0,"multi_level":null},"cache_location":"ghac, name: fe6676c985fe452e4ec4e9acf9d8cae5f56b7fee7caa734482bc6e07b9a2ec16, prefix: /sccache/","cache_size":null,"max_cache_size":null,"use_preprocessor_cache_mode":false,"version":"0.18.0","basedirs":[]}
+2026-10-11T14:41:01.5026448Z ##[endgroup]
+2026-10-11T14:41:01.5043882Z ##[notice]97% - 607 hits, 16 misses, 0 errors
+2026-10-11T14:41:01.5045074Z 
+2026-10-11T14:41:01.5045459Z Full human-readable stats:
+2026-10-11T14:41:01.5045919Z Compile requests                     681
+2026-10-11T14:41:01.5046524Z Compile requests executed            624
+2026-10-11T14:41:01.5047164Z Cache hits                           607
+2026-10-11T14:41:01.5047631Z Cache hits (C/C++)                   532
+2026-10-11T14:41:01.5048143Z Cache hits (Rust)                     75
+2026-10-11T14:41:01.5048638Z Cache misses                          16
+2026-10-11T14:41:01.5049127Z Cache misses (C/C++)                  16
+2026-10-11T14:41:01.5049606Z Cache hits rate                    97.43 %
+2026-10-11T14:41:01.5050091Z Cache hits rate (C/C++)            97.08 %
+2026-10-11T14:41:01.5050605Z Cache hits rate (Rust)            100.00 %
+2026-10-11T14:41:01.5051096Z Cache timeouts                         0
+2026-10-11T14:41:01.5051571Z Cache read errors                      0
+2026-10-11T14:41:01.5052065Z Forced recaches                        0
+2026-10-11T14:41:01.5052602Z Cache write errors                     0
+2026-10-11T14:41:01.5053104Z Cache errors                           0
+2026-10-11T14:41:01.5053587Z Compilations                          16
+2026-10-11T14:41:01.5054080Z Compilation failures                   1
+2026-10-11T14:41:01.5054603Z Non-cacheable compilations             0
+2026-10-11T14:41:01.5055078Z Non-cacheable calls                   55
+2026-10-11T14:41:01.5055754Z Non-compilation calls                  2
+2026-10-11T14:41:01.5056557Z Unsupported compiler calls             0
+2026-10-11T14:41:01.5057076Z Average cache write                0.295 s
+2026-10-11T14:41:01.5057572Z Average compiler                   3.167 s
+2026-10-11T14:41:01.5058092Z Average cache read hit             0.164 s
+2026-10-11T14:41:01.5058611Z Failed distributed compilations        0
+2026-10-11T14:41:01.5058967Z 
+2026-10-11T14:41:01.5059140Z Non-cacheable reasons:
+2026-10-11T14:41:01.5059543Z crate-type                            29
+2026-10-11T14:41:01.5060024Z multiple input files                  17
+2026-10-11T14:41:01.5060565Z -                                      4
+2026-10-11T14:41:01.5061041Z missing input                          3
+2026-10-11T14:41:01.5061538Z missing output_dir                     2
+2026-10-11T14:41:01.5061859Z 
+2026-10-11T14:41:01.5062534Z Cache location                  ghac, name: fe6676c985fe452e4ec4e9acf9d8cae5f56b7fee7caa734482bc6e07b9a2ec16, prefix: /sccache/
+2026-10-11T14:41:01.5063568Z Base directories                (none)
+2026-10-11T14:41:01.5064079Z Version (client)                0.18.0
+2026-10-11T14:41:01.5064392Z 
+2026-10-11T14:41:01.5158515Z Post job cleanup.
+2026-10-11T14:41:01.6051528Z [command]/usr/bin/git version
+2026-10-11T14:41:01.6091008Z git version 2.55.0
+2026-10-11T14:41:01.6124062Z Temporarily overriding HOME='/home/runner/work/_temp/a698c68e-0655-4438-8655-133e3e786c64' before making global git config changes
+2026-10-11T14:41:01.6125666Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-11T14:41:01.6129825Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/R-ebirth/R-ebirth
+2026-10-11T14:41:01.6159813Z Removing SSH command configuration
+2026-10-11T14:41:01.6167430Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-11T14:41:01.6201783Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-11T14:41:01.6422546Z Removing HTTP extra header
+2026-10-11T14:41:01.6426598Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-11T14:41:01.6457174Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-11T14:41:01.6673667Z Removing includeIf entries pointing to credentials config files
+2026-10-11T14:41:01.6680544Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-11T14:41:01.6714069Z includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path
+2026-10-11T14:41:01.6715506Z includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path
+2026-10-11T14:41:01.6716648Z includeif.gitdir:/github/workspace/.git.path
+2026-10-11T14:41:01.6717619Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-11T14:41:01.6723353Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path
+2026-10-11T14:41:01.6745740Z /home/runner/work/_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:41:01.6756041Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-bd247c9b\-5e64\-46a4\-97f1\-ff63f9c20224\.config
+2026-10-11T14:41:01.6788138Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path
+2026-10-11T14:41:01.6818212Z /home/runner/work/_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:41:01.6827679Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-bd247c9b\-5e64\-46a4\-97f1\-ff63f9c20224\.config
+2026-10-11T14:41:01.6862317Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-11T14:41:01.6887146Z /github/runner_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:41:01.6893715Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-bd247c9b\-5e64\-46a4\-97f1\-ff63f9c20224\.config
+2026-10-11T14:41:01.6925578Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-11T14:41:01.6965612Z /github/runner_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config
+2026-10-11T14:41:01.6970866Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-bd247c9b\-5e64\-46a4\-97f1\-ff63f9c20224\.config
+2026-10-11T14:41:01.7004664Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-11T14:41:01.7232412Z Removing credentials config '/home/runner/work/_temp/git-credentials-bd247c9b-5e64-46a4-97f1-ff63f9c20224.config'
+2026-10-11T14:41:01.7409893Z Cleaning up orphan processes
+2026-10-11T14:41:01.7713520Z Terminate orphan process: pid (2478) (sccache)

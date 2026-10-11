@@ -1,0 +1,33 @@
+{
+  "status": "failed",
+  "head": "7501d6c3ac7532925b2997786c5501f6a740db2a",
+  "run": 38148048115,
+  "job": 114495448074,
+  "native_tests": {
+    "passed": 170,
+    "failed": 2,
+    "ignored": 4
+  },
+  "failure": {
+    "case": "long_prefill",
+    "file": "tests/llm-golden/projection/goldens/forward-activations.csv",
+    "line": 21198,
+    "source_pos": 512,
+    "layer": 2,
+    "component": "residual",
+    "neuron": 13,
+    "actual": -0.02155396342277527,
+    "reference": -0.010776706505566835,
+    "absolute_error": 0.010777256917208433,
+    "unchanged_bound": 0.01
+  },
+  "cause": "unresolved; not the historical final-logit cross-schedule outliers",
+  "manual_model_reruns": 0,
+  "next_change": "retain already-computed long-prefill observations and failing host/build context; no claimed numeric fix",
+  "final_matrix": {
+    "R": 4,
+    "Rust_integrity": 4,
+    "failed": 1
+  },
+  "harness_local_checks": "fmt and clippy -Dwarnings pass; no native tests/models executed locally"
+}

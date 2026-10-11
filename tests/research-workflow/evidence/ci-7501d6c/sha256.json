@@ -1,0 +1,11 @@
+{
+  "artifacts.json": "525f6ca21875f93aee22bcc4d7c1ab35d8704cc0dd85bcea3f9116dd0ede660d",
+  "diagnosis.json": "c616923690e5ea585f25e8936d44a27ca2077424ff2c0fa7067ffd44f7da97cb",
+  "diagnostic-check.json": "b5fa55d3d5c617f4cd6a3de4bede9bbf61ecc098c80cde7c265b3f5153cbae33",
+  "diagnostic-clippy.log": "0b0d2dd2db85e9dab48376968c491c15a163b80047479e52d0dc63185b0fd745",
+  "policy-diagnosis/native.log": "5cbd70ceeae0a40a27b0b4f73aaab03026d0ba86a18012f71681dff000ec3893",
+  "policy-diagnosis/source-sha.txt": "7d81b9350fd20fb03afefa2636ecd20e47f77d0704b2e8cbc86aabe4a8893f38",
+  "r-run.json": "a7d0e86b237361e8ba8a2ebba43ff4be01c945964e13518a264021dfddabd895",
+  "rust-job.log": "3f8a229abaa99b78eedb461241d32fd06a6da549d0e0b1deb771dcd5fb5b29dd",
+  "rust-run.json": "ff78cca139ca967e9b66b51bb94217a61445e1656ef3e6a49e2b64ca0cd3c2de"
+}

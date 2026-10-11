@@ -83,3 +83,34 @@ closed that finding by inspecting only the affected lines. Original review and
 closure are retained with the evidence. The executed script/output bytes did
 not change and no inference was replayed. The final PR matrix is pending;
 Phase 7 is not yet declared integrated.
+
+
+## First PR64 CI: inherited long-prefill numerical failure
+
+The first candidate `7501d6c` failed the Rust engine job in run `38148048115`:
+170 tests passed, two failed and four explicit diagnostic/feasibility tests were
+ignored. All four R jobs and the other four Rust/integrity jobs passed (8/9);
+the matrix as a whole remains failed. Both failures reach the same frozen `long_prefill` activation at source
+position 512, layer 2, residual neuron 13: native `-0.02155396342277527` versus
+reference `-0.010776706505566835`, absolute error `0.010777256917208433` above the
+unchanged `0.01` bound. This is an internal activation, not the previously
+recorded final-logit cross-schedule outliers. Its cause is unresolved. The
+Phase7 candidate did not change the native runtime, this test or the references.
+
+[Original failure, job metadata and automatic short-policy diagnostic](../tests/research-workflow/evidence/ci-7501d6c/)
+are retained. The two short pruning-case receipts passed their independent
+comparisons before the long case failed. The automatic short-policy diagnostic
+cannot explain the missing long-prompt activation data. Release/no-spill stages
+were skipped after failure and are not accepted executions in this run.
+
+The affected test now emits the long case's already-computed logits, audit rows
+and row witnesses before scalar checks can abort. Removing those output blocks
+reconstructs the previous test byte-for-byte: no new inference, assertion,
+schedule, reference or tolerance change. On failure, CI retains CPU information
+and actual CMake caches. It no longer reruns the unrelated short-policy model
+diagnostic automatically after any engine-test failure. This is a bounded data
+retention change, **not a numerical fix or completed acceptance**. New retained
+observations must establish the cause before a correction can be claimed.
+
+The diagnostic-only source passes local format and clippy with warnings denied;
+no local native test, model or reference producer was executed for this change.

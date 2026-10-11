@@ -10,7 +10,8 @@ integration remains accepted; no generalized quality or safety claim follows.
 
 Phase 7's [maintainer walkthrough](phase7-implementation.md) has executed and
 its saved outputs/graphics have been inspected. Integrated review and its one documentation correction are closed; final PR
-CI remains pending. D-047 defers independent user feedback until after publication.
+CI found an inherited long-prefill numerical failure; the bounded diagnosis is
+recorded in the Phase7 report. D-047 defers independent user feedback until after publication.
 The [support matrix](supported-workflow.md) is the current user-facing summary.
 
 The following historical ledger was written on 2026-10-02 and subsequently
