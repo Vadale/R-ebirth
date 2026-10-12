@@ -1,0 +1,7 @@
+"prompt_id","condition","unsupported_city_assertion","acknowledges_insufficient_evidence","internally_consistent","completed_without_token_cap","task_correct","annotation"
+"direct","original",TRUE,FALSE,TRUE,TRUE,FALSE,"Manual descriptive review of the full text; no city is inferable from either prompt."
+"explicit","original",TRUE,TRUE,FALSE,FALSE,FALSE,"Manual descriptive review of the full text; no city is inferable from either prompt."
+"direct","zero",TRUE,FALSE,TRUE,TRUE,FALSE,"Manual descriptive review of the full text; no city is inferable from either prompt."
+"explicit","zero",TRUE,TRUE,FALSE,FALSE,FALSE,"Manual descriptive review of the full text; no city is inferable from either prompt."
+"direct","addition",TRUE,FALSE,TRUE,FALSE,FALSE,"Manual descriptive review of the full text; no city is inferable from either prompt."
+"explicit","addition",TRUE,FALSE,TRUE,TRUE,FALSE,"Manual descriptive review of the full text; no city is inferable from either prompt."

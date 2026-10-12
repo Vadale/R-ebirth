@@ -1,0 +1,39 @@
+{
+  "assessment": "One agent-led first-use exercise; not external-human usability validation",
+  "date": "2026-10-12",
+  "package_version": "0.4.0",
+  "package_remote_sha": "3bd5da7399dc163d8c9e4a4e1865a875e7186e71",
+  "dll_sha256": "98247f18d59ba46c710f66f3ddbe94e7b390d0e040b5ef4c3a2f34ea21745227",
+  "model_sha256": "ca59ca7f13d0e15a8cfa77bd17e65d24f6844b554a7b6c12e07a5f89ff76844e",
+  "host_R": "4.5.1",
+  "binary_R": "4.5.3",
+  "backend_requested": "cpu",
+  "model_loads": 1,
+  "construction_traces": 4,
+  "generations": 6,
+  "derived_handles": 2,
+  "expected_refused_trace_calls": 1,
+  "unexpected_errors": 0,
+  "assistance_requests": 0,
+  "retuning": false,
+  "inference_replay": false,
+  "warning": "Package built under R 4.5.3; retained on host R 4.5.1",
+  "verification": "Parent reread saved text/events/RDS, 2 zero controls, 1792 plotted differences, 4x896 trace rows and refusal; no model replay.",
+  "portable_script": "../run.R; parsed/configuration-checked, not executed again",
+  "source_hashes": {
+    "plan.txt": "90c444520712f8e5f6fa8a176c54e1e5809c885f5c7dd0e3753d8d17621bd574",
+    "recipe.R": "ec62af84afed196eb48710ed16e69e47b9707aba73d3ad18cc588c6d27c26784",
+    "portable-recipe.R": "91d2cd43217e4c9ef2fb424f6745f251d9d57d48572e0493f439a161493add8d",
+    "run-01.log": "7b744c83300a937ef80742ad0979a925bcf52d4b568e7559fd69ccbf1d2eec75",
+    "REPORT.txt": "b099b0f95922396c916c38f03c0013bc2ef44bf4ef4512c55461469fdef65922"
+  },
+  "initial_doc_hashes": {
+    "README.md": "abda9ca9efe07efcefeea411811b5bb1354040837cb605000f01bb6295ef066b",
+    "contrast-directions.qmd": "b0654f0f1dbc3e2ebe0aa391dc6670b51eb1c2a517b19cf21d74525fbafbed17",
+    "docs/getting-started.md": "fe1236569edb8d52b88eaea53fa80072d69d9fe043f9f09cd7d355cd47fa8faf",
+    "docs/supported-workflow.md": "db8956e287a48f7d753f083ec2e6e9e9744a29441b1ce6fd1248c20e184a6b13",
+    "examples/research-workflow/README.md": "5d02628ec00229ec73ea068a848f755660f462d44b07e6a993333efd76913f40",
+    "examples/research-workflow/run.R": "829c7f5d4880449c83075937199360e1782c7a9c130d791e35744d98e1cef0f4",
+    "model-interventions.qmd": "66e6ebf50e9a9003993cc4ce585df1172c614f46136726267960a451c095dc83"
+  }
+}

@@ -1,6 +1,6 @@
 # Supported research workflow
 
-Updated 2026-10-11. Start with the [installation guide](getting-started.md), then
+Updated 2026-10-12. Start with the [installation guide](getting-started.md), then
 the [complete walkthrough](../examples/research-workflow/README.md). It uses
 existing public APIs and exports ordinary R objects, CSV and base-R graphics.
 The integrated research APIs are included in 0.4.0. Check installed functions,
@@ -17,6 +17,11 @@ combination accepted by the underlying engine.
 | Update during generation | Bounded `on_state` replies update additive coefficients | Projection is static. Additive revisions in a timeline do not represent static projections. Callbacks run on R's thread and must remain short. |
 | Evaluate | Fixed prompts, controls, held-out data and explicit metrics using ordinary R | Shorter text, decodable labels and changed activations do not prove correctness, causal use, general efficacy or safety. |
 | Close/cancel | `close()` and cooperative `llm_cancel()`; GC as a fallback | Close derived handles explicitly. A watchdog requests cancellation; it is not an operating-system memory/time guarantee. |
+
+For choosing among these functions, see the [research API guide](research-guide.md).
+Ordinary prompt tracing and embeddings are refused on intervened handles;
+observe their generation with `on_state`. This includes projected handles, which
+also refuse images. `llm_compare()` takes live observations, not arbitrary traces.
 
 The projection operator is `x - coef * u * dot(u, x)` for the stored unit
 direction, at the recorded site. Residual addition uses a different site and
@@ -58,4 +63,7 @@ The [maintenance inventory](phase7-maintenance.md) identifies retained gates and
 remaining work. Phase 7's current acceptance is a maintainer functional run
 (D-047). [Independent usability feedback](phase7-user-feedback.md) is deferred
 until after publication; neither acceptance nor adoption by external users is
-claimed.
+claimed. A separate [agent first-use assessment](research-first-use.md) now
+records a fresh question using the released package, with practical difficulties
+and model failures retained. It does not replace external-human feedback or test
+all capabilities in this matrix.

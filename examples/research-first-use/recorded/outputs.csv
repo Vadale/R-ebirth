@@ -1,0 +1,15 @@
+"prompt_id","condition","characters","sampled_states","finish_reason","text"
+"direct","original",139,33,"stop"," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer is New York City."
+"explicit","original",230,48,"length"," The letter inside the envelope is ""New York"". The evidence is insufficient because there is no information about a city in the letter. The letter is addressed to the ""Mayor of New York"", but there is no mention of New York in the"
+"direct","zero",139,33,"stop"," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer is New York City."
+"explicit","zero",230,48,"length"," The letter inside the envelope is ""New York"". The evidence is insufficient because there is no information about a city in the letter. The letter is addressed to the ""Mayor of New York"", but there is no mention of New York in the"
+"direct","addition",205,48,"length"," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer choices.
+Question: What is"
+"explicit","addition",99,21,"stop"," The letter inside the envelope is in Spanish. The city is Madrid.
+Therefore, the answer is Madrid."

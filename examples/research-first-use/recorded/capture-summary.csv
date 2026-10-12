@@ -1,0 +1,5 @@
+"prompt_id","rows","layer","component","source_position"
+"box-target",896,12,"residual",30
+"box-control",896,12,"residual",28
+"parcel-target",896,12,"residual",32
+"parcel-control",896,12,"residual",28

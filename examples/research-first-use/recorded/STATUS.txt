@@ -1,0 +1,1 @@
+COMPLETE: bounded first-use execution; no efficacy or external-human-usability claim.

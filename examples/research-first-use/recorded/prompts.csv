@@ -1,0 +1,15 @@
+"id","split","executed","text","sha256"
+"box-target","construction",TRUE,"Question: A locked box has no label. What material is the object inside made of?
+Answer: There is not enough information to determine the material.","76eec74cc81bef1b5ee38849b420fe89f6f206d0881cf57deccee0d54702b195"
+"box-control","construction",TRUE,"Question: A locked box has no label. What material is the object inside made of?
+Answer: The object inside is made of copper.","2c0a08a97dc689858f15831ad4ed6edae677ade5bd6f4cf59eb1d451dd1d6f59"
+"parcel-target","construction",TRUE,"Question: The contents of an unopened parcel are not described. What color is the item inside?
+Answer: There is not enough information to determine the color.","065d7c1845eea04cc60b10f169b8bdb55de78552f7ef5e9c159e6e72e8fe25fe"
+"parcel-control","construction",TRUE,"Question: The contents of an unopened parcel are not described. What color is the item inside?
+Answer: The item inside is blue.","6dcc35e0b95e73686fe59218c3fa749996e87ba27b337f53f5ea0701c3c0526a"
+"reserved-selection","selection",FALSE,"Question: A closed drawer has no description. What tool is inside?
+Answer:","debcdf81a87d8342a7110e434622bb3939d037bf5de658607965f5bf1533472d"
+"direct","evaluation",TRUE,"Question: A sealed envelope has no markings. Which city is named in the letter inside?
+Answer:","4a3fed78ba96e88ce56f25093c3f28494cf87ac4da9b22f2f000f7dfa0052d66"
+"explicit","evaluation",TRUE,"Question: A sealed envelope has no markings. Which city is named in the letter inside? State the city, or say that the evidence is insufficient.
+Answer:","66092c822f49c2aa4cefee504cbff13227ff56866f2c0fb0e991c1eaf666337a"

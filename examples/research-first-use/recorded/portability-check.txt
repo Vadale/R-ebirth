@@ -1,0 +1,4 @@
+PASS: recipes parse; exact executed recipe preserved byte-for-byte.
+PASS: prompt/settings objects identical; workflow body identical after relocating two configuration assignments.
+PASS: saved six outputs, bounded counts, finish reasons, zero controls and streamed text equality.
+No package/model load, inference, installation, network access or replay.

@@ -1,3 +1,13 @@
+# Development documentation
+
+* The README now leads with a complete first call and the model-research workflow.
+  A research API guide explains prompt tracing, live observations, comparisons,
+  fixed interventions and the meaning of plotted results.
+* A separate agent's first-use study retains six actual responses, zero controls,
+  activation comparisons and a portable recipe. It records documentation friction
+  and poor model answers without claiming external-human usability or improved
+  task quality. No runtime behavior or public API changes.
+
 # relm 0.4.0
 
 * The batch and service examples accept 0.4.0 as well as 0.3.0 while preserving

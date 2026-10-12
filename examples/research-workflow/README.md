@@ -1,15 +1,16 @@
 # A small, inspectable model experiment
 
-This is the supported Phase 7 onboarding route. It joins the existing public APIs
+This is the supported relm 0.4.0 research walkthrough. It joins the public APIs
 without a new framework: **load → observe → compare → intervene → evaluate → export**.
 It is a usability exercise, not a benchmark or evidence that steering improves answers.
 
 ## Before starting
 
-1. Use a Phase 6 build of relm from this repository's `main`, with R >= 4.5.
-   Follow the [installation guide](../../docs/getting-started.md). The 0.3.0 tag
-   predates these APIs; a version number alone cannot identify every development
-   build. The script checks actual functions/arguments before loading the model.
+1. Install relm **0.4.0 or later**, with R >= 4.5, following the
+   [installation guide](../../docs/getting-started.md). Restart R after upgrading.
+   Clone or download this repository as well: `examples/research-workflow/run.R`
+   is a repository example, not a file installed by `install.packages("relm")`.
+   The script checks actual functions/arguments before loading the model.
 2. Install the existing optional `later` (>= 1.4.8) and `promises` (>= 1.5.0)
    packages in the same R session's library search path. Restart R after an upgrade.
 3. Have the cached `qwen2.5-0.5b-instruct-q8_0` model, approximately 675 MB.
@@ -19,8 +20,13 @@ It is a usability exercise, not a benchmark or evidence that steering improves a
    If you need the file, choose explicitly to run
    `model_path <- relm::llm_download("qwen2.5-0.5b-instruct-q8_0")` instead.
    Keep that returned path: the downloader's cache is not necessarily `~/models`.
-4. Record the engine revision of your installed build. The phase-6 source uses
-   `b10828-patched-D039-D040`; use that label only for a build from that source.
+4. Record the engine revision of your installed build. The released 0.4.0 engine
+   uses the research label `b10828-patched-D039-D040`; the maintenance diagnostic-
+   directive patch does not change its numerical implementation. Use that label
+   only for the corresponding engine. Record
+   `packageDescription("relm")$RemoteSha` separately for the package source
+   revision (it may be absent in a local source installation). The script records
+   the installed DLL path/checksum, but does not save `RemoteSha` automatically.
    Caller-supplied provenance is not authentication of the installed binary.
 
 Run from the repository root in a fresh R session:
@@ -33,6 +39,16 @@ run_research_workflow(
   engine_revision = "b10828-patched-D039-D040"
 )
 ```
+
+The repository root is the directory containing `README.md`, `rebirth/` and
+`examples/`; set R's working directory there before `source()`. Use a new output
+directory for a new experiment. If you only want to inspect existing results,
+read the saved files instead of rerunning the model.
+
+For the meaning of a trace, direction, live state and comparison, see
+[Choosing the right research API](../../docs/research-guide.md). The
+[independent agent first-use report](../../docs/research-first-use.md) records a
+separate real attempt and its remaining friction; it is not human user research.
 
 The script loads one CPU model, captures four construction prompts at layer 12
 and generates eight short outputs (four conditions on two separate prompts,

@@ -1623,3 +1623,23 @@ and pre-patch identities unchanged. Newly exposed compiler warnings must be
 inspected, not suppressed. This is neither a vendor version bump nor a waiver of
 the release's zero-warning check. Preserve the original diagnostics and acceptance
 scopes; a new affected build is required before identifying new release assets.
+
+## D-049 — Public onboarding and separate-agent first-use assessment
+
+- **Date/status:** 2026-10-12, APPROVED by the founder before starting the next
+  platform phase. Refresh documentation and the GitHub README, create a new
+  cover, and use a separate agent to attempt a real research workflow and report
+  missing capabilities or confusing commands.
+- **Scope:** one bounded fresh public-API study on the already installed 0.4.0
+  release; no old holdout reuse, tuning, model download, native rebuild or broad
+  repeated acceptance. Publish actual outputs and clearly distinguish the
+  conceptual cover from measured figures. Correct the entry-point docs and
+  release status, keeping source-specific historical evidence.
+- **Independence:** the evaluator begins with minimal conversation context and
+  public documentation/help, with installation paths and resource bounds supplied
+  by the maintainer. This reduces implementation familiarity; it is still an
+  AI-agent assessment, not external-human usability validation under D-047.
+- **Delivery:** one coherent documentation/example/evidence PR, relevant local
+  example/link/render checks and the existing final CI route. No runtime, API,
+  dependency, vendor, numeric-bound, Phase8/9 or new-release change is implied.
+  Remaining API ergonomics are reported rather than hidden by new wrappers.
