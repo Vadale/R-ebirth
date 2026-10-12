@@ -1,0 +1,167 @@
+{
+  "scope": "Code-rendered replay of existing D049 measurements; not an application screencast or new inference.",
+  "recorded_source_commit": "fd409cc03948d5f01a6162b4e09db0389ea13ac9",
+  "integrated_source_commit": "3c530b98196c0152204942ddd25b814e90a2f6c0",
+  "package_source_commit": "3bd5da7399dc163d8c9e4a4e1865a875e7186e71",
+  "new_model_loads": 0,
+  "new_inference_calls": 0,
+  "inputs": {
+    "examples/research-first-use/recorded/all-results.rds": "74ba1f48d40cc3e6dfbf8d19495c270b596a77eacf61d806935da62723370b09",
+    "examples/research-first-use/recorded/direct-comparison.rds": "4bfb28149d144e5ea17d71758b81e80831df442c2ecfcf76b19d28d0fa9fb5ba",
+    "examples/research-first-use/recorded/provenance.json": "b6685a9b9e85acb9ced5322f57c8893d8d1b92615b88123b96db0444bf831936",
+    "examples/research-first-use/recorded/executed-recipe.R": "ec62af84afed196eb48710ed16e69e47b9707aba73d3ad18cc588c6d27c26784"
+  },
+  "renderer": {
+    "path": "examples/animated-research/render.R",
+    "sha256": "1eb91cad8ee1621304bf68b8b253aa43b265188b7dfb5b48e5e280f1db707a19",
+    "R": "4.5.1",
+    "ffmpeg": "ffmpeg version 8.1.2 Copyright (c) 2000-2026 the FFmpeg developers"
+  },
+  "presentation": {
+    "frame_rate": 6,
+    "interpolated_measurements": false,
+    "activation_coordinates": 896,
+    "stream_rows_including_empty_start": 83,
+    "stream_token_positions": {
+      "original": 33,
+      "addition": 48
+    },
+    "first_divergent_sampled_token": 4,
+    "time_axis": "Equal presentation time per token; recorded elapsed times are not used for playback.",
+    "axis_limits": {
+      "activation": [
+        -8,
+        8
+      ],
+      "difference": [
+        -0.15,
+        0.15
+      ],
+      "model_probability": [
+        0,
+        0.1
+      ],
+      "characters": [
+        0,
+        220
+      ]
+    }
+  },
+  "media": {
+    "activation-intervention.gif": {
+      "bytes": 123922,
+      "sha256": "6c07a69fe708d04948a762a922f326c8ca5d180b7ac63287b8287523c075b7a7",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "gif",
+            "width": 1200,
+            "height": 760,
+            "r_frame_rate": "6/1",
+            "nb_frames": "80",
+            "nb_read_frames": "80"
+          }
+        ],
+        "format": {
+          "duration": "13.340000"
+        }
+      }
+    },
+    "activation-intervention.mp4": {
+      "bytes": 133982,
+      "sha256": "1f3c8f4ca2b0195b9ca29d649a81eec478ae3cbaae3653c329a5ef67d21b74a2",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1200,
+            "height": 760,
+            "r_frame_rate": "6/1",
+            "nb_frames": "80",
+            "nb_read_frames": "80",
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "duration": "13.333333"
+        }
+      }
+    },
+    "activation-intervention.png": {
+      "bytes": 156417,
+      "sha256": "c100fa05a21611ed16c718c2e64d96754b2dfd7e73c1084ef7bf55223e4fb159"
+    },
+    "token-stream.gif": {
+      "bytes": 119766,
+      "sha256": "176bd7f43bc92d2600fc659dd4153c9eeca87caaf280fcd429a7b250be15f0ea",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "gif",
+            "width": 1200,
+            "height": 760,
+            "r_frame_rate": "6/1",
+            "nb_frames": "78",
+            "nb_read_frames": "78"
+          }
+        ],
+        "format": {
+          "duration": "13.000000"
+        }
+      }
+    },
+    "token-stream.mp4": {
+      "bytes": 118857,
+      "sha256": "6bef6a3e8c67f66b7c8778b78415388848bc0a92e30b8a037a8296a1605cfb12",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "h264",
+            "width": 1200,
+            "height": 760,
+            "r_frame_rate": "6/1",
+            "nb_frames": "78",
+            "nb_read_frames": "78",
+            "side_data_list": [
+              {}
+            ]
+          }
+        ],
+        "format": {
+          "duration": "13.000000"
+        }
+      }
+    },
+    "token-stream.png": {
+      "bytes": 133128,
+      "sha256": "6146cb4e8bf5f00f44568847f93e01e1c29c8c3e3e7faa0691202919cc8be983"
+    },
+    "activation-frames.csv": {
+      "bytes": 733,
+      "sha256": "2f807e068324ec492b9abb1c19c7d1b2b09eaa16181e0d6b06d4ddab0cdb188e"
+    },
+    "stream-frames.csv": {
+      "bytes": 469,
+      "sha256": "c6544d8609aee938d9586f2e1637953447d86f2bf0538fc2ce91618ba9fee3f4"
+    },
+    "activation-values.csv": {
+      "bytes": 71180,
+      "sha256": "b26bdda74e5060c77d67b68b57dd97239e67825b768a600bdd3b2e9834752de1"
+    },
+    "stream-values.csv": {
+      "bytes": 9170,
+      "sha256": "1384e5f0c9d3a1dc51812d0954c2e79b3dc8c5657fc24c9fd53ecb8ef8a0901c"
+    }
+  },
+  "verification": "R input/CSV arithmetic, full-text/count and exact zero checks passed. Both GIFs and MP4s decoded by ffprobe with the expected frame counts and resolution. Representative start/control/intervention/stream frames were visually inspected. Source study limits remain unchanged."
+}

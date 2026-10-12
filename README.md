@@ -34,6 +34,18 @@ selected values during generation so you can study what changes in the output.
 These tools support experiments; a changed activation or shorter answer does
 not establish an improvement.
 
+## See an intervention, coordinate by coordinate
+
+![Animated R plots reveal 896 recorded layer-12 activations, an unchanged zero control, and the measured effect of residual addition alongside next-token probabilities.](docs/media/research/activation-intervention.gif)
+
+*Real values from a saved relm experiment: capture a state, check the zero control,
+then compare an intervention at the same prompt and prefix. The animation reveals
+recorded coordinates; it does not interpolate new measurements.*
+
+[Play the video](docs/media/research/activation-intervention.mp4) ·
+[Static figure](docs/media/research/activation-intervention.png) ·
+[How it works and the rendering code](docs/animated-research.md)
+
 ## Install and try it
 
 [r-universe](https://vadale.r-universe.dev/relm) distributes the package. Prebuilt
@@ -98,14 +110,19 @@ on supported Apple silicon builds. See [installation and troubleshooting](docs/g
   and [local-service](examples/funding-service/README.md) templates preserve jobs
   and results. Valid JSON does not guarantee correct extracted facts.
 
-## A real experiment, with the outputs left visible
+## Watch generation and keep the evidence
 
-![Measured original, residual-addition and difference values for 896 neurons in the first live state.](examples/research-first-use/recorded/direct-comparison.png)
+![Animated token-stream replay shows recorded text and character counts for the original model and residual addition. The runs share their first three tokens, then diverge. The zero control exactly reproduces the original.](docs/media/research/token-stream.gif)
 
-*Actual `llm_compare()` output from the [first-use study](docs/research-first-use.md),
-not a mockup. The intervention changed layer-12 activations and generated text.
-It did not make the small model stop inventing missing facts. The report retains
-every response, controls, settings and exported values.*
+*Actual `on_token` events from the [first-use study](docs/research-first-use.md),
+replayed at an equal interval per token. This is not a speed comparison. The
+intervention changed the response; both responses still invented missing facts.
+relm makes that difference inspectable, so an experiment can test whether a change
+helps rather than assume it does.*
+
+[Play the video](docs/media/research/token-stream.mp4) ·
+[Static figure](docs/media/research/token-stream.png) ·
+[Data, code and interpretation](docs/animated-research.md)
 
 ## What works today—and what needs care
 

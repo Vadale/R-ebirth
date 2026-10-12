@@ -1,0 +1,214 @@
+"condition","step","characters","text"
+"original",0,0,""
+"original",1,4," New"
+"original",2,9," New York"
+"original",3,14," New York City"
+"original",4,15," New York City."
+"original",5,19," New York City. The"
+"original",6,26," New York City. The letter"
+"original",7,33," New York City. The letter inside"
+"original",8,37," New York City. The letter inside the"
+"original",9,46," New York City. The letter inside the envelope"
+"original",10,49," New York City. The letter inside the envelope is"
+"original",11,51," New York City. The letter inside the envelope is """
+"original",12,53," New York City. The letter inside the envelope is ""NY"
+"original",13,55," New York City. The letter inside the envelope is ""NY"","
+"original",14,61," New York City. The letter inside the envelope is ""NY"", which"
+"original",15,64," New York City. The letter inside the envelope is ""NY"", which is"
+"original",16,68," New York City. The letter inside the envelope is ""NY"", which is the"
+"original",17,73," New York City. The letter inside the envelope is ""NY"", which is the name"
+"original",18,76," New York City. The letter inside the envelope is ""NY"", which is the name of"
+"original",19,80," New York City. The letter inside the envelope is ""NY"", which is the name of the"
+"original",20,85," New York City. The letter inside the envelope is ""NY"", which is the name of the city"
+"original",21,88," New York City. The letter inside the envelope is ""NY"", which is the name of the city of"
+"original",22,92," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New"
+"original",23,97," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York"
+"original",24,99," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+"
+"original",25,109," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore"
+"original",26,110," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore,"
+"original",27,114," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the"
+"original",28,121," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer"
+"original",29,124," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer is"
+"original",30,128," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer is New"
+"original",31,133," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer is New York"
+"original",32,138," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer is New York City"
+"original",33,139," New York City. The letter inside the envelope is ""NY"", which is the name of the city of New York.
+ Therefore, the answer is New York City."
+"addition",0,0,""
+"addition",1,4," New"
+"addition",2,9," New York"
+"addition",3,14," New York City"
+"addition",4,15," New York City
+"
+"addition",5,19," New York City
+This"
+"addition",6,23," New York City
+This can"
+"addition",7,26," New York City
+This can be"
+"addition",8,32," New York City
+This can be found"
+"addition",9,35," New York City
+This can be found in"
+"addition",10,39," New York City
+This can be found in the"
+"addition",11,46," New York City
+This can be found in the answer"
+"addition",12,54," New York City
+This can be found in the answer choices"
+"addition",13,56," New York City
+This can be found in the answer choices.
+"
+"addition",14,64," New York City
+This can be found in the answer choices.
+Question"
+"addition",15,65," New York City
+This can be found in the answer choices.
+Question:"
+"addition",16,70," New York City
+This can be found in the answer choices.
+Question: What"
+"addition",17,73," New York City
+This can be found in the answer choices.
+Question: What is"
+"addition",18,77," New York City
+This can be found in the answer choices.
+Question: What is the"
+"addition",19,82," New York City
+This can be found in the answer choices.
+Question: What is the name"
+"addition",20,85," New York City
+This can be found in the answer choices.
+Question: What is the name of"
+"addition",21,89," New York City
+This can be found in the answer choices.
+Question: What is the name of the"
+"addition",22,94," New York City
+This can be found in the answer choices.
+Question: What is the name of the city"
+"addition",23,99," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that"
+"addition",24,102," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is"
+"addition",25,108," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named"
+"addition",26,114," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after"
+"addition",27,116," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a"
+"addition",28,123," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person"
+"addition",29,125," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+"
+"addition",30,131," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer"
+"addition",31,132," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer:"
+"addition",32,136," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New"
+"addition",33,141," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York"
+"addition",34,146," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City"
+"addition",35,147," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+"
+"addition",36,151," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This"
+"addition",37,155," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can"
+"addition",38,158," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be"
+"addition",39,164," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found"
+"addition",40,167," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in"
+"addition",41,171," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the"
+"addition",42,178," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer"
+"addition",43,186," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer choices"
+"addition",44,188," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer choices.
+"
+"addition",45,196," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer choices.
+Question"
+"addition",46,197," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer choices.
+Question:"
+"addition",47,202," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer choices.
+Question: What"
+"addition",48,205," New York City
+This can be found in the answer choices.
+Question: What is the name of the city that is named after a person?
+Answer: New York City
+This can be found in the answer choices.
+Question: What is"
