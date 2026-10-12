@@ -217,8 +217,6 @@ static void llama_token_data_array_partial_sort_inplace(llama_token_data_array *
 static int llama_sample_dist(llama_token_data_array * cur_p, std::mt19937 & rng) {
     // iterator for the probabilities
 #ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #endif
 
     struct probs_iterator {
@@ -238,7 +236,6 @@ static int llama_sample_dist(llama_token_data_array * cur_p, std::mt19937 & rng)
     };
 
 #ifdef __GNUC__
-    #pragma GCC diagnostic pop
 #endif
 
     std::discrete_distribution<int> dist(probs_iterator{cur_p->data}, probs_iterator{cur_p->data + cur_p->size});

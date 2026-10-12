@@ -1,0 +1,72 @@
+{
+  "status": "verified_with_disclosed_diagnostics",
+  "source_files": 815,
+  "installed_files": 49,
+  "raw_stage_logs": 5,
+  "tar_files": 813,
+  "repository_byte_equal": 793,
+  "generated_files": [
+    "build/vignette.rds",
+    "inst/doc/anatomy-lab.html",
+    "inst/doc/anatomy-lab.qmd",
+    "inst/doc/anatomy-lab.R",
+    "inst/doc/contrast-directions.html",
+    "inst/doc/contrast-directions.qmd",
+    "inst/doc/contrast-directions.R",
+    "inst/doc/model-interventions.html",
+    "inst/doc/model-interventions.qmd",
+    "inst/doc/model-interventions.R",
+    "inst/doc/token-streaming.html",
+    "inst/doc/token-streaming.qmd",
+    "inst/doc/token-streaming.R",
+    "inst/doc/topics-without-python.html",
+    "inst/doc/topics-without-python.qmd",
+    "inst/doc/topics-without-python.R",
+    "inst/doc/vision.html",
+    "inst/doc/vision.qmd",
+    "inst/doc/vision.R"
+  ],
+  "metadata_changed": [
+    "DESCRIPTION"
+  ],
+  "source_sha256": "e801ba6b478e4aa768f1fd1d947dec15cf42646416f9340b1c2e647e504a47b9",
+  "binary_sha256": "3dd59e5e0d95d04f644519fce3a6416a4c798e9d3f5cbb8088e4ba7c214d4b0c",
+  "dll_sha256": "1bc5f033870e3fbb0917989ba2f79695f12301e0383d5d3b33a8489846ddea78",
+  "binary_files_equal_installed": 49,
+  "package_check": {
+    "errors": 0,
+    "warnings": [
+      "missing checkbashisms tool",
+      "pinned vendor nonportable/diagnostic pragmas"
+    ],
+    "notes": [
+      "new submission/tarball size",
+      "installed tidy too old for HTML validation"
+    ]
+  },
+  "tests": {
+    "passed": 5010,
+    "failed": 0,
+    "test_warnings": 0,
+    "skipped": 130,
+    "skip_scope": "62 omitted native-fixture tests; 62 optional-model tests; 4 repository-only fixtures; 1 network download; 1 CRAN-gated model case"
+  },
+  "additional_diagnostics": [
+    "one duplicate -lc++ linker warning",
+    "external testthat built under R4.5.2 while host is4.5.1",
+    "12 pkgdown examplesIf false model conditions"
+  ],
+  "html_pages": 46,
+  "local_html_references": 1051,
+  "missing_local_references": [],
+  "required_new_pages": [
+    "reference/llm_direction.html",
+    "reference/llm_apply_direction.html",
+    "reference/llm_compare.html",
+    "reference/llm_timeline.html",
+    "reference/plot.llm.html",
+    "articles/contrast-directions.html",
+    "articles/model-interventions.html"
+  ],
+  "limits": "HTML structural/link inspection, not browser interaction. Visual figures and actual RStudio smoke remain separate. No new model execution in verification."
+}

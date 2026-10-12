@@ -1,0 +1,3 @@
+Warning message:
+Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds 
+PASS: six collapsed intervals drawn without warnings; small-fold fits/selection/coefficients exact; larger folds retain AUC; zero model calls.

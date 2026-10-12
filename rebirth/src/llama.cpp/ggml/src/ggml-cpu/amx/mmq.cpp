@@ -1,6 +1,4 @@
 #if defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wpedantic"
-#pragma GCC diagnostic ignored "-Wunused-local-typedefs"
 #endif
 
 #include "amx.h"

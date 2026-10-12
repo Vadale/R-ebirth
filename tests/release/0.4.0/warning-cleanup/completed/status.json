@@ -1,0 +1,110 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 15950,
+  "started_at": 1791795963.3333251,
+  "stages": [
+    {
+      "name": "build-carried-vignettes",
+      "command": [
+        "/usr/local/bin/R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/relm"
+      ],
+      "status": "passed",
+      "started_at": 1791795963.511934,
+      "exit_code": 0,
+      "finished_at": 1791795967.5808818,
+      "log_sha256": "c95e662e1f4fbdbe65e414822ce45462064a6955e6026c697ca0d9eba3d99b22"
+    },
+    {
+      "name": "check",
+      "command": [
+        "/usr/local/bin/R",
+        "CMD",
+        "check",
+        "--as-cran",
+        "--install-args=--build",
+        "--output=/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/check",
+        "/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/relm_0.4.0.tar.gz"
+      ],
+      "status": "passed",
+      "started_at": 1791795972.5989661,
+      "exit_code": 0,
+      "finished_at": 1791796212.924437,
+      "log_sha256": "2dea9ed5413017664c393f6437dcd9f6eaa2c67bc7c8c10221372087bd542a44"
+    },
+    {
+      "name": "install",
+      "command": [
+        "/usr/local/bin/R",
+        "CMD",
+        "INSTALL",
+        "--library=/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/library",
+        "/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/relm_0.4.0.tgz"
+      ],
+      "status": "passed",
+      "started_at": 1791796212.947686,
+      "exit_code": 0,
+      "finished_at": 1791796213.296909,
+      "log_sha256": "09f306e6c268b921026506d219041fa658eec53afc804b96c974627b3583115e"
+    },
+    {
+      "name": "installed-production",
+      "command": [
+        "/usr/local/bin/Rscript",
+        "--vanilla",
+        "/private/tmp/relm-release-0.4.0/check-release-installed.R",
+        "/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/library/relm",
+        "/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/relm",
+        "/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python"
+      ],
+      "status": "passed",
+      "started_at": 1791796213.29741,
+      "exit_code": 0,
+      "finished_at": 1791796217.146894,
+      "log_sha256": "29a9d1e1359edb441b3ed76728a7ea39f81aa5d2f705507257ba209b74f2c321"
+    }
+  ],
+  "scope": "Affected production rebuild/check for compiler directives and C++ linking; carried six rendered vignettes and parent site/RStudio scopes. Optional model environments cleared, committed synthetic package tests execute.",
+  "binding_sha256": "b37cd86fff6249d4753c847bb1281d9e75d307513e3e38e484d9eb6ba76a2cc2",
+  "source_head": "60ccdcb3e28742501aac86021349f8e4552a8a79",
+  "source_tree": "Dirty source plus exact input inventory; not a clean-tree claim.",
+  "source_manifest_sha256": "c310b238bfdaf4f3cc0caec7f66844d9f293905268bab92790805c92ce8e0e80",
+  "source_files": 816,
+  "stage": "installed-production",
+  "tar_comparison": {
+    "parent_sha256": "e801ba6b478e4aa768f1fd1d947dec15cf42646416f9340b1c2e647e504a47b9",
+    "files": 814,
+    "changed": [
+      "relm/DESCRIPTION",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/amx/mmq.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/arch/arm/repack.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/arch/riscv/repack.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/arch/x86/repack.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/llamafile/sgemm.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/repack.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/simd-gemm.h",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/spacemit/ime.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/spacemit/ime1_kernels.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/spacemit/ime2_kernels.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/spacemit/repack.cpp",
+      "relm/src/llama.cpp/ggml/src/ggml-cpu/spacemit/rvv_kernels.cpp",
+      "relm/src/llama.cpp/src/llama-sampler.cpp",
+      "relm/src/llama.cpp/vendor/miniaudio/miniaudio.h",
+      "relm/src/llama.cpp/VENDORING.md",
+      "relm/src/Makevars.in",
+      "relm/tools/config.R"
+    ],
+    "added": [
+      "relm/src/llama.cpp/patches/0005-compiler-diagnostics.diff"
+    ],
+    "carried_vignette_files": 18
+  },
+  "source_tarball_sha256": "48978da212cad853ce56055a8d8733328ce4835053b3d9c12e8e8a9544339048",
+  "binary_path": "/private/tmp/relm-release-0.4.0/packaging-warning-cleanup-current-python/relm_0.4.0.tgz",
+  "binary_sha256": "971b72086c4bce52170d191e1bcc24af6a7b373c98a9b6d76e5a5855f16c04d2",
+  "acceptance": "Inspect actual warnings/notes, source/archive/installed provenance; stage success is not release acceptance.",
+  "finished_at": 1791796217.3679109
+}

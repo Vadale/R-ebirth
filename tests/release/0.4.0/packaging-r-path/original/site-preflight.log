@@ -1,0 +1,12 @@
+Error in `pkgdown::check_pkgdown()`:
+! In DESCRIPTION, URL is missing package url
+  (https://vadale.r-universe.dev/relm).
+ℹ See details in `vignette(pkgdown::metadata)`.
+Backtrace:
+    ▆
+ 1. └─pkgdown::check_pkgdown("rebirth")
+ 2.   └─pkgdown:::check_urls(pkg)
+ 3.     └─pkgdown:::config_abort(...)
+ 4.       └─cli::cli_abort(message, ..., call = call, .envir = .envir)
+ 5.         └─rlang::abort(...)
+Execution halted

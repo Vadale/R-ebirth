@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/private/tmp/relm-release-0.4.0/run-packaging.py", line 73, in main
+    assert len(bins)==1, [str(x) for x in bins]
+           ^^^^^^^^^^^^
+AssertionError: []

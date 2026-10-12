@@ -1,0 +1,2 @@
+[1] "R 4.5.1; aarch64-apple-darwin20; 2026-10-12 08:57:24 UTC; unix"
+PASS: pragma check empty; same testthat version built with current R; saved plot data unchanged; output device closes without opening Rplots.pdf. Zero model calls.

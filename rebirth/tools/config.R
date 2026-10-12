@@ -106,14 +106,14 @@ if (is_windows) {
   if (is_arm) stems <- c(stems, "-lggml-metal")
   stems <- c(stems, "-lggml-base")
   # ggml-cpu uses Accelerate on all Apple targets; the Metal backend adds
-  # Metal/MetalKit/Foundation. libc++ is linked explicitly because R links the
-  # shared object with the C compiler.
+  # Metal/MetalKit/Foundation. Makevars selects the C++17 linker, which supplies
+  # libc++ itself; adding it here would duplicate the driver's standard library.
   frameworks <- if (is_arm) {
     "-framework Metal -framework MetalKit -framework Foundation -framework Accelerate"
   } else {
     "-framework Accelerate"
   }
-  .llama_libs <- paste(paste(stems, collapse = " "), frameworks, "-lc++")
+  .llama_libs <- paste(paste(stems, collapse = " "), frameworks)
 } else {
   # Linux and other Unix: CPU only. Group the archives so any back-references
   # between them resolve regardless of order under GNU ld.

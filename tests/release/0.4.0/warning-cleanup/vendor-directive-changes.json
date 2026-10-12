@@ -1,0 +1,79 @@
+{
+  "files": {
+    "ggml/src/ggml-cpu/amx/mmq.cpp": {
+      "removed_directives": 2,
+      "before": "0f95c80e0300eca3b3a3df07272042fee708425e19cd5f2c4cba7b253b26d226",
+      "after": "8f977655b046bebfebebe9d8df061a9b219819d05ad3bb94c78d2a5a58f674ad"
+    },
+    "ggml/src/ggml-cpu/arch/arm/repack.cpp": {
+      "removed_directives": 1,
+      "before": "2e7ba6aaf10834601315fc8f5e7f52a1638076bf6c0435542247c3de1ee4cce7",
+      "after": "7b7071d7b00d38b9998fa885f72b3d1d23abfad0a1d89592628d16e21a15f857"
+    },
+    "ggml/src/ggml-cpu/arch/riscv/repack.cpp": {
+      "removed_directives": 1,
+      "before": "57b1362562ec0dfe8475e49a639783468da3ddbf7a5f009adcd01a7e4ed61fbf",
+      "after": "17f1d741c8764fd01057cd0dc4f3fab02688ab2f6daa1f6e596cceb112d9c269"
+    },
+    "ggml/src/ggml-cpu/arch/x86/repack.cpp": {
+      "removed_directives": 1,
+      "before": "c69735f83caf854172cac78eed2cbc022ef81c077e5f6aca55a49d3404a02331",
+      "after": "f06a23e8e2886c1156970d70235ac4ef1e85729b07752030491ed2bdac1bfcff"
+    },
+    "ggml/src/ggml-cpu/llamafile/sgemm.cpp": {
+      "removed_directives": 2,
+      "before": "e226380b05393302ba91b38d22718d9521700ee2cb7943f83ad316a7a9dcd597",
+      "after": "58cb55c09b08a31098198a47dbec157b015d53b508f893349ecfcfe0678453e2"
+    },
+    "ggml/src/ggml-cpu/repack.cpp": {
+      "removed_directives": 1,
+      "before": "4ff9c018a0514664a5df0e65bebac47be27f6becf0c81145b372ee80dad5ed89",
+      "after": "17078a8cab417059b953349ec085d61da9aaffce0d1789812c8dd1a630222bb7"
+    },
+    "ggml/src/ggml-cpu/simd-gemm.h": {
+      "removed_directives": 1,
+      "before": "ce613195325cea048ede4c7a86c382ac6abf4c701c91eee640bd3cc78b39ce5e",
+      "after": "a00439b2302c255d3599e11c05edfdb47678a689d40313c60963e8678bd82cd4"
+    },
+    "ggml/src/ggml-cpu/spacemit/ime.cpp": {
+      "removed_directives": 3,
+      "before": "ac285559a23f82721a15259e7af8c4cee7b82bcbabab7633feb378d030bcbec9",
+      "after": "76ad58eec2c3470bba8198d0e78e6e44ff953d32e778551d60878770b57dc713"
+    },
+    "ggml/src/ggml-cpu/spacemit/ime1_kernels.cpp": {
+      "removed_directives": 3,
+      "before": "ea1170753bdaca75d629001d7e820ec315bbd54511c37d1ed4c9347eda67bc46",
+      "after": "e9f700c2595300910de87d40e017f6164183c4e1789270c3937a578c61cad879"
+    },
+    "ggml/src/ggml-cpu/spacemit/ime2_kernels.cpp": {
+      "removed_directives": 3,
+      "before": "98b9f38041ead963baf59628167979d667f44c52570cb80d9340efce775fae73",
+      "after": "7f3b0587910f275fbf58db203e12c41808628beaf95de58b0011899106b455ba"
+    },
+    "ggml/src/ggml-cpu/spacemit/repack.cpp": {
+      "removed_directives": 2,
+      "before": "65a3e0359ebc9949bac6ea6f9b4b44af811a8160464f394a659e5c4f39cf5a2d",
+      "after": "ea0401728f2c552d632bd1fe5d147adb3dda25008a5924c07a9af4b1f9cb9e55"
+    },
+    "ggml/src/ggml-cpu/spacemit/rvv_kernels.cpp": {
+      "removed_directives": 3,
+      "before": "4c1e7f76aaeab7247767c7849121dc2450539a1916fe23fd908f24c4f9240179",
+      "after": "308f19dfac74b4f3a346c487b0416bd92c3a20652dbbd46cac5d86ef2d699baa"
+    },
+    "src/llama-sampler.cpp": {
+      "removed_directives": 3,
+      "before": "ade0e3fee8ae823ee1fe0c527e5c3fbe66189b0201ce42327cd6940f83883026",
+      "after": "c61f456e61117a7c0b715aeb19f7a34fe138ff0373647966c614e278ed116354"
+    },
+    "vendor/miniaudio/miniaudio.h": {
+      "removed_directives": 38,
+      "before": "ac7af4de748b7e26b777f37e01cee313a308a7296a3eb080e2906b320cc55c89",
+      "after": "01d7ff3d248b2391b340351b20db005c42ddfb6abcd8818d77c216bb61a15325"
+    }
+  },
+  "file_count": 14,
+  "removed_directives": 64,
+  "post_patch_sha256": "265c9a00f49bbe69b475ca1dbf5a90f503c8f82af3a458aecbde60255aa6a7f8",
+  "initial_path_component_sorted_digest": "9591c1bc5e5ade5b50d6cd2423782701a7a5c61e07a948e1f6ffd96f04dd3d59",
+  "preflight_correction": "Sort complete relative path strings, matching LC_ALL=C sort; Path ordering sorts components instead. No source change."
+}

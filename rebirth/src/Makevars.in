@@ -1,4 +1,5 @@
 TARGET_DIR = ./rust/target
+CXX_STD = CXX17
 LIBDIR = $(TARGET_DIR)/@LIBDIR@
 STATLIB = $(LIBDIR)/librelm.a
 # @LLAMA_LIBS@ is computed per-OS by tools/config.R: the vendored llama.cpp/ggml

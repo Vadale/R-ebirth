@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "r_home": "/Library/Frameworks/R.framework/Resources",
+  "guard_sha256": "6a481d4ff8f9bc01d2521bd2073a49c6c094faec5514d0d3dfc460d581085def",
+  "results": [
+    {
+      "version": "original",
+      "mode": "hosted-shadow",
+      "exit_code": 101,
+      "expected_success": false,
+      "source_sha256": "da060ac57c464f19c232b3f28299c92f95971bddde02f526c281e8f7be6a3817",
+      "output_sha256": "1100542c16f89eb5401fafa659826c1de858b868af24e0ec35ede8363f0c54f6"
+    },
+    {
+      "version": "corrected",
+      "mode": "hosted-shadow",
+      "exit_code": 0,
+      "expected_success": true,
+      "source_sha256": "05a4c8db4514fb9d126005608c261bbafc71adc6626ec50dc37e0fc8392119c8",
+      "output_sha256": "c9602fc055aa55875051959f1c9e5d243056c85b370f0dc882c8d9b38d53ae93"
+    },
+    {
+      "version": "corrected",
+      "mode": "standalone-path",
+      "exit_code": 0,
+      "expected_success": true,
+      "source_sha256": "05a4c8db4514fb9d126005608c261bbafc71adc6626ec50dc37e0fc8392119c8",
+      "output_sha256": "8da75f832110eddc8e75c0cf4d012986b41c2f47f0ff0ed397b71b4d71a78971"
+    }
+  ],
+  "compiled_object_sha256": "41615f52f843454e243698853e77881c872314088e5fdadd8f4ed029735b65e7",
+  "model_calls": 0,
+  "scope": "Original expected rejection plus corrected real host-path and standalone compiler invocation; identical C object bytes."
+}

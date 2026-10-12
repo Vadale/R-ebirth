@@ -1,0 +1,6 @@
+Read-only inspection; zero models or demo reruns.
+Initial job-output reader expected one JSON object; actual retained RStudio output is JSON Lines (323 records). Corrected parsing preserved every original byte.
+Initial RDS inspector compared full-precision steering values directly to status JSON rounded by jsonlite to four decimal digits. Corrected comparison uses that serialization precision; full-precision RDS and acceptance thresholds remain unchanged. Initial inspector source retained.
+An archival draft included an inverted unused JSON-string spelling assertion; it stopped before any archive mutation. Removed that draft-only predicate; retained actual structured-output text unchanged.
+The original status scope phrase duplicate embeddings is imprecise: bound Demo B embeds the first 16 abstracts twice, all 1200 once, then repeats both seeded pipelines on that one full embedding. No raw status was rewritten. Demo B result arrays and temporary figures were not persisted; acceptance uses bound assertions and retained actual PASS output.
+The smoke-created Rplots.pdf (3611 bytes, modification time at job completion) was relocated as rstudio-default-device.pdf; not an additional inspected figure.

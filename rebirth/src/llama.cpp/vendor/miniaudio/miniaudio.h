@@ -3756,10 +3756,7 @@ extern "C" {
     #pragma warning(disable:4214)   /* nonstandard extension used: bit field types other than int */
     #pragma warning(disable:4324)   /* structure was padded due to alignment specifier */
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wpedantic" /* For ISO C99 doesn't support unnamed structs/unions [-Wpedantic] */
     #if defined(__clang__)
-        #pragma GCC diagnostic ignored "-Wc11-extensions"   /* anonymous unions are a C11 extension */
     #endif
 #endif
 
@@ -3795,16 +3792,12 @@ extern "C" {
         typedef unsigned __int64    ma_uint64;
     #else
         #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wlong-long"
             #if defined(__clang__)
-                #pragma GCC diagnostic ignored "-Wc++11-long-long"
             #endif
         #endif
         typedef   signed long long  ma_int64;
         typedef unsigned long long  ma_uint64;
         #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-            #pragma GCC diagnostic pop
         #endif
     #endif
 #endif  /* MA_USE_STDINT */
@@ -8078,7 +8071,6 @@ struct ma_device
 #if defined(_MSC_VER) && !defined(__clang__)
     #pragma warning(pop)
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
-    #pragma GCC diagnostic pop  /* For ISO C99 doesn't support unnamed structs/unions [-Wpedantic] */
 #endif
 
 /*
@@ -12238,8 +12230,6 @@ int ma_android_sdk_version()
 
 
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
 /* Standard sample rates, in order of priority. */
@@ -12291,7 +12281,6 @@ static ma_format g_maFormatPriorities[] = {
     ma_format_u8           /* Low quality */
 };
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic pop
 #endif
 
 
@@ -14214,10 +14203,7 @@ Atomics
 extern "C" {
 #endif
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wlong-long"
     #if defined(__clang__)
-        #pragma GCC diagnostic ignored "-Wc++11-long-long"
     #endif
 #endif
 typedef int ma_atomic_memory_order;
@@ -15854,9 +15840,7 @@ ma_atomic_spinlock ma_atomic_global_lock;
         return expected;
     }
     #if defined(__clang__)
-        #pragma clang diagnostic push
         #if __clang_major__ >= 8
-            #pragma clang diagnostic ignored "-Watomic-alignment"
         #endif
     #endif
     static MA_INLINE ma_uint64 ma_atomic_compare_and_swap_64(volatile ma_uint64* dst, ma_uint64 expected, ma_uint64 replacement)
@@ -15865,7 +15849,6 @@ ma_atomic_spinlock ma_atomic_global_lock;
         return expected;
     }
     #if defined(__clang__)
-        #pragma clang diagnostic pop
     #endif
 #endif
 #if defined(MA_ATOMIC_LEGACY_GCC) || defined(MA_ATOMIC_LEGACY_GCC_ASM)
@@ -17375,7 +17358,6 @@ static MA_INLINE double ma_atomic_compare_and_swap_f64(volatile double* dst, dou
     return r.f;
 }
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic pop
 #endif
 #if defined(__cplusplus)
 }
@@ -19437,12 +19419,9 @@ MA_API ma_proc ma_dlsym(ma_log* pLog, ma_handle handle, const char* symbol)
         #else
         {
             #if (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8))) || defined(__clang__)
-                #pragma GCC diagnostic push
-                #pragma GCC diagnostic ignored "-Wpedantic"
             #endif
                 proc = (ma_proc)dlsym((void*)handle, symbol);
             #if (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8))) || defined(__clang__)
-                #pragma GCC diagnostic pop
             #endif
         }
         #endif
@@ -19910,10 +19889,7 @@ static ma_result ma_result_from_HRESULT(HRESULT hr)
     #pragma warning(push)
     #pragma warning(disable:4201)   /* nonstandard extension used: nameless struct/union */
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wpedantic" /* For ISO C99 doesn't support unnamed structs/unions [-Wpedantic] */
     #if defined(__clang__)
-        #pragma GCC diagnostic ignored "-Wc11-extensions"   /* anonymous unions are a C11 extension */
     #endif
 #endif
 typedef struct
@@ -19936,7 +19912,6 @@ typedef struct
 #if defined(_MSC_VER) && !defined(__clang__)
     #pragma warning(pop)
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
-    #pragma GCC diagnostic pop
 #endif
 
 typedef HRESULT (WINAPI * MA_PFN_CoInitialize)(void* pvReserved);
@@ -23356,10 +23331,7 @@ typedef struct
     #pragma warning(push)
     #pragma warning(disable:4201)   /* nonstandard extension used: nameless struct/union */
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wpedantic" /* For ISO C99 doesn't support unnamed structs/unions [-Wpedantic] */
     #if defined(__clang__)
-        #pragma GCC diagnostic ignored "-Wc11-extensions"   /* anonymous unions are a C11 extension */
     #endif
 #endif
 /* https://docs.microsoft.com/en-us/windows/win32/api/audioclientactivationparams/ns-audioclientactivationparams-audioclient_activation_params */
@@ -23374,7 +23346,6 @@ typedef struct
 #if defined(_MSC_VER) && !defined(__clang__)
     #pragma warning(pop)
 #elif defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 8)))
-    #pragma GCC diagnostic pop
 #endif
 
 #define MA_VIRTUAL_AUDIO_DEVICE_PROCESS_LOOPBACK L"VAD\\Process_Loopback"
@@ -69365,9 +69336,7 @@ static void ma_resource_manager_pipeline_notifications_release_all_fences(const 
 
 /* MurmurHash3. Based on code from https://github.com/PeterScott/murmur3/blob/master/murmur3.c (public domain). */
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic push
     #if __GNUC__ >= 7
-    #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
     #endif
 #endif
 
@@ -69446,7 +69415,6 @@ static ma_uint32 ma_hash_32(const void* key, int len, ma_uint32 seed)
 }
 
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic push
 #endif
 /* End MurmurHash3 */
 
@@ -84841,9 +84809,7 @@ MA_API ma_bool32 ma_dr_wav_fourcc_equal(const ma_uint8* a, const char* b)
 #ifndef ma_dr_flac_c
 #define ma_dr_flac_c
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic push
     #if __GNUC__ >= 7
-    #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
     #endif
 #endif
 #ifdef __linux__
@@ -92687,7 +92653,6 @@ MA_API ma_bool32 ma_dr_flac_next_cuesheet_track(ma_dr_flac_cuesheet_track_iterat
     return MA_TRUE;
 }
 #if defined(__clang__) || (defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)))
-    #pragma GCC diagnostic pop
 #endif
 #endif
 /* dr_flac_c end */
@@ -93281,8 +93246,6 @@ static float ma_dr_mp3_L3_ldexp_q2(float y, int exp_q2)
     return y;
 }
 #if (defined(__GNUC__) && (__GNUC__ >= 13)) && !defined(__clang__)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wstringop-overflow"
 #endif
 static void ma_dr_mp3_L3_decode_scalefactors(const ma_uint8 *hdr, ma_uint8 *ist_pos, ma_dr_mp3_bs *bs, const ma_dr_mp3_L3_gr_info *gr, float *scf, int ch)
 {
@@ -93343,7 +93306,6 @@ static void ma_dr_mp3_L3_decode_scalefactors(const ma_uint8 *hdr, ma_uint8 *ist_
     }
 }
 #if (defined(__GNUC__) && (__GNUC__ >= 13)) && !defined(__clang__)
-    #pragma GCC diagnostic pop
 #endif
 static const float ma_dr_mp3_g_pow43[129 + 16] = {
     0,-1,-2.519842f,-4.326749f,-6.349604f,-8.549880f,-10.902724f,-13.390518f,-16.000000f,-18.720754f,-21.544347f,-24.463781f,-27.473142f,-30.567351f,-33.741992f,-36.993181f,

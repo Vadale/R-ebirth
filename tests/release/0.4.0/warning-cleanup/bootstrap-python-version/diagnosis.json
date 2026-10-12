@@ -1,0 +1,6 @@
+{
+  "cause": "Launch used /usr/bin/python3, whose tarfile lacks the data extraction filter. No build/install/test/model stage started.",
+  "correction": "Use existing current Python interpreter; preserve safe data filter and identical stage logic. Fresh output directory; original failure preserved.",
+  "current_python": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "version": "3.14.6 (main, Jun 10 2026, 10:03:53) [Clang 21.0.0 (clang-2100.0.123.102)]"
+}

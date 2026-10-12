@@ -1,0 +1,137 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 89279,
+  "started_at": 1791741998.200305,
+  "stages": [
+    {
+      "name": "build-carried-vignettes",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "--no-build-vignettes",
+        "/private/tmp/relm-release-0.4.0/packaging-r-path/relm"
+      ],
+      "status": "passed",
+      "started_at": 1791741998.912173,
+      "exit_code": 0,
+      "finished_at": 1791742001.565672,
+      "log_sha256": "9f6669dae03262c6d602263243d524ce17998cecdef2f127bce726492d497b11"
+    },
+    {
+      "name": "check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--as-cran",
+        "--install-args=--build",
+        "--output=/private/tmp/relm-release-0.4.0/packaging-r-path/check",
+        "/private/tmp/relm-release-0.4.0/packaging-r-path/relm_0.4.0.tar.gz"
+      ],
+      "status": "passed",
+      "started_at": 1791742006.6300921,
+      "exit_code": 0,
+      "finished_at": 1791742207.860366,
+      "log_sha256": "b25adf6dd5dd0a3e63281490c981c6a8e36d92458612f6f6fd82cf1ffade9af1"
+    },
+    {
+      "name": "install",
+      "command": [
+        "R",
+        "CMD",
+        "INSTALL",
+        "--library=/private/tmp/relm-release-0.4.0/packaging-r-path/library",
+        "/private/tmp/relm-release-0.4.0/packaging-r-path/relm_0.4.0.tgz"
+      ],
+      "status": "passed",
+      "started_at": 1791742207.87985,
+      "exit_code": 0,
+      "finished_at": 1791742208.200702,
+      "log_sha256": "09f306e6c268b921026506d219041fa658eec53afc804b96c974627b3583115e"
+    },
+    {
+      "name": "installed-production",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-release-0.4.0/check-release-installed.R",
+        "/private/tmp/relm-release-0.4.0/packaging-r-path/library/relm",
+        "/private/tmp/relm-release-0.4.0/packaging-r-path/relm",
+        "/private/tmp/relm-release-0.4.0/packaging-r-path"
+      ],
+      "status": "passed",
+      "started_at": 1791742208.201161,
+      "exit_code": 0,
+      "finished_at": 1791742210.210946,
+      "log_sha256": "29a9d1e1359edb441b3ed76728a7ea39f81aa5d2f705507257ba209b74f2c321"
+    },
+    {
+      "name": "pkgdown",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "-e",
+        "options(warn=1); pkgdown::build_site('/private/tmp/relm-release-0.4.0/packaging-r-path/relm', override=list(destination='/private/tmp/relm-release-0.4.0/packaging-r-path/site'), install=FALSE, new_process=FALSE, devel=FALSE, preview=FALSE)"
+      ],
+      "status": "passed",
+      "started_at": 1791742210.2115872,
+      "exit_code": 0,
+      "finished_at": 1791742243.343904,
+      "log_sha256": "4b2c593533a31a7b6df9ae36d4e8ffa8563dcfad8e24d06f8e6819420b8a2d90"
+    }
+  ],
+  "source_merge": "60ccdcb3e28742501aac86021349f8e4552a8a79",
+  "model_scope": "Optional model environments cleared; committed synthetic package tests execute.",
+  "cargo_scope": "Offline existing registry snapshot; MAKEFLAGS overrides only temporary CARGOTMP, not features or compiler settings.",
+  "carried_stages": [
+    {
+      "name": "document",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-release-0.4.0/check-release-docs.R",
+        "/private/tmp/relm-release-0.4.0/packaging/rebirth",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/library/relm"
+      ],
+      "status": "passed",
+      "started_at": 1791740434.1014662,
+      "exit_code": 0,
+      "finished_at": 1791740434.824492,
+      "log_sha256": "e8c880c06033c320a06588f55ad244d5a15a0dbce7240cbda73a63fc2cd88020"
+    },
+    {
+      "name": "build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "/private/tmp/relm-release-0.4.0/packaging/rebirth"
+      ],
+      "status": "passed",
+      "started_at": 1791740439.356968,
+      "exit_code": 0,
+      "finished_at": 1791740573.704203,
+      "log_sha256": "d46a9261f1969f497bfdbdd0d11d770797126282709403eee9d36be238a61caa"
+    }
+  ],
+  "parent_failure": "as-cran PATH guard rejected unqualified R in FFI build.rs before package tests/examples",
+  "source_files": 815,
+  "source_manifest_sha256": "219fc21e84995445822811d029c1a6707f8398817a0115323f4c39081820b944",
+  "stage": "pkgdown",
+  "tar_comparison": {
+    "parent_sha256": "0d0df0392482a313181feb6c76223828a8fa1a3b3f183c727740e15bfcff8daa",
+    "files": 813,
+    "changed": [
+      "relm/DESCRIPTION",
+      "relm/src/rust/rebirth-ffi/build.rs"
+    ],
+    "carried_vignette_files": 18
+  },
+  "source_tarball_sha256": "e801ba6b478e4aa768f1fd1d947dec15cf42646416f9340b1c2e647e504a47b9",
+  "binary_path": "/private/tmp/relm-release-0.4.0/packaging-r-path/relm_0.4.0.tgz",
+  "binary_sha256": "3dd59e5e0d95d04f644519fce3a6416a4c798e9d3f5cbb8088e4ba7c214d4b0c",
+  "source_drift": {},
+  "acceptance": "Inspect actual warnings/notes, rendered documents and artifact provenance; exit zero is not release approval.",
+  "finished_at": 1791742243.4423082
+}

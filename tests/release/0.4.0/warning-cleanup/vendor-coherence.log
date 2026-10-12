@@ -1,0 +1,2 @@
+OK (G4): vendored pruned tree matches VENDORING.md post-patch SHA256
+OK (coherence): patches/*.diff reverse-apply to the VENDORING.md pre-patch SHA256

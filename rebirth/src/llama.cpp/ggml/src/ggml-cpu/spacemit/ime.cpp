@@ -58,9 +58,6 @@
 #endif
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Woverlength-strings"
-#pragma GCC diagnostic ignored "-Wcast-qual"
-#pragma GCC diagnostic ignored "-Wunused-parameter"
 #endif
 
 // clang-format on

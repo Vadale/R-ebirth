@@ -1,0 +1,15 @@
+{
+  "status": "reviewed",
+  "figures": {
+    "articles/anatomy-lab_files/figure-html/decodability-vs-causality-1.png": "fb3f5a05e0c158c594cd1e9797eae1b8fbcca6ae8f0ca3ccfe5a429bb4b51148",
+    "articles/anatomy-lab_files/figure-html/money-plot-1.png": "81347bd4b53feb04beb51363a8b3b71a9eded7b78a6e8c30b677a68ef99ba0b2",
+    "articles/contrast-directions_files/figure-html/unnamed-chunk-2-1.png": "ba2386f9a4b757a08a36a5907dc39a57d9300305ccd5619a4848b0069c11cb4f",
+    "articles/model-interventions_files/figure-html/unnamed-chunk-1-1.png": "02d1121247b6f613df3d79b90b0c99b80a438587cd58e56246fd4c5444408578",
+    "articles/model-interventions_files/figure-html/unnamed-chunk-2-1.png": "6fc091adde29086525ec4bda16bb18ca46cc5ec4c2cea77fb48f984a3c4365e7",
+    "articles/topics-without-python_files/figure-html/cluster-map-1.png": "83178a8e6064383d06821dae22fd0ba618ac87d385c4534d0674d680ad791281",
+    "articles/topics-without-python_files/figure-html/structure-1.png": "deb6da7da8d1154088bf4ce7a84fa177b38a7a7e06159f65ed62470d42d46d13",
+    "articles/vision_files/figure-html/draw-cat-1.png": "bc8cc065ef297b16bc72cb9c511f417240455950fdd8a33d0a3b0a21aba22b88",
+    "articles/vision_files/figure-html/draw-square-1.png": "6cb5983a50dbec1f1322fbc196eeb903fe1b93e7aaf3527d09ce8cdb98fc7c98"
+  },
+  "scope": "Nine actual generated PNGs viewed individually. Labels and axes legible, synthetic/illustrative disclosures visible. Existing anatomy legend crosses a small part of one series; no missing label or unidentifiable series. Topic dendrogram uses explicit ellipsis labels. No browser interaction claim."
+}

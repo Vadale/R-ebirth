@@ -1,0 +1,5 @@
+FAIL (G4): vendored tree SHA256
+  computed:  265c9a00f49bbe69b475ca1dbf5a90f503c8f82af3a458aecbde60255aa6a7f8
+  VENDORING: 9591c1bc5e5ade5b50d6cd2423782701a7a5c61e07a948e1f6ffd96f04dd3d59 (post-patch)
+A change to src/llama.cpp/ must update VENDORING.md's post-patch row (and, if
+it is a new patch, land the diff in patches/ and re-record both SHAs).

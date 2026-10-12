@@ -44,8 +44,6 @@
 //     Available: https://justine.lol/matmul/. [Accessed: 29-Mar-2024].
 
 #if defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wpedantic"
-#pragma GCC diagnostic ignored "-Wignored-attributes"
 #endif
 
 #include "sgemm.h"

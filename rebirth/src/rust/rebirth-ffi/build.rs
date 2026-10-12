@@ -1,11 +1,25 @@
 //! One R-hosted, header-based state accessor. No Rust build dependency.
 use std::{env, path::PathBuf, process::Command};
 fn r_config(name: &str) -> String {
-    let output = Command::new("R")
+    // R CMD check deliberately shadows bare R on PATH. Use the same R host
+    // that started installation; standalone cargo builds may discover R on PATH.
+    let r = env::var_os("R_HOME")
+        .map(|home| {
+            PathBuf::from(home)
+                .join("bin")
+                .join(format!("R{}", env::consts::EXE_SUFFIX))
+        })
+        .unwrap_or_else(|| PathBuf::from("R"));
+    let output = Command::new(r)
         .args(["CMD", "config", name])
         .output()
         .expect("R CMD config");
-    assert!(output.status.success(), "R CMD config {name} failed");
+    assert!(
+        output.status.success(),
+        "R CMD config {name} failed: {}{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
     String::from_utf8(output.stdout)
         .expect("R compiler flags are UTF-8")
         .trim()
