@@ -7,7 +7,7 @@
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](https://github.com/Vadale/R-ebirth/blob/main/LICENSE.md)
 <!-- badges: end -->
 
-**Local language models as base-R objects.**
+**Local models. Inspectable experiments. Ordinary R.**
 
 relm runs open-weight models on your machine with no Python, model server or
 API key. Generate text and constrained JSON, embed documents, and inspect a
@@ -19,8 +19,9 @@ environment for statistics, visualization and reproducible research.
 token events, live observations, recorded directions, component projections and
 base-R graphics, with code and trace-validation maintenance. See the
 [release notes](https://github.com/Vadale/R-ebirth/blob/main/rebirth/NEWS.md#relm-040).
-Binary availability follows r-universe builds; check `packageVersion("relm")`
-after installation.
+The [0.4.0 release](https://github.com/Vadale/R-ebirth/releases/tag/v0.4.0)
+is published, including a verified fresh Mac arm64 r-universe installation.
+Check `packageVersion("relm")` and restart R after upgrading.
 
 ## Installation
 
@@ -44,43 +45,6 @@ Core imports are `methods` (included with R) and `nanoarrow`, which reads spille
 `glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.
 Optional `later` and `promises` enable async/streaming generation.
 Application examples prepare their own separate dependency environments.
-
-## Asynchronous token data
-
-`llm_generate(async = TRUE)` keeps generation on a native worker.
-With `on_token`, short callbacks receive
-bounded plain-data-frame batches of token IDs, committed text and prompt-end
-events. The promise still resolves to the ordinary named text vector and seed.
-A caller-owned binary file connection can receive UTF-8 CSV instead.
-Check `"on_token" %in% names(formals(llm_generate))` for installed support.
-
-```r
-pending <- llm_generate(m, "Explain a confidence interval.", seed = 17,
-  async = TRUE, on_token = function(batch) {
-    cat(paste0(batch$text[batch$event == "text"], collapse = ""))
-  })
-observed <- promises::then(pending, function(value) print(value),
-  onRejected = function(error) message(conditionMessage(error)))
-```
-
-Load `m` as in the quickstart below and install optional `later`/`promises` first.
-Callbacks run on R's main thread; slow callbacks or storage can block R and
-backpressure the worker. `llm_cancel(m)` is cooperative. See the
-[token-streaming guide](https://github.com/Vadale/R-ebirth/blob/main/rebirth/vignettes/token-streaming.qmd)
-for the event schema, CSV and rolling statistics. Integrated Phase 6 also adds
-bounded `on_state` observations and additive coefficient updates during generation.
-Recorded directions can configure static projection on supported model sites;
-projection coefficients are not live updates.
-
-## Complete research workflow
-
-The [runnable walkthrough](https://github.com/Vadale/R-ebirth/blob/main/examples/research-workflow/README.md)
-joins load, observe, compare, intervene, evaluate and export using the existing
-public APIs. It checks installed capabilities before loading a cached model,
-records actual paired captures and fixed conditions, and saves texts, provenance,
-tables and plots. It is a short functional exercise, not evidence of improved
-answer quality. The [support matrix](https://github.com/Vadale/R-ebirth/blob/main/docs/supported-workflow.md)
-states model/site support, resource limits and optional dependencies.
 
 ## Quickstart
 
@@ -142,6 +106,40 @@ Spark-X2.5-4B is also supported natively through llama.cpp b10828. Its optional
 uses Spark's official non-thinking opener. **Spark activation tracing is
 unsupported** until an independent numerical reference exists.
 
+## A complete research experiment
+
+The [research API guide](https://github.com/Vadale/R-ebirth/blob/main/docs/research-guide.md)
+explains prompt traces, live observations and the data needed for comparisons.
+The [complete walkthrough](https://github.com/Vadale/R-ebirth/blob/main/examples/research-workflow/README.md)
+connects paired traces, recorded directions, original/zero/intervention controls,
+text evaluation and CSV/RDS/plot export. It is a repository example: clone or
+download the repository as well as installing relm.
+
+A separate [first-use study](https://github.com/Vadale/R-ebirth/blob/main/docs/research-first-use.md)
+records an agent's actual attempt with the released package. Its six calls
+completed, but the small model invented facts in every response. Read that report
+for practical difficulties and what was not tested; it is not external-human
+usability validation.
+
+### Streaming and live observations
+
+`llm_generate(async = TRUE)` returns a promise while a native worker generates.
+`on_token` receives data-frame batches of token/text events; `on_state` receives
+bounded live observations. Optional `later >= 1.4.8` and `promises >= 1.5.0` are
+required. In a noninteractive script, service the event loop until settlement.
+Callbacks run on R's main thread and must remain short; `llm_cancel()` requests
+cooperative cancellation. See the
+[streaming guide](https://github.com/Vadale/R-ebirth/blob/main/rebirth/vignettes/token-streaming.qmd)
+and the complete walkthrough for actual waiting and cleanup.
+
+Ordinary `llm_trace()` observes a supplied prompt; it cannot trace an intervened
+handle. To compare original and intervened generation, retain `on_state`
+observations and pass them to `llm_compare()` with the recorded settings and
+preceding sampled-token history. Live coefficient updates are additive;
+component projection stays fixed for the derived handle. The
+[support matrix](https://github.com/Vadale/R-ebirth/blob/main/docs/supported-workflow.md)
+records the supported combinations.
+
 ## Investigate model behavior
 
 `llm_probe()` fits binary ridge models to activation traces using a formula with
@@ -175,7 +173,7 @@ its companion `llm(projector = ...)`: the projector translates images into
 values the language model can read. Interpretability of the vision encoder itself
 is outside the current release.
 
-Three vignettes provide complete workflows with pinned Apache-2.0 models:
+Start with these worked demos using pinned Apache-2.0 models:
 
 - **The anatomy lab:** activation traces, statistical probes and interventions.
   Open `vignette("anatomy-lab", package = "relm")`.

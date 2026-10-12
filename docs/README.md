@@ -5,10 +5,17 @@ Start with one supported path, then use the specialist guides when needed.
 ## Start and complete an experiment
 
 1. [Install and check capabilities](getting-started.md).
-2. [Run the research walkthrough](../examples/research-workflow/README.md):
+2. [Choose the right research API](research-guide.md): prompt traces, live states,
+   directions, controls and how to interpret the plots.
+3. [Run the research walkthrough](../examples/research-workflow/README.md):
    load → observe → compare → intervene → evaluate → export.
-3. [Check support and interpretation limits](supported-workflow.md).
-4. [Read actual validation evidence](validation-status.md). Plans are not results.
+4. [Check support and interpretation limits](supported-workflow.md).
+5. [Read the independent agent's first-use assessment](research-first-use.md):
+   actual outputs, documentation difficulties and remaining gaps.
+
+Version [0.4.0 is published](release-0.4.0.md). For detailed historical numerical
+and runtime evidence, use the [validation ledger](validation-status.md).
+Plans and historical build receipts are not current results.
 
 ## Extend the same workflow
 

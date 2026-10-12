@@ -1,8 +1,35 @@
-# relm 0.4.0 release preparation
+# relm 0.4.0 release record
 
-Status: not published. D048 authorizes maintenance and a GitHub/r-universe
-release before Windows/CUDA; it does not authorize a CRAN submission or remove
-recorded numerical and research limitations.
+**Published 2026-10-12.** The [GitHub release](https://github.com/Vadale/R-ebirth/releases/tag/v0.4.0)
+and annotated tag identify integrated commit
+`3bd5da7399dc163d8c9e4a4e1865a875e7186e71`, the exact accepted PR66 tree. All nine
+final PR checks passed. Source, Mac binary and checksum assets were published and
+their sizes/digests verified. No CRAN submission or Windows/CUDA acceptance is
+claimed; numerical and research limitations remain.
+
+## Verified r-universe installation
+
+The source and Mac arm64/R 4.5 binary served by r-universe identify the same
+release commit. [The Mac build](https://github.com/r-universe/vadale/actions/runs/38273228791/job/114897804233)
+completed its build, check and store stages; the actual package check reported OK.
+A normal R repository download was installed in a fresh library on the existing
+Mac. Version 0.4.0 and `RemoteSha` matched, and all 49 installed files were
+byte-identical to the downloaded binary payload. This was not a clean VM test.
+
+One cached Qwen CPU load and one seeded, eight-token-limit generation returned
+`Ready`, then the handle closed. No model or dependency download was needed.
+The binary was built under R 4.5.3; the host R 4.5.1 emitted that version warning,
+which was retained. The DLL contained no native fixture hooks.
+
+| Distributed artifact | SHA256 |
+| --- | --- |
+| r-universe Mac arm64 binary | `ee716dfb0d403e3136d5fa84edf406d0e128d5d57e2698f83580cb01168eac1d` |
+| Its installed DLL | `98247f18d59ba46c710f66f3ddbe94e7b390d0e040b5ef4c3a2f34ea21745227` |
+
+Four Linux jobs also succeeded. Windows and WebAssembly jobs failed;
+the whole r-universe workflow is not reported as green. Those platforms are
+outside this release's accepted Mac/Linux scope. The chronological packaging
+record below preserves the original failures and each build's source scope.
 
 ## Integrated maintenance
 
@@ -69,8 +96,8 @@ status is retained with a separate passed owner receipt.
 | Installed DLL | `8aee29a6b22fd630dbb570b5b0260559d49bac34e2862bad41ee611908b70bb4` |
 
 See [retained outputs and owner verification](../tests/release/0.4.0/warning-cleanup/completed/).
-These assets supersede the parent candidates below and remain local until
-publication. Website and real RStudio observations retain their parent-source
+These assets superseded the parent candidates below and were subsequently
+published on GitHub. Website and real RStudio observations retain their parent-source
 provenance. No model inference was replayed during the warning correction or
 artifact inspection.
 
@@ -104,7 +131,7 @@ executed without their models.
 | Mac arm64 binary | `3dd59e5e0d95d04f644519fce3a6416a4c798e9d3f5cbb8088e4ba7c214d4b0c` |
 | Installed DLL | `1bc5f033870e3fbb0917989ba2f79695f12301e0383d5d3b33a8489846ddea78` |
 
-Assets remain local, not published. Compact raw logs, source/installed hashes
+These superseded parent assets were not published. Compact raw logs, source/installed hashes
 and separate owner verification are in
 [completed packaging evidence](../tests/release/0.4.0/packaging-r-path/completed/).
 The original driver status remains `awaiting_owner_verification`.
@@ -181,10 +208,10 @@ The original warning-bearing runs remain unchanged historical evidence. The new
 package check passes without a warning exception; D035 still applies only to
 0.3.0. A clean package check does not imply completed CRAN readiness.
 
-## Remaining release gates and limits
+## Completion and remaining limits
 
-Source publication/follow-up CI, tag/assets and a fresh r-universe installation
-remain. The original package, documentation and RStudio results above are
+Source publication/follow-up CI, tag/assets and the fresh r-universe installation
+are complete as recorded above. The original package, documentation and RStudio results are
 retained; their assets are not relabelled as the newly patched build. The current
 Mac package check satisfies the release skill's zero-error/zero-warning gate,
 with its single incoming NOTE explained. No warning waiver is required.

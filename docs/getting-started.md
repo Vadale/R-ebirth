@@ -25,10 +25,24 @@ packageVersion("relm")
 ```
 
 r-universe builds from `main`, so its version can differ from the latest tagged
-release. Check the installed version before using structured output or probes.
-Windows and CUDA remain deferred pending their own hardware acceptance.
+release. Version 0.4.0 has been published and installed from r-universe on
+macOS arm64; see the [release record](release-0.4.0.md). Restart R after upgrading
+an already loaded package. Windows and CUDA still await their own acceptance.
 
-## Check development capabilities
+## Choose your starting point
+
+- **A first model call:** use the [first-run example](#first-run) below. It needs
+  only relm and one small model file.
+- **Understand which function to use:** read the [research API guide](research-guide.md),
+  especially the difference between prompt traces and live observations.
+- **Run an experiment with saved results:** follow the
+  [research walkthrough](../examples/research-workflow/README.md). It additionally
+  needs optional `later >= 1.4.8` and `promises >= 1.5.0`, and the repository's
+  example script. These files do not appear merely by installing the package.
+- **Assess practical limitations:** read the [first-use study](research-first-use.md)
+  and [support matrix](supported-workflow.md).
+
+## Check research capabilities
 
 The research APIs are included in 0.4.0. An installed package
 can retain that version string, and binary builds can lag `main`; check the
@@ -43,8 +57,10 @@ stopifnot(
 )
 ```
 
-If this fails, install a current source build below or wait for its binary;
-the old release is not proof of support for the new interface. Then follow the
+If this fails, check which library R loaded, restart after upgrading, and install
+0.4.0 or later. You can inspect `find.package("relm")` and
+`packageDescription("relm")$RemoteSha` to record the installed source revision.
+Then follow the
 [complete research walkthrough](../examples/research-workflow/README.md), which
 also checks optional async packages and the cached model before doing work.
 The [support matrix](supported-workflow.md) states the bounded supported route.
@@ -84,10 +100,14 @@ close(m)
 The default `chat = TRUE` applies the model's chat template. `temperature = 0`
 uses greedy generation.
 
+CPU is available through `llm(path, backend = "cpu")`; the default `"auto"`
+selects Metal on supported Apple silicon builds. The context length bounds the
+model's token window, not total process memory. Always `close()` handles when done.
+
 The [package quickstart](../rebirth/README.md#quickstart) continues with embeddings,
 a small activation trace and constrained JSON. Activations are numerical values
 inside the model; capture filters select the layers and token positions to inspect.
-Statistical probes in 0.3.0 use these values to measure predictive decodability
+Statistical probes use these values to measure predictive decodability
 with explicit source groups and optional held-out evaluation.
 
 ## Images and research demos
@@ -111,7 +131,7 @@ are optional and are not needed for the first run.
 
 ## Offline batch and local service
 
-The 0.3.0 repository includes a
+The repository includes a
 [restartable batch application](../examples/funding-extraction/README.md) and a
 [loopback service template](../examples/funding-service/README.md). Follow each
 recipe's explicit setup step to prepare its isolated application dependencies
@@ -133,7 +153,20 @@ promotion gates; operational acceptance did not change that result.
 - **Installation asks for cargo or CMake:** R is building from source. Install the
   source toolchain, or select an available binary for your platform and R version.
 - **A function or argument is missing:** check `packageVersion("relm")` and restart
-  R after upgrading. Version 0.2.0 predates structured output and `llm_probe()`.
+  R after upgrading. Check `find.package("relm")` if multiple libraries contain it.
+- **“Package was built under R version …”:** compare the binary's R build version
+  with your R version. The published Mac binary built under R 4.5.3 was installed
+  and exercised on R 4.5.1 with that warning retained. Do not assume every such
+  mismatch is harmless; record your actual versions and errors.
+- **`llm_trace()` rejects a derived/intervened handle:** this is a supported-boundary
+  refusal, not a request to trace the original and label it intervened. Observe
+  the derived handle during `llm_generate(on_state = ...)` instead.
+- **An async script exits without results:** retain the promise and service the
+  `later` event loop until it settles. See the complete walkthrough for a bounded
+  wait and cancellation; an interactive-console snippet is not a standalone job.
+- **The answer is wrong despite a successful call:** execution and model quality
+  are separate. Start with a simple task, read every output, and use task-specific
+  evaluation. A token cap can also leave a response unfinished.
 - **Memory on a 16 GB Mac:** begin with the 0.5B model and narrow trace filters.
   Traces above their configured budget spill to disk; model/context memory is
   separate, and the full 4B-spill hardware acceptance remains open.

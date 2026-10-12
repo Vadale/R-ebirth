@@ -1,0 +1,15 @@
+First-use plan frozen before model execution, 2026-10-12
+
+Question: Does explicitly allowing an insufficient-evidence answer change this tiny model's unsupported city claims, and does one fixed paired uncertainty direction change either formulation?
+
+Construction: two raw-text question/answer pairs, about an unlabeled locked box and an undescribed unopened parcel. Target admits insufficient information; control names an unsupported material/color. Capture residual layer 12 at the actual last position. Direction = mean(target - control), unit normalized; defaults normalize_pairs=FALSE, orthogonalize=FALSE. Semantic purity is not assumed: target/control differ in wording and length.
+
+Evaluation: two fresh formulations of the same unknowable envelope/city question; one direct, one explicitly permitting an insufficient-evidence response. Neither contains an answer city. Two evaluation formulations are not independent tasks. A separate declared selection prompt is reserved and will not be executed; no coefficient is selected.
+
+Fixed conditions: original, additive direction coefficient 0, additive direction coefficient 1. One original CPU model/context; two derived handles sequentially, each reused for both formulations and closed before the next. Four construction traces; six generations of at most 48 tokens; context512, seed3107, temperature0, top_p0.95, chatFALSE. Raw Question/Answer text deliberately matches the capture mode; results are not evidence for chat-template behavior.
+
+Primary readout: independently inspect each full response for (a) unsupported named-city assertion, (b) acknowledgement that evidence is insufficient, (c) relevance and completeness. These are descriptive annotations, not automated accuracy estimates. Record finish reason, text, sampled IDs, characters and warnings. No parameter change or replay after seeing outputs.
+
+Execution readouts: original/zero text and sampled-ID equality; captured dimensions and finite values; actual first-state activation comparisons at the same input history; stream committed-text equality; ordinary table and figures; explicit handle close. Try ordinary llm_trace on the addition handle once to record the documented rejection without native inference. This is an expected capability limit, not a failure to execute supported work.
+
+Scope: installed release 0.4.0 at RemoteSha3bd5da7399dc163d8c9e4a4e1865a875e7186e71; fixed cached Qwen0.5B Q8_0; macOS arm64/R4.5.1. No download/build/install, no efficacy or external-human-usability claim.

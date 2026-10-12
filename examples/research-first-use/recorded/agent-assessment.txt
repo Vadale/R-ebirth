@@ -1,0 +1,61 @@
+Independent agent-led first use of relm 0.4.0
+2026-10-12 | Final original findings before reviewing revised documentation
+
+Result
+The bounded public-API workflow completed on the first execution (exit 0). It loaded one cached Qwen2.5-0.5B-Instruct Q8_0 original CPU handle, captured four selected residual vectors, constructed one recorded direction, generated six outputs using two sequential derived handles, compared actual first states, exported ordinary CSV/RDS and plots, and closed every handle. Both zero controls reproduced original text and sampled IDs exactly. No unexpected runtime failure occurred. This is functional evidence from an assistant-led exercise on the existing Mac/library, not independent external-human usability evidence or a fresh installation.
+
+Research question and result
+The independently chosen question was whether explicitly permitting an insufficient-evidence answer changes unsupported city assertions about an unmarked sealed envelope, and whether a fixed uncertainty-vs-unsupported-claim direction changes either formulation. Two novel construction pairs concerned an unlabeled locked box/material and undescribed unopened parcel/color. They were unrelated to the evaluation envelope question. Layer12, coefficient1, raw-text completion, seed3107, greedy sampling, context512 and max48 tokens were fixed before generation. A separate selection prompt was declared but not executed; no coefficient selection or tuning occurred.
+
+Full response texts are in results/run-01/outputs.csv and the four distinct responses appear in response-review.png. Originals and zero controls are identical:
+- Direct/original: invents New York City and an 'NY' letter detail; 33 sampled states, finish='stop'.
+- Explicit/original: asserts New York, acknowledges insufficient evidence, then invents a 'Mayor of New York' addressee and contradicts itself; 48 states, finish='length'.
+- Direct/addition1: invents New York and nonexistent answer choices, then drifts into additional Q&A; 48 states, finish='length'.
+- Explicit/addition1: invents Spanish and Madrid; 21 states, finish='stop'.
+
+Manual review marks all six responses as unsupported city assertions and task-incorrect. Merely containing 'insufficient' does not make the answer correct. The intervention changed output and first-state activations, but these results show no improvement for the chosen case. The shorter explicit/addition response is still false. They do not show the model's quality ceiling, general steering failure/success, or safety/bias effects.
+
+Concrete execution evidence
+- Exactly four construction captures, each 896 finite rows at layer12/residual/last. Source positions: 30,28,32,28. No spill was requested or exercised.
+- Six generations; no retry or replay; two derived handles (coef0,coef1), one at a time. Each reused for two formulations.
+- Two first-state comparisons matched the recorded same-prompt input history and returned 896-coordinate tables. Difference L2 norms: 0.9999999799 and 0.9999999809. This is compatible with the configured unit addition; it is not independent scientific validation of semantic direction meaning.
+- Exact streamed committed-text/returned-text equality for every generation. finish_reason comes from actual prompt_end events, not inferred from character length.
+- Documented trace-on-intervened request was deliberately tried once and rejected before usable output with class relm_error_trace; raw condition retained in expected-trace-rejection.rds and conditions.rds. This is a capability guard, not an unexpected runtime bug.
+- Only surfaced R warning: relm built under R4.5.3 while host is R4.5.1. No native tokenizer warning appeared in this execution log; no absence-of-risk claim follows.
+- Timings retained: checksum1.55s, load0.409s, traces0.041–0.064s, generations0.409–1.257s. These are local observations, not a performance benchmark. Execution was launched in the background while friction notes were written; one later completion read and session collection, no polling loop.
+
+First-use documentation findings, by priority
+1. Doc gap: release onboarding still uses 'Phase6 build', 'main' and '0.3.0 tag' instructions. Current 0.4.0 language would remove uncertainty. Actual capability checks remain useful.
+2. Doc gap: a small user-authored research path is hard to find before the large scripted walkthrough. The script fixes prompts internally. Show a short initial question→generate→filtered trace→ordinary table path, then link the larger controlled experiment. Avoid making exact provenance machinery the first thing a researcher must understand.
+3. Doc gap: engine_revision is required for direction provenance, but public setup does not demonstrate how a release user identifies that label. Show the mapping for the supported release and explicitly identify it as caller-supplied build provenance; do not pretend it authenticates the native binary.
+4. Capability/discoverability gap: llm_compare takes live on_state observations, not two llm_trace tables. Ordinary tracing refuses an intervened handle; live capture requires async and optional packages. The installed help explains this accurately, but an early conceptual explanation would save a mistaken first attempt.
+5. Doc/API complexity: llm_direction requires disjoint nonempty construction, selection and evaluation manifests even when a coefficient is fixed and no selection occurs. Explain the small-demo convention explicitly. My selection prompt is reserved/unexecuted, so it is not selection evidence.
+6. Doc gap: the public complete script reports sampled-state counts and cap indicators but omits the actual finish reason. Showing on_token prompt_end makes truncation and stopping easier to interpret. Counts alone are not output-token counts or answer quality.
+
+Strengths
+The README immediately states ordinary R outputs and a research purpose. The support matrix is explicit about architecture/site/backend boundaries and correctly separates mechanism from efficacy. The complete script has zero controls, bounded captures, sequential ownership, explicit cleanup, fixed settings, provenance, plot export and retained partial results. Installed help answered all signature and state-alignment questions without source inspection. Plot exports at10x7 inches were legible, though the timeline's automatic y tick labels crowd around coefficient1.
+
+APIs actually exercised
+llm; llm_trace (four supported original captures plus one expected rejected derived request); llm_direction; llm_apply_direction(operator='add',coef0/1); llm_generate(async=TRUE,on_state,on_token); llm_timeline; llm_compare; plot.llm, plot.relm_comparison and plot.relm_timeline; close; ordinary R CSV/RDS persistence.
+
+Read or inferred only, not exercised
+Synchronous llm_generate; chat-template generation; llm_cancel (watchdog never fired); projection; ablation; direct llm_steer; embeddings; llm_tokens; llm_logits; probes; model downloading; images; managed spill; live coefficient changes; GPU/Metal/Windows/Linux execution; installation/build procedures. A shorter README synchronous call would be a documented adaptation of my exercised settings, not an independently replayed synchronous result.
+
+Limits and independence
+I am an AI agent with R/programming knowledge, instructed to evaluate public interfaces; I am not a human novice. Mandatory CLAUDE contained project history. Otherwise I used only frozen public README/getting-started/supported-workflow/research-workflow files and installed help/vignettes. The allowed installed contrast-directions vignette itself included historical F6e aggregate results, which I encountered while reading usage; no historical holdout prompt corpus, implementation source, acceptance workflow or report was inspected or reused. One new question, two formulations, two hand-written pairs, one coefficient and raw completion cannot establish general efficacy, semantic purity, reliable uncertainty detection or scientific causality. Wording/length differ in the construction pairs; the direction may encode those differences.
+
+Assistance requests: 0. Tool permission escalations: 0. Parent supplied the intended installed library/model/resource limits and asked for a reusable observed subset; no scientific or API assistance was sought. At most three derived handles were authorized; only two used. No downloads, installations, builds, broad tests, Git operations or shared product/doc edits were performed.
+
+Artifacts
+- plan.txt: experiment frozen before execution.
+- recipe.R: self-contained runnable experiment with environment overrides for model/output, retained conditions, timings and cleanup. It deliberately refuses an existing output directory. Do not replay merely to view results.
+- render-evidence.R: model-free rendering/review from saved outputs.
+- first-use-friction.txt: chronological notes, including exposure boundary and assistance count.
+- initial/: frozen consulted public files plus installed vignette sources.
+- help/: consulted installed help and package/session metadata.
+- run-01.log: actual background process output, exit0.
+- results/run-01/: all raw outputs, input hashes, direction/captures, live states/events, classed conditions, session, DLL identity, provenance, timing, tables and graphics.
+- Useful presentation PNGs: response-review.png (all distinct actual texts), direct-comparison.png, explicit-comparison.png, configured-model.png. addition-timeline.png is valid but token IDs are identifiers, not a meaningful numeric outcome scale.
+
+Portable delivery addendum
+The original executed recipe is also preserved byte-for-byte as executed-recipe.R. portable-recipe.R has only environment/configuration placement changes, with an explicit portable-recipe.diff. R parse and output-only checks pass; the prompt/settings objects and experiment function body (apart from removing the relocated assignments) are identical. It has not been replayed. See portable-notes.txt. Recommended public pair: response-review.png plus direct-comparison.png.

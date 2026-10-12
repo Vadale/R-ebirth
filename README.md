@@ -1,179 +1,143 @@
-# R-ebirth · relm
+# relm · Local model research in R
 
-**Local language models and model research in ordinary R.**
+![relm — Local models. Inspectable experiments. Conceptual illustration of a model layer connected to an R workspace.](docs/images/relm-research.png)
 
-R-ebirth is delivered as **relm**, an R package that runs open-weight models on
-your machine. Generate text, produce constrained JSON, embed documents and
-inspect a model's internal activity. Results are ordinary character vectors,
-`data.frame`s and matrices, ready for R's statistical and plotting tools.
+[Get started](docs/getting-started.md) ·
+[Research walkthrough](examples/research-workflow/README.md) ·
+[Documentation](docs/README.md) ·
+[0.4.0 release](https://github.com/Vadale/R-ebirth/releases/tag/v0.4.0)
 
-The product focuses on reproducible model research: observe internal activity,
-compare conditions, apply interventions and evaluate their effects in R.
-Topic modelling is an existing application of these tools. The
-[active product plan](SOLO-PHASE-PLAN.md#0-product-objective-and-delivery-boundary)
-prioritizes this workflow, understandable visual results and maintainability.
+**Run a local language model, inspect its internal activity, and test interventions
+from an ordinary R session.** relm returns text, data frames and matrices that
+work with the statistical and plotting tools you already use.
 
-The native engine is a pinned, patched llama.cpp embedded through Rust. No
-Python, model server or API key is required. relm runs on stock R >= 4.5.
+R-ebirth is the repository; **relm** is the R package. It embeds a Rust/llama.cpp
+engine and runs on stock R ≥ 4.5. No Python runtime, model server or API key is
+required. Once a model is downloaded, inference runs locally.
 
-![A topic map of scientific abstracts, with clusters named by a local model](rebirth/man/figures/topic-map.png)
+## From a question to an inspectable experiment
 
-*The [topic-modelling demo](rebirth/vignettes/topics-without-python.qmd) combines
-relm embeddings with optional UMAP and HDBSCAN packages, then asks the model to
-name each cluster.*
+**Load → observe → compare → intervene → evaluate → export**
 
-## relm 0.4.0
+| What you want to do | Start here | What you get |
+| --- | --- | --- |
+| Generate text or constrained JSON | `llm_generate()` | Text, with streaming and asynchronous options |
+| Represent documents numerically | `llm_embed()` | A numeric matrix, one row per input |
+| Inspect values inside the model | `llm_trace()` | Selected activations as a data frame or matrix slice |
+| Measure whether activations predict a label | `llm_probe()` | Grouped statistical probes with held-out evaluation options |
+| Test a controlled intervention | `llm_direction()`, `llm_apply_direction()`, `llm_ablate()` | Derived model handles; the original remains available |
+| Inspect and share the experiment | `plot()`, `llm_compare()`, `llm_timeline()` | Base-R figures and exportable tables |
 
-Version 0.4.0 brings the model-research workflow together with code maintenance:
+An **activation** is a numerical value inside the model. A **direction** combines
+paired activation differences into a reusable vector. An intervention changes
+selected values during generation so you can study what changes in the output.
+These tools support experiments; a changed activation or shorter answer does
+not establish an improvement.
 
-- **Observe:** capture selected activations or receive bounded live observations
-  while text generation runs on a native worker.
-- **Compare:** build reusable directions from paired captures and inspect recorded
-  conditions with `llm_compare()` and `llm_timeline()`.
-- **Intervene:** apply fixed additions, ablations or component projections on
-  supported sites. Live coefficient updates are additive; projection is static.
-- **Export:** keep text, token events, plain R tables, provenance and plots in one
-  [reproducible walkthrough](examples/research-workflow/README.md).
+## Install and try it
 
-Structured JSON, embeddings, probes, supported image input and the existing
-[batch](examples/funding-extraction/README.md) and
-[service](examples/funding-service/README.md) examples remain available.
-The [release notes](rebirth/NEWS.md#relm-040) describe the changes;
-[the release record](docs/release-0.4.0.md) distinguishes preparation from verified
-publication. These tools support experiments; they do not guarantee better or
-safer model answers.
-
-## Install and start
-
-[r-universe](https://vadale.r-universe.dev/relm) distributes macOS and Linux builds
-and tracks the repository's `main` branch. Check the installed version before
-using the 0.4.0 research interfaces:
+[r-universe](https://vadale.r-universe.dev/relm) distributes the package. Prebuilt
+binaries need no Rust or C++ toolchain. macOS arm64 and Linux are the supported
+routes; Windows/CUDA validation is still pending.
 
 ```r
 install.packages(
   "relm",
   repos = c("https://vadale.r-universe.dev", getOption("repos"))
 )
-packageVersion("relm")
 ```
 
-Start with the [package quickstart](rebirth/README.md#quickstart) or the
-[installation guide](docs/getting-started.md). The package README includes
-generation, structured output and a small activation trace. The guide covers
-source builds, image input and troubleshooting.
-
-For the primary research path, follow the
-[complete experiment walkthrough](examples/research-workflow/README.md): load a
-cached model, capture paired activations, construct directions, compare fixed
-interventions and export texts, provenance and plots. It uses the integrated
-research APIs and checks installed capabilities
-before loading the model. See the [support matrix](docs/supported-workflow.md)
-for sites, backends, optional dependencies and interpretation limits.
-
-## Background generation and token streaming
-
-Background generation and token streaming share one native worker. Check that your installed
-`llm_generate()` has `on_token` before trying the streaming example:
+The first model download below is approximately 675 MB; later calls reuse the
+verified cached file. This small model is useful for learning the workflow,
+but its answers still need checking.
 
 ```r
-pending <- llm_generate(m, "Explain bootstrap resampling.", seed = 17,
-  async = TRUE, on_token = function(batch) {
-    cat(paste0(batch$text[batch$event == "text"], collapse = ""))
-  })
-observed <- promises::then(pending, function(value) print(value),
-  onRejected = function(error) message(conditionMessage(error)))
+library(relm)
+
+path <- llm_download("qwen2.5-0.5b-instruct-q8_0")
+m <- llm(path, backend = "cpu", context_length = 512L)
+
+prompt <- paste0(
+  "Question: A sealed envelope has no markings. ",
+  "Which city is named in the letter inside?\nAnswer:"
+)
+answer <- llm_generate(m, prompt, chat = FALSE, max_tokens = 48L,
+                       temperature = 0, seed = 3107L)
+cat(answer)
+
+trace <- llm_trace(m, prompt, layers = 12L, positions = "last",
+                   components = "residual", spill = FALSE)
+activations <- as.matrix(trace, layer = 12L)
+dim(activations) # one captured position × the model's hidden width
+
+close(m)
 ```
 
-Load `m` using the quickstart first. Optional `later` and `promises` packages
-are required. Callbacks receive bounded plain-data-frame batches containing
-token IDs, committed text and prompt-end events. They run on R's thread, so
-keep them short. `llm_cancel(m)` requests cooperative cancellation; a caller-owned
-binary file connection can receive the event CSV instead. See the
-[streaming guide](rebirth/vignettes/token-streaming.qmd),
-[live token-statistics demo](tests/demos/demo-streaming.R) and
-[implementation status](docs/wp10-implementation.md).
+`chat = FALSE` continues the supplied text; `chat = TRUE` uses the model's chat
+template. `llm_trace()` observes a forward pass over the supplied prompt, not
+the generated answer. Use `on_state` for observations during generation.
+CPU makes this example explicit; the normal `backend = "auto"` selects Metal
+on supported Apple silicon builds. See [installation and troubleshooting](docs/getting-started.md).
 
-## Model and intervention graphics
+## Go beyond the first call
 
-Three views use base R: `plot(model)` maps model blocks and configured
-interventions, `llm_compare()` compares recorded live observations, and
-`llm_timeline()` retains the coefficients the worker actually applied. Plotting
-these plain-data results returns the plotted table invisibly for export.
-The [graphics guide](rebirth/vignettes/model-interventions.qmd) includes a
-download-free example and a bounded real-model workflow.
+- **Run a complete experiment:** the [research walkthrough](examples/research-workflow/README.md)
+  saves prompts, fixed conditions, original/zero/intervention outputs, provenance,
+  comparison plots and CSV/RDS files. The [research guide](docs/research-guide.md)
+  explains which API to use at each step.
+- **Watch generation:** [stream token events](rebirth/vignettes/token-streaming.qmd)
+  or inspect [live states and intervention graphics](rebirth/vignettes/model-interventions.qmd).
+  Async/live generation uses optional `later` and `promises`.
+- **Construct an intervention:** [record contrast directions](rebirth/vignettes/contrast-directions.qmd)
+  and apply residual addition or component projection on supported sites.
+  Projection is static; live coefficient updates are additive.
+- **Use the wider R ecosystem:** [probe activations](rebirth/vignettes/anatomy-lab.qmd),
+  build a [topic map](rebirth/vignettes/topics-without-python.qmd), or use supported
+  [image/text models](rebirth/vignettes/vision.qmd).
+- **Build a repeatable application:** separate [batch](examples/funding-extraction/README.md)
+  and [local-service](examples/funding-service/README.md) templates preserve jobs
+  and results. Valid JSON does not guarantee correct extracted facts.
 
-Check that your installation
-exports `llm_compare` and `llm_timeline`. Caller-recorded provenance is validated,
-not authenticated. Divergent input histories withhold differences, and the map
-does not portray measured activity or causal edges. The
-[implementation report](docs/f6c-implementation.md) records source-specific acceptance;
-the [current ledger](docs/validation-status.md) records integration. For readable captions use a wide RStudio Plots
-pane and redraw after resizing, or export at 10 by 7 inches (7 by 5 was also
-checked); very narrow panes can clip labels.
+## A real experiment, with the outputs left visible
 
-## What has been validated
+![Measured original, residual-addition and difference values for 896 neurons in the first live state.](examples/research-first-use/recorded/direct-comparison.png)
 
-Numerical paths are checked against independent references, with the scope of
-each comparison recorded in the [validation ledger](docs/validation-status.md).
-The batch and service examples passed their declared Mac/Linux operational
-acceptance; service stress includes 1,000 requests on one persistent worker.
-The [0.3.0 release report](docs/release-0.3.0.md) records packaging, installed-package
-checks and the remaining CRAN-readiness findings.
-The [service report](docs/service-implementation.md) preserves exact source
-provenance and separates the stress measurements from later lifecycle checks.
+*Actual `llm_compare()` output from the [first-use study](docs/research-first-use.md),
+not a mockup. The intervention changed layer-12 activations and generated text.
+It did not make the small model stop inventing missing facts. The report retains
+every response, controls, settings and exported values.*
 
-These results do not establish extraction accuracy. The frozen D1 pilot produced
-10/10 schema-valid outputs, but only 2/10 task-valid and 0/10 fully grounded
-records; all four quality promotion gates failed. See the
-[evaluation report](docs/d1-extraction-evaluation.md). Likewise, steering and
-ablation are research instruments for auditing model behavior, not guarantees
-of safety or bias removal.
+## What works today—and what needs care
 
-Windows/CUDA, tracing inside the vision encoder, and several larger-model
-hardware checks remain open. The [public execution plan](docs/structured-production-plan.md)
-records completed work and remaining limits. Phase 7 maintainer acceptance is
-complete; independent external-user feedback follows publication.
+Version **0.4.0 is published**, including a verified installation from r-universe
+on Mac arm64. The [release record](docs/release-0.4.0.md) separates package checks,
+distribution checks and the scope of actual model tests.
 
-## Statistical analysis with an external assistant
+- **Supported combinations matter.** Model architecture, component and backend
+  support vary. Start with the [support matrix](docs/supported-workflow.md).
+  Windows/CUDA and vision-encoder tracing are not accepted capabilities.
+- **Memory is part of experiment design.** Select layers and token positions.
+  Trace spill manages capture storage; it does not bound all model/process memory.
+  Close model and derived handles when finished.
+- **Interpret changes cautiously.** Probes measure predictive decodability;
+  model maps show configuration; interventions provide no safety or debiasing
+  guarantee. Numerical checks have [documented scopes and limits](docs/validation-status.md).
+- **Functionality and research quality are separate.** Small-model examples and
+  a successful workflow do not demonstrate general task accuracy. The
+  [first-use assessment](docs/research-first-use.md) records an agent's actual
+  experience, including poor outputs and remaining usability gaps. Human
+  external-user validation is still open.
 
-The optional [R Statistical Analysis skill](integrations/skills/r-statistical-analysis/SKILL.md)
-guides a compatible assistant through statistical work using the R ecosystem:
-from group comparisons to repeated-measures, survival and other specialist
-analyses. It produces reproducible code, interpretable estimates, uncertainty
-and diagnostics. Ordinary statistics does not require relm or a model download.
+## Contribute or explore
 
-This repository companion is separate from the relm 0.3.0 package. It requires
-an R runtime and an assistant with execution tools; broad ecosystem support is
-a routing capability, not a claim that every method has been tested. See
-[local installation and usage](integrations/README.md), the
-[integration plan](docs/i1-assistant-plan.md) and
-[observed results and limits](docs/i1-implementation.md).
-Local R computation does not make a hosted assistant offline: selected tool
-results can enter model context. Public marketplace acceptance is separate.
+Start with the [documentation index](docs/README.md). The package lives in
+`rebirth/`; runnable studies and application templates live in `examples/` and
+`tests/demos/`. The [development workflow](docs/development-workflow.md),
+[architecture](ARCHITECTURE.md) and [simplifier compendium](docs/simplifier-compendium.md)
+explain how to contribute and keep changes readable. The optional
+[statistical-assistant companion](integrations/README.md) is separate from relm.
 
-## Repository and development
-
-| Path | Contents |
-|---|---|
-| `rebirth/` | R package, installed as `relm` |
-| `rebirth/src/rust/` | Native Cargo workspace: `rebirth-llm` and `rebirth-ffi` |
-| `rebirth/src/llama.cpp/` | Pinned engine, patches and vendoring provenance |
-| `tests/llm-golden/` | Independent numerical references |
-| `tests/demos/` | Runnable research demos |
-| `examples/` | Funding batch and service applications |
-| `integrations/skills/` | Portable assistant skills outside the relm core |
-| `docs/` | Design, acceptance evidence and installation guide |
-
-For builds and contributions, read the [architecture](ARCHITECTURE.md) and
-[development workflow](docs/development-workflow.md). The
-[simplifier compendium](docs/simplifier-compendium.md) explains the cleanup rules
-and current debt dispositions. The public specifications
-are [SOLO-PHASE-PLAN.md](SOLO-PHASE-PLAN.md), the
-[execution plan](docs/structured-production-plan.md), [API-GRAMMAR.md](API-GRAMMAR.md)
-and [DECISIONS.md](DECISIONS.md).
-
-## License
-
-Original code is dual-licensed **MIT OR Apache-2.0**; see [LICENSE.md](LICENSE.md).
-Vendored llama.cpp is MIT; see [NOTICE](NOTICE). Modified redistributions must
-rename under the [trademark policy](TRADEMARK.md).
+Original code is **MIT OR Apache-2.0** ([license](LICENSE.md)); vendored llama.cpp
+is MIT ([notice](NOTICE)). Modified redistributions must follow the
+[trademark policy](TRADEMARK.md). The cover is a conceptual illustration;
+research figures are identified by their actual data source.
