@@ -1,0 +1,22 @@
+{
+  "check-config-path.py": "44c533478f17605b8eab3419d50743bc5857cf083ebe359b8cf953e6e918831f",
+  "corrected/build.rs": "05a4c8db4514fb9d126005608c261bbafc71adc6626ec50dc37e0fc8392119c8",
+  "corrected/site-preflight.log": "4cd0200ed0bddccb1561b06b5ffbf716a6ca4f6556abaa1235660aa716d6b3a8",
+  "corrected-hosted-shadow.log": "c9602fc055aa55875051959f1c9e5d243056c85b370f0dc882c8d9b38d53ae93",
+  "corrected-rustc.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "corrected-standalone-path.log": "8da75f832110eddc8e75c0cf4d012986b41c2f47f0ff0ed397b71b4d71a78971",
+  "original/build.log": "d46a9261f1969f497bfdbdd0d11d770797126282709403eee9d36be238a61caa",
+  "original/build.rs": "da060ac57c464f19c232b3f28299c92f95971bddde02f526c281e8f7be6a3817",
+  "original/check-path-guard.sh": "6a481d4ff8f9bc01d2521bd2073a49c6c094faec5514d0d3dfc460d581085def",
+  "original/check.log": "3a487d2f1e220ed30ef96ae37c9a0697a449d54133cf5430db2f23ea56c8eb54",
+  "original/document.log": "e8c880c06033c320a06588f55ad244d5a15a0dbce7240cbda73a63fc2cd88020",
+  "original/driver-error.log": "5f743c0c69bded566c0aa2d025a0ee4ec5bd73857ade6c8094d0bd7f737ee652",
+  "original/install.log": "a52088bafc6f14072300614ef528d8a5fa0980dfe3cc6ba04caf28e4b0dd917f",
+  "original/site-preflight.log": "b7282d787d4140b0b6d7d231f15efebcce6b9ca6553c215e2d34a7e3b4c0c90d",
+  "original/source-manifest.json": "2dfa509ff0ab029e4a832c5f8e099d2212091109596d7b0b3b87d42cf5ac8dc3",
+  "original/status.json": "3033bca28e5bdc49e493d40f54435064f6c3d843c31337943ed5bd7435976796",
+  "original-hosted-shadow.log": "1100542c16f89eb5401fafa659826c1de858b868af24e0ec35ede8363f0c54f6",
+  "original-rustc.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "receipt.json": "f04d7b425e2fbfeb0769dab222047e9918f9af3825ca38e24d9379e5ec1da36f",
+  "scope.json": "50c6bf2b6783925cf5d5bec0451c21c94ab2ca8b139f6213becb7f3354dbeeea"
+}

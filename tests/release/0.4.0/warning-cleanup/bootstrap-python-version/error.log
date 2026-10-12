@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/private/tmp/relm-release-0.4.0/run-packaging-warning-cleanup.py", line 49, in main
+    with tarfile.open(parent_tar) as t: t.extractall(ROOT,filter='data')
+TypeError: extractall() got an unexpected keyword argument 'filter'

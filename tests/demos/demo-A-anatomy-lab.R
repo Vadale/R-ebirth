@@ -263,7 +263,7 @@ demo_A_plot <- function(res, file = NULL) {
     on.exit(grDevices::dev.off(), add = TRUE)
   }
   op <- graphics::par(no.readonly = TRUE)
-  on.exit(graphics::par(op), add = TRUE)
+  on.exit(graphics::par(op), add = TRUE, after = FALSE)
   .demo_par()
 
   pal <- .demo_pal_qual(2)
@@ -280,9 +280,16 @@ demo_A_plot <- function(res, file = NULL) {
   graphics::grid(nx = NA, ny = NULL, col = "grey92", lty = 1)
   graphics::abline(h = 0.5, lty = 2, col = "grey45") # chance
   graphics::text(min(L), 0.5, "chance", pos = 3, offset = 0.2, col = "grey45", cex = 0.8)
-  graphics::arrows(L, res$lower, L, res$upper,
-    angle = 90, code = 3, length = 0.03, col = "grey30"
-  )
+  nonzero <- res$lower != res$upper
+  if (any(nonzero)) {
+    graphics::arrows(L[nonzero], res$lower[nonzero], L[nonzero], res$upper[nonzero],
+      angle = 90, code = 3, length = 0.03, col = "grey30"
+    )
+  }
+  # A collapsed interval is a tick, not an arrow with an undefined direction.
+  if (any(!nonzero)) {
+    graphics::points(L[!nonzero], res$lower[!nonzero], pch = 95, col = "grey30")
+  }
   graphics::lines(L, res$auc, col = series, lwd = 1.5)
   .demo_points(L, res$auc, bg = series, cex = 1.3)
 
@@ -314,10 +321,13 @@ demo_A_plot <- function(res, file = NULL) {
   for (i in seq_along(band)) {
     x <- .demo_A_layer_matrix(tr, band[[i]])
     if (!is.null(rows)) x <- x[rows, , drop = FALSE]
+    # Match glmnet's small-fold fallback explicitly. Lambda selection uses
+    # deviance in this case; the reported out-of-fold AUC is still computed below.
+    measure <- if (nrow(x) / max(foldid) < 10) "deviance" else "auc"
     cvfit <- glmnet::cv.glmnet(
       x, yf,
       family = "binomial", alpha = 0, # ridge: hidden_size >> n (p >> n)
-      foldid = foldid, type.measure = "auc", keep = TRUE
+      foldid = foldid, type.measure = measure, keep = TRUE
     )
     oof <- cvfit$fit.preval[, match(cvfit$lambda.min, cvfit$lambda)]
     ci <- demo_auc_ci(oof, y, seed = 1L)

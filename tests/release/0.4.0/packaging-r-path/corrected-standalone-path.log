@@ -1,0 +1,13 @@
+cargo:rerun-if-changed=native/projection_state.c
+cargo:rerun-if-env-changed=R_HOME
+cargo:rerun-if-env-changed=R_INCLUDE_DIR
+cargo:rerun-if-env-changed=CC
+cargo:rerun-if-env-changed=R_MAKEVARS_USER
+cargo:rustc-link-search=native=/private/tmp/relm-release-0.4.0/r-config-fix/corrected-standalone-path
+cargo:rustc-link-lib=static=relm-r-state
+In file included from native/projection_state.c:7:
+In file included from /Library/Frameworks/R.framework/Resources/include/Rinternals.h:44:
+/Library/Frameworks/R.framework/Resources/include/R_ext/Boolean.h:62:36: warning: unknown warning group '-Wfixed-enum-extension', ignored [-Wunknown-warning-option]
+   62 | #  pragma clang diagnostic ignored "-Wfixed-enum-extension"
+      |                                    ^
+1 warning generated.

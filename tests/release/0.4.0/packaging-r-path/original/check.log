@@ -1,0 +1,36 @@
+* using log directory ‘/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck’
+* using R version 4.5.1 (2025-06-13)
+* using platform: aarch64-apple-darwin20
+* R was compiled by
+    Apple clang version 16.0.0 (clang-1600.0.26.6)
+    GNU Fortran (GCC) 14.2.0
+* running under: macOS Tahoe 26.6.2
+* using session charset: UTF-8
+* using option ‘--as-cran’
+* checking for file ‘relm/DESCRIPTION’ ... OK
+* this is package ‘relm’ version ‘0.4.0’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ... [3s/23s] NOTE
+Maintainer: ‘Alessandro Vadala <vadale93@gmail.com>’
+
+New submission
+
+Size of tarball: 5151682 bytes
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking for sufficient/correct file permissions ... OK
+* checking whether package ‘relm’ can be installed ... [162s/47s] ERROR
+Installation failed.
+See ‘/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/00install.out’ for details.
+* DONE
+
+Status: 1 ERROR, 1 NOTE
+See
+  ‘/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/00check.log’
+for details.
+

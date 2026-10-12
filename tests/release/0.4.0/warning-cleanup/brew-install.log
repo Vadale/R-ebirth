@@ -1,0 +1,11 @@
+==> Would install 2 formulae:
+checkbashisms tidy-html5
+==> Downloading https://ghcr.io/v2/homebrew/core/checkbashisms/manifests/2.26.12
+==> Downloading https://ghcr.io/v2/homebrew/core/tidy-html5/manifests/5.8.0
+==> Fetching downloads for: checkbashisms and tidy-html5
+✔︎ Bottle checkbashisms (2.26.12)
+✔︎ Bottle tidy-html5 (5.8.0)
+==> Pouring checkbashisms--2.26.12.all.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/checkbashisms/2.26.12: 7 files, 73.9KB
+==> Pouring tidy-html5--5.8.0.arm64_tahoe.bottle.tar.gz
+🍺  /opt/homebrew/Cellar/tidy-html5/5.8.0: 15 files, 3.2MB

@@ -1,0 +1,90 @@
+* installing *source* package ‘relm’ ...
+** this is package ‘relm’ version ‘0.4.0’
+** using staged installation
+Using cargo 1.96.0 (30a34c682 2026-05-25)
+Using rustc 1.96.0 (ac68faa20 2026-05-25)
+Using cmake 4.3.4
+Building for CRAN.
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+** libs
+using C compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+using C++ compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+using SDK: ‘’
+clang -arch arm64 -std=gnu2x -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG   -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c entrypoint.c -o entrypoint.o
+if [ -d ./vendor ]; then \
+		echo "=== Using offline vendor directory ==="; \
+		mkdir -p /private/tmp/relm-release-0.4.0/packaging/cargo-home && \
+		cp rust/vendor-config.toml /private/tmp/relm-release-0.4.0/packaging/cargo-home/config.toml; \
+	elif [ -f ./rust/vendor.tar.xz ]; then \
+		echo "=== Using offline vendor tarball ==="; \
+		tar xf rust/vendor.tar.xz && \
+		mkdir -p /private/tmp/relm-release-0.4.0/packaging/cargo-home && \
+		cp rust/vendor-config.toml /private/tmp/relm-release-0.4.0/packaging/cargo-home/config.toml; \
+	fi
+export CARGO_HOME=/private/tmp/relm-release-0.4.0/packaging/cargo-home && \
+	export PATH="/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/R_check_bin:/Applications/RStudio.app/Contents/Resources/app/quarto/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/alessandrovadala/.local/bin:/Users/alessandrovadala/.antigravity/antigravity/bin:/Users/alessandrovadala/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Users/alessandrovadala/.codex/tmp/arg0/codex-arg0vo4iII:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/alessandrovadala/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/alessandrovadala/.local/bin:/Users/alessandrovadala/.antigravity/antigravity/bin:/opt/anaconda3/bin:/opt/anaconda3/condabin:/Users/alessandrovadala/.cargo/bin:/Users/alessandrovadala/.lmstudio/bin:/Users/alessandrovadala/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS:/Users/alessandrovadala/.lmstudio/bin:/Users/alessandrovadala/.cargo/bin" && \
+	RUSTFLAGS=" --print=native-static-libs" cargo build   -p rebirth-ffi --lib --release --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.46
+   Compiling autocfg v1.5.1
+   Compiling libm v0.2.16
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling getrandom v0.3.4
+   Compiling version_check v0.9.5
+   Compiling semver v1.0.28
+   Compiling core-foundation-sys v0.8.7
+   Compiling ahash v0.8.12
+   Compiling bytes v1.12.0
+   Compiling once_cell v1.21.4
+   Compiling num-traits v0.2.19
+   Compiling iana-time-zone v0.1.65
+   Compiling rustc_version v0.4.1
+   Compiling serde_core v1.0.228
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling arrow-schema v59.0.0
+   Compiling flatbuffers v25.12.19
+   Compiling cc v1.2.65
+   Compiling hashbrown v0.17.1
+   Compiling extendr-ffi v0.9.0
+   Compiling syn v2.0.118
+   Compiling cmake v0.1.58
+   Compiling paste v1.0.15
+   Compiling serde_json v1.0.145
+   Compiling bitflags v2.13.0
+   Compiling serde v1.0.228
+   Compiling rebirth-llm v0.0.0 (/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/00_pkg_src/relm/src/rust/rebirth-llm)
+   Compiling lazy_static v1.5.0
+   Compiling ryu v1.0.23
+   Compiling num-integer v0.1.46
+   Compiling num-complex v0.4.6
+   Compiling chrono v0.4.45
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling num-bigint v0.4.8
+   Compiling extendr-api v0.9.0
+   Compiling rebirth-ffi v0.0.0 (/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/00_pkg_src/relm/src/rust/rebirth-ffi)
+error: failed to run custom build command for `rebirth-ffi v0.0.0 (/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/00_pkg_src/relm/src/rust/rebirth-ffi)`
+
+Caused by:
+  process didn't exit successfully: `/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/00_pkg_src/relm/src/./rust/target/release/build/rebirth-ffi-e7913e9b7c72df4a/build-script-build` (exit status: 101)
+  --- stdout
+  cargo:rerun-if-changed=native/projection_state.c
+  cargo:rerun-if-env-changed=R_HOME
+  cargo:rerun-if-env-changed=R_INCLUDE_DIR
+  cargo:rerun-if-env-changed=CC
+  cargo:rerun-if-env-changed=R_MAKEVARS_USER
+
+  --- stderr
+
+  thread 'main' (18530969) panicked at rebirth-ffi/build.rs:8:5:
+  R CMD config CC failed
+  note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+warning: build failed, waiting for other jobs to finish...
+make: *** [rust/target/release/librelm.a] Error 101
+ERROR: compilation failed for package ‘relm’
+* removing ‘/private/tmp/relm-release-0.4.0/packaging/check/relm.Rcheck/relm’

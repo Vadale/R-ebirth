@@ -1,0 +1,59 @@
+{
+  "status": "passed",
+  "verification_scope": "Retained outputs and hashes only; zero builds/tests/models/RNG calls.",
+  "source_files": 816,
+  "repo_inputs": 797,
+  "installed_files": 49,
+  "raw_stage_logs": 4,
+  "tar_files": 814,
+  "repository_byte_equal": 794,
+  "generated_files": [
+    "build/vignette.rds",
+    "inst/doc/anatomy-lab.html",
+    "inst/doc/anatomy-lab.qmd",
+    "inst/doc/anatomy-lab.R",
+    "inst/doc/contrast-directions.html",
+    "inst/doc/contrast-directions.qmd",
+    "inst/doc/contrast-directions.R",
+    "inst/doc/model-interventions.html",
+    "inst/doc/model-interventions.qmd",
+    "inst/doc/model-interventions.R",
+    "inst/doc/token-streaming.html",
+    "inst/doc/token-streaming.qmd",
+    "inst/doc/token-streaming.R",
+    "inst/doc/topics-without-python.html",
+    "inst/doc/topics-without-python.qmd",
+    "inst/doc/topics-without-python.R",
+    "inst/doc/vision.html",
+    "inst/doc/vision.qmd",
+    "inst/doc/vision.R"
+  ],
+  "metadata_changed": [
+    "DESCRIPTION"
+  ],
+  "source_sha256": "48978da212cad853ce56055a8d8733328ce4835053b3d9c12e8e8a9544339048",
+  "binary_sha256": "971b72086c4bce52170d191e1bcc24af6a7b373c98a9b6d76e5a5855f16c04d2",
+  "dll_sha256": "8aee29a6b22fd630dbb570b5b0260559d49bac34e2862bad41ee611908b70bb4",
+  "binary_files_equal_installed": 49,
+  "package_check": {
+    "errors": 0,
+    "warnings": 0,
+    "notes": [
+      "Incoming new submission and 5152966-byte source archive."
+    ]
+  },
+  "tests": {
+    "passed": 5010,
+    "failed": 0,
+    "warnings": 0,
+    "skipped": 130
+  },
+  "installed_functions": 250,
+  "native_fixture_hooks": 0,
+  "compiled_profile_fields": 27,
+  "install_log_compiler_linker_warnings": 0,
+  "library_tool_files": 71,
+  "diagnostic_only_vendor_files": 14,
+  "carried_vignette_files": 18,
+  "limits": "Mac production package scope. Prior pkgdown/RStudio/model acceptance retains its earlier source/DLL provenance; this does not replay it or claim Windows/CUDA/CRAN acceptance."
+}

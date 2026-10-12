@@ -1,0 +1,9 @@
+cargo:rerun-if-changed=native/projection_state.c
+cargo:rerun-if-env-changed=R_HOME
+cargo:rerun-if-env-changed=R_INCLUDE_DIR
+cargo:rerun-if-env-changed=CC
+cargo:rerun-if-env-changed=R_MAKEVARS_USER
+
+thread 'main' (18547487) panicked at /private/tmp/relm-release-0.4.0/r-config-fix/build-original.rs:8:5:
+R CMD config CC failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

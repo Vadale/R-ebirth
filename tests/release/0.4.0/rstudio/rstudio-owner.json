@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "inference_calls": 0,
+  "job_id": "F3B7C316",
+  "elapsed_seconds": 64,
+  "readme": {
+    "embedding_shape": [
+      3,
+      896
+    ],
+    "maximum_unit_norm_error": 2.47214944071317e-08,
+    "trace_coordinates": 896,
+    "async_seed": 17
+  },
+  "demo_A": {
+    "best_layer": 11,
+    "best_auc": 1,
+    "shift_up": 0.1185761324351,
+    "shift_down": -0.867674809673492
+  },
+  "demo_B": {
+    "corpus_size": 1200,
+    "seed": 20240707,
+    "evidence": "Retained actual RStudio PASS output and bound function assertions; result arrays were not persisted.",
+    "exact_scope": "First 16 abstracts embedded twice; all 1200 embedded once; seeded layout, labels, clustering and six statistics checks repeated using that one full embedding."
+  },
+  "warning_counts": {
+    "Too few (< 10) observations per fold for type.measure='auc' in cv.lognet; changed to type.measure='deviance'. Alternatively, use smaller value for nfolds": 24,
+    "zero-length arrow is of indeterminate angle and so skipped": 6
+  },
+  "verified_at": "2026-10-12T08:41:01.937872+00:00",
+  "input_hashes_matched": 7,
+  "installed_hashes_matched": 49,
+  "raw_job_output_records": 323,
+  "actual_rstudio_state": "succeeded",
+  "visual_inspection": {
+    "file": "demo-A.png",
+    "result": "passed",
+    "observation": "Title, axes, model/n=40/bootstrap labels and best-layer annotation legible and unclipped. Six zero-length interval arrows disclosed."
+  },
+  "release_warning_approval": "pending"
+}

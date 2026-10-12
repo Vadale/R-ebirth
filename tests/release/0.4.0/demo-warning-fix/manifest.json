@@ -1,0 +1,9 @@
+{
+  "check-demo-warnings.R": "02a40b50f23ec0682b420337754047259bf940459e8558f65c54537608cc0b8c",
+  "check-demo-warnings.log": "7cc577c9f0af3baa8281cb6c317e1b14e5d9b806d4ceb20755035cbcbeb065d3",
+  "demo-A-after.R": "91b798007de8a97f5237a9158addbd10bda065be3a9fe6d58fddfa86e540a4e2",
+  "demo-A-before.R": "f681877593356c51e083e44addbd2463db2b3eccf01022c23e75c904f9019579",
+  "demo-A-corrected.png": "2f7f7447e0796f1b8f3db03d6974764529164a45c3501a489e7402e862602740",
+  "demo-warning-owner.rds": "1dcfbf73df7f56c9dbed2e05ad33111510fcb7b71ed538d7e8a0c2964f0eacdc",
+  "scope.md": "9fdfeed93d98da176d75e25cab19ac63dcbfdb0259e0f539d22b20a5ff3ff584"
+}

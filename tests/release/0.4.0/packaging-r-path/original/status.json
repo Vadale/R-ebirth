@@ -1,0 +1,62 @@
+{
+  "status": "failed",
+  "pid": 74340,
+  "started_at": 1791740433.623852,
+  "stages": [
+    {
+      "name": "document",
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/private/tmp/relm-release-0.4.0/check-release-docs.R",
+        "/private/tmp/relm-release-0.4.0/packaging/rebirth",
+        "/private/tmp/relm-maintenance-040/builds-20261011-180737/production/library/relm"
+      ],
+      "status": "passed",
+      "started_at": 1791740434.1014662,
+      "exit_code": 0,
+      "finished_at": 1791740434.824492,
+      "log_sha256": "e8c880c06033c320a06588f55ad244d5a15a0dbce7240cbda73a63fc2cd88020"
+    },
+    {
+      "name": "build",
+      "command": [
+        "R",
+        "CMD",
+        "build",
+        "/private/tmp/relm-release-0.4.0/packaging/rebirth"
+      ],
+      "status": "passed",
+      "started_at": 1791740439.356968,
+      "exit_code": 0,
+      "finished_at": 1791740573.704203,
+      "log_sha256": "d46a9261f1969f497bfdbdd0d11d770797126282709403eee9d36be238a61caa"
+    },
+    {
+      "name": "check",
+      "command": [
+        "R",
+        "CMD",
+        "check",
+        "--as-cran",
+        "--install-args=--build",
+        "--output=/private/tmp/relm-release-0.4.0/packaging/check",
+        "/private/tmp/relm-release-0.4.0/packaging/relm_0.4.0.tar.gz"
+      ],
+      "status": "failed",
+      "started_at": 1791740578.324773,
+      "exit_code": 1,
+      "finished_at": 1791740650.039776,
+      "log_sha256": "3a487d2f1e220ed30ef96ae37c9a0697a449d54133cf5430db2f23ea56c8eb54"
+    }
+  ],
+  "source_merge": "60ccdcb3e28742501aac86021349f8e4552a8a79",
+  "model_scope": "Optional model environments cleared; committed synthetic package tests execute.",
+  "cargo_scope": "Offline existing registry snapshot; MAKEFLAGS overrides only temporary CARGOTMP, not features or compiler settings.",
+  "source_files": 799,
+  "source_manifest_sha256": "2dfa509ff0ab029e4a832c5f8e099d2212091109596d7b0b3b87d42cf5ac8dc3",
+  "stage": "check",
+  "source_tarball_sha256": "0d0df0392482a313181feb6c76223828a8fa1a3b3f183c727740e15bfcff8daa",
+  "error": "[]",
+  "finished_at": 1791740650.1905549
+}

@@ -1606,3 +1606,20 @@ default-context guard retains actual-input projection arithmetic, complete site
 writes and exact original/zero output coverage. Production cache/attention policy
 is unchanged; no default whole-forward F64 equivalence or universal kernel
 correctness is claimed. See [the observations and exact test scopes](docs/maintenance-0.4.0-numerics.md).
+
+**Release warning cleanup (2026-10-12):** after inspecting the actual package and
+demo diagnostics, the founder requested "cerca di correggere tutto". This
+authorizes the bounded warning corrections: install checkbashisms and current
+HTML Tidy as local checking tools; rebuild the same testthat version with the
+installed R in an isolated tools library; select the C++ linker explicitly and
+remove the duplicate Darwin standard-library flag; express the demo's existing
+small-fold metric selection and collapsed intervals without warnings. Restore
+graphics parameters before closing the output device.
+
+The vendor exception is limited to removing GCC/Clang diagnostic suppression
+directives from the existing b10828 snapshot, with a reversible patch and updated
+post-patch digest. Keep optimization pragmas, computations, API/layout, upstream
+and pre-patch identities unchanged. Newly exposed compiler warnings must be
+inspected, not suppressed. This is neither a vendor version bump nor a waiver of
+the release's zero-warning check. Preserve the original diagnostics and acceptance
+scopes; a new affected build is required before identifying new release assets.

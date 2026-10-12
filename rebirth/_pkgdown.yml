@@ -26,6 +26,11 @@ reference:
   contents:
   - llm_trace
   - as.matrix.relm_trace
+  - llm_direction
+  - llm_apply_direction
+  - llm_compare
+  - plot.llm
+  - plot.relm_timeline
   - llm_steer
   - llm_ablate
 - title: Statistical probes
@@ -48,3 +53,5 @@ articles:
   - topics-without-python
   - vision
   - token-streaming
+  - contrast-directions
+  - model-interventions

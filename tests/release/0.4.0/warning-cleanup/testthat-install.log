@@ -1,0 +1,41 @@
+* installing *source* package ‘testthat’ ...
+** this is package ‘testthat’ version ‘3.3.2’
+** package ‘testthat’ successfully unpacked and MD5 sums checked
+** using staged installation
+** libs
+using C compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+using C++ compiler: ‘Apple clang version 21.0.0 (clang-2100.3.34.2)’
+using SDK: ‘’
+clang -arch arm64 -std=gnu2x -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I../inst/include -DCOMPILING_TESTTHAT  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2  -c init.c -o init.o
+In file included from init.c:1:
+In file included from /Library/Frameworks/R.framework/Resources/include/R.h:70:
+/Library/Frameworks/R.framework/Resources/include/R_ext/Boolean.h:62:36: warning: unknown warning group '-Wfixed-enum-extension', ignored [-Wunknown-warning-option]
+   62 | #  pragma clang diagnostic ignored "-Wfixed-enum-extension"
+      |                                    ^
+1 warning generated.
+clang++ -arch arm64 -std=gnu++17 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I../inst/include -DCOMPILING_TESTTHAT  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2   -c test-catch.cpp -o test-catch.o
+clang++ -arch arm64 -std=gnu++17 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I../inst/include -DCOMPILING_TESTTHAT  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2   -c test-example.cpp -o test-example.o
+clang++ -arch arm64 -std=gnu++17 -I"/Library/Frameworks/R.framework/Resources/include" -DNDEBUG -I../inst/include -DCOMPILING_TESTTHAT  -I/opt/R/arm64/include    -fPIC  -falign-functions=64 -Wall -g -O2   -c test-runner.cpp -o test-runner.o
+In file included from test-runner.cpp:7:
+In file included from ../inst/include/testthat.h:1:
+In file included from ../inst/include/testthat/testthat.h:170:
+In file included from /Library/Frameworks/R.framework/Resources/include/R.h:70:
+/Library/Frameworks/R.framework/Resources/include/R_ext/Boolean.h:62:36: warning: unknown warning group '-Wfixed-enum-extension', ignored [-Wunknown-warning-option]
+   62 | #  pragma clang diagnostic ignored "-Wfixed-enum-extension"
+      |                                    ^
+1 warning generated.
+clang++ -arch arm64 -std=gnu++17 -dynamiclib -Wl,-headerpad_max_install_names -undefined dynamic_lookup -L/Library/Frameworks/R.framework/Resources/lib -L/opt/R/arm64/lib -o testthat.so init.o test-catch.o test-example.o test-runner.o -F/Library/Frameworks/R.framework/.. -framework R
+installing to /private/tmp/relm-release-0.4.0/warning-cleanup/tools-library/00LOCK-testthat/00new/testthat/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (testthat)

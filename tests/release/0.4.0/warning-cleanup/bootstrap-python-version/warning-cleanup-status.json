@@ -1,0 +1,12 @@
+{
+  "status": "failed",
+  "pid": 15909,
+  "started_at": 1791795895.0038788,
+  "stages": [],
+  "scope": "Affected production rebuild/check for compiler directives and C++ linking; carried six rendered vignettes and parent site/RStudio scopes. Optional model environments cleared, committed synthetic package tests execute.",
+  "binding_sha256": "3a652c1b892e5db2ffdb3675dc66a748617dffb2dc06e9bf02f42b61d3cc5074",
+  "source_head": "60ccdcb3e28742501aac86021349f8e4552a8a79",
+  "source_tree": "Dirty source plus exact input inventory; not a clean-tree claim.",
+  "error": "extractall() got an unexpected keyword argument 'filter'",
+  "finished_at": 1791795895.0444758
+}

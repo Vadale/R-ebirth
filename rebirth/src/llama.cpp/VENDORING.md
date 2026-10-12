@@ -17,7 +17,7 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz` |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
 | Pruned tree SHA256 (pre-patch) | `fd1b8327ef675dc91de4b9fde547d8afb7d4c6b2aa63a8f989e421cf59edd7ac` |
-| Pruned tree SHA256 (post-patch) | `f131eca9a917a5c3bff5cfc4a80d4f88c24597747f9298a7e021cf7586955db7` |
+| Pruned tree SHA256 (post-patch) | `265c9a00f49bbe69b475ca1dbf5a90f503c8f82af3a458aecbde60255aa6a7f8` |
 
 D-032 advances b9726 to b10828 (commit
 `3ad1ba7336986d98592d3e28cafd1a406715351f`) for native Spark 2.5 support.
@@ -71,8 +71,10 @@ as-is, which is CRAN/`R CMD INSTALL`-robust and needs no diff-applier dependency
 
 | `0004-cpu-callback-signatures.diff` | `ggml/src/ggml-cpu/ggml-cpu.c`, seven adapters and assignments | Exact generic callback signatures forwarding to unchanged typed CPU kernels. | D-040 |
 
+| `0005-compiler-diagnostics.diff` | GCC/Clang diagnostic directives in 14 source/header files | Remove warning suppression; retain optimization pragmas and computations. No upstream version change. | D-048 release warning cleanup |
+
 The patches touch engine sources only; all CMake inputs are pristine upstream.
-D-039 and D-040 change only the post-patch digest; the b10828 upstream and pre-patch
+D-039, D-040 and the D-048 diagnostic cleanup change only the post-patch digest; the b10828 upstream and pre-patch
 identities above are unchanged. D-040 changes no numerical kernel. D-039 does not add general overflow handling for
 arbitrary graph sizes. Its source-derived layout and native gates are separate
 from the historical b10828 numerical acceptance below.
@@ -126,7 +128,7 @@ Phase 8).
 - `vendor/CMakeLists.txt`, `vendor/hash/` (the upstream SHA/xxHash library),
   `vendor/{hash,stb,miniaudio,nlohmann,sheredom}/CMakeLists.txt`,
   `vendor/stb/stb_image.h` (image decode) and `vendor/miniaudio/miniaudio.h`
-  (compiled into `mtmd-helper.cpp` unchanged — audio Option A, D-026; the R API
+  (compiled into `mtmd-helper.cpp`; patch 0005 removes diagnostic directives only — audio Option A, D-026; the R API
   never reaches the audio decoder: the Rust image FFI gates input on an image
   magic-byte allow-list, WP-V2).
 - `LICENSE` (llama.cpp MIT — required at configure time by `cmake/license.cmake`

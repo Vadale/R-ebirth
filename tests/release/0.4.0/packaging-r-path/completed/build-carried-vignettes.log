@@ -1,0 +1,10 @@
+* checking for file ‘/private/tmp/relm-release-0.4.0/packaging-r-path/relm/DESCRIPTION’ ... OK
+* preparing ‘relm’:
+* checking DESCRIPTION meta-information ... OK
+* cleaning src
+* running ‘cleanup’
+* checking vignette meta-information ... OK
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+* building ‘relm_0.4.0.tar.gz’
+
