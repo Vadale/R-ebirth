@@ -2,6 +2,9 @@
 
 Start with one supported path, then use the specialist guides when needed.
 
+[Watch relm in motion](animated-research.md): two short, code-generated animations
+of actual activation comparisons and token events, with static figures and data.
+
 ## Start and complete an experiment
 
 1. [Install and check capabilities](getting-started.md).

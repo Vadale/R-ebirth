@@ -1643,3 +1643,13 @@ scopes; a new affected build is required before identifying new release assets.
   example/link/render checks and the existing final CI route. No runtime, API,
   dependency, vendor, numeric-bound, Phase8/9 or new-release change is implied.
   Remaining API ergonomics are reported rather than hidden by new wrappers.
+
+**Animated demonstrations addendum (2026-10-12):** after merging PR67, the founder
+requested videos or GIFs showing interesting relm graphs on GitHub. Add two
+code-rendered animations using already recorded D049 observations: aligned
+activation/zero/addition comparisons and token-stream output inspection. Preserve
+actual values and full text, fixed labelled axes, event order and original data;
+distinguish presentation timing from inference speed. Supply static alternatives,
+the rendering recipe and source provenance. No new model experiment, retuning,
+runtime/API/dependency change or expanded efficacy claim is authorized by this
+media work. Use relevant data/render/link checks and the existing final CI route.

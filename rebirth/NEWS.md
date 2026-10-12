@@ -1,5 +1,9 @@
 # Development documentation
 
+* Recorded research animations now show an aligned activation intervention and
+  token-stream comparison in the GitHub README. GIFs, videos and static views are
+  generated from existing observations without rerunning models; source data,
+  rendering code and interpretation limits are linked.
 * The README now leads with a complete first call and the model-research workflow.
   A research API guide explains prompt tracing, live observations, comparisons,
   fixed interventions and the meaning of plotted results.
