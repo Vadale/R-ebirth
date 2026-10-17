@@ -92,7 +92,8 @@ test_that("llm() raises relm_error_backend for a backend the build lacks", {
   f <- tempfile(fileext = ".gguf")
   file.create(f)
   on.exit(unlink(f), add = TRUE)
-  # CUDA is never built in WP1, so it is unavailable on every CI platform.
+  # Exercise the R boundary independently of this machine's GPU/SDK.
+  local_mocked_bindings(rebirth_available_backends = function() "cpu")
   cnd <- tryCatch(llm(f, backend = "cuda"), condition = function(c) c)
   expect_s3_class(cnd, "relm_error_backend")
   expect_identical(cnd$requested, "cuda")

@@ -1,0 +1,9 @@
+{
+  "native/projection.cpp": "87a22c84559beac46a5735b82b07959f998f5dafcc7e8f252cfce04249272e48",
+  "native/projection.h": "930f5dc8e3b4cce0050efa0291d00871728cd1e4bafd5c7df73e3490a6cdc17e",
+  "src/projection.rs": "44b77be2e93e0770c3b51343bd9bb62c78b595fd29cf02e978a8fc9271e48be0",
+  "src/ffi.rs": "dd47e7e70a18eea28d5736dd3492bd6c01498d4dbc669bde1ac3fbac7b47ed12",
+  "src/projection_tests.rs": "ad7b94832be29cc728e40830239753f13c3eb96078c21c89a31a1632312695a5",
+  "src/projection_review_tests.rs": "c73bdbc206d897c4d868b9e7eb8c3f748cf904012125655eea3f06769fba8fb2",
+  "src/projection_production_worker_tests.rs": "de6d15aa0f09c701a1ba4c7b3168beeab22c60b96196e6fa563c13be30887ee6"
+}

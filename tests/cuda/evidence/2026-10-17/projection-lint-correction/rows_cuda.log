@@ -1,0 +1,21 @@
+["cargo", "test", "--locked", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "-j", "2", "--offline", "--lib", "projection::tests::cuda_projection_device_rows_match_scalar_equation", "--", "--exact", "--nocapture", "--test-threads=1"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (/tmp/relm-phase8/native-initial/target/debug/deps/rebirth_llm-2be65d5ce4723e08)
+
+running 1 test
+test projection::tests::cuda_projection_device_rows_match_scalar_equation ... F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_baseline","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":3,"is_host":0,"usage":2,"device_type":1,"flags":510,"device_index":0,"type_name_bytes":[67, 85, 68, 65, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[67, 85, 68, 65, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[67, 85, 68, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":false,"decode_failed":false}
+F6E_PROJECTION_BUFFER {"schema":1,"phase":"probe_edited","width":32,"depth":3,"layer_native":1,"component_code":0,"kind":3,"is_host":0,"usage":2,"device_type":1,"flags":510,"device_index":0,"type_name_bytes":[67, 85, 68, 65, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"device_name_bytes":[67, 85, 68, 65, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"registry_name_bytes":[67, 85, 68, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],"rows":1,"bytes":128,"dtype_f32":true,"view_offset":0,"data_nonnull":true,"contiguous":true,"no_staging_supported":false,"decode_failed":false}
+
+thread 'projection::tests::cuda_projection_device_rows_match_scalar_equation' (2377817) panicked at rebirth-llm/src/domain.rs:180:5:
+native access without an execution permit
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    projection::tests::cuda_projection_device_rows_match_scalar_equation
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 181 filtered out; finished in 0.21s
+
+error: test failed, to rerun pass `-p rebirth-llm --lib`

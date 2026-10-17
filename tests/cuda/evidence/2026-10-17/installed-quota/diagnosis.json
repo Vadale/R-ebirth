@@ -1,0 +1,11 @@
+{
+  "status": "diagnosed",
+  "failed_pid": 2389708,
+  "native_compile_carried_seconds": 0.04,
+  "document_link_and_run": "passed, 13.20s",
+  "R_shared_link": "failed R_X86_64_PC32: ggml_backend_cuda_register_host_buffer; requires -fPIC",
+  "CUDA_compile_flags_before": "no PIC; C/C++ already PIC",
+  "correction": "CUDA branch CMAKE_POSITION_INDEPENDENT_CODE=ON; generated CUDA -Xcompiler=-fPIC verified before compilation",
+  "models_attempted": 0,
+  "source_drift_before_correction": false
+}

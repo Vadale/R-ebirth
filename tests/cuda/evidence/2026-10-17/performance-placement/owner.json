@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "scope": "Separate load-only placement and diagnostics; not recovery of original benchmark logs",
+  "valid_loads": 2,
+  "generation_trace_derive_tokenize": 0,
+  "source_hashes": 1091,
+  "installed_hashes": 29,
+  "raw_files": 7,
+  "DLL": "8bf2d82f337262386b54ed89ab77f18da15b3a0dd0e819b1ce1435fa535b24a5",
+  "offload": {
+    "cpu": "0/25",
+    "cuda": "25/25"
+  },
+  "known_warning_per_load": "[3] load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden",
+  "new_native_warnings_errors": 0,
+  "metadata_RDS": {
+    "cpu": "fc411b20f9829072de710f4abbb54ddf114f39358592b716e0ca43f13236fe6e",
+    "cuda": "d0de68a5aca30f2886517a1a2faa0b85a92c6c1dff80f81d8a3292e5fb08b666"
+  }
+}

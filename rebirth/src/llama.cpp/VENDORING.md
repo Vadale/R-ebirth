@@ -16,8 +16,8 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | ggml version | 0.23.0 (per `ggml/CMakeLists.txt`) |
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz` |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
-| Pruned tree SHA256 (pre-patch) | `fd1b8327ef675dc91de4b9fde547d8afb7d4c6b2aa63a8f989e421cf59edd7ac` |
-| Pruned tree SHA256 (post-patch) | `265c9a00f49bbe69b475ca1dbf5a90f503c8f82af3a458aecbde60255aa6a7f8` |
+| Pruned tree SHA256 (pre-patch) | `e89c0d0b00b6d31cccf55ff5463a06455617341c15b966d5daeda89fb03b27b5` |
+| Pruned tree SHA256 (post-patch) | `49f780edda8a7da6bfb3f49af162dc1a57848aa91e4ee96ba75fc8372b724dfc` |
 
 D-032 advances b9726 to b10828 (commit
 `3ad1ba7336986d98592d3e28cafd1a406715351f`) for native Spark 2.5 support.
@@ -99,11 +99,13 @@ same-version pristine/model comparison gates are recorded separately.
 
 ## Prune manifest
 
-The snapshot keeps what a static CPU + Metal (with embedded shaders) build of
+The snapshot keeps what CPU, Metal (with embedded shaders), and optional CUDA builds of
 `libllama` + `ggml` + `libmtmd` (the multimodal library, WP-V1/D-026) needs.
-"When unsure, keep" — the prune is conservative and still builds. Non-CPU/
-non-Metal ggml backends return per-backend when their phase arrives (CUDA at
-Phase 8).
+"When unsure, keep" — the prune is conservative. D-050 restores the complete
+282-file `ggml/src/ggml-cuda/` directory byte-for-byte from the same verified
+b10828 tarball for Phase 8. No existing source, patch, or upstream pin changes.
+The former CPU/Metal pre/post digests were `fd1b8327ef675dc91de4b9fde547d8afb7d4c6b2aa63a8f989e421cf59edd7ac`
+and `265c9a00f49bbe69b475ca1dbf5a90f503c8f82af3a458aecbde60255aa6a7f8`.
 
 ### Kept (build inputs)
 
@@ -115,7 +117,8 @@ Phase 8).
 - All non-directory core build inputs directly under `ggml/src/`, including
   `CMakeLists.txt`, `ggml-version.h.in`, the ggml/gguf core files and headers.
 - `ggml/src/ggml-cpu/` (full, all `arch/` subdirs), `ggml/src/ggml-metal/`
-  (including `ggml-metal.metal`), `ggml/src/ggml-blas/`.
+  (including `ggml-metal.metal`), `ggml/src/ggml-blas/`, and
+  `ggml/src/ggml-cuda/` (D-050, unchanged upstream CUDA sources).
 - `tools/mtmd/` **library** inputs only (WP-V1, D-026): `clip.{cpp,h}`,
   `clip-impl.h`, `clip-model.h`, `clip-graph.h`, `mtmd.{cpp,h}`,
   `mtmd-image.{cpp,h}`, `mtmd-audio.{cpp,h}`, `mtmd-helper.{cpp,h}`,
@@ -134,7 +137,7 @@ Phase 8).
 - `LICENSE` (llama.cpp MIT — required at configure time by `cmake/license.cmake`
   and reproduced in the repo-root `NOTICE`).
 
-### Removed (not needed for the static CPU + Metal libraries)
+### Removed (not needed for CPU, Metal, or CUDA libraries)
 
 - Top-level dirs: `examples/`, `tests/`, `models/`, `docs/`, `media/`,
   `scripts/`, `ci/`, `app/`, `benches/`, `pocs/`, `grammars/`, `conversion/`,
@@ -152,8 +155,8 @@ Phase 8).
   configures them unconditionally; their headers remain pruned. `cpp-httplib`,
   tool/server JSON parsing and subprocess video decoding are not built;
   `build.rs` sets `MTMD_VIDEO=OFF` and disables common/tools.
-- Non-CPU/non-Metal ggml backend source dirs under `ggml/src/`:
-  `ggml-cann`, `ggml-cuda`, `ggml-et`, `ggml-hexagon`, `ggml-hip`, `ggml-musa`,
+- Other ggml backend source dirs under `ggml/src/`:
+  `ggml-cann`, `ggml-et`, `ggml-hexagon`, `ggml-hip`, `ggml-musa`,
   `ggml-opencl`, `ggml-openvino`, `ggml-rpc`, `ggml-sycl`, `ggml-virtgpu`,
   `ggml-vulkan`, `ggml-webgpu`, `ggml-zdnn`, `ggml-zendnn`.
   (The matching `ggml/include/ggml-*.h` headers are kept — they are tiny and are

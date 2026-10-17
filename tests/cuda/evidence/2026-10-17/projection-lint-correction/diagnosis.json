@@ -1,0 +1,13 @@
+{
+  "status": "failed",
+  "source_drift": false,
+  "passed": [
+    "clippy",
+    "identity_existing:21",
+    "identity_cuda:14"
+  ],
+  "failed": "rows_cuda",
+  "reason": "New private fixture calls clear_memory without NativeGuard; unchanged execution-domain assertion correctly refused",
+  "executed": "one tiny load, baseline logits, first budget refusal and first constructor with two CUDA probe decodes; no main audited rows",
+  "correction": "Add existing NativeGuard around private fixture, no domain/runtime/assertion/tolerance changes"
+}

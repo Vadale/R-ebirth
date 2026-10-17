@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/relm-phase8/run-projection-cuda.py", line 33, in <module>
+    run('clippy',['cargo','clippy','--locked','--offline','--manifest-path',manifest,'-p','rebirth-llm','--features','cuda','--tests','-j','2','--','-D','warnings'],env)
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/relm-phase8/run-projection-cuda.py", line 16, in run
+    if result.returncode: raise RuntimeError(f'{name} exited {result.returncode}')
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: clippy exited 101

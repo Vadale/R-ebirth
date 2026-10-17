@@ -1,0 +1,16 @@
+{
+  "status": "failed",
+  "pid": 2379826,
+  "output": "/tmp/relm-phase8/installed-ffi-deps",
+  "stages": [
+    {
+      "name": "install",
+      "returncode": 1,
+      "log_sha256": "18808f5c9511e1c849528f6d57c4627c955d33bd379fdc34c7965166c744d826"
+    }
+  ],
+  "carried_configure": "/tmp/relm-phase8/installed-cuda/configure.log",
+  "stage": "install",
+  "updated_at": "2026-10-17T17:48:49.048933+00:00",
+  "error": "install failed; preserve and diagnose"
+}

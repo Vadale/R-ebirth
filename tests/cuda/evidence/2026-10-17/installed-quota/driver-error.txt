@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/relm-phase8/run-installed-quota.py", line 63, in <module>
+    stage('install',['R','CMD','INSTALL','--no-configure','--library='+str(library),str(package)],ROOT,env)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/relm-phase8/run-installed-quota.py", line 15, in stage
+    if r.returncode:raise RuntimeError(name+' failed; preserve and diagnose')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: install failed; preserve and diagnose

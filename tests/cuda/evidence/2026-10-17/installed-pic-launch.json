@@ -1,0 +1,7 @@
+{
+  "pid": 2390858,
+  "driver": "/tmp/relm-phase8/run-installed-pic.py",
+  "sha256": "1d5c7bd64c539fdabd453dd98a38efde43bd4ba65117da91d0398535e199d212",
+  "launched_at": "2026-10-17T18:02:54.235816+00:00",
+  "status_file": "/tmp/relm-phase8/installed-pic-status.json"
+}

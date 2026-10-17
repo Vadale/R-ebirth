@@ -1,0 +1,14 @@
+["cargo", "test", "--locked", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "-j", "2", "--offline", "--test", "synthetic_spill", "--", "--nocapture", "--test-threads=1"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/synthetic_spill.rs (/tmp/relm-phase8/native-initial/target/debug/deps/synthetic_spill-b64844944459a0c0)
+
+running 6 tests
+test an_existing_spill_file_is_rejected_without_truncation_or_cleanup ... ok
+test explicit_positions_recycled_across_differing_lengths_is_reported ... ok
+test in_budget_captures_in_memory ... ok
+test over_budget_spills_and_the_file_equals_the_in_memory_capture ... ok
+test over_budget_without_spill_is_oom_before_capture ... ok
+test spill_creation_rejects_symlinks_and_preserves_their_targets ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+

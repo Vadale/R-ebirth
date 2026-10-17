@@ -1,0 +1,11 @@
+{
+  "stage": "clippy",
+  "native_tests_executed": 0,
+  "source_files": 935,
+  "source_drift": false,
+  "errors": [
+    "test-only CUDA control declaration visible in non-test library",
+    "manual OR range pattern rejected by clippy"
+  ],
+  "correction": "cfg(all(test,feature=cuda)); use 1..=3; no runtime semantics/bounds changes"
+}

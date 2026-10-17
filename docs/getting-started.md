@@ -27,7 +27,9 @@ packageVersion("relm")
 r-universe builds from `main`, so its version can differ from the latest tagged
 release. Version 0.4.0 has been published and installed from r-universe on
 macOS arm64; see the [release record](release-0.4.0.md). Restart R after upgrading
-an already loaded package. Windows and CUDA still await their own acceptance.
+an already loaded package. Windows remains deferred. The development source has
+a separate [optional Linux CUDA build](linux-cuda.md); installing an ordinary
+r-universe binary does not establish CUDA capability.
 
 ## Choose your starting point
 
@@ -101,7 +103,8 @@ The default `chat = TRUE` applies the model's chat template. `temperature = 0`
 uses greedy generation.
 
 CPU is available through `llm(path, backend = "cpu")`; the default `"auto"`
-selects Metal on supported Apple silicon builds. The context length bounds the
+selects Metal on supported Apple silicon builds, then available compiled CUDA,
+then CPU. This is a priority rule, not a speed measurement. The context length bounds the
 model's token window, not total process memory. Always `close()` handles when done.
 
 The [package quickstart](../rebirth/README.md#quickstart) continues with embeddings,

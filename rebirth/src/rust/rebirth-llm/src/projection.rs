@@ -267,7 +267,7 @@ impl Runtime {
                     .rows
                     .checked_mul((self.plan.width * 4) as u64)
                     .ok_or("projection extent overflow")?
-                || (!ask && info.rows > 0 && !matches!(info.access, 1 | 2))
+                || (!ask && info.rows > 0 && !matches!(info.access, 1..=3))
             {
                 return Err("projection descriptor disagrees with row extent/buffer");
             }

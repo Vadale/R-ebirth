@@ -1,0 +1,7 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 2414557,
+  "scope": "separate load-only receipts; original benchmark native logs remain missing",
+  "updated_at": "2026-10-17T18:58:24.087869+00:00",
+  "stage": "cuda"
+}

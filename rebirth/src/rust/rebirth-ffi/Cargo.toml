@@ -32,6 +32,7 @@ selftest = []
 # Internal constructor gate; never enabled by the public package build.
 projection-private = ["selftest", "rebirth-llm/projection-private"]
 spill = ["rebirth-llm/spill"]
+cuda = ["rebirth-llm/cuda"]
 
 [dependencies]
 extendr-api = "0.9"

@@ -1,0 +1,28 @@
+{
+  "pid": 2274584,
+  "status": "awaiting_owner_verification",
+  "tasks": {
+    "launcher": {
+      "status": "finished"
+    },
+    "cuda": {
+      "status": "installed",
+      "prefix": "/home/grauk/.local/share/relm/toolchains/cuda-13.3.1"
+    },
+    "rust": {
+      "status": "installed"
+    },
+    "R": {
+      "status": "installed",
+      "library": "/home/grauk/.local/share/relm/phase8/R-library"
+    },
+    "upstream": {
+      "status": "downloaded_verified",
+      "path": "/tmp/relm-phase8/llama-b10828.tar.gz",
+      "sha256": "da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247"
+    }
+  },
+  "cuda_prefix": "/home/grauk/.local/share/relm/toolchains/cuda-13.3.1",
+  "r_library": "/home/grauk/.local/share/relm/phase8/R-library",
+  "updated_at": "2026-10-17T15:48:34.019846+00:00"
+}

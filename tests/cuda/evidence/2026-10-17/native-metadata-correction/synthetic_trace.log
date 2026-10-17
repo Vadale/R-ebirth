@@ -1,0 +1,10 @@
+["cargo", "test", "--locked", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "-j", "2", "--offline", "--test", "synthetic_trace", "--", "--nocapture", "--test-threads=1"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/synthetic_trace.rs (/tmp/relm-phase8/native-initial/target/debug/deps/synthetic_trace-3db95829009ba7d3)
+
+running 1 test
+test engine_activations_match_numpy_oracle_within_tolerance ... engine-vs-oracle activations max |Δ| = 3.838e-3 (atol 1.0e-2)
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+

@@ -1,0 +1,11 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 2402184,
+  "output": "/tmp/relm-phase8/performance-profile",
+  "updated_at": "2026-10-17T18:41:31.775582+00:00",
+  "stage": "profile",
+  "R_pid": 2402188,
+  "R_returncode": 0,
+  "source_drift": false,
+  "diagnostic_only": true
+}

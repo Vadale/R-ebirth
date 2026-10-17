@@ -1,0 +1,69 @@
+{
+  "status": "passed",
+  "scope": "System tools and actual standalone device execution, not relm acceptance",
+  "cuda_components": {
+    "cccl": {
+      "sha256": "26957cede74f9341174ecaf0372f3f886e7c46ceccb98d6dc775fe2b68d19268",
+      "bytes": 1262552,
+      "version": "13.3.3.4.1"
+    },
+    "cuda_crt": {
+      "sha256": "1251aa9d668c607a103489cd2250773701e83a313e355578044622cf36713a9d",
+      "bytes": 99152,
+      "version": "13.3.73"
+    },
+    "cuda_cudart": {
+      "sha256": "1e59c4888267d27ba1a9bd0f3669a6439db1334a96e754cd9013c7c73e18dc9d",
+      "bytes": 1573744,
+      "version": "13.3.29"
+    },
+    "cuda_culibos": {
+      "sha256": "db36b1381bb3105f2f13591393131d93f501958ebd44e9d0d52234cbbaf8cbd0",
+      "bytes": 21452,
+      "version": "13.3.33"
+    },
+    "cuda_nvcc": {
+      "sha256": "2ff9f9954060794a1c5134a933ccb45bec723d866b2629dadfe4a1a313f21068",
+      "bytes": 31628824,
+      "version": "13.3.73"
+    },
+    "libnvvm": {
+      "sha256": "206b1ab4979c09b5c32f8bf907c42bc9e16cd7454cf6036f524c45a58d060f93",
+      "bytes": 49508948,
+      "version": "13.3.73"
+    },
+    "libcublas": {
+      "sha256": "1794edb653adf48f5fa02d86bb738ed75888dd355aa39dadb6202d84d554c0dc",
+      "bytes": 817981368,
+      "version": "13.6.0.2"
+    },
+    "libnvjitlink": {
+      "sha256": "f79e25bb1ef2f22f26c09897f6cb8719634f38e7330bd4700a1ea9ec9591eaff",
+      "bytes": 56144284,
+      "version": "13.3.33"
+    }
+  },
+  "nvcc": "13.3.73",
+  "rustc": "1.99.1",
+  "R": "4.6.1",
+  "compiler": "GCC 15.3.0",
+  "driver": "580.178.04",
+  "device": "RTX 2060 Mobile / sm_75",
+  "R_library": "/home/grauk/.local/share/relm/phase8/R-library",
+  "R_installed_packages": 29,
+  "device_test": {
+    "status": "passed",
+    "stdout": "CUDA_DEVICE_PASS device=NVIDIA GeForce RTX 2060 capability=7.5 runtime=13030 driver=13000 values=32",
+    "source_sha256": "bbdd1182d650c83467811ec03f6cd8f9314ee36a5020ecd8594417265a38e500",
+    "binary_sha256": "52d1919c93eb8c589cbb390286df029df2cb5a7c2e73bb35223b055bd382c19f",
+    "compile_arguments": [
+      "-ccbin",
+      "/usr/bin/g++-15",
+      "-gencode",
+      "arch=compute_75,code=sm_75"
+    ],
+    "models": 0
+  },
+  "models": 0,
+  "installer_driver_status_preserved": true
+}

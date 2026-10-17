@@ -1,0 +1,460 @@
+{
+  "status": "timing_verified_with_recorded_logging_limitation",
+  "verified_at": "2026-10-17T18:59:47.385061+00:00",
+  "source_hashes": 1091,
+  "installed_hashes": 29,
+  "raw_files": 100,
+  "DLL": "8bf2d82f337262386b54ed89ab77f18da15b3a0dd0e819b1ce1435fa535b24a5",
+  "actual_counts": {
+    "loads": 3,
+    "tokenize": 3,
+    "derive": 3,
+    "trace": 12,
+    "generate": 48,
+    "live_states": 1536
+  },
+  "correctness": {
+    "all_success": true,
+    "same_backend_repeats_exact": true,
+    "sync_stream_live_text_exact": true,
+    "candidate_CUDA_output_events_states_exact_without_time": true,
+    "same_backend_live_repeated_coordinates": 1032192,
+    "candidate_live_coordinate_pairs": 458752
+  },
+  "metrics": {
+    "cpu_baseline": {
+      "plain_sync": {
+        "wall": {
+          "median": 2.427,
+          "min": 2.405,
+          "max": 2.447
+        },
+        "cpu_seconds": {
+          "median": 9.55799999999999,
+          "min": 9.471,
+          "max": 9.63300000000001
+        }
+      },
+      "plain_stream": {
+        "wall": {
+          "median": 2.499,
+          "min": 2.495,
+          "max": 2.512
+        },
+        "cpu_seconds": {
+          "median": 9.803,
+          "min": 9.717,
+          "max": 9.818
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.365685881,
+          "min": 0.363792983,
+          "max": 0.367471994
+        },
+        "first_R": {
+          "median": 0.403999999999996,
+          "min": 0.403,
+          "max": 0.404
+        },
+        "decode_tokens_per_second": {
+          "median": 61.0688143480654,
+          "min": 60.9708730089487,
+          "max": 61.5813844571979
+        }
+      },
+      "filtered_trace": {
+        "wall": {
+          "median": 0.599999999999998,
+          "min": 0.591000000000001,
+          "max": 0.611000000000001
+        },
+        "cpu_seconds": {
+          "median": 2.16399999999999,
+          "min": 2.143,
+          "max": 2.195
+        }
+      },
+      "projection_stream": {
+        "wall": {
+          "median": 2.655,
+          "min": 2.596,
+          "max": 2.756
+        },
+        "cpu_seconds": {
+          "median": 10.319,
+          "min": 10.176,
+          "max": 10.796
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.378604268,
+          "min": 0.357608188,
+          "max": 0.394692349
+        },
+        "first_R": {
+          "median": 0.404000000000003,
+          "min": 0.403000000000002,
+          "max": 0.404999999999998
+        },
+        "decode_tokens_per_second": {
+          "median": 56.9473239643324,
+          "min": 54.9132509690606,
+          "max": 58.3647609264915
+        }
+      },
+      "live_stream": {
+        "wall": {
+          "median": 3.537,
+          "min": 3.494,
+          "max": 3.6
+        },
+        "cpu_seconds": {
+          "median": 11.046,
+          "min": 10.966,
+          "max": 11.164
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.381036715,
+          "min": 0.380598033,
+          "max": 0.39970743
+        },
+        "first_R": {
+          "median": 0.399000000000001,
+          "min": 0.398999999999997,
+          "max": 0.409999999999997
+        },
+        "decode_tokens_per_second": {
+          "median": 40.694128543054,
+          "min": 39.8828638780518,
+          "max": 41.4038510762525
+        }
+      }
+    },
+    "cuda_baseline": {
+      "plain_sync": {
+        "wall": {
+          "median": 0.504,
+          "min": 0.504,
+          "max": 0.505
+        },
+        "cpu_seconds": {
+          "median": 0.504000000000001,
+          "min": 0.504,
+          "max": 0.505
+        }
+      },
+      "plain_stream": {
+        "wall": {
+          "median": 0.513999999999999,
+          "min": 0.513,
+          "max": 0.514
+        },
+        "cpu_seconds": {
+          "median": 0.527000000000001,
+          "min": 0.526,
+          "max": 0.528
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.016820079,
+          "min": 0.016334681,
+          "max": 0.017495583
+        },
+        "first_R": {
+          "median": 0.0520000000000005,
+          "min": 0.0519999999999996,
+          "max": 0.0529999999999999
+        },
+        "decode_tokens_per_second": {
+          "median": 261.184683957381,
+          "min": 261.178792681823,
+          "max": 261.364467650444
+        }
+      },
+      "filtered_trace": {
+        "wall": {
+          "median": 0.123000000000001,
+          "min": 0.101000000000001,
+          "max": 0.126
+        },
+        "cpu_seconds": {
+          "median": 0.124000000000001,
+          "min": 0.100999999999999,
+          "max": 0.126
+        }
+      },
+      "projection_stream": {
+        "wall": {
+          "median": 0.563000000000001,
+          "min": 0.563000000000001,
+          "max": 0.564
+        },
+        "cpu_seconds": {
+          "median": 0.542,
+          "min": 0.541,
+          "max": 0.542999999999999
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.023385156,
+          "min": 0.020870032,
+          "max": 0.02347155
+        },
+        "first_R": {
+          "median": 0.0520000000000014,
+          "min": 0.0519999999999996,
+          "max": 0.0520000000000014
+        },
+        "decode_tokens_per_second": {
+          "median": 256.345853202231,
+          "min": 256.288841835244,
+          "max": 256.452972165861
+        }
+      },
+      "live_stream": {
+        "wall": {
+          "median": 1.118,
+          "min": 1.109,
+          "max": 1.158
+        },
+        "cpu_seconds": {
+          "median": 1.093,
+          "min": 1.062,
+          "max": 1.098
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.022932794,
+          "min": 0.022913029,
+          "max": 0.023938019
+        },
+        "first_R": {
+          "median": 0.0339999999999989,
+          "min": 0.0329999999999995,
+          "max": 0.0419999999999998
+        },
+        "decode_tokens_per_second": {
+          "median": 118.10467939128,
+          "min": 112.97549208506,
+          "max": 118.130381702192
+        }
+      }
+    },
+    "cuda_live_1ms": {
+      "plain_sync": {
+        "wall": {
+          "median": 0.508,
+          "min": 0.506,
+          "max": 0.509
+        },
+        "cpu_seconds": {
+          "median": 0.508999999999999,
+          "min": 0.506,
+          "max": 0.508999999999999
+        }
+      },
+      "plain_stream": {
+        "wall": {
+          "median": 0.516,
+          "min": 0.513,
+          "max": 0.564
+        },
+        "cpu_seconds": {
+          "median": 0.532999999999999,
+          "min": 0.529,
+          "max": 0.534000000000001
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.01818708,
+          "min": 0.016478834,
+          "max": 0.018554026
+        },
+        "first_R": {
+          "median": 0.0530000000000008,
+          "min": 0.0519999999999996,
+          "max": 0.0540000000000003
+        },
+        "decode_tokens_per_second": {
+          "median": 259.949155828216,
+          "min": 258.898536886699,
+          "max": 259.968744060252
+        }
+      },
+      "filtered_trace": {
+        "wall": {
+          "median": 0.114,
+          "min": 0.101000000000001,
+          "max": 0.124000000000001
+        },
+        "cpu_seconds": {
+          "median": 0.115,
+          "min": 0.100999999999999,
+          "max": 0.125
+        }
+      },
+      "projection_stream": {
+        "wall": {
+          "median": 0.564,
+          "min": 0.56,
+          "max": 0.565
+        },
+        "cpu_seconds": {
+          "median": 0.546999999999999,
+          "min": 0.543000000000001,
+          "max": 0.547000000000001
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.023221657,
+          "min": 0.02322005,
+          "max": 0.023295898
+        },
+        "first_R": {
+          "median": 0.0519999999999996,
+          "min": 0.0519999999999996,
+          "max": 0.0520000000000005
+        },
+        "decode_tokens_per_second": {
+          "median": 254.922393343507,
+          "min": 254.592639218016,
+          "max": 255.200912715816
+        }
+      },
+      "live_stream": {
+        "wall": {
+          "median": 1.141,
+          "min": 1.126,
+          "max": 1.153
+        },
+        "cpu_seconds": {
+          "median": 1.237,
+          "min": 1.233,
+          "max": 1.264
+        },
+        "tokens": {
+          "median": 128.0,
+          "min": 128.0,
+          "max": 128.0
+        },
+        "first_native": {
+          "median": 0.022318121,
+          "min": 0.022188705,
+          "max": 0.022612571
+        },
+        "first_R": {
+          "median": 0.0359999999999996,
+          "min": 0.0289999999999999,
+          "max": 0.0359999999999996
+        },
+        "decode_tokens_per_second": {
+          "median": 115.304946092096,
+          "min": 113.404780845529,
+          "max": 116.920712051187
+        }
+      }
+    }
+  },
+  "telemetry": {
+    "cpu_baseline": {
+      "gpu_baseline_MiB": 1502.0,
+      "gpu_peak_MiB": 1507.0,
+      "rss_peak_KiB": 1271132,
+      "hwm_peak_KiB": 1284864,
+      "temperature_C": [
+        32.0,
+        36.0
+      ],
+      "sm_clock_MHz": [
+        300.0,
+        300.0
+      ],
+      "gpu_samples": 241,
+      "process_samples": 486
+    },
+    "cuda_baseline": {
+      "gpu_baseline_MiB": 1502.0,
+      "gpu_peak_MiB": 2798.0,
+      "rss_peak_KiB": 1108904,
+      "hwm_peak_KiB": 1108904,
+      "temperature_C": [
+        36.0,
+        45.0
+      ],
+      "sm_clock_MHz": [
+        300.0,
+        1980.0
+      ],
+      "gpu_samples": 67,
+      "process_samples": 133
+    },
+    "cuda_live_1ms": {
+      "gpu_baseline_MiB": 1502.0,
+      "gpu_peak_MiB": 2802.0,
+      "rss_peak_KiB": 1110840,
+      "hwm_peak_KiB": 1110840,
+      "temperature_C": [
+        42.0,
+        47.0
+      ],
+      "sm_clock_MHz": [
+        1845.0,
+        1965.0
+      ],
+      "gpu_samples": 67,
+      "process_samples": 134
+    }
+  },
+  "selection": {
+    "adopt_1ms": false,
+    "live_wall_reduction_fraction": -0.020572450805008913,
+    "live_CPU_ratio": 1.1317474839890211,
+    "action": "Reject candidate; keep original 5ms in production. No additional candidate or replay."
+  },
+  "speedup_decode_CPU_to_CUDA": 4.276891351922163,
+  "wall_speedup_CPU_to_CUDA": 4.861867704280165,
+  "native_logging": "Original three logs empty due pre-Once collector order. They remain unavailable; cannot claim warning-free benchmark. Existing product quiet logger active; stdout had no ERROR messages. Separate identical-source load-only receipts verify placement and known warning, not original-run logs.",
+  "placement_owner": "adf0f743fdfc771d621c14f44d8f42039d0a2421c7cdcafbe4ad49b81d37d15a",
+  "owner_RDS": "0b40c3a09e7438e66790ceb08cf93b837362bb74ccf6980d4c4475bd4b67c309",
+  "owner_model_replay": 0,
+  "limits": [
+    "Single small model and prompt on this host, three sequential warmed samples; no confidence/generalization/maximum-performance claim.",
+    "Desktop GPU baseline and fixed order/clocks are confounders; projection follows different history.",
+    "Native TTFT includes queue and prompt processing/sampling; not pure prefill.",
+    "Default cache/attention precision unchanged; earlier numerical limits remain."
+  ]
+}

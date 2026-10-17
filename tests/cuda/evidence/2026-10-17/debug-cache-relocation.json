@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "original_path": "/tmp/relm-phase8/native-initial/target",
+  "disk_path": "/home/grauk/.local/share/relm/phase8/native-debug-target",
+  "files": 3464,
+  "bytes": 2523879963,
+  "hash_manifest_sha256": "7bbe0e45525409394102b44c42f8b19ee1c07d76585faf2a1d966239624e7807",
+  "preserved_logical_path": true,
+  "timestamp": "2026-10-17T17:58:46.539293+00:00"
+}

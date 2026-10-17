@@ -1653,3 +1653,42 @@ distinguish presentation timing from inference speed. Supply static alternatives
 the rendering recipe and source provenance. No new model experiment, retuning,
 runtime/API/dependency change or expanded efficacy claim is authorized by this
 media work. Use relevant data/render/link checks and the existing final CI route.
+
+## D-050 — Native Linux CUDA first, then CRAN preparation
+
+- **Date/status:** 2026-10-17, APPROVED scope and sequencing by the founder:
+  start Phase 8 on the available Linux/CUDA computer, prioritize CUDA performance,
+  then prepare Phase 9 for CRAN; consider Windows later if needed.
+- **Decision:** WP13 targets native Linux with the RTX 2060 Mobile (6 GiB),
+  replacing the unavailable Windows/WSL2 host. Optimize measured throughput,
+  latency and memory with a bounded protocol, preserving correctness, resource
+  and ownership criteria. “Maximum performance” is an engineering objective,
+  not a claim of a global optimum. See [the execution plan](docs/wp13-linux-cuda-plan.md).
+- **Windows disposition:** native Windows installation and CUDA remain untested
+  and are deferred, not completed. A Windows CPU build/check feasibility gate
+  belongs to CRAN preparation using CI or win-builder; it needs no local Windows
+  machine. A VM is an optional later interactive route, not GPU evidence by itself.
+- **CRAN boundary:** retain a working ordinary package without a mandatory GPU
+  or CUDA SDK. CRAN normally expects at least two major R platforms and recommends
+  Windows checks; Linux/macOS support does not guarantee acceptance. Concrete
+  portability blockers discovered in Phase 9 must be resolved or disclosed.
+- **Limits:** no new public API, R/Rust dependency, vendor patch, tolerance
+  relaxation, consumed-holdout reuse, driver replacement, overclock or automatic
+  release/submission follows from this sequencing decision. Existing approved
+  APIs and optional CUDA build feature are the starting point. Necessary local
+  development tools are distinct from new package dependencies.
+- **Alternatives:** waiting for Windows would block useful GPU work unnecessarily;
+  treating Linux success as Windows certification would be false. Unlimited
+  tuning would repeat the earlier delivery delays without a defined stopping rule.
+
+### D-050 implementation scope — 2026-10-17
+
+The founder explicitly authorized installing missing tools and proceeding with
+CUDA compilation/tests. Restore the pruned `ggml/src/ggml-cuda/` directory
+byte-for-byte from the already pinned and SHA-verified b10828 archive, as planned
+in D-006 and VENDORING. This is no version bump or new vendor kernel patch.
+Retain every existing source/patch and update the prune digests and mirror.
+Use an isolated official CUDA toolkit to avoid the distro package replacing
+components of the working NVIDIA driver; GCC 15, Rust and Ninja are build tools.
+The optional Linux x86_64 package build uses `RELM_ENABLE_CUDA=1` and `CUDA_PATH`;
+ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.

@@ -1,0 +1,11 @@
+{
+  "original_status": "failed",
+  "native_compile": "passed in 22m55s",
+  "bound_sources_unchanged": 875,
+  "failure": "New test assumed positive gpu_layers; metadata deliberately preserves the -1 all-layers request sentinel. Actual placement not yet verified.",
+  "new_change": "Test assertion only; emit retained native log on unwinding. No runtime/threshold/setting change.",
+  "original_test_sha256": "1f05273dd02d21cbea2a9ef6bff4fdd0c022db6e0c9756265bd95772a46d04c6",
+  "inference_before_failure": 0,
+  "models_loaded_before_failure": 1,
+  "native_build_diagnostic": "ccache not found advisory retained; no compiler-warning claim based only on cargo log."
+}

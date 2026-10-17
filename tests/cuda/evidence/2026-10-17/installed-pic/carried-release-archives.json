@@ -1,0 +1,11 @@
+{
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/libggml-base.a": "30041637f17d157b25acd3ec0518aa29bfbdb5522d41463288ccf6ec96a9b9e2",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/libggml-cpu.a": "48611a7f2da6664e8d3df7314fb1df4f2c05699edc663ed5e25deef02f2c77d4",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/libggml-cuda.a": "f619682994f2cc1805b188d69efcb9f5f32ba44fd6ca01a07b27fa10710d774a",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/libggml.a": "b0c3d044e99b8d2264d55d2308710951e5dbc337b055f34af05f1b14077de088",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/libllama.a": "8a40c8c68f11e52a100dbb449168b2265f6018c19c3bee4eee8f4d13ec57b339",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/libmtmd.a": "dbaec2258596ad3be6aa62841249840039f217c0f4f73121dcfd646d45af0894",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/librelm-grammar.a": "332f4f5d901af0b8d6d96365e9b146ab93e1f53d6a2148c9ebe74a799aac6652",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/librelm.a": "6f50e51e3972755c2157400e1e7aa02059327f5a7e91a3ffb7ebf6c5ef5d6f36",
+  "/tmp/relm-phase8/installed-cuda/package/src/rust/target/release/libvendor-hash.a": "1296618d6d16198439fa4a95f3780e1b76f4da0b1e4354610aafaa1fe92d5757"
+}

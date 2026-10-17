@@ -1,0 +1,26 @@
+{
+  "status": "failed",
+  "pid": 2377329,
+  "output": "/tmp/relm-phase8/projection-lint-correction",
+  "stages": [
+    {
+      "name": "clippy",
+      "returncode": 0
+    },
+    {
+      "name": "identity_existing",
+      "returncode": 0
+    },
+    {
+      "name": "identity_cuda",
+      "returncode": 0
+    },
+    {
+      "name": "rows_cuda",
+      "returncode": 101
+    }
+  ],
+  "stage": "rows_cuda",
+  "updated_at": "2026-10-17T17:16:43.867531+00:00",
+  "error": "rows_cuda exited 101"
+}

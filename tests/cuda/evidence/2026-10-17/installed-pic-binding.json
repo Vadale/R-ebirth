@@ -1,0 +1,6 @@
+{
+  "driver_sha256": "1d5c7bd64c539fdabd453dd98a38efde43bd4ba65117da91d0398535e199d212",
+  "source_manifest_sha256": "2bb6bc04aa3ae9b1aee7c802986c562060200341f4fe5c57991d5cbc982418f2",
+  "parent_diagnosis_sha256": "8a659f4fe446d8bafc6718147917056554f1af734760318cb7bf339784dbb6bb",
+  "preflight_sha256": "198283b9388f359b85bce4ecfde4f90fdf53d7f554cc1e09db2ce27955728c64"
+}

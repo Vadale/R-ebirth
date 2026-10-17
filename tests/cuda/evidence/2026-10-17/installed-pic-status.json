@@ -1,0 +1,45 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 2390858,
+  "output": "/tmp/relm-phase8/installed-pic",
+  "stages": [
+    {
+      "name": "install",
+      "returncode": 0,
+      "log_sha256": "20d15e131481dc7d002fb265c60d68f514a151a5184ffba5c8537a51c806e3e9"
+    },
+    {
+      "name": "dynamic-links",
+      "returncode": 0,
+      "log_sha256": "c3002917770244d01e2c0b990161b13296e74afd1fc0fdce2a4a63b95ef91d27"
+    },
+    {
+      "name": "installed-check",
+      "returncode": 0,
+      "log_sha256": "e5b29ee2004eccdf5cf6b5913999e04822e2fe34141b8982f65cc0c4dd32a2da"
+    },
+    {
+      "name": "logger-compile",
+      "returncode": 0,
+      "log_sha256": "2ec8be23494b12b3f609708e509e8a6f1fe7b4ddf6f03face4016e5edcf791ed"
+    },
+    {
+      "name": "workflow",
+      "returncode": 0,
+      "log_sha256": "14cd4c3d97f7b11c893f2da13d5216fefdb0ba0b23002013460d1701013f3511"
+    }
+  ],
+  "build_scope": {
+    "parent": "/tmp/relm-phase8/installed-quota",
+    "changed_source": "rebirth-llm/build.rs CUDA PIC option only",
+    "CUDA_recompile_required": true,
+    "previous_native_outcomes": "retained at original source/flags, not claimed as execution of PIC objects"
+  },
+  "carried_configure": "/tmp/relm-phase8/installed-cuda/configure.log",
+  "stage": "workflow",
+  "updated_at": "2026-10-17T18:25:43.371172+00:00",
+  "dll_sha256": "8bf2d82f337262386b54ed89ab77f18da15b3a0dd0e819b1ce1435fa535b24a5",
+  "default_fixture_hooks": false,
+  "build_profile": "release",
+  "runtime_without_ld_library_path": true
+}

@@ -1,0 +1,9 @@
+{
+  "binding.json": "1056051fe83b56c4810c272988a62de882823c6ae83d7ccdff095140ef792571",
+  "cpu/metadata.rds": "fc411b20f9829072de710f4abbb54ddf114f39358592b716e0ca43f13236fe6e",
+  "cpu/native.log": "1aa07c8ccb720e0eddc0823079ffa4e150d513648561e5f8873ecff254cacd58",
+  "cpu/run.log": "de3d6b09ee9e33a7bbd5456de17dcfc8f7a87efa4f5e0d5fe44722bc28831a6d",
+  "cuda/metadata.rds": "d0de68a5aca30f2886517a1a2faa0b85a92c6c1dff80f81d8a3292e5fb08b666",
+  "cuda/native.log": "b1689f367e31899923e816a043880d85bd64fe553ab26ab0fe2b94892b127e0f",
+  "cuda/run.log": "617cd5c81e2a0c56f9ee08803e84fa079e7aa91c1d7149f0ebea9613c15d0a28"
+}

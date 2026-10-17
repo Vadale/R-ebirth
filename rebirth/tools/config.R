@@ -42,6 +42,9 @@ if (!selftest %in% c("0", "1")) {
   stop("RELM_ENABLE_SELFTESTS must be 0 or 1", call. = FALSE)
 }
 .selftest_feature <- if (identical(selftest, "1")) "--features selftest" else ""
+source("tools/cuda.R")
+cuda <- relm_cuda_config()
+.cuda_feature <- cuda$feature
 
 # when DEBUG env var is present we use `--debug` build
 .profile <- ifelse(is_debug, "", "--release")
@@ -115,13 +118,17 @@ if (is_windows) {
   }
   .llama_libs <- paste(paste(stems, collapse = " "), frameworks)
 } else {
-  # Linux and other Unix: CPU only. Group the archives so any back-references
+  # Linux and other Unix: group the archives so any back-references
   # between them resolve regardless of order under GNU ld.
   .llama_libs <- paste(
     "-Wl,--start-group",
     "-lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base",
     "-Wl,--end-group -lstdc++ -lm -ldl"
   )
+  if (nzchar(.cuda_feature)) {
+    .llama_libs <- sub("-lggml-base", "-lggml-cuda -lggml-base", .llama_libs, fixed = TRUE)
+    .llama_libs <- paste(.llama_libs, cuda$libs)
+  }
 }
 
 # if windows we replace in the Makevars.win.in
@@ -151,6 +158,7 @@ mv_txt <- readLines(mv_fp)
 new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@PROFILE@", .profile, x = _) |>
   gsub("@SELFTEST_FEATURE@", .selftest_feature, x = _) |>
+  gsub("@CUDA_FEATURE@", .cuda_feature, x = _) |>
   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>

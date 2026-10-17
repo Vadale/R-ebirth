@@ -1,0 +1,25 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 2378146,
+  "output": "/tmp/relm-phase8/projection-permit-correction",
+  "stages": [
+    {
+      "name": "clippy",
+      "returncode": 0
+    },
+    {
+      "name": "rows_cuda",
+      "returncode": 0
+    },
+    {
+      "name": "zero_live_cuda",
+      "returncode": 0
+    },
+    {
+      "name": "worker_cuda",
+      "returncode": 0
+    }
+  ],
+  "stage": "worker_cuda",
+  "updated_at": "2026-10-17T17:18:49.967162+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "CUDA_object_rules": 143,
+  "all_pic": true,
+  "sample_flags": "FLAGS = -O3 -DNDEBUG -std=c++17 \"--generate-code=arch=compute_75,code=[sm_75]\" -Xcompiler=-fPIC -use_fast_math -extended-lambda -compress-mode=size -Xcompiler \"-Wmissing-declarations -Wmissing-noreturn -Wall -Wextra -Wpedantic -Wcast-qual -Wno-unused-function -Wno-array-bounds -Wextra-semi -Wno-pedantic\"",
+  "cmake_configure_only": true,
+  "native_compile_or_models": 0
+}

@@ -17,9 +17,12 @@
 //! a co-located steer bit-for-bit (the mandated compose order `(x+steer)⊙mask+add`).
 //! Runs in the `cargo test -p rebirth-llm` CI job on the CPU backend, download-free.
 
+#[path = "support/numeric_backend.rs"]
+mod numeric_backend;
+
 use std::path::PathBuf;
 
-use rebirth_llm::{load, BackendKind, InterventionSpec, LoadRequest, Logits};
+use rebirth_llm::{load, InterventionSpec, LoadRequest, Logits};
 
 /// The fixed golden input (`synthetic_model.INPUT_TOKENS`).
 const INPUT_TOKENS: [i32; 8] = [1, 7, 13, 22, 5, 31, 44, 2];
@@ -152,8 +155,8 @@ fn load_synthetic() -> rebirth_llm::LoadedModel {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        // CPU so the exact-value path runs identically on every CI platform.
-        backend: BackendKind::Cpu,
+        // The CUDA feature selects the actual GPU; default CI retains CPU.
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })

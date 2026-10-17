@@ -39,7 +39,9 @@ r-universe tracks `main`; check the version before using the 0.4.0 research feat
 Prebuilt binaries need no native toolchain. Source installation needs R >= 4.5,
 Rust >= 1.85.0, CMake >= 3.28 and a C/C++ compiler. See the
 [installation guide](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)
-for source builds and troubleshooting. Windows/CUDA acceptance is still pending.
+for source builds and troubleshooting. Development source additionally supports an
+[explicit Linux CUDA build](https://github.com/Vadale/R-ebirth/blob/main/docs/linux-cuda.md);
+released 0.4.0 binaries are not certified CUDA builds. Windows remains deferred.
 
 Core imports are `methods` (included with R) and `nanoarrow`, which reads spilled traces.
 `glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.

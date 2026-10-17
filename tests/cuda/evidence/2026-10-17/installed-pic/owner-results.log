@@ -1,0 +1,5 @@
+list(status = "passed", construction_values = 7168L, direction_values = 1792L, 
+    direction_max_abs_error = c(residual = 0, mlp_out = 5.55111512312578e-17
+    ), zero_identity_values = 1792L, comparison_coordinates = 1792L, 
+    successful_generations = 8L, sampled_states = 127L, models_loaded_by_verifier = 0L, 
+    scope = "Operational CUDA workflow; not an efficacy or same-row native operator claim")

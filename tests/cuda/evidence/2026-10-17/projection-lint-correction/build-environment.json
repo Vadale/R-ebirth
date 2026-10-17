@@ -1,0 +1,12 @@
+{
+  "CUDA_PATH": "/home/grauk/.local/share/relm/toolchains/cuda-13.3.1",
+  "CUDAARCHS": "75-real",
+  "CUDACXX": "/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/bin/nvcc",
+  "CUDAHOSTCXX": "/usr/bin/g++-15",
+  "CC": "/usr/bin/gcc-15",
+  "CXX": "/usr/bin/g++-15",
+  "CMAKE_GENERATOR": "Ninja",
+  "CARGO_TARGET_DIR": "/tmp/relm-phase8/native-initial/target",
+  "CARGO_BUILD_JOBS": "2",
+  "LD_LIBRARY_PATH": "/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/lib"
+}

@@ -1,0 +1,57 @@
+["R", "CMD", "INSTALL", "--no-configure", "--library=/tmp/relm-phase8/installed-pic/library", "/tmp/relm-phase8/installed-cuda/package"]
+* installing *source* package ‘relm’ ...
+** this is package ‘relm’ version ‘0.4.0’
+** using staged installation
+** libs
+specified C++17
+using C compiler: ‘gcc (GCC) 16.2.1 20260810’
+using C++ compiler: ‘g++ (GCC) 16.2.1 20260810’
+using C++17
+if [ -d ./vendor ]; then \
+	echo "=== Using offline vendor directory ==="; \
+	mkdir -p /tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+	cp rust/vendor-config.toml /tmp/relm-phase8/installed-cuda/temporary-cargo-home/config.toml; \
+elif [ -f ./rust/vendor.tar.xz ]; then \
+	echo "=== Using offline vendor tarball ==="; \
+	tar xf rust/vendor.tar.xz && \
+	mkdir -p /tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+	cp rust/vendor-config.toml /tmp/relm-phase8/installed-cuda/temporary-cargo-home/config.toml; \
+fi
+export CARGO_HOME=/tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+export PATH="/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/bin:/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin:/home/grauk/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo build   --features cuda -p rebirth-ffi --lib --release --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+   Compiling rebirth-llm v0.0.0 (/tmp/relm-phase8/installed-cuda/package/src/rust/rebirth-llm)
+   Compiling rebirth-ffi v0.0.0 (/tmp/relm-phase8/installed-cuda/package/src/rust/rebirth-ffi)
+note: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms
+
+note: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-cuda -lggml-base -lstdc++ -lm -ldl -lcudart -lcublas -lcuda -lc -lm -lrt -lpthread -lR -lgcc_s -lutil -lrt -lpthread -lm -ldl -lc
+
+    Finished `release` profile [optimized] target(s) in 21m 54s
+export CARGO_HOME=/tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+export PATH="/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/bin:/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin:/home/grauk/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo run   --features cuda --release -p rebirth-ffi --bin document --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+note: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms
+
+note: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-cuda -lggml-base -lstdc++ -lm -ldl -lcudart -lcublas -lcuda -lc -lm -lrt -lpthread -lR -lgcc_s -lutil -lrt -lpthread -lm -ldl -lc
+
+   Compiling rebirth-ffi v0.0.0 (/tmp/relm-phase8/installed-cuda/package/src/rust/rebirth-ffi)
+    Finished `release` profile [optimized] target(s) in 12.66s
+     Running `rust/target/release/document`
+# Always clean up CARGOTMP
+rm -Rf /tmp/relm-phase8/installed-cuda/temporary-cargo-home;
+g++ -std=gnu++17 -shared -L/usr/lib64/R/lib -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs -flto=auto -o relm.so entrypoint.o -L./rust/target/release -lrelm -Wl,--start-group -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-cuda -lggml-base -Wl,--end-group -lstdc++ -lm -ldl -L/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/lib64 -Wl,-rpath,/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/lib64 -lcudart -lcublas -lcuda -L/usr/lib64/R/lib -lR
+rm -Rf /tmp/relm-phase8/installed-cuda/temporary-cargo-home /tmp/relm-phase8/installed-cuda/package/src/vendor ./rust/target
+installing to /tmp/relm-phase8/installed-pic/library/00LOCK-package/00new/relm/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (relm)

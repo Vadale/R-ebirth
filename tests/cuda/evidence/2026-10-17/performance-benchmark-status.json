@@ -1,0 +1,15 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 2403075,
+  "output": "/tmp/relm-phase8/performance-benchmark",
+  "completed_configs": [
+    "cpu_baseline",
+    "cuda_baseline",
+    "cuda_live_1ms"
+  ],
+  "updated_at": "2026-10-17T18:48:35.859293+00:00",
+  "stage": "cuda_live_1ms",
+  "R_pid": 2412526,
+  "R_returncode": 0,
+  "source_drift": false
+}

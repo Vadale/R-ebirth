@@ -200,8 +200,10 @@ close(projected)
 ```
 
 This increment supports dense Llama attention/MLP output and dense Qwen2 MLP
-output on CPU and Metal. Qwen2 attention, MoE, CUDA, Windows and other graph/site
-combinations are not supported by projection. Component layers may be `1:L`;
+output on CPU, Metal and the optional single-device Linux CUDA build. CUDA
+uses synchronous copies into the budgeted host row; it is not shared GPU memory.
+Qwen2 attention, MoE, Windows and other graph/site combinations are not supported
+by projection. Component layers may be `1:L`;
 residual addition retains `2:L`. Native checks reject unsupported producers and
 duplicate `(layer, component)` projections before returning a usable handle.
 

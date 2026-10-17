@@ -1,0 +1,54 @@
+["cargo", "clippy", "--locked", "--offline", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "--tests", "-j", "2", "--", "-D", "warnings"]
+    Checking libm v0.2.16
+    Checking cfg-if v1.0.4
+    Checking zerocopy v0.8.52
+    Checking num-traits v0.2.19
+    Checking num-integer v0.1.46
+    Checking num-bigint v0.4.8
+    Checking libc v0.2.186
+    Checking bytes v1.12.0
+    Checking half v2.7.1
+    Checking getrandom v0.3.4
+    Checking arrow-buffer v59.0.0
+    Checking once_cell v1.21.4
+    Checking iana-time-zone v0.1.65
+    Checking arrow-schema v59.0.0
+    Checking chrono v0.4.45
+    Checking arrow-data v59.0.0
+    Checking ahash v0.8.12
+    Checking num-complex v0.4.6
+    Checking hashbrown v0.17.1
+    Checking serde_core v1.0.228
+    Checking arrow-array v59.0.0
+    Checking bitflags v2.13.0
+    Checking arrow-select v59.0.0
+    Checking flatbuffers v25.12.19
+   Compiling rebirth-llm v0.0.0 (/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm)
+    Checking ryu v1.0.23
+    Checking memchr v2.8.3
+    Checking itoa v1.0.18
+    Checking arrow-ipc v59.0.0
+    Checking serde_json v1.0.145
+    Checking serde v1.0.228
+error: function `relm_projection_cuda_buffer_controls` is never used
+   --> rebirth-llm/src/ffi.rs:910:19
+    |
+910 |     pub(crate) fn relm_projection_cuda_buffer_controls() -> u64;
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `-D dead-code` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[expect(dead_code)]` or `#[allow(dead_code)]`
+
+error: this OR pattern can be rewritten using a range
+   --> rebirth-llm/src/projection.rs:270:69
+    |
+270 |                 || (!ask && info.rows > 0 && !matches!(info.access, 1 | 2 | 3))
+    |                                                                     ^^^^^^^^^ help: try: `1..=3`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#manual_range_patterns
+    = note: `-D clippy::manual-range-patterns` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::manual_range_patterns)]`
+
+error: could not compile `rebirth-llm` (lib) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `rebirth-llm` (lib test) due to 1 previous error

@@ -1,0 +1,1 @@
+WP13_BENCHMARK_COMPLETE config=cuda/0.005 attempts=1,1,1,4,16

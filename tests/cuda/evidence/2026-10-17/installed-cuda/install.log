@@ -1,0 +1,30 @@
+["R", "CMD", "INSTALL", "--no-configure", "--library=/tmp/relm-phase8/installed-cuda/library", "/tmp/relm-phase8/installed-cuda/package"]
+* installing *source* package ‘relm’ ...
+** this is package ‘relm’ version ‘0.4.0’
+** using staged installation
+** libs
+specified C++17
+using C compiler: ‘gcc (GCC) 16.2.1 20260810’
+using C++ compiler: ‘g++ (GCC) 16.2.1 20260810’
+using C++17
+gcc -I"/usr/include/R/" -DNDEBUG   -I/usr/local/include    -fpic  -march=x86-64 -mtune=generic -O2 -pipe -fno-plt -fexceptions         -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security         -fstack-clash-protection -fcf-protection         -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -g -ffile-prefix-map=/build/r/src=/usr/src/debug/r -flto=auto -ffat-lto-objects  -c entrypoint.c -o entrypoint.o
+if [ -d ./vendor ]; then \
+	echo "=== Using offline vendor directory ==="; \
+	mkdir -p /tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+	cp rust/vendor-config.toml /tmp/relm-phase8/installed-cuda/temporary-cargo-home/config.toml; \
+elif [ -f ./rust/vendor.tar.xz ]; then \
+	echo "=== Using offline vendor tarball ==="; \
+	tar xf rust/vendor.tar.xz && \
+	mkdir -p /tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+	cp rust/vendor-config.toml /tmp/relm-phase8/installed-cuda/temporary-cargo-home/config.toml; \
+fi
+export CARGO_HOME=/tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+export PATH="/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/bin:/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin:/home/grauk/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo build   --features cuda -p rebirth-ffi --lib --release --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+error: failed to download `extendr-api v0.9.0`
+
+Caused by:
+  attempting to make an HTTP request, but --offline was specified
+make: *** [Makevars:38: rust/target/release/librelm.a] Error 101
+ERROR: compilation failed for package ‘relm’
+* removing ‘/tmp/relm-phase8/installed-cuda/library/relm’

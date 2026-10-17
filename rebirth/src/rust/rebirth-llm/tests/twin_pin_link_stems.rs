@@ -23,6 +23,7 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
     for needle in [
         r#"vec!["relm-grammar", "mtmd", "vendor-hash", "llama", "ggml", "ggml-cpu"]"#,
         r#"lib_stems.push("ggml-metal")"#,
+        r#"lib_stems.push("ggml-cuda")"#,
         r#"lib_stems.push("ggml-base")"#,
     ] {
         assert!(
@@ -38,6 +39,7 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
     let config_r_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../tools/config.R");
     let config_r = fs::read_to_string(&config_r_path)
         .unwrap_or_else(|e| panic!("cannot read {}: {e}", config_r_path.display()));
+    assert!(config_r.contains(r#"sub("-lggml-base", "-lggml-cuda -lggml-base""#));
 
     // GNU-ld group form: the Windows and Linux branches each carry the full
     // ordered token list (order matters: left-to-right resolution).

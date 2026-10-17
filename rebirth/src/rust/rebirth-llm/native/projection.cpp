@@ -8,11 +8,13 @@
 #include <limits>
 
 // Kind 1 preserves the generic host fast path. Kind 2 is the pinned registered
-// Metal device's DEFAULT SHARED type, never a name-only or private-buffer test.
+// Metal device's DEFAULT SHARED type. Kind 3 is the registered CUDA device's
+// default device type, with synchronous copies into the existing charged row.
+// Neither device verdict can be obtained by names alone.
 struct relm_projection_access_frame {
     ggml_backend_buffer_type_t type;
     ggml_backend_dev_t device;
-    ggml_backend_reg_t registry, metal_registry;
+    ggml_backend_reg_t registry, expected_registry;
     const char * type_name;
     const char * device_name;
     const char * registry_name;
@@ -28,6 +30,17 @@ static bool device_index(const char * name, uint32_t & result) {
     if (name[3]=='0' && name[4]!=0) return false;
     result=0;
     for (size_t i=3; i<32; ++i) {
+        if (!name[i]) return true;
+        if (name[i]<'0' || name[i]>'9' || result>(UINT32_MAX-uint32_t(name[i]-'0'))/10) return false;
+        result=result*10+uint32_t(name[i]-'0');
+    }
+    return false;
+}
+static bool cuda_device_index(const char * name, uint32_t & result) {
+    if (!name || std::strncmp(name,"CUDA",4)!=0 || name[4]<'0' || name[4]>'9') return false;
+    if (name[4]=='0' && name[5]!=0) return false;
+    result=0;
+    for (size_t i=4; i<32; ++i) {
         if (!name[i]) return true;
         if (name[i]<'0' || name[i]>'9' || result>(UINT32_MAX-uint32_t(name[i]-'0'))/10) return false;
         result=result*10+uint32_t(name[i]-'0');
@@ -54,6 +67,11 @@ static bool shared_identity(uint32_t flags, const char * type, const char * devi
     uint32_t index=0;
     return (flags & 7)==7 && (flags & 16)!=0 && device_index(device,index) && same_name(type,device);
 }
+static bool cuda_identity(uint32_t flags, const char * type, const char * device) {
+    uint32_t index=0;
+    return (flags & (256|2|4|16))==(256|2|4|16)
+        && cuda_device_index(device,index) && same_name(type,device);
+}
 static uint32_t buffer_access(ggml_backend_buffer_t buffer, relm_projection_buffer_info * proof) {
     if (!buffer) return 0;
     if (ggml_backend_buffer_is_host(buffer)) {
@@ -67,18 +85,22 @@ static uint32_t buffer_access(ggml_backend_buffer_t buffer, relm_projection_buff
     if (!f.device) return 0;
     f.device_name=ggml_backend_dev_name(f.device);
     f.registry=ggml_backend_dev_backend_reg(f.device);
-    f.metal_registry=ggml_backend_reg_by_name("MTL");
+    f.expected_registry=ggml_backend_reg_by_name("MTL");
     f.registry_name=f.registry ? ggml_backend_reg_name(f.registry) : nullptr;
-    if (f.registry && f.registry==f.metal_registry) f.flags|=1;
+    if (f.registry && f.registry==f.expected_registry) f.flags|=1;
+    f.expected_registry=ggml_backend_reg_by_name("CUDA");
+    if (f.registry && f.registry==f.expected_registry) f.flags|=256;
     if (ggml_backend_dev_type(f.device)==GGML_BACKEND_DEVICE_TYPE_GPU) f.flags|=16;
-    if ((f.flags&1) && device_index(f.device_name,f.index)
+    if ((((f.flags&1) && device_index(f.device_name,f.index))
+        || ((f.flags&256) && cuda_device_index(f.device_name,f.index)))
         && f.index<ggml_backend_reg_dev_count(f.registry)
         && ggml_backend_reg_dev_get(f.registry,f.index)==f.device) {
         f.flags|=4;
         if (ggml_backend_dev_buffer_type(f.device)==f.type) f.flags|=2;
     }
     if (same_name(f.type_name,f.device_name)) f.flags|=8;
-    const uint32_t kind=shared_identity(f.flags,f.type_name,f.device_name) ? 2 : 0;
+    const uint32_t kind=shared_identity(f.flags,f.type_name,f.device_name) ? 2
+        : cuda_identity(f.flags,f.type_name,f.device_name) ? 3 : 0;
     if (proof) {
         proof->kind=kind;
         proof->device_type=uint32_t(ggml_backend_dev_type(f.device));
@@ -176,6 +198,10 @@ extern "C" int relm_projection_row(ggml_tensor * t, size_t h, size_t row, float 
     if (row > SIZE_MAX / (h * sizeof(float))) return -2;
     const size_t offset = row * h * sizeof(float), bytes = h * sizeof(float);
     if (offset > ggml_nbytes(t) || bytes > ggml_nbytes(t)-offset) return -2;
+    // The pinned CUDA default get/set selects its device, copies on the
+    // per-thread stream and synchronizes before returning. The scheduler has
+    // already synchronized the producer before this ready callback. No extra
+    // host row, retained device pointer or asynchronous write escapes here.
     if (write) ggml_backend_tensor_set(t,data,offset,bytes);
     else ggml_backend_tensor_get(t,data,offset,bytes);
     return 0;
@@ -243,6 +269,25 @@ extern "C" uint64_t relm_projection_buffer_controls() {
     bits|=uint64_t(!shared_identity(valid,"Other0","Other0"))<<15;
     bits|=uint64_t(!shared_identity(valid,"MTL42949672960","MTL42949672960"))<<16;
     bits|=uint64_t(!shared_identity(valid,"MTL0_Mapped","MTL0_Mapped"))<<17;
+    return bits;
+}
+extern "C" uint64_t relm_projection_cuda_buffer_controls() {
+    uint64_t bits=0;
+    const uint32_t valid=256|2|4|8|16;
+    bits|=uint64_t(cuda_identity(valid,"CUDA0","CUDA0"))<<0;
+    bits|=uint64_t(cuda_identity(valid,"CUDA15","CUDA15"))<<1;
+    bits|=uint64_t(!cuda_identity(valid&~256u,"CUDA0","CUDA0"))<<2;
+    bits|=uint64_t(!cuda_identity(valid&~2u,"CUDA0","CUDA0"))<<3;
+    bits|=uint64_t(!cuda_identity(valid&~4u,"CUDA0","CUDA0"))<<4;
+    bits|=uint64_t(!cuda_identity(valid&~16u,"CUDA0","CUDA0"))<<5;
+    bits|=uint64_t(!cuda_identity(valid,"CUDA_Host","CUDA0"))<<6;
+    bits|=uint64_t(!cuda_identity(valid,"CUDA_Split","CUDA0"))<<7;
+    bits|=uint64_t(!cuda_identity(valid,"CUDA1","CUDA0"))<<8;
+    bits|=uint64_t(!cuda_identity(valid,"CUDA01","CUDA01"))<<9;
+    bits|=uint64_t(!cuda_identity(valid,"CUDA42949672960","CUDA42949672960"))<<10;
+    bits|=uint64_t(!cuda_identity(valid,"CUDA","CUDA"))<<11;
+    bits|=uint64_t(!cuda_identity(valid,nullptr,"CUDA0"))<<12;
+    bits|=uint64_t(!cuda_identity(valid,"MTL0","MTL0"))<<13;
     return bits;
 }
 extern "C" uint64_t relm_projection_classifier_controls() {

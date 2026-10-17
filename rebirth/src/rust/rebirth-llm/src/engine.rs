@@ -1144,7 +1144,8 @@ mod tests {
             available.contains(&BackendKind::Cpu),
             "cpu must always be available; got {available:?}"
         );
-        // CUDA is never built in WP1 (default-off feature).
+        // The ordinary build must not advertise an uncompiled backend.
+        #[cfg(not(feature = "cuda"))]
         assert!(!available.contains(&BackendKind::Cuda));
     }
 
@@ -1220,13 +1221,17 @@ mod tests {
 
     #[test]
     fn load_unavailable_backend_is_backend_error() {
-        // CUDA is never built in WP1, so requesting it must be a Backend error
-        // on every platform (before any file access).
+        // The CUDA build is Linux-only and has no Metal; default builds lack CUDA.
+        let unavailable = if cfg!(feature = "cuda") {
+            BackendKind::Metal
+        } else {
+            BackendKind::Cuda
+        };
         let req = LoadRequest {
             path: PathBuf::from("/does/not/matter.gguf"),
             context_length: 512,
             gpu_layers: None,
-            backend: BackendKind::Cuda,
+            backend: unavailable,
             mmap: true,
             projector: None,
         };
@@ -1235,7 +1240,7 @@ mod tests {
                 requested,
                 available,
             }) => {
-                assert_eq!(requested, "cuda");
+                assert_eq!(requested, unavailable.as_str());
                 assert!(available.contains("cpu"), "available should list cpu");
             }
             Err(e) => panic!("expected Backend error, got {e:?}"),

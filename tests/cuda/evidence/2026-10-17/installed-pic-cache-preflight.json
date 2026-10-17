@@ -1,0 +1,6 @@
+{
+  "status": "passed",
+  "draft": "hardlink across home disk and tmpfs refused EXDEV18 before native/model execution; used ordinary byte-copy",
+  "packages": "existing locked dependencies only",
+  "native_models": 0
+}

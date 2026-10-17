@@ -74,7 +74,9 @@ research_generate <- function(model, prompt, settings) {
   list(text = value, first = first, sampled_ids = ids, timeline = history)
 }
 
-run_research_workflow <- function(model_path, output_dir, engine_revision) {
+run_research_workflow <- function(model_path, output_dir, engine_revision,
+                                  backend = c("cpu", "metal", "cuda")) {
+  backend <- match.arg(backend)
   cfg <- research_preflight(model_path, output_dir, engine_revision)
   if (!dir.create(cfg$output_dir)) stop("Could not create the new output directory.")
   path <- function(name) file.path(cfg$output_dir, name)
@@ -95,16 +97,16 @@ run_research_workflow <- function(model_path, output_dir, engine_revision) {
   stopifnot(!anyDuplicated(prompts$sha256))
   csv(prompts, "prompts.csv")
   settings <- list(seed = 1707L, chat = FALSE, temperature = 0, top_p = 0.95,
-    max_tokens = 32L, stop = NULL, context_length = 512L, backend = "cpu",
+    max_tokens = 32L, stop = NULL, context_length = 512L, backend = backend,
     relm_version = as.character(getNamespaceVersion("relm")), engine_revision = engine_revision)
   save(settings, "settings.rds")
   # The coefficient is fixed before any generation: this exercise does not tune it.
   conditions <- data.frame(condition = c("original", "zero", "addition", "projection"),
     operator = c("none", "project", "add", "project"), coefficient = c(0, 0, 1, 1))
   csv(conditions, "conditions.csv")
-  m <- relm::llm(cfg$model_path, backend = "cpu", context_length = 512L)
+  m <- relm::llm(cfg$model_path, backend = backend, context_length = 512L)
   on.exit(close(m), add = TRUE)
-  stopifnot(m$architecture == "qwen2", m$hidden_size == 896L, m$layers == 24L, m$backend == "cpu")
+  stopifnot(m$architecture == "qwen2", m$hidden_size == 896L, m$layers == 24L, m$backend == backend)
   record <- list(sha256 = cfg$model_sha256, architecture = m$architecture,
     quantization = m$quantization, hidden_size = as.integer(m$hidden_size),
     layers = as.integer(m$layers), engine_revision = engine_revision)
@@ -133,7 +135,7 @@ run_research_workflow <- function(model_path, output_dir, engine_revision) {
     dimnames(target) <- dimnames(control) <- list(pairs$pair_id, as.character(seq_len(896L)))
     context <- list(model = record, capture = list(component = component, positions = "last",
       input_format = "raw_text", tokenizer = "gguf_embedded", add_special = TRUE,
-      parse_special = FALSE, template_sha256 = NULL, context_length = 512L, backend = "cpu",
+      parse_special = FALSE, template_sha256 = NULL, context_length = 512L, backend = backend,
       relm_version = settings$relm_version), pairs = pairs,
       splits = data.frame(prompt_sha256 = prompts$sha256, split = prompts$split), seed = NULL)
     relm::llm_direction(target, control, context, layer = 12L)
@@ -185,7 +187,7 @@ run_research_workflow <- function(model_path, output_dir, engine_revision) {
     "Static projection and residual addition differ in site and direction as well as operator.",
     "Sampled-state counts are not necessarily committed output-token counts.",
     "RDS files are trusted local artifacts; CSV drops attributes. Keep both.",
-    "CPU was requested and recorded from handle metadata; this script does not audit native device logs."),
+    paste(backend, "was requested and recorded from handle metadata; this script does not audit native device logs.")),
     path("INTERPRETATION.txt"))
   close(m)
   files <- list.files(cfg$output_dir, full.names = TRUE)

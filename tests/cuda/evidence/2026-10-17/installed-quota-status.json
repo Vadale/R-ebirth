@@ -1,0 +1,22 @@
+{
+  "status": "failed",
+  "pid": 2389708,
+  "output": "/tmp/relm-phase8/installed-quota",
+  "stages": [
+    {
+      "name": "install",
+      "returncode": 1,
+      "log_sha256": "daa81ed6bfff5ee5e5205ace34126677067141841a148fef59572e18b141edb0"
+    }
+  ],
+  "carried_native_build": {
+    "parent": "/tmp/relm-phase8/installed-ffi-deps",
+    "source_unchanged": true,
+    "archives": 9,
+    "failed_document_link": "SIGBUS caused by tmpfs user quota; EDQUOT control retained"
+  },
+  "carried_configure": "/tmp/relm-phase8/installed-cuda/configure.log",
+  "stage": "install",
+  "updated_at": "2026-10-17T18:00:05.029715+00:00",
+  "error": "install failed; preserve and diagnose"
+}

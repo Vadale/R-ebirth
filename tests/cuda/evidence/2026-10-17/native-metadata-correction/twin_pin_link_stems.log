@@ -1,0 +1,9 @@
+["cargo", "test", "--locked", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "-j", "2", "--offline", "--test", "twin_pin_link_stems", "--", "--nocapture", "--test-threads=1"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/twin_pin_link_stems.rs (/tmp/relm-phase8/native-initial/target/debug/deps/twin_pin_link_stems-df22c5ee9524bde8)
+
+running 1 test
+test build_rs_and_config_r_pin_the_same_archive_stems ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

@@ -27,10 +27,13 @@ test_that("the boundary maps garbage bytes to a model_load payload (no crash)", 
 })
 
 test_that("the boundary maps an unavailable backend to a backend payload", {
-  p <- relm:::rebirth_model_load("nowhere.gguf", 512L, -1L, "cuda", TRUE, "")
+  unavailable <- setdiff(c("cuda", "metal"), relm:::rebirth_available_backends())
+  expect_true(length(unavailable) >= 1L)
+  unavailable <- unavailable[[1L]]
+  p <- relm:::rebirth_model_load("nowhere.gguf", 512L, -1L, unavailable, TRUE, "")
   expect_false(p$ok)
   expect_identical(p$class, "relm_error_backend")
-  expect_identical(p$fields$requested, "cuda")
+  expect_identical(p$fields$requested, unavailable)
   expect_match(p$fields$available, "cpu")
 })
 
@@ -43,11 +46,12 @@ test_that("a forced panic maps to relm_error_internal, never reaching R raw", {
   expect_error(relm:::relm_check(p), class = "relm_error_internal")
 })
 
-test_that("rebirth_available_backends reports cpu and never cuda in WP1", {
+test_that("rebirth_available_backends reports cpu and only supported backends", {
   b <- relm:::rebirth_available_backends()
   expect_type(b, "character")
   expect_true("cpu" %in% b)
-  expect_false("cuda" %in% b)
+  expect_true(all(b %in% c("cpu", "metal", "cuda")))
+  expect_identical(anyDuplicated(b), 0L)
   if (Sys.info()[["sysname"]] == "Darwin" &&
     R.version[["arch"]] %in% c("aarch64", "arm64")) {
     expect_true("metal" %in% b)

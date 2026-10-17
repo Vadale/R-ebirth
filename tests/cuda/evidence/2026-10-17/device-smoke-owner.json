@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "stdout": "CUDA_DEVICE_PASS device=NVIDIA GeForce RTX 2060 capability=7.5 runtime=13030 driver=13000 values=32",
+  "source_sha256": "bbdd1182d650c83467811ec03f6cd8f9314ee36a5020ecd8594417265a38e500",
+  "binary_sha256": "52d1919c93eb8c589cbb390286df029df2cb5a7c2e73bb35223b055bd382c19f",
+  "compile_arguments": [
+    "-ccbin",
+    "/usr/bin/g++-15",
+    "-gencode",
+    "arch=compute_75,code=sm_75"
+  ],
+  "models": 0
+}

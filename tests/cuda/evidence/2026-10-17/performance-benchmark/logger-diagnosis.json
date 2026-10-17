@@ -1,0 +1,7 @@
+{
+  "original_status_preserved": true,
+  "benchmark_raw_native_logs": "empty in all three configurations",
+  "cause": "Benchmark omitted rebirth_available_backends before installing logger; first Backend::acquire LOG_FILTER Once replaces adapter with existing quiet logger. Profile and installed workflow initialized before adapter, so their logs remain valid.",
+  "scope": "Timing/event/RDS outputs and GPU telemetry retained and verified; native warnings and exact placement are unavailable for original benchmark executions.",
+  "correction": "Exactly two separate load-only receipts on same unchanged DLL/model/context/default GPU settings, CPU and CUDA, initialize Once before adapter. Zero generation/trace/derive/tokenize; no repeated benchmark. They do not retroactively recover missing logs."
+}

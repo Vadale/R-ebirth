@@ -1,0 +1,13 @@
+["Rscript", "--vanilla", "/tmp/relm-phase8/check-installed-cuda.R", "/tmp/relm-phase8/installed-pic/library/relm", "/tmp/relm-phase8/installed-cuda/package", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth", "/tmp/relm-phase8/installed-pic"]
+CUDA_INSTALLED_BINDING_OK functions=250 profile=27 fixtures=0
+boundary: ....gguf_init_from_reader: invalid magic characters: '????', expected 'GGUF'
+llama_model_load: error loading model: llama_model_loader: failed to load model from /home/grauk/.local/share/relm/phase8/tmp/RtmpX8exAZ/file2497ec1a28cf50.gguf
+llama_model_load_from_file_impl: failed to load model
+........S....
+llm-load: ..........................................
+
+══ Skipped ═════════════════════════════════════════════════════════════════════
+1. a forced panic maps to relm_error_internal, never reaching R raw ('test-boundary.R:41:3') - Reason: Production build omits native fixtures. Native selftest entries are unavailable: rebirth_selftest_panic
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+CUDA_INSTALLED_BOUNDARY_OK cases=12 expectations=58 skips=1

@@ -1,0 +1,6 @@
+{
+  "pid": 2379514,
+  "script": "/tmp/relm-phase8/run-installed-cuda.py",
+  "sha256": "738b3fa14ac17c77c533b84b1d79c2ccc75d536058b2862aaa6f43df88ef7f38",
+  "binding": "/tmp/relm-phase8/installed-binding.json"
+}
