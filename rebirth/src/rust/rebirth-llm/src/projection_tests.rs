@@ -67,3 +67,6 @@ include!("projection_diagnostic.rs");
 
 include!("projection_policy_diagnostic.rs");
 include!("projection_prefix_debt_diagnostic.rs");
+
+#[cfg(feature = "cuda")]
+include!("projection_cuda_tests.rs");

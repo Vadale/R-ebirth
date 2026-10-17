@@ -9,7 +9,7 @@
 //!      `PKG_LIBS`) can find them.
 //!
 //! Backends (D-006): Metal + embedded shaders on macOS arm64, CPU only elsewhere,
-//! CUDA behind the default-off `cuda` feature (defined, not built, until Phase 8).
+//! CUDA behind the default-off `cuda` feature on Linux x86_64 (D-050).
 //! The vendored tree is committed WITH the rebirth patch set already applied
 //! (D-015): this script compiles it as-is — no build-time patching. The patch
 //! provenance diffs live in `src/llama.cpp/patches/`, and the tree's post-patch
@@ -40,6 +40,9 @@ fn main() {
     println!("cargo:rerun-if-changed=native/projection.h");
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
+    for variable in ["CUDA_PATH", "CUDAARCHS", "CUDACXX", "CUDAHOSTCXX"] {
+        println!("cargo:rerun-if-env-changed={variable}");
+    }
     println!(
         "cargo:rerun-if-changed={}",
         llama_src.join("CMakeLists.txt").display()
@@ -53,6 +56,15 @@ fn main() {
     let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
     let metal = target_os == "macos" && target_arch == "aarch64";
     let cuda = env::var_os("CARGO_FEATURE_CUDA").is_some();
+    let cuda_paths = if cuda {
+        assert!(
+            target_os == "linux" && target_arch == "x86_64",
+            "the cuda feature currently requires Linux x86_64"
+        );
+        Some(cuda_toolkit())
+    } else {
+        None
+    };
     // Dedicated nightly only. Ordinary package/native builds retain their flags.
     let sanitizers = match env::var("RELM_NATIVE_SANITIZERS") {
         Err(env::VarError::NotPresent) => false,
@@ -105,9 +117,16 @@ fn main() {
         cfg.define("GGML_METAL", "OFF");
     }
 
-    // CUDA is defined here but only built when the `cuda` feature is enabled
-    // (Phase 8). WP1 never exercises this path.
     cfg.define("GGML_CUDA", if cuda { "ON" } else { "OFF" });
+    if let Some((root, _)) = &cuda_paths {
+        cfg.define("CUDAToolkit_ROOT", root)
+            .define("CMAKE_CUDA_COMPILER", root.join("bin/nvcc"))
+            // Static CUDA objects also enter R's shared library. The cmake
+            // crate adds PIC to C/C++, but not to CUDA compiler flags.
+            .define("CMAKE_POSITION_INDEPENDENT_CODE", "ON")
+            // This phase targets one GPU; do not add a mandatory NCCL library.
+            .define("GGML_CUDA_NCCL", "OFF");
+    }
 
     // Match the macOS deployment target the final link uses, so the vendored
     // objects are not compiled for a newer macOS than they are linked against —
@@ -186,6 +205,9 @@ fn main() {
     if metal {
         lib_stems.push("ggml-metal");
     }
+    if cuda {
+        lib_stems.push("ggml-cuda");
+    }
     lib_stems.push("ggml-base");
 
     // Relocate the archives to a stable per-build dir (for cargo's own link) and
@@ -217,6 +239,32 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", native_dir.display());
 
     emit_link_flags(&lib_stems, &target_os, metal);
+    if let Some((_, lib)) = cuda_paths {
+        println!("cargo:rustc-link-search=native={}", lib.display());
+        // Link the real system driver, never the toolkit's driver stub.
+        for library in ["cudart", "cublas", "cuda"] {
+            println!("cargo:rustc-link-lib=dylib={library}");
+        }
+    }
+}
+
+/// The explicit toolkit root is shared with the R configure path. Runtime
+/// libraries remain external; ordinary builds never inspect or require CUDA.
+fn cuda_toolkit() -> (PathBuf, PathBuf) {
+    let root = PathBuf::from(env::var_os("CUDA_PATH").unwrap_or_else(|| "/usr/local/cuda".into()));
+    let root = root
+        .canonicalize()
+        .expect("CUDA_PATH must name an installed CUDA toolkit");
+    assert!(
+        root.join("bin/nvcc").is_file(),
+        "CUDA_PATH/bin/nvcc is missing"
+    );
+    let lib = ["lib64", "lib", "targets/x86_64-linux/lib"]
+        .into_iter()
+        .map(|dir| root.join(dir))
+        .find(|dir| dir.join("libcudart.so").is_file() && dir.join("libcublas.so").is_file())
+        .expect("CUDA_PATH must contain shared cudart and cublas libraries");
+    (root, lib)
 }
 
 /// Both CMake invocations must use the same compiler/runtime as instrumented

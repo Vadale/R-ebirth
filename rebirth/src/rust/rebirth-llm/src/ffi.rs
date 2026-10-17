@@ -906,6 +906,8 @@ extern "C" {
 
     #[cfg(test)]
     pub(crate) fn relm_projection_buffer_controls() -> u64;
+    #[cfg(all(test, feature = "cuda"))]
+    pub(crate) fn relm_projection_cuda_buffer_controls() -> u64;
 }
 
 extern "C" {

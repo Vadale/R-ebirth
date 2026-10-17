@@ -52,7 +52,10 @@ these building blocks; a separate `relm.topics` product is not an active goal.
 
 The active remaining sequence is **F6c graphics → F6d reproducible directions →
 F6e projection steering → Phase 7 consolidation/usability/external validation →
-hardware-gated Phase 8 Windows/CUDA → Phase 9 CRAN/docs/API stability**.
+Phase 8 native Linux CUDA/performance → Phase 9 CRAN/docs/API stability**.
+D-050 (2026-10-17) replaces the unavailable Windows/WSL2 host with native Linux;
+Windows CPU portability is assessed during CRAN preparation, with Windows GPU
+acceptance deferred. Phase 6, Phase 7 and the D048/D049 follow-ups are integrated.
 Documentation and compatibility-preserving simplification also accompany every
 increment. Product progress is measured by a researcher completing a reliable
 experiment, not by the number of APIs, backends, phases or graphical panels.
@@ -108,7 +111,8 @@ Direction building first uses the existing additive residual intervention.
 Projection editing is a distinct native operation, with exact tensor semantics,
 independent goldens and its own concrete contract before implementation. This
 amendment does not approve new public signatures, dependencies or vendor edits.
-Phase 8 remains hardware-deferred and Phase 9 remains the CRAN/docs/API-freeze
+The original hardware deferral for Phase 8 is superseded by D-050: native Linux
+CUDA work starts on the available GPU. Phase 9 remains the CRAN/docs/API-freeze
 stage. The existing service and graphical demos do not complete these new steps.
 
 ---
@@ -144,21 +148,24 @@ Package namespace: **`relm`** — verified available on CRAN and unclaimed on Gi
 
 ## 3. Platforms and test matrix (updated — the package makes this cheaper)
 
-**Execution status (2026-09-27, D-027):** macOS and Linux ship today. Windows/CUDA
-remains a target and is deferred pending hardware validation; the historical
-phase labels below are planning targets, not evidence of delivered support.
+**Execution status (2026-10-17, D-050):** macOS and Linux CPU ship today. Native
+Linux CUDA acceptance is now the active target; Windows remains deferred. The
+historical phase labels below are targets, not evidence of delivered support.
 See `docs/validation-status.md` for the checks actually running.
 
 | Tier | Platform | Backend | Where it runs | When |
 |------|----------|---------|---------------|------|
 | 1 (primary) | macOS arm64 | Metal | Mac mini M4 16 GB (RStudio + console) | Phase 0 |
 | 1 | Linux x86_64 + arm64 | CPU | GitHub Actions CI; local arm64 VM for smoke tests | Phase 0 |
-| 2 | Linux + CUDA | CUDA | WSL2 Ubuntu on the founder's Windows PC (RTX 2060, 6 GB) | Phase 1, early |
-| 2 (was 3) | Windows native | CPU, then CUDA | Same PC | Phase 1 |
+| 2 | Linux + CUDA | CUDA | Native Omarchy/Arch on the founder's RTX 2060 Mobile, 6 GiB | Current WP13, D-050 |
+| 2 (was 3) | Windows native | CPU, then CUDA | CPU checks through CI/win-builder; GPU host unavailable | CPU feasibility in Phase 9; GPU later |
 
 Notes:
 
-- **Windows is dramatically cheaper on the package path** than it was for the fork: no interpreter build, just a package with native code under the standard Rtools toolchain — and **users never compile anything** because r-universe serves prebuilt binaries (§4). Windows native is therefore promoted from "experimental at Phase 1 exit" to a full tier-2 target during Phase 1. CUDA validation still starts on WSL2 (cheapest route), then moves native.
+- **Windows remains a target, not delivered support.** Package builds use Rtools;
+  an ordinary binary installation depends on a successful Windows build and
+  distribution. Current Windows r-universe binaries are unavailable. D-050 starts
+  CUDA on native Linux; Windows is not a prerequisite for that GPU work.
 - **Mac mini memory budget (≈10–11 GB free)** unchanged: capture filters mandatory, large traces spill to Arrow IPC files reopened lazily; a full trace degrades to disk, never OOMs the session.
 - **Local Linux VMs** (UTM/lima, arm64 Ubuntu): smoke tests only, VM ≤ 4 GB, never concurrently with a 7B model; heavy testing lives in CI.
 - **MLX:** roadmap Phase 10 (post-`v1.0`, still solo), via `mlx-c`, as a second backend behind the same R API.
@@ -294,7 +301,9 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
 - [ ] Phase 7 consolidation records justified simplifications, compatibility and distinct test coverage/cost
 - [ ] A bounded observe/intervene/evaluate/export workflow passes maintainer functional acceptance (D-047, 2026-10-11); external-user feedback is deferred until after publication, never claimed by agent execution
 - [ ] Existing application service, topic examples and companion integration remain supported without requiring new general frameworks
-- [ ] Windows binaries on r-universe; CUDA green (WSL2 first, then native Windows)
+- [ ] Native Linux CUDA accepted with measured performance (D-050); Windows CPU
+  portability assessed for CRAN. Native Windows/CUDA and Windows distribution
+  remain explicit later targets, not prerequisites for this revised sequence.
 - [ ] CRAN submission of `relm` (Rust vendoring policy compliant)
 - [ ] Docs site generated from runnable examples; `llm_*` API declared stable
 - [ ] WP-T (thesis case study) — **parked, not blocking Phase 1 exit** (thesis assignment ≈ Q1–Q2 2027; see `THESIS-PLAN.md`)

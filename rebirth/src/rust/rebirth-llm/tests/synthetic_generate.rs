@@ -13,9 +13,12 @@
 //!
 //! Runs in the `cargo test -p rebirth-llm` CI job; download-free, CPU-only.
 
+#[path = "support/numeric_backend.rs"]
+mod numeric_backend;
+
 use std::path::PathBuf;
 
-use rebirth_llm::{load, BackendKind, GenerateParams, LoadRequest, LoadedModel, StopReason};
+use rebirth_llm::{load, GenerateParams, LoadRequest, LoadedModel, StopReason};
 
 /// The fixed greedy prompt (`metadata.json` `greedy_prompt`).
 const GREEDY_PROMPT: [i32; 2] = [1, 7];
@@ -66,8 +69,8 @@ fn load_synthetic() -> LoadedModel {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        // CPU so the exact-value path runs identically on every CI platform.
-        backend: BackendKind::Cpu,
+        // The CUDA feature selects the actual GPU; default CI retains CPU.
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })

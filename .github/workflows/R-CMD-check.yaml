@@ -98,6 +98,10 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript tests/toolchain/test-msrv.R
 
+      - name: Optional CUDA configuration boundaries (model-free, no SDK)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript tests/cuda/configuration.R
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         if: steps.scope.outputs.full_checks != 'false'
         with:

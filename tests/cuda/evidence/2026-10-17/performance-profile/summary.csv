@@ -1,0 +1,4 @@
+"mode","wall","submission","tokens","first_native","first_R","decode_span","decode_tokens_per_second","delivery_callbacks","live_states","finish_reason"
+"plain_stream",0.852,0.186,128,0.065759454,0.288,0.550085542,230.873182993055,12,0,"length"
+"projection_stream",0.562,0.00099999999999989,128,0.020341147,0.0519999999999998,0.497838428,255.102846339536,11,0,"length"
+"live_stream",1.254,0.00499999999999989,128,0.023128166,0.0339999999999998,1.219316054,104.156752126221,128,128,"length"

@@ -1,0 +1,6 @@
+{
+  "pid": 2379826,
+  "script": "/tmp/relm-phase8/run-installed-ffi-deps.py",
+  "sha256": "00c0a1af8cfa109af5ae815248f2aca461898556be7dcec656904b7414824adc",
+  "carried_configured_source": "/tmp/relm-phase8/installed-cuda/package"
+}

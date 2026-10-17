@@ -50,7 +50,12 @@ For the meaning of a trace, direction, live state and comparison, see
 [independent agent first-use report](../../docs/research-first-use.md) records a
 separate real attempt and its remaining friction; it is not human user research.
 
-The script loads one CPU model, captures four construction prompts at layer 12
+CPU is the default. With the separately built [Linux CUDA package](../../docs/linux-cuda.md),
+pass `backend = "cuda"` to `run_research_workflow()`; `backend = "metal"` is also
+explicitly selectable. The script records the resolved metadata, not native
+offload receipts.
+
+The script loads one model, captures four construction prompts at layer 12
 and generates eight short outputs (four conditions on two separate prompts,
 32 tokens each). It holds at most one derived handle at a time and closes it.
 The original and zero-projection outputs must match. A 120-second generation

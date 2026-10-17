@@ -1,0 +1,42 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 2360589,
+  "output": "/tmp/relm-phase8/native-metadata-correction",
+  "stages": [
+    {
+      "name": "cuda_backend",
+      "returncode": 0
+    },
+    {
+      "name": "synthetic_logits",
+      "returncode": 0
+    },
+    {
+      "name": "synthetic_embed",
+      "returncode": 0
+    },
+    {
+      "name": "synthetic_trace",
+      "returncode": 0
+    },
+    {
+      "name": "synthetic_intervene",
+      "returncode": 0
+    },
+    {
+      "name": "synthetic_spill",
+      "returncode": 0
+    },
+    {
+      "name": "synthetic_generate",
+      "returncode": 0
+    },
+    {
+      "name": "twin_pin_link_stems",
+      "returncode": 0
+    }
+  ],
+  "carried_compile": "/tmp/relm-phase8/native-initial/compile.log",
+  "stage": "twin_pin_link_stems",
+  "updated_at": "2026-10-17T16:37:49.357330+00:00"
+}

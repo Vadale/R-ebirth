@@ -50,7 +50,9 @@ recorded coordinates; it does not interpolate new measurements.*
 
 [r-universe](https://vadale.r-universe.dev/relm) distributes the package. Prebuilt
 binaries need no Rust or C++ toolchain. macOS arm64 and Linux are the supported
-routes; Windows/CUDA validation is still pending.
+routes. The development source also has an optional [Linux CUDA build](docs/linux-cuda.md)
+with measured RTX 2060 results; published 0.4.0 binaries are not certified CUDA builds.
+Windows validation remains pending.
 
 ```r
 install.packages(
@@ -89,7 +91,8 @@ close(m)
 template. `llm_trace()` observes a forward pass over the supplied prompt, not
 the generated answer. Use `on_state` for observations during generation.
 CPU makes this example explicit; the normal `backend = "auto"` selects Metal
-on supported Apple silicon builds. See [installation and troubleshooting](docs/getting-started.md).
+on supported Apple silicon builds, then available compiled CUDA, then CPU.
+See [installation and troubleshooting](docs/getting-started.md).
 
 ## Go beyond the first call
 
@@ -132,7 +135,8 @@ distribution checks and the scope of actual model tests.
 
 - **Supported combinations matter.** Model architecture, component and backend
   support vary. Start with the [support matrix](docs/supported-workflow.md).
-  Windows/CUDA and vision-encoder tracing are not accepted capabilities.
+  Linux CUDA has a [recorded development scope and performance report](docs/wp13-linux-cuda-implementation.md).
+  Windows and vision-encoder tracing remain outside that acceptance.
 - **Memory is part of experiment design.** Select layers and token positions.
   Trace spill manages capture storage; it does not bound all model/process memory.
   Close model and derived handles when finished.

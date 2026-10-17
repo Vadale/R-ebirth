@@ -1,0 +1,7 @@
+"id","split","text","sha256"
+"pair-a-target","construction","Explain why a lighthouse sends light over the sea in one short sentence.","a0c42de20a1dcdbb574280091f48a5c13237ebb22ad65efb34427ba71784e2be"
+"pair-a-control","construction","Explain why a lighthouse sends light over the sea in a detailed paragraph.","2b392e2b5cc987470c80e30c9bf5c232bb5340e31c55a4d58af15ae5623b8d61"
+"pair-b-target","construction","Explain why a gardener turns compost in one short sentence.","11799a4407e27839ddf8db128945e552730715db972833238b7dcd3f7af3d66a"
+"pair-b-control","construction","Explain why a gardener turns compost in a detailed paragraph.","50309ff21e759d29e5df74419d39f1284d9c07f22c1e4ed93f0965795c41f98b"
+"practice","selection","What does a barometer measure? Answer in one short sentence.","cc6bfb44046239369e1dfcf634357aad27a9b523e66135cc12026ea1a8a3c7af"
+"evaluation","evaluation","Why does an insulated flask keep a drink warm? Answer in one short sentence.","801a57abe6b2e0fae9b63c16f475be92b8a4f5612ad1ad3735c82efd22d6e2d8"

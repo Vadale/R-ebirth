@@ -2,12 +2,22 @@
 // worker with existing numeric input/publication seams; no tokenizer claim.
 #[test]
 fn projection_static_live_restore_cancel_and_poison() {
+    projection_worker_lifecycle(crate::BackendKind::Cpu);
+}
+
+#[test]
+#[cfg(feature = "cuda")]
+fn cuda_projection_static_live_restore_cancel_and_poison() {
+    projection_worker_lifecycle(crate::BackendKind::Cuda);
+}
+
+fn projection_worker_lifecycle(backend: crate::BackendKind) {
     let source = crate::load_with_batch(
         crate::LoadRequest {
             path: f6b_root().join("tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf"),
             context_length: 128,
-            gpu_layers: Some(0),
-            backend: crate::BackendKind::Cpu,
+            gpu_layers: Some(if backend == crate::BackendKind::Cpu { 0 } else { -1 }),
+            backend,
             mmap: true,
             projector: None,
         },
@@ -181,5 +191,6 @@ fn projection_static_live_restore_cancel_and_poison() {
     assert_eq!(source.generate(&[1, 7], &params).unwrap(), base);
     cases += 1;
     assert_eq!(cases, 10);
+    println!("WP13_PROJECTION_WORKER_BACKEND {backend:?}");
     println!("F6E_PROJECTION_PRODUCTION_TEST {{\"test\":\"projection_static_live_restore_cancel_and_poison\",\"status\":\"passed\",\"expected_cases\":10,\"executed_cases\":{cases},\"expected_rejections\":2,\"rejected_cases\":2,\"expected_values\":3,\"compared_values\":3,\"model_loads\":1,\"constructor_calls\":1,\"library_cfg_test\":true,\"private_feature\":false}}");
 }

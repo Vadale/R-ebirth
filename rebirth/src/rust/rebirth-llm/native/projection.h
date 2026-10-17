@@ -23,4 +23,5 @@ size_t relm_projection_info_size();
 size_t relm_projection_name_frame_size();
 size_t relm_projection_access_frame_size();
 uint64_t relm_projection_buffer_controls();
+uint64_t relm_projection_cuda_buffer_controls();
 }

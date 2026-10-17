@@ -1,0 +1,13 @@
+"file","test","nb","failed","skipped","error","warning","passed"
+"test-boundary.R","the boundary maps a missing file to a model_load payload",4,0,FALSE,FALSE,0,4
+"test-boundary.R","the boundary maps garbage bytes to a model_load payload (no crash)",3,0,FALSE,FALSE,0,3
+"test-boundary.R","the boundary maps an unavailable backend to a backend payload",5,0,FALSE,FALSE,0,5
+"test-boundary.R","a forced panic maps to relm_error_internal, never reaching R raw",1,0,TRUE,FALSE,0,0
+"test-boundary.R","rebirth_available_backends reports cpu and only supported backends",4,0,FALSE,FALSE,0,4
+"test-llm-load.R","llm() rejects a non-string path with relm_error_model_load",5,0,FALSE,FALSE,0,5
+"test-llm-load.R","llm() names the failing check for a missing file",2,0,FALSE,FALSE,0,2
+"test-llm-load.R","llm() rejects a directory path",2,0,FALSE,FALSE,0,2
+"test-llm-load.R","llm() validates context_length / gpu_layers / mmap with relm_error_argument",14,0,FALSE,FALSE,0,14
+"test-llm-load.R","llm() rejects invalid backend choices with classed argument errors",12,0,FALSE,FALSE,0,12
+"test-llm-load.R","llm() keeps match.arg defaults and unambiguous backend abbreviations",4,0,FALSE,FALSE,0,4
+"test-llm-load.R","llm() raises relm_error_backend for a backend the build lacks",3,0,FALSE,FALSE,0,3

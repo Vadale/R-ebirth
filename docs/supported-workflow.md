@@ -1,6 +1,6 @@
 # Supported research workflow
 
-Updated 2026-10-12. Start with the [installation guide](getting-started.md), then
+Updated 2026-10-17. Start with the [installation guide](getting-started.md), then
 the [complete walkthrough](../examples/research-workflow/README.md). It uses
 existing public APIs and exports ordinary R objects, CSV and base-R graphics.
 The integrated research APIs are included in 0.4.0. Check installed functions,
@@ -9,11 +9,11 @@ combination accepted by the underlying engine.
 
 | Task | Supported route | Boundary |
 | --- | --- | --- |
-| Load and generate | Local GGUF, `llm()`, `llm_generate()`; macOS arm64/Metal and Linux CPU acceptance | Windows/CUDA are separate future hardware gates. Model loading is synchronous. |
+| Load and generate | Local GGUF, `llm()`, `llm_generate()`; macOS arm64/Metal, Linux CPU and optional development Linux CUDA acceptance | Windows is deferred; [CUDA scope](linux-cuda.md) is a locally verified source build, not the published 0.4.0 binary. Model loading is synchronous. |
 | Observe | `llm_trace()` with layer/position/component filters; `on_state` during async generation | Spark tracing is unsupported. Filter captures; managed Arrow spill limits capture storage, not total process RSS. |
 | Compare and export | `llm_compare()`, `llm_timeline()`, `plot()`; table/CSV and trusted RDS | Matching recorded input histories are required for differences. Caller provenance is validated, not authenticated. A configured model map is not measured activity. |
 | Construct directions | `llm_direction()` from paired actual captures and explicit model/split provenance | Schema 1 residual directions support addition. Schema 2 records supported attention/MLP sites; artifact/model identity must match. |
-| Project | `llm_apply_direction(operator = "project")`, a fixed derived handle | Dense Llama `attn_out`/`mlp_out`; dense Qwen2 `mlp_out`; recorded CPU/Metal scope. No sparse/MoE, GPU-general or arbitrary-architecture promise. |
+| Project | `llm_apply_direction(operator = "project")`, a fixed derived handle | Dense Llama `attn_out`/`mlp_out`; dense Qwen2 `mlp_out`; recorded CPU/Metal and single-device Linux CUDA scope. No sparse/MoE, GPU-general or arbitrary-architecture promise. |
 | Update during generation | Bounded `on_state` replies update additive coefficients | Projection is static. Additive revisions in a timeline do not represent static projections. Callbacks run on R's thread and must remain short. |
 | Evaluate | Fixed prompts, controls, held-out data and explicit metrics using ordinary R | Shorter text, decodable labels and changed activations do not prove correctness, causal use, general efficacy or safety. |
 | Close/cancel | `close()` and cooperative `llm_cancel()`; GC as a fallback | Close derived handles explicitly. A watchdog requests cancellation; it is not an operating-system memory/time guarantee. |

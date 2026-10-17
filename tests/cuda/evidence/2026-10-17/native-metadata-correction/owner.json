@@ -1,0 +1,63 @@
+{
+  "status": "passed",
+  "scope": "CUDA placement and existing synthetic numerical/resource gates only; no projection/live/R/performance acceptance",
+  "test_results": [
+    {
+      "name": "cuda_backend",
+      "passed": 1,
+      "sha256": "d5f096838319260d556ededabdb9333849506f77351cfc360841225bf7e8c3e5",
+      "diagnostics": []
+    },
+    {
+      "name": "synthetic_logits",
+      "passed": 4,
+      "sha256": "f9159472c00318eda1b7c4fe94f442b04e12ed7bdfacfbe1727616ef1d3af9c2",
+      "diagnostics": []
+    },
+    {
+      "name": "synthetic_embed",
+      "passed": 2,
+      "sha256": "d1b818f398a0d4370147240aadc1ad51ddba6e6f7edc2369e2f5fdebccc4cc72",
+      "diagnostics": []
+    },
+    {
+      "name": "synthetic_trace",
+      "passed": 1,
+      "sha256": "81e1d9aca1c6e327b2aa5be9396e141feedb8a1a9ec10d1a7f47a68b19459598",
+      "diagnostics": []
+    },
+    {
+      "name": "synthetic_intervene",
+      "passed": 1,
+      "sha256": "7c3afc71d2ca85a5e07136a478e2ddb1d3d2e510a6e24a7ce9b032737cac0d55",
+      "diagnostics": []
+    },
+    {
+      "name": "synthetic_spill",
+      "passed": 6,
+      "sha256": "9960f1b11f50e86b19f6f107798ba6ebe3a7bdf042bc8047ab7430839be0ca1c",
+      "diagnostics": []
+    },
+    {
+      "name": "synthetic_generate",
+      "passed": 3,
+      "sha256": "558944e4cd6326a0dcb86c714c6273bd62b533597012eb4c963e2a522b34394f",
+      "diagnostics": []
+    },
+    {
+      "name": "twin_pin_link_stems",
+      "passed": 1,
+      "sha256": "19e3a03b9d52f74ad5a640c783f8b415a049e9d40627515703591136e5ad2d8e",
+      "diagnostics": []
+    }
+  ],
+  "total_passed": 19,
+  "bound_source_files": 875,
+  "only_change_from_failed_run": [
+    "rebirth/src/rust/rebirth-llm/tests/cuda_backend.rs"
+  ],
+  "cuda_archive_sha256": "cce96e90c0ef73d13c140202aadfe19a667bf0a18310f3afae1cc18e1fbf8c11",
+  "original_failed_status_preserved": true,
+  "gpu_metadata_sentinel": -1,
+  "native_recompiled": false
+}

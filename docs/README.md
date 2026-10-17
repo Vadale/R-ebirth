@@ -22,6 +22,8 @@ Plans and historical build receipts are not current results.
 
 ## Extend the same workflow
 
+- [Linux CUDA installation and measured scope](linux-cuda.md), with the
+  [implementation/performance report](wp13-linux-cuda-implementation.md).
 - [Streaming](../rebirth/vignettes/token-streaming.qmd) and
   [live intervention graphics](../rebirth/vignettes/model-interventions.qmd).
 - [Recorded contrast directions](../rebirth/vignettes/contrast-directions.qmd).

@@ -1,0 +1,19 @@
+{
+  "status": "diagnosed",
+  "failed_pid": 2379826,
+  "native_release_compile": "passed, 22m24s",
+  "failed_stage": "document binary linker",
+  "crash_pid": 2388328,
+  "signal": "SIGBUS/BUS_ADRERR",
+  "fault_address": "0x7f9c2d31c000",
+  "output_mapping": [
+    "0x7f9c2c800000",
+    "0x7f9c2feda000"
+  ],
+  "allocation_control": "posix_fallocate 64MiB /tmp returned EDQUOT (122); initial receipt write also refused EDQUOT before any relocation",
+  "filesystem": "tmpfs usrquota",
+  "correction": "move completed debug cache to disk; preserve hashes/logical path; current release target/source/config unchanged",
+  "source_drift": false,
+  "model_attempts": 0,
+  "completed_release_archives": 9
+}

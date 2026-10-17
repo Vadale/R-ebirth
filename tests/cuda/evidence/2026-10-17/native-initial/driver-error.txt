@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/tmp/relm-phase8/run-native.py", line 36, in <module>
+    run(test,command+['--offline','--test',test,'--','--nocapture','--test-threads=1'],env)
+    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/relm-phase8/run-native.py", line 16, in run
+    if result.returncode: raise RuntimeError(f'{name} exited {result.returncode}')
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: cuda_backend exited 101

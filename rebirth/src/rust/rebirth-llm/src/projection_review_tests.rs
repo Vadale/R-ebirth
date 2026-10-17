@@ -20,14 +20,28 @@ fn review_source_stamp() -> String {
 
 #[test]
 fn projection_zero_live_capture_preserves_identity_without_row_work() {
+    zero_live_capture(crate::BackendKind::Cpu);
+}
+
+#[test]
+#[cfg(feature = "cuda")]
+fn cuda_projection_zero_live_capture_preserves_identity_without_row_work() {
+    zero_live_capture(crate::BackendKind::Cuda);
+}
+
+fn zero_live_capture(backend: crate::BackendKind) {
     let _native = crate::NativeGuard::acquire("projection zero/live review fixture");
     let source = crate::load_with_batch(
         crate::LoadRequest {
             path: std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"))
                 .join("../../../../tests/llm-golden/live-state/f6b/synthetic-llama-3l.gguf"),
             context_length: 128,
-            gpu_layers: Some(0),
-            backend: crate::BackendKind::Cpu,
+            gpu_layers: Some(if backend == crate::BackendKind::Cpu {
+                0
+            } else {
+                -1
+            }),
+            backend,
             mmap: true,
             projector: None,
         },
@@ -221,6 +235,7 @@ fn projection_zero_live_capture_preserves_identity_without_row_work() {
         "F6E_PROJECTION_REVIEW_TEST {}",
         serde_json::json!({
             "test":"projection_zero_live_capture_preserves_identity_without_row_work",
+            "backend":format!("{backend:?}"),
             "status":"passed", "expected_cases":8, "executed_cases":cases,
             "expected_rejections":2, "rejected_cases":rejected,
             "expected_values":224, "compared_values":compared, "max_abs_error":0.0,

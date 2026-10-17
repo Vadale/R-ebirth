@@ -10,8 +10,8 @@
 #' deterministically with [close()][close.llm] when done; a garbage-collection
 #' finalizer frees it as a safety net otherwise (see [close.llm()]).
 #'
-#' `backend = "auto"` resolves to the fastest backend this build supports
-#' (Metal on Apple silicon, otherwise CPU). Requesting a backend the build was
+#' `backend = "auto"` selects available compiled backends in priority order:
+#' Metal, then CUDA, then CPU. It does not benchmark their speed. Requesting a backend the build was
 #' not compiled with raises `relm_error_backend`.
 #'
 #' No model ships inside the package yet, so the runnable example is guarded by

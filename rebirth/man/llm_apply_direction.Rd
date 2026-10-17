@@ -47,7 +47,7 @@ is insufficient. This check cannot authenticate already-loaded weights.
 Projection edits each executed component row as \code{h - coef * v * sum(v * h)}.
 It is static for the derived handle; live replies still update only existing
 additive steering. Supported sites are dense Llama MLP/post-output-projection
-attention and Qwen2 MLP on CPU/Metal. Projected handles accept text generation
+attention and Qwen2 MLP on CPU/Metal and the optional Linux CUDA build. Projected handles accept text generation
 and logits; image requests, ordinary trace and embedding calls are refused.
 The combined budget includes the current artifact's validation and all
 accumulated projection/residual owners. Direct steer/ablate inheritance uses

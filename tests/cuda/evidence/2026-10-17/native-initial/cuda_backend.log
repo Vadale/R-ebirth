@@ -1,0 +1,19 @@
+["cargo", "test", "--locked", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "-j", "2", "--offline", "--test", "cuda_backend", "--", "--nocapture", "--test-threads=1"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running tests/cuda_backend.rs (/tmp/relm-phase8/native-initial/target/debug/deps/cuda_backend-d4186299485bcb78)
+
+running 1 test
+test cuda_load_and_all_context_types_use_device_buffers ... 
+thread 'cuda_load_and_all_context_types_use_device_buffers' (2331204) panicked at rebirth-llm/tests/cuda_backend.rs:63:5:
+assertion failed: model.metadata().gpu_layers > 0
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+
+failures:
+
+failures:
+    cuda_load_and_all_context_types_use_device_buffers
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+
+error: test failed, to rerun pass `-p rebirth-llm --test cuda_backend`

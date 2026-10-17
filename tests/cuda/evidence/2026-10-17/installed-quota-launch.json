@@ -1,0 +1,8 @@
+{
+  "pid": 2389708,
+  "driver": "/tmp/relm-phase8/run-installed-quota.py",
+  "sha256": "e8f71d9d63973bd5f798d3fa20b8877a2b0d7f3f7c29080c832a364da3c33b0b",
+  "status_file": "/tmp/relm-phase8/installed-quota-status.json",
+  "launched_at": "2026-10-17T17:59:26.489596+00:00",
+  "parent_failed_status": "/tmp/relm-phase8/installed-resume-status.json"
+}

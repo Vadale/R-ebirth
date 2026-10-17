@@ -14,9 +14,12 @@
 //! Runs in the `cargo test -p rebirth-llm` CI job (download-free, synthetic only),
 //! on the CPU backend so the exact-value path is identical across CI platforms.
 
+#[path = "support/numeric_backend.rs"]
+mod numeric_backend;
+
 use std::path::PathBuf;
 
-use rebirth_llm::{load, BackendKind, LoadRequest, Pooling};
+use rebirth_llm::{load, LoadRequest, Pooling};
 
 /// The fixed golden input (`synthetic_model.INPUT_TOKENS`).
 const INPUT_TOKENS: [i32; 8] = [1, 7, 13, 22, 5, 31, 44, 2];
@@ -133,8 +136,8 @@ fn engine_embeddings_match_numpy_oracle_within_tolerance() {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        // CPU so the exact-value path runs identically on every CI platform.
-        backend: BackendKind::Cpu,
+        // The CUDA feature selects the actual GPU; default CI retains CPU.
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })
@@ -223,7 +226,7 @@ fn embed_texts_with_images_rejects_a_length_mismatch() {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        backend: BackendKind::Cpu,
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })

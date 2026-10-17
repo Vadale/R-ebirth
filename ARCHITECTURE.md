@@ -84,7 +84,7 @@ request-state isolation after errors as well as successful calls.
 
 ## 5. Activation taps and interventions (the WP4 core)
 
-**Strategy A (preferred — minimal or zero vendored patching).** llama.cpp already exposes the observation hook we need: the **eval callback** (`cb_eval`, a `ggml_backend_sched_eval_callback` in the context params) — the same mechanism the upstream `llama-imatrix` tool uses to observe intermediate tensors during the forward pass. Graph tensors carry per-layer names (residual/attention/FFN outputs), so the tap = a callback that matches tensor names against the capture spec, copies matching tensors to host buffers (`ggml_backend_tensor_get`), and appends to the trace sink. Callback installed only while tracing → tap-off overhead ≈ 0 (the < 2% acceptance budget).
+**Strategy A (preferred — minimal or zero vendored patching).** llama.cpp already exposes the observation hook we need: the **eval callback** (`cb_eval`, a `ggml_backend_sched_eval_callback` in the context params) — the same mechanism the upstream `llama-imatrix` tool uses to observe intermediate tensors during the forward pass. Graph tensors carry per-layer names (residual/attention/FFN outputs), so the tap = a callback that matches tensor names against the capture spec, copies matching tensors to host buffers (`ggml_backend_tensor_get`), and appends to the trace sink. The current generation context retains a dormant dispatcher for live observation/projection; do not infer zero overhead from an inactive capture. Historical CPU/Metal timing gates and the new bounded Linux CUDA application measurements retain their own source/configuration scopes.
 
 **Steering (generation-time residual addition):** llama.cpp has **native control-vector support** (per-layer additions to the residual stream via the adapter API). `llm_steer` maps onto it directly — no patch. Composition of stacked steers = summed vectors per layer, computed on our side.
 
@@ -116,7 +116,7 @@ precede the full native sanitizer gate.
 
 ## 7. Determinism implementation
 
-Greedy decoding: deterministic per backend by construction. Sampling: the sampler chain runs on CPU from the returned logits with a dedicated seeded RNG per `llm_generate` call — GPU backend nondeterminism therefore cannot enter token selection; same seed ⇒ same tokens on the same backend/build. The drawn-or-supplied seed is always returned (`attr(result, "seed")`). Cross-backend identity is *not* promised (documented tolerance in harness B) — floating-point op order differs between Metal/CPU/CUDA.
+Greedy decoding: deterministic per backend by construction. Sampling: the sampler chain runs on CPU from returned logits with a dedicated seeded RNG per `llm_generate` call. This controls sampling randomness, not backend floating-point variation in logits. Same-backend replay is checked at the recorded sources/settings; the seed alone is not a universal determinism guarantee. The drawn-or-supplied seed is always returned (`attr(result, "seed")`). Cross-backend identity is *not* promised (documented tolerance in harness B) — floating-point op order differs between Metal/CPU/CUDA.
 
 ## 8. Error mapping
 

@@ -1,0 +1,3 @@
+["Rscript", "--vanilla", "/tmp/relm-phase8/installed-workflow.R", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth", "/tmp/relm-phase8/installed-pic", "/home/grauk/.local/share/relm/models/qwen2.5-0.5b-instruct-q8_0.gguf", "/tmp/relm-phase8/installed-pic/log_capture.so"]
+load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+WP13_INSTALLED_CUDA_WORKFLOW_COMPLETE loads=1 traces=4 generations=8 derives=6

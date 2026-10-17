@@ -15,10 +15,13 @@
 //! synthetic only), on the CPU backend so the exact-value path is identical across
 //! CI platforms.
 
+#[path = "support/numeric_backend.rs"]
+mod numeric_backend;
+
 use std::collections::HashMap;
 use std::path::PathBuf;
 
-use rebirth_llm::{load, BackendKind, CaptureSpec, Component, LoadRequest, Positions};
+use rebirth_llm::{load, CaptureSpec, Component, LoadRequest, Positions};
 
 /// The fixed golden input (`synthetic_model.INPUT_TOKENS`).
 const INPUT_TOKENS: [i32; 8] = [1, 7, 13, 22, 5, 31, 44, 2];
@@ -135,8 +138,8 @@ fn engine_activations_match_numpy_oracle_within_tolerance() {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        // CPU so the exact-value path runs identically on every CI platform.
-        backend: BackendKind::Cpu,
+        // The CUDA feature selects the actual GPU; default CI retains CPU.
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })

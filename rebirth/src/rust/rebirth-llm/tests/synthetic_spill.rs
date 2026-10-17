@@ -9,14 +9,16 @@
 //! (`trace_token_batch_spill`) is used — no tokenizer needed.
 #![cfg(feature = "spill")]
 
+#[path = "support/numeric_backend.rs"]
+mod numeric_backend;
+
 use std::collections::HashMap;
 use std::path::PathBuf;
 
 use arrow_array::{Float32Array, StringArray, UInt32Array};
 use arrow_ipc::reader::StreamReader;
 use rebirth_llm::{
-    load, BackendKind, CaptureSpec, Component, LoadRequest, LoadedModel, Positions, SpillPlan,
-    TraceOutput,
+    load, CaptureSpec, Component, LoadRequest, LoadedModel, Positions, SpillPlan, TraceOutput,
 };
 
 const INPUT_TOKENS: [i32; 8] = [1, 7, 13, 22, 5, 31, 44, 2];
@@ -41,7 +43,7 @@ fn load_synthetic() -> LoadedModel {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        backend: BackendKind::Cpu,
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })

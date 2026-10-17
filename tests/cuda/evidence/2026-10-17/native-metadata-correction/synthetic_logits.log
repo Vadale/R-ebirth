@@ -1,0 +1,15 @@
+["cargo", "test", "--locked", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "-j", "2", "--offline", "--test", "synthetic_logits", "--", "--nocapture", "--test-threads=1"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/synthetic_logits.rs (/tmp/relm-phase8/native-initial/target/debug/deps/synthetic_logits-60f75a3f5bc1ba9d)
+
+running 4 tests
+test chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row ... ok
+test chunked_over_batch_teacher_forced_logits_match_the_full_golden_matrix ... chunked teacher-forced max |Δ| = 2.340e-3 (atol 1.0e-2)
+ok
+test engine_logits_match_numpy_oracle_within_tolerance ... engine-vs-oracle max |Δ| = 2.340e-3 (atol 1.0e-2)
+ok
+test top_k_extraction_matches_numpy_oracle_at_the_final_position ... top-k gate: max |Δlogit| = 4.449e-4, max |Δprob| = 2.552e-5 (atol 1.0e-2)
+ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s
+

@@ -1,0 +1,20 @@
+{
+  "status": "failed",
+  "pid": 2379514,
+  "output": "/tmp/relm-phase8/installed-cuda",
+  "stages": [
+    {
+      "name": "configure",
+      "returncode": 0,
+      "log_sha256": "384a9b1cfc84e436c568f4c784f130f839b610ea9046975bd9ede093d054f302"
+    },
+    {
+      "name": "install",
+      "returncode": 1,
+      "log_sha256": "861db2bf8d7f640b9f2e203b5e513b40e0af6cf696e9b6169d9f9645b5834d60"
+    }
+  ],
+  "stage": "install",
+  "updated_at": "2026-10-17T17:24:47.006455+00:00",
+  "error": "install failed; preserve and diagnose"
+}

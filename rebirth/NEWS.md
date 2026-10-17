@@ -1,3 +1,18 @@
+# Development — optional Linux CUDA
+
+* Added an explicit optional Linux x86_64 CUDA build route with
+  `RELM_ENABLE_CUDA=1` and `CUDA_PATH`, including the native backend archive and
+  runtime libraries. Ordinary CPU/Metal builds do not require the CUDA SDK.
+* Restored the unchanged CUDA sources from the existing pinned llama.cpp tag.
+  Actual device, frozen numerical checks and the installed research workflow
+  passed on Linux/RTX 2060 Mobile under D-050. The new bounded benchmark records
+  a 4.28x ordinary decode speedup versus CPU for one Qwen 0.5B Q8_0 prompt.
+  Observation costs, the rejected polling candidate and logging limitations are
+  retained; this is not a new binary release or a universal performance claim.
+* CUDA objects now carry PIC for R shared linking, and wrapper generation reuses
+  the library release profile. The example workflow accepts explicit CUDA/Metal
+  selection with CPU default unchanged; no public API or dependency was added.
+
 # Development documentation
 
 * Recorded research animations now show an aligned activation intervention and

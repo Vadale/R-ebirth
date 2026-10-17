@@ -1,0 +1,13 @@
+{
+  "status": "failed",
+  "stage": "install",
+  "reason": "Offline cache did not contain existing locked extendr-api0.9.0 required by FFI; previous native-only build never fetched it",
+  "native_rust_cuda_build_started": false,
+  "models": 0,
+  "source_drift": false,
+  "passed": [
+    "actual configure, CUDA flags/release profile/link routing",
+    "R entrypoint C compilation"
+  ],
+  "correction": "Fetch existing Cargo.lock dependencies for x86_64 Linux only, then resume unchanged configured package in fresh library; no dependency/version addition"
+}

@@ -1,0 +1,27 @@
+{
+  "installed-ffi-deps/core-debug.txt": {
+    "bytes": 45233,
+    "reason": "host-specific crash journal retained locally",
+    "sha256": "22315b6bf65b0aed8f9131e78be2e5cf465bfc97084a9ff310e8efcbcbdb9b45"
+  },
+  "installed-ffi-deps/core-info.txt": {
+    "bytes": 22966,
+    "reason": "host-specific crash journal retained locally",
+    "sha256": "2e206b8e344493a105c9f42c3b03f50381e746ed5e214cd4b162a04b398d31e4"
+  },
+  "installed-ffi-deps/crash-journal.txt": {
+    "bytes": 30171,
+    "reason": "host-specific crash journal retained locally",
+    "sha256": "f7913fba49b3dd8a73216792dbbfb788dea7ef0ab3d54d4831c55ae7fb945fc0"
+  },
+  "installed-ffi-deps/kernel-journal.txt": {
+    "bytes": 17,
+    "reason": "host-specific crash journal retained locally",
+    "sha256": "19c4e28b2f54ea8f217db4e622b0a5c758efa7b77ce2dc0394b6d159568c0b2e"
+  },
+  "installed-pic/log_capture.so": {
+    "bytes": 16128,
+    "reason": "compiled artifact remains local",
+    "sha256": "415297a3dfbf39490d2e88c90dddbac6e22954951501518b1207506898fa5591"
+  }
+}

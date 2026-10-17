@@ -12,9 +12,12 @@
 //! This test runs in the `cargo test -p rebirth-llm` CI job (rust.yaml), which
 //! builds the vendored engine; it is download-free and synthetic-model-only.
 
+#[path = "support/numeric_backend.rs"]
+mod numeric_backend;
+
 use std::path::PathBuf;
 
-use rebirth_llm::{load, load_with_batch, top_k_logits, BackendKind, LoadRequest};
+use rebirth_llm::{load, load_with_batch, top_k_logits, LoadRequest};
 
 /// The fixed golden input (`synthetic_model.INPUT_TOKENS`).
 const INPUT_TOKENS: [i32; 8] = [1, 7, 13, 22, 5, 31, 44, 2];
@@ -95,8 +98,8 @@ fn engine_logits_match_numpy_oracle_within_tolerance() {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        // CPU so the exact-value path runs identically on every CI platform.
-        backend: BackendKind::Cpu,
+        // The CUDA feature selects the actual GPU; default CI retains CPU.
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })
@@ -194,7 +197,7 @@ fn top_k_extraction_matches_numpy_oracle_at_the_final_position() {
         path: gguf,
         context_length: 512,
         gpu_layers: None,
-        backend: BackendKind::Cpu,
+        backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
     })
@@ -325,8 +328,8 @@ fn chunked_over_batch_prompt_returns_logits_matching_the_golden_final_row() {
             path: gguf,
             context_length: 512,
             gpu_layers: None,
-            // CPU so the exact-value path runs identically on every CI platform.
-            backend: BackendKind::Cpu,
+            // The CUDA feature selects the actual GPU; default CI retains CPU.
+            backend: numeric_backend::backend(),
             mmap: true,
             projector: None,
         },
@@ -400,8 +403,8 @@ fn chunked_over_batch_teacher_forced_logits_match_the_full_golden_matrix() {
             path: gguf,
             context_length: 512,
             gpu_layers: None,
-            // CPU so the exact-value path runs identically on every CI platform.
-            backend: BackendKind::Cpu,
+            // The CUDA feature selects the actual GPU; default CI retains CPU.
+            backend: numeric_backend::backend(),
             mmap: true,
             projector: None,
         },

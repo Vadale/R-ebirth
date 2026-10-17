@@ -1,0 +1,11 @@
+["cargo", "test", "--locked", "--manifest-path", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/Cargo.toml", "-p", "rebirth-llm", "--features", "cuda", "-j", "2", "--offline", "--test", "synthetic_embed", "--", "--nocapture", "--test-threads=1"]
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running tests/synthetic_embed.rs (/tmp/relm-phase8/native-initial/target/debug/deps/synthetic_embed-0e6ea8322d0ad489)
+
+running 2 tests
+test embed_texts_with_images_rejects_a_length_mismatch ... ok
+test engine_embeddings_match_numpy_oracle_within_tolerance ... engine-vs-oracle embeddings max |Δ| = 1.516e-3 (atol 1.0e-2)
+ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+

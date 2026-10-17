@@ -1,0 +1,98 @@
+["R", "CMD", "INSTALL", "--no-configure", "--library=/tmp/relm-phase8/installed-ffi-deps/library", "/tmp/relm-phase8/installed-cuda/package"]
+* installing *source* package ‘relm’ ...
+** this is package ‘relm’ version ‘0.4.0’
+** using staged installation
+** libs
+specified C++17
+using C compiler: ‘gcc (GCC) 16.2.1 20260810’
+using C++ compiler: ‘g++ (GCC) 16.2.1 20260810’
+using C++17
+if [ -d ./vendor ]; then \
+	echo "=== Using offline vendor directory ==="; \
+	mkdir -p /tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+	cp rust/vendor-config.toml /tmp/relm-phase8/installed-cuda/temporary-cargo-home/config.toml; \
+elif [ -f ./rust/vendor.tar.xz ]; then \
+	echo "=== Using offline vendor tarball ==="; \
+	tar xf rust/vendor.tar.xz && \
+	mkdir -p /tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+	cp rust/vendor-config.toml /tmp/relm-phase8/installed-cuda/temporary-cargo-home/config.toml; \
+fi
+export CARGO_HOME=/tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+export PATH="/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/bin:/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin:/home/grauk/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo build   --features cuda -p rebirth-ffi --lib --release --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.46
+   Compiling unicode-ident v1.0.24
+   Compiling autocfg v1.5.1
+   Compiling libm v0.2.16
+   Compiling syn v2.0.118
+   Compiling num-traits v0.2.19
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling num-integer v0.1.46
+   Compiling version_check v0.9.5
+   Compiling getrandom v0.3.4
+   Compiling ahash v0.8.12
+   Compiling num-bigint v0.4.8
+   Compiling zerocopy-derive v0.8.52
+   Compiling once_cell v1.21.4
+   Compiling bytes v1.12.0
+   Compiling half v2.7.1
+   Compiling semver v1.0.28
+   Compiling arrow-buffer v59.0.0
+   Compiling rustc_version v0.4.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling iana-time-zone v0.1.65
+   Compiling serde_core v1.0.228
+   Compiling shlex v2.0.1
+   Compiling arrow-schema v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling cc v1.2.65
+   Compiling chrono v0.4.45
+   Compiling flatbuffers v25.12.19
+   Compiling num-complex v0.4.6
+   Compiling hashbrown v0.17.1
+   Compiling extendr-ffi v0.9.0
+   Compiling arrow-array v59.0.0
+   Compiling cmake v0.1.58
+   Compiling serde_json v1.0.145
+   Compiling bitflags v2.13.0
+   Compiling serde v1.0.228
+   Compiling paste v1.0.15
+   Compiling arrow-select v59.0.0
+   Compiling rebirth-llm v0.0.0 (/tmp/relm-phase8/installed-cuda/package/src/rust/rebirth-llm)
+   Compiling itoa v1.0.18
+   Compiling lazy_static v1.5.0
+   Compiling ryu v1.0.23
+   Compiling extendr-api v0.9.0
+   Compiling memchr v2.8.3
+   Compiling extendr-macros v0.9.0
+   Compiling arrow-ipc v59.0.0
+   Compiling readonly v0.2.13
+   Compiling rebirth-ffi v0.0.0 (/tmp/relm-phase8/installed-cuda/package/src/rust/rebirth-ffi)
+note: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms
+
+note: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-cuda -lggml-base -lstdc++ -lm -ldl -lcudart -lcublas -lcuda -lc -lm -lrt -lpthread -lR -lgcc_s -lutil -lrt -lpthread -lm -ldl -lc
+
+    Finished `release` profile [optimized] target(s) in 22m 24s
+export CARGO_HOME=/tmp/relm-phase8/installed-cuda/temporary-cargo-home && \
+export PATH="/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/bin:/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin:/home/grauk/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo run   --features cuda --release -p rebirth-ffi --bin document --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+note: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms
+
+note: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-cuda -lggml-base -lstdc++ -lm -ldl -lcudart -lcublas -lcuda -lc -lm -lrt -lpthread -lR -lgcc_s -lutil -lrt -lpthread -lm -ldl -lc
+
+   Compiling rebirth-ffi v0.0.0 (/tmp/relm-phase8/installed-cuda/package/src/rust/rebirth-ffi)
+error: linking with `cc` failed: exit status: 1
+  |
+  = note:  "cc" "-m64" "<1 object files omitted>" "-Wl,--as-needed" "-Wl,-Bstatic" "/tmp/relm-phase8/installed-cuda/package/src/./rust/target/release/deps/rustcYxhXfP/librelm-d2f447b50eb60e3c.rlib" "-Wl,--whole-archive" "-lrelm-grammar" "-Wl,--no-whole-archive" "-Wl,--whole-archive" "-lmtmd" "-Wl,--no-whole-archive" "-Wl,--whole-archive" "-lvendor-hash" "-Wl,--no-whole-archive" "-Wl,--whole-archive" "-lllama" "-Wl,--no-whole-archive" "-Wl,--whole-archive" "-lggml" "-Wl,--no-whole-archive" "-Wl,--whole-archive" "-lggml-cpu" "-Wl,--no-whole-archive" "-Wl,--whole-archive" "-lggml-cuda" "-Wl,--no-whole-archive" "-Wl,--whole-archive" "-lggml-base" "-Wl,--no-whole-archive" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib/libcompiler_builtins-*.rlib" "-Wl,-Bdynamic" "-lstdc++" "-lm" "-ldl" "-lcudart" "-lcublas" "-lcuda" "-lc" "-lm" "-lrt" "-lpthread" "-lR" "-lgcc_s" "-lutil" "-lrt" "-lpthread" "-lm" "-ldl" "-lc" "-L" "/tmp/relm-phase8/installed-cuda/package/src/./rust/target/release/deps/rustcYxhXfP/raw-dylibs" "-B<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/bin/gcc-ld" "-fuse-ld=lld" "-Wl,--eh-frame-hdr" "-Wl,-z,noexecstack" "-L" "/tmp/relm-phase8/installed-cuda/package/src/./rust/target/release/build/rebirth-ffi-b0afd6ccbdaf89d6/out" "-L" "/tmp/relm-phase8/installed-cuda/package/src/./rust/target/release/build/rebirth-llm-380b159a824c8c15/out/relm-native" "-L" "/usr/lib/R/lib" "-L" "/home/grauk/.local/share/relm/toolchains/cuda-13.3.1/lib64" "-L" "<sysroot>/lib/rustlib/x86_64-unknown-linux-gnu/lib" "-o" "/tmp/relm-phase8/installed-cuda/package/src/./rust/target/release/deps/document-f9c0a98654722d0d" "-Wl,--gc-sections" "-pie" "-Wl,-z,relro,-z,now" "-Wl,-O1" "-Wl,--strip-debug" "-nodefaultlibs"
+  = note: some arguments are omitted. use `--verbose` to show all linker arguments
+  = note: collect2: fatal error: ld terminated with signal 7 [Bus error], core dumped
+          compilation terminated.
+          
+
+error: could not compile `rebirth-ffi` (bin "document") due to 1 previous error
+make: *** [Makevars:39: rust/target/release/librelm.a] Error 101
+ERROR: compilation failed for package ‘relm’
+* removing ‘/tmp/relm-phase8/installed-ffi-deps/library/relm’

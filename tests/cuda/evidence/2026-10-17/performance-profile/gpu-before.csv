@@ -1,0 +1,2 @@
+timestamp, index, utilization.gpu [%], utilization.memory [%], memory.used [MiB], temperature.gpu, clocks.current.sm [MHz], clocks.current.memory [MHz], power.draw [W], power.limit [W]
+2026/10/17 20:41:27.357, 0, 0, 6, 1502, 33, 300, 405, 3.81, [N/A]
