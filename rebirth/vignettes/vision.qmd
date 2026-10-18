@@ -63,11 +63,12 @@ deleted, never used):
 
 ```{r}
 #| label: download
-#| eval: !expr run_download
-library(relm)
+if (run_download) {
+  library(relm)
 
-model  <- llm_download("qwen2-vl-2b-instruct-q4_k_m")     # ~1 GB, verified
-mmproj <- llm_download("qwen2-vl-2b-instruct-mmproj-f16") # ~1.3 GB, verified
+  model  <- llm_download("qwen2-vl-2b-instruct-q4_k_m")     # ~1 GB, verified
+  mmproj <- llm_download("qwen2-vl-2b-instruct-mmproj-f16") # ~1.3 GB, verified
+}
 ```
 
 Both calls are idempotent: a cached, checksum-matching file is returned
@@ -87,17 +88,18 @@ images everywhere; a plain text handle refuses them with a classed error
 
 ```{r}
 #| label: load
-#| eval: !expr run_real
-m <- llm(model, projector = mmproj)
-m
+if (run_real) {
+  m <- llm(model, projector = mmproj)
+  m
+}
 ```
 
 ```{r}
 #| label: load-recorded
-#| eval: !expr isFALSE(run_real)
 #| echo: false
-# Recorded output of the chunk above (pinned pair, Apple-silicon Metal).
-cat('<llm> Qwen2-VL-2B-Instruct-Q4_K_M.gguf
+if (isFALSE(run_real)) {
+  # Recorded output of the chunk above (pinned pair, Apple-silicon Metal).
+  cat('<llm> Qwen2-VL-2B-Instruct-Q4_K_M.gguf
   architecture:    qwen2vl
   parameters:      1.5 B
   quantization:    Q4_K_M
@@ -107,6 +109,7 @@ cat('<llm> Qwen2-VL-2B-Instruct-Q4_K_M.gguf
   projector:       mmproj-Qwen2-VL-2B-Instruct-f16.gguf
   interventions:   0 active
 ')
+}
 ```
 
 ## Draw an image, ask a question
@@ -141,19 +144,21 @@ always picks its single most likely next token, so the run is deterministic:
 
 ```{r}
 #| label: ask
-#| eval: !expr run_real
-answer <- llm_generate(m, "What color is the square?",
-  images = img, max_tokens = 32, temperature = 0
-)
-cat(answer)
+if (run_real) {
+  answer <- llm_generate(m, "What color is the square?",
+    images = img, max_tokens = 32, temperature = 0
+  )
+  cat(answer)
+}
 ```
 
 ```{r}
 #| label: ask-recorded
-#| eval: !expr isFALSE(run_real)
 #| echo: false
-# Recorded output of the chunk above (pinned pair; greedy, so reproducible).
-cat("The square is red.\n")
+if (isFALSE(run_real)) {
+  # Recorded output of the chunk above (pinned pair; greedy, so reproducible).
+  cat("The square is red.\n")
+}
 ```
 
 That exact sentence is also this pair's reference output in the package's
@@ -163,17 +168,19 @@ same way:
 
 ```{r}
 #| label: describe
-#| eval: !expr run_real
-llm_generate(m, "Describe this image in one short sentence.",
-  images = img, max_tokens = 40, temperature = 0
-) |> cat()
+if (run_real) {
+  llm_generate(m, "Describe this image in one short sentence.",
+    images = img, max_tokens = 40, temperature = 0
+  ) |> cat()
+}
 ```
 
 ```{r}
 #| label: describe-recorded
-#| eval: !expr isFALSE(run_real)
 #| echo: false
-cat("A red square on a white background.\n")
+if (isFALSE(run_real)) {
+  cat("A red square on a white background.\n")
+}
 ```
 
 **How the pairing works.** `images` is a list parallel to `prompt` —
@@ -249,19 +256,21 @@ product is a cosine similarity:
 
 ```{r}
 #| label: similarity
-#| eval: !expr run_real
-e_img <- llm_embed(m, "", images = cat_img) # the image alone: one row
-e_txt <- llm_embed(m, c(cat = "a cat", car = "a car"))
-sims <- drop(tcrossprod(e_img, e_txt))
-round(sims, 3)
+if (run_real) {
+  e_img <- llm_embed(m, "", images = cat_img) # the image alone: one row
+  e_txt <- llm_embed(m, c(cat = "a cat", car = "a car"))
+  sims <- drop(tcrossprod(e_img, e_txt))
+  round(sims, 3)
+}
 ```
 
 ```{r}
 #| label: similarity-recorded
-#| eval: !expr isFALSE(run_real)
 #| echo: false
-# Recorded output of the chunk above (pinned pair, Apple-silicon Metal).
-cat("  cat   car \n0.319 0.275 \n")
+if (isFALSE(run_real)) {
+  # Recorded output of the chunk above (pinned pair, Apple-silicon Metal).
+  cat("  cat   car \n0.319 0.275 \n")
+}
 ```
 
 The drawing lands closer to *"a cat"* than to *"a car"* — the ranking is the
@@ -358,8 +367,9 @@ The same two caveats apply to any other local pair, MedGemma included.
 
 ```{r}
 #| label: close
-#| eval: !expr run_real
-close(m)
+if (run_real) {
+  close(m)
+}
 ```
 
 Everything here runs on local hardware with no Python and no API: two GGUF

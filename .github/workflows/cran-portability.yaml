@@ -55,6 +55,12 @@ jobs:
       - name: Rtools thread declaration compatibility (no engine build)
         shell: bash
         run: python tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+      - name: Quarto temporary-library and extracted-script controls (no native build)
+        shell: Rscript {0}
+        run: |
+          args <- c(Sys.getenv("RUNNER_TEMP"), "--quarto")
+          commandArgs <- function(trailingOnly = FALSE) args
+          source("tests/cran/vignette-library.R")
       - uses: r-lib/actions/check-r-package@v2
         with:
           working-directory: rebirth
@@ -70,4 +76,5 @@ jobs:
             rebirth/check
             rebirth/*.tar.gz
             ${{ runner.temp }}/windows-thread-compat/receipt.json
+            ${{ runner.temp }}/vignette-library
           if-no-files-found: warn

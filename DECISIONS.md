@@ -1754,3 +1754,16 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   imports. Add advapi32 to the Windows Cargo link, matching existing R DLL flags.
   This is an existing OS library, not a new package dependency. Preserve Unix
   plans, vendor/native code and the failed original; verify actual Windows link.
+
+- **Quarto Windows build library and script extraction (2026-10-18):** the
+  actual registry-import preflight passed, and the next package build reached
+  vignette rendering, where two executable documents could not find relm.
+  Quarto's documented Windows temporary-library issue matches this failure
+  (quarto-r#217). Have those two document setups explicitly prepend R CMD
+  build's `R_BUILD_TEMPLIB`, retaining normal paths outside a build. This is a
+  build-tool compatibility input, not a public relm API. Move fourteen optional
+  chunk conditions into equivalent R `if` blocks so script extraction does not
+  evaluate flags before their setup; preserve parsed bodies and conditions.
+  A pure-R miniature package checks actual Quarto build/check before the costly
+  Windows native build. No pre-install duplication, engine/dependency update,
+  skipped vignette gate or native/model replay locally; hosted proof is pending.

@@ -131,6 +131,34 @@ will verify those imports without invoking registry operations. Final generator,
 DLL installation and package tests remain pending. Evidence:
 [`windows-79d1c1b`](../tests/cran/evidence/windows-79d1c1b/).
 
+## Windows vignette subprocess and extracted scripts
+
+The `459d0c5` job passed the actual Rtools registry import linkage check (all
+four receipt source hashes match). R CMD build advanced from temporary package
+installation to vignette rendering. The successful install's detailed output
+was not retained; this is not yet independent final DLL/package acceptance.
+Two executable Quarto documents then failed because their R subprocess could
+not locate `relm`. This matches the upstream Windows temporary-library issue
+[quarto-r#217](https://github.com/quarto-dev/quarto-r/issues/217); installing the
+package a second time is avoided. The two setups now prepend the build library
+recorded by R in `R_BUILD_TEMPLIB`, leaving ordinary document use unchanged.
+This uses a build-tool environment variable, not a stable public relm API.
+
+Separately, knitr's script extraction evaluated fourteen `eval` expressions
+before running their setup, printing missing-variable errors and dropping those
+chunks. Equivalent ordinary R `if` blocks keep the optional model branches and
+illustrative/recorded branches executable in extracted scripts. A raw-source
+check proves all fourteen conditions and parsed bodies unchanged; the two
+synthetic document bodies are also unchanged. No models or graphics were replayed.
+
+Three base-R library-path controls pass, including a path with spaces, absent
+and unset build libraries. The actual Windows Quarto preflight builds/checks a
+pure-R probe and tangles the three affected documents before any native build.
+Those hosted outcomes and the complete package check remain pending. Local
+Quarto is unavailable; no full rendering claim is made. The failed run and
+focused controls are retained in
+[`windows-459d0c5`](../tests/cran/evidence/windows-459d0c5/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU

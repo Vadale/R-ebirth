@@ -1,0 +1,14 @@
+{
+  "README.md": "32cbe442b62ad976f456b3180e4fc8df322b959c8f304fc0676415b62da7a95c",
+  "artifact.zip": "d9fe466e92ca134f5f8d67b825793e7cd43b233d918cc1e5dafa85b39767f7d5",
+  "base-controls.log": "47abce27751ef341a3a11d2440a2edafd0c4c861414cad76efacc73df484afbe",
+  "diagnosis.json": "798842583c2f5ec8854b56ff73d50ca3817cb2901aee64187b2f07113a00096f",
+  "document-bodies.log": "ec0d0fcf2fb74c0f900630bee2de67488c7d7ca594737e732eb07d7a7bdb6e41",
+  "rtools-receipt.json": "062ce35fc7528cb4aeef90d428e3d925681624c037e73d21a33c07d24d05fbf4",
+  "run.json": "35864b2df4a60b1a64db3de635fd2bcc819ebcf5ae05bfda2dfeb3ac53deb17a",
+  "source.json": "7bb070fcbb8c94ac1f89a465c12a0f3130194785632c6d3505c3eae4932004bd",
+  "verify-document-bodies.R": "03050deca80396fd1978bb6d0ad0a3b9166bf82a7de7229d37e872158dc3b148",
+  "vignette-library.R": "d430154f6255cece16b760005d15497820b3ae6bb6564e6ade3e7280f44799e1",
+  "windows-job-raw.log": "b1e112d72ecb2d38aa8e2762999940a7af44a01202a6728f225a059e848f627e",
+  "windows-job.json": "ad148d7bd9b7c242803b1bb639ba43284cd3e39b83f04fd4e01307229f80a7f1"
+}
