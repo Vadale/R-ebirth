@@ -1717,3 +1717,12 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
 - **Alternatives rejected:** changing accepted kernels to shorten names, relying
   on a developer's populated Cargo cache, silently omitting Windows failures,
   replaying consumed experiments or treating existing 0.4 binaries as CUDA builds.
+
+- **First Windows correction (2026-10-18):** the actual hosted build exposed
+  MSYS Makefile parsing with canonical verbatim source paths and excessive
+  CMake object-directory depth. Use ordinary Windows absolute paths and shorter
+  per-profile/per-build-unit native output inside the owned Cargo target.
+  Correct the existing non-Linux fall-through to Darwin links for Windows GNU.
+  Preserve Unix behavior, archives, compiler flags, API and numerical scope;
+  focused local controls do not replace actual Windows execution. Failure and
+  correction evidence: `tests/cran/evidence/windows-08d9cf0/`.

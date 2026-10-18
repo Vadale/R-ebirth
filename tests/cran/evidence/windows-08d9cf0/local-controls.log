@@ -1,0 +1,12 @@
+
+running 7 tests
+test tests::existing_source_uses_host_compatible_absolute_path ... ok
+test tests::missing_source_is_refused_before_cmake ... ok
+test tests::malformed_output_cannot_escape_owned_target ... ok
+test tests::windows_gnu_has_no_darwin_frameworks_or_unix_libraries ... ok
+test tests::shortened_output_preserves_cargo_unit_profile_and_target ... ok
+test tests::linux_and_macos_link_plans_are_unchanged ... ok
+test tests::existing_source_with_spaces_and_parent_components_is_usable ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

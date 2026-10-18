@@ -1,0 +1,37 @@
+{
+  "status": "local_controls_passed_windows_execution_pending",
+  "failed_head": "08d9cf0d3a46408497214a4cd9a93f81027526bb",
+  "failed_run": 39151591857,
+  "failed_job": 117746180393,
+  "failed_stage": "R source-build vignette preparation installation / native CMake makefiles",
+  "observed_failures": [
+    "target pattern contains no '%'",
+    "three CMake object path length warnings"
+  ],
+  "compiler": "GNU C/C++ 14.3.0 on the failed Windows job",
+  "local_rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "local_controls": 7,
+  "native_engine_builds_this_correction": 0,
+  "model_calls_this_correction": 0,
+  "source_sha256": {
+    "rebirth/src/rust/rebirth-llm/build.rs": "82696f1923d3f7604a32218199fdf23bc669c6cba22d4b5d6a64e0d41b606fef",
+    "rebirth/src/rust/rebirth-llm/build_support.rs": "93b8f3c73f252e2ab8e083e740fc64b85ec75380050151b0f611efdf773ff972",
+    ".github/workflows/cran-portability.yaml": "0751198cafcd717ebc9f80e1581db3a8d0493249de6d56863fbd800eb7b21cf2",
+    ".github/workflows/rust.yaml": "63b78770cc07c6d40ab126f9c770de958f4305275332a6bb814b73d07f62792a",
+    "rebirth/src/llama-sources.tar.xz": "e3bc4d8e81da39a46ae01bceb1e7e1f5fefd456919fca0eaf6b6b4e4dfe7e7b1",
+    "rebirth/src/rust/vendor.tar.xz": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b",
+    "rebirth/src/rust/Cargo.lock": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6"
+  },
+  "commands": [
+    "rustfmt --edition 2021 --check rebirth/src/rust/rebirth-llm/build.rs rebirth/src/rust/rebirth-llm/build_support.rs",
+    "rustc --edition=2021 --test -D warnings rebirth/src/rust/rebirth-llm/build_support.rs -o <disk-work>/native-build-controls",
+    "TMPDIR=/home/grauk/Work/relm-phase9 <disk-work>/native-build-controls",
+    "clippy-driver --edition=2021 --test --emit=metadata -D warnings rebirth/src/rust/rebirth-llm/build_support.rs -o <disk-work>/controls.rmeta"
+  ],
+  "limits": [
+    "The failed Windows native build remains failed; no package tests or model execution were reached.",
+    "Local controls ran on Linux; the Windows-specific standard-library path behavior and actual native build require hosted CI.",
+    "No full WRE/CRAN/Windows acceptance from these focused controls.",
+    "The original CLI log download was first rejected due to ANSI escape sequences; the successful download used gh api --allow-escape-sequences, without any job rerun."
+  ]
+}

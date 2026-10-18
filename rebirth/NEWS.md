@@ -7,6 +7,10 @@
   tool discovery respects the platform PATH separator. Windows CPU acceptance
   is being checked separately and is not yet claimed.
 
+* Windows native builds use ordinary absolute CMake paths and shorter owned
+  output directories; Cargo links the GNU C++ runtime instead of Darwin
+  frameworks. Hosted Windows CPU validation is still pending.
+
 # Development — optional Linux CUDA
 
 * Added an explicit optional Linux x86_64 CUDA build route with

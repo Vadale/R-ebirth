@@ -73,6 +73,22 @@ separate verification and source-bound evidence are in
 One integrated independent packaging review and its two-P2 closure are recorded
 in `docs/wp15-cran-review.md`.
 
+## First Windows CI result and bounded correction
+
+The first Windows CPU job on `08d9cf0` failed before native compilation completed
+or package tests began. Its CMake source path used Rust's Windows verbatim path
+syntax; generated MSYS Makefiles refused prerequisite parsing. CMake also
+reported overly deep object directories. The correction keeps ordinary absolute
+Windows paths, shortens native outputs inside the same Cargo profile/build-unit
+boundary, and removes the build script's erroneous Darwin link flags on Windows.
+Unix path handling and Linux/macOS library plans remain unchanged.
+
+Seven new build-only controls, focused formatting/lints and YAML parsing passed
+locally with no engine build or models. Actual Windows closure is pending the
+new automatic matrix. Raw failure, source bindings and interpretation limits:
+[`tests/cran/evidence/windows-08d9cf0/`](../tests/cran/evidence/windows-08d9cf0/).
+No archive regeneration, dependency/version changes or numerical changes.
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU

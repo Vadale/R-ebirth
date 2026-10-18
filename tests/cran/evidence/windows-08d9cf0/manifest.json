@@ -1,0 +1,34 @@
+{
+  "README.md": {
+    "sha256": "e4f0c82731d6508e71a9e7caad989f7b7a263d9878cd6978031892450b7ae1e0",
+    "bytes": 3766
+  },
+  "correction-controls.json": {
+    "sha256": "36eed5e14b046a0a34fe6d55839fb64cbf67c359e181c770cf9a28c554fb80e5",
+    "bytes": 2402
+  },
+  "local-clippy.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "local-controls.log": {
+    "sha256": "9c2995d3f4ca882c898d7f71a7c5a9bedc7d4d37a504212fae95761a541b0102",
+    "bytes": 593
+  },
+  "local-fmt.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "pr-before-correction.json": {
+    "sha256": "e9a2ed6d6cfeffe697054c4d72e3c1e299ef8111aa37594960700880803dd3b8",
+    "bytes": 6055
+  },
+  "windows-job-raw.log": {
+    "sha256": "f071dca8585a12bfe3422690ed8c96bbd0e8dd2af2e6ee372398c95ea359c163",
+    "bytes": 615184
+  },
+  "windows-job.json": {
+    "sha256": "8adbf1ebd97b9249de7ffdc14b220f3f409330e68fe5757832413d7f3d99cdd7",
+    "bytes": 3503
+  }
+}
