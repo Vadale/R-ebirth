@@ -1,0 +1,81 @@
+$ /usr/bin/gcc -std=c11 -I /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/headers -c /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c -o /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/refused.o
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:5:23: error: ‘THREAD_POWER_THROTTLING_STATE’ undeclared here (not in a function)
+    5 | _Static_assert(sizeof(THREAD_POWER_THROTTLING_STATE) == 12, "thread state ABI");
+      |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:5:16: error: expression in static assertion is not an integer
+    5 | _Static_assert(sizeof(THREAD_POWER_THROTTLING_STATE) == 12, "thread state ABI");
+      |                ^~~~~~
+In file included from /usr/include/stdio.h:38,
+                 from /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:3:
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:6:25: error: expected specifier-qualifier-list before ‘THREAD_POWER_THROTTLING_STATE’
+    6 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, Version) == 0, "version offset");
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:6:16: error: expression in static assertion is not an integer
+    6 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, Version) == 0, "version offset");
+      |                ^~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:7:25: error: expected specifier-qualifier-list before ‘THREAD_POWER_THROTTLING_STATE’
+    7 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, ControlMask) == 4, "control offset");
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:7:16: error: expression in static assertion is not an integer
+    7 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, ControlMask) == 4, "control offset");
+      |                ^~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:8:25: error: expected specifier-qualifier-list before ‘THREAD_POWER_THROTTLING_STATE’
+    8 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, StateMask) == 8, "state offset");
+      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:8:16: error: expression in static assertion is not an integer
+    8 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, StateMask) == 8, "state offset");
+      |                ^~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:9:16: error: ‘THREAD_POWER_THROTTLING_CURRENT_VERSION’ undeclared here (not in a function)
+    9 | _Static_assert(THREAD_POWER_THROTTLING_CURRENT_VERSION == 1, "preserve header version");
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:9:16: error: expression in static assertion is not an integer
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:10:16: error: ‘THREAD_POWER_THROTTLING_EXECUTION_SPEED’ undeclared here (not in a function)
+   10 | _Static_assert(THREAD_POWER_THROTTLING_EXECUTION_SPEED == 1, "preserve header flag");
+      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:10:16: error: expression in static assertion is not an integer
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c: In function ‘main’:
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:13:34: error: expected ‘;’ before ‘t’
+   13 |     THREAD_POWER_THROTTLING_STATE t = {THREAD_POWER_THROTTLING_CURRENT_VERSION,
+      |                                  ^~
+      |                                  ;
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:19:9: error: ‘t’ undeclared (first use in this function)
+   19 |     if (t.Version != 1 || t.ControlMask != 1 || t.StateMask != 0 || unaffected()) return 1;
+      |         ^
+/home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:19:9: note: each undeclared identifier is reported only once for each function it appears in
+$ cmake -S /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces -B /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/build -G Unix Makefiles -DCMAKE_C_COMPILER=/usr/bin/gcc
+-- The C compiler identification is GNU 16.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/build
+$ cmake --build /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/build --parallel 2
+[ 33%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/unaffected.c.o
+[ 66%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+[100%] Linking C executable ggml-cpu
+[100%] Built target ggml-cpu
+$ /home/grauk/Work/relm-phase9/windows-thread-compat/missing-declarations path with spaces/build/ggml/src/ggml-cpu
+RELM_THREAD_COMPAT_OK missing-declarations size=12 offsets=0,4,8 version=1 mask=1
+$ cmake -S /home/grauk/Work/relm-phase9/windows-thread-compat/existing-declarations path with spaces -B /home/grauk/Work/relm-phase9/windows-thread-compat/existing-declarations path with spaces/build -G Unix Makefiles -DCMAKE_C_COMPILER=/usr/bin/gcc
+-- The C compiler identification is GNU 16.2.1
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done (0.2s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/grauk/Work/relm-phase9/windows-thread-compat/existing-declarations path with spaces/build
+$ cmake --build /home/grauk/Work/relm-phase9/windows-thread-compat/existing-declarations path with spaces/build --parallel 2
+[ 33%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+[ 66%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/unaffected.c.o
+[100%] Linking C executable ggml-cpu
+[100%] Built target ggml-cpu
+$ /home/grauk/Work/relm-phase9/windows-thread-compat/existing-declarations path with spaces/build/ggml/src/ggml-cpu
+RELM_THREAD_COMPAT_OK existing-declarations size=12 offsets=0,4,8 version=7 mask=32
+$ /usr/bin/gcc -std=c11 -Wall -Wextra -Werror -include /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm/native/windows_thread_compat.h /home/grauk/Work/relm-phase9/windows-thread-compat/non-windows.c -o /home/grauk/Work/relm-phase9/windows-thread-compat/non-windows
+$ /home/grauk/Work/relm-phase9/windows-thread-compat/non-windows
+{"status": "passed", "real_windows_sdk": false, "modes": ["missing-declarations", "existing-declarations"], "negative_missing_type": true, "non_windows_noop": true, "unrelated_source_header_absence": true, "engine_builds": 0, "model_calls": 0, "source_sha256": {"rebirth/src/rust/rebirth-llm/native/windows_thread_compat.h": "64a625e54e4e47ba375a671f06e757e23a51650d84350622611d6206f42be12c", "rebirth/src/rust/rebirth-llm/native/windows_compat.cmake": "47b5fad67a1259681ccca514ce8c1fce07499b8adf98ed469ddd007e367fed7c", "tests/cran/windows_thread_compat.py": "884334d547488c50f1444b1cfb83cd1390b4ff9be7e6261b1d38f68fbdb12a11"}}

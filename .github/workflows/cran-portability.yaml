@@ -52,6 +52,9 @@ jobs:
       - name: Configure and source extraction controls
         shell: Rscript {0}
         run: source("tests/cran/configuration.R")
+      - name: Rtools thread declaration compatibility (no engine build)
+        shell: bash
+        run: python tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
       - uses: r-lib/actions/check-r-package@v2
         with:
           working-directory: rebirth
@@ -66,4 +69,5 @@ jobs:
           path: |
             rebirth/check
             rebirth/*.tar.gz
+            ${{ runner.temp }}/windows-thread-compat/receipt.json
           if-no-files-found: warn

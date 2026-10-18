@@ -1726,3 +1726,11 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   Preserve Unix behavior, archives, compiler flags, API and numerical scope;
   focused local controls do not replace actual Windows execution. Failure and
   correction evidence: `tests/cran/evidence/windows-08d9cf0/`.
+
+- **Rtools declaration compatibility (2026-10-18):** after actual path correction,
+  hosted Windows compilation exposed missing MinGW thread-throttling declarations.
+  Supply the documented ABI only when absent in a relm-owned compatibility header,
+  forced into the single affected C source through a Windows CMake hook. Keep
+  engine/archive bytes, upstream scheduling calls, kernels and SDK/compiler
+  versions unchanged; do not disable the feature to obtain a build. Actual
+  Windows ABI/link/package checks remain required after model-free controls.

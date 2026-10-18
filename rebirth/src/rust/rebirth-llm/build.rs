@@ -42,6 +42,8 @@ fn main() {
     println!("cargo:rerun-if-changed=native/projection.cpp");
     println!("cargo:rerun-if-changed=native/projection.h");
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+    println!("cargo:rerun-if-changed=native/windows_compat.cmake");
+    println!("cargo:rerun-if-changed=native/windows_thread_compat.h");
     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
     for variable in ["CUDA_PATH", "CUDAARCHS", "CUDACXX", "CUDAHOSTCXX"] {
         println!("cargo:rerun-if-env-changed={variable}");
@@ -97,6 +99,11 @@ fn main() {
         // segments. Retain Cargo's build-unit hash to isolate feature variants.
         let out = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR"));
         cfg.out_dir(build_support::windows_output_dir(&out).expect("Cargo native output path"));
+    }
+    if target_os == "windows" {
+        let native = build_support::source_dir(&manifest_dir.join("native"))
+            .expect("native compatibility sources");
+        cfg.define("CMAKE_PROJECT_INCLUDE", native.join("windows_compat.cmake"));
     }
     cfg.define("CMAKE_BUILD_TYPE", "Release")
         .define("BUILD_SHARED_LIBS", "OFF")

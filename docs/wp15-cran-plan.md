@@ -84,10 +84,21 @@ boundary, and removes the build script's erroneous Darwin link flags on Windows.
 Unix path handling and Linux/macOS library plans remain unchanged.
 
 Seven new build-only controls, focused formatting/lints and YAML parsing passed
-locally with no engine build or models. Actual Windows closure is pending the
-new automatic matrix. Raw failure, source bindings and interpretation limits:
+locally with no engine build or models. The next Windows run passed the seven controls and compiled its first engine
+archives without those path errors/warnings, but failed on missing Rtools thread
+power-throttling declarations. Whole Windows acceptance remains pending. Raw failure, source bindings and interpretation limits:
 [`tests/cran/evidence/windows-08d9cf0/`](../tests/cran/evidence/windows-08d9cf0/).
 No archive regeneration, dependency/version changes or numerical changes.
+
+## Rtools header compatibility
+
+The next job on `965ba4b` reached ggml-cpu.c and exposed missing MinGW thread
+power-throttling declarations. A relm-owned, declaration-only compatibility
+header now supplies the documented ABI when absent, forced into that one source
+through a Windows CMake hook. Existing SDK definitions, engine source bytes,
+scheduling calls and kernels are preserved. Local mocked-SDK controls pass;
+actual Rtools ABI/link and package acceptance remain pending the next matrix.
+Raw evidence: [`windows-965ba4b`](../tests/cran/evidence/windows-965ba4b/).
 
 ## Remaining gates
 

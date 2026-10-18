@@ -9,7 +9,9 @@
 
 * Windows native builds use ordinary absolute CMake paths and shorter owned
   output directories; Cargo links the GNU C++ runtime instead of Darwin
-  frameworks. Hosted Windows CPU validation is still pending.
+  frameworks. A scoped header adapter supplies declarations missing from older
+  Rtools MinGW headers without changing engine scheduling or kernel code.
+  Hosted Windows CPU validation is still pending.
 
 # Development — optional Linux CUDA
 

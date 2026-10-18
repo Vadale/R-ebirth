@@ -108,6 +108,11 @@ jobs:
           rustc --edition=2021 --test -D warnings rebirth-llm/build_support.rs -o "$RUNNER_TEMP/native-build-controls"
           "$RUNNER_TEMP/native-build-controls"
 
+      - name: Windows header compatibility controls (no engine build)
+        if: steps.scope.outputs.full_checks != 'false'
+        working-directory: .
+        run: python3 tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+
       - name: cargo clippy (R-free engine crate; deny warnings)
         if: steps.scope.outputs.full_checks != 'false'
         run: cargo clippy --locked -p rebirth-llm --all-targets -- -D warnings
