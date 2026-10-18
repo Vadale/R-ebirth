@@ -1,0 +1,31 @@
+{
+  "files": {
+    "artifact.zip": "09079c2a2abea955548153ecf1f09731eb1a0d5bc725f2f769d5e25a4b54320e",
+    "artifacts.json": "6c38d5d58eb273f0cb350046b8a95a592d6ae115d0b8a4659c057b6b17bce4ef",
+    "correction/compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "correction/corrected-FALSE.log": "8b31852e8db9ec76788ce7397c4db4c888d43f3f11e00d30ecd54982114ccb85",
+    "correction/corrected-TRUE.log": "8b31852e8db9ec76788ce7397c4db4c888d43f3f11e00d30ecd54982114ccb85",
+    "correction/corrected-unset.log": "8b31852e8db9ec76788ce7397c4db4c888d43f3f11e00d30ecd54982114ccb85",
+    "correction/failure-FALSE.log": "50951e8b9d23e35397411e2e5160956491df550a959c4a435d3e3ea0820f186e",
+    "correction/failure-TRUE.log": "50951e8b9d23e35397411e2e5160956491df550a959c4a435d3e3ea0820f186e",
+    "correction/failure-unset.log": "50951e8b9d23e35397411e2e5160956491df550a959c4a435d3e3ea0820f186e",
+    "correction/old-order.log": "be3d15c04e7e1793811100a71620964855ee8150d4c4eeadcd94c65fe1ddb706",
+    "correction/rcmd-observer.c": "1f572ced6a89b757db2116d2efee11492e2125e491b49a2de2872e17bc102191",
+    "correction/real-r-child.log": "6b52a10b72ebb64f9a0d9acfc8862b726fbbd6c8930312c31bcf37e4225266c5",
+    "correction/verify.R": "d554638bd4b092f8d1226b1d2f9c8d558d40a6cd636fbfb41ebdd763c6a8c8b5",
+    "correction/verify.log": "3efc460f4612ab401fa278d8ef05f0c596b21f6f1fdee998935e6194ed495403",
+    "owner.json": "ec89684578e8b7e3b7d44301f7bac93d14dff977cc4c5b5ec47a67e028015877",
+    "probe/00check.log": "bc9ad812796fd685fde53efccb33692f95e88e70adc376d3712e53875d0104b2",
+    "probe/build.log": "e3fb021e5cbcdc75596d02982bf148e4d76c8e579e8f4f37a1b69b0cf8b92d48",
+    "probe/check.log": "24522a7dbe724f284236c27b3bcc3da74b4778647c216833a28795a143b5ceef",
+    "probe/sdk-receipt.json": "ccd604d763feadd606a77721ec4c3f8d5726944cb37cd1a177d2cd407ffd8c5d",
+    "r-source/R-4.6.1.c": "3aabfe0dc5dba5dfb89b68d51e19bd5b7e102449a8a1ad039745f1e3e667602b",
+    "r-source/R.c": "3aabfe0dc5dba5dfb89b68d51e19bd5b7e102449a8a1ad039745f1e3e667602b",
+    "r-source/rcmdfn.c": "2e2638be65f5cc3037eaa1cae5b932466084b8d4d1483ab9b1719a3ad72e1f91",
+    "r-source/system.R": "5aa3d0a3fe3254374348a536c00ef02975125e9d78eb5fe901c250edf557b8f9",
+    "vignette-library-after.R": "e7e28d3b98080962cd0b104943ccf2ce57f5fc05148e52adff1f39f1f5b8a1cc",
+    "vignette-library-before.R": "9fb7ec30cd3e58ecb29a3557c57def2a1535e5cde43ee10ab1c5c196daacf115",
+    "windows-job-raw.log": "b14267bf9e6bd0021a80af00d9dbf20f76c5ead903c3c7ad2bf688828e869fb0",
+    "windows-job.json": "406134e63ee35a6800361a6c5ea90b02e34f3255cc9ed9979c6f01b5215772da"
+  }
+}

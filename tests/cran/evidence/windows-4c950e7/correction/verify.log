@@ -1,0 +1,4 @@
+command=fail inherited_skip=FALSE
+command=fail inherited_skip=FALSE
+command=fail inherited_skip=FALSE
+VIGNETTE_ENVIRONMENT_PASS old_order_rejected=1 restored_success=3 restored_failure=3 real_r_child=1 relm_native_builds=0 models=0

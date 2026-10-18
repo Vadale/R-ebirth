@@ -86,9 +86,17 @@ main <- function() {
   old_wd <- setwd(out)
   on.exit(setwd(old_wd), add = TRUE)
   r <- file.path(R.home("bin"), if (.Platform$OS.type == "windows") "R.exe" else "R")
-  run <- function(name, args, env = character()) {
+  run <- function(name, args, check_scripts = FALSE) {
+    if (check_scripts) {
+      old_skip <- Sys.getenv("_R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_", unset = NA_character_)
+      on.exit(if (is.na(old_skip)) Sys.unsetenv("_R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_")
+              else Sys.setenv(`_R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_` = old_skip))
+      # Windows R CMD ignores name=value arguments before CMD. Inherit the
+      # variable through the process environment and restore it even on failure.
+      Sys.setenv(`_R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_` = "FALSE")
+    }
     log <- paste0(name, ".log")
-    status <- system2(r, args, stdout = log, stderr = log, env = env)
+    status <- system2(r, args, stdout = log, stderr = log)
     if (status != 0L) {
       cat(readLines(log), sep = "\n")
       stop(name, " failed; full native package build must not start")
@@ -99,7 +107,7 @@ main <- function() {
   # R normally avoids a separate extracted-script run when rebuilding vignettes.
   # This small probe deliberately checks both paths; leave relm checks unchanged.
   run("check", c("CMD", "check", "--no-manual", "--no-examples", "--no-tests", archive),
-      env = "_R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_=FALSE")
+      check_scripts = TRUE)
   check <- readLines("relmvignetteprobe.Rcheck/00check.log")
   stopifnot(any(grepl("re-building of vignette outputs.*OK", check)),
             any(grepl("running R code from vignettes.*OK", check)),

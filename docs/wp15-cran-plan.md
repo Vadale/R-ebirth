@@ -191,6 +191,24 @@ Windows checks were skipped by the failed preflight and remain pending. Original
 failure and separately verified passed stages:
 [`windows-3d9b825`](../tests/cran/evidence/windows-3d9b825/).
 
+### Windows R CMD environment inheritance
+
+The `4c950e7` run again passed the pure-R Windows build/render/check but failed
+the separate-script assertion. The earlier local Unix child test did not cover
+Windows argument handling: Windows `system2()` places its `env` strings before
+`CMD`; the official R 4.6.1 Windows entry point ignores such `name=value`
+arguments there. Its source and the original failed job are retained.
+
+The probe helper now uses scoped `Sys.setenv()` so the child inherits the actual
+process environment, restoring unset/true/false parent values on both success
+and failure. Both check assertions and the full relm check remain unchanged.
+The unchanged official Windows entry point, compiled on Linux with an observing
+CMD stub, rejects the old argument order and verifies all six restoration cases.
+An actual local R child also receives the value. This is a focused parser and
+environment test, not Windows SDK or full-package acceptance. No relm native
+builds, rendering or model calls were repeated. Evidence:
+[`windows-4c950e7`](../tests/cran/evidence/windows-4c950e7/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU
