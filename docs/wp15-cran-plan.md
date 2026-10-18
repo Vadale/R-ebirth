@@ -172,6 +172,25 @@ Product code and vignette sources are unchanged; actual Quarto and full package
 checks remain pending. Failure and focused evidence:
 [`windows-77feb30`](../tests/cran/evidence/windows-77feb30/).
 
+### Explicit extracted-script check
+
+On `3d9b825`, the actual Windows path controls, three-document tangling, pure-R
+probe build, vignette rebuild and package check all passed (`Status: OK`, zero
+warnings/errors). The rendered HTML contains the expected executed output. The
+job still failed in our collector: it required a separate extracted-script check
+that R normally omits when rebuilding vignette outputs. This is R's
+`_R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_` default, not `--no-examples` behavior.
+
+The probe now sets that variable to `FALSE` only for its own check subprocess,
+keeping both success assertions and the warning gate. A local subprocess control
+verifies the value and unchanged parent environment. The retained pure-R script
+also executes once on Linux without reinstalling/rendering; this does not claim
+Windows script execution. No relm native build or model calls were made. Actual
+Rtools ABI/registry linkage and all four source hashes still pass. Full relm
+Windows checks were skipped by the failed preflight and remain pending. Original
+failure and separately verified passed stages:
+[`windows-3d9b825`](../tests/cran/evidence/windows-3d9b825/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU

@@ -1,0 +1,39 @@
+R version 4.6.1 (2026-06-24)
+            do_build_vignettes <- do_build_vignettes && build_vignettes
+            skip_run_maybe <- R_check_vignettes_skip_run_maybe && do_build_vignettes
+            savefiles <- file.path(dirname(vigns$docs), paste0(vigns$names, ".Rout.save"))
+            ran <- FALSE
+            if (!skip_run_maybe || any(file.exists(savefiles))) {
+                checkingLog(Log, "running R code from vignettes")
+                res <- character()
+                t1 <- proc.time()
+                iseq <- seq_along(savefiles)
+                if (skip_run_maybe) 
+                  iseq <- iseq[file.exists(savefiles)]
+                out0 <- character()
+                anyNOTE <- FALSE
+                cat("\n")
+                  keep <- as.numeric(Sys.getenv("_R_CHECK_VIGNETTES_NLINES_", "25"))
+                  if (skip_run_maybe || !ran) {
+                    if (ltx_err) 
+                      warningLog(Log)
+                    else errorLog(Log)
+                  }
+                  any <- TRUE
+                  if (skip_run_maybe || !ran) 
+                    warningLog(Log)
+                  else noteLog(Log)
+                  msg <- ngettext(nw, "Warning in re-building vignettes:\n", "Warnings in re-building vignettes:\n", domain = NA)
+                  wrapLog(msg)
+    R_check_exit_on_first_error <- config_val_to_logical(Sys.getenv("_R_CHECK_EXIT_ON_FIRST_ERROR_", "FALSE"))
+    R_check_vignettes_skip_run_maybe <- config_val_to_logical(Sys.getenv("_R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_", "TRUE"))
+    R_check_serialization <- config_val_to_logical(Sys.getenv("_R_CHECK_SERIALIZATION_", "FALSE"))
+    R_check_things_in_check_dir <- config_val_to_logical(Sys.getenv("_R_CHECK_THINGS_IN_CHECK_DIR_", "FALSE"))
+    R_check_things_in_temp_dir <- config_val_to_logical(Sys.getenv("_R_CHECK_THINGS_IN_TEMP_DIR_", "FALSE"))
+    R_check_things_in_others <- config_val_to_logical(Sys.getenv("_R_CHECK_THINGS_IN_OTHER_DIRS_", "FALSE"))
+        R_check_toplevel_files <- TRUE
+        R_check_vignettes_skip_run_maybe <- TRUE
+        R_check_serialization <- TRUE
+        R_check_things_in_check_dir <- TRUE
+        R_check_things_in_temp_dir <- TRUE
+        R_check_vignette_titles <- TRUE

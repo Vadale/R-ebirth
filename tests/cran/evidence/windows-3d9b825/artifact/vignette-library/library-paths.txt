@@ -1,0 +1,2 @@
+observed=D:/a/_temp/vignette-library/temporary library with spaces
+expected=D:/a/_temp/vignette-library/temporary library with spaces
