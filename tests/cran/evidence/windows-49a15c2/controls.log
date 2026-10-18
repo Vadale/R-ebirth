@@ -1,0 +1,7 @@
+
+running 2 tests
+test tests::unix_archive_names_keep_prefix_for_all_backends ... ok
+test tests::windows_archive_names_match_actual_engine_outputs ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+

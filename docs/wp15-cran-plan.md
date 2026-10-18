@@ -108,6 +108,18 @@ default and an explicit target override, and retain the ABI/single-source checks
 They pass locally with no engine/model execution; actual Rtools and full Windows
 acceptance remain pending. Evidence: [`windows-fe62517`](../tests/cran/evidence/windows-fe62517/).
 
+## Windows archive collection
+
+The `49a15c2` job passed the actual Rtools ABI/API preflight and compiled all
+seven native engine/bridge archives. Installation then stopped in relm's archive
+collector: upstream ggml emits `ggml.a`, `ggml-cpu.a` and `ggml-base.a` on Windows,
+while the collector required a `lib` prefix. It now reads the actual platform
+names and preserves the existing canonical `lib*.a` copies for Cargo/R linking.
+No compiled bytes, link directives, vendor inputs or numerical behavior change.
+Two new build-only naming controls pass locally; full Windows link/install and
+package checks remain pending. Original failure and real SDK receipt:
+[`windows-49a15c2`](../tests/cran/evidence/windows-49a15c2/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU

@@ -1,0 +1,13 @@
+error[E0514]: found crate `cmake` compiled by an incompatible version of rustc
+  --> rebirth/src/rust/rebirth-llm/build.rs:95:19
+   |
+95 |     let mut cfg = cmake::Config::new(&llama_src);
+   |                   ^^^^^
+   |
+   = note: the following crate versions were found:
+           crate `cmake` compiled by rustc 1.96.0 (ac68faa20 2026-05-25): /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/target/debug/deps/libcmake-6eb32d7eafc5cbbd.rlib
+   = help: please recompile that crate using this compiler (rustc 1.99.1 (58cf8f9c3 2026-10-13)) (consider running `cargo clean` first)
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0514`.

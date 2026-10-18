@@ -235,15 +235,16 @@ fn main() {
 
     for stem in &lib_stems {
         let file_name = format!("lib{stem}.a");
+        let built_name = build_support::built_archive_name(stem, &target_os);
         let search_dir = if *stem == "relm-grammar" {
             &bridge_dst
         } else {
             &build_dir
         };
-        let found = find_file(search_dir, &file_name).unwrap_or_else(|| {
+        let found = find_file(search_dir, &built_name).unwrap_or_else(|| {
             panic!(
-                "expected static archive {file_name} not produced by the llama.cpp build under {}",
-                build_dir.display()
+                "expected static archive {built_name} not produced by the native build under {}",
+                search_dir.display()
             )
         });
         fs::copy(&found, native_dir.join(&file_name))

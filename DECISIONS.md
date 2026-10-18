@@ -1742,3 +1742,9 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   and vendor/archive bytes unchanged. Focused controls now reject the previous
   adapter; actual Windows acceptance remains required. Preserve the failed job
   in `tests/cran/evidence/windows-fe62517/`; no engine/model replay locally.
+
+- **Windows archive collection (2026-10-18):** actual Rtools ABI preflight and
+  all seven native archive builds passed on49a15c2, then relm searched for a
+  Unix-prefixed ggml archive. Select the pinned engine's Windows source names
+  while retaining canonical lib*.a copies and unchanged Cargo/R link directives.
+  Preserve original failures; no vendor/compiler/kernel/numerical change.

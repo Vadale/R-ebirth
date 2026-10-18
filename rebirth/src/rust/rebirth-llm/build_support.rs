@@ -45,6 +45,17 @@ pub fn windows_output_dir(out: &Path) -> io::Result<PathBuf> {
     Ok(profile.join("n").join(hash))
 }
 
+/// Upstream ggml removes the `lib` prefix on Windows. Other engine/bridge
+/// archives retain it. Copies for Cargo and R still use canonical lib*.a names.
+pub fn built_archive_name(stem: &str, target_os: &str) -> String {
+    let prefix = if target_os == "windows" && (stem == "ggml" || stem.starts_with("ggml-")) {
+        ""
+    } else {
+        "lib"
+    };
+    format!("{prefix}{stem}.a")
+}
+
 pub fn link_libraries(stems: &[&str], target_os: &str, metal: bool) -> Vec<String> {
     // GNU links need archive back-references resolved in dependent Rust bins as
     // well as the R shared library. Do not bundle duplicate native archives into
@@ -158,6 +169,42 @@ mod tests {
                 windows_output_dir(Path::new(path)).unwrap_err().kind(),
                 io::ErrorKind::InvalidInput
             );
+        }
+    }
+
+    #[test]
+    fn windows_archive_names_match_actual_engine_outputs() {
+        // Observed Windows build 39156167138; upstream ggml/CMakeLists.txt
+        // sets CMAKE_STATIC_LIBRARY_PREFIX to empty only in the ggml subtree.
+        for (stem, expected) in [
+            ("relm-grammar", "librelm-grammar.a"),
+            ("mtmd", "libmtmd.a"),
+            ("vendor-hash", "libvendor-hash.a"),
+            ("llama", "libllama.a"),
+            ("ggml", "ggml.a"),
+            ("ggml-cpu", "ggml-cpu.a"),
+            ("ggml-base", "ggml-base.a"),
+        ] {
+            assert_eq!(built_archive_name(stem, "windows"), expected);
+        }
+    }
+
+    #[test]
+    fn unix_archive_names_keep_prefix_for_all_backends() {
+        for target_os in ["linux", "macos"] {
+            for stem in [
+                "relm-grammar",
+                "mtmd",
+                "vendor-hash",
+                "llama",
+                "ggml",
+                "ggml-cpu",
+                "ggml-base",
+                "ggml-metal",
+                "ggml-cuda",
+            ] {
+                assert_eq!(built_archive_name(stem, target_os), format!("lib{stem}.a"));
+            }
         }
     }
 
