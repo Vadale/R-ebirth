@@ -1734,3 +1734,11 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   engine/archive bytes, upstream scheduling calls, kernels and SDK/compiler
   versions unchanged; do not disable the feature to obtain a build. Actual
   Windows ABI/link/package checks remain required after model-free controls.
+
+- **Windows API target ordering correction (2026-10-18):** the new declaration
+  preflight exposed an adapter include-order defect before the package build.
+  Include the actual pinned `ggml.h` before `windows.h`, preserving ggml's target
+  selection and any caller override. Keep SDK declarations, scheduling branches
+  and vendor/archive bytes unchanged. Focused controls now reject the previous
+  adapter; actual Windows acceptance remains required. Preserve the failed job
+  in `tests/cran/evidence/windows-fe62517/`; no engine/model replay locally.

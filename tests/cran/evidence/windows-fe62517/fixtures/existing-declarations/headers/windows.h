@@ -1,0 +1,15 @@
+#ifndef TEST_WINDOWS_H
+#define TEST_WINDOWS_H
+#ifndef _WIN32_WINNT
+#define _WIN32_WINNT 0x0601
+#endif
+#if _WIN32_WINNT >= 0x0602
+#define RELM_TEST_SDK_TARGET_READY 1
+#else
+#define RELM_TEST_SDK_TARGET_READY 0
+#endif
+typedef unsigned int ULONG;
+#define THREAD_POWER_THROTTLING_CURRENT_VERSION 7
+#define THREAD_POWER_THROTTLING_EXECUTION_SPEED 32
+typedef struct { ULONG Version, ControlMask, StateMask; } THREAD_POWER_THROTTLING_STATE;
+#endif

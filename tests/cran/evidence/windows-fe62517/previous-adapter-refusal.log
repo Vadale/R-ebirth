@@ -1,0 +1,6 @@
+/home/grauk/Work/relm-phase9/windows-thread-target/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:5:1: error: static assertion failed: "preserve ggml Windows API target"
+    5 | _Static_assert(_WIN32_WINNT == 0x0A00, "preserve ggml Windows API target");
+      | ^~~~~~~~~~~~~~
+/home/grauk/Work/relm-phase9/windows-thread-target/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:7:1: error: static assertion failed: "SDK read before ggml target selection"
+    7 | _Static_assert(RELM_TEST_SDK_TARGET_READY == 1, "SDK read before ggml target selection");
+      | ^~~~~~~~~~~~~~

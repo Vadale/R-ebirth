@@ -100,6 +100,14 @@ scheduling calls and kernels are preserved. Local mocked-SDK controls pass;
 actual Rtools ABI/link and package acceptance remain pending the next matrix.
 Raw evidence: [`windows-965ba4b`](../tests/cran/evidence/windows-965ba4b/).
 
+The new preflight on `fe62517` failed before the full package build: the adapter
+included `windows.h` before ggml selected its Windows API target, hiding
+`SetThreadInformation`. The adapter now includes the actual pinned `ggml.h`
+first. New focused controls reject the previous adapter, preserve the upstream
+default and an explicit target override, and retain the ABI/single-source checks.
+They pass locally with no engine/model execution; actual Rtools and full Windows
+acceptance remain pending. Evidence: [`windows-fe62517`](../tests/cran/evidence/windows-fe62517/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU

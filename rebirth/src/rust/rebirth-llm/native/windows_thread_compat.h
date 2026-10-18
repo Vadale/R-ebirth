@@ -7,6 +7,9 @@
 #define RELM_WINDOWS_THREAD_COMPAT_H
 
 #if defined(_WIN32) && defined(__MINGW32__)
+/* ggml chooses its Windows API target before any system header. Preserve that
+ * order (and any caller override) when this adapter is force-included. */
+#include "ggml.h"
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif

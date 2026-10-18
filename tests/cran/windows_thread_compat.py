@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 NATIVE = ROOT / 'rebirth/src/rust/rebirth-llm/native'
 HEADER = NATIVE / 'windows_thread_compat.h'
 HOOK = NATIVE / 'windows_compat.cmake'
+GGML_INCLUDE = ROOT / 'rebirth/src/llama.cpp/ggml/include'
 
 
 def run(args, *, expect_failure=False):
@@ -42,16 +43,26 @@ def main():
         headers = root / 'headers'
         headers.mkdir()
         version, mask = (7, 32) if mode == 'existing-declarations' else (1, 1)
+        winnt = '0x0602' if mode == 'existing-declarations' else '0x0A00'
         if not real_windows:
-            sdk = '#ifndef TEST_WINDOWS_H\n#define TEST_WINDOWS_H\ntypedef unsigned int ULONG;\n'
+            sdk = ('#ifndef TEST_WINDOWS_H\n#define TEST_WINDOWS_H\n'
+                   '#ifndef _WIN32_WINNT\n#define _WIN32_WINNT 0x0601\n#endif\n'
+                   '#if _WIN32_WINNT >= 0x0602\n#define RELM_TEST_SDK_TARGET_READY 1\n'
+                   '#else\n#define RELM_TEST_SDK_TARGET_READY 0\n#endif\n'
+                   'typedef unsigned int ULONG;\n')
             if mode == 'existing-declarations':
                 sdk += ('#define THREAD_POWER_THROTTLING_CURRENT_VERSION 7\n'
                         '#define THREAD_POWER_THROTTLING_EXECUTION_SPEED 32\n'
                         'typedef struct { ULONG Version, ControlMask, StateMask; } THREAD_POWER_THROTTLING_STATE;\n')
             (headers / 'windows.h').write_text(sdk + '#endif\n')
-        source.write_text(f'''#include <windows.h>
+        source.write_text(f'''#include "ggml.h"
+#include <windows.h>
 #include <stddef.h>
 #include <stdio.h>
+_Static_assert(_WIN32_WINNT == {winnt}, "preserve ggml Windows API target");
+#ifndef RELM_REAL_WINDOWS
+_Static_assert(RELM_TEST_SDK_TARGET_READY == 1, "SDK read before ggml target selection");
+#endif
 _Static_assert(sizeof(ULONG) == 4, "Windows ULONG ABI");
 _Static_assert(sizeof(THREAD_POWER_THROTTLING_STATE) == 12, "thread state ABI");
 _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, Version) == 0, "version offset");
@@ -64,11 +75,11 @@ int main(void) {{
     THREAD_POWER_THROTTLING_STATE t = {{THREAD_POWER_THROTTLING_CURRENT_VERSION,
         THREAD_POWER_THROTTLING_EXECUTION_SPEED, 0}};
 #ifdef RELM_REAL_WINDOWS
-    BOOL (WINAPI *function)(HANDLE, THREAD_INFORMATION_CLASS, LPVOID, DWORD) = SetThreadInformation;
-    (void) function; /* link/signature only; no scheduling policy change */
+    BOOL (WINAPI *volatile function)(HANDLE, THREAD_INFORMATION_CLASS, LPVOID, DWORD) = SetThreadInformation;
+    if (function == NULL) return 2; /* retain API symbol without calling it */
 #endif
     if (t.Version != {version} || t.ControlMask != {mask} || t.StateMask != 0 || unaffected()) return 1;
-    puts("RELM_THREAD_COMPAT_OK {mode} size=12 offsets=0,4,8 version={version} mask={mask}");
+    puts("RELM_THREAD_COMPAT_OK {mode} size=12 offsets=0,4,8 version={version} mask={mask} winnt={winnt}");
     return 0;
 }}
 ''')
@@ -78,8 +89,10 @@ int main(void) {{
 int unaffected(void) { return 0; }
 ''')
         definitions = 'RELM_REAL_WINDOWS' if real_windows else '_WIN32 __MINGW32__'
+        if mode == 'existing-declarations':
+            definitions += ' _WIN32_WINNT=0x0602'
         (root / 'ggml/src/CMakeLists.txt').write_text(f'''add_executable(ggml-cpu ggml-cpu/ggml-cpu.c unaffected.c)
-target_include_directories(ggml-cpu PRIVATE "${{CMAKE_SOURCE_DIR}}/headers")
+target_include_directories(ggml-cpu PRIVATE "${{CMAKE_SOURCE_DIR}}/headers" "{GGML_INCLUDE.as_posix()}")
 target_compile_definitions(ggml-cpu PRIVATE {definitions})
 target_compile_options(ggml-cpu PRIVATE -std=c11 -Wall -Wextra -Werror -pedantic)
 ''')
@@ -92,7 +105,7 @@ project(relm_thread_compat_control C)
 add_subdirectory(ggml/src)
 ''')
         if mode == 'missing-declarations':
-            run([gcc, '-std=c11', '-I', headers, '-c', source, '-o', root / 'refused.o'], expect_failure=True)
+            run([gcc, '-std=c11', '-I', headers, '-I', GGML_INCLUDE, '-D_WIN32', '-c', source, '-o', root / 'refused.o'], expect_failure=True)
         build = root / 'build'
         generator = 'MSYS Makefiles' if real_windows else 'Unix Makefiles'
         run(['cmake', '-S', root, '-B', build, '-G', generator, '-DCMAKE_C_COMPILER=' + gcc])
@@ -108,9 +121,10 @@ add_subdirectory(ggml/src)
         run([output / 'non-windows'])
     receipt = {'status': 'passed', 'real_windows_sdk': real_windows, 'modes': modes,
                'negative_missing_type': not real_windows, 'non_windows_noop': not real_windows,
-               'unrelated_source_header_absence': True, 'engine_builds': 0, 'model_calls': 0,
+               'unrelated_source_header_absence': True, 'upstream_default_winnt': '0x0A00',
+               'explicit_override_preserved': None if real_windows else '0x0602', 'engine_builds': 0, 'model_calls': 0,
                'source_sha256': {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-                                 for p in [HEADER, HOOK, Path(__file__).resolve()]}}
+                                 for p in [HEADER, HOOK, GGML_INCLUDE / "ggml.h", Path(__file__).resolve()]}}
     (output / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt))
 

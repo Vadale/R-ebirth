@@ -1,0 +1,29 @@
+{
+  "status": "expected_refusal_verified",
+  "parent_head": "fe62517f68fc21037d41fbd3e1b486507eddcbab",
+  "command": [
+    "gcc",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-pedantic",
+    "-D_WIN32",
+    "-D__MINGW32__",
+    "-I",
+    "/home/grauk/Work/relm-phase9/windows-thread-target/missing-declarations path with spaces/headers",
+    "-I",
+    "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+    "-include",
+    "/home/grauk/Work/relm-phase9/windows-thread-target/previous-adapter.h",
+    "-c",
+    "/home/grauk/Work/relm-phase9/windows-thread-target/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c",
+    "-o",
+    "/home/grauk/Work/relm-phase9/windows-thread-target/previous-adapter-refused.o"
+  ],
+  "returncode": 1,
+  "old_adapter_sha256": "64a625e54e4e47ba375a671f06e757e23a51650d84350622611d6206f42be12c",
+  "log_sha256": "cbae3d572ec8e8d7ab04140721142151eeb8ceb83112f99fd2e88020369e8ea9",
+  "engine_builds": 0,
+  "model_calls": 0
+}
