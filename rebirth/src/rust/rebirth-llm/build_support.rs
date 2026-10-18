@@ -75,6 +75,10 @@ pub fn link_libraries(stems: &[&str], target_os: &str, metal: bool) -> Vec<Strin
         flags.push("dylib=stdc++".into());
         if target_os == "linux" {
             flags.extend(["dylib=m".into(), "dylib=dl".into()]);
+        } else {
+            // ggml's Windows CPU description reads the registry. Match the
+            // existing R DLL link in Makevars.win.in for Cargo executables too.
+            flags.push("dylib=advapi32".into());
         }
     } else {
         flags.extend(["dylib=c++".into(), "framework=Accelerate".into()]);
@@ -215,9 +219,22 @@ mod tests {
             [
                 "static:+whole-archive,-bundle=llama",
                 "static:+whole-archive,-bundle=ggml",
-                "dylib=stdc++"
+                "dylib=stdc++",
+                "dylib=advapi32"
             ]
         );
+    }
+
+    #[test]
+    fn windows_registry_library_matches_existing_r_dll_link() {
+        let flags = link_libraries(&["ggml-cpu"], "windows", false);
+        assert_eq!(flags.iter().filter(|s| *s == "dylib=advapi32").count(), 1);
+        let makevars = include_str!("../../Makevars.win.in");
+        let pkg_libs = makevars
+            .lines()
+            .find(|line| line.starts_with("PKG_LIBS ="))
+            .unwrap();
+        assert!(pkg_libs.split_whitespace().any(|flag| flag == "-ladvapi32"));
     }
 
     #[test]

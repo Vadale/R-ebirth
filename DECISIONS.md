@@ -1748,3 +1748,9 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   Unix-prefixed ggml archive. Select the pinned engine's Windows source names
   while retaining canonical lib*.a copies and unchanged Cargo/R link directives.
   Preserve original failures; no vendor/compiler/kernel/numerical change.
+
+- **Windows Cargo system imports (2026-10-18):** after actual native/FFI static
+  compilation passed, the wrapper-generator executable failed on three registry
+  imports. Add advapi32 to the Windows Cargo link, matching existing R DLL flags.
+  This is an existing OS library, not a new package dependency. Preserve Unix
+  plans, vendor/native code and the failed original; verify actual Windows link.

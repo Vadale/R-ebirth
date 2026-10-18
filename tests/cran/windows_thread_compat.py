@@ -76,7 +76,11 @@ int main(void) {{
         THREAD_POWER_THROTTLING_EXECUTION_SPEED, 0}};
 #ifdef RELM_REAL_WINDOWS
     BOOL (WINAPI *volatile function)(HANDLE, THREAD_INFORMATION_CLASS, LPVOID, DWORD) = SetThreadInformation;
-    if (function == NULL) return 2; /* retain API symbol without calling it */
+    LSTATUS (WINAPI *volatile open_key)(HKEY, LPCSTR, DWORD, REGSAM, PHKEY) = RegOpenKeyExA;
+    LSTATUS (WINAPI *volatile query_key)(HKEY, LPCSTR, LPDWORD, LPDWORD, LPBYTE, LPDWORD) = RegQueryValueExA;
+    LSTATUS (WINAPI *volatile close_key)(HKEY) = RegCloseKey;
+    if (function == NULL || open_key == NULL || query_key == NULL || close_key == NULL) return 2;
+    /* Retain real import symbols without invoking scheduling or registry APIs. */
 #endif
     if (t.Version != {version} || t.ControlMask != {mask} || t.StateMask != 0 || unaffected()) return 1;
     puts("RELM_THREAD_COMPAT_OK {mode} size=12 offsets=0,4,8 version={version} mask={mask} winnt={winnt}");
@@ -91,9 +95,11 @@ int unaffected(void) { return 0; }
         definitions = 'RELM_REAL_WINDOWS' if real_windows else '_WIN32 __MINGW32__'
         if mode == 'existing-declarations':
             definitions += ' _WIN32_WINNT=0x0602'
+        system_link = 'target_link_libraries(ggml-cpu PRIVATE advapi32)' if real_windows else ''
         (root / 'ggml/src/CMakeLists.txt').write_text(f'''add_executable(ggml-cpu ggml-cpu/ggml-cpu.c unaffected.c)
 target_include_directories(ggml-cpu PRIVATE "${{CMAKE_SOURCE_DIR}}/headers" "{GGML_INCLUDE.as_posix()}")
 target_compile_definitions(ggml-cpu PRIVATE {definitions})
+{system_link}
 target_compile_options(ggml-cpu PRIVATE -std=c11 -Wall -Wextra -Werror -pedantic)
 ''')
         # On Linux only the CMake selection is emulated; the SDK is explicitly a
@@ -122,7 +128,8 @@ add_subdirectory(ggml/src)
     receipt = {'status': 'passed', 'real_windows_sdk': real_windows, 'modes': modes,
                'negative_missing_type': not real_windows, 'non_windows_noop': not real_windows,
                'unrelated_source_header_absence': True, 'upstream_default_winnt': '0x0A00',
-               'explicit_override_preserved': None if real_windows else '0x0602', 'engine_builds': 0, 'model_calls': 0,
+               'explicit_override_preserved': None if real_windows else '0x0602',
+               'registry_api_imports_linked': real_windows, 'engine_builds': 0, 'model_calls': 0,
                'source_sha256': {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
                                  for p in [HEADER, HOOK, GGML_INCLUDE / "ggml.h", Path(__file__).resolve()]}}
     (output / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')

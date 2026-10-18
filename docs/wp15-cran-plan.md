@@ -120,6 +120,17 @@ Two new build-only naming controls pass locally; full Windows link/install and
 package checks remain pending. Original failure and real SDK receipt:
 [`windows-49a15c2`](../tests/cran/evidence/windows-49a15c2/).
 
+## Windows executable system imports
+
+On `79d1c1b`, the archive collector and FFI static-library build completed. The
+wrapper generator then failed to link three Windows registry functions used by
+ggml's CPU description. Cargo omitted `advapi32`, already present in the R DLL
+link. The Windows-only Cargo plan now includes it; Unix plans are unchanged.
+Three focused link-plan controls pass locally, and the real Rtools preflight
+will verify those imports without invoking registry operations. Final generator,
+DLL installation and package tests remain pending. Evidence:
+[`windows-79d1c1b`](../tests/cran/evidence/windows-79d1c1b/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU
