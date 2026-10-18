@@ -1,0 +1,2 @@
+observed=/home/grauk/Work/relm-phase9/vignette-path-correction/current-spelling/vignette-library/temporary library with spaces
+expected=/home/grauk/Work/relm-phase9/vignette-path-correction/current-spelling/vignette-library/temporary library with spaces

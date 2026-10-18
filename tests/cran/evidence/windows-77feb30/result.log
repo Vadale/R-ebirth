@@ -1,0 +1,2 @@
+VIGNETTE_LIBRARY_BASE_PASS cases=3 native_builds=0 models=0
+VIGNETTE_PATH_REGRESSION_PASS old_default_rejected=1 current_base_cases=3 models=0 native_builds=0

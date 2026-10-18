@@ -29,7 +29,13 @@ main <- function() {
   stopifnot(identical(.libPaths(), old_libs))
   Sys.setenv(R_BUILD_TEMPLIB = lib)
   eval(parse(text = code), envir = new.env())
-  stopifnot(identical(.libPaths()[[1]], normalizePath(lib)),
+  # .libPaths() normalizes with "/" even on Windows; normalizePath() alone
+  # defaults to backslashes there. Compare the same canonical representation.
+  expected_library <- normalizePath(lib, winslash = "/", mustWork = TRUE)
+  writeLines(c(paste0("observed=", .libPaths()[[1]]),
+               paste0("expected=", expected_library)),
+             file.path(out, "library-paths.txt"))
+  stopifnot(identical(.libPaths()[[1]], expected_library),
             identical(.libPaths()[-1L], old_libs))
   .libPaths(old_libs)
   Sys.setenv(R_BUILD_TEMPLIB = file.path(out, "absent"))

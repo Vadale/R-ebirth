@@ -1,0 +1,19 @@
+{
+  "status": "failed_original_preserved_correction_pending_windows",
+  "head": "77feb304f306ad5f3f6050cb449a7629b47064b5",
+  "run": 39161069016,
+  "job": 117774307127,
+  "raw_bytes": 590126,
+  "cause": "Test expected normalizePath default backslashes while .libPaths uses normalizePath(paths, \"/\") on Windows",
+  "correction": "Explicit identical forward-slash normalization; equality and library order remain strict",
+  "local_controls": "Old-default spelling rejected; three current base cases pass with simulated Windows expected-path default and real library directories",
+  "limits": [
+    "Simulation is not actual Windows execution",
+    "Quarto tangle/build/check and full relm package check were not executed",
+    "Five Rust jobs passed; four R jobs running at initial snapshot"
+  ],
+  "full_package_check_skipped": true,
+  "windows_engine_builds": 0,
+  "windows_model_calls": 0,
+  "product_and_vignette_sources_changed": false
+}

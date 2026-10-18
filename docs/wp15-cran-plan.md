@@ -159,6 +159,19 @@ Quarto is unavailable; no full rendering claim is made. The failed run and
 focused controls are retained in
 [`windows-459d0c5`](../tests/cran/evidence/windows-459d0c5/).
 
+### Preflight path spelling correction
+
+The `77feb30` Windows run stopped in the new base preflight, before Quarto or
+relm compilation. The test compared `.libPaths()`'s forward slashes with the
+backslashes returned by Windows `normalizePath()` by default. It now requests
+`winslash = "/"` explicitly, preserving strict equality and library ordering;
+observed/expected paths are retained for diagnosis. The focused local control
+rejects the original spelling and passes the three current base cases using a
+simulated Windows default. This does not replace actual Windows execution.
+Product code and vignette sources are unchanged; actual Quarto and full package
+checks remain pending. Failure and focused evidence:
+[`windows-77feb30`](../tests/cran/evidence/windows-77feb30/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU
