@@ -1,0 +1,16 @@
+{
+  "status": "diagnosed",
+  "cause": "Inspector incorrectly treated Cargo automatic CACHEDIR.TAG as downloaded registry contents",
+  "actual_registry_files": [
+    "CACHEDIR.TAG"
+  ],
+  "all_external_manifest_paths_in_shipped_vendor": true,
+  "target_package_counts": {
+    "metadata-x86_64-unknown-linux-gnu": 54,
+    "metadata-x86_64-pc-windows-gnu": 53,
+    "metadata-aarch64-apple-darwin": 55
+  },
+  "metadata_commands_carried": 3,
+  "native_builds": 0,
+  "model_calls": 0
+}

@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/grauk/Work/relm-phase9/run-source-install-build.py", line 64, in <module>
+    stage("installed-check", ["Rscript", "--vanilla", str(ROOT / "tests/cran/installed-package.R"), str(library / "relm"), str(package), str(OUT / "installed-result.rds")], ROOT, env, 120)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/grauk/Work/relm-phase9/run-source-install-build.py", line 22, in stage
+    if result.returncode: raise RuntimeError(name + " failed; preserve passed stages")
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: installed-check failed; preserve passed stages

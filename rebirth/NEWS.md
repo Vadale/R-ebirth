@@ -1,3 +1,12 @@
+# Development — CRAN source preparation
+
+* Source distributions bundle the unchanged engine and locked Rust dependencies,
+  avoiding long outer archive paths and network-dependent Cargo installation.
+  Source integrity, license notices and the optional Linux CUDA route are retained.
+* Package compilation uses locked dependencies and at most two Cargo jobs;
+  tool discovery respects the platform PATH separator. Windows CPU acceptance
+  is being checked separately and is not yet claimed.
+
 # Development — optional Linux CUDA
 
 * Added an explicit optional Linux x86_64 CUDA build route with

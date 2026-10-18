@@ -1,0 +1,48 @@
+{
+  "status": "passed",
+  "scope": "Offline CPU source packaging/install; documented no-tokenizer refusal and closure, not successful generation/full CRAN/Windows",
+  "source_inputs": 1097,
+  "only_post_build_change": [
+    "tests/cran/installed-package.R"
+  ],
+  "tar": {
+    "path": "/home/grauk/Work/relm-phase9/source-install-build/relm_0.4.0.tar.gz",
+    "sha256": "d8830ebec541596ff5be5145af1a246cad19a62bce2c16c2ba3655204144e10c",
+    "bytes": 7426568,
+    "long_paths": [],
+    "vignettes_built": false
+  },
+  "tar_files": 321,
+  "tar_exact_source_files": 320,
+  "tar_description": "19 original fields unchanged; four R build metadata fields added",
+  "installed_files": 30,
+  "dll_sha256": "e528ec2f78951bb8a5e52e9e31f7581adab3d4afca58b75b4a494675a4304408",
+  "compiler_warnings": 0,
+  "functions": 250,
+  "profile_fields": 27,
+  "production_fixture_hooks": 0,
+  "cpu_only": true,
+  "source_installed_frozen": true,
+  "original_failed_model_attempt": {
+    "loads": 1,
+    "generation_attempts": 1,
+    "successful_generations": 0
+  },
+  "corrected_model_attempt": {
+    "loads": 1,
+    "generation_attempts": 1,
+    "expected_tokenization_refusals": 1,
+    "successful_generations": 0,
+    "native_closed": true
+  },
+  "not_run": [
+    "full as-cran",
+    "vignettes/manual",
+    "Windows CPU",
+    "R-devel"
+  ],
+  "source_failures_preserved": [
+    "source-install-status.json",
+    "source-install-build-status.json"
+  ]
+}

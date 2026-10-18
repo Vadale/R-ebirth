@@ -1692,3 +1692,28 @@ Use an isolated official CUDA toolkit to avoid the distro package replacing
 components of the working NVIDIA driver; GCC 15, Rust and Ninja are build tools.
 The optional Linux x86_64 package build uses `RELM_ENABLE_CUDA=1` and `CUDA_PATH`;
 ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
+
+## D-051 — CRAN preparation after completed Linux CUDA acceptance
+
+- **Date/status:** 2026-10-18, APPROVED by the founder's "ok procedi allora"
+  following the concrete Phase 9 preparation plan.
+- **Decision:** start WP15 with portable source packaging, the existing locked
+  Rust dependency bundle and an early Windows CPU build/check. Keep CUDA optional
+  and preserve every public API, kernel, model, dependency version and numerical
+  threshold. See `docs/wp15-cran-plan.md` for acceptance and execution order.
+- **Packaging choice:** distribute the byte-identical patched engine and locked
+  crates as source archives. Retain the expanded engine in Git and verify archive
+  equality. This addresses the 11 long CUDA paths without a vendor kernel patch.
+- **Resource/build boundary:** isolated disk-backed build/cache/temp paths on
+  this host; explicit two-job package compilation, offline locked Cargo resolution
+  and source/license provenance. No compiler, driver or model auto-installation
+  by the package and no new package dependencies.
+- **Sequence:** Windows CPU feasibility precedes final packaging refinements;
+  Windows GPU and VM work are separate. WP16 documentation/API stability follows
+  WP15; the 30-day green CI criterion is for v1.0, not CRAN eligibility.
+- **Publication boundary:** prepare concrete checks and submission materials;
+  the final external submission and a new release need a reviewable candidate
+  and the founder's final approval. No outreach or auto-merge is implied.
+- **Alternatives rejected:** changing accepted kernels to shorten names, relying
+  on a developer's populated Cargo cache, silently omitting Windows failures,
+  replaying consumed experiments or treating existing 0.4 binaries as CUDA builds.

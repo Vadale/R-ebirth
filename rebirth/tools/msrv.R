@@ -54,10 +54,10 @@ no_rustc_msg <- c(
 )
 
 # Add {user}/.cargo/bin to path before checking
-new_path <- paste0(
+new_path <- paste(
   Sys.getenv("PATH"),
-  ":",
-  paste0(Sys.getenv("HOME"), "/.cargo/bin")
+  file.path(path.expand("~"), ".cargo", "bin"),
+  sep = .Platform$path.sep
 )
 
 # set the path with the new path

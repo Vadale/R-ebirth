@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/grauk/Work/relm-phase9/run-source-install.py", line 52, in <module>
+    assert not (home / "registry").exists(), "Unexpected registry cache in offline validation"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Unexpected registry cache in offline validation

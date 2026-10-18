@@ -102,6 +102,18 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript tests/cuda/configuration.R
 
+      - uses: actions/setup-python@v6
+        if: steps.scope.outputs.full_checks != 'false'
+        with:
+          python-version: '3.12'
+
+      - name: CRAN source bundles and configure controls (no models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: |
+          python3 tools/prepare-cran-sources.py --check
+          python3 tests/cran/test_source_bundles.py
+          Rscript --vanilla tests/cran/configuration.R
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         if: steps.scope.outputs.full_checks != 'false'
         with:

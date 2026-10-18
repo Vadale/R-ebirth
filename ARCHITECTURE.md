@@ -124,7 +124,11 @@ Greedy decoding: deterministic per backend by construction. Sampling: the sample
 
 ## 9. Build pipeline
 
-- `rebirth/src/Makevars` drives `cargo build` (release profile by default; `--offline` for CRAN-mode builds when crates are vendored), links `librelm.a` + llama.cpp objects statically; macOS adds Metal/Accelerate framework flags; feature flags select backends (`metal` default on macOS arm64, `cuda` opt-in from Phase 8).
+- `rebirth/src/Makevars` drives `cargo build` (release profile, locked dependencies,
+  at most two Cargo jobs; offline for bundled source packages), links `librelm.a`
+  and llama.cpp statically; macOS adds Metal/Accelerate frameworks. CUDA is opt-in
+  on Linux x86_64. D-051 bundles the unchanged engine in `llama-sources.tar.xz`
+  and existing locked crates in `vendor.tar.xz`; configure unpacks the engine.
 - `configure` detects cargo/rustc and fails with an actionable message if missing (binary users via r-universe never hit this).
 - **CRAN Rust checklist (applies at Phase 9, prepared from day 1):** `SystemRequirements: Cargo (Rust)` with minimum rustc declared; all crates vendored (`cargo vendor` → `src/rust/vendor.tar.xz`), no network at build time; build respects `~/.R/Makevars` and ≤ 2 threads during checks; authors/licenses of vendored crates listed in `inst/AUTHORS`; verified on the CRAN platform matrix before submission.
 - Toolchain: Rust >= 1.85.0 for the locked default dependency graph on supported macOS/Linux targets (D-027). CI builds at the floor as well as on stable. `rust-toolchain.toml` selects the moving stable channel, not an exact compiler version; `Cargo.lock` pins dependencies and `vendor/README.md` records engine provenance.

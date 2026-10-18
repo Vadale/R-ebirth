@@ -15,6 +15,8 @@ Description: Load and run local large language models (through a vendored,
     embeddings. A checksum-verified downloader ('llm_download') fetches pinned
     models.
 License: MIT + file LICENSE | Apache License (== 2.0)
+Copyright: See inst/AUTHORS and inst/THIRD-PARTY-NOTICES for bundled source
+    authorship, copyrights and licenses.
 URL: https://github.com/Vadale/R-ebirth,
     https://vadale.r-universe.dev/relm
 BugReports: https://github.com/Vadale/R-ebirth/issues
