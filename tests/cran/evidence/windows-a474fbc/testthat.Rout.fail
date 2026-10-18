@@ -1,0 +1,152 @@
+
+R version 4.6.1 (2026-06-24 ucrt) -- "Happy Hop"
+Copyright (C) 2026 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # This file is part of the standard setup for testthat.
+> # It is recommended that you do not modify it.
+> #
+> # Where should you do additional test configuration?
+> # Learn more about the roles of various files in:
+> # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
+> # * https://testthat.r-lib.org/articles/special-files.html
+> 
+> library(testthat)
+> library(relm)
+> 
+> test_check("relm")
+gguf_init_from_reader: invalid magic characters: '????', expected 'GGUF'
+llama_model_load: error loading model: llama_model_loader: failed to load model from C:\Users\RUNNER~1\AppData\Local\Temp\Rtmp6dKiRr/working_dir\RtmpC2Pw07\filecc419525dc0.gguf
+llama_model_load_from_file_impl: failed to load model
+Saving _problems/test-llm-trace-spill-session-34.R
+[ FAIL 1 | WARN 0 | SKIP 141 | PASS 4972 ]
+
+══ Skipped tests (141) ═════════════════════════════════════════════════════════
+• On CRAN (1): 'test-llm-model.R:49:3'
+• Production build omits native fixtures. Native selftest entries are
+  unavailable: rebirth_async_test_handle, rebirth_async_test_config (13):
+  'test-llm-stream.R:4:3', 'test-llm-stream.R:65:3', 'test-llm-stream.R:92:5',
+  'test-llm-stream.R:113:3', 'test-llm-stream.R:130:3',
+  'test-llm-stream.R:152:3', 'test-llm-stream.R:163:3',
+  'test-llm-stream.R:177:3', 'test-llm-stream.R:206:5',
+  'test-llm-stream.R:311:5', 'test-llm-stream.R:329:5',
+  'test-llm-stream.R:368:3', 'test-llm-stream.R:390:3'
+• Production build omits native fixtures. Native selftest entries are
+  unavailable: rebirth_async_test_handle, rebirth_async_test_config,
+  rebirth_async_test_stats (21): 'test-llm-async-lifecycle.R:111:3',
+  'test-llm-async-lifecycle.R:124:3', 'test-llm-async-lifecycle.R:139:3',
+  'test-llm-async-lifecycle.R:154:3', 'test-llm-async-lifecycle.R:192:3',
+  'test-llm-async-lifecycle.R:209:3', 'test-llm-async-lifecycle.R:266:3',
+  'test-llm-async.R:91:3', 'test-llm-async.R:125:3', 'test-llm-async.R:153:3',
+  'test-llm-async.R:167:3', 'test-llm-async.R:177:3', 'test-llm-async.R:201:3',
+  'test-llm-async.R:217:3', 'test-llm-async.R:230:5', 'test-llm-async.R:244:3',
+  'test-llm-async.R:258:3', 'test-llm-async.R:315:3', 'test-llm-async.R:334:3',
+  'test-llm-async.R:359:3', 'test-llm-async.R:374:3'
+• Production build omits native fixtures. Native selftest entries are
+  unavailable: rebirth_async_test_stats (2): 'test-llm-live-model.R:289:3',
+  'test-llm-live-steering.R:248:3'
+• Production build omits native fixtures. Native selftest entries are
+  unavailable: rebirth_selftest_new_handle (9): 'test-llm-close.R:19:3',
+  'test-llm-close.R:31:3', 'test-llm-close.R:40:3', 'test-llm-tokens.R:54:3',
+  'test-projection-owners.R:105:3', 'test-projection-public-binding.R:40:3',
+  'test-projection-public-binding.R:56:3', 'test-projection-state-api.R:2:3',
+  'test-projection-state-api.R:24:3'
+• Production build omits native fixtures. Native selftest entries are
+  unavailable: rebirth_selftest_panic (1): 'test-boundary.R:41:3'
+• Production build omits native fixtures. Native selftest entries are
+  unavailable: rebirth_selftest_trace_tokens_spill (7):
+  'test-llm-trace-spill.R:45:3', 'test-llm-trace-spill.R:95:3',
+  'test-llm-trace-spill.R:118:3', 'test-llm-trace-spill.R:134:3',
+  'test-llm-trace-spill.R:151:3', 'test-llm-trace-spill.R:189:3',
+  'test-llm-trace-spill.R:241:3'
+• Production build omits native fixtures. Native selftest entries are
+  unavailable: rebirth_selftest_validate_image (7): 'test-llm-vision.R:30:3',
+  'test-llm-vision.R:45:3', 'test-llm-vision.R:72:3', 'test-llm-vision.R:89:3',
+  'test-llm-vision.R:114:3', 'test-llm-vision.R:127:3',
+  'test-llm-vision.R:140:3'
+• RELM_TEST_MODEL_GEMMA4 is not set to an existing GGUF file (4):
+  'test-llm-generate.R:159:3', 'test-llm-trace.R:516:3',
+  'test-llm-trace.R:546:3', 'test-llm-trace.R:560:3'
+• RELM_TEST_MODEL_QWEN is not set to an existing GGUF file (46):
+  'test-llm-async-lifecycle.R:221:3', 'test-llm-async.R:286:3',
+  'test-llm-async.R:386:3', 'test-llm-embed.R:108:3', 'test-llm-embed.R:118:3',
+  'test-llm-embed.R:130:3', 'test-llm-embed.R:141:3', 'test-llm-embed.R:158:3',
+  'test-llm-generate.R:73:3', 'test-llm-generate.R:84:3',
+  'test-llm-generate.R:96:3', 'test-llm-generate.R:105:3',
+  'test-llm-generate.R:113:3', 'test-llm-generate.R:129:3',
+  'test-llm-generate.R:140:3', 'test-llm-intervene.R:285:3',
+  'test-llm-intervene.R:301:3', 'test-llm-intervene.R:315:3',
+  'test-llm-intervene.R:331:3', 'test-llm-live-model.R:62:3',
+  'test-llm-live-model.R:127:3', 'test-llm-live-model.R:146:3',
+  'test-llm-live-model.R:173:3', 'test-llm-live-model.R:192:3',
+  'test-llm-live-model.R:249:3', 'test-llm-live-steering.R:131:3',
+  'test-llm-live-steering.R:188:3', 'test-llm-logits.R:71:3',
+  'test-llm-logits.R:100:3', 'test-llm-logits.R:117:3',
+  'test-llm-logits.R:125:3', 'test-llm-logits.R:155:3',
+  'test-llm-model.R:15:3', 'test-llm-model.R:34:3', 'test-llm-model.R:40:3',
+  'test-llm-steer-valence.R:134:3', 'test-llm-stream.R:230:3',
+  'test-llm-stream.R:252:3', 'test-llm-trace-golden.R:253:3',
+  'test-llm-trace.R:470:3', 'test-llm-trace.R:502:3', 'test-llm-trace.R:617:3',
+  'test-llm-vision.R:417:3', 'test-structured-output.R:128:3',
+  'test-structured-output.R:147:3', 'test-structured-output.R:171:3'
+• RELM_TEST_MODEL_QWEN not set (5): 'test-llm-tokens.R:71:3',
+  'test-llm-tokens.R:82:3', 'test-llm-tokens.R:90:3',
+  'test-llm-tokens.R:101:3', 'test-llm-tokens.R:115:3'
+• RELM_TEST_MODEL_QWEN3 is not set to an existing GGUF file (1):
+  'test-llm-trace.R:573:3'
+• RELM_TEST_MODEL_QWEN35 is not set to an existing GGUF file (1):
+  'test-llm-trace.R:597:3'
+• RELM_TEST_MODEL_SPARK not set (optional 4B acceptance) (1):
+  'test-llm-spark.R:6:3'
+• RELM_TEST_MODEL_VLM and RELM_TEST_MMPROJ_VLM are required (2):
+  'test-llm-stream.R:290:3', 'test-llm-vision-async.R:7:3'
+• Set RELM_TEST_MODEL_QWEN to the cached Qwen file; no download. (1):
+  'test-directions-model.R:6:3'
+• Sys.info()[["sysname"]] %in% c("Darwin", "Linux") is not TRUE (2):
+  'test-llm-trace-spill-ownership.R:61:3',
+  'test-llm-trace-spill-ownership.R:75:3'
+• embedding pin not present (repo layout only) (1):
+  'test-llm-vision-embed.R:306:3'
+• macOS-only assertion (1): 'test-llm-vision-embed.R:46:3'
+• no VLM: set RELM_TEST_MODEL_VLM or
+  llm_download("qwen2-vl-2b-instruct-q4_k_m") (10):
+  'test-llm-vision-embed.R:233:3', 'test-llm-vision-embed.R:269:3',
+  'test-llm-vision-embed.R:324:3', 'test-llm-vision-embed.R:339:3',
+  'test-llm-vision-embed.R:352:3', 'test-llm-vision.R:392:3',
+  'test-llm-vision.R:401:3', 'test-llm-vision.R:438:3',
+  'test-llm-vision.R:448:3', 'test-llm-vision.R:469:3'
+• no mmproj: set RELM_TEST_MMPROJ_VLM or
+  llm_download("qwen2-vl-2b-instruct-mmproj-f16") (1):
+  'test-llm-vision.R:432:3'
+• repo-root canonical image not present (1): 'test-llm-vision.R:382:3'
+• set RELM_DOWNLOAD_E2E=1 to run the real network download (1):
+  'test-llm-download.R:374:3'
+• vision golden not present (repo layout only) (1): 'test-llm-vision.R:498:3'
+• vision goldens not present (outside the tarball; see the R-CMD-check step)
+  (1): 'test-llm-vision-embed.R:61:3'
+
+══ Failed tests ════════════════════════════════════════════════════════════════
+── Failure ('test-llm-trace-spill-session.R:34:3'): custom spill paths remain distinct across live R sessions ──
+Expected `dirname(child_path)` to be identical to `root`.
+Differences:
+actual vs expected
+- "C:/Users/RUNNER~1/AppData/Local/Temp/Rtmp6dKiRr/working_dir/RtmpC2Pw07/relm-shared-spill-cc4384179ca"
++ "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\Rtmp6dKiRr/working_dir\\RtmpC2Pw07\\relm-shared-spill-cc4384179ca"
+
+
+[ FAIL 1 | WARN 0 | SKIP 141 | PASS 4972 ]
+Error:
+! Test failures.
+Execution halted

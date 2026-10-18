@@ -209,6 +209,29 @@ environment test, not Windows SDK or full-package acceptance. No relm native
 builds, rendering or model calls were repeated. Evidence:
 [`windows-4c950e7`](../tests/cran/evidence/windows-4c950e7/).
 
+### First complete Windows installation and spill test spelling
+
+On `a474fbc`, the real Windows preflight passed both extracted-script execution
+and vignette rebuilding. The production engine/static library, wrapper generator
+and final GNU R DLL link completed. Installation, package loading, compiled-code
+and Rust checks, examples and vignette rebuilds passed. The retained source tar
+contains 343 files; 323 tracked source files match the candidate exactly, with
+DESCRIPTION build metadata treated separately. The installed 13,954,560-byte DLL
+matches its built copy (SHA-256 `0492f3635bf9a46503e1f3e8711513f3bfc3f4fe13d94d4d5cf523266705aa14`).
+
+The overall check remains failed: 4,972 expectations passed, 141 scoped skips,
+and one assertion compared the same directory with forward versus backward
+slashes. R CMD check reports one error, zero warnings and zero notes. All other
+nine CI jobs passed. The spill test now canonicalizes both existing parent
+paths before strict equality; session-file uniqueness, absent child allocation
+and surviving parent contents remain required. Runtime code is unchanged.
+The one affected case passes five expectations locally using the existing DLL;
+all four helper bodies/formals match current source. No model or native build,
+and no unrelated case was replayed. An initial reporter setup failure occurred
+before the test body and is retained. Corrected Windows execution is still pending.
+Raw logs, failure and source-bound scope:
+[`windows-a474fbc`](../tests/cran/evidence/windows-a474fbc/).
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU

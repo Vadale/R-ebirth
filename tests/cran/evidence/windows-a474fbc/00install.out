@@ -1,0 +1,143 @@
+* installing *source* package 'relm' ...
+** this is package 'relm' version '0.4.0'
+** using staged installation
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 3.31.8
+Building for CRAN.
+Writing `src/Makevars.win`.
+`tools/config.R` has finished.
+** libs
+specified C++17
+using C compiler: 'gcc.exe (GCC) 14.3.0'
+using C++ compiler: 'G__~1.EXE (GCC) 14.3.0'
+using C++17
+gcc  -I"C:/R/include" -DNDEBUG     -I"C:/rtools45/x86_64-w64-mingw32.static.posix/include"      -O2 -Wall -std=gnu2x  -mfpmath=sse -msse2 -mstackrealign   -c entrypoint.c -o entrypoint.o
+mkdir -p ./rust/target/libgcc_mock
+touch ./rust/target/libgcc_mock/libgcc_eh.a
+if [ -d ./vendor ]; then \
+	echo "=== Using offline vendor directory ==="; \
+	mkdir -p /d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo && \
+	cp rust/vendor-config.toml /d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo/config.toml; \
+elif [ -f ./rust/vendor.tar.xz ]; then \
+	echo "=== Using offline vendor tarball ==="; \
+	tar xf rust/vendor.tar.xz && \
+	mkdir -p /d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo && \
+	cp rust/vendor-config.toml /d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo/config.toml; \
+fi
+=== Using offline vendor tarball ===
+# Build the project using Cargo with additional flags
+export CARGO_HOME=/d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo && \
+export LIBRARY_PATH=";/d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/./rust/target/libgcc_mock" && \
+RUSTFLAGS=" --print=native-static-libs" cargo build --locked -j 2 --offline   -p rebirth-ffi --target=x86_64-pc-windows-gnu --lib --release --manifest-path=rust/Cargo.toml --target-dir=./rust/target
+[1m[92m   Compiling[0m proc-macro2 v1.0.106
+[1m[92m   Compiling[0m quote v1.0.46
+[1m[92m   Compiling[0m unicode-ident v1.0.24
+[1m[92m   Compiling[0m libm v0.2.16
+[1m[92m   Compiling[0m autocfg v1.5.1
+[1m[92m   Compiling[0m num-traits v0.2.19
+[1m[92m   Compiling[0m syn v2.0.118
+[1m[92m   Compiling[0m zerocopy v0.8.52
+[1m[92m   Compiling[0m cfg-if v1.0.4
+[1m[92m   Compiling[0m num-integer v0.1.46
+[1m[92m   Compiling[0m version_check v0.9.5
+[1m[92m   Compiling[0m getrandom v0.3.4
+[1m[92m   Compiling[0m ahash v0.8.12
+[1m[92m   Compiling[0m num-bigint v0.4.8
+[1m[92m   Compiling[0m zerocopy-derive v0.8.52
+[1m[92m   Compiling[0m bytes v1.12.0
+[1m[92m   Compiling[0m semver v1.0.28
+[1m[92m   Compiling[0m once_cell v1.21.4
+[1m[92m   Compiling[0m rustc_version v0.4.1
+[1m[92m   Compiling[0m half v2.7.1
+[1m[92m   Compiling[0m find-msvc-tools v0.1.9
+[1m[92m   Compiling[0m arrow-buffer v59.0.0
+[1m[92m   Compiling[0m windows-link v0.2.1
+[1m[92m   Compiling[0m serde_core v1.0.228
+[1m[92m   Compiling[0m shlex v2.0.1
+[1m[92m   Compiling[0m arrow-schema v59.0.0
+[1m[92m   Compiling[0m arrow-data v59.0.0
+[1m[92m   Compiling[0m cc v1.2.65
+[1m[92m   Compiling[0m chrono v0.4.45
+[1m[92m   Compiling[0m flatbuffers v25.12.19
+[1m[92m   Compiling[0m num-complex v0.4.6
+[1m[92m   Compiling[0m hashbrown v0.17.1
+[1m[92m   Compiling[0m extendr-ffi v0.9.0
+[1m[92m   Compiling[0m arrow-array v59.0.0
+[1m[92m   Compiling[0m cmake v0.1.58
+[1m[92m   Compiling[0m serde v1.0.228
+[1m[92m   Compiling[0m bitflags v2.13.0
+[1m[92m   Compiling[0m serde_json v1.0.145
+[1m[92m   Compiling[0m paste v1.0.15
+[1m[92m   Compiling[0m rebirth-llm v0.0.0 (D:\a\R-ebirth\R-ebirth\rebirth\check\relm.Rcheck\00_pkg_src\relm\src\rust\rebirth-llm)
+[1m[92m   Compiling[0m arrow-select v59.0.0
+[1m[92m   Compiling[0m lazy_static v1.5.0
+[1m[92m   Compiling[0m itoa v1.0.18
+[1m[92m   Compiling[0m ryu v1.0.23
+[1m[92m   Compiling[0m memchr v2.8.3
+[1m[92m   Compiling[0m extendr-api v0.9.0
+[1m[92m   Compiling[0m extendr-macros v0.9.0
+[1m[92m   Compiling[0m arrow-ipc v59.0.0
+[1m[92m   Compiling[0m readonly v0.2.13
+[1m[92m   Compiling[0m rebirth-ffi v0.0.0 (D:\a\R-ebirth\R-ebirth\rebirth\check\relm.Rcheck\00_pkg_src\relm\src\rust\rebirth-ffi)
+[1m[93mwarning[0m[1m[97m: fields `path` and `metadata` are never read[0m
+  [1m[96m--> [0mrebirth-llm\src\live_spill.rs:87:5
+   [1m[96m|[0m
+[1m[96m86[0m [1m[96m|[0m pub(crate) struct OwnedLiveFile {
+   [1m[96m|[0m                   [1m[96m-------------[0m [1m[96mfields in this struct[0m
+[1m[96m87[0m [1m[96m|[0m     path: PathBuf,
+   [1m[96m|[0m     [1m[93m^^^^[0m
+[1m[96m88[0m [1m[96m|[0m     metadata: std::fs::Metadata,
+   [1m[96m|[0m     [1m[93m^^^^^^^^[0m
+   [1m[96m|[0m
+   [1m[96m= [0m[1m[97mnote[0m: `OwnedLiveFile` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   [1m[96m= [0m[1m[97mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[93mwarning[0m: `rebirth-llm` (lib) generated 1 warning
+[1m[92mnote[0m[1m[97m: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms[0m
+
+[1m[92mnote[0m[1m[97m: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base -lstdc++ -ladvapi32 -lR -lkernel32 -lntdll -luserenv -lws2_32 -ldbghelp[0m
+
+[1m[92m    Finished[0m `release` profile [optimized] target(s) in 9m 29s
+# Generate wrappers
+export CARGO_HOME=/d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo && \
+export PATH="/x86_64-w64-mingw32.static.posix/bin:/usr/bin:/c/R/bin/x64:/x86_64-w64-mingw32.static.posix/bin:/usr/bin:/x86_64-w64-mingw32.static.posix/bin:/usr/bin:/c/R/bin/x64:/x86_64-w64-mingw32.static.posix/bin:/usr/bin:/x86_64-w64-mingw32.static.posix/bin:/usr/bin:/c/Users/runneradmin/scoop/shims:/c/tools/zstd:/c/hostedtoolcache/windows/pandoc/3.8.3/x64/pandoc-3.8.3:/c/program files/gs/gs10.03.0/bin:/x86_64-w64-mingw32.static.posix/bin:/usr/bin:/c/R/bin:/c/Users/runneradmin/AppData/Roaming/Python/Python312/Scripts:/c/hostedtoolcache/windows/Python/3.12.10/x64/Scripts:/c/hostedtoolcache/windows/Python/3.12.10/x64:/c/Program Files/MongoDB/Server/7.0/bin:/c/vcpkg:/c/tools/zstd:/c/hostedtoolcache/windows/stack/3.11.1/x64:/c/cabal/bin:/c/ghcup/bin:/c/mingw64/bin:/c/Program Files/dotnet:/c/Program Files/MySQL/MySQL Server 8.0/bin:/c/Program Files/R/R-4.6.1/bin/x64:/c/SeleniumWebDrivers/GeckoDriver:/c/SeleniumWebDrivers/EdgeDriver:/c/SeleniumWebDrivers/ChromeDriver:/c/Program Files (x86)/sbt/bin:/c/Program Files (x86)/GitHub CLI:/c/Program Files/Git/bin:/c/Program Files (x86)/pipx_bin:/c/npm/prefix:/c/hostedtoolcache/windows/go/1.24.13/x64/bin:/c/hostedtoolcache/windows/Python/3.12.10/x64/Scripts:/c/hostedtoolcache/windows/Python/3.12.10/x64:/c/hostedtoolcache/windows/Ruby/3.3.12/x64/bin:/c/Program Files/OpenSSL/bin:/c/tools/kotlinc/bin:/c/hostedtoolcache/windows/Java_Temurin-Hotspot_jdk/17.0.20-101/x64/bin:/c/Program Files/ImageMagick-7.1.2-Q16-HDRI:/c/Program Files/Microsoft SDKs/Azure/CLI2/wbin:/c/ProgramData/kind:/c/ProgramData/Chocolatey/bin:/c/Windows/system32:/c/Windows:/c/Windows/System32/Wbem:/c/Windows/System32/WindowsPowerShell/v1.0:/c/Windows/System32/OpenSSH:/c/Program Files/WSL:/c/Program Files/PowerShell/7:/c/Program Files/Microsoft/Web Platform Installer:/c/Program Files/Microsoft SQL Server/170/Tools/Binn:/c/Program Files/Microsoft SQL Server/Client SDK/ODBC/170/Tools/Binn:/c/Program Files/dotnet:/c/Program Files (x86)/Windows Kits/10/Windows Performance Toolkit:/c/Program Files (x86)/WiX Toolset v3.14/bin:/c/Program Files/Microsoft SQL Server/130/DTS/Binn:/c/Program Files/Microsoft SQL Server/140/DTS/Binn:/c/Program Files/Microsoft SQL Server/150/DTS/Binn:/c/Program Files/Microsoft SQL Server/160/DTS/Binn:/c/Program Files/Microsoft SQL Server/170/DTS/Binn:/c/ProgramData/chocolatey/lib/pulumi/tools/Pulumi/bin:/c/Program Files/CMake/bin:/c/Strawberry/c/bin:/c/Strawberry/perl/site/bin:/c/Strawberry/perl/bin:/c/ProgramData/chocolatey/lib/maven/apache-maven-3.9.16/bin:/c/Program Files/Microsoft Service Fabric/bin/Fabric/Fabric.Code:/c/Program Files/Microsoft SDKs/Service Fabric/Tools/ServiceFabricLocalClusterManager:/c/Program Files/nodejs:/c/Program Files/Git/cmd:/c/Program Files/Git/ucrt64/bin:/c/Program Files/Git/usr/bin:/c/Program Files/GitHub CLI:/c/tools/php:/c/Program Files (x86)/sbt/bin:/c/Program Files/Amazon/AWSCLIV2:/c/Program Files/Amazon/SessionManagerPlugin/bin:/c/Program Files/Amazon/AWSSAMCLI/bin:/c/Program Files/Microsoft SQL Server/130/Tools/Binn:/c/Program Files/mongosh:/c/Program Files/LLVM/bin:/c/Program Files (x86)/LLVM/bin:/c/Users/runneradmin/.dotnet/tools:/c/Users/runneradmin/.cargo/bin:/c/Users/runneradmin/AppData/Local/Microsoft/WindowsApps/:/c/Users/runneradmin/Documents/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo run --locked -j 2 --offline   --release -p rebirth-ffi --bin document --target x86_64-pc-windows-gnu --manifest-path=./rust/Cargo.toml --target-dir ./rust/target
+[1m[93mwarning[0m[1m[97m: fields `path` and `metadata` are never read[0m
+  [1m[96m--> [0mrebirth-llm\src\live_spill.rs:87:5
+   [1m[96m|[0m
+[1m[96m86[0m [1m[96m|[0m pub(crate) struct OwnedLiveFile {
+   [1m[96m|[0m                   [1m[96m-------------[0m [1m[96mfields in this struct[0m
+[1m[96m87[0m [1m[96m|[0m     path: PathBuf,
+   [1m[96m|[0m     [1m[93m^^^^[0m
+[1m[96m88[0m [1m[96m|[0m     metadata: std::fs::Metadata,
+   [1m[96m|[0m     [1m[93m^^^^^^^^[0m
+   [1m[96m|[0m
+   [1m[96m= [0m[1m[97mnote[0m: `OwnedLiveFile` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   [1m[96m= [0m[1m[97mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[93mwarning[0m: `rebirth-llm` (lib) generated 1 warning
+[1m[92mnote[0m[1m[97m: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms[0m
+
+[1m[92mnote[0m[1m[97m: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base -lstdc++ -ladvapi32 -lR -lkernel32 -lntdll -luserenv -lws2_32 -ldbghelp[0m
+
+[1m[92m   Compiling[0m rebirth-ffi v0.0.0 (D:\a\R-ebirth\R-ebirth\rebirth\check\relm.Rcheck\00_pkg_src\relm\src\rust\rebirth-ffi)
+[1m[92m    Finished[0m `release` profile [optimized] target(s) in 26.58s
+[1m[92m     Running[0m `rust/target\x86_64-pc-windows-gnu\release\document.exe`
+# Always clean up CARGOTMP
+rm -Rf /d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo;
+g++ -shared -s -static-libgcc -o relm.dll relm-win.def entrypoint.o -L./rust/target/x86_64-pc-windows-gnu/release -lrelm -Wl,--start-group -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base -Wl,--end-group -lstdc++ -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll -LC:/rtools45/x86_64-w64-mingw32.static.posix/lib/x64 -LC:/rtools45/x86_64-w64-mingw32.static.posix/lib -LC:/R/bin/x64 -lR
+rm -Rf /d/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00_pkg_src/relm/src/.cargo vendor ./rust/target
+installing to D:/a/R-ebirth/R-ebirth/rebirth/check/relm.Rcheck/00LOCK-relm/00new/relm/libs/x64
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (relm)
