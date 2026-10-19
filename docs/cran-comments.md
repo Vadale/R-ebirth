@@ -11,15 +11,17 @@ r-universe. It exposes ordinary R objects and bundles patched llama.cpp and
 does not download models, dependencies or a toolchain. CUDA is opt-in and disabled
 in ordinary CPU source-package checks. Compilation explicitly uses two Cargo jobs.
 
-## Compiler requirements requiring maintainer disposition
+## Compiler requirements disclosed for CRAN's consideration
 
 Cargo and rustc >= 1.85.0 are independently required and checked. The locked
 Arrow 59 sources use Rust 2024 edition. Rust/Cargo 1.85 was released 2025-02-20,
 so the candidate does not meet the two-year Cargo-age guidance on 2026-10-19.
-No exception has been granted. CMake >= 3.28 is required. The existing wrapper
-generator links R; non-shared R installations remain unvalidated. These facts
-must be resolved or explicitly raised before choosing to upload, not omitted
-from an incoming submission to make it appear unconditionally portable.
+No exception has been granted. CMake >= 3.28 is required. The wrapper follow-up
+generates wrappers inside the installing R after DLL linking, replacing the
+standalone executable; real non-shared R installation is a pending CI gate.
+The founder chose direct form submission after the technical checks, with these
+requirements disclosed for CRAN's consideration. No preliminary email will be
+sent, and passing hosted CI does not establish farm availability or an exception.
 
 ## Exact candidate and checks — pending
 
@@ -41,5 +43,7 @@ test hooks are explicitly skipped; those skips do not validate the capabilities.
 Historical numerical/quality limitations and Windows GPU/live-cleanup boundaries
 remain documented. No broad quality or platform-equivalence claim is made.
 
-Maintainer merge, external submission and new release publication approval:
-**not yet given for this candidate**.
+The founder authorized agent merge once every current check passes and form
+submission after exact-archive validation. Nothing has been uploaded; no separate
+release publication is authorized. Maintainer email confirmation may require
+the founder's action.

@@ -1,0 +1,198 @@
+{
+  "README.md": {
+    "bytes": 1602,
+    "sha256": "1d0b70e699669974f182d6a9c64728efe5ca77d542f3f0dad925ada2407f39d0"
+  },
+  "artifacts.json": {
+    "bytes": 1467,
+    "sha256": "86137c22efad8571bc7e364cefc97b53dd51247806bbdea9056a65c321d13be7"
+  },
+  "downloads.json": {
+    "bytes": 310,
+    "sha256": "4713c0d3da42c2a1cec8b022fe525defd2abdd5b06f4b995a90c99277c75480c"
+  },
+  "focused/check.py": {
+    "bytes": 4086,
+    "sha256": "4d5934bf4de7f4c8345bbaee6b0bc2b2b1bf2b3184d40d5156f2abcd2696b144"
+  },
+  "focused/clippy.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/clippy.stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/current-compile.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/current-compile.stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/current.rs": {
+    "bytes": 3649,
+    "sha256": "a2763fb266615c363ea98447ab9c059a9d10297a3f299f6b348153c3351c62da"
+  },
+  "focused/include-query.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/include-query.stdout": {
+    "bytes": 15,
+    "sha256": "538ee86305d6f8127d32335e6717a0bf810a2b4aeaa72d9c2e442d7744672354"
+  },
+  "focused/missing-header-refusal.stderr": {
+    "bytes": 285,
+    "sha256": "b6e2e8425062f2da321ba56a0a51b264262a28043d2c72f0ea3f32b89c0fa6f8"
+  },
+  "focused/missing-header-refusal.stdout": {
+    "bytes": 308,
+    "sha256": "95d1731f03dbe97191c47ffe7d5cde4bb8ef76bfce59fab69b68c05a8bdfb4dc"
+  },
+  "focused/nonshared-cppflags.stderr": {
+    "bytes": 29,
+    "sha256": "9dd26dacb98ff6f9d570d2a54683c2f1b6c444b8b23b06d2677dc4682d019c78"
+  },
+  "focused/nonshared-cppflags.stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/nonshared-current.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/nonshared-current.stdout": {
+    "bytes": 456,
+    "sha256": "5b171e0142a696776aa85184641650ae015a1f9b1d1cfae6a59d1a541f3e3936"
+  },
+  "focused/nonshared-original.stderr": {
+    "bytes": 396,
+    "sha256": "39422f91868377d6c44650e8eb1beb115b33df209a3b39fd80ca33f8ad42d66c"
+  },
+  "focused/nonshared-original.stdout": {
+    "bytes": 274,
+    "sha256": "bd983ef19676187501b389657f00b251d8246be79d723a701e0f78d1a570dd47"
+  },
+  "focused/official-R-config.sh": {
+    "bytes": 12387,
+    "sha256": "28e6986fc05c5daade6401718621e51a8969b0287bc6d7a3729cf0b3e5d33726"
+  },
+  "focused/official-config.mk": {
+    "bytes": 92,
+    "sha256": "4beb52983763449e5f289a045de53a003ceabfa69298721bc217a3b6d24120fa"
+  },
+  "focused/original-compile.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/original-compile.stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/original.rs": {
+    "bytes": 2822,
+    "sha256": "9a1732ab2e6822d234b35190dfa559d5606a71803694b4eaa1a63884f031b712"
+  },
+  "focused/projection_state.c": {
+    "bytes": 5118,
+    "sha256": "c5c5295b440cb07cb7875effb596d373694bc1484dfc8dd5dda7a2bcf70ce338"
+  },
+  "focused/records.json": {
+    "bytes": 2321,
+    "sha256": "e41454c340eeddc047dfc54dcc5eeaac3fe8f39301ca87a54efc64a56c5fe521"
+  },
+  "focused/result.json": {
+    "bytes": 436,
+    "sha256": "71adad8f746c59b0472068be399748eaa466d5cf02bab2e191c25639c991e63a"
+  },
+  "focused/shared-cppflags.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/shared-cppflags.stdout": {
+    "bytes": 17,
+    "sha256": "df2a5a7ac8e930346ed338129776b5fe73412f7fb084816a656499be89169b02"
+  },
+  "focused/shared-current.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/shared-current.stdout": {
+    "bytes": 453,
+    "sha256": "5df16c2be4b284b5915d377e05972e7223a30bdc2a128ad2361d77b6891e4969"
+  },
+  "focused/shared-original.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/shared-original.stdout": {
+    "bytes": 420,
+    "sha256": "2335f46086844ada471c5c3e3b40e6a18c89fd8e9ee3574585394304e39740aa"
+  },
+  "focused/special-arch.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/special-arch.stdout": {
+    "bytes": 451,
+    "sha256": "6f1f3e75405bce5c077d1c98a4910f2e8f19050ea203d24846af358dfd930c3c"
+  },
+  "focused/standalone.stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focused/standalone.stdout": {
+    "bytes": 449,
+    "sha256": "5b4f22c68904e574046d47be4587fbdc4aa53789bc0fb46e4f2ace7d7bb43042"
+  },
+  "job.json": {
+    "bytes": 2652,
+    "sha256": "1649e3ad3c051c21fbe41afdbc2aff67957d426a35f317bb9a84b36b707c2ebf"
+  },
+  "owner.json": {
+    "bytes": 596,
+    "sha256": "5868fa6b8f333e242f3453f4c2e1de6d8e93d874797446f6c72f572ef8044406"
+  },
+  "raw/codetools-install.log.gz": {
+    "bytes": 384,
+    "sha256": "4ef23afb830d5178db411585c5af9690ff7017b3fd939c5f9f1c25e10a60ee2a"
+  },
+  "raw/job.log.gz": {
+    "bytes": 12678,
+    "sha256": "9175fde63f32914cde6d9a99355c132515702bf064704d31431593f4d0b9b8c0"
+  },
+  "raw/nanoarrow-install.log.gz": {
+    "bytes": 1015,
+    "sha256": "8428a5dfb0bbc0ae1ae7bd4264dd09ca185105a820d91a7d5ce56bf8b7755a57"
+  },
+  "raw/r-build/config.log.gz": {
+    "bytes": 44168,
+    "sha256": "25d48fb8bbeeb448c5767f0b9d4bd5dc3097883398337e0d03ff73a027f9a353"
+  },
+  "raw/r-build.log.gz": {
+    "bytes": 11931,
+    "sha256": "bb49d7e854105000381781d2dcc574bd81d66bd377d22c042d2b4767884a3cfa"
+  },
+  "raw/r-configure.log.gz": {
+    "bytes": 5743,
+    "sha256": "aa5d50222a53813f527a1e5ad1c8c5f4c0e7ed2691ace291e9b8bcdbfb01d36b"
+  },
+  "raw/r-install.log.gz": {
+    "bytes": 792,
+    "sha256": "df48c5a300fd4d7b1c59d4f9dc57fa5e542a1322f08f907e93449380fcebb529"
+  },
+  "raw/r-linkage.log.gz": {
+    "bytes": 357,
+    "sha256": "0d251c1c42a4fd2aacabf478ebed344494af8cb33b5ebcde398bf344689f24c8"
+  },
+  "raw/relm-install.log.gz": {
+    "bytes": 1945,
+    "sha256": "1e692637b1835d7fb255d4cc4bb19edd16690ce0c2bf887fcacdcf50b399f4d7"
+  },
+  "stages.json": {
+    "bytes": 1255,
+    "sha256": "26aeff0fe234c77576f7926b13d1e84feac442f86b126f4cef0b43000757bbc6"
+  }
+}

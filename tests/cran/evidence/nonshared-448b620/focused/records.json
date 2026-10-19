@@ -1,0 +1,105 @@
+[
+  {
+    "name": "include-query",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "-e",
+      "cat(R.home('include'))"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "original-compile",
+    "command": [
+      "rustc",
+      "--edition=2021",
+      "-Dwarnings",
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/original.rs",
+      "-o",
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/original"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "current-compile",
+    "command": [
+      "rustc",
+      "--edition=2021",
+      "-Dwarnings",
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/current.rs",
+      "-o",
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/current"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "shared-cppflags",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/rhost/bin/R",
+      "CMD",
+      "config",
+      "--cppflags"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "shared-original",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/original"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "shared-current",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/current"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "nonshared-cppflags",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/rhost/bin/R",
+      "CMD",
+      "config",
+      "--cppflags"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "nonshared-original",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/original"
+    ],
+    "returncode": 101
+  },
+  {
+    "name": "nonshared-current",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/current"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "standalone",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/current"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "special-arch",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/current"
+    ],
+    "returncode": 0
+  },
+  {
+    "name": "missing-header-refusal",
+    "command": [
+      "/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/current"
+    ],
+    "returncode": 101
+  }
+]

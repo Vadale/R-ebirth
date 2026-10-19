@@ -1,0 +1,14 @@
+{
+  "status": "affected_correction_verified",
+  "head": "448b620e72a7c5a74c501d29b6d13da793f09df6",
+  "job": 118133106585,
+  "original_job_conclusion": "failure",
+  "artifact_bytes": 118903,
+  "artifact_sha256": "0ccf8e8c1085d27ef4aaee14206ae82c9bd1836b266939889403a84195de004f",
+  "stage_hashes_verified": 7,
+  "current_source_sha256": "a2763fb266615c363ea98447ab9c059a9d10297a3f299f6b348153c3351c62da",
+  "positive_compiler_stderr_empty": true,
+  "native_engine_builds": 0,
+  "model_calls": 0,
+  "scope": "Local accessor compile/control; corrected full hosted nonshared installation pending"
+}

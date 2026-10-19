@@ -71,6 +71,11 @@ jobs:
       - name: Rtools thread declaration compatibility (no engine build)
         shell: bash
         run: python tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+      - name: R-hosted wrapper generator controls (no engine build)
+        shell: bash
+        run: |
+          mkdir -p "$RUNNER_TEMP/wrapper-controls"
+          Rscript --vanilla tests/cran/wrapper-generator.R "$RUNNER_TEMP/wrapper-controls"
       - name: Quarto temporary-library and extracted-script controls (no native build)
         shell: Rscript {0}
         run: |
@@ -93,6 +98,7 @@ jobs:
             rebirth/*.tar.gz
             ${{ runner.temp }}/windows-thread-compat/receipt.json
             ${{ runner.temp }}/vignette-library
+            ${{ runner.temp }}/wrapper-controls
           if-no-files-found: warn
 
   r-devel:
@@ -148,6 +154,8 @@ jobs:
         run: |
           Rscript --vanilla tests/cran/configuration.R
           Rscript --vanilla tests/cran/native-build.R
+          mkdir -p "$RUNNER_TEMP/wrapper-controls"
+          Rscript --vanilla tests/cran/wrapper-generator.R "$RUNNER_TEMP/wrapper-controls"
           Rscript --vanilla tests/toolchain/test-msrv.R
           rustc --edition=2021 --test -D warnings rebirth/src/rust/rebirth-llm/src/live_file.rs -o "$RUNNER_TEMP/live-file-controls"
           "$RUNNER_TEMP/live-file-controls"
@@ -165,4 +173,38 @@ jobs:
           path: |
             rebirth/check
             rebirth/*.tar.gz
+            ${{ runner.temp }}/wrapper-controls
+          if-no-files-found: warn
+
+  nonshared-r:
+    name: Linux CPU installation (R without shared library)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      RUSTUP_TOOLCHAIN: '1.85.0'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: '1.85.0'
+      - name: Install isolated-R build prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gfortran libreadline-dev libpcre2-dev libcurl4-openssl-dev libbz2-dev liblzma-dev libdeflate-dev libzstd-dev zlib1g-dev texinfo cmake
+      - name: Actual non-shared R and production installation (no models)
+        run: python tests/cran/nonshared-r.py "$RUNNER_TEMP/nonshared-r"
+      - name: Retain non-shared R installation results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nonshared-r-package-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/nonshared-r/*.log
+            ${{ runner.temp }}/nonshared-r/*.json
+            ${{ runner.temp }}/nonshared-r/*.rds
+            ${{ runner.temp }}/nonshared-r/r-build/config.log
+            ${{ runner.temp }}/nonshared-r/library/relm
           if-no-files-found: warn

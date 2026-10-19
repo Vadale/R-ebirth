@@ -1,0 +1,19 @@
+{
+  "README.md": "54dc48d0ee777abf6f1e6ed1a441be6266d8e9c345daf00f70ed034c060e8bad",
+  "configure.log": "52e6be29eec4568026802159bdffecba2ccab8451cbe51708f090f1cec4cad83",
+  "correspondence.log": "4c93acfb1c72d04e4570f2d9168ea8eebee85f4fd75075369810b460ca379c2c",
+  "fixture-controls.log": "bbf5fcd3cb0c5f2f130d8bcc2db864a1fdc3444484af61b5893ac31de0c39153",
+  "generate.log": "8890cd91037853fe09a439c9dff4f6936d43439602ea95f2914bb4d91feac5d6",
+  "owner.json": "96fb187ff53566c96b6d8e043e482991858342aa5dedc1218d56242ecc5c3a08",
+  "production/check.R": "17cacba110f11d3e5b4e041a0a5cd1b8106701b897947218c7b2d00f496fa227",
+  "production/check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "production/fixture.c": "5a17882a325401bd24ada8c77cca56f0bad867a0bf1f9a5603dc39cd06abd111",
+  "production/install.log": "a02b8c5427dc0ed234ac6cb0a5741e6eebfea57e39d386853f2b7514d14f8fa2",
+  "production/invalid-metadata.log": "870be7e7f4495ad515cd3aa5692caf09805841dd8cccf7188b5d9bf6077a4d11",
+  "production/missing-dll.log": "1e775c80d16d0fa5e03dab623c0c336196fc5aaa5fa970423ff839b1364de61a",
+  "production-wrappers.R": "27f9c6b3cbbf4a73cc4e0da5d6ae215e5aba947238d048c8924291701c2883b0",
+  "selftest/check.R": "93340f55dedb934ead419e5d259127b9c2031632f1eff638563a99209ed9736b",
+  "selftest/check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "selftest/fixture.c": "709e470b538dc76c2981436b8ab1ef5f41b3eb9ec2a7288290c22c0ed0b079fd",
+  "selftest/install.log": "e5c6d11e10b0d5f7b31fc18259925087df8d7ac44b56bb9522ac5e18ad9046ec"
+}

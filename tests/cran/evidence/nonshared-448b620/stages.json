@@ -1,0 +1,44 @@
+[
+  {
+    "stage": "r-configure",
+    "seconds": 27.512358573999997,
+    "returncode": 0,
+    "log_sha256": "6763274beb176b51794c47e6970d83bed486f981ad884b675089afc4b4d210cc"
+  },
+  {
+    "stage": "r-build",
+    "seconds": 113.91908398499999,
+    "returncode": 0,
+    "log_sha256": "8c4e9b9d1958bc1bd7f5569c9afbd7ba80b8754ec9345b99bb8afd88dfdb7a3c"
+  },
+  {
+    "stage": "r-install",
+    "seconds": 0.6648403319999829,
+    "returncode": 0,
+    "log_sha256": "c27ce2a0faadae51d0b700593e9b0c7631317342d555a0252e2c9637d8c6fd1b"
+  },
+  {
+    "stage": "r-linkage",
+    "seconds": 0.007906781000002638,
+    "returncode": 0,
+    "log_sha256": "681e5ac84833a3f4e7aded8f0d0e1a89cc2b2a67c6fddcc6aaf40f6f9987d21d"
+  },
+  {
+    "stage": "nanoarrow-install",
+    "seconds": 6.575495899999993,
+    "returncode": 0,
+    "log_sha256": "7ae550d3a1904992fa09ac28105d7cad86ccdf17f172c9d1456e6422e54f5364"
+  },
+  {
+    "stage": "codetools-install",
+    "seconds": 0.7654650230000186,
+    "returncode": 0,
+    "log_sha256": "b51fc7996bed0df7571d031bdbba40a64860336f3b51f080b3050cd1c01f3ee7"
+  },
+  {
+    "stage": "relm-install",
+    "seconds": 157.51581988599997,
+    "returncode": 1,
+    "log_sha256": "1132cf4309f1d5abb22b9f2d70ce2c21d94d8b40159fce4eb1640943caeff13c"
+  }
+]

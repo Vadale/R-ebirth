@@ -1,6 +1,6 @@
 //! One R-hosted, header-based state accessor. No Rust build dependency.
 use std::{env, path::PathBuf, process::Command};
-fn r_config(name: &str) -> String {
+fn r_command() -> Command {
     // R CMD check deliberately shadows bare R on PATH. Use the same R host
     // that started installation; standalone cargo builds may discover R on PATH.
     let r = env::var_os("R_HOME")
@@ -10,26 +10,28 @@ fn r_config(name: &str) -> String {
                 .join(format!("R{}", env::consts::EXE_SUFFIX))
         })
         .unwrap_or_else(|| PathBuf::from("R"));
-    let output = Command::new(r)
-        .args(["CMD", "config", name])
-        .output()
-        .expect("R CMD config");
+    Command::new(r)
+}
+fn r_output(args: &[&str]) -> String {
+    let output = r_command().args(args).output().expect("R configuration");
     assert!(
         output.status.success(),
-        "R CMD config {name} failed: {}{}",
+        "R {args:?} failed: {}{}",
         String::from_utf8_lossy(&output.stdout),
         String::from_utf8_lossy(&output.stderr)
     );
     String::from_utf8(output.stdout)
-        .expect("R compiler flags are UTF-8")
+        .expect("R configuration is UTF-8")
         .trim()
         .to_owned()
 }
+
 fn main() {
     println!("cargo:rerun-if-changed=native/projection_state.c");
     for name in [
         "R_HOME",
         "R_INCLUDE_DIR",
+        "R_ARCH",
         "CC",
         "CFLAGS",
         "RELM_R_PORTABLE",
@@ -40,30 +42,49 @@ fn main() {
     let out = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR"));
     let object = out.join("projection_state.o");
     let archive = out.join("librelm-r-state.a");
-    // R's trusted compiler/CPP flag string is shell syntax; source/output paths
-    // are separate positional arguments and never interpolated into that code.
+    // R CMD config --cppflags describes embedding R and returns no flags when
+    // R was not built as a library. Package headers are still available.
+    let include = env::var_os("R_INCLUDE_DIR")
+        .filter(|path| !path.is_empty())
+        .map(PathBuf::from)
+        .unwrap_or_else(|| {
+            PathBuf::from(r_output(&[
+                "--vanilla",
+                "--slave",
+                "-e",
+                "cat(R.home('include'))",
+            ]))
+        });
+    assert!(
+        include.join("Rinternals.h").is_file(),
+        "R headers missing: {include:?}"
+    );
+    // R's trusted compiler/flag strings are shell syntax. File/include paths
+    // remain separate positional arguments, including spaces and shell syntax.
     let portable = env::var("RELM_R_PORTABLE").as_deref() == Ok("1");
     let cc = if portable {
         env::var("CC").expect("R CC")
     } else {
-        r_config("CC")
+        r_output(&["CMD", "config", "CC"])
     };
     let flags = if portable {
         env::var("CFLAGS").expect("R CFLAGS")
     } else {
         "-fPIC".to_string()
     };
-    let command = format!(
-        r#"{} {} {} -c "$1" -o "$2""#,
-        cc,
-        r_config("--cppflags"),
-        flags
-    );
+    let mut command = format!(r#"{cc} {flags} -I"$3" -c "$1" -o "$2""#);
+    let arch = env::var("R_ARCH").unwrap_or_default();
+    let arch_include = include.join(arch.trim_start_matches(['/', '\\']));
+    if !arch.is_empty() {
+        command.push_str(r#" -I"$4""#);
+    }
     assert!(
         Command::new("sh")
             .args(["-c", &command, "relm-r-state-compile"])
             .arg("native/projection_state.c")
             .arg(&object)
+            .arg(&include)
+            .arg(&arch_include)
             .status()
             .expect("R C compiler")
             .success(),

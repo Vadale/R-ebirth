@@ -65,8 +65,9 @@ than two years old; it reaches that age on **2027-02-20**. This preparation does
 not satisfy the age guidance and no exception has been requested or granted.
 Explicit version checks fix an installation defect; they do not waive policy.
 
-The chosen preparation route keeps the tested dependencies and records this
-issue for the maintainer's concrete submission decision. Alternatives are waiting
+The founder chose direct form submission with this issue disclosed, after the
+technical checks pass, without a preliminary email. The tested dependencies stay
+unchanged; no CRAN exception has been granted. Alternatives if CRAN refuses are waiting
 until the two-year date or undertaking a separately authorized Arrow/dependency
 downgrade with affected validation. The candidate does not silently take either
 route. A new stable toolchain on GitHub is not evidence of CRAN farm availability.
@@ -80,10 +81,16 @@ tools. CMake >= 3.28 and the Rust floor still need confirmation on the intended
 external checking environment. Hosted R-devel and Windows CI are useful evidence,
 not a win-builder or CRAN farm result.
 
-The current build-time `document` executable uses extendr and links R. A
-non-shared R installation has not been validated and may not provide its linkable
-R library. This remains an explicit portability question before upload; the
-candidate does not claim to resolve it by passing a shared-R CI environment.
+The wrapper installation follow-up replaces `cargo run --bin document` with
+`Rscript tools/generate-wrappers.R`, after linking the package DLL. The installing
+R calls extendr's registered metadata generator, so production and selftest
+wrappers come from the actual DLL. The optional maintainer `document` binary
+remains available but is no longer linked/executed by package installation.
+This avoids the standalone executable's requirement for a linkable `libR`.
+A dedicated Linux CI check builds real R4.6.1 with `--disable-R-shlib`, then
+installs the production package with Cargo/rustc1.85 and inspects its metadata,
+source functions and ELF dependencies without model calls. Its current result
+is pending; passing shared-R tests alone is not non-shared-R acceptance.
 No compiler/toolchain installation, registry download or model download happens
 inside the package's locked offline build. Package compilation uses two Cargo
 jobs; check-mode owned context parameters are capped at two threads.
@@ -117,16 +124,38 @@ Windows execution, Tidy/incoming results, final source tar and its platform
 checks must come from the new ordinary eleven-job matrix. Capture the results
 locally and in the PR; do not trigger another matrix merely to commit receipts.
 
-Before an upload decision:
+Before the authorized upload:
 
-1. Inspect the final eleven outcomes, actual routes, diagnostics and allowed skips.
+1. Inspect all twelve current outcomes, actual routes, diagnostics and allowed skips.
 2. Bind one 0.5.0 source tar by SHA256 and source inventory; record its incoming
    checks, size, examples, vignettes, PDF, installed notices and platform results.
-3. Resolve or explicitly discuss the Rust-age/system-tool and non-shared-R
-   questions with the maintainer. No external contact is authorized by this PR.
+3. Complete the non-shared-R check and disclose the Rust-age/system-tool limits
+   in the form comments. The founder authorized this route without a preliminary email.
 4. Complete the [submission comments](cran-comments.md) with that exact candidate,
-   then obtain concrete approval for merge, release and/or external upload.
+   then submit through the official form. The agent may merge after all checks
+   pass; a separate release is not authorized by this decision.
 
 The [CRAN submission checklist](https://cran.r-project.org/web/packages/submission_checklist.html)
 expects current R-devel `--as-cran` results and disposition of significant notes.
 No CRAN/win-builder upload, external email, release tag or publication has occurred.
+
+## Post-PR72 preparation (2026-10-19)
+
+PR72 is integrated at `7310ab8` with the exact accepted source tree. All eleven
+checks passed, including production Windows/R-devel, HTML Tidy and the full
+manual; the only R-devel check NOTE was `New submission`. Exact source receipts
+remain local and in PR72. These are parent results, not acceptance of the new
+R-hosted generator. No compiler, dependency, kernel or public API is changed by
+that follow-up. Its focused local evidence and ordinary final matrix are separate.
+
+The final upload must be built with R release/patched and that **same archive**
+checked with R-devel. An R-devel-built archive is useful evidence but does not
+by itself satisfy the release-build recommendation. Bind the selected archive
+and all external results by SHA256; reuse passed unchanged stages.
+
+See [the authorized form-submission procedure](cran-request.md).
+No numerical acceptance probability is justified by the available evidence.
+Current farm tool availability and disposition of the Cargo-age guidance still
+require external confirmation. Twenty or thirty days of use, publicity or prior
+r-universe downloads are not an admission prerequisite; the project's 30-day
+green-CI criterion is separately attached to v1.0.

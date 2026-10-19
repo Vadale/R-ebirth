@@ -1,0 +1,21 @@
+* installing *source* package ‘relm’ ...
+** this is package ‘relm’ version ‘0.0.0’
+** using staged installation
+** libs
+using C compiler: ‘gcc (GCC) 16.2.1 20260810’
+gcc -I"/usr/include/R/" -DNDEBUG   -I/usr/local/include    -fpic  -march=x86-64 -mtune=generic -O2 -pipe -fno-plt -fexceptions         -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security         -fstack-clash-protection -fcf-protection         -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -g -ffile-prefix-map=/build/r/src=/usr/src/debug/r -flto=auto -ffat-lto-objects  -c fixture.c -o fixture.o
+gcc -shared -L/usr/lib64/R/lib -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs -flto=auto -o relm.so fixture.o -L/usr/lib64/R/lib -lR
+'/usr/lib64/R/bin/Rscript' --vanilla ../tools/generate-wrappers.R "relm.so" ../R/extendr-wrappers.R
+RELM_R_HOSTED_WRAPPERS_OK
+installing to /home/grauk/Work/relm-phase9/r-hosted-wrappers/fixture-controls/production/library/00LOCK-relm/00new/relm/libs
+** R
+** byte-compile and prepare package for lazy loading
+** help
+No man pages found in package  ‘relm’ 
+*** installing help indices
+** building package indices
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (relm)
