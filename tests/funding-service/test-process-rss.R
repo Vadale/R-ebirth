@@ -89,10 +89,13 @@ main <- function() {
   }
   handle <- ps::ps_handle(Sys.getpid())
 
+  # ps 1.9.3 accepts precise and legacy Linux boot times. Subtracting one
+  # second can select the same live identity's legacy representation; use the
+  # Unix epoch for a clearly invalid creation time, retaining the same PID.
   check('persisted-owner-identity', {
     owner <- svc_process()
     stopifnot(svc_alive(owner))
-    stale <- owner; stale$birth <- sprintf('%.6f', as.numeric(owner$birth) - 1)
+    stale <- owner; stale$birth <- '0.000000'
     stopifnot(!svc_alive(stale), svc_running(handle))
   })
   check('owner-live-read-denial', {
@@ -107,7 +110,7 @@ main <- function() {
     observed <- callr::r(function(root, runtime, owner) {
       source(file.path(root, 'examples', 'funding-service', 'common.R'))
       source(runtime)
-      stale <- owner; stale$birth <- sprintf('%.6f', as.numeric(owner$birth) - 1)
+      stale <- owner; stale$birth <- '0.000000'
       list(alive = svc_alive(owner), stale_alive = svc_alive(stale),
            recorded_birth = owner$birth, observed_birth = svc_birth(ps::ps_handle(owner$pid)))
     }, args = list(root, normalizePath(options$runtime), owner), libpath = .libPaths(),
@@ -127,7 +130,7 @@ main <- function() {
     stopifnot(ps::ps_is_running(observed), !identical(svc_birth(observed), owner$birth))
     local <- product(list(ps_handle = fresh))
     stopifnot(local$svc_alive(owner))
-    stale <- owner; stale$birth <- sprintf('%.6f', as.numeric(owner$birth) - 1)
+    stale <- owner; stale$birth <- '0.000000'
     stopifnot(!local$svc_alive(stale))
   })
 
@@ -164,7 +167,7 @@ main <- function() {
     stopifnot(svc_running(handle))
   })
   check('actual-stale-birth', {
-    stale <- ps::ps_handle(Sys.getpid(), time = ps::ps_create_time(handle) - 1)
+    stale <- ps::ps_handle(Sys.getpid(), time = as.POSIXct(0, origin = "1970-01-01"))
     # The actual pinned ps reader must reject bytes belonging to a replacement
     # identity. Do not fake a successful read that bypasses ps's handle checks.
     local <- product(list(ps_children = function(...) list(), ps_handle = function(pid) stale))

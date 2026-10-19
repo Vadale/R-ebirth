@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "base_head": "5371f40d4cbe6c7e5de8c133c2c26fe353df20a0",
+  "status": "four_affected_cases_passed_hosted_pending",
+  "failure_job": 117993639418,
+  "original_job_conclusion": "failure",
+  "matrix_snapshot": {
+    "success": 10,
+    "failure": 1
+  },
+  "passed_package_scope_in_failed_job": {
+    "expectations": 6669,
+    "skips": 81,
+    "errors": 0,
+    "warnings": 0,
+    "notes": 0
+  },
+  "failure_stage": "first persisted-owner-identity service preflight; HTTP/process acceptance not started",
+  "source_diagnosis": "Pinned ps accepts precise and legacy boot origins within one tick. Subtracting one second can select the same live identity. Exact function counterexample reproduced this invalid fixture assumption. Original runner boot/creation timestamps were not retained; no exact runner timing claim.",
+  "exact_upstream_function_sha256": "91762fd2dfcba0013935f7f5a49ed815d91e172ddf1e078168b9fbf3adba9d5a",
+  "upstream_source_sha256": "7dbf875c9b4b05ba08e9b426b9bea15a3af191b64eae3f6b8369f81fc329b2f1",
+  "controlled_counterexample_cases": 6,
+  "controlled_boundary": "OS stat/clock inputs and R scalar plumbing stubbed; ps function body exact; not a full installed-ps run",
+  "actual_ps_version": "1.9.3",
+  "real_host_observation": {
+    "ps_version": "1.9.3",
+    "owner": {
+      "pid": 3228017,
+      "birth": "1792405663.117269"
+    },
+    "old_fixture": {
+      "pid": 3228017,
+      "birth": "1792405662.117269"
+    },
+    "old_alive": false,
+    "legacy_fixture": {
+      "pid": 3228017,
+      "birth": "1792405662.430000"
+    },
+    "legacy_alive": true,
+    "epoch_fixture": {
+      "pid": 3228017,
+      "birth": "0.000000"
+    },
+    "epoch_alive": false,
+    "owner_alive": true,
+    "clock_period": 0.01,
+    "model_loads": 0
+  },
+  "affected_cases": [
+    "persisted-owner-identity",
+    "independent-owner-reader",
+    "owner-boot-offset",
+    "actual-stale-birth"
+  ],
+  "case_results_carried": 3,
+  "affected_case_rerun_only": "actual-stale-birth after correcting literal epoch to required POSIXct",
+  "initial_failures": [
+    "C test-stub indentation warning before execution; fixed without changing upstream function",
+    "direct ps_handle epoch lacked POSIXct type; first three cases carried, only fourth corrected and run"
+  ],
+  "runtime_and_dependency_hashes": {
+    "examples/funding-service/runtime.R": "fc539b55cc6b20f0d0af0ce79d4f68716a3b79efaad8adc4c070429e3236b4a0",
+    "examples/funding-service/common.R": "5ab0894c955e64e666a11313fa34a7a66c7048f3c5af59bdc6304c1b6fcee266",
+    "tests/service-contract/dependencies.csv": "621feae757c4ba9e11622f6efde0bdc4703fcb51fbe8878ef42db7c4244b410a",
+    "rebirth/src/llama-sources.tar.xz": "180a9f53fa84b1b1857fc9adacf96566eadeaf6202611a68a9b2996bae782d14",
+    "rebirth/src/rust/vendor.tar.xz": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b",
+    "rebirth/src/rust/Cargo.lock": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6"
+  },
+  "test_inverse_reconstructs_original": true,
+  "test_sha256": "951fe55e846eb974f56473b84f410e9ce671a8f1b6101d84a14d31448361a403",
+  "ps_dll_sha256": "8ab77ec00e83551042a1b9d7d11f027fe2340d2d7b63a1fbad059c06a22c6355",
+  "new_model_loads": 0,
+  "new_http_services": 0,
+  "relm_native_builds": 0,
+  "remaining": "Normal eleven-check final matrix required. No merge/submission consent."
+}

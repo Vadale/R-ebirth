@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "files": {
+    "117993639418.json": {
+      "sha256": "425134dd86584e9da5aba492e986b09eae3d885f8e2ba22e116076ada85d71e0",
+      "bytes": 7715
+    },
+    "117993639418.log": {
+      "sha256": "50d4998437ef2e38cba91494e33f0484bf3ecd63352ece1c7f23bc5eab99f693",
+      "bytes": 1190624
+    },
+    "README.md": {
+      "sha256": "94362d386e3bf18e9dd18f16735396dd8fe34ee1281fd4b2602a83577ecae078",
+      "bytes": 1715
+    },
+    "actual-stale-birth-corrected.log": {
+      "sha256": "8a652af3269abc60f13288dc18e4d2d9dbf7c711693ba963bd1e528f265ebd3d",
+      "bytes": 84
+    },
+    "actual-stale-birth-initial.log": {
+      "sha256": "79ac0104d74583eda4617855380e2d1ee0d60546eb3881e5f770d31af02e624c",
+      "bytes": 61
+    },
+    "actual-stale-birth.log": {
+      "sha256": "79ac0104d74583eda4617855380e2d1ee0d60546eb3881e5f770d31af02e624c",
+      "bytes": 61
+    },
+    "affected-remaining-result.json": {
+      "sha256": "61fada9d977bc36ce34df18c0905d23ecc9614ca627b7610740ed033edee0f8f",
+      "bytes": 452
+    },
+    "affected-results.json": {
+      "sha256": "db4b8d68632bbdf93eccfed87c539ac44edac7c386fda113e4c61bbabf9e203c",
+      "bytes": 1113
+    },
+    "artifacts.json": {
+      "sha256": "2417ae81585f9b8ab0781887c79e4e920660474138543c03336cb1a14a56bbd9",
+      "bytes": 2157
+    },
+    "independent-owner-reader.log": {
+      "sha256": "570511b23608588fb3db09ca47f405e75e8e1c7cee6fda94733982d1e08eeef1",
+      "bytes": 200
+    },
+    "owner-boot-offset.log": {
+      "sha256": "099c0c74d6bb9f5eef7a9a41065d44867715cd619827e8dbc7ce0a4c9dfafa75",
+      "bytes": 83
+    },
+    "owner.json": {
+      "sha256": "7aa8181aeb79d791ac487a0c7dc09ad9b985dad0b28b8daa2ee27e0b4289adac",
+      "bytes": 3359
+    },
+    "persisted-owner-identity.log": {
+      "sha256": "8f23220583ad955d5a1c899fb034e5a2097b09afb6b8f800449e22be13eb608b",
+      "bytes": 90
+    },
+    "ps-LICENSE": {
+      "sha256": "e163678959610d192af2fa22473ea0db36cd7ae1bbb171eb947d9722e13572cc",
+      "bytes": 40
+    },
+    "ps-api-linux.c": {
+      "sha256": "7dbf875c9b4b05ba08e9b426b9bea15a3af191b64eae3f6b8369f81fc329b2f1",
+      "bytes": 51153
+    },
+    "ps-is-running-exact.c": {
+      "sha256": "91762fd2dfcba0013935f7f5a49ed815d91e172ddf1e078168b9fbf3adba9d5a",
+      "bytes": 1145
+    },
+    "ps-native-control-build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "ps-native-control-command.json": {
+      "sha256": "5cf427da246d8f0d0981e6f4e673c62d31866e9800034cd878665b5ef48142df",
+      "bytes": 235
+    },
+    "ps-native-control-initial-build.log": {
+      "sha256": "6da92ba207f8f167a4c0b3788c198d9b091dfcb0cf693f70f18ca87bb19930f3",
+      "bytes": 728
+    },
+    "ps-native-control-initial.c": {
+      "sha256": "df33d6dd7bde9c88def81c9963c6c1ac07c17d5872c95fbfef11691419e16564",
+      "bytes": 2773
+    },
+    "ps-native-control-run.log": {
+      "sha256": "0d5dbb3f690e34868f6242e1634c8e9e89b52dbdfefa4696fbfc93b8f30fde0e",
+      "bytes": 465
+    },
+    "ps-native-control.c": {
+      "sha256": "2c8c38176c66db7fc81bbd49c885e3f8b7b6b5e6bebb92ab489f07644bd244db",
+      "bytes": 2781
+    },
+    "real-process-observation.R": {
+      "sha256": "7fb070987380c4545731f4eced17b5177d05ef86f5d55e16af01ecf16a8311d4",
+      "bytes": 1498
+    },
+    "real-process-observation.json": {
+      "sha256": "09cfb67a0e02107e206fbd529a58f0e064c67dc387aa0f8044e5dc05cf6bace7",
+      "bytes": 463
+    },
+    "real-process-observation.log": {
+      "sha256": "20bf28f43b79a34ad84d2309003dcb2216e653cc141f1fe1fba2f8ae009810a3",
+      "bytes": 114
+    },
+    "run-affected.py": {
+      "sha256": "63ee54a56ad2ce878d0b306fd33c7eb93867458ee8c18c8d84d947b535de5ea6",
+      "bytes": 737
+    },
+    "source-url.json": {
+      "sha256": "ffc7e38f6588e80d4a5ad71eb9ad23b5e085b44f8fce8fa391e544802fb66b08",
+      "bytes": 161
+    },
+    "test-process-rss-corrected.R": {
+      "sha256": "951fe55e846eb974f56473b84f410e9ce671a8f1b6101d84a14d31448361a403",
+      "bytes": 8613
+    },
+    "test-process-rss-initial.R": {
+      "sha256": "efd728a206389aa83e1b4168e1f048e71f51ce52d22a1fd9e48de65397cb097e",
+      "bytes": 8578
+    },
+    "test-process-rss-original.R": {
+      "sha256": "621e43fa3a98696f4acdce25b73e41d40a8fb92c370c7773f55b926f05157142",
+      "bytes": 8481
+    }
+  },
+  "local_executable": {
+    "path": "/home/grauk/Work/relm-phase9/process-identity-5371f40/ps-native-control",
+    "sha256": "790863ddaec918c9cc18a289076f762ea6b6cbb741f585c95b32dd55383c2641"
+  }
+}

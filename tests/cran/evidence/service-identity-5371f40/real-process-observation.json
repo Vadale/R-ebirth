@@ -1,0 +1,25 @@
+{
+  "ps_version": "1.9.3",
+  "owner": {
+    "pid": 3228017,
+    "birth": "1792405663.117269"
+  },
+  "old_fixture": {
+    "pid": 3228017,
+    "birth": "1792405662.117269"
+  },
+  "old_alive": false,
+  "legacy_fixture": {
+    "pid": 3228017,
+    "birth": "1792405662.430000"
+  },
+  "legacy_alive": true,
+  "epoch_fixture": {
+    "pid": 3228017,
+    "birth": "0.000000"
+  },
+  "epoch_alive": false,
+  "owner_alive": true,
+  "clock_period": 0.01,
+  "model_loads": 0
+}

@@ -1,0 +1,18 @@
+{
+  "case": "actual-stale-birth",
+  "command": [
+    "Rscript",
+    "--vanilla",
+    "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/tests/funding-service/test-process-rss.R",
+    "/home/grauk/.local/share/relm/phase8/R-library",
+    "--case",
+    "actual-stale-birth"
+  ],
+  "returncode": 0,
+  "carried_cases": [
+    "persisted-owner-identity",
+    "independent-owner-reader",
+    "owner-boot-offset"
+  ],
+  "not_replayed": 9
+}

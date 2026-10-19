@@ -411,3 +411,30 @@ not downloaded or independently hash-verified. This does not establish corrected
 package acceptance or resolve the separate local GCC16 warning retroactively.
 The next matrix validates the coherent correction; no prior stage was replayed
 locally. Final CI receipts remain local.
+
+## Service identity fixture after the GCC correction (2026-10-19)
+
+The corrected5371f40 matrix ended with ten successful jobs and one failed Linux
+oldrel/Rust1.85 job. That job's actual package check passed (6,669 expectations,
+81 scoped skips, zero errors/warnings/notes), then the first service ownership
+preflight rejected its `!svc_alive(stale)` expectation before HTTP acceptance.
+
+The fixture subtracted one second from a live process birth. Pinned ps1.9.3
+accepts both precise and legacy boot-time representations within one clock tick;
+the exact upstream native function reproduces a valid owner for which subtracting
+one second still identifies that live process. Original runner timestamps were
+not retained, so this is a deterministic counterexample to the fixture assumption,
+not a reconstruction of the runner's exact boot clock. Runtime guards stay intact.
+Three persisted fixtures now use an epoch birth string; the direct handle uses
+a POSIXct epoch, with the same PID and unchanged assertions. All four affected
+cases passed with actual installed ps1.9.3, including an independent R reader.
+The local host still rejects the former minus-one fixture; its separate actual
+legacy birth is accepted and epoch rejected, with the original owner surviving.
+No model, HTTP service, dependency update or relm native rebuild was needed.
+
+The original failed job, complete raw output, exact source, local observations,
+and two draft control failures remain in
+[`service-identity-5371f40`](../tests/cran/evidence/service-identity-5371f40/).
+Nine unrelated process cases were not replayed. Product/runtime/source bundles
+remain byte-identical to5371f40; current hosted acceptance follows the ordinary
+automatic matrix for this test-only correction. No final CRAN/merge claim.

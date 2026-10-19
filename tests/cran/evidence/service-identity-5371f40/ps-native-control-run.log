@@ -1,0 +1,7 @@
+precise_owner birth=1000000005.999000 actual=1 expected=1
+legacy_owner birth=1000000005.000000 actual=1 expected=1
+old_minus_one_fixture_is_alive birth=1000000004.999000 actual=1 expected=1
+epoch_fixture_is_not_alive birth=0.000000 actual=0 expected=0
+unrelated_future_identity birth=1000000007.999000 actual=0 expected=0
+original_owner_survives birth=1000000005.999000 actual=1 expected=1
+PS_PINNED_IDENTITY_CONTROL_OK cases=6 original_fixture_counterexample=true

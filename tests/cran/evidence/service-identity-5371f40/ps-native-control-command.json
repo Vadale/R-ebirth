@@ -1,0 +1,11 @@
+[
+  "cc",
+  "-std=c11",
+  "-O2",
+  "-Wall",
+  "-Wextra",
+  "-Werror",
+  "/home/grauk/Work/relm-phase9/process-identity-5371f40/ps-native-control.c",
+  "-o",
+  "/home/grauk/Work/relm-phase9/process-identity-5371f40/ps-native-control"
+]
