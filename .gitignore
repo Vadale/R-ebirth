@@ -56,3 +56,8 @@ ROADMAP.md
 
 # Local prepared batch environments and persistent runs
 /.funding-extraction/
+
+# Personal planning stays local; never include it in public source or evidence.
+/THESIS-PLAN.md
+/private/
+/personal/

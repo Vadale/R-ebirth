@@ -2,7 +2,7 @@
 
 **Document 1 of 3** — operational decisions for the solo-development period (Phase 0 through end of Phase 1).
 Companion documents: `ARCHITECTURE.md` (document 2 — package internals and native boundary) and `API-GRAMMAR.md` (document 3 — final function signatures and naming rules).
-Operational companion: the work-package plans under `docs/` — toolchain, sequencing, and the thesis case study (WP-T). This plan states *decisions*; the roadmap states *execution*.
+Operational companion: the work-package plans under `docs/` — toolchain and sequencing. This plan states *decisions*; the roadmap states *execution*.
 
 - **Status:** focused product scope approved under D-043; earlier decisions remain historical
 - **Date:** 2026-10-05 (product focus revision; original plan 2026-07-03)
@@ -257,8 +257,7 @@ one; elapsed time or completion of the previous phase is insufficient.
 **D-028 addition:** retain Demos A/B and add a bounded public-document extraction
 application under the [near-term plan](docs/structured-production-plan.md).
 It starts from verified text, produces evidence-linked data, measures errors,
-and becomes the first restartable batch example. It is not the parked thesis
-and does not claim causal or clinical conclusions. Demos A/B being delivered
+and becomes the first restartable batch example. It does not claim causal or clinical conclusions. Demos A/B being delivered
 does not imply this new application's acceptance has passed.
 
 Both demos pinned to license-clean models, runnable on the Mac mini 16 GB from RStudio, offline after one model download, seeded and reproducible. The medical-bias scenario stays deferred to documentation as a carefully-framed exploratory case study — not a launch demo (a launch demo must survive hostile expert scrutiny; "how to *investigate*" does, "we fixed clinical bias" does not).
@@ -277,9 +276,6 @@ Target: ~40 lines of base-R idiom, < 10 minutes end-to-end on the Mac mini.
 
 **Acceptance:** both live in `tests/demos/`, run nightly in CI (Demo A on the CI model with relaxed thresholds), and run on the founder's Mac mini from RStudio with pinned seeds giving identical outputs across runs.
 
-### Case study (Phase 1) — master's thesis: statistical audit of a medical LLM
-
-The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the first real-world application: a demographic-sensitivity audit of **MedGemma 1.5 4B** (local GGUF) on radiology-report triage, using `llm_trace`/`llm_probe`/`llm_steer` for the internal analysis and a health-economics framing (misclassification costs, equity in AI-assisted screening, local-vs-API deployment economics). Full design, data plan (OpenI reports primary, MIMIC-CXR upgrade path), and timeline live in `THESIS-PLAN.md`. Framing rule applies: *audit and investigation*, never "bias fixed." **Parked 2026-07-04:** the thesis will be assigned in ~6–8 months; the plan resumes then and gates nothing else.
 
 ---
 
@@ -306,7 +302,6 @@ The founder's thesis (MSc Public and Health Economics, UniMol) doubles as the fi
   remain explicit later targets, not prerequisites for this revised sequence.
 - [ ] CRAN submission of `relm` (Rust vendoring policy compliant)
 - [ ] Docs site generated from runnable examples; `llm_*` API declared stable
-- [ ] WP-T (thesis case study) — **parked, not blocking Phase 1 exit** (thesis assignment ≈ Q1–Q2 2027; see `THESIS-PLAN.md`)
 - [ ] Full CI matrix green 30 consecutive days before declaring Phase 1 closed
 
 ---
