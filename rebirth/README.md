@@ -23,6 +23,10 @@ The [0.4.0 release](https://github.com/Vadale/R-ebirth/releases/tag/v0.4.0)
 is published, including a verified fresh Mac arm64 r-universe installation.
 Check `packageVersion("relm")` and restart R after upgrading.
 
+This checkout prepares **0.5.0**, combining optional Linux CUDA and CRAN source
+portability. It is not yet a published release or a CRAN-accepted package; see the
+[submission status](https://github.com/Vadale/R-ebirth/blob/main/docs/cran-submission.md).
+
 ## Installation
 
 Use [r-universe](https://vadale.r-universe.dev/relm) for macOS and Linux builds:
@@ -37,11 +41,13 @@ packageVersion("relm")
 
 r-universe tracks `main`; check the version before using the 0.4.0 research features.
 Prebuilt binaries need no native toolchain. Source installation needs R >= 4.5,
-Rust >= 1.85.0, CMake >= 3.28 and a C/C++ compiler. See the
+Cargo >= 1.85.0 and rustc >= 1.85.0 (checked separately), CMake >= 3.28,
+`xz` and a C/C++ compiler. See the
 [installation guide](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)
 for source builds and troubleshooting. Development source additionally supports an
 [explicit Linux CUDA build](https://github.com/Vadale/R-ebirth/blob/main/docs/linux-cuda.md);
-released 0.4.0 binaries are not certified CUDA builds. Windows remains deferred.
+released 0.4.0 binaries are not certified CUDA builds. Windows CPU source checks
+passed at PR71; Windows GPU and full live-file lifecycle parity remain unverified.
 
 Core imports are `methods` (included with R) and `nanoarrow`, which reads spilled traces.
 `glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.

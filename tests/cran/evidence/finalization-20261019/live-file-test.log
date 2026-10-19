@@ -1,0 +1,9 @@
+
+running 4 tests
+test tests::delivery_retains_file ... ok
+test tests::unpublished_file_respects_platform_cleanup_policy ... ok
+test tests::replacement_symlink_and_its_target_survive ... ok
+test tests::replaced_file_survives ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

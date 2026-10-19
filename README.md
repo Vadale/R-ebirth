@@ -52,7 +52,10 @@ recorded coordinates; it does not interpolate new measurements.*
 binaries need no Rust or C++ toolchain. macOS arm64 and Linux are the supported
 routes. The development source also has an optional [Linux CUDA build](docs/linux-cuda.md)
 with measured RTX 2060 results; published 0.4.0 binaries are not certified CUDA builds.
-Windows validation remains pending.
+Windows CPU source-package checks passed in PR71; Windows GPU and full live-file
+lifecycle parity remain outside that acceptance. The **0.5.0 source candidate**
+combines this portability work and CRAN preparation; it is not yet a published
+release or an accepted CRAN package. See the [submission status](docs/cran-submission.md).
 
 ```r
 install.packages(

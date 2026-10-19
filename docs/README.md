@@ -19,6 +19,9 @@ of actual activation comparisons and token events, with static figures and data.
 Version [0.4.0 is published](release-0.4.0.md). For detailed historical numerical
 and runtime evidence, use the [validation ledger](validation-status.md).
 Plans and historical build receipts are not current results.
+The next **0.5.0 candidate** groups Linux CUDA, Windows CPU portability and
+[CRAN preparation](cran-submission.md), including the remaining Rust/Cargo policy
+decision. It has not been published or submitted to CRAN.
 
 ## Extend the same workflow
 

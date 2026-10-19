@@ -73,7 +73,7 @@ pub struct LiveSpillReport {
     pub spec_key: String,
     pub batch_bytes: u64,
     pub serialized_bytes: u64,
-    pub(crate) owned: Option<crate::live_spill::OwnedLiveFile>,
+    pub(crate) owned: Option<crate::live_file::OwnedLiveFile>,
 }
 
 #[derive(Debug)]

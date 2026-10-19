@@ -1,0 +1,47 @@
+{
+  "status": "PASS_AFFECTED_LOCAL",
+  "failed_head": "b1dff21bec6a158d88f2a93452ec70a28c6c99a2",
+  "old_matrix": {
+    "success": 5,
+    "failure": 6
+  },
+  "failed_jobs": [
+    118042059766,
+    118042059125,
+    118042059124,
+    118042059228,
+    118042058807,
+    118042060120
+  ],
+  "source_hashes": {
+    "rebirth/tools/msrv.R": "6b379307537c46a2ba6120b873711553d34a9cf25056da948a995548b7de97cb",
+    "tests/toolchain/test-msrv.R": "c8032c69674a48dc0fae3451e3f40777a83cdfd1a125f58a66f7e7e18d69d970"
+  },
+  "original_rejected": true,
+  "corrected_configure_cases": 35,
+  "serialized_metadata_cases": 12,
+  "actual_ci_descriptions_passed": [
+    "windows",
+    "r-devel"
+  ],
+  "local_actual_tools": "rustc/cargo1.99.1",
+  "models": 0,
+  "native_builds": 0,
+  "package_installations": 0,
+  "current_hosted_acceptance": "pending",
+  "raw_logs_sha256": {
+    "windows": "7df856ae83394873f64a15874de581cd2f697c1611e79ad441feffd2cacd1c2c",
+    "mac-release": "789eb82e83c5a67e20b57a7ecfc453709d73da41cde153cde412601a2ce5cf29",
+    "linux-release": "108a9cb356a89280e9934423d6dccb844a7349a41f6e5f89a8ce91390c9755f8",
+    "mac-oldrel": "3b98c5c81028350781a6cdfd3ae23334fc443fae95605338a8cd4e6c7571687a",
+    "linux-oldrel": "17f1cda430597f9cb3fab583925fdfcd5e6347e642ff9cdd34e89e0c9292f31d",
+    "r-devel": "8bd7b40069ecd734773e13b14183cc394a8e3b7dc80ade54415ec5350c54c8e8"
+  },
+  "protected_hashes": {
+    "rebirth/src/llama-sources.tar.xz": "180a9f53fa84b1b1857fc9adacf96566eadeaf6202611a68a9b2996bae782d14",
+    "rebirth/src/rust/vendor.tar.xz": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b",
+    "rebirth/src/rust/Cargo.lock": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",
+    "rebirth/DESCRIPTION": "7996e5cc44691cdcd9691f920cd5ae137af887d11651cafcab737d41c6865ee3",
+    ".github/workflows/cran-portability.yaml": "e1aeada6bc0197e3f84554f8902b66cb1e674f4c57f03af61739d80884965ea4"
+  }
+}

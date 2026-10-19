@@ -1,0 +1,3 @@
+Command: ruby -rpsych; Psych.safe_load of .github/workflows/cran-portability.yaml with aliases enabled; assert sorted jobs == [r-devel, windows-cpu].
+Observed: CRAN portability YAML parsed; both existing jobs preserved.
+Exit status: 0.

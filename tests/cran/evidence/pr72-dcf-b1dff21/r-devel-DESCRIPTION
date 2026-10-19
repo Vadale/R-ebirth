@@ -1,0 +1,46 @@
+Package: relm
+Title: Local Large Language Models as Base-R Objects
+Version: 0.5.0
+Authors@R: 
+    c(person("Alessandro", "Vadala", , "vadale93@gmail.com", role = c("aut", "cre", "cph")),
+      person("ggml authors", role = c("ctb", "cph"), comment = "Bundled llama.cpp and ggml (MIT)"),
+      person("Authors of the bundled Rust and native dependencies", role = c("ctb", "cph"),
+             comment = "Individual authors, copyrights and licenses are listed in AUTHORS, RUST-NOTICES and THIRD-PARTY-NOTICES"))
+Description: Load and run local large language models (through a vendored,
+    patched 'llama.cpp') from R and work with them as plain data frames and
+    matrices in base-R idiom. Provides model loading and tokenization (llm(),
+    llm_tokens()), text generation (llm_generate()), next-token distributions
+    (llm_logits()), embeddings (llm_embed()), and mechanistic
+    interpretability tools -- activation tracing (llm_trace()), activation
+    steering (llm_steer()), neuron ablation (llm_ablate()), and grouped statistical
+    probes (llm_probe()). Vision-language
+    models loaded with their projector take image input in generation and
+    embeddings. A checksum-verified downloader (llm_download()) fetches pinned
+    models.
+License: MIT + file LICENSE | Apache License (== 2.0)
+Copyright: See inst/AUTHORS, inst/RUST-NOTICES and
+        inst/THIRD-PARTY-NOTICES for bundled source authorship,
+        copyrights and licenses.
+URL: https://github.com/Vadale/R-ebirth,
+        https://vadale.r-universe.dev/relm
+BugReports: https://github.com/Vadale/R-ebirth/issues
+Depends: R (>= 4.5.0)
+Imports: methods, nanoarrow
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 8.0.0
+Suggests: testthat (>= 3.0.0), later (>= 1.4.8), promises (>= 1.5.0),
+        glmnet, uwot, dbscan, quarto
+VignetteBuilder: quarto
+Config/testthat/edition: 3
+Config/rextendr/version: 0.5.0
+SystemRequirements: Cargo (Rust's package manager) >= 1.85.0, rustc >=
+        1.85.0, cmake (>= 3.28), xz
+NeedsCompilation: yes
+Packaged: 2026-10-19 11:55:26 UTC; runner
+Author: Alessandro Vadala [aut, cre, cph],
+  ggml authors [ctb, cph] (Bundled llama.cpp and ggml (MIT)),
+  Authors of the bundled Rust and native dependencies [ctb, cph]
+    (Individual authors, copyrights and licenses are listed in AUTHORS,
+    RUST-NOTICES and THIRD-PARTY-NOTICES)
+Maintainer: Alessandro Vadala <vadale93@gmail.com>

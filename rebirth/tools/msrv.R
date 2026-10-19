@@ -1,116 +1,43 @@
-# read the DESCRIPTION file
+# Cargo and rustc can be packaged separately. Check each declared floor before
+# extracting/building sources; never install or update either tool automatically.
 desc <- read.dcf("DESCRIPTION")
-
 if (!"SystemRequirements" %in% colnames(desc)) {
-  fmt <- c(
-    "`SystemRequirements` not found in `DESCRIPTION`.",
-    "Please specify `SystemRequirements: Cargo (Rust's package manager), rustc`"
-  )
-  stop(paste(fmt, collapse = "\n"))
+  stop("Declare Cargo and rustc minimum versions in DESCRIPTION SystemRequirements.")
 }
-
-# extract system requirements
-sysreqs <- desc[, "SystemRequirements"]
-
-# check that cargo and rustc is found
-if (!grepl("cargo", sysreqs, ignore.case = TRUE)) {
-  stop("You must specify `Cargo (Rust's package manager)` in your `SystemRequirements`")
-}
-
-if (!grepl("rustc", sysreqs, ignore.case = TRUE)) {
-  stop("You must specify `Cargo (Rust's package manager), rustc` in your `SystemRequirements`")
-}
-
-# split into parts
-parts <- strsplit(sysreqs, ", ")[[1]]
-
-# identify which is the rustc
-rustc_ver <- parts[grepl("rustc", parts)]
-
-# perform checks for the presence of rustc and cargo on the OS
-no_cargo_msg <- c(
-  "----------------------- [CARGO NOT FOUND]--------------------------",
-  "The 'cargo' command was not found on the PATH. Please install Cargo",
-  "from: https://www.rust-lang.org/tools/install",
-  "",
-  "Alternatively, you may install Cargo from your OS package manager:",
-  " - Debian/Ubuntu: apt-get install cargo",
-  " - Fedora/CentOS: dnf install cargo",
-  " - macOS: brew install rust",
-  "-------------------------------------------------------------------"
-)
-
-no_rustc_msg <- c(
-  "----------------------- [RUST NOT FOUND]---------------------------",
-  "The 'rustc' compiler was not found on the PATH. Please install",
-  paste(rustc_ver, "or higher from:"),
-  "https://www.rust-lang.org/tools/install",
-  "",
-  "Alternatively, you may install Rust from your OS package manager:",
-  " - Debian/Ubuntu: apt-get install rustc",
-  " - Fedora/CentOS: dnf install rustc",
-  " - macOS: brew install rust",
-  "-------------------------------------------------------------------"
-)
-
-# Add {user}/.cargo/bin to path before checking
-new_path <- paste(
-  Sys.getenv("PATH"),
-  file.path(path.expand("~"), ".cargo", "bin"),
-  sep = .Platform$path.sep
-)
-
-# set the path with the new path
-Sys.setenv("PATH" = new_path)
-
-# check for rustc installation
-rustc_version <- tryCatch(
-  system("rustc --version", intern = TRUE),
-  error = function(e) {
-    stop(paste(no_rustc_msg, collapse = "\n"))
+# DCF continuation lines are whitespace, including in R CMD build's DESCRIPTION.
+sysreqs <- gsub("[[:space:]]+", " ", desc[, "SystemRequirements"])
+requirements <- strsplit(sysreqs, ",", fixed = TRUE)[[1L]]
+minimum <- function(tool) {
+  entry <- trimws(requirements[grepl(paste0("^", tool, "\\b"),
+                                    trimws(requirements), ignore.case = TRUE)])
+  if (length(entry) != 1L || !grepl(">= [0-9]+\\.[0-9]+\\.[0-9]+$", entry)) {
+    stop("Declare an explicit ", tool, " minimum (>= major.minor.patch) in SystemRequirements.")
   }
-)
+  sub(".*>= ", "", entry)
+}
+floors <- c(rustc = minimum("rustc"), cargo = minimum("Cargo"))
 
-# check for cargo installation
-cargo_version <- tryCatch(
-  system("cargo --version", intern = TRUE),
-  error = function(e) {
-    stop(paste(no_cargo_msg, collapse = "\n"))
+# Keep system tools first, then the user's standard rustup installation.
+Sys.setenv(PATH = paste(Sys.getenv("PATH"), file.path(path.expand("~"), ".cargo", "bin"),
+                       sep = .Platform$path.sep))
+for (tool in names(floors)) {
+  label <- if (tool == "rustc") "Rust" else "Cargo"
+  help <- paste0("Install ", tool, " >= ", floors[[tool]],
+                 " using your OS package manager or https://rustup.rs/; ",
+                 "then put it on PATH (or in ~/.cargo/bin).")
+  output <- tryCatch(system(paste(tool, "--version"), intern = TRUE),
+                     error = function(e) stop(tool, " could not run. ", help, call. = FALSE))
+  status <- attr(output, "status")
+  pattern <- paste0("^", tool, " ([0-9]+\\.[0-9]+\\.[0-9]+)([-+ ].*)?$")
+  if ((!is.null(status) && status != 0L) || length(output) != 1L ||
+      is.na(output) || !grepl(pattern, output)) {
+    stop("Cannot determine ", tool, " version from a successful --version command. ",
+         help, call. = FALSE)
   }
-)
-
-# helper function to extract versions
-extract_semver <- function(ver) {
-  if (grepl("\\d+\\.\\d+(\\.\\d+)?", ver)) {
-    sub(".*?(\\d+\\.\\d+(\\.\\d+)?).*", "\\1", ver)
-  } else {
-    NA
+  current <- sub(pattern, "\\1", output)
+  message("Using ", output)
+  if (utils::compareVersion(current, floors[[tool]]) < 0L) {
+    stop("Minimum supported ", label, " version is ", floors[[tool]],
+         ". Installed ", label, " version is ", current, ". ", help, call. = FALSE)
   }
 }
-
-# get the MSRV
-msrv <- extract_semver(rustc_ver)
-
-# extract current version
-current_rust_version <- extract_semver(rustc_version)
-
-# perform check
-if (!is.na(msrv)) {
-  # -1 when current version is later
-  # 0 when they are the same
-  # 1 when MSRV is newer than current
-  is_msrv <- utils::compareVersion(msrv, current_rust_version)
-  if (is_msrv == 1) {
-    fmt <- paste0(
-      "\n------------------ [UNSUPPORTED RUST VERSION]------------------\n",
-      "- Minimum supported Rust version is %s.\n",
-      "- Installed Rust version is %s.\n",
-      "---------------------------------------------------------------"
-    )
-    stop(sprintf(fmt, msrv, current_rust_version))
-  }
-}
-
-# print the versions
-versions_fmt <- "Using %s\nUsing %s"
-message(sprintf(versions_fmt, cargo_version, rustc_version))

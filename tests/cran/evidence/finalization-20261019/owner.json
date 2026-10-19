@@ -1,0 +1,36 @@
+{
+  "status": "PASS_SCOPED_LOCAL",
+  "base_commit": "21b2589d5360996eabe2cc53c9c833cf3c94f566",
+  "source_sha256": {
+    ".github/workflows/cran-portability.yaml": "e1aeada6bc0197e3f84554f8902b66cb1e674f4c57f03af61739d80884965ea4",
+    "examples/funding-extraction/app.R": "85fdb3e8d1c6763fad0b451db1e4ec3475ea6288a2fb99fa296a79db76818616",
+    "rebirth/DESCRIPTION": "7996e5cc44691cdcd9691f920cd5ae137af887d11651cafcab737d41c6865ee3",
+    "rebirth/NEWS.md": "057db186679140fee1e31aed26d033535dd5741f2aaa0c95dd7329871266fbdb",
+    "rebirth/README.md": "ee6e4852a6fbe75fe1f07381d82292f0b976f5de3454175c92f5e414a382ddef",
+    "rebirth/src/rust/rebirth-llm/src/lib.rs": "a8466c154cb58785826f6cc8701ee6d0f22c9c6e90b635c98915adfd3c23acfe",
+    "rebirth/src/rust/rebirth-llm/src/live_file.rs": "54421c15b190426254d6e6b68af96853c725df989940878b3e6ee722da5b60f2",
+    "rebirth/src/rust/rebirth-llm/src/live_spill.rs": "c92577759f0bda832b512ea01cbd7296aba4d8bfea6b00adcf4becca4c91d344",
+    "rebirth/src/rust/rebirth-llm/src/live_state.rs": "da8031b25dd562303c7944e477dc6e83d38e9b6c06f6b2c74da33e6baef551ea",
+    "rebirth/tools/msrv.R": "b55a2912151a47e129aa492d1244b2b05d3f5625883f8f8630f0ca1b8d647ac4",
+    "tests/funding-extraction/test_versions.R": "7682654779364709cd2ceb4c1534d5fa06ffabfaa38cdeb8ca5cddfd6457a6a2",
+    "tests/toolchain/test-msrv.R": "d41bd69510ddd4474ed35dba76eb3a7ad8223f0c79e8f9ba06e54af236547f68"
+  },
+  "protected_sha256": {
+    "rebirth/src/llama-sources.tar.xz": "180a9f53fa84b1b1857fc9adacf96566eadeaf6202611a68a9b2996bae782d14",
+    "rebirth/src/rust/vendor.tar.xz": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b",
+    "rebirth/src/rust/Cargo.lock": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",
+    "rebirth/tools/bundled-sources.json": "dede2f6e11e66c56aa6011546b2c158d40f83f919b3e77fdb204cce1d951fb03",
+    "rebirth/inst/AUTHORS": "1f8fa6e5c0a17e6bebc31885cc021dfa7503224fb711ef969d76c9c70cd6a5bc",
+    "rebirth/inst/RUST-NOTICES": "788843bfc21633590c7903bbf5d5ab6f4c7b9ed945ffbcac5089e4c028cee545",
+    "rebirth/inst/THIRD-PARTY-NOTICES": "d656cfd75387a530124bd2518181a2d774ad0bed604321a2b6df1a51ad99fd83"
+  },
+  "original_drop_sha256": "81fbc175961c5b065b8485c08f5fbe400ab3b877ce57b78a09ef88a4057a0bb4",
+  "models": 0,
+  "engine_builds": 0,
+  "installed_package_checks": 0,
+  "windows_execution": false,
+  "tidy_execution": false,
+  "yaml_parser_available": true,
+  "scope": "23 configure cases; actual installed Rust/Cargo versions; 13+6 application version cases; 4 Linux file cases; standalone Clippy and fmt. Windows/full package/HTML incoming checks pending.",
+  "yaml_validation": "Ruby/Psych safe_load parsed the updated workflow; windows-cpu and r-devel job keys preserved."
+}

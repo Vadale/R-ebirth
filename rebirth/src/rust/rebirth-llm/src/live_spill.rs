@@ -1,5 +1,6 @@
 //! One completed live Arrow stream per source state. Only the generation worker
 //! joins this writer. Queue predicates and cancellation use the same mutex.
+use crate::live_file::OwnedLiveFile;
 use crate::live_state::{
     trace_error, LiveEstimate, LiveRequest, LiveSpillReport, LIVE_BATCH_ROWS, LIVE_SPILL_BYTES,
     LIVE_TRANSPORT_BYTES,
@@ -80,33 +81,6 @@ impl Queue {
     }
 }
 
-/// Owns only the exclusively created file identity. A completed but undelivered
-/// file is removed on the generation worker; delivery relinquishes this guard.
-#[derive(Debug)]
-pub(crate) struct OwnedLiveFile {
-    path: PathBuf,
-    metadata: std::fs::Metadata,
-    retained: bool,
-}
-impl Drop for OwnedLiveFile {
-    fn drop(&mut self) {
-        if self.retained {
-            return;
-        }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::MetadataExt;
-            if let Ok(current) = std::fs::symlink_metadata(&self.path) {
-                if current.is_file()
-                    && current.dev() == self.metadata.dev()
-                    && current.ino() == self.metadata.ino()
-                {
-                    let _ = std::fs::remove_file(&self.path);
-                }
-            }
-        }
-    }
-}
 struct LimitedFile {
     file: File,
     written: u64,
@@ -166,11 +140,7 @@ impl LiveSpillSink {
                     trace_error(format!("Could not exclusively create live spill file: {e}"))
                 })?
         };
-        let owner = OwnedLiveFile {
-            path: path.clone(),
-            metadata: file.metadata().map_err(|e| trace_error(e.to_string()))?,
-            retained: false,
-        };
+        let owner = OwnedLiveFile::new(&path, &file).map_err(|e| trace_error(e.to_string()))?;
         let spec = request.state_spec(state_id, prompt_count, source_pos, estimate.batch_bytes);
         let schema = schema(
             &nonce,
@@ -340,7 +310,7 @@ impl Drop for LiveSpillSink {
 impl LiveSpillReport {
     pub(crate) fn delivered(&mut self) {
         if let Some(mut owner) = self.owned.take() {
-            owner.retained = true;
+            owner.retain();
         }
     }
 }

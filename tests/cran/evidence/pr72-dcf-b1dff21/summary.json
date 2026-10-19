@@ -1,0 +1,370 @@
+[
+  {
+    "job": 118042059766,
+    "name": "windows",
+    "bytes": 619677,
+    "sha256": "7df856ae83394873f64a15874de581cd2f697c1611e79ad441feffd2cacd1c2c",
+    "diagnostics": [
+      [
+        1058,
+        "2026-10-19T11:49:16.1586872Z \u001b[36;1m    *) echo \"Warning: unsupported Windows architecture '${arch}', JAVA_HOME not set by setup-r-dependencies.\" >&2 ;;\u001b[0m"
+      ],
+      [
+        9955,
+        "2026-10-19T12:01:42.4528658Z ##[warning]Warning: file 'relm/cleanup' did not have execute permissions: corrected"
+      ],
+      [
+        9956,
+        "2026-10-19T12:01:42.4530392Z ##[warning]Warning: file 'relm/configure' did not have execute permissions: corrected"
+      ],
+      [
+        9979,
+        "2026-10-19T12:01:57.8943694Z * checking whether package 'relm' can be installed ... ERROR"
+      ],
+      [
+        9984,
+        "2026-10-19T12:01:57.8949127Z Status: 1 ERROR"
+      ],
+      [
+        9992,
+        "2026-10-19T12:01:58.8065756Z \u001b[31m\u276f checking whether package 'relm' can be installed ... ERROR\u001b[39m"
+      ],
+      [
+        10003,
+        "2026-10-19T12:01:58.8076617Z Execution halted"
+      ],
+      [
+        10004,
+        "2026-10-19T12:01:58.8077120Z ERROR: configuration failed for package 'relm'"
+      ],
+      [
+        10008,
+        "2026-10-19T12:01:58.8086097Z ##[error]Error: R CMD check found ERRORs"
+      ],
+      [
+        10009,
+        "2026-10-19T12:01:58.8174028Z Execution halted"
+      ]
+    ]
+  },
+  {
+    "job": 118042059125,
+    "name": "mac-release",
+    "bytes": 1168027,
+    "sha256": "789eb82e83c5a67e20b57a7ecfc453709d73da41cde153cde412601a2ce5cf29",
+    "diagnostics": [
+      [
+        672,
+        "2026-10-19T11:48:35.4879700Z Oct 19 11:48:35  installer[4893] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: location = file://localhost"
+      ],
+      [
+        673,
+        "2026-10-19T11:48:35.4881230Z Oct 19 11:48:35  installer[4893] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/pandoc-3.8.3-arm64-macOS.pkg#pandoc.pkg"
+      ],
+      [
+        746,
+        "2026-10-19T11:48:42.0319180Z Oct 19 11:48:42  installer[5025] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: location = file://localhost"
+      ],
+      [
+        747,
+        "2026-10-19T11:48:42.0422290Z Oct 19 11:48:42  installer[5025] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/gfortran-14.2-universal.pkg#gfortran.pkg"
+      ],
+      [
+        787,
+        "2026-10-19T11:49:07.6738470Z Oct 19 11:49:07  installer[6247] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: location = file://localhost"
+      ],
+      [
+        788,
+        "2026-10-19T11:49:07.6739960Z Oct 19 11:49:07  installer[6247] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.6.1-arm64.pkg#R-fw.pkg"
+      ],
+      [
+        789,
+        "2026-10-19T11:49:07.6741270Z Oct 19 11:49:07  installer[6247] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.6.1-arm64.pkg#R-app.pkg"
+      ],
+      [
+        790,
+        "2026-10-19T11:49:07.6742520Z Oct 19 11:49:07  installer[6247] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.6.1-arm64.pkg#tcltk.pkg"
+      ],
+      [
+        791,
+        "2026-10-19T11:49:07.6743600Z Oct 19 11:49:07  installer[6247] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.6.1-arm64.pkg#texinfo.pkg"
+      ],
+      [
+        14693,
+        "2026-10-19T11:51:18.8773600Z \u001b[36;1m# \"Error: \", so a ::error:: inside the message never starts a line and\u001b[0m"
+      ],
+      [
+        14698,
+        "2026-10-19T11:51:18.8775090Z \u001b[36;1m  cat(sprintf(\"::error::%s\\n\", msg), file = stderr())\u001b[0m"
+      ],
+      [
+        15283,
+        "2026-10-19T12:03:10.1877870Z * checking whether package \u2018relm\u2019 can be installed ... ERROR"
+      ],
+      [
+        15287,
+        "2026-10-19T12:03:10.1919580Z Status: 1 ERROR"
+      ],
+      [
+        15295,
+        "2026-10-19T12:03:11.1283280Z \u001b[31m\u276f checking whether package \u2018relm\u2019 can be installed ... ERROR\u001b[39m"
+      ],
+      [
+        15305,
+        "2026-10-19T12:03:11.1300310Z ##[error]Error: R CMD check found ERRORs"
+      ],
+      [
+        15307,
+        "2026-10-19T12:03:11.1305320Z Execution halted"
+      ],
+      [
+        15308,
+        "2026-10-19T12:03:11.1307620Z Execution halted"
+      ],
+      [
+        15309,
+        "2026-10-19T12:03:11.1309840Z ERROR: configuration failed for package \u2018relm\u2019"
+      ]
+    ]
+  },
+  {
+    "job": 118042059124,
+    "name": "linux-release",
+    "bytes": 1095891,
+    "sha256": "108a9cb356a89280e9934423d6dccb844a7349a41f6e5f89a8ce91390c9755f8",
+    "diagnostics": [
+      [
+        1549,
+        "2026-10-19T11:48:50.9013666Z /usr/share/gdebi/GDebi/GDebiCli.py:159: SyntaxWarning: invalid escape sequence '\\S'"
+      ],
+      [
+        1730,
+        "2026-10-19T11:48:54.3175559Z /usr/bin/gdebi:113: SyntaxWarning: invalid escape sequence '\\S'"
+      ],
+      [
+        13938,
+        "2026-10-19T11:49:49.6488469Z WARNING: apt does not have a stable CLI interface. Use with caution in scripts."
+      ],
+      [
+        14354,
+        "2026-10-19T11:49:58.0519786Z \u001b[36;1m# \"Error: \", so a ::error:: inside the message never starts a line and\u001b[0m"
+      ],
+      [
+        14359,
+        "2026-10-19T11:49:58.0521486Z \u001b[36;1m  cat(sprintf(\"::error::%s\\n\", msg), file = stderr())\u001b[0m"
+      ],
+      [
+        14948,
+        "2026-10-19T11:56:26.2192772Z * checking whether package \u2018relm\u2019 can be installed ... ERROR"
+      ],
+      [
+        14953,
+        "2026-10-19T11:56:26.2219100Z Status: 1 ERROR"
+      ],
+      [
+        14961,
+        "2026-10-19T11:56:26.6136031Z \u001b[31m\u276f checking whether package \u2018relm\u2019 can be installed ... ERROR\u001b[39m"
+      ],
+      [
+        14972,
+        "2026-10-19T11:56:26.6143572Z Execution halted"
+      ],
+      [
+        14973,
+        "2026-10-19T11:56:26.6143998Z ERROR: configuration failed for package \u2018relm\u2019"
+      ],
+      [
+        14977,
+        "2026-10-19T11:56:26.6152691Z ##[error]Error: R CMD check found ERRORs"
+      ],
+      [
+        14978,
+        "2026-10-19T11:56:26.6153279Z Execution halted"
+      ]
+    ]
+  },
+  {
+    "job": 118042059228,
+    "name": "mac-oldrel",
+    "bytes": 1184321,
+    "sha256": "3b98c5c81028350781a6cdfd3ae23334fc443fae95605338a8cd4e6c7571687a",
+    "diagnostics": [
+      [
+        663,
+        "2026-10-19T11:48:33.4023740Z Oct 19 11:48:33  installer[3654] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: location = file://localhost"
+      ],
+      [
+        664,
+        "2026-10-19T11:48:33.4025080Z Oct 19 11:48:33  installer[3654] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/pandoc-3.8.3-arm64-macOS.pkg#pandoc.pkg"
+      ],
+      [
+        737,
+        "2026-10-19T11:48:38.7018970Z Oct 19 11:48:38  installer[3794] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: location = file://localhost"
+      ],
+      [
+        738,
+        "2026-10-19T11:48:38.7025040Z Oct 19 11:48:38  installer[3794] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/gfortran-14.2-universal.pkg#gfortran.pkg"
+      ],
+      [
+        778,
+        "2026-10-19T11:49:03.1619380Z Oct 19 11:49:03  installer[4865] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: location = file://localhost"
+      ],
+      [
+        779,
+        "2026-10-19T11:49:03.1620530Z Oct 19 11:49:03  installer[4865] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.5.3-arm64.pkg#R-fw.pkg"
+      ],
+      [
+        780,
+        "2026-10-19T11:49:03.1621750Z Oct 19 11:49:03  installer[4865] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.5.3-arm64.pkg#R-app.pkg"
+      ],
+      [
+        781,
+        "2026-10-19T11:49:03.1622830Z Oct 19 11:49:03  installer[4865] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.5.3-arm64.pkg#tcltk.pkg"
+      ],
+      [
+        782,
+        "2026-10-19T11:49:03.1623800Z Oct 19 11:49:03  installer[4865] <Debug>: -[IFDInstallController(Private) _buildInstallPlanReturningError:]: file://localhost/Users/runner/work/_temp/R-4.5.3-arm64.pkg#texinfo.pkg"
+      ],
+      [
+        14889,
+        "2026-10-19T11:51:03.4771070Z \u001b[36;1m# \"Error: \", so a ::error:: inside the message never starts a line and\u001b[0m"
+      ],
+      [
+        14894,
+        "2026-10-19T11:51:03.4775890Z \u001b[36;1m  cat(sprintf(\"::error::%s\\n\", msg), file = stderr())\u001b[0m"
+      ],
+      [
+        15478,
+        "2026-10-19T12:00:48.4929840Z * checking whether package \u2018relm\u2019 can be installed ... ERROR"
+      ],
+      [
+        15483,
+        "2026-10-19T12:00:48.4960120Z Status: 1 ERROR"
+      ],
+      [
+        15491,
+        "2026-10-19T12:00:48.9364100Z \u001b[31m\u276f checking whether package \u2018relm\u2019 can be installed ... ERROR\u001b[39m"
+      ],
+      [
+        15492,
+        "2026-10-19T12:00:48.9406500Z ##[error]Error: R CMD check found ERRORs"
+      ],
+      [
+        15503,
+        "2026-10-19T12:00:48.9412260Z Execution halted"
+      ],
+      [
+        15504,
+        "2026-10-19T12:00:48.9412700Z ERROR: configuration failed for package \u2018relm\u2019"
+      ],
+      [
+        15508,
+        "2026-10-19T12:00:48.9414730Z Execution halted"
+      ]
+    ]
+  },
+  {
+    "job": 118042058807,
+    "name": "linux-oldrel",
+    "bytes": 1092360,
+    "sha256": "17f1cda430597f9cb3fab583925fdfcd5e6347e642ff9cdd34e89e0c9292f31d",
+    "diagnostics": [
+      [
+        1544,
+        "2026-10-19T11:48:39.4634772Z /usr/share/gdebi/GDebi/GDebiCli.py:159: SyntaxWarning: invalid escape sequence '\\S'"
+      ],
+      [
+        1725,
+        "2026-10-19T11:48:42.9230015Z /usr/bin/gdebi:113: SyntaxWarning: invalid escape sequence '\\S'"
+      ],
+      [
+        13933,
+        "2026-10-19T11:49:37.5755775Z WARNING: apt does not have a stable CLI interface. Use with caution in scripts."
+      ],
+      [
+        14307,
+        "2026-10-19T11:49:46.0804816Z \u001b[36;1m# \"Error: \", so a ::error:: inside the message never starts a line and\u001b[0m"
+      ],
+      [
+        14312,
+        "2026-10-19T11:49:46.0806575Z \u001b[36;1m  cat(sprintf(\"::error::%s\\n\", msg), file = stderr())\u001b[0m"
+      ],
+      [
+        14900,
+        "2026-10-19T11:57:03.9690034Z * checking whether package \u2018relm\u2019 can be installed ... ERROR"
+      ],
+      [
+        14905,
+        "2026-10-19T11:57:03.9715856Z Status: 1 ERROR"
+      ],
+      [
+        14914,
+        "2026-10-19T11:57:04.3587174Z \u001b[31m\u276f checking whether package \u2018relm\u2019 can be installed ... ERROR\u001b[39m"
+      ],
+      [
+        14925,
+        "2026-10-19T11:57:04.3598443Z Execution halted"
+      ],
+      [
+        14926,
+        "2026-10-19T11:57:04.3598873Z ERROR: configuration failed for package \u2018relm\u2019"
+      ],
+      [
+        14930,
+        "2026-10-19T11:57:04.3607796Z ##[error]Error: R CMD check found ERRORs"
+      ],
+      [
+        14931,
+        "2026-10-19T11:57:04.3608408Z Execution halted"
+      ]
+    ]
+  },
+  {
+    "job": 118042060120,
+    "name": "r-devel",
+    "bytes": 1060704,
+    "sha256": "8bd7b40069ecd734773e13b14183cc394a8e3b7dc80ade54415ec5350c54c8e8",
+    "diagnostics": [
+      [
+        1613,
+        "2026-10-19T11:48:56.3306839Z /usr/share/gdebi/GDebi/GDebiCli.py:159: SyntaxWarning: invalid escape sequence '\\S'"
+      ],
+      [
+        1794,
+        "2026-10-19T11:49:00.5469783Z /usr/bin/gdebi:113: SyntaxWarning: invalid escape sequence '\\S'"
+      ],
+      [
+        14307,
+        "2026-10-19T11:50:12.7042827Z WARNING: apt does not have a stable CLI interface. Use with caution in scripts."
+      ],
+      [
+        14786,
+        "2026-10-19T11:55:40.2646414Z * checking whether package \u2018relm\u2019 can be installed ... ERROR"
+      ],
+      [
+        14791,
+        "2026-10-19T11:55:40.2672171Z Status: 1 ERROR, 1 NOTE"
+      ],
+      [
+        14800,
+        "2026-10-19T11:55:40.6558740Z \u001b[31m\u276f checking whether package \u2018relm\u2019 can be installed ... ERROR\u001b[39m"
+      ],
+      [
+        14816,
+        "2026-10-19T11:55:40.6572108Z Execution halted"
+      ],
+      [
+        14817,
+        "2026-10-19T11:55:40.6572561Z ERROR: configuration failed for package \u2018relm\u2019"
+      ],
+      [
+        14821,
+        "2026-10-19T11:55:40.6581541Z ##[error]Error: R CMD check found ERRORs"
+      ],
+      [
+        14822,
+        "2026-10-19T11:55:40.6581938Z Execution halted"
+      ]
+    ]
+  }
+]

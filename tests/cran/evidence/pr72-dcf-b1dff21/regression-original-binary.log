@@ -1,0 +1,4 @@
+Error in tryCatchList(expr, classes, parentenv, handlers) : 
+  Serialized DESCRIPTION rejected: Declare an explicit rustc minimum (>= major.minor.patch) in SystemRequirements.
+Calls: tryCatch -> tryCatchList
+Execution halted

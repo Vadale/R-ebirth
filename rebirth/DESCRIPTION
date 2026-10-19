@@ -1,6 +1,6 @@
 Package: relm
 Title: Local Large Language Models as Base-R Objects
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: 
     c(person("Alessandro", "Vadala", , "vadale93@gmail.com", role = c("aut", "cre", "cph")),
       person("ggml authors", role = c("ctb", "cph"), comment = "Bundled llama.cpp and ggml (MIT)"),
@@ -42,4 +42,4 @@ Suggests:
 VignetteBuilder: quarto
 Config/testthat/edition: 3
 Config/rextendr/version: 0.5.0
-SystemRequirements: Cargo (Rust's package manager), rustc >= 1.85.0, cmake (>= 3.28), xz
+SystemRequirements: Cargo (Rust's package manager) >= 1.85.0, rustc >= 1.85.0, cmake (>= 3.28), xz

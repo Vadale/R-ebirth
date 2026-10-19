@@ -1797,3 +1797,16 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   shell quoting. These are corrections to the already-authorized WRE build route.
   Keep all original CI failures and focused failed harness attempts; current
   hosted package acceptance remains necessary before merging/submission.
+
+
+- **Single finalization candidate (2026-10-19):** after merging PR71, the founder
+  authorized the CRAN finalization PR and clarification of Rust/Cargo. Prepare
+  version0.5.0 (not a publication) with independent minimum checks for Cargo and
+  rustc1.85, preserving the locked Arrow59/edition2024 graph. Document the unmet
+  two-year Cargo-age guidance and unvalidated farm/non-shared-R configuration;
+  do not invent an exception or lower metadata without compatible dependencies.
+  Limit live-file identity storage to Unix while preserving the existing exact
+  destructor and non-Unix file retention; no path-only deletion or lint suppression.
+  Include HTMLTidy/incoming checks, application version compatibility and submission
+  materials in one ordinary final matrix. Merge/release/external upload require
+  a concrete founder decision after actual current receipts; no external outreach.

@@ -1,0 +1,14 @@
+[
+  {
+    "platform_metadata": "windows",
+    "description_sha256": "1448c5ba6e2548dedf51ec6def9d8b2777050464bf9000ec2e23d777ab6f4eef",
+    "parser_sha256": "6b379307537c46a2ba6120b873711553d34a9cf25056da948a995548b7de97cb",
+    "exit": 0
+  },
+  {
+    "platform_metadata": "r-devel",
+    "description_sha256": "6e29fd73e6f32aa0a2584f394014c1fda1be8d097c72350fe3949e2f62cc332b",
+    "parser_sha256": "6b379307537c46a2ba6120b873711553d34a9cf25056da948a995548b7de97cb",
+    "exit": 0
+  }
+]

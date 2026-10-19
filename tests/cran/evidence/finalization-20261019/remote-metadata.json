@@ -1,0 +1,46 @@
+[
+  {
+    "url": "https://cran.r-project.org/src/contrib/PACKAGES.gz",
+    "observed_at": "2026-10-19T11:42:51.226155+00:00",
+    "status": 200,
+    "final_url": "https://cran.r-project.org/src/contrib/PACKAGES.gz",
+    "bytes": 1948251,
+    "sha256": "79cc24ea55bfd83130d2b4e56bd12a6005463c2fb601a7c28a5269b08b94e920",
+    "package_entries": 25431,
+    "name_matches": [],
+    "reverse_dependency_mentions": []
+  },
+  {
+    "url": "https://cran.r-project.org/src/contrib/Archive/",
+    "observed_at": "2026-10-19T11:42:51.961357+00:00",
+    "status": 200,
+    "final_url": "https://cran.r-project.org/src/contrib/Archive/",
+    "bytes": 5594197,
+    "sha256": "1cad6fcc707e9c70360533a52f25c1c519c6b44d2f1d02ce1fe3b9ca59f560aa",
+    "name_matches": []
+  },
+  {
+    "url": "https://github.com/Vadale/R-ebirth",
+    "observed_at": "2026-10-19T11:42:54.749733+00:00",
+    "status": 200,
+    "final_url": "https://github.com/Vadale/R-ebirth",
+    "bytes": 337306,
+    "sha256": "8802f252512a97a494246569143b184d6b88008eeac547d224be2dddb0136c5e"
+  },
+  {
+    "url": "https://github.com/Vadale/R-ebirth/issues",
+    "observed_at": "2026-10-19T11:42:56.162414+00:00",
+    "status": 200,
+    "final_url": "https://github.com/Vadale/R-ebirth/issues",
+    "bytes": 264972,
+    "sha256": "c33875099cc195d4601e5a56720aea73e4a20c067fc6e24924072cf4616538c1"
+  },
+  {
+    "url": "https://vadale.r-universe.dev/relm",
+    "observed_at": "2026-10-19T11:42:57.229498+00:00",
+    "status": 200,
+    "final_url": "https://vadale.r-universe.dev/relm",
+    "bytes": 78238,
+    "sha256": "cf12743e146f6c4f5b5900444dc64073d57abd4a371b9774436d57872546fe41"
+  }
+]
