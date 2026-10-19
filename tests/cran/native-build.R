@@ -13,7 +13,10 @@ for (windows in c(FALSE, TRUE)) {
     grepl('RELM_R_PORTABLE=1', config$.native_build_env, fixed = TRUE),
     grepl('CC="$(CC)" CXX="$(CXX17)"', config$.native_build_env, fixed = TRUE),
     grepl('$(CXX17FLAGS) $(CXX17PICFLAGS) $(CXX17STD)', config$.native_build_env, fixed = TRUE),
-    sum(grepl('export CMAKE=', config$new_txt, fixed = TRUE)) == 2L,
+    sum(grepl('export CMAKE=', config$new_txt, fixed = TRUE)) == 1L,
+    !any(grepl('cargo run', config$new_txt, fixed = TRUE)),
+    sum(grepl('generate-wrappers.R', config$new_txt, fixed = TRUE)) == 1L,
+    !any(grepl('@RSCRIPT@', config$new_txt, fixed = TRUE)),
     !any(grepl('@NATIVE_BUILD_ENV@', config$new_txt, fixed = TRUE)))
 }
 # Exercise the real Unix make/shell path, including space-bearing tool paths and
@@ -38,11 +41,11 @@ for (cmake in cmake_paths) {
     stopifnot(is.environment(config), identical(config$cmake_command, cmake))
     exports <- trimws(grep('export CMAKE=', config$new_txt, value = TRUE, fixed = TRUE))
     expected <- paste0('export ', config$.native_build_env, ' && \\')
-    stopifnot(length(exports) == 2L, all(exports == expected))
+    stopifnot(length(exports) == 1L, all(exports == expected))
     # The former regex replacement must fail this same byte comparison.
     old <- gsub('@NATIVE_BUILD_ENV@', config$.native_build_env, config$mv_txt)
     old_exports <- trimws(grep('export CMAKE=', old, value = TRUE, fixed = TRUE))
-    stopifnot(length(old_exports) == 2L, all(old_exports != expected))
+    stopifnot(length(old_exports) == 1L, all(old_exports != expected))
     if (.Platform$OS.type != 'windows') {
       capture <- file.path(root, 'cmake-path.txt')
       recipe <- sub(' && \\', '', exports[[1L]], fixed = TRUE)
@@ -54,4 +57,4 @@ for (cmake in cmake_paths) {
   }
 }
 unlink(root, recursive = TRUE)
-cat('CRAN_NATIVE_CONFIG_OK platforms=2 cargo_commands=4 literal_paths=4 model_calls=0 native_compiles=0\n')
+cat('CRAN_NATIVE_CONFIG_OK platforms=2 cargo_commands=2 literal_paths=4 model_calls=0 native_compiles=0\n')

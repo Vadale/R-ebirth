@@ -234,13 +234,24 @@ Raw logs, failure and source-bound scope:
 
 ## Current finalization status (2026-10-19)
 
-PR70 and PR71 have been merged by the founder; all ten/eleven final checks and
+PR70, PR71 and PR72 have been merged by the founder; all ten/eleven final checks and
 exact integration trees were independently verified at their recorded source.
 Earlier “pending” statements above describe original failed candidates and are
 retained as history. Current CPU portability, R-devel/manual and attribution
 milestones passed; the final 0.5.0 candidate and admission questions are tracked
 in [CRAN submission status](cran-submission.md). Final current CI/tar, Cargo-age
 and farm/non-shared-R disposition, and maintainer upload approval remain open.
+
+The authorized post-PR72 follow-up runs wrapper generation inside R after DLL
+linking, preserving actual production/selftest metadata and removing the ordinary
+install's standalone `document` link. Two local miniature C-package installations,
+two explicit failure controls and a byte-exact comparison with the prior production
+DLL's wrappers pass; 95 installed correspondence expectations pass on that parent
+DLL. No new engine/model acceptance is implied. The ordinary matrix also includes
+one real isolated R4.6.1 `--disable-R-shlib` CPU installation with the minimum
+Rust/Cargo toolchain. That new environment is pending until its raw results are
+inspected. [Request procedure and unsent inquiry](cran-request.md) record the
+separate Rust-age/farm and external approval boundaries.
 
 ## Remaining gates
 

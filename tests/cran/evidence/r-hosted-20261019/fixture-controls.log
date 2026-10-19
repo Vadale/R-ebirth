@@ -1,0 +1,10 @@
+Error in parse(text = text) : <text>:10:0: unexpected end of input
+8: invalid <- function(# nolint end
+9: 
+  ^
+Execution halted
+Error in normalizePath(args[[1L]], mustWork = TRUE) : 
+  path[1]="/home/grauk/Work/relm-phase9/r-hosted-wrappers/fixture-controls/production/library/relm/libs/relm.so.missing": No such file or directory
+Calls: dyn.load -> normalizePath
+Execution halted
+CRAN_WRAPPER_GENERATOR_OK modes=2 installs=2 refusals=2 engine_builds=0 models=0

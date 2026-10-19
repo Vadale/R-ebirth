@@ -1,0 +1,5 @@
+Error in parse(text = text) : <text>:10:0: unexpected end of input
+8: invalid <- function(# nolint end
+9: 
+  ^
+Execution halted

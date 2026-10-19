@@ -1,0 +1,37 @@
+{
+  "status": "passed_focused_shared_R_only",
+  "sources": {
+    "rebirth/tools/generate-wrappers.R": "28f6e6fda5d6eaed5403fcc49349a30faa60608fc15075cecdc301d28bf59ae1",
+    "rebirth/src/Makevars.in": "576ec4c0c7a579e2729dd0a5ad0c7a7cf813663ae4eb1efa2c3dc20f1631d1b4",
+    "rebirth/src/Makevars.win.in": "e991d0dd0f953f7ac8a6d7560af66e0725733b03a9d66260e786d20aca8d1e2f",
+    "rebirth/tools/config.R": "7da98d7d4d36dce38161d7d64591999bf353f16d399ebaa61bfb7669963477eb",
+    "rebirth/src/rust/rebirth-ffi/document.rs": "f432c172168ed41feb9d4c87f960d420ea431b441c56e44c474ce02619c13b71",
+    "rebirth/tests/testthat/test-wrapper-correspondence.R": "c03f53da081353c4eaca998f6e655cea6395886c99cd9742595ca0cf7b432c32",
+    "tests/cran/wrapper-generator.R": "e48602ee0b5b5956e73eea143ced3ae44080033da2773ad6a54551550705fc06",
+    "tests/cran/native-build.R": "e5a0bc61db70522f1cb11b2d66b331bddc0ad254b5089d3d621449195cb8075e",
+    "tests/cran/nonshared-r.py": "5981a3b9a4f6b9eece1303a448e9ed0828034b24270aebe5898351cedc6b86e5",
+    ".github/workflows/cran-portability.yaml": "f585a95d4a60e7c046dde6e263efb0e4c11b2d256f869aa96d821c7c2054e6a3"
+  },
+  "parent_dll_sha256": "fd4be0fdc56d7885392332d6f8e7024152396923cb3be8a359fd69d0ded1894d",
+  "wrapper_bytes_exact": true,
+  "wrappers": 31,
+  "expectations": 95,
+  "miniature_C_package_installs": 2,
+  "expected_refusals": 2,
+  "engine_builds": 0,
+  "model_calls": 0,
+  "limitations": [
+    "Real non-shared R and changed full-package install pending ordinary CI.",
+    "Existing parent production DLL used only for metadata/installed-wrapper comparisons; not new-source installation acceptance.",
+    "Miniature selftest fixture tests the generator route; real relm selftest correspondence remains in ordinary package CI.",
+    "Optional maintainer Cargo document binary retains its libR requirement.",
+    "No CRAN-farm, external-upload or admission claim."
+  ],
+  "protected": {
+    "rebirth/src/llama-sources.tar.xz": "180a9f53fa84b1b1857fc9adacf96566eadeaf6202611a68a9b2996bae782d14",
+    "rebirth/src/rust/vendor.tar.xz": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b",
+    "rebirth/src/rust/Cargo.lock": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",
+    "rebirth/DESCRIPTION": "7996e5cc44691cdcd9691f920cd5ae137af887d11651cafcab737d41c6865ee3",
+    "API-GRAMMAR.md": "b0caeb85c99d84e41b9f01ed16868bd4a27c2ef66f7dace38c96f43c98d26a87"
+  }
+}

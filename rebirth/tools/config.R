@@ -97,6 +97,8 @@ cfg <- if (is_debug) "debug" else "release"
 
 # read in the Makevars.in file checking
 is_windows <- .Platform[["OS.type"]] == "windows"
+.rscript <- file.path(R.home("bin"), if (is_windows) "Rscript.exe" else "Rscript")
+.rscript <- gsub("$", "$$", shQuote(.rscript, type = "sh"), fixed = TRUE)
 
 # Native link flags for the vendored llama.cpp/ggml/mtmd static archives
 # (D-006, D-026). rebirth-llm/build.rs relocates the archives into $(LIBDIR);
@@ -172,6 +174,7 @@ new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@SELFTEST_FEATURE@", .selftest_feature, x = _) |>
   gsub("@CUDA_FEATURE@", .cuda_feature, x = _) |>
   gsub("@NATIVE_BUILD_ENV@", .native_build_env, x = _, fixed = TRUE) |>
+  gsub("@RSCRIPT@", .rscript, x = _, fixed = TRUE) |>
   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>

@@ -16,8 +16,9 @@ in ordinary CPU source-package checks. Compilation explicitly uses two Cargo job
 Cargo and rustc >= 1.85.0 are independently required and checked. The locked
 Arrow 59 sources use Rust 2024 edition. Rust/Cargo 1.85 was released 2025-02-20,
 so the candidate does not meet the two-year Cargo-age guidance on 2026-10-19.
-No exception has been granted. CMake >= 3.28 is required. The existing wrapper
-generator links R; non-shared R installations remain unvalidated. These facts
+No exception has been granted. CMake >= 3.28 is required. The wrapper follow-up
+generates wrappers inside the installing R after DLL linking, replacing the
+standalone executable; real non-shared R installation is a pending CI gate. These facts
 must be resolved or explicitly raised before choosing to upload, not omitted
 from an incoming submission to make it appear unconditionally portable.
 

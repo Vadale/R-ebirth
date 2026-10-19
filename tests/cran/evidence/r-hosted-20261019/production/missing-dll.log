@@ -1,0 +1,4 @@
+Error in normalizePath(args[[1L]], mustWork = TRUE) : 
+  path[1]="/home/grauk/Work/relm-phase9/r-hosted-wrappers/fixture-controls/production/library/relm/libs/relm.so.missing": No such file or directory
+Calls: dyn.load -> normalizePath
+Execution halted
