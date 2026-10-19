@@ -1,0 +1,56 @@
+name: Documentation pages
+
+on:
+  workflow_run:
+    workflows: [R-CMD-check.yaml]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: documentation-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Never execute code from the downloaded artifact. Only the site produced
+      # by the successful default-branch job is eligible for static publication.
+      - name: Require the current main commit
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACCEPTED_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          main_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)
+          if [ "$main_sha" = "$ACCEPTED_SHA" ]; then
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Superseded main build; no stale documentation deployment."
+          fi
+      - uses: actions/download-artifact@v5
+        if: steps.current.outputs.publish == 'true'
+        with:
+          name: relm-documentation
+          path: artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - uses: actions/configure-pages@v5
+        if: steps.current.outputs.publish == 'true'
+      - uses: actions/upload-pages-artifact@v4
+        if: steps.current.outputs.publish == 'true'
+        with:
+          path: artifact/relm-docs/site
+      - uses: actions/deploy-pages@v4
+        if: steps.current.outputs.publish == 'true'
+        id: deployment

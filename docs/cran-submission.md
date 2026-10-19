@@ -1,10 +1,24 @@
 # relm 0.5.0 — CRAN preparation and remaining decisions
 
-Updated 2026-10-19. **Candidate, not published or submitted.** The founder
-authorized one finalization PR after merging PR71. WP15 permits completion with
-documented admission blockers while r-universe continues; it does not promise
-CRAN acceptance. WP16 and the project's 30-day green-CI window before v1.0 are
-separate work, not CRAN rules.
+Updated 2026-10-19. **Submitted to CRAN; awaiting a response.** The maintainer
+reported completing the email confirmation. Submission is not acceptance.
+The exact submitted source archive has SHA-256
+`f47e37cfff796229065dce77b352c97a3fe9581a679beab4ec44bdf0737a3ab1`.
+Its corrected win-builder R-devel result had **0 errors, 0 warnings and 1 NOTE**
+(new submission and four intentional domain terms), with 5,068 passed expectations
+and 141 scoped skips. The former failed archive remains recorded as failed.
+
+Actual win-builder Rust/Cargo 1.92 and CMake 3.31.8 built this archive. This proves
+availability on that server, not general farm availability or a policy exception.
+The submission explicitly disclosed the Rust/Cargo 1.85 minimum and unmet age
+guidance. Do not submit a replacement while this candidate awaits CRAN feedback.
+No separate 0.5.0 GitHub release has been announced by this submission.
+
+WP15 permits completion with documented admission blockers while r-universe
+continues. [WP16 documentation and compatibility](wp16-plan.md) and the project's
+[30-day green-CI gate](api-policy.md) before v1.0 are separate work, not CRAN rules.
+The sections below preserve the preparation stages and their original scope;
+references to pending checks describe those historical stages, not a new task.
 
 ## What this candidate changes
 

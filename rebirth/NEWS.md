@@ -1,3 +1,12 @@
+# Development documentation after the 0.5.0 submission
+
+* Adds a source-derived public API inventory, an API/version/deprecation policy
+  and an explicit thirty-day green-CI gate for the future 1.0 release.
+* Adds sixteen independent agent examples and a complete documentation site
+  artifact, with explicit synthetic/model/network execution boundaries.
+* The exact archive already submitted to CRAN is unchanged. No new runtime API,
+  dependency, model capability or release is introduced by this documentation.
+
 # relm 0.5.0 (candidate; not published)
 
 ## CRAN source preparation

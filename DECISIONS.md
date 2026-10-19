@@ -1834,3 +1834,25 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   Address requested changes rather than sending duplicate pending submissions.
   Maintainer email confirmation may require the founder's action. Separate
   release publication remains outside this authorization.
+
+
+## D-052 — Documentation, agent examples and public compatibility baseline
+
+- **Date:** 2026-10-19. **Status:** authorized by the founder's explicit WP16
+  request: complete documentation, agent examples and API/version policy in one
+  PR; the agent merges only after all current checks pass.
+- **Decision:** freeze the existing public exports and registered S3 contracts
+  under `docs/api-policy.md`, with a source-derived inventory and standalone
+  examples. Consolidate the pkgdown site and machine-readable documentation.
+  Documentation tooling is maintainer-only; no new package dependency, API,
+  model capability, kernel or numerical tolerance is introduced.
+- **Why:** people and coding agents need one navigable, executable account of
+  the implemented API, explicit prerequisites and a predictable upgrade policy.
+- **Release boundary:** the thirty-day green-CI requirement is a separate elapsed
+  1.0 gate; documentation completion does not satisfy it. The submitted 0.5.0
+  archive remains unchanged, pending CRAN feedback. No separate release or
+  duplicate submission is authorized.
+- **Alternatives rejected:** inventing convenience exports; installing model
+  dependencies or downloading large weights during ordinary documentation CI;
+  representing guarded model examples as successful executions; marking 1.0
+  stability history complete at the documentation merge.

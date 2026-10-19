@@ -13,15 +13,21 @@ of actual activation comparisons and token events, with static figures and data.
 3. [Run the research walkthrough](../examples/research-workflow/README.md):
    load → observe → compare → intervene → evaluate → export.
 4. [Check support and interpretation limits](supported-workflow.md).
-5. [Read the independent agent's first-use assessment](research-first-use.md):
+5. [Use the agent guide and standalone API examples](agents.md).
+6. [Read the independent agent's first-use assessment](research-first-use.md):
    actual outputs, documentation difficulties and remaining gaps.
+
+[API/version policy](api-policy.md) defines the compatibility baseline;
+[WP16 validation](wp16-implementation.md) records actual example execution and
+the separate publication and 1.0 release gates.
 
 Version [0.4.0 is published](release-0.4.0.md). For detailed historical numerical
 and runtime evidence, use the [validation ledger](validation-status.md).
 Plans and historical build receipts are not current results.
 The next **0.5.0 candidate** groups Linux CUDA, Windows CPU portability and
 [CRAN preparation](cran-submission.md), including the remaining Rust/Cargo policy
-decision. It has not been published or submitted to CRAN.
+decision. The exact source has been submitted and maintainer confirmation reported; CRAN
+acceptance and a separate GitHub release are pending.
 
 ## Extend the same workflow
 
@@ -46,6 +52,8 @@ decision. It has not been published or submitted to CRAN.
   [maintainer execution report](phase7-implementation.md).
 - [Optional post-publication user feedback](phase7-user-feedback.md): independent
   usability remains deferred, not claimed by the maintainer's functional run.
+- [API and version policy](api-policy.md), including compatibility and the
+  thirty-day green-CI gate before 1.0.
 - [Development workflow](development-workflow.md): coherent milestones, scoped
   verification and batched pushes (D-029).
 - Binding specifications: [product plan](../SOLO-PHASE-PLAN.md),

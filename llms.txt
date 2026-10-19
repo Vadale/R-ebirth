@@ -1,0 +1,33 @@
+# relm
+
+> Local language models as base-R objects for reproducible observation,
+> comparison, intervention and evaluation. Repository: R-ebirth. Package: relm.
+
+The 0.5.0 source was submitted to CRAN; acceptance is pending. Read the installed
+version and help before executing examples. Existing functionality and the
+compatibility baseline are documented; no universal quality or safety claim.
+Do not invent reserved APIs, fetch models or install tools without authorization.
+
+## Start
+
+- [Documentation site](https://vadale.github.io/R-ebirth/): rendered reference and guides from the accepted main build.
+- [Full reference text](https://vadale.github.io/R-ebirth/llms-full.txt): agent guide, compatibility policy and all installed-help topics in one file.
+- [Agent guide](https://github.com/Vadale/R-ebirth/blob/main/docs/agents.md): prerequisites, standalone examples, lifecycle and error handling.
+- [Installation](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md): binary/source routes and toolchain requirements.
+- [Research guide](https://github.com/Vadale/R-ebirth/blob/main/docs/research-guide.md): load, observe, compare, intervene, evaluate, export.
+- [Supported scope](https://github.com/Vadale/R-ebirth/blob/main/docs/supported-workflow.md): capabilities, platform limits and interpretation.
+
+## API and executable examples
+
+- [Public surface CSV](https://github.com/Vadale/R-ebirth/blob/main/docs/api-surface.csv): source-derived signatures for all exports and S3 methods.
+- [Standalone R scripts](https://github.com/Vadale/R-ebirth/tree/main/rebirth/inst/examples/agents): one independent example per export; explicit model/network prerequisites.
+- [Installed reference sources](https://github.com/Vadale/R-ebirth/tree/main/rebirth/man): arguments, return values, errors and examples.
+- [API/version policy](https://github.com/Vadale/R-ebirth/blob/main/docs/api-policy.md): compatibility, deprecation and the thirty-day 1.0 gate.
+- [Approved grammar](https://github.com/Vadale/R-ebirth/blob/main/API-GRAMMAR.md): binding semantics; proposed names are not exported.
+
+## Evidence and distribution
+
+- [CRAN status](https://github.com/Vadale/R-ebirth/blob/main/docs/cran-submission.md): submitted candidate, unresolved policy decision, no admission claim.
+- [Linux CUDA](https://github.com/Vadale/R-ebirth/blob/main/docs/linux-cuda.md): optional build and bounded measured results.
+- [Research walkthrough](https://github.com/Vadale/R-ebirth/tree/main/examples/research-workflow): explicit data separation and output provenance.
+- [r-universe](https://vadale.r-universe.dev/relm): inspect the actual available build and commit; do not equate a version label with verified distribution.
