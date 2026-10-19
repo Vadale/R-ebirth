@@ -1,0 +1,23 @@
+{
+  "README.md": "3d503b20caaa6a7ef1db758019df65b32167724c4db0b3ae1ff1263fb8515d44",
+  "fixtures/existing-declarations/CMakeLists.txt": "5e92d4bb7e33e7793445cec10ff90fbbbb14113651e1596fbf0751e3295cab91",
+  "fixtures/existing-declarations/ggml/src/CMakeLists.txt": "4a2ab9c15b69655c40833a9c34787474cef8077cd67fd6529a1f695d1932f974",
+  "fixtures/existing-declarations/ggml/src/ggml-cpu/ggml-cpu.c": "d44045596268daaed8ad6b4dd1a5e78f521659095cec2f6c0f72dc01903c722e",
+  "fixtures/existing-declarations/ggml/src/unaffected.c": "764f2241233d53c2eb8b5c40c7795ba633263b18017c242aba05a9212870a09b",
+  "fixtures/existing-declarations/headers/windows.h": "418b9fc272674db7269da32e1cd3c0642df744d49e3ec6776e2d956aac5cec0a",
+  "fixtures/missing-declarations/CMakeLists.txt": "5e92d4bb7e33e7793445cec10ff90fbbbb14113651e1596fbf0751e3295cab91",
+  "fixtures/missing-declarations/ggml/src/CMakeLists.txt": "dd2dbe8eb2fd1e40367bc74e7667d434707f0d35c5f8e47f29763b5fc22bfd2c",
+  "fixtures/missing-declarations/ggml/src/ggml-cpu/ggml-cpu.c": "f048ca4839d53fbf587c619fde062965edc1cfc466ee2b6bbcf6388bf8f62516",
+  "fixtures/missing-declarations/ggml/src/unaffected.c": "764f2241233d53c2eb8b5c40c7795ba633263b18017c242aba05a9212870a09b",
+  "fixtures/missing-declarations/headers/windows.h": "cb44df67984d659eaff9c60681a726e9b2530c90c4f43b68facfb76cc411a49a",
+  "local-controls.log": "979185461d3a36f3eff4fb764f558928b278cf766ba6c3083f4efba62cbd516c",
+  "non-windows.c": "715c2a4891e40db84f301124073653f02f59a41b674b544a720e745367f85286",
+  "owner.json": "96811f092b1263c18608d627aa77278d74b5ce10b1b8f4cc8721d4318e9d7e80",
+  "previous-adapter-refusal.json": "10fba2996bf6737f8d15825898ea3c5eb54f0f185051b1ed06d91e47d16b8b00",
+  "previous-adapter-refusal.log": "cbae3d572ec8e8d7ab04140721142151eeb8ceb83112f99fd2e88020369e8ea9",
+  "previous-adapter.h": "64a625e54e4e47ba375a671f06e757e23a51650d84350622611d6206f42be12c",
+  "receipt.json": "8789985b2c07af7e1bbed71d0043dfebd2f0c049d84256db9cf4d974ffbc0236",
+  "source-sha256.json": "a05ca369cc4d5f65ca5dba214475f232270342a3a7d30e97d28374107b2d07fc",
+  "windows-job-raw.log": "442984c02bb90abe4f9a02486f044540ff371d5f3123b84e871aad0fae9c49bf",
+  "windows-job.json": "d38aca6740d0c2bee5adc2aa15a7f457ec437b130530416ea6c611182c8d8753"
+}

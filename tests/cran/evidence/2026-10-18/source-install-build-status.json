@@ -1,0 +1,48 @@
+{
+  "status": "failed",
+  "pid": 2628189,
+  "output": "/home/grauk/Work/relm-phase9/source-install-build",
+  "stages": [
+    {
+      "name": "source-build",
+      "returncode": 0,
+      "log_sha256": "be9314bbcf8f851e202bb0ff48088046f45e9fcb7524f7302ff64506c5337c7e"
+    },
+    {
+      "name": "install",
+      "returncode": 0,
+      "log_sha256": "0b8893e2c13644f9df99db5f01709e7f76584366037879d2a4d11e63b9eea31c"
+    },
+    {
+      "name": "dynamic-links",
+      "returncode": 0,
+      "log_sha256": "4c6f6cf81dfa76868a68034aed3e2fe91c53f4f9d4baf71ba36d3d4a310c07a7"
+    },
+    {
+      "name": "installed-check",
+      "returncode": 1,
+      "log_sha256": "a3b95267952fbfb5cec8b2e15e0ea4a2dba9b1f38044b7c2b386e55f525208bd"
+    }
+  ],
+  "updated_at": "2026-10-18T17:33:44.196903+00:00",
+  "carried_metadata": [
+    {
+      "name": "metadata-x86_64-unknown-linux-gnu",
+      "returncode": 0,
+      "log_sha256": "45c1f9d40c2741c17bcd65eda239d7e3e18efe40997c5250019ca314eca724ff"
+    },
+    {
+      "name": "metadata-x86_64-pc-windows-gnu",
+      "returncode": 0,
+      "log_sha256": "7d3729ede23b5c129f5ee96dd0aa9040c7e33e1eb39320193bed7f85f6b5d2be"
+    },
+    {
+      "name": "metadata-aarch64-apple-darwin",
+      "returncode": 0,
+      "log_sha256": "f1ebfb6379c7e2acaa2fa3c7fb63489e8f2db9e7670c1182901537357d987f01"
+    }
+  ],
+  "stage": "installed-check",
+  "error": "installed-check failed; preserve passed stages",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/grauk/Work/relm-phase9/run-source-install-build.py\", line 64, in <module>\n    stage(\"installed-check\", [\"Rscript\", \"--vanilla\", str(ROOT / \"tests/cran/installed-package.R\"), str(library / \"relm\"), str(package), str(OUT / \"installed-result.rds\")], ROOT, env, 120)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/grauk/Work/relm-phase9/run-source-install-build.py\", line 22, in stage\n    if result.returncode: raise RuntimeError(name + \" failed; preserve passed stages\")\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: installed-check failed; preserve passed stages\n"
+}

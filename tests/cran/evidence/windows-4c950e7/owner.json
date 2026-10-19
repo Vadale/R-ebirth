@@ -1,0 +1,44 @@
+{
+  "head": "4c950e7ea619082bae70b4de5baac0944655648e",
+  "run": 39163783800,
+  "job": 117782380386,
+  "original_conclusion": "failure",
+  "passed_windows_scope": [
+    "3 base path controls",
+    "3 document tangles",
+    "pure-R build and check, zero errors/warnings",
+    "rendered output marker",
+    "actual SDK/registry API, four current hashes"
+  ],
+  "not_executed": [
+    "separate extracted-script R check",
+    "full relm package check"
+  ],
+  "diagnosis": "Windows system2 inserts env as command-line arguments before CMD. Official R 4.6.1 Windows main scans CMD and handles only specific startup switches before it, ignoring the name=value argument. The separate script gate remains skipped. The earlier local Unix child control did not test this Windows path.",
+  "fix": "Scoped Sys.setenv in the probe subprocess helper, restored on success and failure; no env command-line argument. Assertions and full relm check settings unchanged.",
+  "local_validation": {
+    "official_windows_entrypoint_compiled_on_linux": true,
+    "observer_stub_not_windows_sdk": true,
+    "old_argument_order_rejected": 1,
+    "success_restore_cases": 3,
+    "failure_restore_cases": 3,
+    "real_R_child_environment_passed": 1,
+    "relm_native_builds": 0,
+    "model_calls": 0,
+    "renders": 0,
+    "compiler_warnings": 0
+  },
+  "compiled_observer_local_only_sha256": "1307b1e7684829c54d63a9a737e289ffb8b07fe2160a59bb68fa878cdbd98a9a",
+  "source_urls": {
+    "R-4.6.1.c": "https://svn.r-project.org/R/tags/R-4-6-1/src/gnuwin32/front-ends/R.c",
+    "R.c": "https://svn.r-project.org/R/trunk/src/gnuwin32/front-ends/R.c",
+    "rcmdfn.c": "https://svn.r-project.org/R/trunk/src/gnuwin32/front-ends/rcmdfn.c",
+    "system.R": "https://svn.r-project.org/R/trunk/src/library/base/R/windows/system.R"
+  },
+  "limits": [
+    "Hosted corrected execution pending.",
+    "This portable parser reproduction is not actual Windows/Rtools execution.",
+    "No relm native or package acceptance from the pure-R probe.",
+    "Four R jobs still running at initial failure snapshot; five Rust jobs passed."
+  ]
+}

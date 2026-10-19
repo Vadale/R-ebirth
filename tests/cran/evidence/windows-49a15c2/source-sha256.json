@@ -1,0 +1,11 @@
+{
+  "rebirth/src/llama-sources.tar.xz": "e3bc4d8e81da39a46ae01bceb1e7e1f5fefd456919fca0eaf6b6b4e4dfe7e7b1",
+  "rebirth/src/rust/vendor.tar.xz": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b",
+  "rebirth/src/rust/Cargo.lock": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",
+  "rebirth/src/rust/rebirth-llm/native/windows_thread_compat.h": "3fa0c81bdd54fbdcf8577c18a6ed8a0d102986b539f1f032adf6fa0c27a3de61",
+  "rebirth/src/rust/rebirth-llm/native/windows_compat.cmake": "47b5fad67a1259681ccca514ce8c1fce07499b8adf98ed469ddd007e367fed7c",
+  "tests/cran/windows_thread_compat.py": "8a71abda7b24ba7e2d9dda54c3f4d5a6275ab2d68f73080d8134c6ae4b0ce725",
+  "rebirth/src/rust/rebirth-llm/build.rs": "54c8e59799fed1ee9c461f60d3065d3e955a3246ce948c12c6e5b844b7247a60",
+  "rebirth/src/rust/rebirth-llm/build_support.rs": "27b37c2fae4a18971335e1a4e1b6e92916f49e55b1f9a1a9ed672bc133e94093",
+  "rebirth/src/llama.cpp/ggml/CMakeLists.txt": "febd1d7f548657f02cc643b6871b9362fe67de42190176f47ee3ce12e07f2f11"
+}

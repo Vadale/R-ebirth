@@ -1,0 +1,3 @@
+# Preserve exact source, vendor, reference and evidence bytes on every host.
+# Text diff detection remains enabled; only newline conversion is disabled.
+* -text

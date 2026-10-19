@@ -1,0 +1,1 @@
+identical(.libPaths()[[1]], normalizePath(lib)) is not TRUE

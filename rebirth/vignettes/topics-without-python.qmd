@@ -62,55 +62,57 @@ is deterministic given the layout. Cluster names come from the model itself.
 
 ```{r}
 #| label: pipeline-real
-#| eval: !expr run_real
-library(relm)
-m <- llm(model_path)
+if (run_real) {
+  library(relm)
+  m <- llm(model_path)
 
-emb <- llm_embed(m, abstracts$text, pooling = "mean", normalize = TRUE)
+  emb <- llm_embed(m, abstracts$text, pooling = "mean", normalize = TRUE)
 
-set.seed(20240707)
-coords <- uwot::umap(emb, n_neighbors = 15, min_dist = 0.1, n_components = 2,
-                     metric = "cosine", n_sgd_threads = 1)
-cluster <- dbscan::hdbscan(coords, minPts = 15)$cluster # 0 = noise
+  set.seed(20240707)
+  coords <- uwot::umap(emb, n_neighbors = 15, min_dist = 0.1, n_components = 2,
+                       metric = "cosine", n_sgd_threads = 1)
+  cluster <- dbscan::hdbscan(coords, minPts = 15)$cluster # 0 = noise
 
-# Name each cluster from its most central abstracts.
-ids <- sort(setdiff(unique(cluster), 0))
-labels <- vapply(ids, function(g) {
-  members <- which(cluster == g)
-  cen <- colMeans(coords[members, , drop = FALSE])
-  medoid <- members[which.min(rowSums(sweep(coords[members, , drop = FALSE], 2, cen)^2))]
-  prompt <- paste0(
-    "Reply with a SHORT topic label of 2 to 4 words for these abstracts, ",
-    "and nothing else.\n\n",
-    paste0("- ", abstracts$text[medoid], collapse = "\n"), "\n\nTopic label:"
-  )
-  trimws(gsub("[\"'`.]", "", llm_generate(m, prompt, max_tokens = 12, temperature = 0, seed = 1)))
-}, character(1))
-names(labels) <- ids
-close(m)
+  # Name each cluster from its most central abstracts.
+  ids <- sort(setdiff(unique(cluster), 0))
+  labels <- vapply(ids, function(g) {
+    members <- which(cluster == g)
+    cen <- colMeans(coords[members, , drop = FALSE])
+    medoid <- members[which.min(rowSums(sweep(coords[members, , drop = FALSE], 2, cen)^2))]
+    prompt <- paste0(
+      "Reply with a SHORT topic label of 2 to 4 words for these abstracts, ",
+      "and nothing else.\n\n",
+      paste0("- ", abstracts$text[medoid], collapse = "\n"), "\n\nTopic label:"
+    )
+    trimws(gsub("[\"'`.]", "", llm_generate(m, prompt, max_tokens = 12, temperature = 0, seed = 1)))
+  }, character(1))
+  names(labels) <- ids
+  close(m)
+}
 ```
 
 ```{r}
 #| label: pipeline-illustrative
-#| eval: !expr isFALSE(run_real)
-# Illustrative layout (no model/uwot/dbscan at render time): eight Gaussian blobs
-# keyed off the sample's known topics, so the map matches what the real pipeline
-# produces. Run the chunk above on your own model for the genuine embedding map.
-set.seed(20240707)
-labs <- unique(abstracts$label)
-ang <- setNames(2 * pi * (seq_along(labs) - 1) / length(labs), labs)
-cx <- 6 * cos(ang[abstracts$label]); cy <- 6 * sin(ang[abstracts$label])
-coords <- cbind(cx + rnorm(nrow(abstracts), 0, 0.8),
-                cy + rnorm(nrow(abstracts), 0, 0.8))
-cluster <- as.integer(factor(abstracts$label, levels = labs))
-labels <- setNames(labs, seq_along(labs))
-# a synthetic embedding (one direction per topic + noise) so the quality and
-# structure metrics below have something to read without a model
-D <- 24
-dirs <- matrix(rnorm(length(labs) * D), length(labs), D)
-dirs <- dirs / sqrt(rowSums(dirs^2))
-emb <- dirs[cluster, ] + matrix(rnorm(nrow(abstracts) * D, sd = 0.5), nrow(abstracts), D)
-emb <- emb / sqrt(rowSums(emb^2))
+if (isFALSE(run_real)) {
+  # Illustrative layout (no model/uwot/dbscan at render time): eight Gaussian blobs
+  # keyed off the sample's known topics, so the map matches what the real pipeline
+  # produces. Run the chunk above on your own model for the genuine embedding map.
+  set.seed(20240707)
+  labs <- unique(abstracts$label)
+  ang <- setNames(2 * pi * (seq_along(labs) - 1) / length(labs), labs)
+  cx <- 6 * cos(ang[abstracts$label]); cy <- 6 * sin(ang[abstracts$label])
+  coords <- cbind(cx + rnorm(nrow(abstracts), 0, 0.8),
+                  cy + rnorm(nrow(abstracts), 0, 0.8))
+  cluster <- as.integer(factor(abstracts$label, levels = labs))
+  labels <- setNames(labs, seq_along(labs))
+  # a synthetic embedding (one direction per topic + noise) so the quality and
+  # structure metrics below have something to read without a model
+  D <- 24
+  dirs <- matrix(rnorm(length(labs) * D), length(labs), D)
+  dirs <- dirs / sqrt(rowSums(dirs^2))
+  emb <- dirs[cluster, ] + matrix(rnorm(nrow(abstracts) * D, sd = 0.5), nrow(abstracts), D)
+  emb <- emb / sqrt(rowSums(emb^2))
+}
 ```
 
 ## The labelled map

@@ -1,0 +1,11 @@
+{
+  "TMPDIR": "/home/grauk/Work/relm-phase9/tmp",
+  "R_LIBS": "/home/grauk/Work/relm-phase9/source-install/library:/home/grauk/.local/share/relm/phase8/R-library",
+  "R_LIBS_USER": "/home/grauk/.local/share/relm/phase8/R-library",
+  "RELM_ENABLE_CUDA": "0",
+  "RELM_ENABLE_SELFTESTS": "0",
+  "NOT_CRAN": "false",
+  "CARGO_NET_OFFLINE": "true",
+  "CARGO_BUILD_JOBS": "2",
+  "PATH": "/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin"
+}

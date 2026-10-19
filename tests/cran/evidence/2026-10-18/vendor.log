@@ -1,0 +1,111 @@
+ Downloading crates ...
+  Downloaded futures-core v0.3.32
+  Downloaded android_system_properties v0.1.5
+  Downloaded bumpalo v3.20.3
+  Downloaded windows-result v0.4.1
+  Downloaded futures-task v0.3.32
+  Downloaded core-foundation-sys v0.8.7
+  Downloaded windows-implement v0.60.2
+  Downloaded wasm-bindgen-shared v0.2.126
+  Downloaded windows-strings v0.5.1
+  Downloaded wasm-bindgen-macro v0.2.126
+  Downloaded iana-time-zone-haiku v0.1.2
+  Downloaded windows-link v0.2.1
+  Downloaded windows-interface v0.59.3
+  Downloaded pin-project-lite v0.2.17
+  Downloaded slab v0.4.12
+  Downloaded wasi v0.11.1+wasi-snapshot-preview1
+  Downloaded rustversion v1.0.22
+  Downloaded windows-core v0.62.2
+  Downloaded serde_derive v1.0.228
+  Downloaded log v0.4.33
+  Downloaded wasm-bindgen v0.2.126
+  Downloaded wit-bindgen v0.57.1
+  Downloaded r-efi v5.3.0
+  Downloaded wasm-bindgen-macro-support v0.2.126
+  Downloaded js-sys v0.3.103
+  Downloaded wasip2 v1.0.4+wasi-0.2.12
+  Downloaded futures-util v0.3.32
+   Vendoring ahash v0.8.12 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ahash-0.8.12) to /home/grauk/Work/relm-phase9/vendor/ahash-0.8.12
+   Vendoring android_system_properties v0.1.5 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/android_system_properties-0.1.5) to /home/grauk/Work/relm-phase9/vendor/android_system_properties-0.1.5
+   Vendoring arrow-array v59.0.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrow-array-59.0.0) to /home/grauk/Work/relm-phase9/vendor/arrow-array-59.0.0
+   Vendoring arrow-buffer v59.0.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrow-buffer-59.0.0) to /home/grauk/Work/relm-phase9/vendor/arrow-buffer-59.0.0
+   Vendoring arrow-data v59.0.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrow-data-59.0.0) to /home/grauk/Work/relm-phase9/vendor/arrow-data-59.0.0
+   Vendoring arrow-ipc v59.0.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrow-ipc-59.0.0) to /home/grauk/Work/relm-phase9/vendor/arrow-ipc-59.0.0
+   Vendoring arrow-schema v59.0.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrow-schema-59.0.0) to /home/grauk/Work/relm-phase9/vendor/arrow-schema-59.0.0
+   Vendoring arrow-select v59.0.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arrow-select-59.0.0) to /home/grauk/Work/relm-phase9/vendor/arrow-select-59.0.0
+   Vendoring autocfg v1.5.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/autocfg-1.5.1) to /home/grauk/Work/relm-phase9/vendor/autocfg-1.5.1
+   Vendoring bitflags v2.13.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bitflags-2.13.0) to /home/grauk/Work/relm-phase9/vendor/bitflags-2.13.0
+   Vendoring bumpalo v3.20.3 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bumpalo-3.20.3) to /home/grauk/Work/relm-phase9/vendor/bumpalo-3.20.3
+   Vendoring bytes v1.12.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/bytes-1.12.0) to /home/grauk/Work/relm-phase9/vendor/bytes-1.12.0
+   Vendoring cc v1.2.65 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cc-1.2.65) to /home/grauk/Work/relm-phase9/vendor/cc-1.2.65
+   Vendoring cfg-if v1.0.4 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cfg-if-1.0.4) to /home/grauk/Work/relm-phase9/vendor/cfg-if-1.0.4
+   Vendoring chrono v0.4.45 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/chrono-0.4.45) to /home/grauk/Work/relm-phase9/vendor/chrono-0.4.45
+   Vendoring cmake v0.1.58 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cmake-0.1.58) to /home/grauk/Work/relm-phase9/vendor/cmake-0.1.58
+   Vendoring const-random v0.1.18 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-random-0.1.18) to /home/grauk/Work/relm-phase9/vendor/const-random-0.1.18
+   Vendoring const-random-macro v0.1.16 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/const-random-macro-0.1.16) to /home/grauk/Work/relm-phase9/vendor/const-random-macro-0.1.16
+   Vendoring core-foundation-sys v0.8.7 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/core-foundation-sys-0.8.7) to /home/grauk/Work/relm-phase9/vendor/core-foundation-sys-0.8.7
+   Vendoring crunchy v0.2.4 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/crunchy-0.2.4) to /home/grauk/Work/relm-phase9/vendor/crunchy-0.2.4
+   Vendoring extendr-api v0.9.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/extendr-api-0.9.0) to /home/grauk/Work/relm-phase9/vendor/extendr-api-0.9.0
+   Vendoring extendr-ffi v0.9.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/extendr-ffi-0.9.0) to /home/grauk/Work/relm-phase9/vendor/extendr-ffi-0.9.0
+   Vendoring extendr-macros v0.9.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/extendr-macros-0.9.0) to /home/grauk/Work/relm-phase9/vendor/extendr-macros-0.9.0
+   Vendoring find-msvc-tools v0.1.9 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/find-msvc-tools-0.1.9) to /home/grauk/Work/relm-phase9/vendor/find-msvc-tools-0.1.9
+   Vendoring flatbuffers v25.12.19 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/flatbuffers-25.12.19) to /home/grauk/Work/relm-phase9/vendor/flatbuffers-25.12.19
+   Vendoring futures-core v0.3.32 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-core-0.3.32) to /home/grauk/Work/relm-phase9/vendor/futures-core-0.3.32
+   Vendoring futures-task v0.3.32 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-task-0.3.32) to /home/grauk/Work/relm-phase9/vendor/futures-task-0.3.32
+   Vendoring futures-util v0.3.32 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-util-0.3.32) to /home/grauk/Work/relm-phase9/vendor/futures-util-0.3.32
+   Vendoring getrandom v0.2.17 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.2.17) to /home/grauk/Work/relm-phase9/vendor/getrandom-0.2.17
+   Vendoring getrandom v0.3.4 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/getrandom-0.3.4) to /home/grauk/Work/relm-phase9/vendor/getrandom-0.3.4
+   Vendoring half v2.7.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/half-2.7.1) to /home/grauk/Work/relm-phase9/vendor/half-2.7.1
+   Vendoring hashbrown v0.17.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.17.1) to /home/grauk/Work/relm-phase9/vendor/hashbrown-0.17.1
+   Vendoring iana-time-zone v0.1.65 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/iana-time-zone-0.1.65) to /home/grauk/Work/relm-phase9/vendor/iana-time-zone-0.1.65
+   Vendoring iana-time-zone-haiku v0.1.2 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/iana-time-zone-haiku-0.1.2) to /home/grauk/Work/relm-phase9/vendor/iana-time-zone-haiku-0.1.2
+   Vendoring itoa v1.0.18 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/itoa-1.0.18) to /home/grauk/Work/relm-phase9/vendor/itoa-1.0.18
+   Vendoring js-sys v0.3.103 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/js-sys-0.3.103) to /home/grauk/Work/relm-phase9/vendor/js-sys-0.3.103
+   Vendoring lazy_static v1.5.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/lazy_static-1.5.0) to /home/grauk/Work/relm-phase9/vendor/lazy_static-1.5.0
+   Vendoring libc v0.2.186 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.186) to /home/grauk/Work/relm-phase9/vendor/libc-0.2.186
+   Vendoring libm v0.2.16 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/libm-0.2.16) to /home/grauk/Work/relm-phase9/vendor/libm-0.2.16
+   Vendoring log v0.4.33 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/log-0.4.33) to /home/grauk/Work/relm-phase9/vendor/log-0.4.33
+   Vendoring memchr v2.8.3 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/memchr-2.8.3) to /home/grauk/Work/relm-phase9/vendor/memchr-2.8.3
+   Vendoring num-bigint v0.4.8 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-bigint-0.4.8) to /home/grauk/Work/relm-phase9/vendor/num-bigint-0.4.8
+   Vendoring num-complex v0.4.6 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-complex-0.4.6) to /home/grauk/Work/relm-phase9/vendor/num-complex-0.4.6
+   Vendoring num-integer v0.1.46 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-integer-0.1.46) to /home/grauk/Work/relm-phase9/vendor/num-integer-0.1.46
+   Vendoring num-traits v0.2.19 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/num-traits-0.2.19) to /home/grauk/Work/relm-phase9/vendor/num-traits-0.2.19
+   Vendoring once_cell v1.21.4 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/once_cell-1.21.4) to /home/grauk/Work/relm-phase9/vendor/once_cell-1.21.4
+   Vendoring paste v1.0.15 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/paste-1.0.15) to /home/grauk/Work/relm-phase9/vendor/paste-1.0.15
+   Vendoring pin-project-lite v0.2.17 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/pin-project-lite-0.2.17) to /home/grauk/Work/relm-phase9/vendor/pin-project-lite-0.2.17
+   Vendoring proc-macro2 v1.0.106 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/proc-macro2-1.0.106) to /home/grauk/Work/relm-phase9/vendor/proc-macro2-1.0.106
+   Vendoring quote v1.0.46 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/quote-1.0.46) to /home/grauk/Work/relm-phase9/vendor/quote-1.0.46
+   Vendoring r-efi v5.3.0 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/r-efi-5.3.0) to /home/grauk/Work/relm-phase9/vendor/r-efi-5.3.0
+   Vendoring readonly v0.2.13 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/readonly-0.2.13) to /home/grauk/Work/relm-phase9/vendor/readonly-0.2.13
+   Vendoring rustc_version v0.4.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustc_version-0.4.1) to /home/grauk/Work/relm-phase9/vendor/rustc_version-0.4.1
+   Vendoring rustversion v1.0.22 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustversion-1.0.22) to /home/grauk/Work/relm-phase9/vendor/rustversion-1.0.22
+   Vendoring ryu v1.0.23 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/ryu-1.0.23) to /home/grauk/Work/relm-phase9/vendor/ryu-1.0.23
+   Vendoring semver v1.0.28 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/semver-1.0.28) to /home/grauk/Work/relm-phase9/vendor/semver-1.0.28
+   Vendoring serde v1.0.228 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.228) to /home/grauk/Work/relm-phase9/vendor/serde-1.0.228
+   Vendoring serde_core v1.0.228 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_core-1.0.228) to /home/grauk/Work/relm-phase9/vendor/serde_core-1.0.228
+   Vendoring serde_derive v1.0.228 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_derive-1.0.228) to /home/grauk/Work/relm-phase9/vendor/serde_derive-1.0.228
+   Vendoring serde_json v1.0.145 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde_json-1.0.145) to /home/grauk/Work/relm-phase9/vendor/serde_json-1.0.145
+   Vendoring shlex v2.0.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/shlex-2.0.1) to /home/grauk/Work/relm-phase9/vendor/shlex-2.0.1
+   Vendoring slab v0.4.12 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/slab-0.4.12) to /home/grauk/Work/relm-phase9/vendor/slab-0.4.12
+   Vendoring syn v2.0.118 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/syn-2.0.118) to /home/grauk/Work/relm-phase9/vendor/syn-2.0.118
+   Vendoring tiny-keccak v2.0.2 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tiny-keccak-2.0.2) to /home/grauk/Work/relm-phase9/vendor/tiny-keccak-2.0.2
+   Vendoring unicode-ident v1.0.24 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.24) to /home/grauk/Work/relm-phase9/vendor/unicode-ident-1.0.24
+   Vendoring version_check v0.9.5 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/version_check-0.9.5) to /home/grauk/Work/relm-phase9/vendor/version_check-0.9.5
+   Vendoring wasi v0.11.1+wasi-snapshot-preview1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasi-0.11.1+wasi-snapshot-preview1) to /home/grauk/Work/relm-phase9/vendor/wasi-0.11.1+wasi-snapshot-preview1
+   Vendoring wasip2 v1.0.4+wasi-0.2.12 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasip2-1.0.4+wasi-0.2.12) to /home/grauk/Work/relm-phase9/vendor/wasip2-1.0.4+wasi-0.2.12
+   Vendoring wasm-bindgen v0.2.126 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-0.2.126) to /home/grauk/Work/relm-phase9/vendor/wasm-bindgen-0.2.126
+   Vendoring wasm-bindgen-macro v0.2.126 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-macro-0.2.126) to /home/grauk/Work/relm-phase9/vendor/wasm-bindgen-macro-0.2.126
+   Vendoring wasm-bindgen-macro-support v0.2.126 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-macro-support-0.2.126) to /home/grauk/Work/relm-phase9/vendor/wasm-bindgen-macro-support-0.2.126
+   Vendoring wasm-bindgen-shared v0.2.126 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wasm-bindgen-shared-0.2.126) to /home/grauk/Work/relm-phase9/vendor/wasm-bindgen-shared-0.2.126
+   Vendoring windows-core v0.62.2 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-core-0.62.2) to /home/grauk/Work/relm-phase9/vendor/windows-core-0.62.2
+   Vendoring windows-implement v0.60.2 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-implement-0.60.2) to /home/grauk/Work/relm-phase9/vendor/windows-implement-0.60.2
+   Vendoring windows-interface v0.59.3 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-interface-0.59.3) to /home/grauk/Work/relm-phase9/vendor/windows-interface-0.59.3
+   Vendoring windows-link v0.2.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-link-0.2.1) to /home/grauk/Work/relm-phase9/vendor/windows-link-0.2.1
+   Vendoring windows-result v0.4.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-result-0.4.1) to /home/grauk/Work/relm-phase9/vendor/windows-result-0.4.1
+   Vendoring windows-strings v0.5.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/windows-strings-0.5.1) to /home/grauk/Work/relm-phase9/vendor/windows-strings-0.5.1
+   Vendoring wit-bindgen v0.57.1 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/wit-bindgen-0.57.1) to /home/grauk/Work/relm-phase9/vendor/wit-bindgen-0.57.1
+   Vendoring zerocopy v0.8.52 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerocopy-0.8.52) to /home/grauk/Work/relm-phase9/vendor/zerocopy-0.8.52
+   Vendoring zerocopy-derive v0.8.52 (/home/grauk/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zerocopy-derive-0.8.52) to /home/grauk/Work/relm-phase9/vendor/zerocopy-derive-0.8.52
+To use vendored sources, add this to your .cargo/config.toml for this project:
+

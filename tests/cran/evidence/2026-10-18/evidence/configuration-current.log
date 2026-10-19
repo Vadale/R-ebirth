@@ -1,0 +1,33 @@
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 4.4.3
+Building for CRAN.
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 4.4.3
+Building for CRAN.
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 4.4.3
+Building for CRAN.
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 4.4.3
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 4.4.3
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 4.4.3
+Building for CRAN.
+Writing `src/Makevars.win`.
+`tools/config.R` has finished.
+CRAN_CONFIG_PASS cases=9 engine_files=766 native_builds=0 models=0

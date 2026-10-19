@@ -1,0 +1,19 @@
+{
+  "status": "diagnosed",
+  "cause": "Smoke test wrongly requested successful text generation from the documented no_vocab synthetic model",
+  "product_change": false,
+  "carried_stages": [
+    "source-build",
+    "install",
+    "dynamic-links"
+  ],
+  "first_attempt": {
+    "model_loads": 1,
+    "generation_attempts": 1,
+    "successful_generations": 0,
+    "tokenization_refusal": true,
+    "finally_close_executed": true
+  },
+  "correction": "Assert documented relm_error_tokenize class and native handle closure; no raw-token public generation API exists; no native rebuild or reinstall",
+  "changed_test_sha256": "87e11a7685d9649ee1f4269d67616cc9bb588bce7670613b94905e3c4fabff8c"
+}

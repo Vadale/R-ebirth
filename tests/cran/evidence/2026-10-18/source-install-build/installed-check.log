@@ -1,0 +1,5 @@
+["Rscript", "--vanilla", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/tests/cran/installed-package.R", "/home/grauk/Work/relm-phase9/source-install-build/library/relm", "/home/grauk/Work/relm-phase9/source-install/package", "/home/grauk/Work/relm-phase9/source-install-build/installed-result.rds"]
+Error in FUN(X[[i]], ...) : 
+  Tokenization failed (the model carries no tokenizer (no_vocab)). The model may lack a tokenizer, or a token id may be outside its vocabulary. Check the input and that the model file carries a tokenizer.
+Calls: tryCatch ... llm_generate -> vapply -> FUN -> relm_check -> relm_abort
+Execution halted

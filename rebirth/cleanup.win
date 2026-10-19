@@ -1,1 +1,5 @@
 rm -f src/Makevars.win
+if test -f src/.relm-unpacked-engine; then
+    rm -rf src/llama.cpp
+    rm -f src/.relm-unpacked-engine
+fi

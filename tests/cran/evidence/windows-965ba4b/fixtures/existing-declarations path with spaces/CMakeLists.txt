@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.28)
+project(relm_thread_compat_control C)
+set(WIN32 TRUE)
+include("/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm/native/windows_compat.cmake")
+add_subdirectory(ggml/src)

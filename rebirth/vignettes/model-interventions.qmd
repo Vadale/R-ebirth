@@ -20,6 +20,15 @@ four coordinate differences were independently specified as `0.5, -1, 1, 0`.
 Real observations come directly from `llm_generate(on_state = ...)`.
 
 ```{r}
+#| label: setup
+#| include: false
+# R CMD build records its installation here. Quarto on Windows can lose the
+# temporary library when starting its R subprocess (quarto-r issue #217).
+build_library <- Sys.getenv("R_BUILD_TEMPLIB")
+if (nzchar(build_library)) .libPaths(c(build_library, .libPaths()))
+```
+
+```{r}
 #| fig-width: 10
 #| fig-height: 7
 library(relm)

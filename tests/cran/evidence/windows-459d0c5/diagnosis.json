@@ -1,0 +1,18 @@
+{
+  "status": "original_failed_correction_pending_hosted_preflight",
+  "head": "459d0c577fb8accb4a6096aca17fee3c14d43fb1",
+  "actual_rtools_registry_import_linkage": "passed_four_source_hashes_verified",
+  "failure": "Quarto render cannot find relm in Windows R CMD build temporary library",
+  "secondary": "knitr tangle evaluates eval flags without running setup; fourteen conditions moved into identical R if bodies",
+  "scope": "Local base controls and source equivalence only; no local Quarto, native build or model calls",
+  "upstream": "https://github.com/quarto-dev/quarto-r/issues/217",
+  "sources_read_locally": {
+    "utils-vignettes.R": "1fde95e545e51f035aa9a5cd55ec3985d66deb0074d2cc371368187cafbf8019",
+    "knitr-block.R": "477e698830ce215e3caed0904723b114aac4250cffa0c4215febee543818387e"
+  },
+  "limitations": [
+    "Detailed successful temporary installation log not retained by R CMD build",
+    "Whole Windows package acceptance still pending",
+    "Rust jobs passed; Mac R jobs were still running at first failure snapshot"
+  ]
+}

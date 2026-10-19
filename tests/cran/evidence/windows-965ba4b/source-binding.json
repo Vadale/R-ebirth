@@ -1,0 +1,21 @@
+{
+  "status": "local_controls_passed_actual_windows_pending",
+  "failed_parent": "965ba4b79f81ba471ad736e047f7fae17b3d24f3",
+  "source_sha256": {
+    "rebirth/src/rust/rebirth-llm/build.rs": "e9fef2a2781098e3dbc30d805d697b8a4d842769231664fbce7ccc15141d4a09",
+    "rebirth/src/rust/rebirth-llm/native/windows_compat.cmake": "47b5fad67a1259681ccca514ce8c1fce07499b8adf98ed469ddd007e367fed7c",
+    "rebirth/src/rust/rebirth-llm/native/windows_thread_compat.h": "64a625e54e4e47ba375a671f06e757e23a51650d84350622611d6206f42be12c",
+    "tests/cran/windows_thread_compat.py": "884334d547488c50f1444b1cfb83cd1390b4ff9be7e6261b1d38f68fbdb12a11",
+    ".github/workflows/cran-portability.yaml": "5b80b1c07c8ed16fa14cf7c52997f4f5f1f1c0da6c4a374534e93b17d893104c",
+    ".github/workflows/rust.yaml": "a0fb6ebfaf7ea090fdef2310e3ef67527068afb074bfda5b6161834414561984",
+    "rebirth/src/llama-sources.tar.xz": "e3bc4d8e81da39a46ae01bceb1e7e1f5fefd456919fca0eaf6b6b4e4dfe7e7b1",
+    "rebirth/src/rust/vendor.tar.xz": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b",
+    "rebirth/src/rust/Cargo.lock": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6"
+  },
+  "commands": [
+    "python3 tests/cran/windows_thread_compat.py --output /home/grauk/Work/relm-phase9/windows-thread-compat",
+    "rustfmt --edition 2021 --check rebirth/src/rust/rebirth-llm/build.rs"
+  ],
+  "native_engine_builds": 0,
+  "model_calls": 0
+}

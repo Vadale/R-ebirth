@@ -1,3 +1,18 @@
+# Development — CRAN source preparation
+
+* Source distributions bundle the unchanged engine and locked Rust dependencies,
+  avoiding long outer archive paths and network-dependent Cargo installation.
+  Source integrity, license notices and the optional Linux CUDA route are retained.
+* Package compilation uses locked dependencies and at most two Cargo jobs;
+  tool discovery respects the platform PATH separator. Windows CPU acceptance
+  is being checked separately and is not yet claimed.
+
+* Windows native builds use ordinary absolute CMake paths and shorter owned
+  output directories; Cargo links the GNU C++ runtime instead of Darwin
+  frameworks. A scoped header adapter supplies declarations missing from older
+  Rtools MinGW headers without changing engine scheduling or kernel code.
+  Hosted Windows CPU validation is still pending.
+
 # Development — optional Linux CUDA
 
 * Added an explicit optional Linux x86_64 CUDA build route with

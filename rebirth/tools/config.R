@@ -14,7 +14,7 @@ env_not_cran <- Sys.getenv("NOT_CRAN")
 # check if the vendored zip file exists
 vendor_exists <- file.exists("src/rust/vendor.tar.xz")
 
-is_not_cran <- env_not_cran != ""
+is_not_cran <- identical(tolower(env_not_cran), "true")
 is_debug <- env_debug != ""
 
 if (is_debug) {
@@ -28,13 +28,14 @@ if (!is_not_cran) {
   message("Building for CRAN.")
 }
 
-# we set cran flags only if NOT_CRAN is empty and if
-# the vendored crates are present.
-.cran_flags <- ifelse(
-  !is_not_cran && vendor_exists,
-  "-j 2 --offline",
-  ""
-)
+# Bound package compilation even when a developer has no vendor bundle.
+.cran_flags <- paste("--locked -j 2", if (vendor_exists) "--offline" else "")
+if (!is_not_cran && !vendor_exists) {
+  stop("Bundled Rust sources are missing; use a complete relm source package. ",
+       "Maintainers may set NOT_CRAN=true for an unbundled development checkout.", call. = FALSE)
+}
+source("tools/source-bundles.R")
+relm_unpack_engine()
 
 # Only explicit maintainer/CI builds expose native fixture entry points.
 selftest <- Sys.getenv("RELM_ENABLE_SELFTESTS", "0")
@@ -97,7 +98,7 @@ is_windows <- .Platform[["OS.type"]] == "windows"
 sysname <- Sys.info()[["sysname"]]
 arch <- R.version[["arch"]]
 if (is_windows) {
-  # Windows/CUDA is Phase 8 and not yet exercised. CPU-only, GNU ld group form.
+  # Windows CPU linking; actual build/check acceptance is the WP15 gate.
   .llama_libs <- paste(
     "-Wl,--start-group",
     "-lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base",

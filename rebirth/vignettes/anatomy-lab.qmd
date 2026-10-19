@@ -166,44 +166,46 @@ same fold where appropriate.
 
 ```{r}
 #| label: probe-real
-#| eval: !expr run_real
-library(relm)
-m <- llm(model_path)
-tr <- llm_trace(m, train, positions = "last", components = "residual")
+if (run_real) {
+  library(relm)
+  m <- llm(model_path)
+  tr <- llm_trace(m, train, positions = "last", components = "residual")
 
-layer_matrix <- function(tr, L) {
-  x <- as.matrix(tr, layer = L, component = "residual")
-  x[order(as.integer(sub("[.].*$", "", rownames(x)))), , drop = FALSE]
-}
-yf <- factor(ifelse(y, "pos", "neg"), levels = c("neg", "pos"))
-set.seed(1)
-foldid <- sample(rep(seq_len(5), length.out = length(y)))
+  layer_matrix <- function(tr, L) {
+    x <- as.matrix(tr, layer = L, component = "residual")
+    x[order(as.integer(sub("[.].*$", "", rownames(x)))), , drop = FALSE]
+  }
+  yf <- factor(ifelse(y, "pos", "neg"), levels = c("neg", "pos"))
+  set.seed(1)
+  foldid <- sample(rep(seq_len(5), length.out = length(y)))
 
-band <- sort(unique(tr$layer))
-auc <- lower <- upper <- numeric(length(band))
-for (i in seq_along(band)) {
-  cvfit <- glmnet::cv.glmnet(layer_matrix(tr, band[i]), yf, family = "binomial",
-                             alpha = 0, foldid = foldid, type.measure = "auc",
-                             keep = TRUE)
-  oof <- cvfit$fit.preval[, match(cvfit$lambda.min, cvfit$lambda)]
-  ci <- demo_auc_ci(oof, y)
-  auc[i] <- ci[["auc"]]; lower[i] <- ci[["lower"]]; upper[i] <- ci[["upper"]]
+  band <- sort(unique(tr$layer))
+  auc <- lower <- upper <- numeric(length(band))
+  for (i in seq_along(band)) {
+    cvfit <- glmnet::cv.glmnet(layer_matrix(tr, band[i]), yf, family = "binomial",
+                               alpha = 0, foldid = foldid, type.measure = "auc",
+                               keep = TRUE)
+    oof <- cvfit$fit.preval[, match(cvfit$lambda.min, cvfit$lambda)]
+    ci <- demo_auc_ci(oof, y)
+    auc[i] <- ci[["auc"]]; lower[i] <- ci[["lower"]]; upper[i] <- ci[["upper"]]
+  }
+  res <- list(layers = band, auc = auc, lower = lower, upper = upper)
+  close(m)
 }
-res <- list(layers = band, auc = auc, lower = lower, upper = upper)
-close(m)
 ```
 
 ```{r}
 #| label: probe-illustrative
-#| eval: !expr isFALSE(run_real)
-# Illustrative curve (no model available at render time): sentiment becomes
-# linearly readable in the middle layers. Run the chunk above on your own model
-# to reproduce this figure from real activations.
-L <- 1:24
-set.seed(1)
-auc <- pmin(pmax(0.5 + 0.47 / (1 + exp(-(L - 7) / 1.6)) + rnorm(24, 0, 0.01), 0.5), 0.99)
-w <- (0.5 + 0.5 * (1 - auc)) * 0.09
-res <- list(layers = L, auc = auc, lower = pmax(auc - w, 0), upper = pmin(auc + w, 1))
+if (isFALSE(run_real)) {
+  # Illustrative curve (no model available at render time): sentiment becomes
+  # linearly readable in the middle layers. Run the chunk above on your own model
+  # to reproduce this figure from real activations.
+  L <- 1:24
+  set.seed(1)
+  auc <- pmin(pmax(0.5 + 0.47 / (1 + exp(-(L - 7) / 1.6)) + rnorm(24, 0, 0.01), 0.5), 0.99)
+  w <- (0.5 + 0.5 * (1 - auc)) * 0.09
+  res <- list(layers = L, auc = auc, lower = pmax(auc - w, 0), upper = pmin(auc + w, 1))
+}
 ```
 
 ```{r}

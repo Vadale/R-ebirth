@@ -1,0 +1,192 @@
+## -----------------------------------------------------------------------------
+#| label: setup
+#| include: false
+# The embedding step needs a local GGUF model; UMAP and HDBSCAN need uwot and
+# dbscan. A checker has none of these, so we gate the real pipeline and fall back
+# to an illustrative layout keyed off the sample's known topics. Point
+# RELM_DEMO_MODEL (or RELM_TEST_MODEL_QWEN) at a GGUF file, and install
+# uwot + dbscan, to render the map from real embeddings.
+model_path <- Sys.getenv("RELM_DEMO_MODEL", Sys.getenv("RELM_TEST_MODEL_QWEN", ""))
+have_model <- nzchar(model_path) && file.exists(model_path)
+have_uwot <- requireNamespace("uwot", quietly = TRUE)
+have_dbscan <- requireNamespace("dbscan", quietly = TRUE)
+run_real <- have_model && have_uwot && have_dbscan
+
+
+## -----------------------------------------------------------------------------
+#| label: data
+csv <- system.file("extdata", "abstracts-sample.csv", package = "relm")
+abstracts <- if (nzchar(csv)) {
+  utils::read.csv(csv, stringsAsFactors = FALSE)
+} else {
+  # fallback when the vignette is knitted from the source tree
+  utils::read.csv(file.path("..", "inst", "extdata", "abstracts-sample.csv"),
+                  stringsAsFactors = FALSE)
+}
+nrow(abstracts)
+table(abstracts$label)
+
+
+## -----------------------------------------------------------------------------
+#| label: pipeline-real
+if (run_real) {
+  library(relm)
+  m <- llm(model_path)
+
+  emb <- llm_embed(m, abstracts$text, pooling = "mean", normalize = TRUE)
+
+  set.seed(20240707)
+  coords <- uwot::umap(emb, n_neighbors = 15, min_dist = 0.1, n_components = 2,
+                       metric = "cosine", n_sgd_threads = 1)
+  cluster <- dbscan::hdbscan(coords, minPts = 15)$cluster # 0 = noise
+
+  # Name each cluster from its most central abstracts.
+  ids <- sort(setdiff(unique(cluster), 0))
+  labels <- vapply(ids, function(g) {
+    members <- which(cluster == g)
+    cen <- colMeans(coords[members, , drop = FALSE])
+    medoid <- members[which.min(rowSums(sweep(coords[members, , drop = FALSE], 2, cen)^2))]
+    prompt <- paste0(
+      "Reply with a SHORT topic label of 2 to 4 words for these abstracts, ",
+      "and nothing else.\n\n",
+      paste0("- ", abstracts$text[medoid], collapse = "\n"), "\n\nTopic label:"
+    )
+    trimws(gsub("[\"'`.]", "", llm_generate(m, prompt, max_tokens = 12, temperature = 0, seed = 1)))
+  }, character(1))
+  names(labels) <- ids
+  close(m)
+}
+
+
+## -----------------------------------------------------------------------------
+#| label: pipeline-illustrative
+if (isFALSE(run_real)) {
+  # Illustrative layout (no model/uwot/dbscan at render time): eight Gaussian blobs
+  # keyed off the sample's known topics, so the map matches what the real pipeline
+  # produces. Run the chunk above on your own model for the genuine embedding map.
+  set.seed(20240707)
+  labs <- unique(abstracts$label)
+  ang <- setNames(2 * pi * (seq_along(labs) - 1) / length(labs), labs)
+  cx <- 6 * cos(ang[abstracts$label]); cy <- 6 * sin(ang[abstracts$label])
+  coords <- cbind(cx + rnorm(nrow(abstracts), 0, 0.8),
+                  cy + rnorm(nrow(abstracts), 0, 0.8))
+  cluster <- as.integer(factor(abstracts$label, levels = labs))
+  labels <- setNames(labs, seq_along(labs))
+  # a synthetic embedding (one direction per topic + noise) so the quality and
+  # structure metrics below have something to read without a model
+  D <- 24
+  dirs <- matrix(rnorm(length(labs) * D), length(labs), D)
+  dirs <- dirs / sqrt(rowSums(dirs^2))
+  emb <- dirs[cluster, ] + matrix(rnorm(nrow(abstracts) * D, sd = 0.5), nrow(abstracts), D)
+  emb <- emb / sqrt(rowSums(emb^2))
+}
+
+
+## -----------------------------------------------------------------------------
+#| label: cluster-map
+#| fig-width: 8.5
+#| fig-height: 6.5
+#| fig-alt: "UMAP scatter of abstracts coloured into topic clusters with topic labels."
+ids <- sort(setdiff(unique(cluster), 0))
+pal <- adjustcolor(grDevices::hcl.colors(length(ids), "Dark 3"), 0.6)
+col <- rep(adjustcolor("grey70", 0.45), length(cluster))
+for (j in seq_along(ids)) col[cluster == ids[j]] <- pal[j]
+
+op <- par(mar = c(4.2, 4.2, 3, 1), mgp = c(2.5, 0.7, 0), las = 1)
+xr <- range(coords[, 1]); yr <- range(coords[, 2]) # pad so edge labels fit
+plot(coords, col = col, pch = 19, cex = 0.5, xlab = "UMAP 1", ylab = "UMAP 2",
+     xlim = xr + c(-1, 1) * 0.10 * diff(xr), ylim = yr + c(-1, 1) * 0.06 * diff(yr),
+     main = sprintf("Topic modelling without Python (%s)",
+                    if (run_real) "real embeddings" else "illustrative"))
+halo <- function(x, y, s) {
+  o <- 0.006 * diff(par("usr")[1:2])
+  for (dx in c(-1, 1)) for (dy in c(-1, 1)) text(x + dx * o, y + dy * o, s, col = "white", font = 2)
+  text(x, y, s, font = 2)
+}
+for (j in seq_along(ids)) {
+  members <- which(cluster == ids[j])
+  cen <- colMeans(coords[members, , drop = FALSE])
+  med <- members[which.min(rowSums(sweep(coords[members, , drop = FALSE], 2, cen)^2))]
+  halo(coords[med, 1], coords[med, 2], labels[[as.character(ids[j])]])
+}
+par(op)
+
+
+## -----------------------------------------------------------------------------
+#| label: quality
+simplified_silhouette <- function(coords, cluster) {
+  ids <- sort(setdiff(unique(cluster), 0))
+  cen <- t(vapply(ids, function(g) colMeans(coords[cluster == g, , drop = FALSE]),
+                  numeric(ncol(coords))))
+  d <- vapply(seq_along(ids), function(i) sqrt(rowSums(sweep(coords, 2, cen[i, ])^2)),
+              numeric(nrow(coords)))
+  sil <- rep(NA_real_, nrow(coords))
+  for (i in seq_along(ids)) {
+    m <- which(cluster == ids[i]); a <- d[m, i]; b <- apply(d[m, -i, drop = FALSE], 1, min)
+    sil[m] <- (b - a) / pmax(a, b)
+  }
+  sil
+}
+cohesion <- function(emb, members) {           # = mean cosine of members to the centroid
+  U <- emb[members, , drop = FALSE]; U <- U / sqrt(rowSums(U^2))
+  sqrt(sum(colMeans(U)^2))
+}
+ids <- sort(setdiff(unique(cluster), 0))
+sil <- simplified_silhouette(coords, cluster)
+quality <- data.frame(
+  topic = labels[as.character(ids)],
+  n = as.integer(table(cluster)[as.character(ids)]),
+  silhouette = round(vapply(ids, function(g) mean(sil[cluster == g]), numeric(1)), 2),
+  cohesion = round(vapply(ids, function(g) cohesion(emb, which(cluster == g)), numeric(1)), 2)
+)
+quality[order(-quality$silhouette), ]
+
+
+## -----------------------------------------------------------------------------
+#| label: terms
+stopwords <- c("the","a","an","and","or","to","of","in","on","for","with","we","our",
+               "that","this","is","are","be","by","as","from","using","study","results",
+               "method","approach","paper","show","these","which","can","based","present")
+tokenize <- function(t) {
+  w <- unlist(regmatches(tolower(t), gregexpr("[[:alpha:]]+", tolower(t))))
+  w <- w[nchar(w) >= 3]; w[!w %in% stopwords]
+}
+toks <- lapply(abstracts$text, tokenize)
+vocab <- sort(unique(unlist(toks[cluster %in% ids])))
+counts <- vapply(ids, function(g)
+  as.integer(table(factor(unlist(toks[cluster == g]), levels = vocab))),
+  integer(length(vocab)))
+rownames(counts) <- vocab                        # vocabulary x topic counts
+yw <- rowSums(counts); alpha <- length(vocab) * yw / sum(yw)  # informative prior
+a0 <- sum(alpha); N <- sum(counts)
+top_terms <- function(gi, n = 8) {
+  y <- counts[, gi]; ni <- sum(y); r <- yw - y
+  delta <- log((y + alpha) / (ni + a0 - y - alpha)) -
+           log((r + alpha) / (N - ni + a0 - r - alpha))
+  z <- delta / sqrt(1 / (y + alpha) + 1 / (r + alpha))
+  names(sort(z, decreasing = TRUE))[seq_len(n)]
+}
+data.frame(
+  topic = labels[as.character(ids)],
+  distinctive_terms = vapply(seq_along(ids),
+    function(gi) paste(top_terms(gi), collapse = ", "), character(1))
+)
+
+
+## -----------------------------------------------------------------------------
+#| label: structure
+#| fig-width: 8
+#| fig-height: 4.5
+#| fig-alt: "Dendrogram of topics clustered by centroid cosine similarity."
+centroids <- t(vapply(ids, function(g) colMeans(emb[cluster == g, , drop = FALSE]),
+                      numeric(ncol(emb))))
+centroids <- centroids / sqrt(rowSums(centroids^2))
+cosm <- pmin(pmax(tcrossprod(centroids), -1), 1)
+short <- function(s) ifelse(nchar(s) > 22, paste0(substr(s, 1, 19), "..."), s)
+hc <- hclust(as.dist(1 - cosm), method = "average")
+hc$labels <- short(labels[as.character(ids)])
+op <- par(mar = c(2, 4, 3, 9), mgp = c(2.5, 0.7, 0))
+plot(as.dendrogram(hc), horiz = TRUE, xlab = "1 - cosine",
+     main = "Which topics are near each other")
+par(op)
+

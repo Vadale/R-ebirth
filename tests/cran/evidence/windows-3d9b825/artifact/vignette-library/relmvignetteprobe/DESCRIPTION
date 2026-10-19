@@ -1,0 +1,9 @@
+Package: relmvignetteprobe
+Version: 0.0.1
+Title: Temporary Library Vignette Probe
+Description: Checks temporary library visibility in document subprocesses.
+Authors@R: person('Test', 'Maintainer', email='test@example.org', role=c('aut','cre'))
+License: GPL-3
+Encoding: UTF-8
+Suggests: quarto
+VignetteBuilder: quarto

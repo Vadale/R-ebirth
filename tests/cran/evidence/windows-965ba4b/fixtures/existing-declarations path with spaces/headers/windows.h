@@ -1,0 +1,7 @@
+#ifndef TEST_WINDOWS_H
+#define TEST_WINDOWS_H
+typedef unsigned int ULONG;
+#define THREAD_POWER_THROTTLING_CURRENT_VERSION 7
+#define THREAD_POWER_THROTTLING_EXECUTION_SPEED 32
+typedef struct { ULONG Version, ControlMask, StateMask; } THREAD_POWER_THROTTLING_STATE;
+#endif

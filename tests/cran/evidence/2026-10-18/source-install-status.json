@@ -1,0 +1,26 @@
+{
+  "status": "failed",
+  "pid": 2626249,
+  "output": "/home/grauk/Work/relm-phase9/source-install",
+  "stages": [
+    {
+      "name": "metadata-x86_64-unknown-linux-gnu",
+      "returncode": 0,
+      "log_sha256": "45c1f9d40c2741c17bcd65eda239d7e3e18efe40997c5250019ca314eca724ff"
+    },
+    {
+      "name": "metadata-x86_64-pc-windows-gnu",
+      "returncode": 0,
+      "log_sha256": "7d3729ede23b5c129f5ee96dd0aa9040c7e33e1eb39320193bed7f85f6b5d2be"
+    },
+    {
+      "name": "metadata-aarch64-apple-darwin",
+      "returncode": 0,
+      "log_sha256": "f1ebfb6379c7e2acaa2fa3c7fb63489e8f2db9e7670c1182901537357d987f01"
+    }
+  ],
+  "updated_at": "2026-10-18T17:26:48.174312+00:00",
+  "stage": "metadata-aarch64-apple-darwin",
+  "error": "Unexpected registry cache in offline validation",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/grauk/Work/relm-phase9/run-source-install.py\", line 52, in <module>\n    assert not (home / \"registry\").exists(), \"Unexpected registry cache in offline validation\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Unexpected registry cache in offline validation\n"
+}

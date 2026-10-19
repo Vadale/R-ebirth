@@ -15,6 +15,8 @@
 //! provenance diffs live in `src/llama.cpp/patches/`, and the tree's post-patch
 //! SHA256 (asserted by CI gate G4) is recorded in `src/llama.cpp/VENDORING.md`.
 
+mod build_support;
+
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -24,7 +26,7 @@ fn main() {
     // rebirth-llm is at rebirth/src/rust/rebirth-llm; the vendored engine is at
     // rebirth/src/llama.cpp — two levels up from this crate.
     let llama_src = manifest_dir.join("..").join("..").join("llama.cpp");
-    let llama_src = llama_src.canonicalize().unwrap_or_else(|e| {
+    let llama_src = build_support::source_dir(&llama_src).unwrap_or_else(|e| {
         panic!(
             "vendored llama.cpp not found at {}: {e}",
             llama_src.display()
@@ -33,12 +35,15 @@ fn main() {
 
     // Rerun only when the pin or this script changes (the vendored tree is pinned).
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=build_support.rs");
     println!("cargo:rerun-if-changed=native/grammar.cpp");
     println!("cargo:rerun-if-changed=native/abi.cpp");
     println!("cargo:rerun-if-changed=native/spill_lease.cpp");
     println!("cargo:rerun-if-changed=native/projection.cpp");
     println!("cargo:rerun-if-changed=native/projection.h");
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+    println!("cargo:rerun-if-changed=native/windows_compat.cmake");
+    println!("cargo:rerun-if-changed=native/windows_thread_compat.h");
     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
     for variable in ["CUDA_PATH", "CUDAARCHS", "CUDACXX", "CUDAHOSTCXX"] {
         println!("cargo:rerun-if-env-changed={variable}");
@@ -88,6 +93,18 @@ fn main() {
     }
 
     let mut cfg = cmake::Config::new(&llama_src);
+    if cfg!(windows) {
+        // R builds in an already deep temporary package directory. Keep CMake
+        // inside the same Cargo profile, but omit redundant build/crate/out
+        // segments. Retain Cargo's build-unit hash to isolate feature variants.
+        let out = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR"));
+        cfg.out_dir(build_support::windows_output_dir(&out).expect("Cargo native output path"));
+    }
+    if target_os == "windows" {
+        let native = build_support::source_dir(&manifest_dir.join("native"))
+            .expect("native compatibility sources");
+        cfg.define("CMAKE_PROJECT_INCLUDE", native.join("windows_compat.cmake"));
+    }
     cfg.define("CMAKE_BUILD_TYPE", "Release")
         .define("BUILD_SHARED_LIBS", "OFF")
         // Only libllama + ggml + libmtmd are needed; skip every extra artifact.
@@ -163,7 +180,7 @@ fn main() {
     // dependency. No vendored engine source or new build crate is required.
     let mut bridge = cmake::Config::new(manifest_dir.join("native"));
     bridge
-        .out_dir(dst.join("grammar-bridge"))
+        .out_dir(dst.join(if cfg!(windows) { "g" } else { "grammar-bridge" }))
         .define("CMAKE_BUILD_TYPE", "Release")
         .define("RELM_LLAMA_SOURCE", &llama_src);
     if target_os == "macos" {
@@ -218,15 +235,16 @@ fn main() {
 
     for stem in &lib_stems {
         let file_name = format!("lib{stem}.a");
+        let built_name = build_support::built_archive_name(stem, &target_os);
         let search_dir = if *stem == "relm-grammar" {
             &bridge_dst
         } else {
             &build_dir
         };
-        let found = find_file(search_dir, &file_name).unwrap_or_else(|| {
+        let found = find_file(search_dir, &built_name).unwrap_or_else(|| {
             panic!(
-                "expected static archive {file_name} not produced by the llama.cpp build under {}",
-                build_dir.display()
+                "expected static archive {built_name} not produced by the native build under {}",
+                search_dir.display()
             )
         });
         fs::copy(&found, native_dir.join(&file_name))
@@ -295,42 +313,11 @@ fn configure_sanitizers(config: &mut cmake::Config) {
 /// Emit the `cargo:rustc-link-lib` flags for the cargo-driven link (tests + the
 /// `document` bin). The R SHLIB link mirrors these in `src/Makevars(.in)`.
 fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
-    if target_os == "linux" {
-        // The engine symbols must reach the `rebirth-ffi` `document` bin, a
-        // dependent crate. `cargo:rustc-link-arg` (which a --start-group needs)
-        // does NOT propagate across crates — only `rustc-link-lib`/`-search` do.
-        // On GNU ld a static archive yields only the members referenced before it
-        // is scanned, so plain, unordered `-l` flags leave the ggml/llama
-        // back-references undefined. `+whole-archive` forces every object in (no
-        // group, order-independent) and propagates via `rustc-link-lib`; `-bundle`
-        // keeps the archives OUT of `librelm.a` so the R SHLIB link (Makevars
-        // PKG_LIBS, with its own --start-group) remains the single provider and no
-        // symbol is defined twice.
-        for stem in lib_stems {
-            println!("cargo:rustc-link-lib=static:+whole-archive,-bundle={stem}");
-        }
-        println!("cargo:rustc-link-lib=dylib=stdc++");
-        println!("cargo:rustc-link-lib=dylib=m");
-        println!("cargo:rustc-link-lib=dylib=dl");
-    } else {
-        // macOS ld64 resolves archive back-references without groups.
-        for stem in lib_stems {
-            println!("cargo:rustc-link-lib=static={stem}");
-        }
-        println!("cargo:rustc-link-lib=dylib=c++");
-
-        // ggml's CPU backend links Accelerate (vDSP / BLAS) on every macOS arch, so
-        // it is needed for both arm64 and x86_64 — the cross-compiled x86_64
-        // `document` bin otherwise fails to link with undefined `_vDSP_*` symbols.
-        // Metal and its Obj-C dependencies are only pulled in by the Metal backend
-        // (macOS arm64).
-        println!("cargo:rustc-link-lib=framework=Accelerate");
-        if metal {
-            for framework in ["Metal", "MetalKit", "Foundation"] {
-                println!("cargo:rustc-link-lib=framework={framework}");
-            }
-            link_clang_runtime();
-        }
+    for flag in build_support::link_libraries(lib_stems, target_os, metal) {
+        println!("cargo:rustc-link-lib={flag}");
+    }
+    if metal {
+        link_clang_runtime();
     }
 }
 

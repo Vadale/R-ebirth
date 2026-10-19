@@ -21,6 +21,15 @@ loaded model weights. The numerical answer is independently specified as
 `c(2, 1, 0, 0) / sqrt(5)`.
 
 ```{r}
+#| label: setup
+#| include: false
+# R CMD build records its installation here. Quarto on Windows can lose the
+# temporary library when starting its R subprocess (quarto-r issue #217).
+build_library <- Sys.getenv("R_BUILD_TEMPLIB")
+if (nzchar(build_library)) .libPaths(c(build_library, .libPaths()))
+```
+
+```{r}
 library(relm)
 control <- rbind(c(2, 0, -1, 0.5), c(0, 3, 1, 2))
 target <- control + rbind(c(1, 2, 0, 0), c(3, 0, 0, 0))

@@ -1,0 +1,70 @@
+{
+  "README.md": {
+    "sha256": "30ddab9d8fa7fc7c8c12ae03392cc3748ca794cc74b618b798f473147529de19",
+    "bytes": 3675
+  },
+  "fixtures/existing-declarations path with spaces/CMakeLists.txt": {
+    "sha256": "5e92d4bb7e33e7793445cec10ff90fbbbb14113651e1596fbf0751e3295cab91",
+    "bytes": 256
+  },
+  "fixtures/existing-declarations path with spaces/ggml/src/CMakeLists.txt": {
+    "sha256": "6dd9c225d18d06f52cf5f0d268c965ca1a149a60c0750dd9988c67afecd20ef9",
+    "bytes": 279
+  },
+  "fixtures/existing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c": {
+    "sha256": "6336faec3235fd12ff6bac4fe5287a3873bb13de103fa61626abc91e1b59e30b",
+    "bytes": 1232
+  },
+  "fixtures/existing-declarations path with spaces/ggml/src/unaffected.c": {
+    "sha256": "764f2241233d53c2eb8b5c40c7795ba633263b18017c242aba05a9212870a09b",
+    "bytes": 140
+  },
+  "fixtures/existing-declarations path with spaces/headers/windows.h": {
+    "sha256": "1500c6756c07d08f8bc421531139bff7836e7db1e65eceb7ac96f7fd4a6ca6e1",
+    "bytes": 271
+  },
+  "fixtures/missing-declarations path with spaces/CMakeLists.txt": {
+    "sha256": "5e92d4bb7e33e7793445cec10ff90fbbbb14113651e1596fbf0751e3295cab91",
+    "bytes": 256
+  },
+  "fixtures/missing-declarations path with spaces/ggml/src/CMakeLists.txt": {
+    "sha256": "6dd9c225d18d06f52cf5f0d268c965ca1a149a60c0750dd9988c67afecd20ef9",
+    "bytes": 279
+  },
+  "fixtures/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c": {
+    "sha256": "c77efc11297f8867b44e64af30ddf630aa0f555013e855f2e6b0645bbe64f5ca",
+    "bytes": 1228
+  },
+  "fixtures/missing-declarations path with spaces/ggml/src/unaffected.c": {
+    "sha256": "764f2241233d53c2eb8b5c40c7795ba633263b18017c242aba05a9212870a09b",
+    "bytes": 140
+  },
+  "fixtures/missing-declarations path with spaces/headers/windows.h": {
+    "sha256": "2a20998fefa17a7d2a43b8331ba79438a077421f9fdab7d078ab0cbc59e9860e",
+    "bytes": 81
+  },
+  "fixtures/non-windows.c": {
+    "sha256": "715c2a4891e40db84f301124073653f02f59a41b674b544a720e745367f85286",
+    "bytes": 120
+  },
+  "local-compatibility.json": {
+    "sha256": "eef3c53be5c90e07585b4c25c7dd28445f31b2a6ae2bdede4cdc1c28adc00fe3",
+    "bytes": 677
+  },
+  "local-compatibility.log": {
+    "sha256": "d3ca257ce1d6042f1bfc0abfe0b9133ed4ec53900b158eded8bd487d19949385",
+    "bytes": 8776
+  },
+  "source-binding.json": {
+    "sha256": "4c8c3eda0f73c360abd4de0e0942c1361720f5b0b5046e74c8c361f351671b07",
+    "bytes": 1433
+  },
+  "windows-job-raw.log": {
+    "sha256": "495019c39e61cc0a8bdc46dc6c79e803da30211a5b0d6099df4679b980f2cfc4",
+    "bytes": 620786
+  },
+  "windows-job.json": {
+    "sha256": "7ba98fa14cab289b8cf4b0a1976117f31e6c5451d1324511bdcb780612dd1045",
+    "bytes": 3692
+  }
+}

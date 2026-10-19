@@ -1,0 +1,22 @@
+{
+  "files": {
+    "00check.log": "3de7b4434a608adbc336c9587f777086b50dd467b54687ad32116b0582746631",
+    "00install.out": "7d8c93e8ffe52992a35f8b4e6222da41f784d33747bcecd7695cad5fad006c47",
+    "artifacts.json": "f28d15daebc20cda5c004a94133699c6a270b87e31b46250831a1fe11b409d74",
+    "correction/results.rds": "79afe197b2d1b2a481f15c0e4038962006b221f843bda78ce8fd9ebf3664a817",
+    "correction/test-focused.R": "ce15bc6af032f341cd8a28e4d60072a4899098ff75b084ff689a5c2b08b1f006",
+    "correction/verify-initial.R": "b401dd05d27562551a89eb72d3c19e957d6fa9de6e181be8b06ddf0ee45dba5d",
+    "correction/verify-initial.log": "7cbabf009ba9a236a2b2ed72bf0db552e2adff9f26d9db00cea42bc33fb90927",
+    "correction/verify.R": "24aa03333623797f024d1583ed2e3ec93301fac34ad87c251bf8398e3b66e4b1",
+    "correction/verify.log": "d250e41453f3c72560bcaa9d5637cada925eb6b6805eaa77f5f1b2a788690cbd",
+    "owner.json": "50e1324ada15beed619cd57f974e6997c523e435a72c5bbf754558ae0d0a75a2",
+    "preflight-check.log": "431aadd621b76c9e578652242213f1e2926d310dcb5e14c044247fef12dea20c",
+    "sdk-receipt.json": "ccd604d763feadd606a77721ec4c3f8d5726944cb37cd1a177d2cd407ffd8c5d",
+    "test-after.R": "05c19a28e7f63ee754b90b45c0d30d1ab618e1f8ac74f84eab801aeb2b72e5ea",
+    "test-before.R": "59ba1fee14dbd0287fdcc7ffb78535906323f34e369ec607d822f4a0d24e6648",
+    "test-failure-extract.R": "153ac50ee5459ebb0545038bc55423b7fbeb3d0691cc3f312127ea314b56d92d",
+    "testthat.Rout.fail": "83466dcf8b5f2809d7476fd8755c114b047b0d1e0fcf3b9d0552872d244f38b8",
+    "windows-job-raw.log": "ed6640285601402a378164d2bf01867caa04b249a54cc260316db7dbbc4adf9e",
+    "windows-job.json": "9e743afb3381b336ff918a6e8d89fedc0f5c7ca05df8d00ed6c5510a8102dacd"
+  }
+}

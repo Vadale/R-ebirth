@@ -1692,3 +1692,78 @@ Use an isolated official CUDA toolkit to avoid the distro package replacing
 components of the working NVIDIA driver; GCC 15, Rust and Ninja are build tools.
 The optional Linux x86_64 package build uses `RELM_ENABLE_CUDA=1` and `CUDA_PATH`;
 ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
+
+## D-051 — CRAN preparation after completed Linux CUDA acceptance
+
+- **Date/status:** 2026-10-18, APPROVED by the founder's "ok procedi allora"
+  following the concrete Phase 9 preparation plan.
+- **Decision:** start WP15 with portable source packaging, the existing locked
+  Rust dependency bundle and an early Windows CPU build/check. Keep CUDA optional
+  and preserve every public API, kernel, model, dependency version and numerical
+  threshold. See `docs/wp15-cran-plan.md` for acceptance and execution order.
+- **Packaging choice:** distribute the byte-identical patched engine and locked
+  crates as source archives. Retain the expanded engine in Git and verify archive
+  equality. This addresses the 11 long CUDA paths without a vendor kernel patch.
+- **Resource/build boundary:** isolated disk-backed build/cache/temp paths on
+  this host; explicit two-job package compilation, offline locked Cargo resolution
+  and source/license provenance. No compiler, driver or model auto-installation
+  by the package and no new package dependencies.
+- **Sequence:** Windows CPU feasibility precedes final packaging refinements;
+  Windows GPU and VM work are separate. WP16 documentation/API stability follows
+  WP15; the 30-day green CI criterion is for v1.0, not CRAN eligibility.
+- **Publication boundary:** prepare concrete checks and submission materials;
+  the final external submission and a new release need a reviewable candidate
+  and the founder's final approval. No outreach or auto-merge is implied.
+- **Alternatives rejected:** changing accepted kernels to shorten names, relying
+  on a developer's populated Cargo cache, silently omitting Windows failures,
+  replaying consumed experiments or treating existing 0.4 binaries as CUDA builds.
+
+- **First Windows correction (2026-10-18):** the actual hosted build exposed
+  MSYS Makefile parsing with canonical verbatim source paths and excessive
+  CMake object-directory depth. Use ordinary Windows absolute paths and shorter
+  per-profile/per-build-unit native output inside the owned Cargo target.
+  Correct the existing non-Linux fall-through to Darwin links for Windows GNU.
+  Preserve Unix behavior, archives, compiler flags, API and numerical scope;
+  focused local controls do not replace actual Windows execution. Failure and
+  correction evidence: `tests/cran/evidence/windows-08d9cf0/`.
+
+- **Rtools declaration compatibility (2026-10-18):** after actual path correction,
+  hosted Windows compilation exposed missing MinGW thread-throttling declarations.
+  Supply the documented ABI only when absent in a relm-owned compatibility header,
+  forced into the single affected C source through a Windows CMake hook. Keep
+  engine/archive bytes, upstream scheduling calls, kernels and SDK/compiler
+  versions unchanged; do not disable the feature to obtain a build. Actual
+  Windows ABI/link/package checks remain required after model-free controls.
+
+- **Windows API target ordering correction (2026-10-18):** the new declaration
+  preflight exposed an adapter include-order defect before the package build.
+  Include the actual pinned `ggml.h` before `windows.h`, preserving ggml's target
+  selection and any caller override. Keep SDK declarations, scheduling branches
+  and vendor/archive bytes unchanged. Focused controls now reject the previous
+  adapter; actual Windows acceptance remains required. Preserve the failed job
+  in `tests/cran/evidence/windows-fe62517/`; no engine/model replay locally.
+
+- **Windows archive collection (2026-10-18):** actual Rtools ABI preflight and
+  all seven native archive builds passed on49a15c2, then relm searched for a
+  Unix-prefixed ggml archive. Select the pinned engine's Windows source names
+  while retaining canonical lib*.a copies and unchanged Cargo/R link directives.
+  Preserve original failures; no vendor/compiler/kernel/numerical change.
+
+- **Windows Cargo system imports (2026-10-18):** after actual native/FFI static
+  compilation passed, the wrapper-generator executable failed on three registry
+  imports. Add advapi32 to the Windows Cargo link, matching existing R DLL flags.
+  This is an existing OS library, not a new package dependency. Preserve Unix
+  plans, vendor/native code and the failed original; verify actual Windows link.
+
+- **Quarto Windows build library and script extraction (2026-10-18):** the
+  actual registry-import preflight passed, and the next package build reached
+  vignette rendering, where two executable documents could not find relm.
+  Quarto's documented Windows temporary-library issue matches this failure
+  (quarto-r#217). Have those two document setups explicitly prepend R CMD
+  build's `R_BUILD_TEMPLIB`, retaining normal paths outside a build. This is a
+  build-tool compatibility input, not a public relm API. Move fourteen optional
+  chunk conditions into equivalent R `if` blocks so script extraction does not
+  evaluate flags before their setup; preserve parsed bodies and conditions.
+  A pure-R miniature package checks actual Quarto build/check before the costly
+  Windows native build. No pre-install duplication, engine/dependency update,
+  skipped vignette gate or native/model replay locally; hosted proof is pending.

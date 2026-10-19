@@ -1,0 +1,114 @@
+["R", "CMD", "INSTALL", "--library=/home/grauk/Work/relm-phase9/source-install-build/library", "/home/grauk/Work/relm-phase9/source-install-build/relm_0.4.0.tar.gz"]
+* installing *source* package ‘relm’ ...
+** this is package ‘relm’ version ‘0.4.0’
+** using staged installation
+Using cargo 1.99.1 (5f94df478 2026-08-27)
+Using rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Using cmake 4.4.3
+Building for CRAN.
+Writing `src/Makevars`.
+`tools/config.R` has finished.
+** libs
+specified C++17
+using C compiler: ‘gcc (GCC) 16.2.1 20260810’
+using C++ compiler: ‘g++ (GCC) 16.2.1 20260810’
+using C++17
+gcc -I"/usr/include/R/" -DNDEBUG   -I/usr/local/include    -fpic  -march=x86-64 -mtune=generic -O2 -pipe -fno-plt -fexceptions         -Wp,-D_FORTIFY_SOURCE=3 -Wformat -Werror=format-security         -fstack-clash-protection -fcf-protection         -fno-omit-frame-pointer -mno-omit-leaf-frame-pointer -g -ffile-prefix-map=/build/r/src=/usr/src/debug/r -flto=auto -ffat-lto-objects  -c entrypoint.c -o entrypoint.o
+if [ -d ./vendor ]; then \
+	echo "=== Using offline vendor directory ==="; \
+	mkdir -p /home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo && \
+	cp rust/vendor-config.toml /home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo/config.toml; \
+elif [ -f ./rust/vendor.tar.xz ]; then \
+	echo "=== Using offline vendor tarball ==="; \
+	tar xf rust/vendor.tar.xz && \
+	mkdir -p /home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo && \
+	cp rust/vendor-config.toml /home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo/config.toml; \
+fi
+=== Using offline vendor tarball ===
+export CARGO_HOME=/home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo && \
+export PATH="/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin:/home/grauk/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo build --locked -j 2 --offline   -p rebirth-ffi --lib --release --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.46
+   Compiling autocfg v1.5.1
+   Compiling libm v0.2.16
+   Compiling num-traits v0.2.19
+   Compiling syn v2.0.118
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling num-integer v0.1.46
+   Compiling version_check v0.9.5
+   Compiling getrandom v0.3.4
+   Compiling ahash v0.8.12
+   Compiling num-bigint v0.4.8
+   Compiling zerocopy-derive v0.8.52
+   Compiling bytes v1.12.0
+   Compiling once_cell v1.21.4
+   Compiling half v2.7.1
+   Compiling semver v1.0.28
+   Compiling rustc_version v0.4.1
+   Compiling arrow-buffer v59.0.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling serde_core v1.0.228
+   Compiling shlex v2.0.1
+   Compiling iana-time-zone v0.1.65
+   Compiling arrow-schema v59.0.0
+   Compiling arrow-data v59.0.0
+   Compiling chrono v0.4.45
+   Compiling cc v1.2.65
+   Compiling flatbuffers v25.12.19
+   Compiling num-complex v0.4.6
+   Compiling hashbrown v0.17.1
+   Compiling extendr-ffi v0.9.0
+   Compiling arrow-array v59.0.0
+   Compiling cmake v0.1.58
+   Compiling bitflags v2.13.0
+   Compiling serde_json v1.0.145
+   Compiling paste v1.0.15
+   Compiling serde v1.0.228
+   Compiling arrow-select v59.0.0
+   Compiling rebirth-llm v0.0.0 (/home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/rust/rebirth-llm)
+   Compiling itoa v1.0.18
+   Compiling ryu v1.0.23
+   Compiling lazy_static v1.5.0
+   Compiling extendr-api v0.9.0
+   Compiling memchr v2.8.3
+   Compiling extendr-macros v0.9.0
+   Compiling arrow-ipc v59.0.0
+   Compiling readonly v0.2.13
+   Compiling rebirth-ffi v0.0.0 (/home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/rust/rebirth-ffi)
+note: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms
+
+note: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base -lstdc++ -lm -ldl -lc -lm -lrt -lpthread -lR -lgcc_s -lutil -lrt -lpthread -lm -ldl -lc
+
+    Finished `release` profile [optimized] target(s) in 4m 48s
+export CARGO_HOME=/home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo && \
+export PATH="/home/grauk/.codex/tmp/arg0/codex-arg0PMH4uU:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/home/grauk/.local/share/mise/installs/codex/latest/bin:/home/grauk/.local/share/mise/installs/gh/latest/gh_2.102.0_linux_amd64/bin:/home/grauk/.local/share/mise/installs/node/26.8.1/bin:/home/grauk/.local/share/mise/installs/python/latest/bin:/home/grauk/.local/share/mise/shims:/usr/share/omarchy/bin:/home/grauk/.local/share/../bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/home/grauk/.local/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/grauk/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/usr/lib/chatgpt/resources:/usr/lib/rustup/bin:/home/grauk/.cargo/bin" && \
+RUSTFLAGS=" --print=native-static-libs" cargo run --locked -j 2 --offline   --release -p rebirth-ffi --bin document --manifest-path=./rust/Cargo.toml --target-dir ./rust/target 
+note: link against the following native artifacts when linking against this static library. The order and any duplication can be significant on some platforms
+
+note: native-static-libs: -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base -lstdc++ -lm -ldl -lc -lm -lrt -lpthread -lR -lgcc_s -lutil -lrt -lpthread -lm -ldl -lc
+
+   Compiling rebirth-ffi v0.0.0 (/home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/rust/rebirth-ffi)
+    Finished `release` profile [optimized] target(s) in 13.13s
+     Running `rust/target/release/document`
+# Always clean up CARGOTMP
+rm -Rf /home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo;
+g++ -std=gnu++17 -shared -L/usr/lib64/R/lib -Wl,-O1 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,-z,pack-relative-relocs -flto=auto -o relm.so entrypoint.o -L./rust/target/release -lrelm -Wl,--start-group -lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base -Wl,--end-group -lstdc++ -lm -ldl -L/usr/lib64/R/lib -lR
+rm -Rf /home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/.cargo /home/grauk/Work/relm-phase9/tmp/Rtmpw9n7LT/R.INSTALL281aab6e7f13c8/relm/src/vendor ./rust/target
+installing to /home/grauk/Work/relm-phase9/source-install-build/library/00LOCK-relm/00new/relm/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+*** copying figures
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (relm)

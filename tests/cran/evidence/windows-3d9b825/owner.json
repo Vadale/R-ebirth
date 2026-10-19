@@ -1,0 +1,32 @@
+{
+  "original_job_conclusion": "failure",
+  "head": "3d9b8253de62b87caee7346ab60d3b0dd21c4d64",
+  "run": 39162045941,
+  "job": 117777199534,
+  "actual_windows_passed": [
+    "base library path controls (3)",
+    "tangle three affected documents",
+    "pure-R probe source build",
+    "pure-R probe check: Status OK, zero warnings/errors",
+    "rendered output marker",
+    "Rtools ABI and registry import preflight (4 source hashes)"
+  ],
+  "actual_windows_not_executed": [
+    "separate extracted-R check",
+    "relm native package build/check"
+  ],
+  "cause": "R 4.6.1 defaults _R_CHECK_VIGNETTES_SKIP_RUN_MAYBE_ to TRUE and skips separate script execution when rebuilding vignette outputs; collector required both without requesting both. Unrelated to --no-examples.",
+  "correction": "Set the variable FALSE only in the pure-R probe check subprocess; keep both success assertions and warning refusal unchanged.",
+  "local_new_checks": [
+    "actual R subprocess receives FALSE, parent environment unchanged",
+    "one execution of retained pure-R script, no reinstall/render",
+    "parse three retained extracted scripts without execution"
+  ],
+  "native_builds": 0,
+  "model_calls": 0,
+  "limits": [
+    "Local retained-script execution is Linux, not Windows extracted-script acceptance.",
+    "Actual Quarto is unavailable locally; hosted pure-R render evidence carried without replay.",
+    "Full Windows relm package acceptance remains pending."
+  ]
+}

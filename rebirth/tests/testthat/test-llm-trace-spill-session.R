@@ -31,7 +31,10 @@ test_that("custom spill paths remain distinct across live R sessions", {
   expect_identical(status, 0L)
   child_path <- readRDS(result)
   expect_false(identical(parent_path, child_path))
-  expect_identical(dirname(child_path), root)
+  expect_identical(
+    normalizePath(dirname(child_path), winslash = "/", mustWork = TRUE),
+    normalizePath(root, winslash = "/", mustWork = TRUE)
+  )
   expect_false(file.exists(child_path))
   expect_identical(readLines(parent_path), "live parent trace")
 })

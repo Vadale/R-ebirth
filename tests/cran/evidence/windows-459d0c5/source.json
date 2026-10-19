@@ -1,0 +1,10 @@
+{
+  ".github/workflows/cran-portability.yaml": "2229658c5668ea5cfa94e2a48319ac5edc14adebbe8e10fbbd7ebb58f0f390a8",
+  "tests/cran/vignette-library.R": "d430154f6255cece16b760005d15497820b3ae6bb6564e6ade3e7280f44799e1",
+  "rebirth/vignettes/anatomy-lab.qmd": "6bf26cd096ede246499721cc6b300e3142efb36cae68d55de2f78839167c9c44",
+  "rebirth/vignettes/contrast-directions.qmd": "9276fb1f28137d73d35de48899bc6bec4569285ef0a48c37f31eae2682eeabf8",
+  "rebirth/vignettes/model-interventions.qmd": "d2988259dff5aa7d48153b61bcceae27b906b8d49cc7806add45ebc20d8be898",
+  "rebirth/vignettes/token-streaming.qmd": "e6c700eb676e6c8cd2eedbd482e999b3bbc80e7ae360ee8a00a8ceb2b64cd372",
+  "rebirth/vignettes/topics-without-python.qmd": "3c7753e65dd5199c81a7ee115243f04dd415153a847baadaea0954fd78eab4ca",
+  "rebirth/vignettes/vision.qmd": "65f6d4c6b1d63a06710d28520f48d908f917225f3df169c57c3ee3fba09e0de5"
+}
