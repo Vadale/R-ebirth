@@ -33,7 +33,7 @@ differentiation by itself and does not establish factual correctness.
 
 The package-suite → distribution → team-supported R-fork ladder is unchanged.
 Native async, streaming, types, `reb_compile()`, fine-tuning and later research
-phases remain planned. Windows/CUDA and the thesis remain deferred under their
+phases remain planned. Windows/CUDA remain deferred under their
 existing decisions. No new model backend is a prerequisite for this increment.
 
 ## 2. Sequence and work-package exits

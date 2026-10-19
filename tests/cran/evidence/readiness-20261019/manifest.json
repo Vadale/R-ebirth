@@ -1,4 +1,5 @@
 {
+  "PUBLIC-REDACTIONS.md": "bef5ee4db08f111070d3f7ded9f20adaff8db887b62bb86d9353dbf0e47a83a9",
   "readiness-build/configure.log": "029be902566de13a794bcb1906575fcd89cdecaa053741ef7a48d3567d9cd41a",
   "readiness-build/context-budget.log": "3eb5928870e8a106d7c4b8c394f19c6b660751fa9021ff55400f8c1ecc39011e",
   "readiness-build/diagnosis.json": "0153f40697bc77b8498ad1f66f98bf77c8281351354f695773c695516dd3e260",
@@ -50,7 +51,7 @@
   "source/.github/workflows/R-CMD-check.yaml": "0c34913cdf11aee1c2dcd059ed9e10a561deae09b29776e7470409aac6c7fbd2",
   "source/.github/workflows/cran-portability.yaml": "e261b21d6d45f157d1ecea7698002cc7644ffd978d0ab72cf6cdf987dbe33f18",
   "source/.github/workflows/rust.yaml": "cf9b69375ae1a18ed95443bce0119e5b56a37d2c07d4bb17d266b0e368fafb16",
-  "source/DECISIONS.md": "4b10b1453bf48af8a0f4b7e2e23178bd1b37e644f2c987ca1405699eab06dcc7",
+  "source/DECISIONS.md": "d720013b3c2072919ce8da3d844e241d89e7f426a4b139c194ec296929aa6a37",
   "source/docs/wp15-cran-plan.md": "9afc3f1a100c873e0a4896fb30117b1e9c2865eb59d2374fa8f5c95f151a3947",
   "source/rebirth/DESCRIPTION": "74d1b76423cfc3f81652a6151b6f1b86eac7fa3765577eec8cb2c19a01758eff",
   "source/rebirth/inst/AUTHORS": "1f8fa6e5c0a17e6bebc31885cc021dfa7503224fb711ef969d76c9c70cd6a5bc",
