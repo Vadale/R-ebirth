@@ -6,6 +6,12 @@
 - **Date:** 2026-07-03
 - **Change protocol:** any change to an entry marked `[approved]` after sign-off requires a `DECISIONS.md` entry approved by the founder. Additions for a new phase are drafted here with status `[proposed]`, then approved before implementation.
 
+
+**WP16 compatibility baseline (2026-10-19, D-052):** the implemented exports and
+registered S3 methods are frozen under [the API/version policy](docs/api-policy.md).
+The source-derived [inventory](docs/api-surface.csv) and installed help are the
+navigation aids; the contracts below remain binding. This is not a 1.0 release.
+
 ---
 
 ## 1. Global grammar rules
@@ -134,7 +140,7 @@ Vectorized over `prompt`; forward pass, next-token distribution. Returns a `data
 
 ---
 
-## 5. Function entries — Phase 4 `[approved: D-003; implementation pending]`
+## 5. Function entries — Phase 4 `[approved: D-003; D-033 implemented]`
 
 **D-033 approved (2026-09-28):** WP11a's grouping, selection, preprocessing,
 uncertainty and controls contract is binding in
@@ -316,7 +322,7 @@ Callback failures retain `relm_error_callback` with callback identification.
 Approved narrow exception to global rule 9: an explicitly supplied
 `llm_generate(on_token = con)` file connection receives output. relm neither
 chooses a path nor opens/closes that connection. This exception, the schemas and lifecycle amendment are binding.
-Implementation and acceptance are in progress.
+Implementation and acceptance are complete at the recorded WP10 sources.
 
 
 ## 11. Live state observation — `[approved: D-041, 2026-10-03]`
@@ -476,4 +482,4 @@ validation/storage/probe ledger; base model/KV/capture retain separate contracts
 integer `configured_projections` after its existing D044 site-table columns and
 marks the configured component without storing vectors. F6c comparison alignment
 and additive-only live timeline audit retain their meanings. These behavior/schema
-extensions to D044/D045 are approved by D046; they are not yet shipped.
+extensions to D044/D045 shipped in 0.4.0; Linux CUDA acceptance followed in D050.

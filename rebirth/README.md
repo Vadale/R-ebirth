@@ -3,7 +3,7 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/Vadale/R-ebirth/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Vadale/R-ebirth/actions/workflows/R-CMD-check.yaml)
 [![r-universe](https://vadale.r-universe.dev/badges/relm)](https://vadale.r-universe.dev/relm)
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![API baseline: frozen](https://img.shields.io/badge/API%20baseline-frozen-blue.svg)](https://github.com/Vadale/R-ebirth/blob/main/docs/api-policy.md)
 [![License: MIT OR Apache-2.0](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue.svg)](https://github.com/Vadale/R-ebirth/blob/main/LICENSE.md)
 <!-- badges: end -->
 
@@ -23,8 +23,8 @@ The [0.4.0 release](https://github.com/Vadale/R-ebirth/releases/tag/v0.4.0)
 is published, including a verified fresh Mac arm64 r-universe installation.
 Check `packageVersion("relm")` and restart R after upgrading.
 
-This checkout prepares **0.5.0**, combining optional Linux CUDA and CRAN source
-portability. It is not yet a published release or a CRAN-accepted package; see the
+The **0.5.0 source has been submitted to CRAN**, combining optional Linux CUDA
+and source portability. It is not yet a published release or a CRAN-accepted package; see the
 [submission status](https://github.com/Vadale/R-ebirth/blob/main/docs/cran-submission.md).
 
 ## Installation
@@ -226,3 +226,16 @@ native engine and its boundaries.
 Original code is **MIT OR Apache-2.0**. Vendored llama.cpp is MIT. Modified
 redistributions must rename under the
 [trademark policy](https://github.com/Vadale/R-ebirth/blob/main/TRADEMARK.md).
+
+## Agent documentation and compatibility
+
+Start with the [agent guide](https://github.com/Vadale/R-ebirth/blob/main/docs/agents.md),
+[llms.txt](https://github.com/Vadale/R-ebirth/blob/main/llms.txt) and the
+[API/version policy](https://github.com/Vadale/R-ebirth/blob/main/docs/api-policy.md).
+The WP16 build includes sixteen independent R example scripts under
+`system.file("examples", "agents", package = "relm")`. Sourcing a script defines
+its example; it never downloads a model or starts inference automatically.
+
+The public API baseline includes the current exports and registered S3 methods.
+The project's thirty-day green-CI gate precedes a future 1.0 release; CRAN admission
+and external-human usability are separate outcomes.

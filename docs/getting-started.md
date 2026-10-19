@@ -27,7 +27,8 @@ packageVersion("relm")
 r-universe builds from `main`, so its version can differ from the latest tagged
 release. Version 0.4.0 has been published and installed from r-universe on
 macOS arm64; see the [release record](release-0.4.0.md). Restart R after upgrading
-an already loaded package. Windows CPU source-package checks passed at PR71;
+an already loaded package. Windows CPU source-package checks and the corrected 0.5.0 win-builder R-devel
+check passed;
 this is not a claim of a published Windows binary or Windows GPU support.
 The 0.5.0 candidate is tracked in the [CRAN preparation status](cran-submission.md).
 The development source has
@@ -205,5 +206,7 @@ first-run example. A green GitHub matrix does not by itself verify that a new
 r-universe binary is available. Record the actual published version and platform
 results; do not substitute an older binary or source build for this check.
 
-CRAN preparation remains a later [package-plan](../SOLO-PHASE-PLAN.md) milestone alongside
-documentation and API stability work. The current package remains experimental.
+The exact 0.5.0 source has been submitted to CRAN; acceptance is pending.
+See [submission status](cran-submission.md), the [agent examples](agents.md) and
+the [API/version policy](api-policy.md). The frozen public compatibility baseline
+does not imply a released 1.0 or completed thirty-day CI window.

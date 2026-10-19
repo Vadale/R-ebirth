@@ -4,7 +4,8 @@
 
 [Get started](docs/getting-started.md) ·
 [Research walkthrough](examples/research-workflow/README.md) ·
-[Documentation](docs/README.md) ·
+[Documentation](https://vadale.github.io/R-ebirth/) ·
+[For agents](llms.txt) ·
 [0.4.0 release](https://github.com/Vadale/R-ebirth/releases/tag/v0.4.0)
 
 **Run a local language model, inspect its internal activity, and test interventions
@@ -52,10 +53,10 @@ recorded coordinates; it does not interpolate new measurements.*
 binaries need no Rust or C++ toolchain. macOS arm64 and Linux are the supported
 routes. The development source also has an optional [Linux CUDA build](docs/linux-cuda.md)
 with measured RTX 2060 results; published 0.4.0 binaries are not certified CUDA builds.
-Windows CPU source-package checks passed in PR71; Windows GPU and full live-file
+Windows CPU source-package checks and the corrected 0.5.0 win-builder check passed; Windows GPU and full live-file
 lifecycle parity remain outside that acceptance. The **0.5.0 source candidate**
-combines this portability work and CRAN preparation; it is not yet a published
-release or an accepted CRAN package. See the [submission status](docs/cran-submission.md).
+combines this portability work and has been submitted to CRAN. Maintainer
+confirmation is complete; acceptance and a separate 0.5.0 release are pending. See the [submission status](docs/cran-submission.md).
 
 ```r
 install.packages(
@@ -98,6 +99,9 @@ on supported Apple silicon builds, then available compiled CUDA, then CPU.
 See [installation and troubleshooting](docs/getting-started.md).
 
 ## Go beyond the first call
+
+For agent-assisted use, start with [llms.txt](llms.txt), the
+[standalone examples](docs/agents.md) and [API/version policy](docs/api-policy.md).
 
 - **Run a complete experiment:** the [research walkthrough](examples/research-workflow/README.md)
   saves prompts, fixed conditions, original/zero/intervention outputs, provenance,

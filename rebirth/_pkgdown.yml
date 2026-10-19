@@ -1,4 +1,12 @@
-url: https://vadale.r-universe.dev/relm
+url: https://vadale.github.io/R-ebirth/
+development:
+  mode: unreleased
+repo:
+  url:
+    home: https://github.com/Vadale/R-ebirth/
+    source: https://github.com/Vadale/R-ebirth/blob/HEAD/rebirth/
+    issue: https://github.com/Vadale/R-ebirth/issues/
+    user: https://github.com/
 
 template:
   bootstrap: 5
@@ -29,6 +37,7 @@ reference:
   - llm_direction
   - llm_apply_direction
   - llm_compare
+  - llm_timeline
   - plot.llm
   - plot.relm_timeline
   - llm_steer
