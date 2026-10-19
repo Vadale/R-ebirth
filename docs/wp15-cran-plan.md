@@ -240,7 +240,39 @@ Earlier “pending” statements above describe original failed candidates and a
 retained as history. Current CPU portability, R-devel/manual and attribution
 milestones passed; the final 0.5.0 candidate and admission questions are tracked
 in [CRAN submission status](cran-submission.md). Final current CI/tar, Cargo-age
-and farm/non-shared-R disposition, and maintainer upload approval remain open.
+and farm/non-shared-R disposition remain open at that recorded source.
+
+## PR73 non-shared-R header discovery and submission route
+
+The first PR73 matrix at `448b620` finished with eleven successful jobs and one
+failed non-shared-R installation. R4.6.1 itself built and installed successfully
+without libR.so; nanoarrow and codetools installed too. The package then failed
+compiling its C state accessor because `R CMD config --cppflags` returned empty
+stdout with status zero. The exact official R script intentionally does this
+when neither shared nor static libR is configured: the switch describes embedding
+R, not compiling an R extension. The installed headers were present and had
+already compiled relm's entrypoint.c. No completed non-shared relm DLL or tests
+are claimed for that failed run.
+
+The correction uses R_INCLUDE_DIR supplied by installation, with R.home("include")
+queried through the selected R as the standalone fallback. Include paths and the
+optional R_ARCH directory are separate quoted shell arguments. Compiler/flags,
+the C source, public API, native archives and dependency graph are unchanged.
+The complete original/corrected build scripts were compiled independently;
+the official R configuration script reproduces the old missing-header error.
+Four corrected accessor compiles pass (shared, non-shared configuration,
+standalone discovery, and a path with spaces/apostrophe/dollar plus architecture).
+Shared original/corrected and non-shared corrected objects are byte-identical.
+An invalid header path is refused before compilation. These are C-accessor
+controls with zero model calls or engine builds, not full hosted acceptance.
+Original failure and focused evidence are retained in
+[`nonshared-448b620`](../tests/cran/evidence/nonshared-448b620/).
+
+The founder authorized direct submission through the CRAN form, without a
+preliminary email, and agent merge after every current check passes. Final
+archive validation and honest disclosure of the unmet Rust/Cargo age guidance
+remain required. See [the procedure](cran-request.md); no CRAN exception or
+submission is claimed by this preparation.
 
 The authorized post-PR72 follow-up runs wrapper generation inside R after DLL
 linking, preserving actual production/selftest metadata and removing the ordinary

@@ -1,0 +1,10 @@
+cargo:rerun-if-changed=native/projection_state.c
+cargo:rerun-if-env-changed=R_HOME
+cargo:rerun-if-env-changed=R_INCLUDE_DIR
+cargo:rerun-if-env-changed=R_ARCH
+cargo:rerun-if-env-changed=CC
+cargo:rerun-if-env-changed=CFLAGS
+cargo:rerun-if-env-changed=RELM_R_PORTABLE
+cargo:rerun-if-env-changed=R_MAKEVARS_USER
+cargo:rustc-link-search=native=/home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/standalone
+cargo:rustc-link-lib=static=relm-r-state

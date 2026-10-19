@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "old_nonshared_rejected": true,
+  "new_compiles": 4,
+  "object_sha256": "8873756ad0dfef7d0b84d451913d09054bfe3b2522d0815ffbfe45c3eb2c4969",
+  "actual_c_source_sha256": "c5c5295b440cb07cb7875effb596d373694bc1484dfc8dd5dda7a2bcf70ce338",
+  "native_engine_builds": 0,
+  "model_calls": 0,
+  "scope": "Exact official R config behavior plus actual accessor compilation; hosted full nonshared installation pending"
+}

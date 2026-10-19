@@ -1,0 +1,8 @@
+native/projection_state.c:7:10: fatal error: Rinternals.h: No such file or directory
+    7 | #include <Rinternals.h>
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+
+thread 'main' (3626734) panicked at /home/grauk/Work/relm-phase9/pr73-failure-448b620/focused/original.rs:62:5:
+R state accessor compile failed
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

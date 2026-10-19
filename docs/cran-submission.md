@@ -65,8 +65,9 @@ than two years old; it reaches that age on **2027-02-20**. This preparation does
 not satisfy the age guidance and no exception has been requested or granted.
 Explicit version checks fix an installation defect; they do not waive policy.
 
-The chosen preparation route keeps the tested dependencies and records this
-issue for the maintainer's concrete submission decision. Alternatives are waiting
+The founder chose direct form submission with this issue disclosed, after the
+technical checks pass, without a preliminary email. The tested dependencies stay
+unchanged; no CRAN exception has been granted. Alternatives if CRAN refuses are waiting
 until the two-year date or undertaking a separately authorized Arrow/dependency
 downgrade with affected validation. The candidate does not silently take either
 route. A new stable toolchain on GitHub is not evidence of CRAN farm availability.
@@ -123,15 +124,16 @@ Windows execution, Tidy/incoming results, final source tar and its platform
 checks must come from the new ordinary eleven-job matrix. Capture the results
 locally and in the PR; do not trigger another matrix merely to commit receipts.
 
-Before an upload decision:
+Before the authorized upload:
 
-1. Inspect the final eleven outcomes, actual routes, diagnostics and allowed skips.
+1. Inspect all twelve current outcomes, actual routes, diagnostics and allowed skips.
 2. Bind one 0.5.0 source tar by SHA256 and source inventory; record its incoming
    checks, size, examples, vignettes, PDF, installed notices and platform results.
-3. Resolve or explicitly discuss the Rust-age/system-tool and non-shared-R
-   questions with the maintainer. No external contact is authorized by this PR.
+3. Complete the non-shared-R check and disclose the Rust-age/system-tool limits
+   in the form comments. The founder authorized this route without a preliminary email.
 4. Complete the [submission comments](cran-comments.md) with that exact candidate,
-   then obtain concrete approval for merge, release and/or external upload.
+   then submit through the official form. The agent may merge after all checks
+   pass; a separate release is not authorized by this decision.
 
 The [CRAN submission checklist](https://cran.r-project.org/web/packages/submission_checklist.html)
 expects current R-devel `--as-cran` results and disposition of significant notes.
@@ -151,7 +153,7 @@ checked with R-devel. An R-devel-built archive is useful evidence but does not
 by itself satisfy the release-build recommendation. Bind the selected archive
 and all external results by SHA256; reuse passed unchanged stages.
 
-See [the request procedure and unsent compiler inquiry](cran-request.md).
+See [the authorized form-submission procedure](cran-request.md).
 No numerical acceptance probability is justified by the available evidence.
 Current farm tool availability and disposition of the Cargo-age guidance still
 require external confirmation. Twenty or thirty days of use, publicity or prior

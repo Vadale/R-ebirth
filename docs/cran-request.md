@@ -1,59 +1,38 @@
 # CRAN request and submission procedure
 
-Status: preparation authorized on 2026-10-19; **nothing sent or uploaded**.
+Status: direct form submission authorized on 2026-10-19; **nothing sent or uploaded**.
 The wrapper follow-up and its new non-shared-R check must finish before a final
 candidate is described as verified. PR72's eleven successful checks are parent
 evidence; no relm admission decision or Rust exception exists.
 
-## Preliminary compiler inquiry — draft for maintainer approval
+## Founder decision
 
-To: CRAN-submissions@R-project.org
+Skip the preliminary email. Submit through the official form after the final
+candidate passes its technical checks, disclose the Rust/Cargo requirement and
+unmet age guidance, and address any requested changes. This is permission to
+request consideration, not an exception granted by CRAN.
 
-Subject: Compiler requirements for a first submission of relm
-
-Dear CRAN maintainers,
-
-I am preparing the first submission of relm, an R package for local language-model
-inference, activation capture and controlled interventions. It is currently
-distributed through r-universe.
-
-The package requires Cargo and rustc >= 1.85.0 and CMake >= 3.28. Its locked
-Arrow 59 dependencies use Rust 2024 edition. We have verified a complete source
-installation with Cargo/rustc 1.85.0, as well as Windows, Linux and macOS checks.
-Rust sources and license notices are bundled; installation is offline, uses two
-build jobs and does not install tools or download models. CUDA is optional and
-disabled for ordinary CRAN builds.
-
-I understand that your Rust guidance asks for testing with Cargo at least two
-years old. Version 1.85.0 was released on 20 February 2025 and does not yet meet
-that age. Before submitting, could you advise whether these tool requirements
-are supportable on the check farm and acceptable for consideration, or whether
-we should first target an older Rust dependency graph?
-
-Repository: https://github.com/Vadale/R-ebirth
-Package: https://vadale.r-universe.dev/relm
-
-Thank you,
-Alessandro Vadala
-
-This is a requirements inquiry, not a package submission or a request to bypass
-checks. Do not attach a binary or send the package by email. Update its evidence
-wording if the final candidate or requirements change before the founder sends it.
+The founder also authorizes the agent to merge PR73 when **all twelve current
+checks pass** and their required routes/results are verified. Any failed check
+must be corrected first. No further merge confirmation is needed. This does not
+authorize a separate GitHub release or omission of required checks.
 
 ## Actual package submission
 
-1. Close or obtain an explicit disposition of the compiler requirements. Complete
-   the current packaging matrix, including the non-shared-R installation.
+1. Complete the current packaging matrix, including the non-shared-R installation,
+   and merge the exact accepted head. Keep the tested dependency graph and report
+   Cargo/rustc >= 1.85.0, CMake >= 3.28 and the unmet two-year Cargo-age guidance
+   openly in the submission comments. Do not claim farm compatibility or approval.
 2. Build one `relm_0.5.0.tar.gz` with current R release/patched, retain its SHA256
    and run `R CMD check --as-cran` on that same archive with current R-devel.
    Include example/vignette/manual results, exact licenses and explained notes.
-3. With approval, upload the same source archive to win-builder's R-devel form.
+3. Upload the same source archive to win-builder's R-devel form as a submission check.
    Results go to the maintainer address in DESCRIPTION. Record the input digest
    and returned logs; this checks portability but does not submit to CRAN.
 4. Complete `cran-comments.md` for that exact archive and review all warnings or
    significant notes. `New submission` is expected for a new package; it does
    not grant an exception to other requirements.
-5. With approval, use the official CRAN submission form, choose the source
+5. Use the authorized official CRAN submission form, choose the source
    archive and provide the requested maintainer/details/comments. The maintainer
    must accept the confirmation email. Confirm access to the DESCRIPTION email
    before upload; no credentials or confirmation links belong in the repository.

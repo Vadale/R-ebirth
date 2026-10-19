@@ -1823,3 +1823,14 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   do not infer that environment's acceptance from shared-R tests. Prepare an
   unsent compiler-requirement inquiry and submission procedure. External contact,
   upload, merge and release still need the founder's concrete approval.
+
+- **Direct submission and delegated merge (2026-10-19):** the founder explicitly
+  chose the CRAN form instead of a preliminary email and authorized the agent to
+  merge PR73 once every current test/check passes. Verify the actual required
+  routes and exact head before merging; fix failures first, without a new merge
+  approval question. Then complete the release-built source archive and its
+  exact-archive R-devel/win-builder checks and submit using the form. Disclose
+  the Cargo/rustc1.85 requirement and unmet age guidance; no exception is claimed.
+  Address requested changes rather than sending duplicate pending submissions.
+  Maintainer email confirmation may require the founder's action. Separate
+  release publication remains outside this authorization.
