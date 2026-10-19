@@ -1,0 +1,8 @@
+/home/grauk/Work/relm-phase9/process-identity-5371f40/ps-native-control.c: In function ‘psll__parse_stat_file’:
+/home/grauk/Work/relm-phase9/process-identity-5371f40/ps-native-control.c:15:5: error: this ‘if’ clause does not guard... [-Werror=misleading-indentation]
+   15 |     if (pid != 17 || flags != 0) abort(); s->starttime = 500; return 0;
+      |     ^~
+/home/grauk/Work/relm-phase9/process-identity-5371f40/ps-native-control.c:15:43: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+   15 |     if (pid != 17 || flags != 0) abort(); s->starttime = 500; return 0;
+      |                                           ^
+cc1: all warnings being treated as errors

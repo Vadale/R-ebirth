@@ -11,6 +11,7 @@ import io
 import json
 from pathlib import Path
 import subprocess
+import sys
 import tarfile
 import tomllib
 
@@ -89,6 +90,7 @@ def check():
     assert current == record["bundles"]["src/llama-sources.tar.xz"]["files"], "Engine bundle is stale"
     for name, expected in record["generated_files"].items():
         assert sha((PACKAGE / name).read_bytes()) == expected, f"Generated file changed: {name}"
+    subprocess.run([sys.executable, str(ROOT / "tools/cran-notices.py")], check=True)
     print(f"CRAN_SOURCES_OK engine={len(current)} crates={record['crate_count']} lock_unchanged=true")
 
 
@@ -99,7 +101,7 @@ def prepare(vendor):
     assert {p.name for p in vendor.iterdir()} == expected, "Vendor inventory differs from Cargo.lock"
     authors = ["relm bundled source authorship and licenses", "", "Original relm: Alessandro Vadala; MIT OR Apache-2.0.",
                "llama.cpp and native dependencies: see THIRD-PARTY-NOTICES and", "src/llama-sources.tar.xz, including upstream LICENSE and retained notices.",
-               "", "Rust dependencies below are the existing Cargo.lock graph. Original license", "texts and copyright notices are retained inside src/rust/vendor.tar.xz.", ""]
+               "", "Rust dependencies below are the existing Cargo.lock graph. Original license", "texts and copyright notices are installed in RUST-NOTICES.", ""]
     for package in sorted(packages, key=lambda p: (p["name"], p["version"])):
         directory = vendor / (package["name"] + "-" + package["version"])
         verify_crate(directory, package["checksum"])
@@ -135,6 +137,7 @@ def prepare(vendor):
     record = dict(schema=1, cargo_lock_sha256=sha(LOCK.read_bytes()), crate_count=len(packages), bundles=bundles,
                   generated_files=generated, omitted_compiled_artifacts=omissions)
     MANIFEST.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+    subprocess.run([sys.executable, str(ROOT / "tools/cran-notices.py"), "--write"], check=True)
     check()
     print(json.dumps({name: {k: v for k, v in data.items() if k != "files"} for name, data in bundles.items()}, indent=2))
 

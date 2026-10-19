@@ -21,6 +21,12 @@ jobs:
       CARGO_BUILD_JOBS: "2"
       CARGO_NET_OFFLINE: "true"
       NOT_CRAN: "false"
+      _R_CHECK_LIMIT_CORES_: "true"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v6
@@ -51,7 +57,9 @@ jobs:
           working-directory: rebirth
       - name: Configure and source extraction controls
         shell: Rscript {0}
-        run: source("tests/cran/configuration.R")
+        run: |
+          source("tests/cran/configuration.R")
+          source("tests/cran/native-build.R")
       - name: Rtools thread declaration compatibility (no engine build)
         shell: bash
         run: python tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
@@ -77,4 +85,66 @@ jobs:
             rebirth/*.tar.gz
             ${{ runner.temp }}/windows-thread-compat/receipt.json
             ${{ runner.temp }}/vignette-library
+          if-no-files-found: warn
+
+  r-devel:
+    name: Linux production source package (R-devel, PDF manual)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      RELM_ENABLE_CUDA: "0"
+      RELM_ENABLE_SELFTESTS: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_NET_OFFLINE: "true"
+      NOT_CRAN: "false"
+      _R_CHECK_LIMIT_CORES_: "true"
+      _R_CHECK_FORCE_SUGGESTS_: "true"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Verify source bundles and installed notices
+        run: python tools/prepare-cran-sources.py --check
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: stable
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: devel
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-tinytex@v2
+        env:
+          TINYTEX_INSTALLER: TinyTeX
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+          working-directory: rebirth
+      - name: Configure controls before native compilation
+        run: |
+          Rscript --vanilla tests/cran/configuration.R
+          Rscript --vanilla tests/cran/native-build.R
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          working-directory: rebirth
+          args: 'c("--as-cran")'
+          build_args: 'character()'
+          error-on: '"warning"'
+      - name: Retain R-devel source, manual and results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: r-devel-cran-package-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            rebirth/check
+            rebirth/*.tar.gz
           if-no-files-found: warn

@@ -45,6 +45,9 @@ fn main() {
     println!("cargo:rerun-if-changed=native/windows_compat.cmake");
     println!("cargo:rerun-if-changed=native/windows_thread_compat.h");
     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
+    for variable in ["RELM_R_PORTABLE", "CC", "CXX", "CFLAGS", "CXXFLAGS"] {
+        println!("cargo:rerun-if-env-changed={variable}");
+    }
     for variable in ["CUDA_PATH", "CUDAARCHS", "CUDACXX", "CUDAHOSTCXX"] {
         println!("cargo:rerun-if-env-changed={variable}");
     }
@@ -93,6 +96,19 @@ fn main() {
     }
 
     let mut cfg = cmake::Config::new(&llama_src);
+    let portable = env::var("RELM_R_PORTABLE").as_deref() == Ok("1");
+    if portable {
+        assert!(
+            !cuda,
+            "portable R CPU configuration cannot be combined with CUDA"
+        );
+        for option in build_support::portable_cpu_options() {
+            cfg.define(option, "OFF");
+        }
+        // No host ISA probing on Arm either; the R toolchain supplies its target.
+        cfg.define("GGML_CPU_ARM_ARCH", "");
+        configure_r_compiler(&mut cfg);
+    }
     if cfg!(windows) {
         // R builds in an already deep temporary package directory. Keep CMake
         // inside the same Cargo profile, but omit redundant build/crate/out
@@ -179,6 +195,9 @@ fn main() {
     // Separate relm-owned exception boundary, built with the existing CMake
     // dependency. No vendored engine source or new build crate is required.
     let mut bridge = cmake::Config::new(manifest_dir.join("native"));
+    if portable {
+        configure_r_compiler(&mut bridge);
+    }
     bridge
         .out_dir(dst.join(if cfg!(windows) { "g" } else { "grammar-bridge" }))
         .define("CMAKE_BUILD_TYPE", "Release")
@@ -268,6 +287,18 @@ fn main() {
 
 /// The explicit toolkit root is shared with the R configure path. Runtime
 /// libraries remain external; ordinary builds never inspect or require CUDA.
+fn configure_r_compiler(config: &mut cmake::Config) {
+    // Makevars exports R's selected CC/CXX17 and complete flags. The cmake
+    // crate otherwise drops -O/-g and CMake adds its own Release optimization.
+    config.no_default_flags(true);
+    for (language, variable) in [("C", "CFLAGS"), ("CXX", "CXXFLAGS")] {
+        let flags = env::var(variable).unwrap_or_else(|_| panic!("R build must export {variable}"));
+        config.define(format!("CMAKE_{language}_FLAGS"), flags);
+        config.define(format!("CMAKE_{language}_FLAGS_RELEASE"), "");
+    }
+    config.define("CMAKE_POSITION_INDEPENDENT_CODE", "ON");
+}
+
 fn cuda_toolkit() -> (PathBuf, PathBuf) {
     let root = PathBuf::from(env::var_os("CUDA_PATH").unwrap_or_else(|| "/usr/local/cuda".into()));
     let root = root

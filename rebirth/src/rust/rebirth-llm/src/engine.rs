@@ -328,6 +328,8 @@ impl OwnedContext {
         // b10828 defaults to one output per sequence. relm also returns
         // per-token logits/embeddings, so retain the pre-bump batch-wide limit.
         cparams.n_outputs_max_per_seq = 0;
+        cparams.n_threads = crate::check_resources::threads(cparams.n_threads);
+        cparams.n_threads_batch = crate::check_resources::threads(cparams.n_threads_batch);
         // This chokepoint covers generation, embeddings, traces, and derived
         // intervention handles; none may re-enable GPU work on a CPU model.
         if model.resolved_backend == BackendKind::Cpu {
@@ -1127,6 +1129,75 @@ impl LoadedModel {
 mod tests {
     use super::*;
     use std::io::Write;
+
+    #[test]
+    fn r_check_budget_reaches_all_owned_contexts() {
+        // Separate processes avoid mutating the environment of parallel tests.
+        if std::env::var_os("RELM_THREAD_TEST_CHILD").is_none() {
+            for check in ["TRUE", "FALSE"] {
+                let output = std::process::Command::new(std::env::current_exe().unwrap())
+                    .args([
+                        "--exact",
+                        "engine::tests::r_check_budget_reaches_all_owned_contexts",
+                        "--nocapture",
+                    ])
+                    .env("RELM_THREAD_TEST_CHILD", "1")
+                    .env("_R_CHECK_LIMIT_CORES_", check)
+                    .output()
+                    .unwrap();
+                assert!(
+                    output.status.success(),
+                    "{}\n{}",
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                print!("{}", String::from_utf8_lossy(&output.stdout));
+            }
+            return;
+        }
+        extern "C" {
+            fn llama_n_threads(ctx: *mut ffi::llama_context) -> i32;
+            fn llama_n_threads_batch(ctx: *mut ffi::llama_context) -> i32;
+        }
+        extern "C" fn no_capture(_: *mut ffi::ggml_tensor, _: bool, _: *mut c_void) -> bool {
+            false
+        }
+        let _native = NativeGuard::acquire("r_check_budget_control");
+        let model = load(LoadRequest {
+            path: PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("../../../tests/testthat/fixtures/synthetic-llama-2l.gguf"),
+            context_length: 64,
+            gpu_layers: Some(0),
+            backend: BackendKind::Cpu,
+            mmap: true,
+            projector: None,
+        })
+        .unwrap();
+        let derived = model.clone_with_fresh_context().unwrap();
+        let embedding = model.create_embedding_context(64).unwrap();
+        let trace = model
+            .create_trace_context(64, no_capture, std::ptr::null_mut())
+            .unwrap();
+        let expected = if std::env::var("_R_CHECK_LIMIT_CORES_").as_deref() == Ok("TRUE") {
+            2
+        } else {
+            4
+        };
+        for ptr in [
+            model.ctx_ptr(),
+            derived.ctx_ptr(),
+            embedding.as_ptr(),
+            trace.as_ptr(),
+        ] {
+            // SAFETY: read-only upstream getters on the four live owned contexts.
+            unsafe {
+                assert_eq!(llama_n_threads(ptr), expected);
+                assert_eq!(llama_n_threads_batch(ptr), expected);
+            }
+        }
+        assert_eq!(crate::vision::context_params().n_threads, expected);
+        println!("CRAN_CONTEXT_THREADS_OK threads={expected} contexts=4 text_fields=8 vision_parameter=1 loads=1 decodes=0");
+    }
 
     #[test]
     fn backend_kind_roundtrips_and_parses() {

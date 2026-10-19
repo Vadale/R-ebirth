@@ -256,3 +256,185 @@ historical numerical, benchmark and quality limits remain unchanged.
 - <https://cran.r-project.org/web/packages/submission_checklist.html>
 - <https://cran.r-project.org/doc/manuals/r-release/R-exts.html>
 - <https://win-builder.r-project.org/>
+
+## WRE readiness continuation after PR70 (2026-10-19)
+
+PR70's source-packaging and Windows CPU milestone is integrated. Its ten CI
+outcomes are carried at the accepted source; they do not certify the following
+new compilation settings. Phase9 and CRAN submission remain open.
+
+The owned text-context factory caps both inference thread parameters at two
+when R's standard `_R_CHECK_LIMIT_CORES_` is active. Both mtmd constructor paths
+use the same bounded parameter builder. A new isolated native control observes
+actual thread getters for generation, derived, embedding and trace contexts,
+and checks the vision parameter; it performs no decode. Ordinary sessions keep
+four upstream threads. This verifies configured counts, not a universal bound
+on every process-wide/background operating-system thread. CI also sets the
+standard OpenMP/OpenBLAS/MKL/Accelerate/BLIS controls to one before starting R.
+
+Ordinary R CPU/Metal builds now explicitly disable host ISA detection and
+optional x86 extensions, and use R's effective CC/CXX17 and flags. The selected
+CMake executable is carried into Cargo, including the official Mac app fallback.
+Compiler flags supplied by R or a user's Makevars remain authoritative; a user
+who adds machine-specific flags creates a correspondingly local binary. CMake
+Release flags cannot silently replace R's optimization/debug flags. The explicit
+Linux CUDA build keeps its accepted configuration; no new CUDA performance claim
+or benchmark is made. Direct Cargo development is a separate build scope.
+
+`RUST-NOTICES` installs the exact license/copyright texts for all 81 locked
+crates, with a source/hash index and identical texts deduplicated. The published
+extendr-api/ffi/macros and flatbuffers crate archives omit their top-level
+license file; local supplements bind the original repository and commit from
+`.cargo_vcs_info.json`. `tools/cran-notices.py` verifies these bindings without
+network access or changing source archives. All platform/build-only crates are
+included; this does not assert that all 81 are linked on every target.
+
+The ordinary automatic matrix gains one Linux R-devel production check with
+full PDF manual, examples and vignettes. The existing Rust1.85 Linux leg remains
+the declared-floor test. Final toolchain suitability, incoming checks, tar size,
+licenses, diagnostics and submission comments must be inspected on the final
+candidate. Rust1.85 is newer than CRAN's preferred two-year age at this date;
+record that constraint rather than asserting an exception has been granted.
+No CRAN/win-builder upload or new release is authorized by these local edits.
+
+Official references consulted: [CRAN Rust guidance](https://cran.r-project.org/web/packages/using_rust.html),
+[CRAN policy](https://cran.r-project.org/web/packages/policies.html),
+[Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html),
+and the [R check implementation](https://github.com/wch/r-source/blob/trunk/src/library/tools/R/check.R).
+
+## Local WRE result and outstanding compiler diagnostic (2026-10-19)
+
+The new isolated release control passed with two tiny-model loads and zero
+decodes: eight owned text contexts, sixteen actual thread-getter values and
+two vision constructor parameter values. Check-mode values were two; ordinary
+values remained four. The separate production CPU installation passed its
+250-function/body/formals and codetools inspection, 33 registered calls with
+zero selftest hooks, 27-field allocation profile, and all three installed
+notice files. Installed inspection made zero model calls. The DLL SHA256 is
+`fd4be0fdc56d7885392332d6f8e7024152396923cb3be8a359fd69d0ded1894d`;
+ELF has no CUDA dependency or TEXTREL. These are scoped install/resource results,
+not a full CRAN check, vision-model test, inference or performance acceptance.
+
+The 7,454,971-byte no-vignette/no-manual source tar has 326 files and no outer
+paths over 100 bytes. 325 files match repository bytes; DESCRIPTION retains
+all 19 field values after normal build whitespace formatting and adds four
+standard metadata fields. The source snapshots bind 1,112 inputs; the final
+installation has 31 files. The retained native configuration has 266 compile
+commands with portable CPU settings and R flags.
+
+The first worker failed before the unit executable existed: its isolated test
+harness omitted two existing repository-only JSON include_str fixtures. The
+corrected harness reused all 307 native artifact hashes, sizes and modification
+times through the resumed test. Source build/configure were carried without
+replay. The subsequent normal R install compiled Rust crates again; its
+exported flag whitespace differed from the earlier driver. Its owned target
+was cleaned normally, so the pre-install archive hashes must not be presented
+as final-DLL archive identity or proof of complete native cache reuse.
+
+The installed link emitted one GCC16/LTO `-Wstringop-overread` diagnostic at
+pinned `llama-model-loader.cpp:249` (`try_override` string assignment), with an
+inlined `get_key` path and a likely-zero-source note. Source inspection finds
+a null check in `validate_override` before that assignment. This observation
+does not prove a compiler false positive or harmlessness. That original receipt
+remains `passed_scoped_with_open_compiler_warning`; the later bounded correction
+is recorded below, without relabelling the old installation. The earlier CMake
+missing-ccache advisory is also retained. The package installed, but that result
+is not globally warning-free or ready for submission.
+
+A raw-only metadata inspector initially rejected normal DESCRIPTION whitespace
+reflow. Its original script/log remain preserved; comparison of the same saved
+tar and RDS then passed, with no native/model replay. Original worker statuses
+remain unchanged. Parent verification and all raw/source records are retained
+in [`readiness-20261019`](../tests/cran/evidence/readiness-20261019/), manifest
+`814e1c2bca91711aa1afc50ea1effcbefc932f47885beb005424352f34383f83`.
+Current Windows/macOS/R-devel/manual results and the final Rust/toolchain,
+warning, version and submission decisions remain pending. Do not recheck PR70.
+
+## GCC16 warning correction and first PR71 failures (2026-10-19)
+
+The founder requested the warning correction while the first PR71 matrix was
+running. Compile and shared-link of the complete original model-loader
+translation unit, using its retained R/GCC16 optimization and LTO flags,
+reproduced the exact `-Wstringop-overread` diagnostic. Adding `ovrd &&` immediately
+before the existing string-type validator removes the diagnostic with
+`-Werror=stringop-overread` still enabled. This isolated shared object is not a
+complete runnable engine or installed R package. It establishes the affected
+compiler diagnostic's resolution, not a claim about every possible input or
+compiler version.
+
+The actual original and corrected template each passed eight cases: one absent
+pointer, three wrong types, and four strings (empty, ordinary, maximum terminated
+length, embedded NUL). Return value, target and captured diagnostic bytes match
+independently stated expectations and each other. The corrected full-source
+control also passes the exact new CI command with all warnings treated as errors.
+No model, metadata getter, inference or full native/package rebuild was used.
+An optional ASan/UBSan build stopped before execution on an unrelated libstdc++16
+regex `maybe-uninitialized` diagnostic instantiated by the full source; its
+original command/log are retained. No sanitizer success or warning suppression
+is claimed.
+
+Patch0006 preserves the existing validator/null handling, assignment and logs.
+Upstream b10828 and pre-patch identity are unchanged. G4 and reverse-patch
+coherence passed; the new post-patch digest is
+`07b8a13db5c250360466facdcacb1331e284ba5d4a4d0e04b6a64c99ad0ecd7b`.
+Only the engine source bundle changes; all locked Rust dependency bytes and
+licenses stay unchanged. No kernel, ABI, numerical bound or optimization change.
+
+Five first-matrix jobs failed the same two `needless_borrows_for_generic_args`
+errors in the new portable-build script. Removing the two borrows passes actual
+build-script Clippy with warnings denied. The standalone lint uses the four
+exact locked dependency versions/checksums, without running the script or
+building the engine. The Windows job separately failed before native compilation:
+regex template replacement removed backslashes from the discovered CMake path.
+Literal replacement preserves both generated Cargo exports; shell quoting now
+precedes make-dollar escaping. Actual configuration and Unix make/shell controls
+cover the failing Rtools path and a path containing spaces, apostrophe and dollar,
+in both templates. The former replacement fails the same byte comparison.
+These controls mock discovery only and do not claim Windows execution.
+
+The first local special-character path check exposed the quoting-order defect;
+its failed log/source remain retained alongside the corrected pass. Current
+platform checks are still required. All original failed CI outcomes remain
+failed, with full raw logs and metadata in
+[`pr71-gcc-build-20261019`](../tests/cran/evidence/pr71-gcc-build-20261019/).
+No clean full-package, final CRAN, merge or submission claim follows from these
+focused results.
+
+The first PR71 matrix subsequently finished with five successes and six retained
+failures; no additional failure appeared. Parent-head R-devel/GCC13.3 completed
+production installation, compiled-code/Rust checks, examples, tests, vignette
+rebuild and PDF manual: 4,981 passing expectations, 141 scoped skips, zero errors
+or warnings, one NOTE because HTML Tidy is unavailable. Installed size was
+126.4 MB (123.2 MB in libs), retained as a resource/submission consideration.
+Full job output and step metadata were inspected; the large binary artifact was
+not downloaded or independently hash-verified. This does not establish corrected
+package acceptance or resolve the separate local GCC16 warning retroactively.
+The next matrix validates the coherent correction; no prior stage was replayed
+locally. Final CI receipts remain local.
+
+## Service identity fixture after the GCC correction (2026-10-19)
+
+The corrected5371f40 matrix ended with ten successful jobs and one failed Linux
+oldrel/Rust1.85 job. That job's actual package check passed (6,669 expectations,
+81 scoped skips, zero errors/warnings/notes), then the first service ownership
+preflight rejected its `!svc_alive(stale)` expectation before HTTP acceptance.
+
+The fixture subtracted one second from a live process birth. Pinned ps1.9.3
+accepts both precise and legacy boot-time representations within one clock tick;
+the exact upstream native function reproduces a valid owner for which subtracting
+one second still identifies that live process. Original runner timestamps were
+not retained, so this is a deterministic counterexample to the fixture assumption,
+not a reconstruction of the runner's exact boot clock. Runtime guards stay intact.
+Three persisted fixtures now use an epoch birth string; the direct handle uses
+a POSIXct epoch, with the same PID and unchanged assertions. All four affected
+cases passed with actual installed ps1.9.3, including an independent R reader.
+The local host still rejects the former minus-one fixture; its separate actual
+legacy birth is accepted and epoch rejected, with the original owner surviving.
+No model, HTTP service, dependency update or relm native rebuild was needed.
+
+The original failed job, complete raw output, exact source, local observations,
+and two draft control failures remain in
+[`service-identity-5371f40`](../tests/cran/evidence/service-identity-5371f40/).
+Nine unrelated process cases were not replayed. Product/runtime/source bundles
+remain byte-identical to5371f40; current hosted acceptance follows the ordinary
+automatic matrix for this test-only correction. No final CRAN/merge claim.

@@ -1,0 +1,3 @@
+{"alive":true,"stale_alive":false,"recorded_birth":"1792405701.257269","observed_birth":"1792405701.257268"} 
+PASS: independent-owner-reader 
+PASS: 1 process RSS/liveness regressions; no model loaded

@@ -17,7 +17,7 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz` |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
 | Pruned tree SHA256 (pre-patch) | `e89c0d0b00b6d31cccf55ff5463a06455617341c15b966d5daeda89fb03b27b5` |
-| Pruned tree SHA256 (post-patch) | `49f780edda8a7da6bfb3f49af162dc1a57848aa91e4ee96ba75fc8372b724dfc` |
+| Pruned tree SHA256 (post-patch) | `07b8a13db5c250360466facdcacb1331e284ba5d4a4d0e04b6a64c99ad0ecd7b` |
 
 D-032 advances b9726 to b10828 (commit
 `3ad1ba7336986d98592d3e28cafd1a406715351f`) for native Spark 2.5 support.
@@ -72,6 +72,16 @@ as-is, which is CRAN/`R CMD INSTALL`-robust and needs no diff-applier dependency
 | `0004-cpu-callback-signatures.diff` | `ggml/src/ggml-cpu/ggml-cpu.c`, seven adapters and assignments | Exact generic callback signatures forwarding to unchanged typed CPU kernels. | D-040 |
 
 | `0005-compiler-diagnostics.diff` | GCC/Clang diagnostic directives in 14 source/header files | Remove warning suppression; retain optimization pragmas and computations. No upstream version change. | D-048 release warning cleanup |
+
+| `0006-model-loader-override-null.diff` | `src/llama-model-loader.cpp`, one condition | Make the existing null refusal explicit at the string-override call site; avoids the reproduced GCC16/LTO overread diagnostic while preserving validation, results and logs. | D-051 founder warning correction |
+
+D-051 adds this bounded correction after the founder explicitly requested fixing
+the GCC warning on 2026-10-19. The original guard in validate_override is retained;
+no suppression, LTO/optimization change, metadata API, kernel or upstream version
+change is involved. The original full translation unit reproduces the diagnostic;
+the corrected unit links clean with the warning promoted to error. Eight actual
+template cases compare original/corrected values and logs, without a model load.
+The previous post-patch digest was `49f780edda8a7da6bfb3f49af162dc1a57848aa91e4ee96ba75fc8372b724dfc`.
 
 The patches touch engine sources only; all CMake inputs are pristine upstream.
 D-039, D-040 and the D-048 diagnostic cleanup change only the post-patch digest; the b10828 upstream and pre-patch

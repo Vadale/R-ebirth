@@ -27,15 +27,21 @@ extract_semver <- function(ver) {
   }
 }
 
+cmake_command <- unname(Sys.which("cmake"))
+if (!nzchar(cmake_command) && identical(Sys.info()[["sysname"]], "Darwin")) {
+  fallback <- "/Applications/CMake.app/Contents/bin/cmake"
+  if (file.exists(fallback)) cmake_command <- fallback
+}
+if (!nzchar(cmake_command)) stop(paste(no_cmake_msg, collapse = "\n"), call. = FALSE)
 cmake_version_raw <- tryCatch(
-  system("cmake --version", intern = TRUE),
+  system2(cmake_command, "--version", stdout = TRUE),
   error = function(e) stop(paste(no_cmake_msg, collapse = "\n")),
   warning = function(e) stop(paste(no_cmake_msg, collapse = "\n"))
 )
 
 current_cmake_version <- extract_semver(cmake_version_raw[[1]])
 
-if (!is.na(current_cmake_version) &&
+if (is.na(current_cmake_version) ||
   utils::compareVersion(current_cmake_version, cmake_min_version) < 0) {
   fmt <- paste0(
     "\n------------------ [UNSUPPORTED CMAKE VERSION]------------------\n",

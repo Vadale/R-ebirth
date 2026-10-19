@@ -1,0 +1,126 @@
+{
+  "schema": 1,
+  "base_head": "0be17e49c38233f98f189b9559dea8546ebea9d6",
+  "status": "passed_focused_correction_hosted_pending",
+  "source_hashes": {
+    "rebirth/src/llama.cpp/src/llama-model-loader.cpp": "eff3ed2472f0637acd332affb0121b0cfdb085d1e0f7d365b915557fee7a5e3e",
+    "rebirth/src/llama.cpp/patches/0006-model-loader-override-null.diff": "2743db69a91ae488c76a6e658a2988df2ee0a920fe39299864b41b5766d81cc4",
+    "rebirth/src/llama.cpp/VENDORING.md": "80c0dc93ccbe33fd02d68cf5c40edbfed365e5e827bc3c4a2499a7a38f3723df",
+    "rebirth/src/rust/rebirth-llm/build.rs": "e1f17700232a1c6195e05d6b97ee2f4dbd887ecbb4a720e0b6a8af1ade6d2687",
+    "rebirth/tools/config.R": "029fd38b93cb2506c3ae3118d34bf8ccd1b6e9bea2555ade04e753fe57ab1fc6",
+    "tests/cran/configuration.R": "568c9319f0fecc6dc8c5fe73c2d78b5d7815e8b92b2409484ac41eb172122a07",
+    "tests/cran/native-build.R": "24fa77954f4d2c329f532a083650aed36282c8130f88cb5d826a6c46c16a15da",
+    "tests/cran/model-loader-override.cpp": "2368341aaf9f76cdb3fa9968fc8b60733a3dc31a91ad311c6301bfca6c14f549",
+    ".github/workflows/rust.yaml": "4d4e6c174f43ffdbdea408a99cf0a304e583182fd95de17733d19f2f9fe551cd"
+  },
+  "ci_failures_preserved": [
+    {
+      "id": 117983971308,
+      "name": "cargo fmt / clippy / test",
+      "head_sha": "0be17e49c38233f98f189b9559dea8546ebea9d6",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Vadale/R-ebirth/actions/runs/39229566985/job/117983971308"
+    },
+    {
+      "id": 117983971710,
+      "name": "macos-15 (R oldrel-1, Rust stable)",
+      "head_sha": "0be17e49c38233f98f189b9559dea8546ebea9d6",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Vadale/R-ebirth/actions/runs/39229566959/job/117983971710"
+    },
+    {
+      "id": 117983971736,
+      "name": "Windows CPU source package (R release)",
+      "head_sha": "0be17e49c38233f98f189b9559dea8546ebea9d6",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Vadale/R-ebirth/actions/runs/39229566954/job/117983971736"
+    },
+    {
+      "id": 117983971821,
+      "name": "ubuntu-24.04 (R oldrel-1, Rust 1.85.0)",
+      "head_sha": "0be17e49c38233f98f189b9559dea8546ebea9d6",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Vadale/R-ebirth/actions/runs/39229566959/job/117983971821"
+    },
+    {
+      "id": 117983971882,
+      "name": "macos-15 (R release, Rust stable)",
+      "head_sha": "0be17e49c38233f98f189b9559dea8546ebea9d6",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Vadale/R-ebirth/actions/runs/39229566959/job/117983971882"
+    },
+    {
+      "id": 117983971963,
+      "name": "ubuntu-24.04 (R release, Rust stable)",
+      "head_sha": "0be17e49c38233f98f189b9559dea8546ebea9d6",
+      "conclusion": "failure",
+      "html_url": "https://github.com/Vadale/R-ebirth/actions/runs/39229566959/job/117983971963"
+    }
+  ],
+  "original_loader_warning_reproduced": true,
+  "corrected_loader_diagnostic_count": 0,
+  "loader_actual_expected_cases": 8,
+  "original_corrected_ci_output_equal": true,
+  "ci_full_source_control_all_warnings_errors": true,
+  "native_config_literal_path_cases": 4,
+  "native_config_platform_templates": 2,
+  "old_template_rejected": true,
+  "make_shell_roundtrip_platform": "Linux; no current Windows execution claim",
+  "build_script_lint": "passed -Dwarnings; executable compiled but not run",
+  "lint_dependencies_exact_locked": [
+    "cc 1.2.65",
+    "cmake 0.1.58",
+    "find-msvc-tools 0.1.9",
+    "shlex 2.0.1"
+  ],
+  "optional_sanitizer": "compilation failed on unrelated libstdc++ regex maybe-uninitialized; no execution or sanitizer acceptance",
+  "initial_special_path_control": "failed; quoting order corrected; original retained",
+  "model_loads": 0,
+  "full_engine_or_R_builds": 0,
+  "vendor_verification": "G4 and reverse patch coherence passed once before archiving; no replay",
+  "postpatch_sha256": "07b8a13db5c250360466facdcacb1331e284ba5d4a4d0e04b6a64c99ad0ecd7b",
+  "source_bundle": {
+    "bytes": 2001304,
+    "sha256": "180a9f53fa84b1b1857fc9adacf96566eadeaf6202611a68a9b2996bae782d14"
+  },
+  "source_bundle_file_count": 767,
+  "bundle_changed": [
+    "llama.cpp/VENDORING.md",
+    "llama.cpp/src/llama-model-loader.cpp"
+  ],
+  "bundle_added": [
+    "llama.cpp/patches/0006-model-loader-override-null.diff"
+  ],
+  "rust_bundle_and_lock_unchanged": true,
+  "compiled_outputs_local_only": {
+    "original.o": {
+      "sha256": "499a90e45a99613a78a3879c865e805f3d4646eb04fd3bbc5e41322f4a71865d",
+      "bytes": 10514768
+    },
+    "original.so": {
+      "sha256": "b35540ef06642f9665eddbd6d6cd2ab0f4bf3e534b25bdab8bfefef58a442fa1",
+      "bytes": 4519632
+    },
+    "corrected.o": {
+      "sha256": "c06c1826e5e3180269dd0a04f656a1581fd5af7c5f135b3de57498a2523c2533",
+      "bytes": 10488520
+    },
+    "corrected.so": {
+      "sha256": "9346cff34b3200a454586168e5c524431cae38ba23f4fd2cdb8f086e83eecc3f",
+      "bytes": 4519096
+    },
+    "original-control": {
+      "sha256": "e5c6f88e1020cd420ada3fdb8c2f0fc45cdfaa789b120f1508797d746c40f85f",
+      "bytes": 31920
+    },
+    "corrected-control": {
+      "sha256": "cd76aec8885021740128d482795844c18f84f38c1243404e81f3635e989c012c",
+      "bytes": 31920
+    },
+    "ci-control": {
+      "sha256": "cd76aec8885021740128d482795844c18f84f38c1243404e81f3635e989c012c",
+      "bytes": 31920
+    }
+  },
+  "remaining": "R-devel still running at last observation. New full matrix required after one corrective push; no merge or CRAN approval."
+}

@@ -1,0 +1,29 @@
+{
+  "status": "failed",
+  "pid": 3059583,
+  "output": "/home/grauk/Work/relm-phase9/readiness-build",
+  "stages": [
+    {
+      "name": "source-build",
+      "returncode": 0,
+      "seconds": 1.4875055809970945,
+      "log_sha256": "688ebaa2375a62b0a96780c5eae4d9aa99c1c33e2d818481d03cc64c9752f5f3"
+    },
+    {
+      "name": "configure",
+      "returncode": 0,
+      "seconds": 0.29270344803808257,
+      "log_sha256": "029be902566de13a794bcb1906575fcd89cdecaa053741ef7a48d3567d9cd41a"
+    },
+    {
+      "name": "context-budget",
+      "returncode": 101,
+      "seconds": 294.65161868196446,
+      "log_sha256": "3eb5928870e8a106d7c4b8c394f19c6b660751fa9021ff55400f8c1ecc39011e"
+    }
+  ],
+  "updated_at": "2026-10-19T08:39:29.660592+00:00",
+  "stage": "context-budget",
+  "error": "context-budget failed; preserve passed stages",
+  "traceback": "Traceback (most recent call last):\n  File \"/home/grauk/Work/relm-phase9/run-readiness-build.py\", line 76, in <module>\n    output=stage('context-budget',['cargo','test','--locked','--offline','-j','2','--release','-p','rebirth-llm','--lib','--manifest-path=./rust/Cargo.toml','--target-dir=./rust/target','engine::tests::r_check_budget_reaches_all_owned_contexts','--','--exact','--nocapture'],src,native)\n  File \"/home/grauk/Work/relm-phase9/run-readiness-build.py\", line 22, in stage\n    if result.returncode: raise RuntimeError(name+' failed; preserve passed stages')\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: context-budget failed; preserve passed stages\n"
+}

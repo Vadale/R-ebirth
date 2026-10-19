@@ -47,6 +47,17 @@ source("tools/cuda.R")
 cuda <- relm_cuda_config()
 .cuda_feature <- cuda$feature
 
+# Ordinary R CPU/Metal binaries must not depend on the build machine's ISA.
+# Keep the explicitly opted-in CUDA performance build at its accepted flags.
+.native_build_env <- if (nzchar(.cuda_feature)) "RELM_R_PORTABLE=0" else paste(
+  'RELM_R_PORTABLE=1 CC="$(CC)" CXX="$(CXX17)"',
+  'CFLAGS="$(CPPFLAGS) $(CFLAGS) $(CPICFLAGS)"',
+  'CXXFLAGS="$(CPPFLAGS) $(CXX17FLAGS) $(CXX17PICFLAGS) $(CXX17STD)"'
+)
+# Quote for the shell first, then escape dollars for the enclosing make recipe.
+.native_build_env <- paste0("CMAKE=", gsub("$", "$$", shQuote(cmake_command, type = "sh"), fixed = TRUE),
+                           " ", .native_build_env)
+
 # when DEBUG env var is present we use `--debug` build
 .profile <- ifelse(is_debug, "", "--release")
 .clean_targets <- ifelse(is_debug, "", "$(TARGET_DIR)")
@@ -160,6 +171,7 @@ new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@PROFILE@", .profile, x = _) |>
   gsub("@SELFTEST_FEATURE@", .selftest_feature, x = _) |>
   gsub("@CUDA_FEATURE@", .cuda_feature, x = _) |>
+  gsub("@NATIVE_BUILD_ENV@", .native_build_env, x = _, fixed = TRUE) |>
   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>

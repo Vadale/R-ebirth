@@ -181,6 +181,13 @@ fresh-handle access probe, then checks its persisted creation-time handle throug
 live stat-denial fixture protects fail-closed ownership behavior. These checks
 use the library's native identity resolution, not an invented timing tolerance.
 
+Wrong-birth fixtures use the Unix epoch with the same live PID. Subtracting one
+second is not reliably invalid: ps1.9.3 also accepts the legacy integer boot-time
+representation, which may be within a tick of that value. This fixture correction
+does not change production ownership checks, clock tolerances or dependency pins.
+The retained PR71 failure and exact-source counterexample are in
+`tests/cran/evidence/service-identity-5371f40`.
+
 For a reviewed final-source lifecycle confirmation, dispatch
 `nightly-model-tolerance.yaml` with `service=true`, `service_lifecycle_only=true`,
 `sampler_diagnostic=false` and `spark=false`. This retains preflight, prepared

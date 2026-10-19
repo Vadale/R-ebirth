@@ -1,0 +1,44 @@
+{
+  "status": "awaiting_owner_verification",
+  "pid": 3097428,
+  "output": "/home/grauk/Work/relm-phase9/readiness-fixtures",
+  "stages": [
+    {
+      "name": "context-budget",
+      "returncode": 0,
+      "seconds": 41.41066974302521,
+      "log_sha256": "3d7575a5915eee3e626d8c7a2e9a99fcdf8064a7ac5f77da86e12033afd3771e"
+    },
+    {
+      "name": "install",
+      "returncode": 0,
+      "seconds": 375.77679065201664,
+      "log_sha256": "8f71f5a1ad90793928c9c17babe328825fc36fd6b757d2caa9d1add5929275f9"
+    },
+    {
+      "name": "elf",
+      "returncode": 0,
+      "seconds": 0.01693502999842167,
+      "log_sha256": "6c75e304b752669e6353968f1154d85142fd643df688f3f7ab69f2312a948206"
+    },
+    {
+      "name": "installed-inspection",
+      "returncode": 0,
+      "seconds": 4.064997733978089,
+      "log_sha256": "44d0fbc5a5d9c234a2129a5002478803690a9403e3a2b03ecdfd17ab7a3ce66a"
+    }
+  ],
+  "updated_at": "2026-10-19T09:07:45.207029+00:00",
+  "stage": "installed-inspection",
+  "context_control": {
+    "loads": 2,
+    "decodes": 0,
+    "text_contexts": 8,
+    "text_thread_fields": 16,
+    "vision_parameter_values": 2
+  },
+  "dll_sha256": "fd4be0fdc56d7885392332d6f8e7024152396923cb3be8a359fd69d0ded1894d",
+  "source_files": 1112,
+  "installed_files": 31,
+  "scope": "New portable CPU install and thread-parameter control; no inference or full CRAN/manual claim"
+}

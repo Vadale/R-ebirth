@@ -1,0 +1,13 @@
+In function ‘length’,
+    inlined from ‘assign’ at /usr/include/c++/16/bits/basic_string.h:1871:19,
+    inlined from ‘operator=’ at /usr/include/c++/16/bits/basic_string.h:940:28,
+    inlined from ‘try_override’ at /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/src/llama-model-loader.cpp:249:24,
+    inlined from ‘set’ at /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/src/llama-model-loader.cpp:256:32,
+    inlined from ‘set’ at /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/src/llama-model-loader.cpp:265:23,
+    inlined from ‘set’ at /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/src/llama-model-loader.cpp:269:23,
+    inlined from ‘get_key’ at /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/src/llama-model-loader.cpp:426:49:
+/usr/include/c++/16/bits/char_traits.h:396:32: warning: ‘__builtin_strlen’ reading 1 or more bytes from a region of size 0 [-Wstringop-overread]
+  396 |         return __builtin_strlen(__s);
+      |                                ^
+In member function ‘get_key’:
+lto1: note: source object is likely at address zero

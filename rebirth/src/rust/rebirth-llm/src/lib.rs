@@ -21,6 +21,7 @@
 use std::ffi::CStr;
 
 mod async_job;
+mod check_resources;
 mod domain;
 mod embed;
 mod engine;

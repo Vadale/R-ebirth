@@ -1,0 +1,9 @@
+["cargo", "generate-lockfile", "--offline", "--manifest-path", "/home/grauk/Work/relm-phase9/gcc-loader-warning/build-script-lint/Cargo.toml"]
+     Locking 4 packages to highest compatible versions
+["cargo", "clippy", "--locked", "--offline", "--manifest-path", "/home/grauk/Work/relm-phase9/gcc-loader-warning/build-script-lint/Cargo.toml", "--target-dir", "/home/grauk/Work/relm-phase9/gcc-loader-warning/build-script-lint/target", "--", "-D", "warnings"]
+    Checking find-msvc-tools v0.1.9
+    Checking shlex v2.0.1
+    Checking cc v1.2.65
+    Checking cmake v0.1.58
+    Checking relm-build-script-lint v0.0.0 (/home/grauk/Work/relm-phase9/gcc-loader-warning/build-script-lint)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.75s

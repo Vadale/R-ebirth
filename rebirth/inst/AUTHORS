@@ -5,7 +5,7 @@ llama.cpp and native dependencies: see THIRD-PARTY-NOTICES and
 src/llama-sources.tar.xz, including upstream LICENSE and retained notices.
 
 Rust dependencies below are the existing Cargo.lock graph. Original license
-texts and copyright notices are retained inside src/rust/vendor.tar.xz.
+texts and copyright notices are installed in RUST-NOTICES.
 
 ahash-0.8.12
   Authors: Tom Kaitchuck <Tom.Kaitchuck@gmail.com>

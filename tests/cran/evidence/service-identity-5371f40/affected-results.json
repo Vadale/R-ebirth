@@ -1,0 +1,50 @@
+[
+  {
+    "case": "persisted-owner-identity",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "tests/funding-service/test-process-rss.R",
+      "/home/grauk/.local/share/relm/phase8/R-library",
+      "--case",
+      "persisted-owner-identity"
+    ],
+    "returncode": 0
+  },
+  {
+    "case": "independent-owner-reader",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "tests/funding-service/test-process-rss.R",
+      "/home/grauk/.local/share/relm/phase8/R-library",
+      "--case",
+      "independent-owner-reader"
+    ],
+    "returncode": 0
+  },
+  {
+    "case": "owner-boot-offset",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "tests/funding-service/test-process-rss.R",
+      "/home/grauk/.local/share/relm/phase8/R-library",
+      "--case",
+      "owner-boot-offset"
+    ],
+    "returncode": 0
+  },
+  {
+    "case": "actual-stale-birth",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "tests/funding-service/test-process-rss.R",
+      "/home/grauk/.local/share/relm/phase8/R-library",
+      "--case",
+      "actual-stale-birth"
+    ],
+    "returncode": 1
+  }
+]

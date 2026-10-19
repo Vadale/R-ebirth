@@ -1,0 +1,10 @@
+{
+  "driver": "/home/grauk/Work/relm-phase9/run-readiness-fixtures.py",
+  "driver_sha256": "ae214804be4ff5dcf318d683611bab179ee6475cff8de57dd9bac18b44cf2fcf",
+  "binding_sha256": "7b10fa478cb1d0f5c728eb6d36abe63ef76e353cefd5f7306a67ddfd12f0792f",
+  "python": "/home/grauk/.local/share/mise/installs/python/latest/bin/python3",
+  "status": "/home/grauk/Work/relm-phase9/readiness-fixtures-status.json",
+  "launched_at": "2026-10-19T09:00:36.926639+00:00",
+  "parent_pid": 3059583,
+  "pid": 3097428
+}

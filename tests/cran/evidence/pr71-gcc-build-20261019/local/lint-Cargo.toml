@@ -1,0 +1,9 @@
+[package]
+name="relm-build-script-lint"
+version="0.0.0"
+edition="2021"
+[dependencies]
+cmake="=0.1.58"
+[[bin]]
+name="build-script-lint"
+path="/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust/rebirth-llm/build.rs"
