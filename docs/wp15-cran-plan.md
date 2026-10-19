@@ -256,3 +256,96 @@ historical numerical, benchmark and quality limits remain unchanged.
 - <https://cran.r-project.org/web/packages/submission_checklist.html>
 - <https://cran.r-project.org/doc/manuals/r-release/R-exts.html>
 - <https://win-builder.r-project.org/>
+
+## WRE readiness continuation after PR70 (2026-10-19)
+
+PR70's source-packaging and Windows CPU milestone is integrated. Its ten CI
+outcomes are carried at the accepted source; they do not certify the following
+new compilation settings. Phase9 and CRAN submission remain open.
+
+The owned text-context factory caps both inference thread parameters at two
+when R's standard `_R_CHECK_LIMIT_CORES_` is active. Both mtmd constructor paths
+use the same bounded parameter builder. A new isolated native control observes
+actual thread getters for generation, derived, embedding and trace contexts,
+and checks the vision parameter; it performs no decode. Ordinary sessions keep
+four upstream threads. This verifies configured counts, not a universal bound
+on every process-wide/background operating-system thread. CI also sets the
+standard OpenMP/OpenBLAS/MKL/Accelerate/BLIS controls to one before starting R.
+
+Ordinary R CPU/Metal builds now explicitly disable host ISA detection and
+optional x86 extensions, and use R's effective CC/CXX17 and flags. The selected
+CMake executable is carried into Cargo, including the official Mac app fallback.
+Compiler flags supplied by R or a user's Makevars remain authoritative; a user
+who adds machine-specific flags creates a correspondingly local binary. CMake
+Release flags cannot silently replace R's optimization/debug flags. The explicit
+Linux CUDA build keeps its accepted configuration; no new CUDA performance claim
+or benchmark is made. Direct Cargo development is a separate build scope.
+
+`RUST-NOTICES` installs the exact license/copyright texts for all 81 locked
+crates, with a source/hash index and identical texts deduplicated. The published
+extendr-api/ffi/macros and flatbuffers crate archives omit their top-level
+license file; local supplements bind the original repository and commit from
+`.cargo_vcs_info.json`. `tools/cran-notices.py` verifies these bindings without
+network access or changing source archives. All platform/build-only crates are
+included; this does not assert that all 81 are linked on every target.
+
+The ordinary automatic matrix gains one Linux R-devel production check with
+full PDF manual, examples and vignettes. The existing Rust1.85 Linux leg remains
+the declared-floor test. Final toolchain suitability, incoming checks, tar size,
+licenses, diagnostics and submission comments must be inspected on the final
+candidate. Rust1.85 is newer than CRAN's preferred two-year age at this date;
+record that constraint rather than asserting an exception has been granted.
+No CRAN/win-builder upload or new release is authorized by these local edits.
+
+Official references consulted: [CRAN Rust guidance](https://cran.r-project.org/web/packages/using_rust.html),
+[CRAN policy](https://cran.r-project.org/web/packages/policies.html),
+[Writing R Extensions](https://cran.r-project.org/doc/manuals/r-release/R-exts.html),
+and the [R check implementation](https://github.com/wch/r-source/blob/trunk/src/library/tools/R/check.R).
+
+## Local WRE result and outstanding compiler diagnostic (2026-10-19)
+
+The new isolated release control passed with two tiny-model loads and zero
+decodes: eight owned text contexts, sixteen actual thread-getter values and
+two vision constructor parameter values. Check-mode values were two; ordinary
+values remained four. The separate production CPU installation passed its
+250-function/body/formals and codetools inspection, 33 registered calls with
+zero selftest hooks, 27-field allocation profile, and all three installed
+notice files. Installed inspection made zero model calls. The DLL SHA256 is
+`fd4be0fdc56d7885392332d6f8e7024152396923cb3be8a359fd69d0ded1894d`;
+ELF has no CUDA dependency or TEXTREL. These are scoped install/resource results,
+not a full CRAN check, vision-model test, inference or performance acceptance.
+
+The 7,454,971-byte no-vignette/no-manual source tar has 326 files and no outer
+paths over 100 bytes. 325 files match repository bytes; DESCRIPTION retains
+all 19 field values after normal build whitespace formatting and adds four
+standard metadata fields. The source snapshots bind 1,112 inputs; the final
+installation has 31 files. The retained native configuration has 266 compile
+commands with portable CPU settings and R flags.
+
+The first worker failed before the unit executable existed: its isolated test
+harness omitted two existing repository-only JSON include_str fixtures. The
+corrected harness reused all 307 native artifact hashes, sizes and modification
+times through the resumed test. Source build/configure were carried without
+replay. The subsequent normal R install compiled Rust crates again; its
+exported flag whitespace differed from the earlier driver. Its owned target
+was cleaned normally, so the pre-install archive hashes must not be presented
+as final-DLL archive identity or proof of complete native cache reuse.
+
+The installed link emitted one GCC16/LTO `-Wstringop-overread` diagnostic at
+pinned `llama-model-loader.cpp:249` (`try_override` string assignment), with an
+inlined `get_key` path and a likely-zero-source note. Source inspection finds
+a null check in `validate_override` before that assignment. This observation
+does not prove a compiler false positive or harmlessness. The warning remains
+OPEN for final submission disposition; no flag suppression, optimization
+removal, dependency update or vendor patch was applied. The earlier CMake
+missing-ccache advisory is also retained. The package installed, but it is not
+globally warning-free or ready for submission.
+
+A raw-only metadata inspector initially rejected normal DESCRIPTION whitespace
+reflow. Its original script/log remain preserved; comparison of the same saved
+tar and RDS then passed, with no native/model replay. Original worker statuses
+remain unchanged. Parent verification and all raw/source records are retained
+in [`readiness-20261019`](../tests/cran/evidence/readiness-20261019/), manifest
+`814e1c2bca91711aa1afc50ea1effcbefc932f47885beb005424352f34383f83`.
+Current Windows/macOS/R-devel/manual results and the final Rust/toolchain,
+warning, version and submission decisions remain pending. Do not recheck PR70.

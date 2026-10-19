@@ -1,0 +1,2 @@
+["/usr/bin/Rscript", "--vanilla", "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/tests/cran/installed-readiness.R", "/home/grauk/Work/relm-phase9/readiness-fixtures/library/relm", "/home/grauk/Work/relm-phase9/readiness-build/package", "/home/grauk/Work/relm-phase9/readiness-fixtures/installed-result.rds"]
+CRAN_INSTALLED_READINESS_OK functions=250 profile=27 hooks=0 notices=3 model_loads=0 inference=0

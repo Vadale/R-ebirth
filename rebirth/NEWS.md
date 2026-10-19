@@ -4,14 +4,26 @@
   avoiding long outer archive paths and network-dependent Cargo installation.
   Source integrity, license notices and the optional Linux CUDA route are retained.
 * Package compilation uses locked dependencies and at most two Cargo jobs;
-  tool discovery respects the platform PATH separator. Windows CPU acceptance
-  is being checked separately and is not yet claimed.
+  tool discovery respects the platform PATH separator. Windows CPU source-package
+  checks passed at the PR70 milestone; changed compilation settings below require
+  their own current-platform checks.
 
 * Windows native builds use ordinary absolute CMake paths and shorter owned
   output directories; Cargo links the GNU C++ runtime instead of Darwin
   frameworks. A scoped header adapter supplies declarations missing from older
   Rtools MinGW headers without changing engine scheduling or kernel code.
-  Hosted Windows CPU validation is still pending.
+  The PR70 Windows CPU milestone passed; Windows GPU remains untested.
+
+* During R package checks, owned text and vision context parameters honor
+  `_R_CHECK_LIMIT_CORES_` with a maximum of two threads. Ordinary sessions retain
+  upstream thread defaults.
+* Ordinary R CPU/Metal compilation uses R-selected C/C++17 compilers and flags
+  with explicit portable CPU options. Direct Cargo and explicitly enabled CUDA
+  keep their existing compilation policy. CMake discovery includes the standard
+  macOS application location.
+* Installed Rust license/copyright notices cover all 81 locked crates. A new
+  Linux R-devel check includes the full PDF manual. One local GCC16/LTO warning
+  in the pinned model loader remains under investigation; no clean-CRAN claim.
 
 # Development — optional Linux CUDA
 

@@ -416,7 +416,7 @@ pub(crate) fn load_projector(
 
     // SAFETY: default params are a plain by-value C struct we only tweak; the
     // ffi.rs ABI test pins every field's offset and default.
-    let mut probe_params = unsafe { ffi::mtmd_context_params_default() };
+    let mut probe_params = context_params();
     probe_params.use_gpu = false;
     probe_params.print_timings = false;
     probe_params.warmup = false;
@@ -471,7 +471,7 @@ pub(crate) fn load_projector(
         drop(probe);
 
         // SAFETY: as above; the GPU context is the one the handle keeps.
-        let mut params = unsafe { ffi::mtmd_context_params_default() };
+        let mut params = context_params();
         params.use_gpu = true;
         params.print_timings = false;
         debug_assert!(params.cb_eval.is_null(), "cb_eval must stay NULL (req 7)");
@@ -513,6 +513,13 @@ pub(crate) fn load_projector(
     }
 
     Ok(vision)
+}
+
+pub(crate) fn context_params() -> ffi::mtmd_context_params {
+    // SAFETY: upstream returns a plain by-value ABI-pinned parameter struct.
+    let mut params = unsafe { ffi::mtmd_context_params_default() };
+    params.n_threads = crate::check_resources::threads(params.n_threads);
+    params
 }
 
 // --- RAII wrappers for the ingest --------------------------------------------

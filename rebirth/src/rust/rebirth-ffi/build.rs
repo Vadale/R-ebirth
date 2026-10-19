@@ -27,7 +27,14 @@ fn r_config(name: &str) -> String {
 }
 fn main() {
     println!("cargo:rerun-if-changed=native/projection_state.c");
-    for name in ["R_HOME", "R_INCLUDE_DIR", "CC", "R_MAKEVARS_USER"] {
+    for name in [
+        "R_HOME",
+        "R_INCLUDE_DIR",
+        "CC",
+        "CFLAGS",
+        "RELM_R_PORTABLE",
+        "R_MAKEVARS_USER",
+    ] {
         println!("cargo:rerun-if-env-changed={name}");
     }
     let out = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR"));
@@ -35,10 +42,22 @@ fn main() {
     let archive = out.join("librelm-r-state.a");
     // R's trusted compiler/CPP flag string is shell syntax; source/output paths
     // are separate positional arguments and never interpolated into that code.
+    let portable = env::var("RELM_R_PORTABLE").as_deref() == Ok("1");
+    let cc = if portable {
+        env::var("CC").expect("R CC")
+    } else {
+        r_config("CC")
+    };
+    let flags = if portable {
+        env::var("CFLAGS").expect("R CFLAGS")
+    } else {
+        "-fPIC".to_string()
+    };
     let command = format!(
-        r#"{} {} -fPIC -c "$1" -o "$2""#,
-        r_config("CC"),
-        r_config("--cppflags")
+        r#"{} {} {} -c "$1" -o "$2""#,
+        cc,
+        r_config("--cppflags"),
+        flags
     );
     assert!(
         Command::new("sh")

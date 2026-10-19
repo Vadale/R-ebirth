@@ -108,6 +108,14 @@ jobs:
           rustc --edition=2021 --test -D warnings rebirth-llm/build_support.rs -o "$RUNNER_TEMP/native-build-controls"
           "$RUNNER_TEMP/native-build-controls"
 
+      - name: CRAN thread budget and notice controls (no engine build)
+        if: steps.scope.outputs.full_checks != 'false'
+        working-directory: .
+        run: |
+          rustc --edition=2021 --test -D warnings rebirth/src/rust/rebirth-llm/src/check_resources.rs -o "$RUNNER_TEMP/check-resources"
+          "$RUNNER_TEMP/check-resources"
+          python3 tests/cran/test_notices.py
+
       - name: Windows header compatibility controls (no engine build)
         if: steps.scope.outputs.full_checks != 'false'
         working-directory: .

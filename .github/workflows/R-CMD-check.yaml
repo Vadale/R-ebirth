@@ -39,6 +39,12 @@ jobs:
       # D-037 reserves one native execution domain per process. Concurrency
       # regressions spawn their own controlled threads; unrelated tests serialize.
       RUST_TEST_THREADS: "1"
+      _R_CHECK_LIMIT_CORES_: "true"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
       SCCACHE_GHA_ENABLED: "true"
       RUSTC_WRAPPER: "sccache"
       CMAKE_C_COMPILER_LAUNCHER: "sccache"

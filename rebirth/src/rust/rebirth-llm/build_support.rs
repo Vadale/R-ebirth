@@ -3,6 +3,29 @@
 use std::io;
 use std::path::{Path, PathBuf};
 
+/// Explicit baseline for redistributable R CPU binaries. Turning off NATIVE
+/// alone is insufficient: upstream may then enable AVX2/FMA by default.
+pub fn portable_cpu_options() -> &'static [&'static str] {
+    &[
+        "GGML_NATIVE",
+        "GGML_CPU_ALL_VARIANTS",
+        "GGML_SSE42",
+        "GGML_AVX",
+        "GGML_AVX_VNNI",
+        "GGML_AVX2",
+        "GGML_BMI2",
+        "GGML_AVX512",
+        "GGML_AVX512_VBMI",
+        "GGML_AVX512_VNNI",
+        "GGML_AVX512_BF16",
+        "GGML_FMA",
+        "GGML_F16C",
+        "GGML_AMX_TILE",
+        "GGML_AMX_INT8",
+        "GGML_AMX_BF16",
+    ]
+}
+
 pub fn source_dir(path: &Path) -> io::Result<PathBuf> {
     let path = if cfg!(windows) {
         // canonicalize introduces a verbatim \\?\ prefix that MSYS Makefiles
@@ -96,6 +119,25 @@ pub fn link_libraries(stems: &[&str], target_os: &str, metal: bool) -> Vec<Strin
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn portable_distribution_disables_implicit_host_and_optional_x86_isa() {
+        let options = portable_cpu_options();
+        for name in [
+            "GGML_NATIVE",
+            "GGML_CPU_ALL_VARIANTS",
+            "GGML_SSE42",
+            "GGML_AVX2",
+            "GGML_FMA",
+            "GGML_F16C",
+            "GGML_AVX512",
+            "GGML_AMX_TILE",
+        ] {
+            assert!(options.contains(&name), "missing {name}");
+        }
+        let unique: std::collections::BTreeSet<_> = options.iter().collect();
+        assert_eq!(unique.len(), options.len());
+    }
 
     #[test]
     fn existing_source_uses_host_compatible_absolute_path() {

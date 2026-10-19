@@ -4261,7 +4261,8 @@
   "cargo_lock_sha256": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",
   "crate_count": 81,
   "generated_files": {
-    "inst/AUTHORS": "1b3167c5ae25f1c296ab65238e4f2fe3caebd97afe494c311dfeafa038077438",
+    "inst/AUTHORS": "1f8fa6e5c0a17e6bebc31885cc021dfa7503224fb711ef969d76c9c70cd6a5bc",
+    "inst/RUST-NOTICES": "788843bfc21633590c7903bbf5d5ab6f4c7b9ed945ffbcac5089e4c028cee545",
     "src/rust/vendor-config.toml": "77e9219c27274120197571fd165cbe4121963b5ad3bc0b20b383c86ef0ce6c2b"
   },
   "omitted_compiled_artifacts": [

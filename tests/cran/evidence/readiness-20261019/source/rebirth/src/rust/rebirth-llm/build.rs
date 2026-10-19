@@ -1,0 +1,443 @@
+//! Native build of the vendored llama.cpp (DECISIONS.md D-006).
+//!
+//! Configures and builds `rebirth/src/llama.cpp` as a set of static archives via
+//! the `cmake` build-dependency, then:
+//!   1. emits `cargo:rustc-link-*` so cargo-driven links (the `rebirth-llm` tests
+//!      and the `rebirth-ffi` `document` bin) resolve the engine symbols, and
+//!   2. relocates the produced `.a` archives next to `librelm.a` in the shared
+//!      `rust/target/<profile>/` dir so the R shared-object link (Makevars
+//!      `PKG_LIBS`) can find them.
+//!
+//! Backends (D-006): Metal + embedded shaders on macOS arm64, CPU only elsewhere,
+//! CUDA behind the default-off `cuda` feature on Linux x86_64 (D-050).
+//! The vendored tree is committed WITH the rebirth patch set already applied
+//! (D-015): this script compiles it as-is — no build-time patching. The patch
+//! provenance diffs live in `src/llama.cpp/patches/`, and the tree's post-patch
+//! SHA256 (asserted by CI gate G4) is recorded in `src/llama.cpp/VENDORING.md`.
+
+mod build_support;
+
+use std::env;
+use std::fs;
+use std::path::{Path, PathBuf};
+
+fn main() {
+    let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR"));
+    // rebirth-llm is at rebirth/src/rust/rebirth-llm; the vendored engine is at
+    // rebirth/src/llama.cpp — two levels up from this crate.
+    let llama_src = manifest_dir.join("..").join("..").join("llama.cpp");
+    let llama_src = build_support::source_dir(&llama_src).unwrap_or_else(|e| {
+        panic!(
+            "vendored llama.cpp not found at {}: {e}",
+            llama_src.display()
+        )
+    });
+
+    // Rerun only when the pin or this script changes (the vendored tree is pinned).
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=build_support.rs");
+    println!("cargo:rerun-if-changed=native/grammar.cpp");
+    println!("cargo:rerun-if-changed=native/abi.cpp");
+    println!("cargo:rerun-if-changed=native/spill_lease.cpp");
+    println!("cargo:rerun-if-changed=native/projection.cpp");
+    println!("cargo:rerun-if-changed=native/projection.h");
+    println!("cargo:rerun-if-changed=native/CMakeLists.txt");
+    println!("cargo:rerun-if-changed=native/windows_compat.cmake");
+    println!("cargo:rerun-if-changed=native/windows_thread_compat.h");
+    println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
+    for variable in ["RELM_R_PORTABLE", "CC", "CXX", "CFLAGS", "CXXFLAGS"] {
+        println!("cargo:rerun-if-env-changed={variable}");
+    }
+    for variable in ["CUDA_PATH", "CUDAARCHS", "CUDACXX", "CUDAHOSTCXX"] {
+        println!("cargo:rerun-if-env-changed={variable}");
+    }
+    println!(
+        "cargo:rerun-if-changed={}",
+        llama_src.join("CMakeLists.txt").display()
+    );
+    println!(
+        "cargo:rerun-if-changed={}",
+        llama_src.join("VENDORING.md").display()
+    );
+
+    let target_os = env::var("CARGO_CFG_TARGET_OS").unwrap_or_default();
+    let target_arch = env::var("CARGO_CFG_TARGET_ARCH").unwrap_or_default();
+    let metal = target_os == "macos" && target_arch == "aarch64";
+    let cuda = env::var_os("CARGO_FEATURE_CUDA").is_some();
+    let cuda_paths = if cuda {
+        assert!(
+            target_os == "linux" && target_arch == "x86_64",
+            "the cuda feature currently requires Linux x86_64"
+        );
+        Some(cuda_toolkit())
+    } else {
+        None
+    };
+    // Dedicated nightly only. Ordinary package/native builds retain their flags.
+    let sanitizers = match env::var("RELM_NATIVE_SANITIZERS") {
+        Err(env::VarError::NotPresent) => false,
+        Ok(value) if value == "address,undefined" => {
+            assert!(
+                target_os == "linux" && target_arch == "x86_64" && !cuda,
+                "RELM_NATIVE_SANITIZERS requires the Linux x86_64 CPU nightly"
+            );
+            true
+        }
+        other => panic!("unsupported RELM_NATIVE_SANITIZERS: {other:?}"),
+    };
+
+    // Cap cmake parallelism (the crate derives --parallel from NUM_JOBS): keeps
+    // memory in check on the 16 GB primary machine and stays CRAN-friendly
+    // (CRAN passes -j2 to cargo, so NUM_JOBS is already 2 there). D-006 "Timing".
+    if let Ok(n) = env::var("NUM_JOBS") {
+        if let Ok(j) = n.parse::<usize>() {
+            env::set_var("NUM_JOBS", j.min(4).to_string());
+        }
+    }
+
+    let mut cfg = cmake::Config::new(&llama_src);
+    let portable = env::var("RELM_R_PORTABLE").as_deref() == Ok("1");
+    if portable {
+        assert!(
+            !cuda,
+            "portable R CPU configuration cannot be combined with CUDA"
+        );
+        for option in build_support::portable_cpu_options() {
+            cfg.define(option, "OFF");
+        }
+        // No host ISA probing on Arm either; the R toolchain supplies its target.
+        cfg.define("GGML_CPU_ARM_ARCH", "");
+        configure_r_compiler(&mut cfg);
+    }
+    if cfg!(windows) {
+        // R builds in an already deep temporary package directory. Keep CMake
+        // inside the same Cargo profile, but omit redundant build/crate/out
+        // segments. Retain Cargo's build-unit hash to isolate feature variants.
+        let out = PathBuf::from(env::var_os("OUT_DIR").expect("OUT_DIR"));
+        cfg.out_dir(build_support::windows_output_dir(&out).expect("Cargo native output path"));
+    }
+    if target_os == "windows" {
+        let native = build_support::source_dir(&manifest_dir.join("native"))
+            .expect("native compatibility sources");
+        cfg.define("CMAKE_PROJECT_INCLUDE", native.join("windows_compat.cmake"));
+    }
+    cfg.define("CMAKE_BUILD_TYPE", "Release")
+        .define("BUILD_SHARED_LIBS", "OFF")
+        // Only libllama + ggml + libmtmd are needed; skip every extra artifact.
+        .define("LLAMA_BUILD_TESTS", "OFF")
+        .define("LLAMA_BUILD_EXAMPLES", "OFF")
+        .define("LLAMA_BUILD_TOOLS", "OFF")
+        .define("LLAMA_BUILD_SERVER", "OFF")
+        .define("LLAMA_BUILD_COMMON", "OFF")
+        .define("LLAMA_BUILD_APP", "OFF")
+        // Upstream b10828 supports the library-only mtmd build (D-032),
+        // so patch 0002 is retired. Video stays disabled: no ffmpeg subprocess
+        // or sheredom header is reachable from the R image path.
+        .define("LLAMA_BUILD_MTMD", "ON")
+        .define("MTMD_VIDEO", "OFF")
+        // Keep the produced archive set canonical and deterministic: the ggml
+        // Accelerate path (GGML_ACCELERATE) stays on for the CPU backend, but the
+        // separate BLAS backend is not built (avoids an extra libggml-blas.a).
+        .define("GGML_BLAS", "OFF")
+        // Avoid an OpenMP (libgomp) transitive dependency in the static link;
+        // ggml falls back to its own pthread threadpool.
+        .define("GGML_OPENMP", "OFF");
+
+    if metal {
+        cfg.define("GGML_METAL", "ON")
+            .define("GGML_METAL_EMBED_LIBRARY", "ON");
+    } else {
+        cfg.define("GGML_METAL", "OFF");
+    }
+
+    cfg.define("GGML_CUDA", if cuda { "ON" } else { "OFF" });
+    if let Some((root, _)) = &cuda_paths {
+        cfg.define("CUDAToolkit_ROOT", root)
+            .define("CMAKE_CUDA_COMPILER", root.join("bin/nvcc"))
+            // Static CUDA objects also enter R's shared library. The cmake
+            // crate adds PIC to C/C++, but not to CUDA compiler flags.
+            .define("CMAKE_POSITION_INDEPENDENT_CODE", "ON")
+            // This phase targets one GPU; do not add a mandatory NCCL library.
+            .define("GGML_CUDA_NCCL", "OFF");
+    }
+
+    // Match the macOS deployment target the final link uses, so the vendored
+    // objects are not compiled for a newer macOS than they are linked against —
+    // R CMD check (error-on = warning) rejects "object file was built for newer
+    // 'macOS' version than being linked". R exports MACOSX_DEPLOYMENT_TARGET
+    // during the package build; fall back to the architecture's floor otherwise.
+    if target_os == "macos" {
+        let deployment_target = env::var("MACOSX_DEPLOYMENT_TARGET").unwrap_or_else(|_| {
+            if target_arch == "aarch64" {
+                "11.0".to_string()
+            } else {
+                "10.15".to_string()
+            }
+        });
+        cfg.define("CMAKE_OSX_DEPLOYMENT_TARGET", &deployment_target);
+
+        // Pin the vendored llama.cpp CMake build to the target arch when cross
+        // compiling. r-universe builds the macOS x86_64 (Intel) binary on an arm64
+        // runner; without this CMake defaults to the host arch (arm64), so the
+        // objects are arm64 and the x86_64 link fails with "Undefined symbols for
+        // architecture x86_64". Set it only for x86_64 so the native arm64 build
+        // (the primary target) stays byte-for-byte unchanged.
+        if target_arch == "x86_64" {
+            cfg.define("CMAKE_OSX_ARCHITECTURES", "x86_64");
+        }
+    }
+
+    if sanitizers {
+        configure_sanitizers(&mut cfg);
+    }
+    let dst = cfg.build();
+
+    // Separate relm-owned exception boundary, built with the existing CMake
+    // dependency. No vendored engine source or new build crate is required.
+    let mut bridge = cmake::Config::new(manifest_dir.join("native"));
+    if portable {
+        configure_r_compiler(&mut bridge);
+    }
+    bridge
+        .out_dir(dst.join(if cfg!(windows) { "g" } else { "grammar-bridge" }))
+        .define("CMAKE_BUILD_TYPE", "Release")
+        .define("RELM_LLAMA_SOURCE", &llama_src);
+    if target_os == "macos" {
+        let floor = if target_arch == "aarch64" {
+            "11.0"
+        } else {
+            "10.15"
+        };
+        bridge.define(
+            "CMAKE_OSX_DEPLOYMENT_TARGET",
+            env::var("MACOSX_DEPLOYMENT_TARGET").unwrap_or_else(|_| floor.to_string()),
+        );
+        if target_arch == "x86_64" {
+            bridge.define("CMAKE_OSX_ARCHITECTURES", "x86_64");
+        }
+    }
+    if sanitizers {
+        configure_sanitizers(&mut bridge);
+    }
+    let bridge_dst = bridge.build();
+
+    // The cmake crate builds under `<dst>/build`; llama.cpp's install target does
+    // not copy static archives, so locate them directly in the build tree.
+    let build_dir = dst.join("build");
+
+    // Dependency order (GNU ld resolves left-to-right): the Rust code references
+    // mtmd and llama; mtmd references llama + ggml; llama references ggml
+    // (registry) + the backends; everything references ggml-base, which is the
+    // leaf and comes last. Twin-pinned with the R-side link in
+    // rebirth/tools/config.R (@LLAMA_LIBS@) — keep the two lists consistent.
+    let mut lib_stems: Vec<&str> = vec![
+        "relm-grammar",
+        "mtmd",
+        "vendor-hash",
+        "llama",
+        "ggml",
+        "ggml-cpu",
+    ];
+    if metal {
+        lib_stems.push("ggml-metal");
+    }
+    if cuda {
+        lib_stems.push("ggml-cuda");
+    }
+    lib_stems.push("ggml-base");
+
+    // Relocate the archives to a stable per-build dir (for cargo's own link) and
+    // to the shared profile dir alongside librelm.a (for the R SHLIB link).
+    let native_dir = dst.join("relm-native");
+    fs::create_dir_all(&native_dir).expect("create native lib dir");
+    let profile_dir = profile_target_dir();
+
+    for stem in &lib_stems {
+        let file_name = format!("lib{stem}.a");
+        let built_name = build_support::built_archive_name(stem, &target_os);
+        let search_dir = if *stem == "relm-grammar" {
+            &bridge_dst
+        } else {
+            &build_dir
+        };
+        let found = find_file(search_dir, &built_name).unwrap_or_else(|| {
+            panic!(
+                "expected static archive {built_name} not produced by the native build under {}",
+                search_dir.display()
+            )
+        });
+        fs::copy(&found, native_dir.join(&file_name))
+            .unwrap_or_else(|e| panic!("copy {file_name} into native dir: {e}"));
+        if let Some(ref pdir) = profile_dir {
+            let _ = fs::copy(&found, pdir.join(&file_name));
+        }
+    }
+
+    println!("cargo:rustc-link-search=native={}", native_dir.display());
+
+    emit_link_flags(&lib_stems, &target_os, metal);
+    if let Some((_, lib)) = cuda_paths {
+        println!("cargo:rustc-link-search=native={}", lib.display());
+        // Link the real system driver, never the toolkit's driver stub.
+        for library in ["cudart", "cublas", "cuda"] {
+            println!("cargo:rustc-link-lib=dylib={library}");
+        }
+    }
+}
+
+/// The explicit toolkit root is shared with the R configure path. Runtime
+/// libraries remain external; ordinary builds never inspect or require CUDA.
+fn configure_r_compiler(config: &mut cmake::Config) {
+    // Makevars exports R's selected CC/CXX17 and complete flags. The cmake
+    // crate otherwise drops -O/-g and CMake adds its own Release optimization.
+    config.no_default_flags(true);
+    for (language, variable) in [("C", "CFLAGS"), ("CXX", "CXXFLAGS")] {
+        let flags = env::var(variable).unwrap_or_else(|_| panic!("R build must export {variable}"));
+        config.define(&format!("CMAKE_{language}_FLAGS"), flags);
+        config.define(&format!("CMAKE_{language}_FLAGS_RELEASE"), "");
+    }
+    config.define("CMAKE_POSITION_INDEPENDENT_CODE", "ON");
+}
+
+fn cuda_toolkit() -> (PathBuf, PathBuf) {
+    let root = PathBuf::from(env::var_os("CUDA_PATH").unwrap_or_else(|| "/usr/local/cuda".into()));
+    let root = root
+        .canonicalize()
+        .expect("CUDA_PATH must name an installed CUDA toolkit");
+    assert!(
+        root.join("bin/nvcc").is_file(),
+        "CUDA_PATH/bin/nvcc is missing"
+    );
+    let lib = ["lib64", "lib", "targets/x86_64-linux/lib"]
+        .into_iter()
+        .map(|dir| root.join(dir))
+        .find(|dir| dir.join("libcudart.so").is_file() && dir.join("libcublas.so").is_file())
+        .expect("CUDA_PATH must contain shared cudart and cublas libraries");
+    (root, lib)
+}
+
+/// Both CMake invocations must use the same compiler/runtime as instrumented
+/// Rust. The nightly checks the commands, resulting objects and linked runtime;
+/// setting this opt-in alone is not evidence of successful instrumentation.
+fn configure_sanitizers(config: &mut cmake::Config) {
+    config
+        .define("CMAKE_BUILD_TYPE", "RelWithDebInfo")
+        .define("CMAKE_C_COMPILER", "clang-19")
+        .define("CMAKE_CXX_COMPILER", "clang++-19")
+        .define("CMAKE_C_COMPILER_LAUNCHER", "")
+        .define("CMAKE_CXX_COMPILER_LAUNCHER", "")
+        .define("GGML_CCACHE", "OFF")
+        .define("GGML_NATIVE", "OFF")
+        .define("CMAKE_EXPORT_COMPILE_COMMANDS", "ON")
+        .define("CMAKE_VERBOSE_MAKEFILE", "ON")
+        .define("CMAKE_C_FLAGS_RELWITHDEBINFO", "-O1 -g")
+        .define("CMAKE_CXX_FLAGS_RELWITHDEBINFO", "-O1 -g");
+    for flag in [
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+    ] {
+        config.cflag(flag).cxxflag(flag);
+    }
+}
+
+/// Emit the `cargo:rustc-link-lib` flags for the cargo-driven link (tests + the
+/// `document` bin). The R SHLIB link mirrors these in `src/Makevars(.in)`.
+fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
+    for flag in build_support::link_libraries(lib_stems, target_os, metal) {
+        println!("cargo:rustc-link-lib={flag}");
+    }
+    if metal {
+        link_clang_runtime();
+    }
+}
+
+/// Link clang's darwin runtime for the Metal backend's Obj-C `@available()`
+/// checks.
+///
+/// `ggml-metal-device.m` guards features with `@available(macOS 15.0, ...)`
+/// (and several `macOS 10.12` checks). Above the deployment target those cannot
+/// be folded away at compile time, so clang emits a call to
+/// `___isPlatformVersionAtLeast`, which lives in `libclang_rt.osx.a`.
+///
+/// The R SHLIB link never noticed: R drives it through the compiler driver,
+/// which adds the runtime automatically. A cargo-driven link (this crate's
+/// tests, the `rebirth-ffi` `document` bin) invokes the linker without it, so
+/// every macOS-arm64 cargo test binary that pulls in the Metal objects fails to
+/// link with an undefined `___isPlatformVersionAtLeast`. That is why the
+/// nightly's engine-side gates had never once executed on a macOS runner — the
+/// step was always reached after an earlier failure had already stopped the job,
+/// so nothing reported it.
+///
+/// Best-effort by design: if the runtime cannot be located we emit nothing and
+/// leave the link exactly as it was, since the R build path does not need this
+/// and must not break because a toolchain moved.
+fn link_clang_runtime() {
+    let Some(dir) = clang_runtime_dir() else {
+        println!("cargo:warning=clang darwin runtime not found; a cargo-driven macOS link may fail on ___isPlatformVersionAtLeast");
+        return;
+    };
+    if dir.join("libclang_rt.osx.a").is_file() {
+        println!("cargo:rustc-link-search=native={}", dir.display());
+        println!("cargo:rustc-link-lib=static=clang_rt.osx");
+    }
+}
+
+/// `<clang resource dir>/lib/darwin`, via `clang -print-resource-dir` (the
+/// toolchain's own answer — the path embeds a clang version that changes with
+/// every Xcode update, so it is never hard-coded).
+fn clang_runtime_dir() -> Option<PathBuf> {
+    // CC may carry arguments (R's Makeconf sets things like `clang -arch arm64`),
+    // so split it the way the cmake/cc crates do — passing the whole string as a
+    // program name fails to spawn, and the fallback would silently drop the flags.
+    let cc = env::var("CC").unwrap_or_else(|_| "clang".to_string());
+    let mut parts = cc.split_whitespace();
+    let program = parts.next()?;
+    let out = std::process::Command::new(program)
+        .args(parts)
+        .arg("-print-resource-dir")
+        .output()
+        .ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let resource_dir = String::from_utf8(out.stdout).ok()?;
+    Some(
+        PathBuf::from(resource_dir.trim())
+            .join("lib")
+            .join("darwin"),
+    )
+}
+
+/// The shared `rust/target/<profile>/` directory (alongside `librelm.a`),
+/// derived from `OUT_DIR = <target>/<profile>/build/<crate>-<hash>/out`.
+fn profile_target_dir() -> Option<PathBuf> {
+    let out_dir = PathBuf::from(env::var("OUT_DIR").ok()?);
+    // out -> <crate>-<hash> -> build -> <profile>
+    let dir = out_dir.ancestors().nth(3)?.to_path_buf();
+    if dir.is_dir() {
+        Some(dir)
+    } else {
+        None
+    }
+}
+
+/// Recursively search `dir` for a file named `name`, returning the first match.
+fn find_file(dir: &Path, name: &str) -> Option<PathBuf> {
+    let entries = fs::read_dir(dir).ok()?;
+    let mut subdirs = Vec::new();
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.is_dir() {
+            subdirs.push(path);
+        } else if path.file_name().map(|f| f == name).unwrap_or(false) {
+            return Some(path);
+        }
+    }
+    for sub in subdirs {
+        if let Some(found) = find_file(&sub, name) {
+            return Some(found);
+        }
+    }
+    None
+}

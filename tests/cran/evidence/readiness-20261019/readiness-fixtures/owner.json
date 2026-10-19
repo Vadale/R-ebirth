@@ -1,0 +1,59 @@
+{
+  "status": "passed_scoped_with_open_compiler_warning",
+  "verified_at": "2026-10-19T09:20:14.638533+00:00",
+  "source_files": 1112,
+  "tar": {
+    "sha256": "4c8a212113502b7eb01a2c1e0cb9d38e0a10a242baeaf964ff35e25fd004259f",
+    "bytes": 7454971,
+    "files": 326,
+    "exact_repo_files": 325,
+    "description_fields": 19,
+    "build_fields": 4,
+    "vignettes": false,
+    "manual": false
+  },
+  "installed_files": 31,
+  "dll_sha256": "fd4be0fdc56d7885392332d6f8e7024152396923cb3be8a359fd69d0ded1894d",
+  "functions": 250,
+  "registered": 33,
+  "hooks": 0,
+  "profile_fields": 27,
+  "notices": 3,
+  "loads": 2,
+  "decodes": 0,
+  "installed_inspector_model_calls": 0,
+  "thread_getters": 16,
+  "text_contexts": 8,
+  "vision_parameter_values": 2,
+  "retained_native_artifacts": 307,
+  "native_compile_commands": 266,
+  "warnings": [
+    "/usr/include/c++/16/bits/char_traits.h:396:32: warning: \u2018__builtin_strlen\u2019 reading 1 or more bytes from a region of size 0 [-Wstringop-overread]"
+  ],
+  "limits": [
+    "No full as-cran/manual/R-devel/current Windows/macOS acceptance yet.",
+    "No actual vision-model execution, process-wide CPU utilization or new inference/numerical/performance acceptance.",
+    "307 native artifact hashes/bytes/mtimes prove reuse through the resumed test only. R installation compiled again after effective flag whitespace differed; its native target was normally cleaned, so pre-install archive hashes are not a final DLL archive identity claim.",
+    "GCC16 LTO stringop-overread warning in pinned llama-model-loader.cpp:249 remains OPEN. Source has a null guard; false-positive/harmlessness not proven. No suppression/vendor modification.",
+    "Original CMake ccache-not-found warning retained; first missing-fixture failure and metadata-whitespace inspector draft remain failed."
+  ],
+  "raw_sha256": {
+    "driver.py": "ae214804be4ff5dcf318d683611bab179ee6475cff8de57dd9bac18b44cf2fcf",
+    "parent-diagnosis.json": "0153f40697bc77b8498ad1f66f98bf77c8281351354f695773c695516dd3e260",
+    "source-before.json": "6ec08727fc813298e997c6886249c23895e6376eaf5ac77504a3058686226ee1",
+    "source-tar.json": "cd1e7e9cfd55d26df6b2f93efab1c45050061b15fa40cb21f8ee74f0ef830587",
+    "environment.json": "a67b0e217c08d17dfce36387672293f11b308f01088bc2e4b77d391490c4f1e3",
+    "native-environment.json": "5c636e7e110b6bb53ad5981615faf917d1a76ee1b9b0ec56f162e575ffe2e2d1",
+    "carried-stages.json": "56ce0fe47f67feb2239f7c409f7e902f3faa05e69c9d098d91e04d541d8fe814",
+    "context-budget.log": "3d7575a5915eee3e626d8c7a2e9a99fcdf8064a7ac5f77da86e12033afd3771e",
+    "native-reuse.json": "2bdabb5dd1e0f448db34547125bb35248c59e6220fad928fdb406cc31974e1b5",
+    "install.log": "8f71f5a1ad90793928c9c17babe328825fc36fd6b757d2caa9d1add5929275f9",
+    "elf.log": "6c75e304b752669e6353968f1154d85142fd643df688f3f7ab69f2312a948206",
+    "installed-inspection.log": "44d0fbc5a5d9c234a2129a5002478803690a9403e3a2b03ecdfd17ab7a3ce66a",
+    "installed-result.rds": "be8ef3b6b0c16c876705ddd612f7ac588f90487830ab6a01618e5190290dabc1",
+    "source-after.json": "6a5b67a74b839981f2f855a1977dbbcfcfaef80e9ecf8b4d49eb1ee64204f279",
+    "installed-hashes.json": "762437159106307f3cbeeaa63c1ffd4c9cc73f8227eb0b6b46dede23e6d3ba49",
+    "owner-rds-original.log": "1c3c891e06cadbfe63f9a2b6f7e5ab197e25fbd769793a6498968ce1783993ea",
+    "owner-rds.log": "29550146e46e28344af150d9731fab1e446576a28f3ae36a9478af2300479adb"
+  }
+}

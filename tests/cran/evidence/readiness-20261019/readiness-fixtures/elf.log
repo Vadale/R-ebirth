@@ -1,0 +1,34 @@
+["readelf", "-d", "/home/grauk/Work/relm-phase9/readiness-fixtures/library/relm/libs/relm.so"]
+
+Dynamic section at offset 0xc624d8 contains 30 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libR.so]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+ 0x000000000000000c (INIT)               0x119000
+ 0x000000000000000d (FINI)               0xa1fdf4
+ 0x0000000000000019 (INIT_ARRAY)         0xc33ca0
+ 0x000000000000001b (INIT_ARRAYSZ)       24 (bytes)
+ 0x000000000000001a (FINI_ARRAY)         0xc33cb8
+ 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)
+ 0x000000006ffffef5 (GNU_HASH)           0x298
+ 0x0000000000000005 (STRTAB)             0x46318
+ 0x0000000000000006 (SYMTAB)             0xdee8
+ 0x000000000000000a (STRSZ)              643721 (bytes)
+ 0x000000000000000b (SYMENT)             24 (bytes)
+ 0x0000000000000003 (PLTGOT)             0xc63708
+ 0x0000000000000007 (RELA)               0xe8468
+ 0x0000000000000008 (RELASZ)             194760 (bytes)
+ 0x0000000000000009 (RELAENT)            24 (bytes)
+ 0x000000000000001e (FLAGS)              BIND_NOW
+ 0x000000006ffffffb (FLAGS_1)            Flags: NOW
+ 0x000000006ffffffe (VERNEED)            0xe80a8
+ 0x000000006fffffff (VERNEEDNUM)         5
+ 0x000000006ffffff0 (VERSYM)             0xe35a2
+ 0x0000000000000024 (RELR)               0x117d30
+ 0x0000000000000023 (RELRSZ)             3176 (bytes)
+ 0x0000000000000025 (RELRENT)            8 (bytes)
+ 0x0000000000000000 (NULL)               0x0

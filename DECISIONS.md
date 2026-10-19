@@ -1767,3 +1767,17 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   A pure-R miniature package checks actual Quarto build/check before the costly
   Windows native build. No pre-install duplication, engine/dependency update,
   skipped vignette gate or native/model replay locally; hosted proof is pending.
+
+- **WRE readiness after PR70 integration (2026-10-19):** honor the standard
+  `_R_CHECK_LIMIT_CORES_` environment at every owned text and vision context
+  parameter boundary, with at most two threads during checks. Ordinary sessions
+  keep upstream defaults. Configure ordinary R CPU/Metal distribution builds
+  with explicit baseline ISA options and R-selected C/C++17 compilers/flags;
+  direct Cargo development and explicitly enabled Linux CUDA keep their existing
+  compilation policy. This is a distribution configuration change, not a kernel,
+  model, dependency, public API or numerical-tolerance change. Carry prior
+  performance measurements only at their exact accepted configurations.
+  Install exact Rust notices for all 81 locked crates, supplementing four
+  license-file omissions from their recorded upstream commits. Source archives
+  remain byte-identical. Add R-devel production checks including the PDF manual,
+  limit BLAS worker settings in CI, and keep final submission approval separate.

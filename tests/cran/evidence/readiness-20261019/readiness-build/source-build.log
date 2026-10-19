@@ -1,0 +1,10 @@
+["/usr/bin/R", "CMD", "build", "--no-build-vignettes", "--no-manual", "/home/grauk/Work/relm-phase9/readiness-build/package"]
+* checking for file ‘/home/grauk/Work/relm-phase9/readiness-build/package/DESCRIPTION’ ... OK
+* preparing ‘relm’:
+* checking DESCRIPTION meta-information ... OK
+* cleaning src
+* running ‘cleanup’
+* checking for LF line-endings in source and make files and shell scripts
+* checking for empty or unneeded directories
+* building ‘relm_0.4.0.tar.gz’
+

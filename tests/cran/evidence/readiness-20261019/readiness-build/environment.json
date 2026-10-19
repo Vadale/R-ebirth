@@ -1,0 +1,20 @@
+{
+  "TMPDIR": "/home/grauk/Work/relm-phase9/readiness-build/tmp",
+  "R_LIBS": "/home/grauk/Work/relm-phase9/readiness-build/library:/home/grauk/.local/share/relm/phase8/R-library",
+  "R_LIBS_USER": "/home/grauk/.local/share/relm/phase8/R-library",
+  "R_ENVIRON_USER": "/dev/null",
+  "R_PROFILE_USER": "/dev/null",
+  "RELM_ENABLE_CUDA": "0",
+  "RELM_ENABLE_SELFTESTS": "0",
+  "NOT_CRAN": "false",
+  "CARGO_NET_OFFLINE": "true",
+  "CARGO_BUILD_JOBS": "2",
+  "RUST_TEST_THREADS": "1",
+  "OMP_NUM_THREADS": "1",
+  "OPENBLAS_NUM_THREADS": "1",
+  "MKL_NUM_THREADS": "1",
+  "VECLIB_MAXIMUM_THREADS": "1",
+  "BLIS_NUM_THREADS": "1",
+  "_R_CHECK_LIMIT_CORES_": "true",
+  "R_HOME": "/usr/lib64/R"
+}

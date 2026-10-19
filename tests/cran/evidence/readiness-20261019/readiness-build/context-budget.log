@@ -1,0 +1,64 @@
+["cargo", "test", "--locked", "--offline", "-j", "2", "--release", "-p", "rebirth-llm", "--lib", "--manifest-path=./rust/Cargo.toml", "--target-dir=./rust/target", "engine::tests::r_check_budget_reaches_all_owned_contexts", "--", "--exact", "--nocapture"]
+   Compiling proc-macro2 v1.0.106
+   Compiling libm v0.2.16
+   Compiling autocfg v1.5.1
+   Compiling quote v1.0.46
+   Compiling num-traits v0.2.19
+   Compiling unicode-ident v1.0.24
+   Compiling syn v2.0.118
+   Compiling zerocopy v0.8.52
+   Compiling cfg-if v1.0.4
+   Compiling libc v0.2.186
+   Compiling num-integer v0.1.46
+   Compiling getrandom v0.3.4
+   Compiling version_check v0.9.5
+   Compiling ahash v0.8.12
+   Compiling num-bigint v0.4.8
+   Compiling zerocopy-derive v0.8.52
+   Compiling semver v1.0.28
+   Compiling bytes v1.12.0
+   Compiling rustc_version v0.4.1
+   Compiling iana-time-zone v0.1.65
+   Compiling serde_core v1.0.228
+   Compiling arrow-schema v59.0.0
+   Compiling half v2.7.1
+   Compiling arrow-buffer v59.0.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling once_cell v1.21.4
+   Compiling shlex v2.0.1
+   Compiling cc v1.2.65
+   Compiling arrow-data v59.0.0
+   Compiling chrono v0.4.45
+   Compiling flatbuffers v25.12.19
+   Compiling num-complex v0.4.6
+   Compiling hashbrown v0.17.1
+   Compiling arrow-array v59.0.0
+   Compiling cmake v0.1.58
+   Compiling serde_json v1.0.145
+   Compiling serde v1.0.228
+   Compiling bitflags v2.13.0
+   Compiling arrow-select v59.0.0
+   Compiling rebirth-llm v0.0.0 (/home/grauk/Work/relm-phase9/readiness-build/package/src/rust/rebirth-llm)
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling ryu v1.0.23
+   Compiling arrow-ipc v59.0.0
+error: couldn't read `rebirth-llm/src/../../../../../tests/structured-output/output.schema.json`: No such file or directory (os error 2)
+    --> rebirth-llm/src/schema.rs:1260:46
+     |
+1260 |           let schema = CompiledSchema::compile(include_str!(
+     |  ______________________________________________^
+1261 | |             "../../../../../tests/structured-output/output.schema.json"
+1262 | |         ))
+     | |_________^
+
+error: couldn't read `rebirth-llm/src/../../../../../tests/structured-output/cases.json`: No such file or directory (os error 2)
+    --> rebirth-llm/src/schema.rs:1264:61
+     |
+1264 |           let cases: serde_json::Value = serde_json::from_str(include_str!(
+     |  _____________________________________________________________^
+1265 | |             "../../../../../tests/structured-output/cases.json"
+1266 | |         ))
+     | |_________^
+
+error: could not compile `rebirth-llm` (lib test) due to 2 previous errors

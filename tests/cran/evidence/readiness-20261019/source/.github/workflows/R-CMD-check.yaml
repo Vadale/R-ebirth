@@ -1,0 +1,314 @@
+# Runs R CMD check on the `relm` package (which builds its native Rust core
+# via cargo). Modeled on https://github.com/r-lib/actions/tree/v2/examples.
+# Downloads no models: model-dependent tests use committed synthetic fixtures
+# or skip when their opt-in real-model paths are absent.
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+name: R-CMD-check.yaml
+
+permissions: read-all
+
+jobs:
+  R-CMD-check:
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (R ${{ matrix.config.r }}, Rust ${{ matrix.config.rust }})
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # R release is 4.6 and oldrel-1 is the supported 4.5 line. The Linux
+        # oldrel leg also checks the Rust minimum on the full package (default
+        # Arrow spill + extendr), avoiding a separate duplicate native build.
+        config:
+          - {os: macos-15,     r: 'release',  rust: 'stable'}
+          - {os: ubuntu-24.04, r: 'release',  rust: 'stable'}
+          - {os: macos-15,     r: 'oldrel-1', rust: 'stable'}
+          - {os: ubuntu-24.04, r: 'oldrel-1', rust: '1.85.0'}
+
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+      # Exercise the non-shipping R/native fixture hooks in this test build.
+      RELM_ENABLE_SELFTESTS: "1"
+      # Override the repository's floating stable channel even inside the
+      # R CMD check build subprocess, so the MSRV leg actually uses the floor.
+      RUSTUP_TOOLCHAIN: ${{ matrix.config.rust }}
+      # D-037 reserves one native execution domain per process. Concurrency
+      # regressions spawn their own controlled threads; unrelated tests serialize.
+      RUST_TEST_THREADS: "1"
+      _R_CHECK_LIMIT_CORES_: "true"
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      VECLIB_MAXIMUM_THREADS: "1"
+      BLIS_NUM_THREADS: "1"
+      SCCACHE_GHA_ENABLED: "true"
+      RUSTC_WRAPPER: "sccache"
+      CMAKE_C_COMPILER_LAUNCHER: "sccache"
+      CMAKE_CXX_COMPILER_LAUNCHER: "sccache"
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 2
+
+      # Required job names remain present for documentation-only changes. Missing
+      # or ambiguous history selects full verification; this is not a test pass.
+      - name: Classify changed files (fail closed)
+        id: scope
+        working-directory: .
+        run: python3 tests/ci/change_scope.py
+
+      - uses: dtolnay/rust-toolchain@master
+        if: steps.scope.outputs.full_checks != 'false'
+        with:
+          toolchain: ${{ matrix.config.rust }}
+          components: rustfmt, clippy
+
+      # Compiler cache (see env): routes the vendored llama.cpp cmake build and
+      # rustc through sccache so the C++ engine isn't recompiled from scratch each
+      # run. Content-keyed, so it survives R CMD check's temp build dir + cleanup.
+      - name: sccache (compiler cache)
+        if: steps.scope.outputs.full_checks != 'false'
+        uses: mozilla-actions/sccache-action@v0.0.10
+
+      - uses: r-lib/actions/setup-pandoc@v2
+        if: steps.scope.outputs.full_checks != 'false'
+
+      - uses: r-lib/actions/setup-r@v2
+        if: steps.scope.outputs.full_checks != 'false'
+        with:
+          r-version: ${{ matrix.config.r }}
+          use-public-rspm: true
+
+      - name: Vision test runner controls (base R, no models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/ci/test-vision-runner.R
+
+      - name: Research walkthrough preflight (base R, no models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/research-workflow/test-preflight.R
+
+      - name: External statistical skill artifact runner (base R, no models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/skills/r-statistical-analysis/test-runner.R .
+
+      - name: Assistant installation and packaging boundaries (no model/network)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: python3 tests/assistant-integration/test-tools.py
+
+      - name: toolchain declarations and configure MSRV regression (model-free)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript tests/toolchain/test-msrv.R
+
+      - name: Optional CUDA configuration boundaries (model-free, no SDK)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript tests/cuda/configuration.R
+
+      - uses: actions/setup-python@v6
+        if: steps.scope.outputs.full_checks != 'false'
+        with:
+          python-version: '3.12'
+
+      - name: CRAN source bundles and configure controls (no models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: |
+          python3 tools/prepare-cran-sources.py --check
+          python3 tests/cran/test_source_bundles.py
+          Rscript --vanilla tests/cran/configuration.R
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        if: steps.scope.outputs.full_checks != 'false'
+        with:
+          extra-packages: any::rcmdcheck
+          needs: check
+          working-directory: rebirth
+
+      # Model-free demo-utils self-test (D-020 / D-022): the base-R AUC/CI helpers
+      # and the WP7.5b analysis helpers (dose-response CI, cosine matrix, truncated
+      # KL, colour-strip legend breaks, ...) are guarded by an executable self-test
+      # that runs on source(). It needs no model and no built package, so it runs
+      # here per-commit -- the demos' numeric core is checked on every push.
+      - name: demo-utils self-test (model-free)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript -e 'source("tests/demos/demo-utils.R")'
+
+      # Independent WP11a references; the installed-product gate runs below.
+      # glmnet is already a Suggests dependency installed by setup-r-dependencies.
+      - name: Probe statistical references and split audit (no model)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript tests/llm-golden/probe-contract/verify.R --numerical
+
+      # Model-free smoke test of Demo B's B1-B4 figure code (D-022): synthesizes
+      # coordinates/clusters/embeddings/texts (no model, no uwot/dbscan) and renders
+      # every analysis to a headless PDF, so a base-graphics regression in the extended
+      # topic figures is caught per-commit (the nightly exercises them on a real model).
+      - name: demo-B plot self-test (model-free)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript -e 'Sys.setenv(RELM_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
+
+      # The COMMITTED golden sidecars, verified from the checkout (D-026 fifth
+      # addendum). The testthat suite cannot do this per-commit: the goldens live
+      # at the repo root, outside the built tarball, so under R CMD check that
+      # test skips -- and a skip is the wrong answer for the one check that
+      # validates the real artifact rather than the mechanism. Re-recording a
+      # golden and forgetting its sidecar would then merge green and surface only
+      # in that night's vision job.
+      #
+      # Possible only because verify_golden_sidecar() takes explicit paths: it
+      # needs no testthat context, no built package, and no model, so the real
+      # function runs here on the real files -- no reimplementation in shell, and
+      # therefore no R-vs-shell twin to drift (rule 8f).
+      - name: committed golden sidecars (model-free)
+        if: steps.scope.outputs.full_checks != 'false'
+        shell: bash
+        run: |
+          Rscript - <<'RS'
+          source("rebirth/tests/testthat/helper-llm.R")
+          # The annotation must be emitted BEFORE stop(): R prefixes its own
+          # "Error: ", so a ::error:: inside the message never starts a line and
+          # GitHub never parses it. Exit 1 is what actually gates; this only buys
+          # the PR-UI annotation.
+          fail <- function(...) {
+            msg <- sprintf(...)
+            cat(sprintf("::error::%s\n", msg), file = stderr())
+            stop(msg, call. = FALSE)
+          }
+          sidecars <- Sys.glob("tests/llm-golden/*/goldens/*.machine")
+          # A gate that silently verifies zero files is the failure this step is about.
+          if (length(sidecars) == 0L) fail("no golden sidecars found; the glob is wrong or they were deleted")
+          for (s in sidecars) {
+            golden <- sub("\\.machine$", "", s)
+            # verify_golden_sidecar() deliberately tolerates an absent golden (so
+            # R CMD check does not break), so the orphan case is caught here.
+            if (!file.exists(golden)) fail("orphan sidecar '%s': its golden '%s' does not exist", s, golden)
+            # Errors loudly on a stale or digest-less sidecar; that is the gate.
+            # Wrapped, not called bare: those stops are raised INSIDE the helper,
+            # so without this they would exit 1 (the gate holds) but never reach
+            # fail() and never annotate -- an annotator covering four of six
+            # failure modes, silently missing the two that matter most.
+            machine <- tryCatch(
+              verify_golden_sidecar(golden, s),
+              error = function(e) fail("%s", conditionMessage(e))
+            )
+            if (is.na(machine) || !nzchar(machine)) fail("sidecar '%s' names no machine", s)
+            # UNKNOWN_CPU comes from the sourced helper, never retyped here: a
+            # bare literal would keep "passing" if the sentinel were renamed.
+            if (grepl(UNKNOWN_CPU, machine, fixed = TRUE)) {
+              fail("sidecar '%s' records '%s', which is not an identity: two unrelated machines would match it", s, UNKNOWN_CPU)
+            }
+            cat(sprintf("verified %s -> %s\n", basename(golden), machine))
+          }
+          cat(sprintf("%d golden sidecar(s) verified against their goldens\n", length(sidecars)))
+          RS
+
+      # Lint the R-boundary crate here rather than in rust.yaml: rebirth-ffi's
+      # build needs R on the PATH (provided by the steps above). rust.yaml lints
+      # the R-free rebirth-llm.
+      - name: clippy (rebirth-ffi, the R boundary crate)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: |
+          cargo clippy --locked -p rebirth-ffi --all-targets -- -D warnings
+          cargo clippy --locked -p rebirth-ffi --features selftest --all-targets -- -D warnings
+        working-directory: rebirth/src/rust
+
+      # Run rebirth-ffi's own tests here too (R on the PATH links the crate): the
+      # ARCHITECTURE §4 index-conversion property tests and the P-4 boundary-guard
+      # reject tests live in this crate and otherwise run nowhere in CI (rust.yaml
+      # is R-free and cannot build rebirth-ffi).
+      - name: Managed spill lease process and path controls (no model)
+        if: steps.scope.outputs.full_checks != 'false'
+        shell: bash
+        working-directory: .
+        run: |
+          set -euo pipefail
+          c++ -std=c++17 -DRELM_SPILL_TESTING -Wall -Wextra -Werror -fPIC -shared \
+            rebirth/src/rust/rebirth-llm/native/spill_lease.cpp \
+            -o "$RUNNER_TEMP/relm-spill-lease.so"
+          python3 tests/spill-lifecycle/test-native.py "$RUNNER_TEMP/relm-spill-lease.so"
+
+      - name: cargo test (rebirth-ffi, the R boundary crate)
+        if: steps.scope.outputs.full_checks != 'false'
+        shell: bash
+        run: |
+          # setup-r's oldrel installation is outside the Linux loader's default
+          # search path. Native test executables link libR but are not launched
+          # through R's wrapper, which would normally set this path for them.
+          if [[ "$RUNNER_OS" == "Linux" ]]; then
+            export LD_LIBRARY_PATH="$(R RHOME)/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+          fi
+          cargo test --locked -p rebirth-ffi --features selftest
+        working-directory: rebirth/src/rust
+
+      # Linux's CPU-only build cannot detect accidental Metal initialization.
+      # Execute the isolated backend regression on macOS too (the cross-Intel
+      # job only links test binaries and does not execute them).
+      - name: CPU backend isolation (including Metal-enabled builds)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: cargo test --locked -p rebirth-llm --test cpu_backend
+        working-directory: rebirth/src/rust
+
+      - uses: r-lib/actions/check-r-package@v2
+        if: steps.scope.outputs.full_checks != 'false'
+        with:
+          working-directory: rebirth
+          args: 'c("--no-manual")'
+          error-on: '"warning"'
+          upload-snapshots: true
+
+      - name: Probe product agreement with independent references (no model)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript tests/probe-product/run.R --relm-library rebirth/check/relm.Rcheck
+
+      # D2 is an application outside the package; reuse R CMD check's installed
+      # build. Its parser pin never enters relm Imports/Suggests (D-031).
+      - name: Prepare the pinned D2 application parser
+        if: steps.scope.outputs.full_checks != 'false'
+        shell: Rscript {0}
+        run: |
+          if (!requireNamespace("jsonlite", quietly = TRUE) ||
+              as.character(packageVersion("jsonlite")) != "2.0.0") {
+            install.packages("https://cran.r-project.org/src/contrib/Archive/jsonlite/jsonlite_2.0.0.tar.gz",
+                             repos = NULL, type = "source")
+          }
+
+      - name: D2 process interruption and identity acceptance (model-free)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: |
+          Rscript --vanilla tests/funding-extraction/test_versions.R
+          python3 tests/funding-extraction/test_restart.py \
+            --relm-library rebirth/check/relm.Rcheck \
+            --work-dir "${{ runner.temp }}/d2-process"
+
+
+      - name: Service source prerequisites (Linux)
+        if: runner.os == 'Linux' && steps.scope.outputs.full_checks != 'false'
+        run: sudo apt-get update && sudo apt-get install -y libsodium-dev libcurl4-openssl-dev libicu-dev
+
+      - name: Prepare exact D-034 application pins (isolated library)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/funding-service/install-pins.R "${{ runner.temp }}/service-library"
+
+      - name: Service HTTP, overload, process recovery and persistence
+        if: steps.scope.outputs.full_checks != 'false'
+        shell: bash
+        run: |
+          Rscript --vanilla tests/funding-service/test-ipc-scan.R
+          Rscript --vanilla tests/funding-service/test-process-rss.R "$RUNNER_TEMP/service-library"
+          python3 tests/funding-service/accept.py --self-test
+          python3 tests/funding-service/test_sampler.py
+          Rscript --vanilla tests/funding-service/processes.R "${{ runner.temp }}/service-library" self-test
+          python3 tests/funding-service/accept.py --suite deterministic \
+            --source-library "${{ runner.temp }}/service-library" \
+            --work-dir "${{ runner.temp }}/service-process" --default-deadline
+
+      - name: Preserve service process acceptance evidence
+        if: always() && steps.scope.outputs.full_checks != 'false'
+        uses: actions/upload-artifact@v7
+        with:
+          name: service-process-${{ matrix.config.os }}-${{ matrix.config.r }}
+          path: ${{ runner.temp }}/service-process
+          if-no-files-found: warn
