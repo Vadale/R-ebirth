@@ -248,10 +248,16 @@ test_that("[MODEL] derived Qwen ownership survives parent sibling and unrelated 
 })
 
 test_that("foreign external pointers fail safely before an extendr downcast", {
+  # win-builder child processes need not attach methods at startup.
+  previous <- Sys.getenv("R_DEFAULT_PACKAGES", unset = NA_character_)
+  on.exit(if (is.na(previous)) Sys.unsetenv("R_DEFAULT_PACKAGES") else
+    Sys.setenv(R_DEFAULT_PACKAGES = previous), add = TRUE)
+  Sys.setenv(R_DEFAULT_PACKAGES = "datasets,utils,grDevices,graphics,stats")
   async_lifecycle_process(c(
+    "stopifnot(!('package:methods' %in% search()))",
     "foreign <- getDLLRegisteredRoutines('stats')$.Call[[1]]$address",
     "stopifnot(typeof(foreign) == 'externalptr')",
-    "for (ptr in list(foreign, new('externalptr'), NULL)) {",
+    "for (ptr in list(foreign, methods::new('externalptr'), NULL)) {",
     "  for (fun in list(relm:::rebirth_async_ready, relm:::rebirth_async_cancel)) {",
     "    payload <- fun(ptr)",
     "    stopifnot(identical(payload$ok, FALSE), identical(payload$class, 'relm_error_closed'))",

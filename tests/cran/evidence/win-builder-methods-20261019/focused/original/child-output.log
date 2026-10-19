@@ -1,0 +1,11 @@
+ASYNC_STAGE begin elapsed=0.000 cpu=0.000 load namespaces
+Loading required namespace: later
+Loading required namespace: promises
+ASYNC_STAGE end elapsed=0.250 cpu=0.237 load namespaces
+ASYNC_STAGE begin elapsed=0.252 cpu=0.239 lifecycle 001 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+ASYNC_STAGE end elapsed=0.254 cpu=0.241 lifecycle 001 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+ASYNC_STAGE begin elapsed=0.254 cpu=0.241 lifecycle 002 stopifnot(typeof(foreign) == "externalptr")
+ASYNC_STAGE end elapsed=0.254 cpu=0.241 lifecycle 002 stopifnot(typeof(foreign) == "externalptr")
+ASYNC_STAGE begin elapsed=0.254 cpu=0.241 lifecycle 003 for (ptr in list(foreign, new("externalptr"), NULL)) {
+Error in new("externalptr") : could not find function "new"
+Execution halted
