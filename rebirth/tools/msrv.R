@@ -4,7 +4,9 @@ desc <- read.dcf("DESCRIPTION")
 if (!"SystemRequirements" %in% colnames(desc)) {
   stop("Declare Cargo and rustc minimum versions in DESCRIPTION SystemRequirements.")
 }
-requirements <- strsplit(desc[, "SystemRequirements"], ",", fixed = TRUE)[[1L]]
+# DCF continuation lines are whitespace, including in R CMD build's DESCRIPTION.
+sysreqs <- gsub("[[:space:]]+", " ", desc[, "SystemRequirements"])
+requirements <- strsplit(sysreqs, ",", fixed = TRUE)[[1L]]
 minimum <- function(tool) {
   entry <- trimws(requirements[grepl(paste0("^", tool, "\\b"),
                                     trimws(requirements), ignore.case = TRUE)])

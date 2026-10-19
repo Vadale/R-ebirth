@@ -28,6 +28,26 @@ Cargo.lock, authorship notices, API signatures and numerical bounds are unchange
 from PR71. No model, inference, held-out prompt or old acceptance suite was
 replayed for these local corrections. Current-candidate full CI is required.
 
+### Packaged-metadata correction
+
+The first PR72 matrix at `b1dff21` ended with five successful Rust/integrity jobs
+and six failed R jobs. All six stopped at the same install/configure guard:
+R CMD build folded `rustc >= 1.85.0` between the operator and version, which the
+new parser rejected. Actual Windows and R-devel source archives retain that
+valid DCF layout. The correction normalizes field whitespace before parsing;
+versions, declarations, refusal rules and native code are unchanged. A regression
+fails against the original parser and passes after correction: 35 configure cases
+include 12 folded-field/line-ending cases, with old Cargo/rustc still refused.
+Both original CI DESCRIPTION files also pass the corrected complete script with
+the real local tools, without rebuilding the engine or rerunning models.
+
+Actual Windows three-case file controls and Linux four-case controls passed in
+the failed matrix; Tidy5.6.0 installed successfully. R-devel incoming checks
+reported the expected new-submission NOTE. Full package tests and later HTML
+checks did not run after the install failure; these are not current acceptance.
+Raw failures and correction evidence:
+[`pr72-dcf-b1dff21`](../tests/cran/evidence/pr72-dcf-b1dff21/).
+
 ## Rust and Cargo: technical floor versus admission policy
 
 Cargo resolves/builds packages; rustc compiles Rust. Distributors can package

@@ -6,6 +6,8 @@
   including malformed, missing and failed version commands. This is the tested
   Arrow 59 / Rust 2024 floor, not a claim of CRAN admission; the toolchain is
   younger than CRAN's recommended two years as of 2026-10-19.
+  Requirement parsing also accepts DESCRIPTION continuation lines introduced by
+  R CMD build, while preserving the same minimum-version refusals.
 * Live spill ownership stores Unix identity fields only on Unix, removing the
   Windows unused-field warning without disabling a lint or deleting files by
   pathname alone. Unix identity/delivery guards are preserved; on other systems

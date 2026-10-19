@@ -80,4 +80,34 @@ missing_floor <- desc
 missing_floor[, "SystemRequirements"] <- sub("Cargo (Rust's package manager) >= 1.85.0",
   "Cargo (Rust's package manager)", desc[, "SystemRequirements"], fixed = TRUE)
 expect_error(check_configure(metadata = missing_floor), "Declare an explicit Cargo minimum")
-cat(sprintf("RUST_CARGO_FLOOR_OK floor=%s configure_cases=%d models=0 builds=0\n", floor, cases))
+
+# R CMD build serializes DESCRIPTION with folded DCF fields. Exercise the real
+# serializer/reader, including Windows line endings, before any native build.
+# Version refusals must remain effective after accepting the valid formatting.
+description_path <- tempfile("msrv-description-")
+serialized_cases <- 0L
+tryCatch({
+  for (width in c(72L, 60L)) {
+    write.dcf(desc, file = description_path, width = width)
+    lines <- readLines(description_path)
+    for (eol in c("\n", "\r\n")) {
+      # Binary output avoids Windows text-mode conversion of explicit CRLF.
+      writeBin(charToRaw(paste0(paste(lines, collapse = eol), eol)), description_path)
+      packaged <- read.dcf(description_path)
+      stopifnot(grepl(paste0(">=\n", floor),
+                     packaged[1L, "SystemRequirements"], fixed = TRUE))
+      result <- check_configure(metadata = packaged)
+      if (inherits(result, "error"))
+        stop("Serialized DESCRIPTION rejected: ", conditionMessage(result))
+      cases <- cases + 1L
+      expect_error(check_configure(below, above, metadata = packaged),
+                   paste("Installed Rust version is", below))
+      expect_error(check_configure(above, below, metadata = packaged),
+                   paste("Installed Cargo version is", below))
+      serialized_cases <- serialized_cases + 3L
+    }
+  }
+}, finally = unlink(description_path))
+cat(sprintf(paste0("RUST_CARGO_FLOOR_OK floor=%s configure_cases=%d ",
+                   "serialized_metadata_cases=%d models=0 builds=0\n"),
+            floor, cases, serialized_cases))
