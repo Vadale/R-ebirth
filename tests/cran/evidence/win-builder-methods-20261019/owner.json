@@ -1,0 +1,55 @@
+{
+  "verified_at": "2026-10-19T17:36:21.353644+00:00",
+  "status": "focused_correction_passed_external_whole_check_remains_failed",
+  "external_result": "https://win-builder.r-project.org/9twD0970G3H0/",
+  "uploaded_source_sha256": "cc36c8819ee28fc2b261289b9ea902aa9d852ded1ed2844f6636381e622b357d",
+  "external_status": {
+    "errors": 1,
+    "notes": 1,
+    "warnings": 0,
+    "passing_expectations": 5066,
+    "failing_expectations": 2,
+    "scoped_skips": 141
+  },
+  "actual_external_tools": {
+    "rustc": "1.92.0",
+    "cargo": "1.92.0",
+    "cmake": "3.31.8",
+    "R": "devel 2026-10-18 r90707 ucrt",
+    "GCC": "14.3.0"
+  },
+  "binary_zip": {
+    "bytes": 5774770,
+    "sha256": "efe8234e9af5eed423d195c3f35da4bf77e1358885180e83f4db28dbb105f65f",
+    "files": 53,
+    "verified_internal_MD5_entries": 52,
+    "DLL_sha256": "17fa649640736f73d010923907366841ad7e9e39d065a9d664af3e148c5ff34a"
+  },
+  "focused_local": {
+    "original": {
+      "fail": 2,
+      "pass": 1
+    },
+    "fixed": {
+      "fail": 0,
+      "pass": 3,
+      "warnings": 0
+    },
+    "native_refusals": 6,
+    "safe_close_calls": 3,
+    "models": 0,
+    "native_builds": 0,
+    "parent_environment_restored": true,
+    "DLL_sha256": "fd4be0fdc56d7885392332d6f8e7024152396923cb3be8a359fd69d0ded1894d",
+    "driver_sha256": "2ace1ab5bb2de1bb66cb103b2fb2eb3f81f946ea48bf015d949e8b503e3e9a7e",
+    "initial_harness_failure": "Missing existing dependency library; stopped before test execution. Preserved and corrected without installation."
+  },
+  "source_sha256": "370e58c3df8506e86f9de289dcaea760a98c81d7760fea759553bc920a250a0a",
+  "limits": [
+    "Local existing parent production DLL, not a newly compiled current package or Windows execution.",
+    "Only the affected foreign-pointer case executed; no model/native rebuild/other tests replayed.",
+    "Focused helper copy additionally writes its already-computed child output; repository helper/deadlines/refusals unchanged.",
+    "Original Windows check remains failed; corrected automatic matrix and new exact-archive external check pending.",
+    "A successful build with farm tools is not policy admission or an age-guidance exception."
+  ]
+}

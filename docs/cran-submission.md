@@ -77,9 +77,9 @@ route. A new stable toolchain on GitHub is not evidence of CRAN farm availabilit
 The [published CRAN flavors](https://cran.r-project.org/web/checks/check_flavors.html)
 identify their C/C++ compilers but do not establish a Cargo/rustc/CMake version
 for this package. Their linked Fedora details likewise do not confirm those
-tools. CMake >= 3.28 and the Rust floor still need confirmation on the intended
-external checking environment. Hosted R-devel and Windows CI are useful evidence,
-not a win-builder or CRAN farm result.
+tools. CMake >= 3.28 and the Rust floor are now confirmed on the specific win-builder
+R-devel environment described below. Availability on other CRAN farm configurations
+remains unconfirmed; hosted CI does not establish it.
 
 The wrapper installation follow-up replaces `cargo run --bin document` with
 `Rscript tools/generate-wrappers.R`, after linking the package DLL. The installing
@@ -89,8 +89,9 @@ remains available but is no longer linked/executed by package installation.
 This avoids the standalone executable's requirement for a linkable `libR`.
 A dedicated Linux CI check builds real R4.6.1 with `--disable-R-shlib`, then
 installs the production package with Cargo/rustc1.85 and inspects its metadata,
-source functions and ELF dependencies without model calls. Its current result
-is pending; passing shared-R tests alone is not non-shared-R acceptance.
+source functions and ELF dependencies without model calls. PR73 passed this actual
+non-shared-R installation check; its retained receipts bind 250 R functions,
+27 profile fields, three notices, no self-test hooks and no libR.so dependency.
 No compiler/toolchain installation, registry download or model download happens
 inside the package's locked offline build. Package compilation uses two Cargo
 jobs; check-mode owned context parameters are capped at two threads.
@@ -137,7 +138,9 @@ Before the authorized upload:
 
 The [CRAN submission checklist](https://cran.r-project.org/web/packages/submission_checklist.html)
 expects current R-devel `--as-cran` results and disposition of significant notes.
-No CRAN/win-builder upload, external email, release tag or publication has occurred.
+No CRAN submission, preliminary email, release tag or separate publication has
+occurred. The selected archive has since been uploaded once to win-builder;
+the failed result and focused correction are recorded below.
 
 ## Post-PR72 preparation (2026-10-19)
 
@@ -159,3 +162,38 @@ Current farm tool availability and disposition of the Cargo-age guidance still
 require external confirmation. Twenty or thirty days of use, publicity or prior
 r-universe downloads are not an admission prerequisite; the project's 30-day
 green-CI criterion is separately attached to v1.0.
+
+## First exact-archive win-builder result (2026-10-19)
+
+The R-release-built archive `relm_0.5.0.tar.gz` (7,772,402 bytes, SHA256
+`cc36c8819ee28fc2b261289b9ea902aa9d852ded1ed2844f6636381e622b357d`)
+was checked by win-builder with R-devel r90707 on Windows Server 2022.
+Actual Cargo/rustc 1.92.0 and CMake 3.31.8 built and installed the package;
+compiled-code/Rust checks, examples, vignette rebuild and PDF/HTML manuals passed.
+This demonstrates tool availability on that server, not an exception to the
+Cargo-age guidance or availability on every CRAN farm.
+
+The whole check **failed**: 1 ERROR, 1 NOTE, zero warnings; 5,066 expectations
+passed, two failed and 141 were explicitly skipped. Both failures came from one
+child process using unqualified `new('externalptr')` when methods was not attached.
+The process exited before the invalid-pointer loop; this was not a demonstrated
+failure of the runtime pointer guards. The NOTE identifies a new submission and
+the domain terms `downloader`, `embeddings`, `interpretability` and `vendored`.
+
+The correction qualifies `methods::new()` using the already-declared dependency.
+That same test now starts its child without methods in `R_DEFAULT_PACKAGES`,
+asserts methods is not attached, and restores the parent's environment afterward.
+All original refusal, close, panic-output and deadline assertions remain intact.
+One original/fixed local comparison on the retained production DLL reproduces
+the same two failures, then passes all three outer expectations with zero warnings,
+six classed native refusals and three safe closes. No model or native rebuild
+was used. The first local driver stopped before tests because its dependency
+library was not selected; that failure is retained, and no dependencies were installed.
+
+Raw external logs, selected test sources and focused results are retained in
+[`win-builder-methods-20261019`](../tests/cran/evidence/win-builder-methods-20261019/).
+The downloaded Windows binary and full local evidence remain outside Git.
+The original win-builder check stays failed. Current automatic CI and a corrected
+release-built archive checked by win-builder are required before CRAN submission.
+PR74's current-document privacy cleanup is merged; the founder explicitly chose
+to leave history unchanged. No personal planning is included in the selected archive.

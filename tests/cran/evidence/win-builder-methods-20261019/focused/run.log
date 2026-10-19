@@ -1,0 +1,56 @@
+selected: 12.
+
+══ Failed ══════════════════════════════════════════════════════════════════════
+── 1. Failure ('test-selected.R:43:5'): foreign external pointers fail safely be
+Expected `status` to equal 0L.
+Differences:
+1/1 mismatches
+[1] 1 - 0 == 1
+ASYNC_STAGE begin elapsed=0.000 cpu=0.000 load namespaces
+Loading required namespace: later
+Loading required namespace: promises
+ASYNC_STAGE end elapsed=0.250 cpu=0.237 load namespaces
+ASYNC_STAGE begin elapsed=0.252 cpu=0.239 lifecycle 001 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+ASYNC_STAGE end elapsed=0.254 cpu=0.241 lifecycle 001 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+ASYNC_STAGE begin elapsed=0.254 cpu=0.241 lifecycle 002 stopifnot(typeof(foreign) == "externalptr")
+ASYNC_STAGE end elapsed=0.254 cpu=0.241 lifecycle 002 stopifnot(typeof(foreign) == "externalptr")
+ASYNC_STAGE begin elapsed=0.254 cpu=0.241 lifecycle 003 for (ptr in list(foreign, new("externalptr"), NULL)) {
+Error in new("externalptr") : could not find function "new"
+Execution halted
+Backtrace:
+    ▆
+ 1. └─async_lifecycle_process(...) at test-selected.R:43:5
+ 2.   └─testthat::expect_equal(status, 0L, info = output) at test-selected.R:34:5
+
+── 2. Failure ('test-selected.R:43:5'): foreign external pointers fail safely be
+Expected `output` to match string "ASYNC_LIFECYCLE_OK".
+Actual text:
+✖ │ ASYNC_STAGE begin elapsed=0.000 cpu=0.000 load namespaces
+  │ Loading required namespace: later
+  │ Loading required namespace: promises
+  │ ASYNC_STAGE end elapsed=0.250 cpu=0.237 load namespaces
+  │ ASYNC_STAGE begin elapsed=0.252 cpu=0.239 lifecycle 001 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+  │ ASYNC_STAGE end elapsed=0.254 cpu=0.241 lifecycle 001 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+  │ ASYNC_STAGE begin elapsed=0.254 cpu=0.241 lifecycle 002 stopifnot(typeof(foreign) == "externalptr")
+  │ ASYNC_STAGE end elapsed=0.254 cpu=0.241 lifecycle 002 stopifnot(typeof(foreign) == "externalptr")
+  │ ASYNC_STAGE begin elapsed=0.254 cpu=0.241 lifecycle 003 for (ptr in list(foreign, new("externalptr"), NULL)) {
+  │ Error in new("externalptr") : could not find function "new"
+  │ Execution halted
+Backtrace:
+    ▆
+ 1. └─async_lifecycle_process(...) at test-selected.R:43:5
+ 2.   └─testthat::expect_match(output, "ASYNC_LIFECYCLE_OK", fixed = TRUE) at test-selected.R:35:5
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+selected: ...
+
+══ DONE ════════════════════════════════════════════════════════════════════════
+$original
+   fail   error warning    pass 
+      2       0       0       1 
+
+$fixed
+   fail   error warning    pass 
+      0       0       0       3 
+
+WINBUILDER_METHODS_FOCUSED_OK models=0 native_builds=0

@@ -1,0 +1,20 @@
+{
+  "00check.log.gz": "ecf4dcffb21c05d2adf5c82e5da96c26ac997b9acfefe8da6147322fcfdcf995",
+  "00install.out.gz": "f1c9eb7856840ed261604b6236173d1d3dbe3863e956e444d32d2fc81a13d736",
+  "binary-inventory.json": "691695466b9816382d06d3d625628dc643ce857382be2e1bb5f96a2e0e66e7d0",
+  "current-test-llm-async-lifecycle.R": "370e58c3df8506e86f9de289dcaea760a98c81d7760fea759553bc920a250a0a",
+  "downloads.json": "9cb57393b0db5ab2a044412fd4419b1f55da504ee937078833bbfb57c919ac3c",
+  "examples_and_tests_tests_testthat.Rout.fail.gz": "1ac1663fc19aab655ce1ea07c8a00b319586a562b0f0b09d26a11b16e2cfe7dc",
+  "file2ee2c1225546e.log.gz": "66cb6de04561dcfc6d6692947410399f142ad8056e986760ba3102e7db6eb809",
+  "file2ee2c680a3adf.R.gz": "9aafbfe74f7a5f29edd1a3d1ff6f35eb375c8b48838d87b355b6bbb93383df7a",
+  "focused/fixed/child-output.log": "89d1a44f4e949a6c867a1c066a10ca3b4a35f2707c08c4550d078cf6fb73b164",
+  "focused/fixed/test-selected.R": "28af23a747bb54659b8f60278b7d176029733917a4609c72cb4718847ecc1c24",
+  "focused/initial-run.log": "7649a7cbe1679c0d0469e492d0760dd7752cd6307815c902b9b6a5868d618eae",
+  "focused/original/child-output.log": "3e46bf71ffc4b26a7072b282e930ae4b7ade7125bad9ed95efee7b01c29f5e2c",
+  "focused/original/test-selected.R": "8ad2f91b90b256775139a78d8d1f11532adfbfb66a95eadcc38fd906dcec73d4",
+  "focused/run.log": "ede6ec62a3cb45a5e2f43f510514d981c07a965aa9f399c2af74e0c537238638",
+  "original-test-llm-async-lifecycle.R.gz": "fe031dc754611d06f4b9960679933e28ade428125dac40f8f5bdce2dd18b22e7",
+  "owner.json": "877d468025cd16c49eb9018f9a279d22cb412808b45261e5a2d2d8ed98b43045",
+  "problems-downloads.json": "a960eaafd15111ba3ae8700fd52c887d081c770c73547eca444347321375f160",
+  "test-downloads.json": "5141995ea9874b9aee817a9abe314f73efed5089802142cf7cd996ee30e06954"
+}

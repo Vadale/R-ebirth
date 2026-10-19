@@ -1,0 +1,22 @@
+[
+  {
+    "name": "examples_and_tests/tests/startup.Rs",
+    "bytes": 131,
+    "sha256": "fed9cfb12d26f8f863e56bef227d03225c75e2129cc8e5a0495ec651e7c51fb3"
+  },
+  {
+    "name": "examples_and_tests/tests/testthat.Rout.fail",
+    "bytes": 10899,
+    "sha256": "79ca43a1daace41d89ced53f97e53524918aa472fee3dbae1338c40ef48e7f40"
+  },
+  {
+    "name": "examples_and_tests/tests/testthat/",
+    "bytes": 10605,
+    "sha256": "0e1e6109afd6263c8dde932de4990a1a8d23fa5799878be17e05642850a0213b"
+  },
+  {
+    "name": "relm_0.5.0.zip",
+    "bytes": 5774770,
+    "sha256": "efe8234e9af5eed423d195c3f35da4bf77e1358885180e83f4db28dbb105f65f"
+  }
+]

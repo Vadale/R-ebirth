@@ -1,0 +1,18 @@
+ASYNC_STAGE begin elapsed=0.000 cpu=0.000 load namespaces
+Loading required namespace: later
+Loading required namespace: promises
+ASYNC_STAGE end elapsed=0.233 cpu=0.233 load namespaces
+ASYNC_STAGE begin elapsed=0.235 cpu=0.235 lifecycle 001 stopifnot(!("package:methods" %in% search()))
+ASYNC_STAGE end elapsed=0.235 cpu=0.235 lifecycle 001 stopifnot(!("package:methods" %in% search()))
+ASYNC_STAGE begin elapsed=0.235 cpu=0.235 lifecycle 002 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+ASYNC_STAGE end elapsed=0.237 cpu=0.237 lifecycle 002 foreign <- getDLLRegisteredRoutines("stats")$.Call[[1]]$address
+ASYNC_STAGE begin elapsed=0.237 cpu=0.237 lifecycle 003 stopifnot(typeof(foreign) == "externalptr")
+ASYNC_STAGE end elapsed=0.237 cpu=0.237 lifecycle 003 stopifnot(typeof(foreign) == "externalptr")
+ASYNC_STAGE begin elapsed=0.237 cpu=0.237 lifecycle 004 for (ptr in list(foreign, methods::new("externalptr"), NULL)) {
+ASYNC_STAGE end elapsed=0.243 cpu=0.243 lifecycle 004 for (ptr in list(foreign, methods::new("externalptr"), NULL)) {
+ASYNC_STAGE begin elapsed=0.243 cpu=0.243 lifecycle 005 gc()
+          used (Mb) gc trigger (Mb) max used (Mb)
+Ncells  545245 29.2     923665 49.4   923665 49.4
+Vcells 1028861  7.9    8388608 64.0  1998791 15.3
+ASYNC_STAGE end elapsed=0.284 cpu=0.284 lifecycle 005 gc()
+ASYNC_LIFECYCLE_OK
