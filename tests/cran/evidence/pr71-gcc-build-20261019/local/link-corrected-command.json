@@ -1,0 +1,1 @@
+["g++", "-shared", "-flto=auto", "-O2", "-Werror=stringop-overread", "-o", "/home/grauk/Work/relm-phase9/gcc-loader-warning/corrected.so", "/home/grauk/Work/relm-phase9/gcc-loader-warning/corrected.o"]

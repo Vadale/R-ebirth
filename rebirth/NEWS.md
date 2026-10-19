@@ -1,6 +1,6 @@
 # Development — CRAN source preparation
 
-* Source distributions bundle the unchanged engine and locked Rust dependencies,
+* Source distributions bundle the pinned engine and locked Rust dependencies,
   avoiding long outer archive paths and network-dependent Cargo installation.
   Source integrity, license notices and the optional Linux CUDA route are retained.
 * Package compilation uses locked dependencies and at most two Cargo jobs;
@@ -20,10 +20,15 @@
 * Ordinary R CPU/Metal compilation uses R-selected C/C++17 compilers and flags
   with explicit portable CPU options. Direct Cargo and explicitly enabled CUDA
   keep their existing compilation policy. CMake discovery includes the standard
-  macOS application location.
+  macOS application location; generated Makevars retain literal tool paths,
+  including Windows separators and shell-special characters.
 * Installed Rust license/copyright notices cover all 81 locked crates. A new
-  Linux R-devel check includes the full PDF manual. One local GCC16/LTO warning
-  in the pinned model loader remains under investigation; no clean-CRAN claim.
+  Linux R-devel check includes the full PDF manual.
+* An explicit null check at the model loader's string-override boundary removes
+  the reproduced GCC16/LTO overread warning. Original and corrected behavior
+  match for absent overrides, wrong types and valid strings; optimization,
+  dependency versions and numerical kernels are unchanged. Full current-platform
+  package checks remain required; this is not a clean-CRAN claim.
 
 # Development — optional Linux CUDA
 

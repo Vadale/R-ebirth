@@ -1,0 +1,19 @@
+[
+  "g++",
+  "-std=c++17",
+  "-O2",
+  "-flto=auto",
+  "-ffunction-sections",
+  "-fdata-sections",
+  "-Wl,--gc-sections",
+  "-Wall",
+  "-Wextra",
+  "-Werror=stringop-overread",
+  "-I/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/src",
+  "-I/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/include",
+  "-I/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/llama.cpp/ggml/include",
+  "-DRELM_LOADER_SOURCE=\"/home/grauk/Work/relm-phase9/gcc-loader-warning/source-corrected.cpp\"",
+  "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/tests/cran/model-loader-override.cpp",
+  "-o",
+  "/home/grauk/Work/relm-phase9/gcc-loader-warning/corrected-control"
+]

@@ -1,0 +1,119 @@
+In file included from /usr/include/c++/16/future:53,
+                 from /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/tests/cran/../../rebirth/src/llama.cpp/src/llama-model-loader.cpp:14,
+                 from /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/tests/cran/model-loader-override.cpp:7:
+In constructor ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_end() [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:293:24:
+/usr/include/c++/16/bits/std_function.h:395:42: error: ‘*(std::function<bool(char)>*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::function<bool(char)>::_M_invoker’ may be used uninitialized [-Werror=maybe-uninitialized]
+  395 |       : _Function_base(), _M_invoker(__x._M_invoker)
+      |                                      ~~~~^~~~~~~~~~
+In file included from /usr/include/c++/16/regex:66,
+                 from /home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/tests/cran/../../rebirth/src/llama.cpp/src/llama-model-loader.cpp:15:
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_end() [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:290:17: note: ‘__tmp’ declared here
+  290 |         _StateT __tmp(_S_opcode_subexpr_end);
+      |                 ^~~~~
+In member function ‘bool std::_Function_base::_M_empty() const’,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::operator bool() const [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:564:25,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:397:6,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_end() [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:293:24:
+/usr/include/c++/16/bits/std_function.h:252:37: error: ‘*(const std::_Function_base*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::_Function_base::_M_manager’ may be used uninitialized [-Werror=maybe-uninitialized]
+  252 |     bool _M_empty() const { return !_M_manager; }
+      |                                     ^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_end() [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:290:17: note: ‘__tmp’ declared here
+  290 |         _StateT __tmp(_S_opcode_subexpr_end);
+      |                 ^~~~~
+In constructor ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_begin() [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:284:24:
+/usr/include/c++/16/bits/std_function.h:395:42: error: ‘*(std::function<bool(char)>*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::function<bool(char)>::_M_invoker’ may be used uninitialized [-Werror=maybe-uninitialized]
+  395 |       : _Function_base(), _M_invoker(__x._M_invoker)
+      |                                      ~~~~^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_begin() [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:282:17: note: ‘__tmp’ declared here
+  282 |         _StateT __tmp(_S_opcode_subexpr_begin);
+      |                 ^~~~~
+In member function ‘bool std::_Function_base::_M_empty() const’,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::operator bool() const [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:564:25,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:397:6,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_begin() [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:284:24:
+/usr/include/c++/16/bits/std_function.h:252:37: error: ‘*(const std::_Function_base*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::_Function_base::_M_manager’ may be used uninitialized [-Werror=maybe-uninitialized]
+  252 |     bool _M_empty() const { return !_M_manager; }
+      |                                     ^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_subexpr_begin() [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:282:17: note: ‘__tmp’ declared here
+  282 |         _StateT __tmp(_S_opcode_subexpr_begin);
+      |                 ^~~~~
+In constructor ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_backref(std::size_t) [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.tcc:177:29:
+/usr/include/c++/16/bits/std_function.h:395:42: error: ‘*(std::function<bool(char)>*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::function<bool(char)>::_M_invoker’ may be used uninitialized [-Werror=maybe-uninitialized]
+  395 |       : _Function_base(), _M_invoker(__x._M_invoker)
+      |                                      ~~~~^~~~~~~~~~
+In file included from /usr/include/c++/16/bits/regex_automaton.h:405:
+/usr/include/c++/16/bits/regex_automaton.tcc: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_backref(std::size_t) [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.tcc:175:15: note: ‘__tmp’ declared here
+  175 |       _StateT __tmp(_S_opcode_backref);
+      |               ^~~~~
+In member function ‘bool std::_Function_base::_M_empty() const’,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::operator bool() const [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:564:25,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:397:6,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_backref(std::size_t) [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.tcc:177:29:
+/usr/include/c++/16/bits/std_function.h:252:37: error: ‘*(const std::_Function_base*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::_Function_base::_M_manager’ may be used uninitialized [-Werror=maybe-uninitialized]
+  252 |     bool _M_empty() const { return !_M_manager; }
+      |                                     ^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.tcc: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_backref(std::size_t) [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.tcc:175:15: note: ‘__tmp’ declared here
+  175 |       _StateT __tmp(_S_opcode_backref);
+      |               ^~~~~
+In constructor ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_repeat(std::__detail::_StateIdT, std::__detail::_StateIdT, bool) [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:266:24:
+/usr/include/c++/16/bits/std_function.h:395:42: error: ‘*(std::function<bool(char)>*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::function<bool(char)>::_M_invoker’ may be used uninitialized [-Werror=maybe-uninitialized]
+  395 |       : _Function_base(), _M_invoker(__x._M_invoker)
+      |                                      ~~~~^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_repeat(std::__detail::_StateIdT, std::__detail::_StateIdT, bool) [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:260:17: note: ‘__tmp’ declared here
+  260 |         _StateT __tmp(_S_opcode_repeat);
+      |                 ^~~~~
+In member function ‘bool std::_Function_base::_M_empty() const’,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::operator bool() const [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:564:25,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:397:6,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_repeat(std::__detail::_StateIdT, std::__detail::_StateIdT, bool) [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:266:24:
+/usr/include/c++/16/bits/std_function.h:252:37: error: ‘*(const std::_Function_base*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::_Function_base::_M_manager’ may be used uninitialized [-Werror=maybe-uninitialized]
+  252 |     bool _M_empty() const { return !_M_manager; }
+      |                                     ^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_repeat(std::__detail::_StateIdT, std::__detail::_StateIdT, bool) [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:260:17: note: ‘__tmp’ declared here
+  260 |         _StateT __tmp(_S_opcode_repeat);
+      |                 ^~~~~
+In constructor ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_alt(std::__detail::_StateIdT, std::__detail::_StateIdT, bool) [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:254:24,
+    inlined from ‘void std::__detail::_Compiler<_TraitsT>::_M_disjunction() [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_compiler.tcc:106:18:
+/usr/include/c++/16/bits/std_function.h:395:42: error: ‘*(std::function<bool(char)>*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::function<bool(char)>::_M_invoker’ may be used uninitialized [-Werror=maybe-uninitialized]
+  395 |       : _Function_base(), _M_invoker(__x._M_invoker)
+      |                                      ~~~~^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘void std::__detail::_Compiler<_TraitsT>::_M_disjunction() [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:249:17: note: ‘__tmp’ declared here
+  249 |         _StateT __tmp(_S_opcode_alternative);
+      |                 ^~~~~
+In member function ‘bool std::_Function_base::_M_empty() const’,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::operator bool() const [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:564:25,
+    inlined from ‘std::function<_Res(_ArgTypes ...)>::function(std::function<_Res(_ArgTypes ...)>&&) [with _Res = bool; _ArgTypes = {char}]’ at /usr/include/c++/16/bits/std_function.h:397:6,
+    inlined from ‘std::__detail::_State<_Char_type>::_State(std::__detail::_State<_Char_type>&&) [with _Char_type = char]’ at /usr/include/c++/16/bits/regex_automaton.h:152:4,
+    inlined from ‘std::__detail::_StateIdT std::__detail::_NFA<_TraitsT>::_M_insert_alt(std::__detail::_StateIdT, std::__detail::_StateIdT, bool) [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_automaton.h:254:24,
+    inlined from ‘void std::__detail::_Compiler<_TraitsT>::_M_disjunction() [with _TraitsT = std::__cxx11::regex_traits<char>]’ at /usr/include/c++/16/bits/regex_compiler.tcc:106:18:
+/usr/include/c++/16/bits/std_function.h:252:37: error: ‘*(const std::_Function_base*)((char*)&__tmp + offsetof(std::__detail::_StateT, std::__detail::_State<char>::<unnamed>.std::__detail::_State_base::<unnamed>)).std::_Function_base::_M_manager’ may be used uninitialized [-Werror=maybe-uninitialized]
+  252 |     bool _M_empty() const { return !_M_manager; }
+      |                                     ^~~~~~~~~~
+/usr/include/c++/16/bits/regex_automaton.h: In member function ‘void std::__detail::_Compiler<_TraitsT>::_M_disjunction() [with _TraitsT = std::__cxx11::regex_traits<char>]’:
+/usr/include/c++/16/bits/regex_automaton.h:249:17: note: ‘__tmp’ declared here
+  249 |         _StateT __tmp(_S_opcode_alternative);
+      |                 ^~~~~
+cc1plus: all warnings being treated as errors

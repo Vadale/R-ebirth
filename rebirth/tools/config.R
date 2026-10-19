@@ -54,7 +54,8 @@ cuda <- relm_cuda_config()
   'CFLAGS="$(CPPFLAGS) $(CFLAGS) $(CPICFLAGS)"',
   'CXXFLAGS="$(CPPFLAGS) $(CXX17FLAGS) $(CXX17PICFLAGS) $(CXX17STD)"'
 )
-.native_build_env <- paste0("CMAKE=", shQuote(gsub("$", "$$", cmake_command, fixed = TRUE), type = "sh"),
+# Quote for the shell first, then escape dollars for the enclosing make recipe.
+.native_build_env <- paste0("CMAKE=", gsub("$", "$$", shQuote(cmake_command, type = "sh"), fixed = TRUE),
                            " ", .native_build_env)
 
 # when DEBUG env var is present we use `--debug` build
@@ -170,7 +171,7 @@ new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@PROFILE@", .profile, x = _) |>
   gsub("@SELFTEST_FEATURE@", .selftest_feature, x = _) |>
   gsub("@CUDA_FEATURE@", .cuda_feature, x = _) |>
-  gsub("@NATIVE_BUILD_ENV@", .native_build_env, x = _) |>
+  gsub("@NATIVE_BUILD_ENV@", .native_build_env, x = _, fixed = TRUE) |>
   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>

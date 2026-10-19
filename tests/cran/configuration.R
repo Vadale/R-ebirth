@@ -31,7 +31,7 @@ stopifnot(identical(unname(tools::md5sum(file.path("rebirth/src/llama.cpp", orig
 stopifnot(system2("sh", c("-c", shQuote(paste("cd", shQuote(root), "&& sh", shQuote(file.path(repo, "rebirth/cleanup")))))) == 0L,
           !dir.exists(file.path(root, "src/llama.cpp")))
 
-configure_case <- function(vendor, not_cran, windows = FALSE) {
+configure_case <- function(vendor, not_cran, windows = FALSE, cmake = NULL) {
   directory <- tempfile("configure-", tmpdir = root)
   dir.create(directory)
   dir.create(file.path(directory, "src"))
@@ -48,6 +48,17 @@ configure_case <- function(vendor, not_cran, windows = FALSE) {
   env <- new.env(parent = globalenv())
   env$source <- function(file) sys.source(file, envir = env)
   env$Sys.setenv <- function(...) invisible(NULL)
+  if (!is.null(cmake)) {
+    env$Sys.which <- function(names) {
+      if (identical(names, "cmake")) return(c(cmake = cmake))
+      Sys.which(names)
+    }
+    env$system2 <- function(command, args = character(), ...) {
+      if (identical(command, cmake) && identical(args, "--version"))
+        return("cmake version 3.28.0")
+      stop("Unexpected command in the CMake path fixture")
+    }
+  }
   env$Sys.getenv <- function(x, unset = "", ...) {
     values <- c(NOT_CRAN = not_cran, DEBUG = "", RELM_ENABLE_CUDA = "0", RELM_ENABLE_SELFTESTS = "0")
     if (length(x) == 1L && x %in% names(values)) return(unname(values[[x]]))

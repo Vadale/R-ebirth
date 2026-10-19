@@ -1,0 +1,5 @@
+[
+  "Rscript",
+  "--vanilla",
+  "tests/cran/native-build.R"
+]

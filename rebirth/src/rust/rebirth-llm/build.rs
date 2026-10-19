@@ -293,8 +293,8 @@ fn configure_r_compiler(config: &mut cmake::Config) {
     config.no_default_flags(true);
     for (language, variable) in [("C", "CFLAGS"), ("CXX", "CXXFLAGS")] {
         let flags = env::var(variable).unwrap_or_else(|_| panic!("R build must export {variable}"));
-        config.define(&format!("CMAKE_{language}_FLAGS"), flags);
-        config.define(&format!("CMAKE_{language}_FLAGS_RELEASE"), "");
+        config.define(format!("CMAKE_{language}_FLAGS"), flags);
+        config.define(format!("CMAKE_{language}_FLAGS_RELEASE"), "");
     }
     config.define("CMAKE_POSITION_INDEPENDENT_CODE", "ON");
 }

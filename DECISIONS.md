@@ -1781,3 +1781,19 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   license-file omissions from their recorded upstream commits. Source archives
   remain byte-identical. Add R-devel production checks including the PDF manual,
   limit BLAS worker settings in CI, and keep final submission approval separate.
+
+- **GCC warning and PR71 build corrections (2026-10-19):** the founder explicitly
+  requested fixing the remaining GCC warning while PR71 completes. Add a direct
+  null check at the pinned loader's string override boundary, retaining its
+  existing validator, assignment, logging and return values. The one-line patch
+  reproduces/removes the actual GCC16/LTO warning in the complete affected
+  translation unit and preserves eight explicit absent/wrong-type/string cases.
+  Record reversible patch0006 and update only the engine source bundle; retain
+  upstream pin, pre-patch identity, Rust archive/lock, kernels, optimization and
+  numerical bounds. This authorizes this bounded vendor correction, not a vendor
+  update or warning suppression. Also remove two needless build-script borrows
+  rejected by CI, and preserve literal discovered CMake paths in Makevars by
+  replacing the template literally and applying make-dollar escaping after
+  shell quoting. These are corrections to the already-authorized WRE build route.
+  Keep all original CI failures and focused failed harness attempts; current
+  hosted package acceptance remains necessary before merging/submission.

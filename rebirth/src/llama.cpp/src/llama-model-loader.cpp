@@ -245,7 +245,7 @@ namespace GGUFMeta {
         template<typename OT>
         static typename std::enable_if<std::is_same<OT, std::string>::value, bool>::type
         try_override(T & target, const struct llama_model_kv_override * ovrd) {
-            if (validate_override(LLAMA_KV_OVERRIDE_TYPE_STR, ovrd)) {
+            if (ovrd && validate_override(LLAMA_KV_OVERRIDE_TYPE_STR, ovrd)) {
                 target = ovrd->val_str;
                 return true;
             }

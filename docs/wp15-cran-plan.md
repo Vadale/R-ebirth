@@ -335,11 +335,11 @@ The installed link emitted one GCC16/LTO `-Wstringop-overread` diagnostic at
 pinned `llama-model-loader.cpp:249` (`try_override` string assignment), with an
 inlined `get_key` path and a likely-zero-source note. Source inspection finds
 a null check in `validate_override` before that assignment. This observation
-does not prove a compiler false positive or harmlessness. The warning remains
-OPEN for final submission disposition; no flag suppression, optimization
-removal, dependency update or vendor patch was applied. The earlier CMake
-missing-ccache advisory is also retained. The package installed, but it is not
-globally warning-free or ready for submission.
+does not prove a compiler false positive or harmlessness. That original receipt
+remains `passed_scoped_with_open_compiler_warning`; the later bounded correction
+is recorded below, without relabelling the old installation. The earlier CMake
+missing-ccache advisory is also retained. The package installed, but that result
+is not globally warning-free or ready for submission.
 
 A raw-only metadata inspector initially rejected normal DESCRIPTION whitespace
 reflow. Its original script/log remain preserved; comparison of the same saved
@@ -349,3 +349,65 @@ in [`readiness-20261019`](../tests/cran/evidence/readiness-20261019/), manifest
 `814e1c2bca91711aa1afc50ea1effcbefc932f47885beb005424352f34383f83`.
 Current Windows/macOS/R-devel/manual results and the final Rust/toolchain,
 warning, version and submission decisions remain pending. Do not recheck PR70.
+
+## GCC16 warning correction and first PR71 failures (2026-10-19)
+
+The founder requested the warning correction while the first PR71 matrix was
+running. Compile and shared-link of the complete original model-loader
+translation unit, using its retained R/GCC16 optimization and LTO flags,
+reproduced the exact `-Wstringop-overread` diagnostic. Adding `ovrd &&` immediately
+before the existing string-type validator removes the diagnostic with
+`-Werror=stringop-overread` still enabled. This isolated shared object is not a
+complete runnable engine or installed R package. It establishes the affected
+compiler diagnostic's resolution, not a claim about every possible input or
+compiler version.
+
+The actual original and corrected template each passed eight cases: one absent
+pointer, three wrong types, and four strings (empty, ordinary, maximum terminated
+length, embedded NUL). Return value, target and captured diagnostic bytes match
+independently stated expectations and each other. The corrected full-source
+control also passes the exact new CI command with all warnings treated as errors.
+No model, metadata getter, inference or full native/package rebuild was used.
+An optional ASan/UBSan build stopped before execution on an unrelated libstdc++16
+regex `maybe-uninitialized` diagnostic instantiated by the full source; its
+original command/log are retained. No sanitizer success or warning suppression
+is claimed.
+
+Patch0006 preserves the existing validator/null handling, assignment and logs.
+Upstream b10828 and pre-patch identity are unchanged. G4 and reverse-patch
+coherence passed; the new post-patch digest is
+`07b8a13db5c250360466facdcacb1331e284ba5d4a4d0e04b6a64c99ad0ecd7b`.
+Only the engine source bundle changes; all locked Rust dependency bytes and
+licenses stay unchanged. No kernel, ABI, numerical bound or optimization change.
+
+Five first-matrix jobs failed the same two `needless_borrows_for_generic_args`
+errors in the new portable-build script. Removing the two borrows passes actual
+build-script Clippy with warnings denied. The standalone lint uses the four
+exact locked dependency versions/checksums, without running the script or
+building the engine. The Windows job separately failed before native compilation:
+regex template replacement removed backslashes from the discovered CMake path.
+Literal replacement preserves both generated Cargo exports; shell quoting now
+precedes make-dollar escaping. Actual configuration and Unix make/shell controls
+cover the failing Rtools path and a path containing spaces, apostrophe and dollar,
+in both templates. The former replacement fails the same byte comparison.
+These controls mock discovery only and do not claim Windows execution.
+
+The first local special-character path check exposed the quoting-order defect;
+its failed log/source remain retained alongside the corrected pass. Current
+platform checks are still required. All original failed CI outcomes remain
+failed, with full raw logs and metadata in
+[`pr71-gcc-build-20261019`](../tests/cran/evidence/pr71-gcc-build-20261019/).
+No clean full-package, final CRAN, merge or submission claim follows from these
+focused results.
+
+The first PR71 matrix subsequently finished with five successes and six retained
+failures; no additional failure appeared. Parent-head R-devel/GCC13.3 completed
+production installation, compiled-code/Rust checks, examples, tests, vignette
+rebuild and PDF manual: 4,981 passing expectations, 141 scoped skips, zero errors
+or warnings, one NOTE because HTML Tidy is unavailable. Installed size was
+126.4 MB (123.2 MB in libs), retained as a resource/submission consideration.
+Full job output and step metadata were inspected; the large binary artifact was
+not downloaded or independently hash-verified. This does not establish corrected
+package acceptance or resolve the separate local GCC16 warning retroactively.
+The next matrix validates the coherent correction; no prior stage was replayed
+locally. Final CI receipts remain local.

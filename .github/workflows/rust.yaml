@@ -116,6 +116,15 @@ jobs:
           "$RUNNER_TEMP/check-resources"
           python3 tests/cran/test_notices.py
 
+      - name: Model loader string override control (no model calls)
+        if: steps.scope.outputs.full_checks != 'false'
+        working-directory: .
+        run: |
+          g++ -std=c++17 -O2 -flto=auto -ffunction-sections -fdata-sections -Wl,--gc-sections -Wall -Wextra -Werror \
+            -Irebirth/src/llama.cpp/src -Irebirth/src/llama.cpp/include -Irebirth/src/llama.cpp/ggml/include \
+            tests/cran/model-loader-override.cpp -o "$RUNNER_TEMP/model-loader-override"
+          "$RUNNER_TEMP/model-loader-override"
+
       - name: Windows header compatibility controls (no engine build)
         if: steps.scope.outputs.full_checks != 'false'
         working-directory: .

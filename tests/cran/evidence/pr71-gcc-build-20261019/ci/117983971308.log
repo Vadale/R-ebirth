@@ -1,0 +1,930 @@
+﻿2026-10-19T09:22:29.2859937Z Current runner version: '2.337.0'
+2026-10-19T09:22:29.2881047Z ##[group]Runner Image Provisioner
+2026-10-19T09:22:29.2881743Z Hosted Compute Agent
+2026-10-19T09:22:29.2882278Z Version: 20261012.601
+2026-10-19T09:22:29.2882873Z Commit: f3dc54e1fb89da6852db922499a0233137369e1d
+2026-10-19T09:22:29.2883438Z Build Date: 2026-10-12T17:48:21Z
+2026-10-19T09:22:29.2884055Z Worker ID: {dbc17a36-0dee-4d5a-8f2f-b763a7d97053}
+2026-10-19T09:22:29.2884631Z Region: westus3
+2026-10-19T09:22:29.2885304Z Cloud: Azure
+2026-10-19T09:22:29.2885830Z ##[endgroup]
+2026-10-19T09:22:29.2886977Z ##[group]Operating System
+2026-10-19T09:22:29.2887552Z Ubuntu
+2026-10-19T09:22:29.2887991Z 24.04.5
+2026-10-19T09:22:29.2888403Z LTS
+2026-10-19T09:22:29.2888897Z ##[endgroup]
+2026-10-19T09:22:29.2889410Z ##[group]Runner Image
+2026-10-19T09:22:29.2889943Z Image: ubuntu-24.04
+2026-10-19T09:22:29.2890415Z Version: 20261012.334.1
+2026-10-19T09:22:29.2891481Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/Ubuntu2404-Readme.md
+2026-10-19T09:22:29.2892718Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261012.334
+2026-10-19T09:22:29.2893539Z ##[endgroup]
+2026-10-19T09:22:29.2896002Z ##[group]GITHUB_TOKEN Permissions
+2026-10-19T09:22:29.2897820Z Actions: read
+2026-10-19T09:22:29.2898340Z ArtifactMetadata: read
+2026-10-19T09:22:29.2898905Z Attestations: read
+2026-10-19T09:22:29.2899412Z Checks: read
+2026-10-19T09:22:29.2899858Z CodeQuality: read
+2026-10-19T09:22:29.2900348Z Contents: read
+2026-10-19T09:22:29.2900829Z Deployments: read
+2026-10-19T09:22:29.2901270Z Discussions: read
+2026-10-19T09:22:29.2901768Z Drives: read
+2026-10-19T09:22:29.2902205Z Issues: read
+2026-10-19T09:22:29.2902660Z Metadata: read
+2026-10-19T09:22:29.2903240Z Models: read
+2026-10-19T09:22:29.2903665Z Packages: read
+2026-10-19T09:22:29.2904164Z Pages: read
+2026-10-19T09:22:29.2904602Z PullRequests: read
+2026-10-19T09:22:29.2905089Z RepositoryProjects: read
+2026-10-19T09:22:29.2905776Z SecurityEvents: read
+2026-10-19T09:22:29.2906248Z Statuses: read
+2026-10-19T09:22:29.2906742Z VulnerabilityAlerts: read
+2026-10-19T09:22:29.2907233Z ##[endgroup]
+2026-10-19T09:22:29.2908885Z Secret source: Actions
+2026-10-19T09:22:29.2909756Z Cache mode: write
+2026-10-19T09:22:29.2910292Z Prepare workflow directory
+2026-10-19T09:22:29.3237867Z Prepare all required actions
+2026-10-19T09:22:29.3275954Z Getting action download info
+2026-10-19T09:22:29.6808025Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+2026-10-19T09:22:29.9090834Z Download action repository 'actions/upload-artifact@v7' (SHA:cf430e030ddbb5b0abf93d22962f4752f3646cd9)
+2026-10-19T09:22:30.7754444Z Download action repository 'dtolnay/rust-toolchain@stable' (SHA:b725eda525362e7cf34af9a7243cac1e3f01a7ec)
+2026-10-19T09:22:31.0092137Z Download action repository 'mozilla-actions/sccache-action@v0.0.10' (SHA:9e7fa8a12102821edf02ca5dbea1acd0f89a2696)
+2026-10-19T09:22:31.6572839Z Complete job name: cargo fmt / clippy / test
+2026-10-19T09:22:31.7155415Z ##[group]Run actions/checkout@v7
+2026-10-19T09:22:31.7156008Z with:
+2026-10-19T09:22:31.7156186Z   fetch-depth: 2
+2026-10-19T09:22:31.7156382Z   repository: Vadale/R-ebirth
+2026-10-19T09:22:31.7158313Z   token: ***
+2026-10-19T09:22:31.7158508Z   ssh-strict: true
+2026-10-19T09:22:31.7158695Z   ssh-user: git
+2026-10-19T09:22:31.7158886Z   persist-credentials: true
+2026-10-19T09:22:31.7159087Z   clean: true
+2026-10-19T09:22:31.7159277Z   sparse-checkout-cone-mode: true
+2026-10-19T09:22:31.7159506Z   fetch-tags: false
+2026-10-19T09:22:31.7159692Z   show-progress: true
+2026-10-19T09:22:31.7159895Z   lfs: false
+2026-10-19T09:22:31.7160072Z   submodules: false
+2026-10-19T09:22:31.7160256Z   set-safe-directory: true
+2026-10-19T09:22:31.7160476Z   allow-unsafe-pr-checkout: false
+2026-10-19T09:22:31.7160813Z env:
+2026-10-19T09:22:31.7160980Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:31.7161168Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:31.7161375Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:31.7161874Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:31.7162107Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:31.7162333Z ##[endgroup]
+2026-10-19T09:22:31.8001855Z Syncing repository: Vadale/R-ebirth
+2026-10-19T09:22:31.8003452Z ##[group]Getting Git version info
+2026-10-19T09:22:31.8003942Z Working directory is '/home/runner/work/R-ebirth/R-ebirth'
+2026-10-19T09:22:31.8004789Z [command]/usr/bin/git version
+2026-10-19T09:22:31.9923491Z git version 2.55.0
+2026-10-19T09:22:31.9941078Z ##[endgroup]
+2026-10-19T09:22:31.9950905Z Temporarily overriding HOME='/home/runner/work/_temp/d4ad7533-fc91-46bb-a243-0c01fd509902' before making global git config changes
+2026-10-19T09:22:31.9951861Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-19T09:22:31.9956431Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/R-ebirth/R-ebirth
+2026-10-19T09:22:32.0072584Z Deleting the contents of '/home/runner/work/R-ebirth/R-ebirth'
+2026-10-19T09:22:32.0075967Z ##[group]Determining repository object format
+2026-10-19T09:22:32.0077464Z ##[endgroup]
+2026-10-19T09:22:32.0077932Z ##[group]Initializing the repository
+2026-10-19T09:22:32.0081587Z [command]/usr/bin/git init /home/runner/work/R-ebirth/R-ebirth
+2026-10-19T09:22:32.0173956Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-10-19T09:22:32.0174911Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-10-19T09:22:32.0175944Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-10-19T09:22:32.0176506Z hint: call:
+2026-10-19T09:22:32.0176748Z hint:
+2026-10-19T09:22:32.0177110Z hint: 	git config --global init.defaultBranch <name>
+2026-10-19T09:22:32.0177489Z hint:
+2026-10-19T09:22:32.0177861Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-10-19T09:22:32.0178387Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-10-19T09:22:32.0178916Z hint:
+2026-10-19T09:22:32.0179172Z hint: 	git branch -m <name>
+2026-10-19T09:22:32.0179472Z hint:
+2026-10-19T09:22:32.0179769Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-10-19T09:22:32.0180411Z Initialized empty Git repository in /home/runner/work/R-ebirth/R-ebirth/.git/
+2026-10-19T09:22:32.0185398Z [command]/usr/bin/git remote add origin https://github.com/Vadale/R-ebirth
+2026-10-19T09:22:32.0234900Z ##[endgroup]
+2026-10-19T09:22:32.0235480Z ##[group]Disabling automatic garbage collection
+2026-10-19T09:22:32.0237538Z [command]/usr/bin/git config --local gc.auto 0
+2026-10-19T09:22:32.0267987Z ##[endgroup]
+2026-10-19T09:22:32.0268413Z ##[group]Setting up auth
+2026-10-19T09:22:32.0268777Z Removing SSH command configuration
+2026-10-19T09:22:32.0273426Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-19T09:22:32.0303185Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-19T09:22:32.2055014Z Removing HTTP extra header
+2026-10-19T09:22:32.2061879Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-19T09:22:32.2100890Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-19T09:22:32.2317747Z Removing includeIf entries pointing to credentials config files
+2026-10-19T09:22:32.2324192Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-19T09:22:32.2362308Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-19T09:22:32.2588095Z [command]/usr/bin/git config --file /home/runner/work/_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-10-19T09:22:32.2623760Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path /home/runner/work/_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:22:32.2656371Z [command]/usr/bin/git config --local includeIf.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path /home/runner/work/_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:22:32.3332056Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:22:32.3446646Z [command]/usr/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:22:32.3471578Z ##[endgroup]
+2026-10-19T09:22:32.3471931Z ##[group]Fetching the repository
+2026-10-19T09:22:32.3480588Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=2 origin +56c15e2ba01c5173ec06f733d14f43f84e99fb17:refs/remotes/pull/71/merge
+2026-10-19T09:22:37.4387826Z From https://github.com/Vadale/R-ebirth
+2026-10-19T09:22:37.4388499Z  * [new ref]         56c15e2ba01c5173ec06f733d14f43f84e99fb17 -> pull/71/merge
+2026-10-19T09:22:37.4390988Z ##[endgroup]
+2026-10-19T09:22:37.4391967Z ##[group]Determining the checkout info
+2026-10-19T09:22:37.4392310Z ##[endgroup]
+2026-10-19T09:22:37.4396579Z [command]/usr/bin/git sparse-checkout disable
+2026-10-19T09:22:37.4444523Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-10-19T09:22:37.4473364Z ##[group]Checking out the ref
+2026-10-19T09:22:37.4477102Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/71/merge
+2026-10-19T09:22:38.0970143Z Note: switching to 'refs/remotes/pull/71/merge'.
+2026-10-19T09:22:38.0970501Z 
+2026-10-19T09:22:38.0970789Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-19T09:22:38.0971326Z changes and commit them, and you can discard any commits you make in this
+2026-10-19T09:22:38.0971827Z state without impacting any branches by switching back to a branch.
+2026-10-19T09:22:38.0972153Z 
+2026-10-19T09:22:38.0972410Z If you want to create a new branch to retain commits you create, you may
+2026-10-19T09:22:38.0972922Z do so (now or later) by using -c with the switch command. Example:
+2026-10-19T09:22:38.0973222Z 
+2026-10-19T09:22:38.0973363Z   git switch -c <new-branch-name>
+2026-10-19T09:22:38.0973578Z 
+2026-10-19T09:22:38.0973693Z Or undo this operation with:
+2026-10-19T09:22:38.0973883Z 
+2026-10-19T09:22:38.0973987Z   git switch -
+2026-10-19T09:22:38.0974172Z 
+2026-10-19T09:22:38.0974569Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-19T09:22:38.0974933Z 
+2026-10-19T09:22:38.0975876Z HEAD is now at 56c15e2 Merge 0be17e49c38233f98f189b9559dea8546ebea9d6 into b1abb784df0a7b79efdf039c86701b3666371229
+2026-10-19T09:22:38.1014382Z ##[endgroup]
+2026-10-19T09:22:38.1058000Z [command]/usr/bin/git log -1 --format=%H
+2026-10-19T09:22:38.1077839Z 56c15e2ba01c5173ec06f733d14f43f84e99fb17
+2026-10-19T09:22:38.1258718Z ##[group]Run python3 tests/ci/change_scope.py
+2026-10-19T09:22:38.1259092Z [36;1mpython3 tests/ci/change_scope.py[0m
+2026-10-19T09:22:38.1458472Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:22:38.1458788Z env:
+2026-10-19T09:22:38.1458980Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:38.1459180Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:38.1459380Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:38.1459646Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:38.1459876Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:38.1460097Z ##[endgroup]
+2026-10-19T09:22:38.1970557Z {"base": "b1abb784df0a7b79efdf039c86701b3666371229", "full_checks": true, "head": "56c15e2ba01c5173ec06f733d14f43f84e99fb17", "paths": [".github/workflows/R-CMD-check.yaml", ".github/workflows/cran-portability.yaml", ".github/workflows/rust.yaml", "DECISIONS.md", "docs/wp15-cran-plan.md", "rebirth/DESCRIPTION", "rebirth/NEWS.md", "rebirth/inst/AUTHORS", "rebirth/inst/RUST-NOTICES", "rebirth/src/Makevars.in", "rebirth/src/Makevars.win.in", "rebirth/src/rust/rebirth-ffi/build.rs", "rebirth/src/rust/rebirth-llm/build.rs", "rebirth/src/rust/rebirth-llm/build_support.rs", "rebirth/src/rust/rebirth-llm/src/check_resources.rs", "rebirth/src/rust/rebirth-llm/src/engine.rs", "rebirth/src/rust/rebirth-llm/src/lib.rs", "rebirth/src/rust/rebirth-llm/src/vision.rs", "rebirth/tools/bundled-sources.json", "rebirth/tools/cmake.R", "rebirth/tools/config.R", "tests/cran/evidence/readiness-20261019/manifest.json", "tests/cran/evidence/readiness-20261019/readiness-build/configure.log", "tests/cran/evidence/readiness-20261019/readiness-build/context-budget.log", "tests/cran/evidence/readiness-20261019/readiness-build/diagnosis.json", "tests/cran/evidence/readiness-20261019/readiness-build/driver.py", "tests/cran/evidence/readiness-20261019/readiness-build/environment.json", "tests/cran/evidence/readiness-20261019/readiness-build/failure.txt", "tests/cran/evidence/readiness-20261019/readiness-build/native-environment.json", "tests/cran/evidence/readiness-20261019/readiness-build/source-before.json", "tests/cran/evidence/readiness-20261019/readiness-build/source-build.log", "tests/cran/evidence/readiness-20261019/readiness-build/source-tar.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/carried-stages.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/context-budget.log", "tests/cran/evidence/readiness-20261019/readiness-fixtures/driver.py", "tests/cran/evidence/readiness-20261019/readiness-fixtures/elf.log", "tests/cran/evidence/readiness-20261019/readiness-fixtures/environment.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/install.log", "tests/cran/evidence/readiness-20261019/readiness-fixtures/installed-hashes.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/installed-inspection.log", "tests/cran/evidence/readiness-20261019/readiness-fixtures/installed-result.rds", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/inventory.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/CMakeCache.txt", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/compile_commands.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/ggml/src/CMakeFiles/ggml-base.dir/flags.make", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/ggml/src/CMakeFiles/ggml-cpu.dir/flags.make", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/ggml/src/CMakeFiles/ggml.dir/flags.make", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/src/CMakeFiles/llama.dir/flags.make", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/tools/mtmd/CMakeFiles/mtmd.dir/flags.make", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/build/vendor/hash/CMakeFiles/vendor-hash.dir/flags.make", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/grammar-bridge/build/CMakeCache.txt", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-build/release/build/rebirth-llm-1b281f17ce1865f2/out/grammar-bridge/build/CMakeFiles/relm-grammar.dir/flags.make", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-environment.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/native-reuse.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/owner-rds-original.log", "tests/cran/evidence/readiness-20261019/readiness-fixtures/owner-rds.log", "tests/cran/evidence/readiness-20261019/readiness-fixtures/owner.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/parent-diagnosis.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/source-after.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/source-before.json", "tests/cran/evidence/readiness-20261019/readiness-fixtures/source-tar.json", "tests/cran/evidence/readiness-20261019/recipes/inspect-readiness-original.R", "tests/cran/evidence/readiness-20261019/recipes/inspect-readiness.R", "tests/cran/evidence/readiness-20261019/recipes/readiness-build-binding.json", "tests/cran/evidence/readiness-20261019/recipes/readiness-build-launch.json", "tests/cran/evidence/readiness-20261019/recipes/readiness-build-status.json", "tests/cran/evidence/readiness-20261019/recipes/readiness-fixtures-binding.json", "tests/cran/evidence/readiness-20261019/recipes/readiness-fixtures-launch.json", "tests/cran/evidence/readiness-20261019/recipes/readiness-fixtures-status.json", "tests/cran/evidence/readiness-20261019/recipes/verify-readiness.py", "tests/cran/evidence/readiness-20261019/source/.github/workflows/R-CMD-check.yaml", "tests/cran/evidence/readiness-20261019/source/.github/workflows/cran-portability.yaml", "tests/cran/evidence/readiness-20261019/source/.github/workflows/rust.yaml", "tests/cran/evidence/readiness-20261019/source/DECISIONS.md", "tests/cran/evidence/readiness-20261019/source/docs/wp15-cran-plan.md", "tests/cran/evidence/readiness-20261019/source/rebirth/DESCRIPTION", "tests/cran/evidence/readiness-20261019/source/rebirth/inst/AUTHORS", "tests/cran/evidence/readiness-20261019/source/rebirth/inst/RUST-NOTICES", "tests/cran/evidence/readiness-20261019/source/rebirth/src/Makevars.in", "tests/cran/evidence/readiness-20261019/source/rebirth/src/Makevars.win.in", "tests/cran/evidence/readiness-20261019/source/rebirth/src/rust/rebirth-ffi/build.rs", "tests/cran/evidence/readiness-20261019/source/rebirth/src/rust/rebirth-llm/build.rs", "tests/cran/evidence/readiness-20261019/source/rebirth/src/rust/rebirth-llm/build_support.rs", "tests/cran/evidence/readiness-20261019/source/rebirth/src/rust/rebirth-llm/src/check_resources.rs", "tests/cran/evidence/readiness-20261019/source/rebirth/src/rust/rebirth-llm/src/engine.rs", "tests/cran/evidence/readiness-20261019/source/rebirth/src/rust/rebirth-llm/src/lib.rs", "tests/cran/evidence/readiness-20261019/source/rebirth/src/rust/rebirth-llm/src/vision.rs", "tests/cran/evidence/readiness-20261019/source/rebirth/tools/bundled-sources.json", "tests/cran/evidence/readiness-20261019/source/rebirth/tools/cmake.R", "tests/cran/evidence/readiness-20261019/source/rebirth/tools/config.R", "tests/cran/evidence/readiness-20261019/source/tests/cran/installed-readiness.R", "tests/cran/evidence/readiness-20261019/source/tests/cran/native-build.R", "tests/cran/evidence/readiness-20261019/source/tools/cran-notices.py", "tests/cran/evidence/readiness-20261019/source/tools/prepare-cran-sources.py", "tests/cran/installed-readiness.R", "tests/cran/native-build.R", "tests/cran/test_notices.py", "tools/cran-license-supplements/extendr-api-0.9.0-LICENSE", "tools/cran-license-supplements/extendr-ffi-0.9.0-LICENSE", "tools/cran-license-supplements/flatbuffers-25.12.19-LICENSE", "tools/cran-license-supplements/sources.json", "tools/cran-notices.py", "tools/prepare-cran-sources.py"], "reason": "Change outside the external documentation allowlist."}
+2026-10-19T09:22:38.2080754Z ##[group]Run python3 tests/llm-golden/vision/tools/test_reference_manifest.py
+2026-10-19T09:22:38.2081218Z [36;1mpython3 tests/llm-golden/vision/tools/test_reference_manifest.py[0m
+2026-10-19T09:22:38.2136880Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:22:38.2137103Z env:
+2026-10-19T09:22:38.2137276Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:38.2137465Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:38.2137669Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:38.2137873Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:38.2138267Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:38.2138490Z ##[endgroup]
+2026-10-19T09:22:38.4732036Z test_changed_header_even_with_updated_hash_is_rejected (__main__.ReferenceManifestTests.test_changed_header_even_with_updated_hash_is_rejected) ... ok
+2026-10-19T09:22:38.4888885Z test_child_failure_cannot_be_success_even_with_a_marker (__main__.ReferenceManifestTests.test_child_failure_cannot_be_success_even_with_a_marker) ... ok
+2026-10-19T09:22:38.4902934Z test_exact_test_binary_selection_rejects_missing_and_ambiguous_artifacts (__main__.ReferenceManifestTests.test_exact_test_binary_selection_rejects_missing_and_ambiguous_artifacts) ... ok
+2026-10-19T09:22:38.8157783Z test_full_cli_uses_independent_environment_and_exact_stdin_handoff (__main__.ReferenceManifestTests.test_full_cli_uses_independent_environment_and_exact_stdin_handoff) ... ok
+2026-10-19T09:22:38.8167651Z test_malformed_nonfinite_and_wrong_count_dumps_are_rejected (__main__.ReferenceManifestTests.test_malformed_nonfinite_and_wrong_count_dumps_are_rejected) ... ok
+2026-10-19T09:22:38.8425004Z test_matching_manifest_sends_verified_bytes_and_binds_final_receipt (__main__.ReferenceManifestTests.test_matching_manifest_sends_verified_bytes_and_binds_final_receipt) ... ok
+2026-10-19T09:22:38.8436710Z test_missing_manifest_is_rejected (__main__.ReferenceManifestTests.test_missing_manifest_is_rejected) ... ok
+2026-10-19T09:22:38.8690936Z test_path_replacement_after_verification_cannot_change_consumed_snapshot (__main__.ReferenceManifestTests.test_path_replacement_after_verification_cannot_change_consumed_snapshot) ... ok
+2026-10-19T09:22:38.8704182Z test_same_path_changed_bytes_are_rejected (__main__.ReferenceManifestTests.test_same_path_changed_bytes_are_rejected) ... ok
+2026-10-19T09:22:38.9001297Z test_skip_or_wrong_digest_marker_cannot_be_numerical_success (__main__.ReferenceManifestTests.test_skip_or_wrong_digest_marker_cannot_be_numerical_success) ... ok
+2026-10-19T09:22:39.0752577Z test_stale_dimensions_are_rejected (__main__.ReferenceManifestTests.test_stale_dimensions_are_rejected) ... ok
+2026-10-19T09:22:39.0809535Z test_stale_input_and_build_identities_are_rejected (__main__.ReferenceManifestTests.test_stale_input_and_build_identities_are_rejected) ... ok
+2026-10-19T09:22:39.0821387Z test_substituted_snapshot_is_rejected_before_child_start (__main__.ReferenceManifestTests.test_substituted_snapshot_is_rejected_before_child_start) ... ok
+2026-10-19T09:22:39.0857518Z test_wrong_run_nonce_source_runner_and_prior_attempt_are_rejected (__main__.ReferenceManifestTests.test_wrong_run_nonce_source_runner_and_prior_attempt_are_rejected) ... ok
+2026-10-19T09:22:39.0858378Z 
+2026-10-19T09:22:39.0858565Z ----------------------------------------------------------------------
+2026-10-19T09:22:39.0859101Z Ran 14 tests in 0.701s
+2026-10-19T09:22:39.0859255Z 
+2026-10-19T09:22:39.0859356Z OK
+2026-10-19T09:22:39.0974808Z ##[group]Run python3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"
+2026-10-19T09:22:39.0975506Z [36;1mpython3 tests/sanitizers/graph_size.py --evidence "$RUNNER_TEMP/graph-size-layout"[0m
+2026-10-19T09:22:39.1031443Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:22:39.1031673Z env:
+2026-10-19T09:22:39.1031847Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:39.1032040Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:39.1032262Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:39.1032475Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:39.1032713Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:39.1032928Z ##[endgroup]
+2026-10-19T09:22:51.1016727Z GRAPH_SIZE_LAYOUT_PASSED cases=68 source=0a4c36c14a1ba15559d6a21f570bfabb478eb05058c45c97a84ce7108f3c6841
+2026-10-19T09:22:51.1147065Z ##[group]Run actions/upload-artifact@v7
+2026-10-19T09:22:51.1147322Z with:
+2026-10-19T09:22:51.1147509Z   name: graph-size-linux-39229566985-1
+2026-10-19T09:22:51.1147770Z   path: /home/runner/work/_temp/graph-size-layout
+2026-10-19T09:22:51.1148023Z   if-no-files-found: warn
+2026-10-19T09:22:51.1148226Z   compression-level: 6
+2026-10-19T09:22:51.1148660Z   overwrite: false
+2026-10-19T09:22:51.1148840Z   include-hidden-files: false
+2026-10-19T09:22:51.1149037Z   archive: true
+2026-10-19T09:22:51.1149199Z env:
+2026-10-19T09:22:51.1149356Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:51.1149535Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:51.1149725Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:51.1149917Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:51.1150139Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:51.1150347Z ##[endgroup]
+2026-10-19T09:22:51.2409411Z With the provided path, there will be 15 files uploaded
+2026-10-19T09:22:51.2410362Z Artifact name is valid!
+2026-10-19T09:22:51.2410794Z Root directory input is valid!
+2026-10-19T09:22:51.5922011Z Uploading artifact: graph-size-linux-39229566985-1.zip
+2026-10-19T09:22:51.5957262Z Beginning upload of artifact content to blob storage
+2026-10-19T09:22:52.1692180Z Uploaded bytes 591984
+2026-10-19T09:22:52.2286555Z Finished uploading artifact content to blob storage!
+2026-10-19T09:22:52.2287602Z SHA256 digest of uploaded artifact is 4d43b6ab8c9926800f57d83376dd46c8c8a52ec6d69c52095f33d7515d868b12
+2026-10-19T09:22:52.2288316Z Finalizing artifact upload
+2026-10-19T09:22:52.5867011Z Artifact graph-size-linux-39229566985-1 successfully finalized. Artifact ID 12176910001
+2026-10-19T09:22:52.5868096Z Artifact graph-size-linux-39229566985-1 has been successfully uploaded! Final size is 591984 bytes. Artifact ID is 12176910001
+2026-10-19T09:22:52.5871048Z Artifact download URL: https://github.com/Vadale/R-ebirth/actions/runs/39229566985/artifacts/12176910001
+2026-10-19T09:22:52.6102170Z ##[group]Run dtolnay/rust-toolchain@stable
+2026-10-19T09:22:52.6102430Z with:
+2026-10-19T09:22:52.6102614Z   components: rustfmt, clippy
+2026-10-19T09:22:52.6102825Z   toolchain: stable
+2026-10-19T09:22:52.6102995Z env:
+2026-10-19T09:22:52.6103157Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:52.6103351Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:52.6103548Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:52.6103763Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6103990Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6104209Z ##[endgroup]
+2026-10-19T09:22:52.6158838Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-10-19T09:22:52.6183483Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-10-19T09:22:52.6183788Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-10-19T09:22:52.6184214Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-10-19T09:22:52.6184701Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-10-19T09:22:52.6184951Z [36;1m  exit 1[0m
+2026-10-19T09:22:52.6185344Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-10-19T09:22:52.6185682Z [36;1m  if [[ Linux == macOS ]]; then[0m
+2026-10-19T09:22:52.6186126Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-19T09:22:52.6186571Z [36;1m  else[0m
+2026-10-19T09:22:52.6186908Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-19T09:22:52.6187281Z [36;1m  fi[0m
+2026-10-19T09:22:52.6187535Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-10-19T09:22:52.6187952Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-10-19T09:22:52.6188360Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-10-19T09:22:52.6188777Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-10-19T09:22:52.6189161Z [36;1melse[0m
+2026-10-19T09:22:52.6189331Z [36;1m  delimiter=EOF[0m
+2026-10-19T09:22:52.6189599Z [36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done[0m
+2026-10-19T09:22:52.6190000Z [36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT[0m
+2026-10-19T09:22:52.6190500Z [36;1mfi[0m
+2026-10-19T09:22:52.6247949Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:22:52.6248243Z env:
+2026-10-19T09:22:52.6248433Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:52.6248629Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:52.6248831Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:52.6249040Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6249276Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6249512Z   toolchain: stable
+2026-10-19T09:22:52.6249693Z ##[endgroup]
+2026-10-19T09:22:52.6337081Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=17]
+2026-10-19T09:22:52.6339445Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-10-19T09:22:52.6363756Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV
+2026-10-19T09:22:52.6364162Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$HOME/.cargo"} >> $GITHUB_ENV[0m
+2026-10-19T09:22:52.6418948Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:22:52.6419240Z env:
+2026-10-19T09:22:52.6419413Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:52.6419609Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:52.6419821Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:52.6420025Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6420256Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6420472Z ##[endgroup]
+2026-10-19T09:22:52.6501218Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=16]
+2026-10-19T09:22:52.6503401Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-10-19T09:22:52.6527402Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-10-19T09:22:52.6527729Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-10-19T09:22:52.6528333Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://sh.rustup.rs | sh -s -- --default-toolchain none -y[0m
+2026-10-19T09:22:52.6528916Z [36;1m  echo "$CARGO_HOME/bin" >> $GITHUB_PATH[0m
+2026-10-19T09:22:52.6529158Z [36;1mfi[0m
+2026-10-19T09:22:52.6584059Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:22:52.6584347Z env:
+2026-10-19T09:22:52.6584661Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:52.6584885Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:52.6585093Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:52.6585480Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6585744Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.6585973Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:22:52.6586188Z ##[endgroup]
+2026-10-19T09:22:52.6667874Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=success;conclusion=success;duration_ms=16]
+2026-10-19T09:22:52.6670180Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-10-19T09:22:52.6677657Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-19T09:22:52.6689879Z ##[start-action display=rustup toolchain install stable;id=__dtolnay_rust-toolchain.__run_4]
+2026-10-19T09:22:52.7311154Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+2026-10-19T09:22:52.7311732Z [36;1mset -f  # split targets and components on commas and whitespace, without glob expansion[0m
+2026-10-19T09:22:52.7312098Z [36;1mflags=()[0m
+2026-10-19T09:22:52.7312359Z [36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done[0m
+2026-10-19T09:22:52.7312717Z [36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done[0m
+2026-10-19T09:22:52.7313117Z [36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi[0m
+2026-10-19T09:22:52.7313465Z [36;1mlog=$(mktemp)[0m
+2026-10-19T09:22:52.7313667Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-10-19T09:22:52.7313884Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-10-19T09:22:52.7314528Z [36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-10-19T09:22:52.7314980Z [36;1m    break[0m
+2026-10-19T09:22:52.7315287Z [36;1m  else[0m
+2026-10-19T09:22:52.7315460Z [36;1m    status=$?[0m
+2026-10-19T09:22:52.7315644Z [36;1m  fi[0m
+2026-10-19T09:22:52.7315891Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-10-19T09:22:52.7316330Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-10-19T09:22:52.7316695Z [36;1m    exit "$status"[0m
+2026-10-19T09:22:52.7316894Z [36;1m  fi[0m
+2026-10-19T09:22:52.7317182Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-10-19T09:22:52.7317518Z [36;1m  sleep 30[0m
+2026-10-19T09:22:52.7317705Z [36;1mdone[0m
+2026-10-19T09:22:52.7373349Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:22:52.7373657Z env:
+2026-10-19T09:22:52.7373838Z   RUST_TEST_THREADS: 1
+2026-10-19T09:22:52.7374042Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:22:52.7374248Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:22:52.7374463Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.7374697Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:22:52.7374925Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:22:52.7375226Z   toolchain: stable
+2026-10-19T09:22:52.7375412Z   targets: 
+2026-10-19T09:22:52.7375779Z   components: rustfmt, clippy
+2026-10-19T09:22:52.7376001Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-10-19T09:22:52.7376206Z ##[endgroup]
+2026-10-19T09:22:53.2807236Z info: syncing channel updates for stable-x86_64-unknown-linux-gnu
+2026-10-19T09:22:53.5790460Z info: latest update on 2026-10-15 for version 1.99.1 (58cf8f9c3 2026-10-13)
+2026-10-19T09:22:53.6009461Z info: removing previous version of component rustfmt
+2026-10-19T09:22:53.6097054Z info: removing previous version of component clippy
+2026-10-19T09:22:53.6108800Z info: removing previous version of component cargo
+2026-10-19T09:22:53.6264133Z info: removing previous version of component rust-std
+2026-10-19T09:22:53.6424960Z info: removing previous version of component rustc
+2026-10-19T09:22:53.6463487Z info: downloading 5 components
+2026-10-19T09:23:01.4092704Z 
+2026-10-19T09:23:01.4154834Z   stable-x86_64-unknown-linux-gnu updated - rustc 1.99.1 (58cf8f9c3 2026-10-13) (from rustc 1.99.0 (b940084d7 2026-09-28))
+2026-10-19T09:23:01.4155440Z 
+2026-10-19T09:23:01.4353296Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=8766]
+2026-10-19T09:23:01.4359039Z ##[start-action display=rustup default stable;id=__dtolnay_rust-toolchain.__run_5]
+2026-10-19T09:23:01.4389303Z ##[group]Run rustup default "$toolchain" --force-non-host
+2026-10-19T09:23:01.4389647Z [36;1mrustup default "$toolchain" --force-non-host[0m
+2026-10-19T09:23:01.4444666Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:23:01.4444965Z env:
+2026-10-19T09:23:01.4445327Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.4445545Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.4445754Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.4445960Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.4446194Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.4446417Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.4446626Z   toolchain: stable
+2026-10-19T09:23:01.4446805Z ##[endgroup]
+2026-10-19T09:23:01.4557184Z info: using existing install for stable-x86_64-unknown-linux-gnu
+2026-10-19T09:23:01.4564257Z info: default toolchain set to stable-x86_64-unknown-linux-gnu
+2026-10-19T09:23:01.4564521Z 
+2026-10-19T09:23:01.4622955Z   stable-x86_64-unknown-linux-gnu unchanged - rustc 1.99.1 (58cf8f9c3 2026-10-13)
+2026-10-19T09:23:01.4625471Z info: note that the toolchain 'stable-x86_64-unknown-linux-gnu' is currently in use (overridden by '/home/runner/work/R-ebirth/R-ebirth/rust-toolchain.toml')
+2026-10-19T09:23:01.4626529Z 
+2026-10-19T09:23:01.4639533Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=27]
+2026-10-19T09:23:01.4642908Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-10-19T09:23:01.4659384Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-10-19T09:23:01.4660076Z [36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-10-19T09:23:01.4660600Z [36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-10-19T09:23:01.4661011Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-10-19T09:23:01.4716851Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:23:01.4717138Z env:
+2026-10-19T09:23:01.4717318Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.4717522Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.4717730Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.4717936Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.4718172Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.4718416Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.4718635Z   toolchain: stable
+2026-10-19T09:23:01.4718813Z ##[endgroup]
+2026-10-19T09:23:01.5030102Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=38]
+2026-10-19T09:23:01.5032499Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-10-19T09:23:01.5049198Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-10-19T09:23:01.5049529Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-10-19T09:23:01.5049801Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-10-19T09:23:01.5050035Z [36;1mfi[0m
+2026-10-19T09:23:01.5105615Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:23:01.5105930Z env:
+2026-10-19T09:23:01.5106105Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.5106298Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.5106505Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.5106723Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5106952Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5107181Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.5107392Z ##[endgroup]
+2026-10-19T09:23:01.5184878Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=15]
+2026-10-19T09:23:01.5187132Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-10-19T09:23:01.5203527Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-10-19T09:23:01.5203838Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-10-19T09:23:01.5204109Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-10-19T09:23:01.5204348Z [36;1mfi[0m
+2026-10-19T09:23:01.5257218Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:23:01.5257535Z env:
+2026-10-19T09:23:01.5257715Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.5257910Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.5258113Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.5258326Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5258556Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5258783Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.5258991Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:01.5259193Z ##[endgroup]
+2026-10-19T09:23:01.5337845Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=15]
+2026-10-19T09:23:01.5340814Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-10-19T09:23:01.5357709Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-10-19T09:23:01.5358127Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-10-19T09:23:01.5358895Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-10-19T09:23:01.5359469Z [36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-10-19T09:23:01.5359921Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-19T09:23:01.5360347Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-10-19T09:23:01.5360761Z [36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-10-19T09:23:01.5361199Z [36;1m    touch "/home/runner/work/_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-19T09:23:01.5361606Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-10-19T09:23:01.5361881Z [36;1m  fi[0m
+2026-10-19T09:23:01.5362051Z [36;1mfi[0m
+2026-10-19T09:23:01.5414844Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:23:01.5415344Z env:
+2026-10-19T09:23:01.5415574Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.5415771Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.5415979Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.5416193Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5416438Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5416673Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.5416895Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:01.5417086Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:01.5417283Z   toolchain: stable
+2026-10-19T09:23:01.5417656Z ##[endgroup]
+2026-10-19T09:23:01.5702505Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=36]
+2026-10-19T09:23:01.5706130Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-10-19T09:23:01.5722700Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-10-19T09:23:01.5723312Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-10-19T09:23:01.5723808Z [36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-10-19T09:23:01.5724200Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-10-19T09:23:01.5724456Z [36;1mfi[0m
+2026-10-19T09:23:01.5779470Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:23:01.5779745Z env:
+2026-10-19T09:23:01.5779919Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.5780134Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.5780342Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.5780555Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5780796Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.5781033Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.5781245Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:01.5781439Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:01.5781635Z   toolchain: stable
+2026-10-19T09:23:01.5781833Z ##[endgroup]
+2026-10-19T09:23:01.5960159Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=25]
+2026-10-19T09:23:01.5964085Z ##[start-action display=rustc +stable --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-10-19T09:23:01.5981909Z ##[group]Run rustc +"$toolchain" --version --verbose
+2026-10-19T09:23:01.5982243Z [36;1mrustc +"$toolchain" --version --verbose[0m
+2026-10-19T09:23:01.6038027Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-10-19T09:23:01.6038316Z env:
+2026-10-19T09:23:01.6038504Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.6038711Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.6038916Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.6039131Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.6039364Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.6039596Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.6039811Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:01.6040165Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:01.6040359Z   toolchain: stable
+2026-10-19T09:23:01.6040535Z ##[endgroup]
+2026-10-19T09:23:01.6207333Z rustc 1.99.1 (58cf8f9c3 2026-10-13)
+2026-10-19T09:23:01.6207914Z binary: rustc
+2026-10-19T09:23:01.6208296Z commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67
+2026-10-19T09:23:01.6208641Z commit-date: 2026-10-13
+2026-10-19T09:23:01.6208855Z host: x86_64-unknown-linux-gnu
+2026-10-19T09:23:01.6209135Z release: 1.99.1
+2026-10-19T09:23:01.6209335Z LLVM version: 23.1.1
+2026-10-19T09:23:01.6220939Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=25]
+2026-10-19T09:23:01.6302901Z ##[group]Run mozilla-actions/sccache-action@v0.0.10
+2026-10-19T09:23:01.6303179Z with:
+2026-10-19T09:23:01.6305004Z   token: ***
+2026-10-19T09:23:01.6305441Z   disable_annotations: false
+2026-10-19T09:23:01.6305647Z env:
+2026-10-19T09:23:01.6305823Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:01.6306018Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:01.6306240Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:01.6306443Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.6306688Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:01.6306921Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:01.6307140Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:01.6307333Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:01.6307537Z ##[endgroup]
+2026-10-19T09:23:02.0395900Z try to setup sccache version: v0.18.0
+2026-10-19T09:23:02.0405818Z sccache download from url: https://github.com/mozilla/sccache/releases/download/v0.18.0/sccache-v0.18.0-x86_64-unknown-linux-musl.tar.gz
+2026-10-19T09:23:02.4847556Z Correct checksum: 45f1447fbe231e3037bde351ef70677dd212216c8d62ae7ca409fecc4d6acc89
+2026-10-19T09:23:02.4935701Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/de34b646-94d2-4589-b500-5c195714d16d -f /home/runner/work/_temp/11ae4520-af06-4040-90e8-008846d090c7
+2026-10-19T09:23:02.6379032Z sccache extracted to: /home/runner/work/_temp/de34b646-94d2-4589-b500-5c195714d16d
+2026-10-19T09:23:02.7550180Z sccache cached to: /opt/hostedtoolcache/sccache/0.18.0/x64
+2026-10-19T09:23:02.7672759Z ##[group]Run cargo fmt --all --check
+2026-10-19T09:23:02.7673055Z [36;1mcargo fmt --all --check[0m
+2026-10-19T09:23:02.7673368Z [36;1m# include! keeps extendr registration in one module; rustfmt does not[0m
+2026-10-19T09:23:02.7673705Z [36;1m# follow include files automatically.[0m
+2026-10-19T09:23:02.7674023Z [36;1mrustfmt --check --edition 2021 rebirth-ffi/src/async_boundary.rs[0m
+2026-10-19T09:23:02.7731962Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:23:02.7732179Z env:
+2026-10-19T09:23:02.7732349Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:02.7732549Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:02.7732761Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:02.7732966Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:02.7733193Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:02.7733420Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:02.7733650Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:02.7733830Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:02.7734130Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-19T09:23:02.7734423Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-19T09:23:02.7734765Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-19T09:23:02.7774043Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-19T09:23:02.7774290Z ##[endgroup]
+2026-10-19T09:23:03.1241076Z ##[group]Run rustc --edition=2021 --test -D warnings rebirth-llm/build_support.rs -o "$RUNNER_TEMP/native-build-controls"
+2026-10-19T09:23:03.1241778Z [36;1mrustc --edition=2021 --test -D warnings rebirth-llm/build_support.rs -o "$RUNNER_TEMP/native-build-controls"[0m
+2026-10-19T09:23:03.1242232Z [36;1m"$RUNNER_TEMP/native-build-controls"[0m
+2026-10-19T09:23:03.1298591Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:23:03.1298830Z env:
+2026-10-19T09:23:03.1299015Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:03.1299238Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:03.1299651Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:03.1299858Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:03.1300099Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:03.1300327Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:03.1300537Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:03.1300719Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:03.1301043Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-19T09:23:03.1301336Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-19T09:23:03.1301676Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-19T09:23:03.1340461Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-19T09:23:03.1340694Z ##[endgroup]
+2026-10-19T09:23:03.3714341Z 
+2026-10-19T09:23:03.3714873Z running 11 tests
+2026-10-19T09:23:03.3722329Z test tests::existing_source_uses_host_compatible_absolute_path ... ok
+2026-10-19T09:23:03.3723025Z test tests::existing_source_with_spaces_and_parent_components_is_usable ... ok
+2026-10-19T09:23:03.3723660Z test tests::linux_and_macos_link_plans_are_unchanged ... ok
+2026-10-19T09:23:03.3724176Z test tests::malformed_output_cannot_escape_owned_target ... ok
+2026-10-19T09:23:03.3724670Z test tests::missing_source_is_refused_before_cmake ... ok
+2026-10-19T09:23:03.3725398Z test tests::portable_distribution_disables_implicit_host_and_optional_x86_isa ... ok
+2026-10-19T09:23:03.3726095Z test tests::shortened_output_preserves_cargo_unit_profile_and_target ... ok
+2026-10-19T09:23:03.3726698Z test tests::unix_archive_names_keep_prefix_for_all_backends ... ok
+2026-10-19T09:23:03.3727247Z test tests::windows_archive_names_match_actual_engine_outputs ... ok
+2026-10-19T09:23:03.3727830Z test tests::windows_gnu_has_no_darwin_frameworks_or_unix_libraries ... ok
+2026-10-19T09:23:03.3728435Z test tests::windows_registry_library_matches_existing_r_dll_link ... ok
+2026-10-19T09:23:03.3728784Z 
+2026-10-19T09:23:03.3729096Z test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-19T09:23:03.3729566Z 
+2026-10-19T09:23:03.3759729Z ##[group]Run rustc --edition=2021 --test -D warnings rebirth/src/rust/rebirth-llm/src/check_resources.rs -o "$RUNNER_TEMP/check-resources"
+2026-10-19T09:23:03.3760530Z [36;1mrustc --edition=2021 --test -D warnings rebirth/src/rust/rebirth-llm/src/check_resources.rs -o "$RUNNER_TEMP/check-resources"[0m
+2026-10-19T09:23:03.3761003Z [36;1m"$RUNNER_TEMP/check-resources"[0m
+2026-10-19T09:23:03.3761273Z [36;1mpython3 tests/cran/test_notices.py[0m
+2026-10-19T09:23:03.3819173Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:23:03.3819398Z env:
+2026-10-19T09:23:03.3819575Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:03.3819768Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:03.3819968Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:03.3820186Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:03.3820419Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:03.3820647Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:03.3820858Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:03.3821109Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:03.3821373Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-19T09:23:03.3821666Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-19T09:23:03.3822015Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-19T09:23:03.3860664Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-19T09:23:03.3860895Z ##[endgroup]
+2026-10-19T09:23:03.4782444Z 
+2026-10-19T09:23:03.4783007Z running 1 test
+2026-10-19T09:23:03.4783987Z test tests::check_budget_caps_defaults_and_automatic_values_without_changing_normal_sessions ... ok
+2026-10-19T09:23:03.4784489Z 
+2026-10-19T09:23:03.4784798Z test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-10-19T09:23:03.4785361Z 
+2026-10-19T09:23:06.5087996Z ...
+2026-10-19T09:23:06.5088433Z ----------------------------------------------------------------------
+2026-10-19T09:23:06.5088885Z Ran 3 tests in 2.942s
+2026-10-19T09:23:06.5089068Z 
+2026-10-19T09:23:06.5089689Z OK
+2026-10-19T09:23:06.5268408Z ##[group]Run python3 tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+2026-10-19T09:23:06.5269263Z [36;1mpython3 tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"[0m
+2026-10-19T09:23:06.5325279Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:23:06.5325496Z env:
+2026-10-19T09:23:06.5325661Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:06.5325854Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:06.5326060Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:06.5326270Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:06.5326505Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:06.5326741Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:06.5326955Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:06.5327146Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:06.5327404Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-19T09:23:06.5327685Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-19T09:23:06.5328191Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-19T09:23:06.5367344Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-19T09:23:06.5367661Z ##[endgroup]
+2026-10-19T09:23:06.6709093Z $ /usr/bin/gcc -std=c11 -I /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/headers -I /home/runner/work/R-ebirth/R-ebirth/rebirth/src/llama.cpp/ggml/include -D_WIN32 -c /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c -o /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/refused.o
+2026-10-19T09:23:06.6711670Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:10:23: error: ‘THREAD_POWER_THROTTLING_STATE’ undeclared here (not in a function)
+2026-10-19T09:23:06.6712447Z    10 | _Static_assert(sizeof(THREAD_POWER_THROTTLING_STATE) == 12, "thread state ABI");
+2026-10-19T09:23:06.6712843Z       |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-19T09:23:06.6713607Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:10:16: error: expression in static assertion is not an integer
+2026-10-19T09:23:06.6714335Z    10 | _Static_assert(sizeof(THREAD_POWER_THROTTLING_STATE) == 12, "thread state ABI");
+2026-10-19T09:23:06.6714712Z       |                ^~~~~~
+2026-10-19T09:23:06.6714981Z In file included from /usr/include/stdio.h:34,
+2026-10-19T09:23:06.6715664Z                  from /home/runner/work/R-ebirth/R-ebirth/rebirth/src/llama.cpp/ggml/include/ggml.h:214,
+2026-10-19T09:23:06.6716328Z                  from /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:1:
+2026-10-19T09:23:06.6717371Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:11:25: error: expected specifier-qualifier-list before ‘THREAD_POWER_THROTTLING_STATE’
+2026-10-19T09:23:06.6718185Z    11 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, Version) == 0, "version offset");
+2026-10-19T09:23:06.6718600Z       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-19T09:23:06.6719257Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:11:16: error: expression in static assertion is not an integer
+2026-10-19T09:23:06.6719992Z    11 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, Version) == 0, "version offset");
+2026-10-19T09:23:06.6720382Z       |                ^~~~~~~~
+2026-10-19T09:23:06.6721119Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:12:25: error: expected specifier-qualifier-list before ‘THREAD_POWER_THROTTLING_STATE’
+2026-10-19T09:23:06.6721913Z    12 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, ControlMask) == 4, "control offset");
+2026-10-19T09:23:06.6722610Z       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-19T09:23:06.6723361Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:12:16: error: expression in static assertion is not an integer
+2026-10-19T09:23:06.6724070Z    12 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, ControlMask) == 4, "control offset");
+2026-10-19T09:23:06.6724458Z       |                ^~~~~~~~
+2026-10-19T09:23:06.6725345Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:13:25: error: expected specifier-qualifier-list before ‘THREAD_POWER_THROTTLING_STATE’
+2026-10-19T09:23:06.6726268Z    13 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, StateMask) == 8, "state offset");
+2026-10-19T09:23:06.6726641Z       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-19T09:23:06.6727215Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:13:16: error: expression in static assertion is not an integer
+2026-10-19T09:23:06.6727883Z    13 | _Static_assert(offsetof(THREAD_POWER_THROTTLING_STATE, StateMask) == 8, "state offset");
+2026-10-19T09:23:06.6728214Z       |                ^~~~~~~~
+2026-10-19T09:23:06.6728951Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:14:16: error: ‘THREAD_POWER_THROTTLING_CURRENT_VERSION’ undeclared here (not in a function)
+2026-10-19T09:23:06.6729702Z    14 | _Static_assert(THREAD_POWER_THROTTLING_CURRENT_VERSION == 1, "preserve header version");
+2026-10-19T09:23:06.6730058Z       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-19T09:23:06.6730626Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:14:16: error: expression in static assertion is not an integer
+2026-10-19T09:23:06.6731670Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:15:16: error: ‘THREAD_POWER_THROTTLING_EXECUTION_SPEED’ undeclared here (not in a function)
+2026-10-19T09:23:06.6732407Z    15 | _Static_assert(THREAD_POWER_THROTTLING_EXECUTION_SPEED == 1, "preserve header flag");
+2026-10-19T09:23:06.6732753Z       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2026-10-19T09:23:06.6733305Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:15:16: error: expression in static assertion is not an integer
+2026-10-19T09:23:06.6734151Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c: In function ‘main’:
+2026-10-19T09:23:06.6734960Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:18:34: error: expected ‘;’ before ‘t’
+2026-10-19T09:23:06.6735751Z    18 |     THREAD_POWER_THROTTLING_STATE t = {THREAD_POWER_THROTTLING_CURRENT_VERSION,
+2026-10-19T09:23:06.6736086Z       |                                  ^~
+2026-10-19T09:23:06.6736315Z       |                                  ;
+2026-10-19T09:23:06.6736945Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:28:9: error: ‘t’ undeclared (first use in this function)
+2026-10-19T09:23:06.6737590Z    28 |     if (t.Version != 1 || t.ControlMask != 1 || t.StateMask != 0 || unaffected()) return 1;
+2026-10-19T09:23:06.6737908Z       |         ^
+2026-10-19T09:23:06.6738493Z /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/ggml/src/ggml-cpu/ggml-cpu.c:28:9: note: each undeclared identifier is reported only once for each function it appears in
+2026-10-19T09:23:08.8967581Z $ cmake -S /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces -B /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/build -G Unix Makefiles -DCMAKE_C_COMPILER=/usr/bin/gcc
+2026-10-19T09:23:08.8968795Z -- The C compiler identification is GNU 13.3.0
+2026-10-19T09:23:08.8969204Z -- Detecting C compiler ABI info
+2026-10-19T09:23:08.8969441Z -- Detecting C compiler ABI info - done
+2026-10-19T09:23:08.8969741Z -- Check for working C compiler: /usr/bin/gcc - skipped
+2026-10-19T09:23:08.8970008Z -- Detecting C compile features
+2026-10-19T09:23:08.8970230Z -- Detecting C compile features - done
+2026-10-19T09:23:08.8970458Z -- Configuring done (1.7s)
+2026-10-19T09:23:08.8970665Z -- Generating done (0.0s)
+2026-10-19T09:23:08.8971089Z -- Build files have been written to: /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/build
+2026-10-19T09:23:09.2330482Z $ cmake --build /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/build --parallel 2
+2026-10-19T09:23:09.2331206Z [ 33%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+2026-10-19T09:23:09.2331634Z [ 66%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/unaffected.c.o
+2026-10-19T09:23:09.2332003Z [100%] Linking C executable ggml-cpu
+2026-10-19T09:23:09.2332260Z [100%] Built target ggml-cpu
+2026-10-19T09:23:09.2338019Z $ /home/runner/work/_temp/windows-thread-compat/missing-declarations path with spaces/build/ggml/src/ggml-cpu
+2026-10-19T09:23:09.2338915Z RELM_THREAD_COMPAT_OK missing-declarations size=12 offsets=0,4,8 version=1 mask=1 winnt=0x0A00
+2026-10-19T09:23:09.6957543Z $ cmake -S /home/runner/work/_temp/windows-thread-compat/existing-declarations path with spaces -B /home/runner/work/_temp/windows-thread-compat/existing-declarations path with spaces/build -G Unix Makefiles -DCMAKE_C_COMPILER=/usr/bin/gcc
+2026-10-19T09:23:09.6958405Z -- The C compiler identification is GNU 13.3.0
+2026-10-19T09:23:09.6958685Z -- Detecting C compiler ABI info
+2026-10-19T09:23:09.6958915Z -- Detecting C compiler ABI info - done
+2026-10-19T09:23:09.6959188Z -- Check for working C compiler: /usr/bin/gcc - skipped
+2026-10-19T09:23:09.6959484Z -- Detecting C compile features
+2026-10-19T09:23:09.6959751Z -- Detecting C compile features - done
+2026-10-19T09:23:09.6959993Z -- Configuring done (0.4s)
+2026-10-19T09:23:09.6960193Z -- Generating done (0.0s)
+2026-10-19T09:23:09.6960638Z -- Build files have been written to: /home/runner/work/_temp/windows-thread-compat/existing-declarations path with spaces/build
+2026-10-19T09:23:10.0163033Z $ cmake --build /home/runner/work/_temp/windows-thread-compat/existing-declarations path with spaces/build --parallel 2
+2026-10-19T09:23:10.0188359Z [ 33%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/ggml-cpu/ggml-cpu.c.o
+2026-10-19T09:23:10.0189132Z [ 66%] Building C object ggml/src/CMakeFiles/ggml-cpu.dir/unaffected.c.o
+2026-10-19T09:23:10.0189597Z [100%] Linking C executable ggml-cpu
+2026-10-19T09:23:10.0189830Z [100%] Built target ggml-cpu
+2026-10-19T09:23:10.0190229Z $ /home/runner/work/_temp/windows-thread-compat/existing-declarations path with spaces/build/ggml/src/ggml-cpu
+2026-10-19T09:23:10.0190804Z RELM_THREAD_COMPAT_OK existing-declarations size=12 offsets=0,4,8 version=7 mask=32 winnt=0x0602
+2026-10-19T09:23:10.0421982Z $ /usr/bin/gcc -std=c11 -Wall -Wextra -Werror -include /home/runner/work/R-ebirth/R-ebirth/rebirth/src/rust/rebirth-llm/native/windows_thread_compat.h /home/runner/work/_temp/windows-thread-compat/non-windows.c -o /home/runner/work/_temp/windows-thread-compat/non-windows
+2026-10-19T09:23:10.0428508Z $ /home/runner/work/_temp/windows-thread-compat/non-windows
+2026-10-19T09:23:10.0438412Z {"status": "passed", "real_windows_sdk": false, "modes": ["missing-declarations", "existing-declarations"], "negative_missing_type": true, "non_windows_noop": true, "unrelated_source_header_absence": true, "upstream_default_winnt": "0x0A00", "explicit_override_preserved": "0x0602", "registry_api_imports_linked": false, "engine_builds": 0, "model_calls": 0, "source_sha256": {"rebirth/src/rust/rebirth-llm/native/windows_thread_compat.h": "3fa0c81bdd54fbdcf8577c18a6ed8a0d102986b539f1f032adf6fa0c27a3de61", "rebirth/src/rust/rebirth-llm/native/windows_compat.cmake": "47b5fad67a1259681ccca514ce8c1fce07499b8adf98ed469ddd007e367fed7c", "rebirth/src/llama.cpp/ggml/include/ggml.h": "34192eac913444df9dc1d23025a618448cdee1ee7d78597af4979d8edc77b695", "tests/cran/windows_thread_compat.py": "a153f38a25ca0793e8e04cf6e5be5c525df4af2fbd8404dfeb3ddca39b8b345a"}}
+2026-10-19T09:23:10.0523677Z ##[group]Run cargo clippy --locked -p rebirth-llm --all-targets -- -D warnings
+2026-10-19T09:23:10.0524131Z [36;1mcargo clippy --locked -p rebirth-llm --all-targets -- -D warnings[0m
+2026-10-19T09:23:10.0580410Z shell: /usr/bin/bash -e {0}
+2026-10-19T09:23:10.0580634Z env:
+2026-10-19T09:23:10.0580814Z   RUST_TEST_THREADS: 1
+2026-10-19T09:23:10.0581019Z   SCCACHE_GHA_ENABLED: true
+2026-10-19T09:23:10.0581222Z   RUSTC_WRAPPER: sccache
+2026-10-19T09:23:10.0581437Z   CMAKE_C_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:10.0581677Z   CMAKE_CXX_COMPILER_LAUNCHER: sccache
+2026-10-19T09:23:10.0581917Z   CARGO_HOME: /home/runner/.cargo
+2026-10-19T09:23:10.0582130Z   CARGO_INCREMENTAL: 0
+2026-10-19T09:23:10.0582337Z   CARGO_TERM_COLOR: always
+2026-10-19T09:23:10.0582594Z   SCCACHE_PATH: /opt/hostedtoolcache/sccache/0.18.0/x64/sccache
+2026-10-19T09:23:10.0582879Z   ACTIONS_CACHE_SERVICE_V2: on
+2026-10-19T09:23:10.0583265Z   ACTIONS_RESULTS_URL: https://results-receiver.actions.githubusercontent.com/
+2026-10-19T09:23:10.0621932Z   ACTIONS_RUNTIME_TOKEN: ***
+2026-10-19T09:23:10.0622152Z ##[endgroup]
+2026-10-19T09:23:10.2091575Z [1m[92m    Updating[0m crates.io index
+2026-10-19T09:23:10.5069508Z [1m[92m Downloading[0m crates ...
+2026-10-19T09:23:10.5652878Z [1m[92m  Downloaded[0m ahash v0.8.12
+2026-10-19T09:23:10.5752812Z [1m[92m  Downloaded[0m arrow-data v59.0.0
+2026-10-19T09:23:10.5847622Z [1m[92m  Downloaded[0m const-random-macro v0.1.16
+2026-10-19T09:23:10.5905076Z [1m[92m  Downloaded[0m crunchy v0.2.4
+2026-10-19T09:23:10.5927902Z [1m[92m  Downloaded[0m rustc_version v0.4.1
+2026-10-19T09:23:10.5938962Z [1m[92m  Downloaded[0m cfg-if v1.0.4
+2026-10-19T09:23:10.5982449Z [1m[92m  Downloaded[0m itoa v1.0.18
+2026-10-19T09:23:10.5996919Z [1m[92m  Downloaded[0m const-random v0.1.18
+2026-10-19T09:23:10.6006033Z [1m[92m  Downloaded[0m version_check v0.9.5
+2026-10-19T09:23:10.6072225Z [1m[92m  Downloaded[0m num-complex v0.4.6
+2026-10-19T09:23:10.6094876Z [1m[92m  Downloaded[0m cmake v0.1.58
+2026-10-19T09:23:10.6109301Z [1m[92m  Downloaded[0m num-integer v0.1.46
+2026-10-19T09:23:10.6122578Z [1m[92m  Downloaded[0m autocfg v1.5.1
+2026-10-19T09:23:10.6152431Z [1m[92m  Downloaded[0m find-msvc-tools v0.1.9
+2026-10-19T09:23:10.6170637Z [1m[92m  Downloaded[0m flatbuffers v25.12.19
+2026-10-19T09:23:10.6185566Z [1m[92m  Downloaded[0m shlex v2.0.1
+2026-10-19T09:23:10.6197179Z [1m[92m  Downloaded[0m iana-time-zone v0.1.65
+2026-10-19T09:23:10.6221077Z [1m[92m  Downloaded[0m quote v1.0.46
+2026-10-19T09:23:10.6248563Z [1m[92m  Downloaded[0m semver v1.0.28
+2026-10-19T09:23:10.6267757Z [1m[92m  Downloaded[0m once_cell v1.21.4
+2026-10-19T09:23:10.6289118Z [1m[92m  Downloaded[0m tiny-keccak v2.0.2
+2026-10-19T09:23:10.6310321Z [1m[92m  Downloaded[0m getrandom v0.2.17
+2026-10-19T09:23:10.6337602Z [1m[92m  Downloaded[0m half v2.7.1
+2026-10-19T09:23:10.6360749Z [1m[92m  Downloaded[0m proc-macro2 v1.0.106
+2026-10-19T09:23:10.6386286Z [1m[92m  Downloaded[0m ryu v1.0.23
+2026-10-19T09:23:10.6414009Z [1m[92m  Downloaded[0m arrow-buffer v59.0.0
+2026-10-19T09:23:10.6446676Z [1m[92m  Downloaded[0m bitflags v2.13.0
+2026-10-19T09:23:10.6483282Z [1m[92m  Downloaded[0m serde_core v1.0.228
+2026-10-19T09:23:10.6506222Z [1m[92m  Downloaded[0m unicode-ident v1.0.24
+2026-10-19T09:23:10.6528615Z [1m[92m  Downloaded[0m getrandom v0.3.4
+2026-10-19T09:23:10.6556898Z [1m[92m  Downloaded[0m num-traits v0.2.19
+2026-10-19T09:23:10.6578381Z [1m[92m  Downloaded[0m arrow-ipc v59.0.0
+2026-10-19T09:23:10.6606112Z [1m[92m  Downloaded[0m bytes v1.12.0
+2026-10-19T09:23:10.6634770Z [1m[92m  Downloaded[0m cc v1.2.65
+2026-10-19T09:23:10.6659257Z [1m[92m  Downloaded[0m serde v1.0.228
+2026-10-19T09:23:10.6687856Z [1m[92m  Downloaded[0m arrow-schema v59.0.0
+2026-10-19T09:23:10.6710889Z [1m[92m  Downloaded[0m num-bigint v0.4.8
+2026-10-19T09:23:10.6749997Z [1m[92m  Downloaded[0m zerocopy-derive v0.8.52
+2026-10-19T09:23:10.6826570Z [1m[92m  Downloaded[0m memchr v2.8.3
+2026-10-19T09:23:10.6872246Z [1m[92m  Downloaded[0m arrow-select v59.0.0
+2026-10-19T09:23:10.6896113Z [1m[92m  Downloaded[0m hashbrown v0.17.1
+2026-10-19T09:23:10.6939889Z [1m[92m  Downloaded[0m libm v0.2.16
+2026-10-19T09:23:10.7030844Z [1m[92m  Downloaded[0m serde_json v1.0.145
+2026-10-19T09:23:10.7090596Z [1m[92m  Downloaded[0m arrow-array v59.0.0
+2026-10-19T09:23:10.7152945Z [1m[92m  Downloaded[0m chrono v0.4.45
+2026-10-19T09:23:10.7208195Z [1m[92m  Downloaded[0m zerocopy v0.8.52
+2026-10-19T09:23:10.7392191Z [1m[92m  Downloaded[0m syn v2.0.118
+2026-10-19T09:23:10.7479872Z [1m[92m  Downloaded[0m libc v0.2.186
+2026-10-19T09:23:10.8241173Z [1m[92m   Compiling[0m libm v0.2.16
+2026-10-19T09:23:10.8241638Z [1m[92m   Compiling[0m proc-macro2 v1.0.106
+2026-10-19T09:23:10.8241942Z [1m[92m   Compiling[0m autocfg v1.5.1
+2026-10-19T09:23:10.8253439Z [1m[92m   Compiling[0m quote v1.0.46
+2026-10-19T09:23:11.0480444Z [1m[92m   Compiling[0m unicode-ident v1.0.24
+2026-10-19T09:23:11.2980680Z [1m[92m   Compiling[0m num-traits v0.2.19
+2026-10-19T09:23:11.3967175Z [1m[92m   Compiling[0m zerocopy v0.8.52
+2026-10-19T09:23:11.4353032Z [1m[92m    Checking[0m cfg-if v1.0.4
+2026-10-19T09:23:11.5208133Z [1m[92m   Compiling[0m libc v0.2.186
+2026-10-19T09:23:11.6317080Z [1m[92m   Compiling[0m version_check v0.9.5
+2026-10-19T09:23:11.7585346Z [1m[92m   Compiling[0m getrandom v0.3.4
+2026-10-19T09:23:12.0797277Z [1m[92m   Compiling[0m ahash v0.8.12
+2026-10-19T09:23:12.1317791Z [1m[92m   Compiling[0m semver v1.0.28
+2026-10-19T09:23:12.2691261Z [1m[92m    Checking[0m num-integer v0.1.46
+2026-10-19T09:23:12.3610860Z [1m[92m    Checking[0m bytes v1.12.0
+2026-10-19T09:23:12.6093746Z [1m[92m   Compiling[0m rustc_version v0.4.1
+2026-10-19T09:23:12.6914602Z [1m[92m   Compiling[0m syn v2.0.118
+2026-10-19T09:23:12.7262413Z [1m[92m    Checking[0m num-bigint v0.4.8
+2026-10-19T09:23:12.7852897Z [1m[92m   Compiling[0m shlex v2.0.1
+2026-10-19T09:23:12.8315566Z [1m[92m    Checking[0m arrow-schema v59.0.0
+2026-10-19T09:23:13.0105414Z [1m[92m    Checking[0m once_cell v1.21.4
+2026-10-19T09:23:13.1553084Z [1m[92m   Compiling[0m find-msvc-tools v0.1.9
+2026-10-19T09:23:13.2921948Z [1m[92m   Compiling[0m serde_core v1.0.228
+2026-10-19T09:23:13.3510335Z [1m[92m    Checking[0m iana-time-zone v0.1.65
+2026-10-19T09:23:13.3630454Z [1m[92m   Compiling[0m cc v1.2.65
+2026-10-19T09:23:13.3978475Z [1m[92m   Compiling[0m flatbuffers v25.12.19
+2026-10-19T09:23:13.4136438Z [1m[92m   Compiling[0m zerocopy-derive v0.8.52
+2026-10-19T09:23:13.4576511Z [1m[92m    Checking[0m num-complex v0.4.6
+2026-10-19T09:23:13.5581221Z [1m[92m    Checking[0m chrono v0.4.45
+2026-10-19T09:23:13.9046981Z [1m[92m    Checking[0m hashbrown v0.17.1
+2026-10-19T09:23:13.9411195Z [1m[92m   Compiling[0m cmake v0.1.58
+2026-10-19T09:23:14.2596673Z [1m[92m    Checking[0m bitflags v2.13.0
+2026-10-19T09:23:14.4382782Z [1m[92m   Compiling[0m serde_json v1.0.145
+2026-10-19T09:23:14.4877721Z [1m[92m   Compiling[0m serde v1.0.228
+2026-10-19T09:23:14.5808410Z [1m[92m   Compiling[0m rebirth-llm v0.0.0 (/home/runner/work/R-ebirth/R-ebirth/rebirth/src/rust/rebirth-llm)
+2026-10-19T09:23:14.6388606Z [1m[91merror[0m[1m: the borrowed expression implements the required traits[0m
+2026-10-19T09:23:14.6389083Z    [1m[94m--> [0mrebirth-llm/build.rs:296:23
+2026-10-19T09:23:14.6389346Z     [1m[94m|[0m
+2026-10-19T09:23:14.6389713Z [1m[94m296[0m [1m[94m|[0m         config.define(&format!("CMAKE_{language}_FLAGS"), flags);
+2026-10-19T09:23:14.6390347Z     [1m[94m|[0m                       [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mhelp: change this to: `format!("CMAKE_{language}_FLAGS")`[0m
+2026-10-19T09:23:14.6391053Z     [1m[94m|[0m
+2026-10-19T09:23:14.6391635Z     [1m[94m= [0m[1mhelp[0m: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#needless_borrows_for_generic_args
+2026-10-19T09:23:14.6393119Z     [1m[94m= [0m[1mnote[0m: `-D clippy::needless-borrows-for-generic-args` implied by `-D warnings`
+2026-10-19T09:23:14.6393733Z     [1m[94m= [0m[1mhelp[0m: to override `-D warnings` add `#[allow(clippy::needless_borrows_for_generic_args)]`
+2026-10-19T09:23:14.6394042Z 
+2026-10-19T09:23:14.6394582Z [1m[91merror[0m[1m: the borrowed expression implements the required traits[0m
+2026-10-19T09:23:14.6395274Z    [1m[94m--> [0mrebirth-llm/build.rs:297:23
+2026-10-19T09:23:14.6395701Z     [1m[94m|[0m
+2026-10-19T09:23:14.6396301Z [1m[94m297[0m [1m[94m|[0m         config.define(&format!("CMAKE_{language}_FLAGS_RELEASE"), "");
+2026-10-19T09:23:14.6397123Z     [1m[94m|[0m                       [1m[91m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[91mhelp: change this to: `format!("CMAKE_{language}_FLAGS_RELEASE")`[0m
+2026-10-19T09:23:14.6397662Z     [1m[94m|[0m
+2026-10-19T09:23:14.6398470Z     [1m[94m= [0m[1mhelp[0m: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#needless_borrows_for_generic_args
+2026-10-19T09:23:14.6398963Z 
+2026-10-19T09:23:14.6431951Z [1m[91merror[0m: could not compile `rebirth-llm` (build script) due to 2 previous errors
+2026-10-19T09:23:14.6432733Z [1m[33mwarning[0m: build failed, waiting for other jobs to finish...
+2026-10-19T09:23:14.9193389Z ##[error]Process completed with exit code 101.
+2026-10-19T09:23:14.9289734Z Post job cleanup.
+2026-10-19T09:23:14.9953919Z ##[group]Get human-readable stats
+2026-10-19T09:23:14.9968774Z [command]/opt/hostedtoolcache/sccache/0.18.0/x64/sccache --show-stats
+2026-10-19T09:23:15.0015922Z Compile requests                      61
+2026-10-19T09:23:15.0016366Z Compile requests executed             39
+2026-10-19T09:23:15.0016778Z Cache hits                            38
+2026-10-19T09:23:15.0017117Z Cache hits (C/C++)                     6
+2026-10-19T09:23:15.0017459Z Cache hits (Rust)                     32
+2026-10-19T09:23:15.0017812Z Cache misses                           0
+2026-10-19T09:23:15.0018168Z Cache hits rate                   100.00 %
+2026-10-19T09:23:15.0018532Z Cache hits rate (C/C++)           100.00 %
+2026-10-19T09:23:15.0018889Z Cache hits rate (Rust)            100.00 %
+2026-10-19T09:23:15.0019255Z Cache timeouts                         0
+2026-10-19T09:23:15.0019598Z Cache read errors                      0
+2026-10-19T09:23:15.0020009Z Forced recaches                        0
+2026-10-19T09:23:15.0020370Z Cache write errors                     0
+2026-10-19T09:23:15.0020720Z Cache errors                           0
+2026-10-19T09:23:15.0021081Z Compilations                           0
+2026-10-19T09:23:15.0021431Z Compilation failures                   1
+2026-10-19T09:23:15.0021784Z Non-cacheable compilations             0
+2026-10-19T09:23:15.0022158Z Non-cacheable calls                   20
+2026-10-19T09:23:15.0022524Z Non-compilation calls                  2
+2026-10-19T09:23:15.0022885Z Unsupported compiler calls             0
+2026-10-19T09:23:15.0023242Z Average cache write                0.000 s
+2026-10-19T09:23:15.0023612Z Average compiler                   0.000 s
+2026-10-19T09:23:15.0023979Z Average cache read hit             0.329 s
+2026-10-19T09:23:15.0024349Z Failed distributed compilations        0
+2026-10-19T09:23:15.0024584Z 
+2026-10-19T09:23:15.0024719Z Non-cacheable reasons:
+2026-10-19T09:23:15.0025035Z crate-type                            13
+2026-10-19T09:23:15.0025546Z -                                      3
+2026-10-19T09:23:15.0025910Z missing output_dir                     2
+2026-10-19T09:23:15.0026255Z missing input                          1
+2026-10-19T09:23:15.0026589Z multiple input files                   1
+2026-10-19T09:23:15.0026819Z 
+2026-10-19T09:23:15.0027330Z Cache location                  ghac, name: fe6676c985fe452e4ec4e9acf9d8cae5f56b7fee7caa734482bc6e07b9a2ec16, prefix: /sccache/
+2026-10-19T09:23:15.0028477Z Base directories                (none)
+2026-10-19T09:23:15.0028818Z Version (client)                0.18.0
+2026-10-19T09:23:15.0033260Z ##[endgroup]
+2026-10-19T09:23:15.0033726Z ##[group]Get JSON stats
+2026-10-19T09:23:15.0035523Z [command]/opt/hostedtoolcache/sccache/0.18.0/x64/sccache --show-stats --stats-format=json
+2026-10-19T09:23:15.0076653Z {"stats":{"compile_requests":61,"requests_unsupported_compiler":0,"requests_not_compile":2,"requests_not_cacheable":20,"requests_executed":39,"cache_errors":{"counts":{},"adv_counts":{}},"cache_hits":{"counts":{"C/C++":6,"Rust":32},"adv_counts":{"rust":32,"c [gcc]":6}},"cache_misses":{"counts":{},"adv_counts":{}},"cache_timeouts":0,"cache_read_errors":0,"non_cacheable_compilations":0,"forced_recaches":0,"cache_write_errors":0,"cache_writes":0,"cache_write_duration":{"secs":0,"nanos":0},"cache_read_hit_duration":{"secs":12,"nanos":514360435},"compilations":0,"compiler_write_duration":{"secs":0,"nanos":0},"compile_fails":1,"not_cached":{"-":3,"missing output_dir":2,"multiple input files":1,"missing input":1,"crate-type":13},"dist_compiles":{},"dist_errors":0,"multi_level":null},"cache_location":"ghac, name: fe6676c985fe452e4ec4e9acf9d8cae5f56b7fee7caa734482bc6e07b9a2ec16, prefix: /sccache/","cache_size":null,"max_cache_size":null,"use_preprocessor_cache_mode":false,"version":"0.18.0","basedirs":[]}
+2026-10-19T09:23:15.0081518Z ##[endgroup]
+2026-10-19T09:23:15.0096098Z ##[notice]100% - 38 hits, 0 misses, 0 errors
+2026-10-19T09:23:15.0097236Z 
+2026-10-19T09:23:15.0097792Z Full human-readable stats:
+2026-10-19T09:23:15.0098168Z Compile requests                      61
+2026-10-19T09:23:15.0098537Z Compile requests executed             39
+2026-10-19T09:23:15.0098923Z Cache hits                            38
+2026-10-19T09:23:15.0099393Z Cache hits (C/C++)                     6
+2026-10-19T09:23:15.0099784Z Cache hits (Rust)                     32
+2026-10-19T09:23:15.0100186Z Cache misses                           0
+2026-10-19T09:23:15.0100568Z Cache hits rate                   100.00 %
+2026-10-19T09:23:15.0100958Z Cache hits rate (C/C++)           100.00 %
+2026-10-19T09:23:15.0101358Z Cache hits rate (Rust)            100.00 %
+2026-10-19T09:23:15.0101737Z Cache timeouts                         0
+2026-10-19T09:23:15.0102213Z Cache read errors                      0
+2026-10-19T09:23:15.0102626Z Forced recaches                        0
+2026-10-19T09:23:15.0102993Z Cache write errors                     0
+2026-10-19T09:23:15.0103385Z Cache errors                           0
+2026-10-19T09:23:15.0103794Z Compilations                           0
+2026-10-19T09:23:15.0104182Z Compilation failures                   1
+2026-10-19T09:23:15.0104570Z Non-cacheable compilations             0
+2026-10-19T09:23:15.0104978Z Non-cacheable calls                   20
+2026-10-19T09:23:15.0105719Z Non-compilation calls                  2
+2026-10-19T09:23:15.0106116Z Unsupported compiler calls             0
+2026-10-19T09:23:15.0106532Z Average cache write                0.000 s
+2026-10-19T09:23:15.0106925Z Average compiler                   0.000 s
+2026-10-19T09:23:15.0107335Z Average cache read hit             0.329 s
+2026-10-19T09:23:15.0107747Z Failed distributed compilations        0
+2026-10-19T09:23:15.0108016Z 
+2026-10-19T09:23:15.0108165Z Non-cacheable reasons:
+2026-10-19T09:23:15.0108492Z crate-type                            13
+2026-10-19T09:23:15.0108873Z -                                      3
+2026-10-19T09:23:15.0109237Z missing output_dir                     2
+2026-10-19T09:23:15.0109624Z missing input                          1
+2026-10-19T09:23:15.0110015Z multiple input files                   1
+2026-10-19T09:23:15.0110298Z 
+2026-10-19T09:23:15.0110847Z Cache location                  ghac, name: fe6676c985fe452e4ec4e9acf9d8cae5f56b7fee7caa734482bc6e07b9a2ec16, prefix: /sccache/
+2026-10-19T09:23:15.0111724Z Base directories                (none)
+2026-10-19T09:23:15.0112266Z Version (client)                0.18.0
+2026-10-19T09:23:15.0112518Z 
+2026-10-19T09:23:15.0263512Z Post job cleanup.
+2026-10-19T09:23:15.1018623Z [command]/usr/bin/git version
+2026-10-19T09:23:15.1062356Z git version 2.55.0
+2026-10-19T09:23:15.1096689Z Temporarily overriding HOME='/home/runner/work/_temp/b426255c-58bb-4d8c-a96f-52f98039df76' before making global git config changes
+2026-10-19T09:23:15.1097483Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-19T09:23:15.1101914Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/R-ebirth/R-ebirth
+2026-10-19T09:23:15.1137352Z Removing SSH command configuration
+2026-10-19T09:23:15.1144410Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-10-19T09:23:15.1180011Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-10-19T09:23:15.1476556Z Removing HTTP extra header
+2026-10-19T09:23:15.1477320Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-19T09:23:15.1515863Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-10-19T09:23:15.1752348Z Removing includeIf entries pointing to credentials config files
+2026-10-19T09:23:15.1753205Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-19T09:23:15.1788804Z includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path
+2026-10-19T09:23:15.1789633Z includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path
+2026-10-19T09:23:15.1790340Z includeif.gitdir:/github/workspace/.git.path
+2026-10-19T09:23:15.1790953Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-19T09:23:15.1796466Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path
+2026-10-19T09:23:15.1822488Z /home/runner/work/_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:23:15.1831424Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git.path \/home\/runner\/work\/_temp\/git\-credentials\-7aaa3377\-5df7\-4a5b\-a775\-e574aeb9e734\.config
+2026-10-19T09:23:15.1873117Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path
+2026-10-19T09:23:15.1907706Z /home/runner/work/_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:23:15.1915834Z [command]/usr/bin/git config --local --unset includeif.gitdir:/home/runner/work/R-ebirth/R-ebirth/.git/worktrees/*.path \/home\/runner\/work\/_temp\/git\-credentials\-7aaa3377\-5df7\-4a5b\-a775\-e574aeb9e734\.config
+2026-10-19T09:23:15.1950085Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+2026-10-19T09:23:15.1973081Z /github/runner_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:23:15.1979512Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-7aaa3377\-5df7\-4a5b\-a775\-e574aeb9e734\.config
+2026-10-19T09:23:15.2010234Z [command]/usr/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+2026-10-19T09:23:15.2032244Z /github/runner_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config
+2026-10-19T09:23:15.2038477Z [command]/usr/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-7aaa3377\-5df7\-4a5b\-a775\-e574aeb9e734\.config
+2026-10-19T09:23:15.2072093Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-10-19T09:23:15.2273032Z Removing credentials config '/home/runner/work/_temp/git-credentials-7aaa3377-5df7-4a5b-a775-e574aeb9e734.config'
+2026-10-19T09:23:15.2412424Z Cleaning up orphan processes
+2026-10-19T09:23:15.2723358Z Terminate orphan process: pid (2351) (sccache)

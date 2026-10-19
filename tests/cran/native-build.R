@@ -27,5 +27,31 @@ writeLines(c('CC = cc', 'CXX17 = c++', paste('CFLAGS =', flags), 'CPPFLAGS =',
  'test "$$CXX" = c++ && test "$$CFLAGS" = " ', flags, ' " && ',
  'test "$$CXXFLAGS" = " ', flags, '  -std=gnu++17"')), makefile)
 if (.Platform$OS.type != 'windows') stopifnot(system2('make', c('-f', shQuote(makefile))) == 0L)
+# Configure the actual templates with literal Windows paths. Discovery/version
+# probing is mocked; the generated export passes through real make and sh on
+# Unix, without executing CMake, Cargo, a compiler or a model.
+cmake_paths <- c('C:\\rtools45\\X86_64~1.POS\\bin\\cmake.exe',
+                 "C:\\tools with spaces\\owner's $tools\\cmake.exe")
+for (cmake in cmake_paths) {
+  for (windows in c(FALSE, TRUE)) {
+    config <- configure_case(TRUE, 'false', windows, cmake = cmake)
+    stopifnot(is.environment(config), identical(config$cmake_command, cmake))
+    exports <- trimws(grep('export CMAKE=', config$new_txt, value = TRUE, fixed = TRUE))
+    expected <- paste0('export ', config$.native_build_env, ' && \\')
+    stopifnot(length(exports) == 2L, all(exports == expected))
+    # The former regex replacement must fail this same byte comparison.
+    old <- gsub('@NATIVE_BUILD_ENV@', config$.native_build_env, config$mv_txt)
+    old_exports <- trimws(grep('export CMAKE=', old, value = TRUE, fixed = TRUE))
+    stopifnot(length(old_exports) == 2L, all(old_exports != expected))
+    if (.Platform$OS.type != 'windows') {
+      capture <- file.path(root, 'cmake-path.txt')
+      recipe <- sub(' && \\', '', exports[[1L]], fixed = TRUE)
+      writeLines(c('all:', paste0('\t@', recipe, '; printf "%s" "$$CMAKE" > ',
+                                 shQuote(capture))), makefile)
+      stopifnot(system2('make', c('-f', shQuote(makefile))) == 0L,
+                identical(readChar(capture, file.info(capture)$size, useBytes = TRUE), cmake))
+    }
+  }
+}
 unlink(root, recursive = TRUE)
-cat('CRAN_NATIVE_CONFIG_OK platforms=2 cargo_commands=4 model_calls=0 native_compiles=0\n')
+cat('CRAN_NATIVE_CONFIG_OK platforms=2 cargo_commands=4 literal_paths=4 model_calls=0 native_compiles=0\n')
