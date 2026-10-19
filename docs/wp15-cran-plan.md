@@ -232,6 +232,16 @@ before the test body and is retained. Corrected Windows execution is still pendi
 Raw logs, failure and source-bound scope:
 [`windows-a474fbc`](../tests/cran/evidence/windows-a474fbc/).
 
+## Current finalization status (2026-10-19)
+
+PR70 and PR71 have been merged by the founder; all ten/eleven final checks and
+exact integration trees were independently verified at their recorded source.
+Earlier “pending” statements above describe original failed candidates and are
+retained as history. Current CPU portability, R-devel/manual and attribution
+milestones passed; the final 0.5.0 candidate and admission questions are tracked
+in [CRAN submission status](cran-submission.md). Final current CI/tar, Cargo-age
+and farm/non-shared-R disposition, and maintainer upload approval remain open.
+
 ## Remaining gates
 
 - Source-package size, third-party licensing, compiler flags, portable CPU

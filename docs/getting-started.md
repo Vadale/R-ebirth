@@ -27,7 +27,10 @@ packageVersion("relm")
 r-universe builds from `main`, so its version can differ from the latest tagged
 release. Version 0.4.0 has been published and installed from r-universe on
 macOS arm64; see the [release record](release-0.4.0.md). Restart R after upgrading
-an already loaded package. Windows remains deferred. The development source has
+an already loaded package. Windows CPU source-package checks passed at PR71;
+this is not a claim of a published Windows binary or Windows GPU support.
+The 0.5.0 candidate is tracked in the [CRAN preparation status](cran-submission.md).
+The development source has
 a separate [optional Linux CUDA build](linux-cuda.md); installing an ordinary
 r-universe binary does not establish CUDA capability.
 
@@ -69,9 +72,19 @@ The [support matrix](supported-workflow.md) states the bounded supported route.
 
 ## Install from source
 
-You need R >= 4.5, Rust >= 1.85.0 (via [rustup](https://rustup.rs)),
+You need R >= 4.5, **Cargo >= 1.85.0 and rustc >= 1.85.0** (for example via
+[rustup](https://rustup.rs); they are checked separately),
 CMake >= 3.28, a C/C++ compiler and `xz`. On macOS, install Xcode command-line
 tools and CMake; on Linux, use the corresponding development packages.
+On Windows use Rtools matching your R version and the GNU Rust target. Keep
+source/build paths short. The current wrapper generator also needs a linkable
+R library; installation with a non-shared R build remains unvalidated.
+
+The package does not install compilers or download dependencies during its
+locked, vendored Cargo build. For heavy builds, keep the package copy, Cargo
+target/cache and `TMPDIR` on a disk with sufficient space; set `TMPDIR` before
+starting R. Moving only temporary files leaves any `src/rust/target` beside the
+package copy. Prebuilt binaries do not require this compilation toolchain.
 
 With the optional `remotes` package installed, run:
 

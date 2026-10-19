@@ -9,7 +9,9 @@ floor <- sub('^rust-version = "([0-9.]+)"$', "\\1", floor_line)
 
 desc <- read.dcf("rebirth/DESCRIPTION")
 required <- unname(sub(".*rustc >= ([0-9.]+).*", "\\1", desc[, "SystemRequirements"]))
-stopifnot(identical(required, floor))
+cargo_required <- unname(sub(".*Cargo \\(Rust's package manager\\) >= ([0-9.]+).*",
+                             "\\1", desc[, "SystemRequirements"]))
+stopifnot(identical(required, floor), identical(cargo_required, floor))
 for (crate in c("rebirth-llm", "rebirth-ffi")) {
   manifest <- readLines(file.path("rebirth/src/rust", crate, "Cargo.toml"))
   stopifnot(identical(grep("^rust-version", manifest, value = TRUE),
@@ -28,13 +30,19 @@ stopifnot(identical(ci_floor, floor),
 # Execute the real configure script in an isolated environment, stubbing only
 # its external commands and PATH mutation. This catches a disabled/ineffective
 # version check, not just a disagreement between duplicated version strings.
-check_configure <- function(version) {
+check_configure <- function(rust = floor, cargo = floor, raw = list(), metadata = desc) {
   env <- new.env(parent = globalenv())
-  env$read.dcf <- function(...) desc
+  env$read.dcf <- function(...) metadata
   env$Sys.setenv <- function(...) invisible(NULL)
   env$system <- function(command, intern) {
     stopifnot(intern, command %in% c("rustc --version", "cargo --version"))
-    paste(sub(" --version", "", command, fixed = TRUE), version, "(test fixture)")
+    tool <- sub(" --version", "", command, fixed = TRUE)
+    if (tool %in% names(raw)) {
+      value <- raw[[tool]]
+      if (inherits(value, "error")) stop(value)
+      return(value)
+    }
+    paste(tool, if (tool == "rustc") rust else cargo, "(test fixture)")
   }
   tryCatch({
     suppressMessages(sys.source("rebirth/tools/msrv.R", envir = env))
@@ -46,13 +54,30 @@ version_parts <- as.integer(strsplit(floor, ".", fixed = TRUE)[[1L]])
 stopifnot(length(version_parts) == 3L, version_parts[[2L]] > 0L)
 below <- paste(version_parts[[1L]], version_parts[[2L]] - 1L, 0L, sep = ".")
 above <- paste(version_parts[[1L]], version_parts[[2L]] + 1L, 0L, sep = ".")
-rejected <- check_configure(below)
-stopifnot(inherits(rejected, "error"),
-          grepl(paste("Minimum supported Rust version is", floor),
-                conditionMessage(rejected), fixed = TRUE),
-          grepl(paste("Installed Rust version is", below),
-                conditionMessage(rejected), fixed = TRUE),
-          is.null(check_configure(floor)),
-          is.null(check_configure(above)))
-cat(sprintf("Rust MSRV %s: declarations agree; configure rejects %s and accepts %s/%s.\n",
-            floor, below, floor, above))
+cases <- 0L
+expect_error <- function(value, text) {
+  stopifnot(inherits(value, "error"), grepl(text, conditionMessage(value), fixed = TRUE))
+  cases <<- cases + 1L
+}
+# Test independently: a new compiler cannot excuse an old Cargo (or vice versa).
+expect_error(check_configure(below, above), paste("Installed Rust version is", below))
+expect_error(check_configure(above, below), paste("Installed Cargo version is", below))
+for (pair in list(c(floor, floor), c(above, floor), c(floor, above), c(above, above))) {
+  stopifnot(is.null(check_configure(pair[[1]], pair[[2]])))
+  cases <- cases + 1L
+}
+for (tool in c("rustc", "cargo")) {
+  for (bad in list(character(), NA_character_, "unparseable", c("first", "second"),
+                  paste("wrong-tool", floor), paste(tool, "1.85"),
+                  structure(paste(tool, floor), status = 127L))) {
+    expect_error(check_configure(raw = setNames(list(bad), tool)),
+                 paste("Cannot determine", tool, "version"))
+  }
+  expect_error(check_configure(raw = setNames(list(simpleError("missing tool")), tool)),
+               paste(tool, "could not run"))
+}
+missing_floor <- desc
+missing_floor[, "SystemRequirements"] <- sub("Cargo (Rust's package manager) >= 1.85.0",
+  "Cargo (Rust's package manager)", desc[, "SystemRequirements"], fixed = TRUE)
+expect_error(check_configure(metadata = missing_floor), "Declare an explicit Cargo minimum")
+cat(sprintf("RUST_CARGO_FLOOR_OK floor=%s configure_cases=%d models=0 builds=0\n", floor, cases))

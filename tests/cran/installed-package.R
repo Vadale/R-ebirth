@@ -3,8 +3,9 @@
 args <- commandArgs(TRUE)
 stopifnot(length(args) == 3L)
 library(relm)
+expected_version <- read.dcf(file.path(args[[2L]], "DESCRIPTION"))[1L, "Version"]
 stopifnot(normalizePath(find.package("relm")) == normalizePath(args[[1L]]),
-          identical(as.character(packageVersion("relm")), "0.4.0"))
+          identical(as.character(packageVersion("relm")), unname(expected_version)))
 ns <- asNamespace("relm")
 source_env <- new.env(parent = ns)
 for (p in sort(list.files(file.path(args[[2L]], "R"), full.names = TRUE)))

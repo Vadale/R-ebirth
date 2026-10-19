@@ -1,4 +1,18 @@
-# Development — CRAN source preparation
+# relm 0.5.0 (candidate; not published)
+
+## CRAN source preparation
+
+* Cargo and rustc are now checked independently against explicit 1.85.0 minima,
+  including malformed, missing and failed version commands. This is the tested
+  Arrow 59 / Rust 2024 floor, not a claim of CRAN admission; the toolchain is
+  younger than CRAN's recommended two years as of 2026-10-19.
+* Live spill ownership stores Unix identity fields only on Unix, removing the
+  Windows unused-field warning without disabling a lint or deleting files by
+  pathname alone. Unix identity/delivery guards are preserved; on other systems
+  caller-managed unpublished files remain retained for explicit cleanup.
+* The production R-devel check includes HTML Tidy and incoming metadata checks.
+  Batch/service recipes admit 0.5.0 while retaining exact prepared-environment
+  fingerprints and their existing dependency pins.
 
 * Source distributions bundle the pinned engine and locked Rust dependencies,
   avoiding long outer archive paths and network-dependent Cargo installation.
@@ -30,7 +44,7 @@
   dependency versions and numerical kernels are unchanged. Full current-platform
   package checks remain required; this is not a clean-CRAN claim.
 
-# Development — optional Linux CUDA
+## Optional Linux CUDA
 
 * Added an explicit optional Linux x86_64 CUDA build route with
   `RELM_ENABLE_CUDA=1` and `CUDA_PATH`, including the native backend archive and
@@ -45,7 +59,7 @@
   the library release profile. The example workflow accepts explicit CUDA/Metal
   selection with CPU default unchanged; no public API or dependency was added.
 
-# Development documentation
+## Documentation
 
 * Recorded research animations now show an aligned activation intervention and
   token-stream comparison in the GitHub README. GIFs, videos and static views are

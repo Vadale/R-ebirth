@@ -46,6 +46,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           & "$env:RUNNER_TEMP/native-build-controls.exe"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Live file ownership controls (no engine build)
+        shell: pwsh
+        run: |
+          rustc --edition=2021 --test -D warnings rebirth/src/rust/rebirth-llm/src/live_file.rs -o "$env:RUNNER_TEMP/live-file-controls.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & "$env:RUNNER_TEMP/live-file-controls.exe"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: release
@@ -60,6 +67,7 @@ jobs:
         run: |
           source("tests/cran/configuration.R")
           source("tests/cran/native-build.R")
+          source("tests/toolchain/test-msrv.R")
       - name: Rtools thread declaration compatibility (no engine build)
         shell: bash
         run: python tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
@@ -101,6 +109,8 @@ jobs:
       NOT_CRAN: "false"
       _R_CHECK_LIMIT_CORES_: "true"
       _R_CHECK_FORCE_SUGGESTS_: "true"
+      _R_CHECK_CRAN_INCOMING_: "true"
+      _R_CHECK_CRAN_INCOMING_REMOTE_: "true"
       OMP_NUM_THREADS: "1"
       OPENBLAS_NUM_THREADS: "1"
       MKL_NUM_THREADS: "1"
@@ -124,6 +134,11 @@ jobs:
       - uses: r-lib/actions/setup-tinytex@v2
         env:
           TINYTEX_INSTALLER: TinyTeX
+      - name: Install HTML checking tool
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends tidy
+          tidy --version
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
@@ -133,6 +148,9 @@ jobs:
         run: |
           Rscript --vanilla tests/cran/configuration.R
           Rscript --vanilla tests/cran/native-build.R
+          Rscript --vanilla tests/toolchain/test-msrv.R
+          rustc --edition=2021 --test -D warnings rebirth/src/rust/rebirth-llm/src/live_file.rs -o "$RUNNER_TEMP/live-file-controls"
+          "$RUNNER_TEMP/live-file-controls"
       - uses: r-lib/actions/check-r-package@v2
         with:
           working-directory: rebirth

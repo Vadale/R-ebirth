@@ -1,6 +1,6 @@
 # Supported research workflow
 
-Updated 2026-10-17. Start with the [installation guide](getting-started.md), then
+Updated 2026-10-19. Start with the [installation guide](getting-started.md), then
 the [complete walkthrough](../examples/research-workflow/README.md). It uses
 existing public APIs and exports ordinary R objects, CSV and base-R graphics.
 The integrated research APIs are included in 0.4.0. Check installed functions,
@@ -9,7 +9,7 @@ combination accepted by the underlying engine.
 
 | Task | Supported route | Boundary |
 | --- | --- | --- |
-| Load and generate | Local GGUF, `llm()`, `llm_generate()`; macOS arm64/Metal, Linux CPU and optional development Linux CUDA acceptance | Windows is deferred; [CUDA scope](linux-cuda.md) is a locally verified source build, not the published 0.4.0 binary. Model loading is synchronous. |
+| Load and generate | Local GGUF, `llm()`, `llm_generate()`; macOS arm64/Metal, Linux CPU and optional development Linux CUDA acceptance | Windows CPU production source-package checks passed at PR71; full research/GPU parity is unverified. [CUDA scope](linux-cuda.md) is a locally verified source build, not the published 0.4.0 binary. Model loading is synchronous. |
 | Observe | `llm_trace()` with layer/position/component filters; `on_state` during async generation | Spark tracing is unsupported. Filter captures; managed Arrow spill limits capture storage, not total process RSS. |
 | Compare and export | `llm_compare()`, `llm_timeline()`, `plot()`; table/CSV and trusted RDS | Matching recorded input histories are required for differences. Caller provenance is validated, not authenticated. A configured model map is not measured activity. |
 | Construct directions | `llm_direction()` from paired actual captures and explicit model/split provenance | Schema 1 residual directions support addition. Schema 2 records supported attention/MLP sites; artifact/model identity must match. |
@@ -26,6 +26,12 @@ also refuse images. `llm_compare()` takes live observations, not arbitrary trace
 The projection operator is `x - coef * u * dot(u, x)` for the stored unit
 direction, at the recorded site. Residual addition uses a different site and
 direction; comparing the two is not an isolated comparison of operators.
+
+Live spill cleanup has a platform boundary: Unix removes an unpublished file
+only while its recorded device/inode still matches. Non-Unix systems retain
+caller-managed files for explicit cleanup; managed native spill leases are
+unavailable there. A passed Windows CPU package check does not certify Windows
+live-spill cleanup parity. The 0.5.0 warning correction preserves this behavior.
 
 ## Existing complementary uses
 

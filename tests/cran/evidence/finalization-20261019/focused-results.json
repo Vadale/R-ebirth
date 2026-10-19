@@ -1,0 +1,88 @@
+[
+  {
+    "name": "msrv",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "tests/toolchain/test-msrv.R"
+    ],
+    "cwd": "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth",
+    "exit": 0,
+    "log_sha256": "57ff1b973f47403486868a76066aa5a4f2ab45ec2abbf9b30a61d916001825ce"
+  },
+  {
+    "name": "real-tools",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "tools/msrv.R"
+    ],
+    "cwd": "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth",
+    "exit": 0,
+    "log_sha256": "c83d1f0e5312a134f0a36d2ff713eeb2392b43dc2d252cd852a20b6bb1e3ce9f"
+  },
+  {
+    "name": "app-versions",
+    "command": [
+      "Rscript",
+      "--vanilla",
+      "tests/funding-extraction/test_versions.R"
+    ],
+    "cwd": "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth",
+    "exit": 0,
+    "log_sha256": "1aa1b9ebc2c127f9b74aa7ab70640ab1db7d4cb2c4b90b622d07eaefac31f561"
+  },
+  {
+    "name": "live-file-compile",
+    "command": [
+      "rustc",
+      "--edition=2021",
+      "--test",
+      "-D",
+      "warnings",
+      "rebirth/src/rust/rebirth-llm/src/live_file.rs",
+      "-o",
+      "/home/grauk/Work/relm-phase9/finalization-20261019/live-file-controls"
+    ],
+    "cwd": "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth",
+    "exit": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "live-file-test",
+    "command": [
+      "/home/grauk/Work/relm-phase9/finalization-20261019/live-file-controls"
+    ],
+    "cwd": "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth",
+    "exit": 0,
+    "log_sha256": "b681dccab6576d0b09063259ad7e53d71fab1c967630b0f513b6f295f04886b5"
+  },
+  {
+    "name": "live-file-clippy",
+    "command": [
+      "clippy-driver",
+      "--edition=2021",
+      "--test",
+      "-D",
+      "warnings",
+      "rebirth/src/rust/rebirth-llm/src/live_file.rs",
+      "-o",
+      "/home/grauk/Work/relm-phase9/finalization-20261019/live-file-clippy"
+    ],
+    "cwd": "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth",
+    "exit": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "format",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "cwd": "/home/grauk/Documents/Codex/Recupero-Mac-2026-10-13/DOCUDESK/R-ebirth/rebirth/src/rust",
+    "exit": 0,
+    "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

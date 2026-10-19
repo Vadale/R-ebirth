@@ -31,6 +31,8 @@ mod generate;
 mod intervene;
 mod live_capture;
 #[cfg(feature = "spill")]
+mod live_file;
+#[cfg(feature = "spill")]
 mod live_spill;
 mod live_state;
 mod live_steering;
