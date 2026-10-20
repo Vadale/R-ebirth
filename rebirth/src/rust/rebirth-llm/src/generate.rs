@@ -1470,10 +1470,9 @@ impl LoadedModel {
     /// assistant-turn opener when `add_assistant`. Errors if the model carries no
     /// chat template (use `chat = FALSE` for a raw completion).
     ///
-    /// The model's embedded `tokenizer.chat_template` is tried first (the common
-    /// case — e.g. Qwen's chatml, which b9726 detects). If it is present but the
-    /// applier cannot recognize it (some modern models' Jinja, e.g. Gemma 4's),
-    /// this falls back to the architecture's builtin template (D-021); see
+    /// Exact supported modern templates retain their thinking/channel format.
+    /// Other embedded templates use the engine applier, followed by a legacy
+    /// architecture fallback when appropriate (D-021/D-054); see
     /// [`resolve_and_apply_template`]. The returned [`TemplatedPrompt`] carries how
     /// the result must be tokenized (the builtin fallback omits the leading BOS).
     pub fn apply_chat_template(
@@ -1552,11 +1551,9 @@ pub struct TemplatedPrompt {
 /// first argument, so passing the name re-selects the builtin format.
 fn arch_builtin_template(arch: &str) -> Option<&'static str> {
     match arch {
-        // Gemma family: all share the `<start_of_turn>user\n...<end_of_turn>\n
-        // <start_of_turn>model\n` builtin (LLM_CHAT_TEMPLATE_GEMMA). Gemma 4's
-        // embedded Jinja is NOT detected by b9726 (its string lacks the
-        // `<start_of_turn>` literal the applier keys on at llama-chat.cpp:155), so
-        // this fallback is what makes chat = TRUE work for it (spike-confirmed).
+        // Legacy Gemma formats use this builtin. D-054 resolves supported
+        // modern Gemma4 templates first and refuses unknown modern spellings;
+        // it must not substitute old markers for the new <|turn> contract.
         "gemma" | "gemma2" | "gemma3" | "gemma4" => Some("gemma"),
         // Qwen family: chatml (`<|im_start|>role\n...<|im_end|>`).
         "qwen2" | "qwen3" | "qwen35" => Some("chatml"),
@@ -1586,8 +1583,10 @@ fn arch_builtin_template(arch: &str) -> Option<&'static str> {
 /// - `embedded` absent (`None`) → the model declares no chat contract; error with
 ///   the same "use chat = FALSE" message as before (a builtin fallback here would
 ///   format a base model that intentionally carries no template).
-/// - Spark's two pinned official template spellings use the narrow D-032
-///   single-user-turn formatter. Unknown Spark templates fail explicitly.
+/// - Spark's two pinned official spellings use the narrow D-032 formatter.
+///   D-054 likewise preserves the exact modern Qwen3.5/Gemma4 single-user format
+///   before the legacy detector can discard thinking or channel markers.
+///   Unknown modern spellings fail explicitly; unrelated legacy paths remain.
 fn resolve_and_apply_template(
     embedded: Option<&str>,
     arch: &str,
@@ -1602,6 +1601,9 @@ fn resolve_and_apply_template(
     };
     if arch == "spark2_5" {
         return apply_spark_template(tmpl, messages, add_assistant, structured);
+    }
+    if let Some(prompt) = apply_modern_template(tmpl, arch, messages, add_assistant, structured)? {
+        return Ok(prompt);
     }
     match apply_template(tmpl, messages, add_assistant) {
         Ok(text) => Ok(TemplatedPrompt {
@@ -1618,6 +1620,110 @@ fn resolve_and_apply_template(
             None => Err(embedded_err),
         },
     }
+}
+
+// Full source matches are deliberate: llama.cpp's legacy marker detector drops
+// modern thinking/channel semantics. The immutable sources and independent
+// Jinja-rendered expectations ship with the package (D-054).
+const QWEN35_AUTHOR_TEMPLATE: &str =
+    include_str!("../tests/fixtures/modern-chat/qwen35-author.jinja");
+const QWEN35_GGUF_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/qwen35-gguf.jinja");
+const GEMMA4_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/gemma4.jinja");
+
+fn apply_modern_template(
+    template: &str,
+    arch: &str,
+    messages: &[ChatMessage],
+    add_assistant: bool,
+    structured: bool,
+) -> Result<Option<TemplatedPrompt>, RebirthError> {
+    let (prefix, turn_end, assistant, thinking) = match (arch, template) {
+        ("qwen35", QWEN35_AUTHOR_TEMPLATE | QWEN35_GGUF_TEMPLATE) => (
+            "<|im_start|>user\n",
+            "<|im_end|>\n",
+            "<|im_start|>assistant\n",
+            // The author defaults to thinking; this GGUF converter explicitly
+            // defaults to non-thinking. Schema output must start at JSON.
+            if !structured && template == QWEN35_AUTHOR_TEMPLATE {
+                "<think>\n"
+            } else {
+                "<think>\n\n</think>\n\n"
+            },
+        ),
+        ("gemma4", GEMMA4_TEMPLATE) => (
+            "<bos><|turn>user\n",
+            "<turn|>\n",
+            "<|turn>model\n",
+            "<|channel>thought\n<channel|>",
+        ),
+        _ => {
+            // Markers only REFUSE an unknown modern spelling; they never select
+            // a guessed formatter or overwrite custom template semantics.
+            let unknown_modern = match arch {
+                "qwen35" => template.contains("<think>") || template.contains("enable_thinking"),
+                "gemma4" => template.contains("<|turn>") || template.contains("enable_thinking"),
+                _ => false,
+            };
+            if unknown_modern {
+                return Err(RebirthError::Generation {
+                    reason: format!("the {arch} modern chat template does not match a supported source template"),
+                });
+            }
+            return Ok(None);
+        }
+    };
+    let [message] = messages else {
+        return Err(RebirthError::Generation {
+            reason: "modern chat formatting supports exactly one user message".into(),
+        });
+    };
+    if message.role != "user" || message.content.as_bytes().contains(&0) {
+        return Err(RebirthError::Generation {
+            reason: "modern chat formatting requires one user message without interior NUL bytes"
+                .into(),
+        });
+    }
+    // Jinja's trim uses Python str.strip: in addition to Unicode whitespace,
+    // Python strips the four ASCII information separators U+001C..U+001F.
+    let content = message
+        .content
+        .trim_matches(|c: char| c.is_whitespace() || matches!(c, '\u{1c}'..='\u{1f}'));
+    let pieces = [
+        prefix,
+        content,
+        turn_end,
+        if add_assistant { assistant } else { "" },
+        if add_assistant { thinking } else { "" },
+    ];
+    let limit =
+        crate::async_job::output_remaining().map(|_| crate::async_job::ASYNC_MAX_ARGUMENT_BYTES);
+    Ok(Some(TemplatedPrompt {
+        text: join_modern_prompt(&pieces, limit)?,
+        // Gemma's BOS is explicit; Qwen has no BOS here. Both still use the
+        // shared parse_special=true tokenizer/decode path, without an extra BOS.
+        add_special: false,
+    }))
+}
+
+fn join_modern_prompt(pieces: &[&str], limit: Option<usize>) -> Result<String, RebirthError> {
+    let refused = || RebirthError::Argument {
+        argument: "prompt".into(),
+        reason: "templated prompt exceeds the supported byte budget".into(),
+    };
+    let bytes = pieces
+        .iter()
+        .try_fold(0usize, |n, s| n.checked_add(s.len()))
+        .ok_or_else(refused)?;
+    if limit.is_some_and(|limit| bytes > limit) {
+        return Err(refused());
+    }
+    // Check the complete byte count before allocating; do not double capacity
+    // while appending a near-limit asynchronous prompt.
+    let mut text = String::with_capacity(bytes);
+    for piece in pieces {
+        text.push_str(piece);
+    }
+    Ok(text)
 }
 
 // The author ships both a standalone Jinja file and a compact tokenizer-config
@@ -1909,6 +2015,110 @@ mod tests {
         apply_template, arch_builtin_template, resolve_and_apply_template, top_k_logits,
         ChatMessage, RebirthError, SPARK_CHAT_TEMPLATE, SPARK_TOKENIZER_TEMPLATE,
     };
+
+    // Ordinary Rust PR jobs, no model/download. The reference comes from the
+    // pinned authors' Jinja sources, not from the formatter under test.
+    #[test]
+    fn modern_chat_matches_independent_jinja_cases() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../tests/fixtures/modern-chat/single-user-turn.json"
+        ))
+        .unwrap();
+        let cases = fixture["cases"].as_array().unwrap();
+        assert_eq!(cases.len(), 72);
+        for case in cases {
+            let template = match case["template"].as_str().unwrap() {
+                "qwen35-author.jinja" => {
+                    include_str!("../tests/fixtures/modern-chat/qwen35-author.jinja")
+                }
+                "qwen35-gguf.jinja" => {
+                    include_str!("../tests/fixtures/modern-chat/qwen35-gguf.jinja")
+                }
+                "gemma4.jinja" => include_str!("../tests/fixtures/modern-chat/gemma4.jinja"),
+                other => panic!("unexpected fixture template {other}"),
+            };
+            let result = resolve_and_apply_template(
+                Some(template),
+                case["architecture"].as_str().unwrap(),
+                &[ChatMessage::user(case["prompt"].as_str().unwrap())],
+                case["add_assistant"].as_bool().unwrap(),
+                case["structured"].as_bool().unwrap(),
+            )
+            .unwrap();
+            assert_eq!(
+                result.text.as_bytes(),
+                case["rendered"].as_str().unwrap().as_bytes(),
+                "{}",
+                case["name"]
+            );
+            assert!(
+                !result.add_special,
+                "BOS, when required, is already in the official format"
+            );
+        }
+    }
+
+    #[test]
+    fn modern_chat_checks_full_utf8_budget_before_allocation() {
+        let parts = ["<bos>", "café", "\n"];
+        let expected = "<bos>café\n";
+        let text = super::join_modern_prompt(&parts, Some(expected.len())).unwrap();
+        assert_eq!(text, expected);
+        assert_eq!(text.capacity(), text.len());
+        assert!(matches!(
+            super::join_modern_prompt(&parts, Some(expected.len() - 1)),
+            Err(RebirthError::Argument { .. })
+        ));
+    }
+
+    #[test]
+    fn modern_chat_rejects_modified_templates_and_bad_messages() {
+        for (arch, template) in [
+            (
+                "qwen35",
+                include_str!("../tests/fixtures/modern-chat/qwen35-author.jinja"),
+            ),
+            (
+                "qwen35",
+                include_str!("../tests/fixtures/modern-chat/qwen35-gguf.jinja"),
+            ),
+            (
+                "gemma4",
+                include_str!("../tests/fixtures/modern-chat/gemma4.jinja"),
+            ),
+        ] {
+            for changed in [
+                format!("{template} "),
+                template.replace("enable_thinking", "custom_thinking"),
+                format!("{template}\0"),
+            ] {
+                assert!(matches!(
+                    resolve_and_apply_template(
+                        Some(&changed),
+                        arch,
+                        &[ChatMessage::user("hi")],
+                        true,
+                        false
+                    ),
+                    Err(RebirthError::Generation { .. })
+                ));
+            }
+            for messages in [
+                vec![],
+                vec![ChatMessage::user("one"), ChatMessage::user("two")],
+                vec![ChatMessage {
+                    role: "system".into(),
+                    content: "policy".into(),
+                }],
+                vec![ChatMessage::user("interior\0NUL")],
+            ] {
+                assert!(matches!(
+                    resolve_and_apply_template(Some(template), arch, &messages, true, false),
+                    Err(RebirthError::Generation { .. })
+                ));
+            }
+        }
+    }
 
     // Model-free, runs in the ordinary macOS/Linux cargo PR jobs. Expected
     // bytes were rendered independently by Jinja2 from both immutable official

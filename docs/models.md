@@ -61,6 +61,26 @@ registry rather than assuming an alias exists.
 Use `chat = FALSE` for raw continuation. A model needs an appropriate template
 for chat; changing that flag is a deliberate change to the input format.
 
+### Modern chat templates
+
+Chat support depends on the embedded template as well as the architecture.
+The D-054 formatter recognizes three exact source templates: Qwen3.5-9B's
+original author template and the pinned Unsloth GGUF spelling, and
+Gemma4-12B-it's original template. Provenance and independent reference bytes
+are in `rebirth/src/rust/rebirth-llm/tests/fixtures/modern-chat/README.md`.
+
+For the single user prompt accepted by `llm_generate()`, ordinary Qwen chat
+preserves the template's declared default: thinking for the author spelling,
+non-thinking for the supported GGUF spelling. Schema-constrained output uses
+the template's non-thinking mode. Gemma4 uses its modern turn/channel markers
+and non-thinking default. No response text is stripped or repaired. Modified
+modern templates are refused rather than replaced with a guessed legacy format.
+This is not arbitrary Jinja, tool calling or multi-turn conversation support.
+
+Correct formatting alone does not establish load compatibility, factual quality,
+speed or support for every quantization. Record the exact GGUF and template
+when reporting a result; older Gemma/Qwen measurements retain their original scope.
+
 ## Bring a different local GGUF
 
 Obtain a GGUF from a source you trust, follow its license/access requirements,
