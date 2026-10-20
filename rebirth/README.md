@@ -24,12 +24,13 @@ is published, including a verified fresh Mac arm64 r-universe installation.
 Check `packageVersion("relm")` and restart R after upgrading.
 
 The **0.5.0 source has been submitted to CRAN**, combining optional Linux CUDA
-and source portability. It is not yet a published release or a CRAN-accepted package; see the
+and source portability. A separate GitHub release and CRAN acceptance are pending; see the
 [submission status](https://github.com/Vadale/R-ebirth/blob/main/docs/cran-submission.md).
 
 ## Installation
 
-Use [r-universe](https://vadale.r-universe.dev/relm) for macOS and Linux builds:
+Use [r-universe](https://vadale.r-universe.dev/relm) and check the builds available
+for your OS, R version and architecture:
 
 ```r
 install.packages(
@@ -46,8 +47,9 @@ Cargo >= 1.85.0 and rustc >= 1.85.0 (checked separately), CMake >= 3.28,
 [installation guide](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md)
 for source builds and troubleshooting. Development source additionally supports an
 [explicit Linux CUDA build](https://github.com/Vadale/R-ebirth/blob/main/docs/linux-cuda.md);
-released 0.4.0 binaries are not certified CUDA builds. Windows CPU source checks
-passed at PR71; Windows GPU and full live-file lifecycle parity remain unverified.
+an ordinary binary does not establish CUDA capability. Windows CPU source-package
+and corrected 0.5.0 win-builder checks passed; Windows GPU and full live-file
+lifecycle parity remain unverified.
 
 Core imports are `methods` (included with R) and `nanoarrow`, which reads spilled traces.
 `glmnet` is optional for probes; `uwot` and `dbscan` are optional demo packages.
@@ -58,6 +60,8 @@ Application examples prepare their own separate dependency environments.
 
 The small Qwen model below is approximately 675 MB. `llm_download()` verifies
 the pinned Apache-2.0 model by SHA256 and reuses a matching cached copy.
+For another model, see [choosing and changing models](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md):
+registry aliases, your own local GGUF, matched vision projectors and operation limits.
 
 ```r
 library(relm)

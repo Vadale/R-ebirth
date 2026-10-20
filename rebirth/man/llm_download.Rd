@@ -36,6 +36,9 @@ downloaded is ever executed — the file is only written to disk and checksummed
 \strong{Registry aliases.} The package ships a small registry (\code{inst/models.csv})
 of license-clean, checksum-pinned models. The current aliases are:
 \itemize{
+\item \code{"spark-x2.5-4b-q8_0"} — Spark-X2.5 4B, Q8_0 (Apache-2.0);
+optional text model, requiring the b10828 engine. Activation tracing is
+unsupported; it is not a default CI download.
 \item \code{"qwen2.5-0.5b-instruct-q8_0"} — Qwen2.5 0.5B Instruct, Q8_0 (Apache-2.0);
 the small CI-integration model.
 \item \code{"qwen2.5-1.5b-instruct-q4_k_m"} — Qwen2.5 1.5B Instruct, Q4_K_M
@@ -49,10 +52,10 @@ path as \code{llm()}'s \code{projector}.
 }
 
 Passing an unknown alias raises \code{relm_error_download} and lists the known
-aliases. Larger Qwen quantizations (7B) ship as split multi-part GGUFs and are
-not in the single-file registry yet; Gemma models are gated by the Gemma Terms
-of Use (they require accepting terms and an access token on Hugging Face), so
-they are supplied by local path rather than downloaded here.
+aliases. The registry contains only the pinned single-file entries above;
+it is not a catalog of every compatible GGUF. Other models can be supplied by
+local path to \code{\link[=llm]{llm()}}, subject to engine compatibility and the model's license
+and access requirements. This downloader does not handle authenticated access.
 
 \strong{Full URLs.} A full \verb{https://} URL is downloaded as given. Only HTTPS is
 accepted (\verb{http://}, \verb{ftp://}, \verb{file://}, ... are rejected). A bare URL has no

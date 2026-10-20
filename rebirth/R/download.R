@@ -11,6 +11,9 @@
 #' **Registry aliases.** The package ships a small registry (`inst/models.csv`)
 #' of license-clean, checksum-pinned models. The current aliases are:
 #'
+#' - `"spark-x2.5-4b-q8_0"` — Spark-X2.5 4B, Q8_0 (Apache-2.0);
+#'   optional text model, requiring the b10828 engine. Activation tracing is
+#'   unsupported; it is not a default CI download.
 #' - `"qwen2.5-0.5b-instruct-q8_0"` — Qwen2.5 0.5B Instruct, Q8_0 (Apache-2.0);
 #'   the small CI-integration model.
 #' - `"qwen2.5-1.5b-instruct-q4_k_m"` — Qwen2.5 1.5B Instruct, Q4_K_M
@@ -23,10 +26,10 @@
 #'   path as `llm()`'s `projector`.
 #'
 #' Passing an unknown alias raises `relm_error_download` and lists the known
-#' aliases. Larger Qwen quantizations (7B) ship as split multi-part GGUFs and are
-#' not in the single-file registry yet; Gemma models are gated by the Gemma Terms
-#' of Use (they require accepting terms and an access token on Hugging Face), so
-#' they are supplied by local path rather than downloaded here.
+#' aliases. The registry contains only the pinned single-file entries above;
+#' it is not a catalog of every compatible GGUF. Other models can be supplied by
+#' local path to [llm()], subject to engine compatibility and the model's license
+#' and access requirements. This downloader does not handle authenticated access.
 #'
 #' **Full URLs.** A full `https://` URL is downloaded as given. Only HTTPS is
 #' accepted (`http://`, `ftp://`, `file://`, ... are rejected). A bare URL has no
@@ -314,8 +317,8 @@ move_into_place <- function(tmp, dest) {
 
 # The single network call: fetch `url` to `dest` over HTTPS via base R's libcurl
 # method. Isolated so tests mock exactly this and drive every surrounding path
-# offline. download.file() raises on an HTTP/connection error and leaves no file;
-# any residue is removed and the failure re-raised as a classed condition.
+# offline. download.file() can raise or return a nonzero status and leave partial
+# bytes; the adapter removes any residue and raises a classed condition.
 fetch_url <- function(url, dest, quiet, call = sys.call(-1L)) {
   # A model GGUF is often > 1 GB; the default download timeout (60s) would abort a
   # legitimate fetch on any normal link, so raise it for the duration (never

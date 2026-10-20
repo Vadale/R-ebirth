@@ -25,7 +25,8 @@ for path in examples.glob("*.R"):
     assert not re.search(r"relm:::|install.packages|source\(", text), path
 
 paths = [root / "llms.txt", root / "README.md"] + [root / "docs" / name for name in (
-    "agents.md", "api-policy.md", "wp16-plan.md", "README.md", "getting-started.md")]
+    "agents.md", "api-policy.md", "wp16-plan.md", "README.md", "getting-started.md",
+    "models.md")]
 links = 0
 for path in paths:
     text = path.read_text()
@@ -48,7 +49,7 @@ if len(sys.argv) == 2:
         assert (site / "reference" / row["topic"].replace(".Rd", ".html")).is_file(), row
     for name in exports:
         assert (site / "agents" / (name + ".R")).read_bytes() == (examples / (name + ".R")).read_bytes()
-    for name in ("agents", "api-policy", "getting-started", "research-guide",
+    for name in ("agents", "api-policy", "getting-started", "models", "research-guide",
                  "supported-workflow", "cran-submission"):
         html = (site / "articles" / (name + ".html")).read_text()
         assert f"https://github.com/Vadale/R-ebirth/blob/main/docs/{name}.md" in html

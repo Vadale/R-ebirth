@@ -14,10 +14,12 @@
 #' Metal, then CUDA, then CPU. It does not benchmark their speed. Requesting a backend the build was
 #' not compiled with raises `relm_error_backend`.
 #'
-#' No model ships inside the package yet, so the runnable example is guarded by
-#' the `RELM_TEST_MODEL_QWEN` environment variable (point it at a local
-#' Qwen2.5 GGUF to run it). A tiny in-repo model arrives in a later work
-#' package.
+#' Supply your own compatible GGUF, or a pinned file fetched by [llm_download()].
+#' No pretrained user model ships inside the package; tiny test fixtures are not
+#' conversational models. The runnable example is guarded by the
+#' `RELM_TEST_MODEL_QWEN` environment variable (point it at a local Qwen2.5 GGUF).
+#' Loading a model does not guarantee support for every observation or
+#' intervention API; unsupported capabilities are explicitly refused.
 #'
 #' @section Image input (vision models):
 #' `projector` enables image input for a vision-language model: point it at the
