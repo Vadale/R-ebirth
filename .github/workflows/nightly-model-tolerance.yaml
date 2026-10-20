@@ -98,6 +98,39 @@ jobs:
           extra-packages: any::devtools
           working-directory: rebirth
 
+      - name: Install the selftest candidate for parent and child R processes
+        env:
+          RELM_ENABLE_SELFTESTS: "1"
+        working-directory: rebirth
+        run: |
+          set -euo pipefail
+          # load_all only serves the parent session. Lifecycle children must load
+          # this candidate from a real installation, not an older global package.
+          candidate="$RUNNER_TEMP/relm-tolerance-library"
+          mkdir "$candidate"
+          echo "RELM_TOLERANCE_R_LIBRARY=$candidate" >> "$GITHUB_ENV"
+          R CMD INSTALL --library="$candidate" . \
+            2>&1 | tee "$RUNNER_TEMP/tolerance-install.log"
+          RELM_TOLERANCE_R_LIBRARY="$candidate" Rscript --vanilla - <<'RS' \
+            2>&1 | tee "$RUNNER_TEMP/tolerance-installed-child.log"
+          candidate <- normalizePath(Sys.getenv("RELM_TOLERANCE_R_LIBRARY"), mustWork = TRUE)
+          .libPaths(c(candidate, .libPaths()))
+          library(relm)
+          installed <- normalizePath(find.package("relm"), mustWork = TRUE)
+          expected <- normalizePath(file.path(candidate, "relm"), mustWork = TRUE)
+          dll <- normalizePath(getLoadedDLLs()[["relm"]][["path"]], mustWork = TRUE)
+          stopifnot(
+            identical(installed, expected),
+            startsWith(dll, paste0(expected, "/libs/")),
+            identical(as.character(packageVersion("relm")), read.dcf("DESCRIPTION")[[1L, "Version"]]),
+            all(c("wrap__rebirth_async_test_handle", "wrap__rebirth_async_test_config",
+              "wrap__rebirth_async_test_stats") %in% names(getDLLRegisteredRoutines("relm")$.Call)))
+          print(sessionInfo())
+          print(.libPaths())
+          cat(sprintf("TOLERANCE_INSTALLED_CHILD_OK source=%s package=%s dll_sha256=%s\n",
+            Sys.getenv("GITHUB_SHA"), installed, unname(tools::sha256sum(dll))))
+          RS
+
       - name: Download + verify the pinned Qwen2.5-0.5B Q8_0 GGUF (fail-closed)
         run: |
           set -euo pipefail
@@ -116,13 +149,16 @@ jobs:
           # Export the verified path to the test step.
           echo "RELM_TEST_MODEL_QWEN=${dest}" >> "$GITHUB_ENV"
 
-      - name: Build relm and run the [MODEL] tolerance suite
-        env:
-          RELM_ENABLE_SELFTESTS: "1"
+      - name: Run the installed [MODEL] tolerance suite
         working-directory: rebirth
         run: |
-          Rscript -e '
-            suppressMessages(pkgload::load_all(".", quiet = TRUE))
+          set -euo pipefail
+          Rscript --vanilla - <<'RS' 2>&1 | tee "$RUNNER_TEMP/tolerance-suite.log"
+            candidate <- normalizePath(Sys.getenv("RELM_TOLERANCE_R_LIBRARY"), mustWork = TRUE)
+            .libPaths(c(candidate, .libPaths()))
+            library(relm)
+            stopifnot(identical(normalizePath(find.package("relm"), mustWork = TRUE),
+              normalizePath(file.path(candidate, "relm"), mustWork = TRUE)))
             mp <- Sys.getenv("RELM_TEST_MODEL_QWEN")
             stopifnot(nzchar(mp), file.exists(mp))
             # Fail LOUDLY if the downloaded file is not the expected model, so the
@@ -135,17 +171,42 @@ jobs:
             )
             close(m)
             library(testthat)
-            res <- test_dir("tests/testthat", reporter = "summary", stop_on_failure = TRUE)
+            res <- test_dir("tests/testthat", reporter = "summary", stop_on_failure = FALSE,
+              package = "relm", load_package = "installed")
             df <- as.data.frame(res)
+            # Keep every result before enforcing the same fail-on-error contract;
+            # the console reporter can truncate failure details.
+            evidence <- file.path(Sys.getenv("RUNNER_TEMP"), "relm-tolerance-results")
+            dir.create(evidence)
+            saveRDS(res, file.path(evidence, "results.rds"))
+            write.csv(df[, !vapply(df, is.list, logical(1)), drop = FALSE],
+              file.path(evidence, "test-results.csv"), row.names = FALSE)
+            writeLines(capture.output(sessionInfo()), file.path(evidence, "session.txt"))
+            stopifnot(nrow(df) > 0L, !anyNA(df[c("failed", "error", "passed", "skipped")]),
+              all(df$failed == 0L), !any(df$error))
             # The HF-golden [MODEL] comparison (the WP6b tolerance core) MUST have RUN,
             # not skipped: passed > 0 means its expectations executed.
             golden <- df[grepl("HF fp32 activation golden", df$test), ]
-            stopifnot(nrow(golden) == 1L, golden$failed == 0L, golden$passed > 0L)
+            stopifnot(nrow(golden) == 1L, golden$failed == 0L, golden$passed > 0L,
+              !golden$skipped)
             cat(sprintf(
               "nightly [MODEL] suite: %d passed, %d skipped, %d failed\n",
               sum(df$passed), sum(df$skipped), sum(df$failed)
             ))
-          '
+          RS
+
+      - name: Preserve tolerance installation and full test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: model-tolerance-results
+          path: |
+            ${{ runner.temp }}/tolerance-install.log
+            ${{ runner.temp }}/tolerance-installed-child.log
+            ${{ runner.temp }}/tolerance-suite.log
+            ${{ runner.temp }}/relm-tolerance-results
+            rebirth/tests/testthat/_problems
+          if-no-files-found: warn
 
       - name: Constrained context and sampler boundary regression
         working-directory: rebirth/src/rust
