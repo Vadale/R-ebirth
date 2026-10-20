@@ -31,7 +31,7 @@ description[1L, "URL"] <- paste(description[1L, "URL"],
 write.dcf(description, file.path(stage, "DESCRIPTION"))
 # Additional site-only articles. Their code is displayed, not silently executed.
 # The dedicated examples runner separately records actual execution outcomes.
-articles <- c("agents", "api-policy", "getting-started", "research-guide",
+articles <- c("agents", "api-policy", "getting-started", "models", "research-guide",
               "supported-workflow", "cran-submission")
 dir.create(file.path(stage, "vignettes", "articles"))
 github <- "https://github.com/Vadale/R-ebirth/blob/main/"
@@ -73,7 +73,7 @@ site <- file.path(output, "site")
 pkgdown::build_site(stage, install = FALSE, new_process = FALSE, devel = FALSE,
   examples = TRUE, run_dont_run = FALSE, preview = FALSE, quiet = FALSE,
   override = list(destination = site))
-# These six articles are generated from repository Markdown, not committed Rmd
+# These articles are generated from repository Markdown, not committed Rmd
 # files. Point the displayed source link at the real file, keeping reference and
 # original vignette source links unchanged.
 for (name in articles) {
@@ -93,7 +93,8 @@ stopifnot(file.copy("llms.txt", site, overwrite = TRUE),
           file.copy("rebirth/inst/examples/agents", site, recursive = TRUE))
 reference <- c("# relm reference for agents", "",
   "Generated from the current Rd files; model-guarded examples are not execution receipts.",
-  "", readLines("docs/agents.md"), "", readLines("docs/api-policy.md"))
+  "", readLines("docs/agents.md"), "", readLines("docs/models.md"),
+  "", readLines("docs/api-policy.md"))
 for (file in sort(list.files("rebirth/man", "\\.Rd$", full.names = TRUE))) {
   reference <- c(reference, "", paste0("## ", basename(file)), "", "```text",
     capture.output(tools::Rd2txt(tools::parse_Rd(file), options = list(underline_titles = FALSE))), "```")

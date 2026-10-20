@@ -1,7 +1,8 @@
 # WP8a: llm_download(). A network + filesystem surface, so per-commit CI must
 # exercise it WITHOUT hitting the network. The single network call is isolated in
-# fetch_url(); every test below mocks it with a local fixture (or seeds the cache
-# directly), so resolve/verify/cache/fail-closed/dir-creation all run offline in
+# fetch_url(); core tests mock it with a local fixture (or seed the cache
+# directly), while transport tests mock only utils::download.file(). Resolution,
+# verification, caching, cleanup and timeout handling therefore run offline in
 # the ordinary `devtools::test()` / R CMD check suite. The only test that really
 # downloads is the [MODEL] end-to-end one, gated on RELM_DOWNLOAD_E2E so it
 # runs only on the founder's Mac and never in per-commit CI.
@@ -315,7 +316,7 @@ test_that("download_verify() re-fetches a bare URL even if a same-named file exi
   expect_identical(tolower(unname(tools::sha256sum(path))), fx$sha256)
 })
 
-test_that("download_verify() surfaces a network failure as relm_error_download", {
+test_that("download_verify() propagates a classed fetch_url() failure", {
   dir <- tempfile("dlcache-")
   on.exit(unlink(dir, recursive = TRUE, force = TRUE), add = TRUE)
   local_mocked_bindings(
@@ -330,6 +331,93 @@ test_that("download_verify() surfaces a network failure as relm_error_download",
   expect_s3_class(cnd, "relm_error_download")
   expect_false(file.exists(file.path(dir, "model.gguf")))
   expect_length(list.files(dir, pattern = "\\.part$"), 0L)
+})
+
+# --- fetch_url(): the real transport adapter (offline; per-commit CI) -------
+
+test_that("fetch_url() translates a thrown error, cleans partial bytes and restores timeout", {
+  url <- "https://example.org/model.gguf"
+  dest <- tempfile(fileext = ".part")
+  on.exit(unlink(dest, force = TRUE), add = TRUE)
+  old_timeout <- options(timeout = 60L)
+  on.exit(options(old_timeout), add = TRUE)
+  caller <- quote(llm_download("https://example.org/model.gguf"))
+  observed_timeout <- NULL
+  local_mocked_bindings(
+    download.file = function(url, destfile, ...) {
+      observed_timeout <<- getOption("timeout")
+      writeBin(charToRaw("partial"), destfile)
+      stop("simulated connection failure")
+    },
+    .package = "utils"
+  )
+
+  cnd <- tryCatch(
+    relm:::fetch_url(url, dest, quiet = TRUE, call = caller),
+    error = identity
+  )
+  expect_s3_class(cnd, "relm_error_download")
+  expect_match(conditionMessage(cnd), "simulated connection failure", fixed = TRUE)
+  expect_identical(cnd$url, url)
+  expect_identical(conditionCall(cnd), caller)
+  expect_false(file.exists(dest))
+  expect_equal(observed_timeout, 3600L)
+  expect_equal(getOption("timeout"), 60L)
+})
+
+test_that("fetch_url() translates nonzero status, cleans partial bytes and restores timeout", {
+  url <- "https://example.org/model.gguf"
+  dest <- tempfile(fileext = ".part")
+  on.exit(unlink(dest, force = TRUE), add = TRUE)
+  old_timeout <- options(timeout = 60L)
+  on.exit(options(old_timeout), add = TRUE)
+  caller <- quote(llm_download("https://example.org/model.gguf"))
+  observed_timeout <- NULL
+  local_mocked_bindings(
+    download.file = function(url, destfile, ...) {
+      observed_timeout <<- getOption("timeout")
+      writeBin(charToRaw("partial"), destfile)
+      1L
+    },
+    .package = "utils"
+  )
+
+  cnd <- tryCatch(
+    relm:::fetch_url(url, dest, quiet = TRUE, call = caller),
+    error = identity
+  )
+  expect_s3_class(cnd, "relm_error_download")
+  expect_match(conditionMessage(cnd), "failed with status 1", fixed = TRUE)
+  expect_identical(cnd$url, url)
+  expect_identical(conditionCall(cnd), caller)
+  expect_false(file.exists(dest))
+  expect_equal(observed_timeout, 3600L)
+  expect_equal(getOption("timeout"), 60L)
+})
+
+test_that("fetch_url() keeps successful bytes and preserves a larger user timeout", {
+  url <- "https://example.org/model.gguf"
+  dest <- tempfile(fileext = ".part")
+  on.exit(unlink(dest, force = TRUE), add = TRUE)
+  old_timeout <- options(timeout = 7200L)
+  on.exit(options(old_timeout), add = TRUE)
+  bytes <- charToRaw("complete fixture")
+  observed_timeout <- NULL
+  local_mocked_bindings(
+    download.file = function(url, destfile, ...) {
+      observed_timeout <<- getOption("timeout")
+      writeBin(bytes, destfile)
+      0L
+    },
+    .package = "utils"
+  )
+
+  result <- withVisible(relm:::fetch_url(url, dest, quiet = TRUE))
+  expect_identical(result$value, dest)
+  expect_false(result$visible)
+  expect_identical(readBin(dest, "raw", n = length(bytes)), bytes)
+  expect_equal(observed_timeout, 7200L)
+  expect_equal(getOption("timeout"), 7200L)
 })
 
 # --- llm_download() end-to-end wiring (offline; per-commit CI) ---------------

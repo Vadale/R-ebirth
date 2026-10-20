@@ -8,6 +8,8 @@ of actual activation comparisons and token events, with static figures and data.
 ## Start and complete an experiment
 
 1. [Install and check capabilities](getting-started.md).
+   [Choose or change a model](models.md): pinned downloads, your own GGUF and
+   model-specific observation limits.
 2. [Choose the right research API](research-guide.md): prompt traces, live states,
    directions, controls and how to interpret the plots.
 3. [Run the research walkthrough](../examples/research-workflow/README.md):

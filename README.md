@@ -50,9 +50,9 @@ recorded coordinates; it does not interpolate new measurements.*
 ## Install and try it
 
 [r-universe](https://vadale.r-universe.dev/relm) distributes the package. Prebuilt
-binaries need no Rust or C++ toolchain. macOS arm64 and Linux are the supported
-routes. The development source also has an optional [Linux CUDA build](docs/linux-cuda.md)
-with measured RTX 2060 results; published 0.4.0 binaries are not certified CUDA builds.
+binaries need no Rust or C++ toolchain; check availability for your OS, R version
+and architecture. The development source also has an optional [Linux CUDA build](docs/linux-cuda.md)
+with measured RTX 2060 results; an ordinary binary does not establish CUDA capability.
 Windows CPU source-package checks and the corrected 0.5.0 win-builder check passed; Windows GPU and full live-file
 lifecycle parity remain outside that acceptance. The **0.5.0 source candidate**
 combines this portability work and has been submitted to CRAN. Maintainer
@@ -97,6 +97,9 @@ the generated answer. Use `on_state` for observations during generation.
 CPU makes this example explicit; the normal `backend = "auto"` selects Metal
 on supported Apple silicon builds, then available compiled CUDA, then CPU.
 See [installation and troubleshooting](docs/getting-started.md).
+To use a different model, follow [choosing and changing models](docs/models.md):
+five pinned aliases, other local GGUF files and matched vision projectors, with
+the supported research operations made explicit.
 
 ## Go beyond the first call
 

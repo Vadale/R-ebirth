@@ -58,10 +58,12 @@ finalizer frees it as a safety net otherwise (see \code{\link[=close.llm]{close.
 Metal, then CUDA, then CPU. It does not benchmark their speed. Requesting a backend the build was
 not compiled with raises \code{relm_error_backend}.
 
-No model ships inside the package yet, so the runnable example is guarded by
-the \code{RELM_TEST_MODEL_QWEN} environment variable (point it at a local
-Qwen2.5 GGUF to run it). A tiny in-repo model arrives in a later work
-package.
+Supply your own compatible GGUF, or a pinned file fetched by \code{\link[=llm_download]{llm_download()}}.
+No pretrained user model ships inside the package; tiny test fixtures are not
+conversational models. The runnable example is guarded by the
+\code{RELM_TEST_MODEL_QWEN} environment variable (point it at a local Qwen2.5 GGUF).
+Loading a model does not guarantee support for every observation or
+intervention API; unsupported capabilities are explicitly refused.
 }
 \section{Image input (vision models)}{
 

@@ -12,9 +12,9 @@ r-universe builds, so check the installed version before using the new features.
 
 ## Install from r-universe
 
-The [relm r-universe page](https://vadale.r-universe.dev/relm) is live and
-distributes macOS and Linux builds. Prebuilt binaries need no Rust or C++
-toolchain:
+The [relm r-universe page](https://vadale.r-universe.dev/relm) lists the available
+macOS, Linux and Windows builds by R version and architecture. Select a build
+matching your platform. Prebuilt binaries need no Rust or C++ toolchain:
 
 ```r
 install.packages(
@@ -27,9 +27,10 @@ packageVersion("relm")
 r-universe builds from `main`, so its version can differ from the latest tagged
 release. Version 0.4.0 has been published and installed from r-universe on
 macOS arm64; see the [release record](release-0.4.0.md). Restart R after upgrading
-an already loaded package. Windows CPU source-package checks and the corrected 0.5.0 win-builder R-devel
-check passed;
-this is not a claim of a published Windows binary or Windows GPU support.
+an already loaded package. Windows CPU source-package checks and the corrected
+0.5.0 win-builder R-devel check passed. Binary availability is separate from
+installed-workflow validation; Windows GPU and full live-file lifecycle parity
+remain unverified.
 The 0.5.0 candidate is tracked in the [CRAN preparation status](cran-submission.md).
 The development source has
 a separate [optional Linux CUDA build](linux-cuda.md); installing an ordinary
@@ -39,6 +40,8 @@ r-universe binary does not establish CUDA capability.
 
 - **A first model call:** use the [first-run example](#first-run) below. It needs
   only relm and one small model file.
+- **Use a different model:** follow [choosing and changing models](models.md)
+  for the five pinned aliases, local GGUF files and matched vision projectors.
 - **Understand which function to use:** read the [research API guide](research-guide.md),
   especially the difference between prompt traces and live observations.
 - **Run an experiment with saved results:** follow the
@@ -78,8 +81,10 @@ You need R >= 4.5, **Cargo >= 1.85.0 and rustc >= 1.85.0** (for example via
 CMake >= 3.28, a C/C++ compiler and `xz`. On macOS, install Xcode command-line
 tools and CMake; on Linux, use the corresponding development packages.
 On Windows use Rtools matching your R version and the GNU Rust target. Keep
-source/build paths short. The current wrapper generator also needs a linkable
-R library; installation with a non-shared R build remains unvalidated.
+source/build paths short. Wrapper generation runs inside the installing R
+process after linking the package DLL. A production CPU installation with
+non-shared R 4.6.1 and Rust/Cargo 1.85 has passed; a separate shared `libR`
+is not required for that route.
 
 The package does not install compilers or download dependencies during its
 locked, vendored Cargo build. For heavy builds, keep the package copy, Cargo

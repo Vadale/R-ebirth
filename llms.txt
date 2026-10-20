@@ -14,6 +14,7 @@ Do not invent reserved APIs, fetch models or install tools without authorization
 - [Full reference text](https://vadale.github.io/R-ebirth/llms-full.txt): agent guide, compatibility policy and all installed-help topics in one file.
 - [Agent guide](https://github.com/Vadale/R-ebirth/blob/main/docs/agents.md): prerequisites, standalone examples, lifecycle and error handling.
 - [Installation](https://github.com/Vadale/R-ebirth/blob/main/docs/getting-started.md): binary/source routes and toolchain requirements.
+- [Choose and change models](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md): installed registry, other local GGUF files, matching projectors and capability limits.
 - [Research guide](https://github.com/Vadale/R-ebirth/blob/main/docs/research-guide.md): load, observe, compare, intervene, evaluate, export.
 - [Supported scope](https://github.com/Vadale/R-ebirth/blob/main/docs/supported-workflow.md): capabilities, platform limits and interpretation.
 

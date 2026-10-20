@@ -70,6 +70,12 @@ Only the downloader's explicit `allow_download = TRUE` enables that side effect.
 Its registry alias verifies a pinned checksum; a bare URL alone is not verified
 against a trusted expected checksum.
 
+For another model, use [the model-choice guide](models.md). Change the supplied
+path and independent digest, then check the capabilities needed by the example.
+Spark can generate text but cannot supply the traces used by the direction
+example; a matching vector length is not permission to reuse another model's
+direction.
+
 ```r
 example <- new.env()
 source(system.file("examples", "agents", "llm_generate.R", package = "relm"),
