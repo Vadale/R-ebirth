@@ -1,3 +1,14 @@
+# Development runtime changes after the 0.5.0 submission
+
+* Preserve the supported Qwen3.5 and Gemma4 single-user chat formats before the
+  legacy engine template detector can discard thinking/channel markers.
+  Recognition uses complete pinned source templates; unknown modern spellings
+  fail explicitly. Schema output selects their non-thinking mode, with no
+  response repair or new public argument. Independent Jinja references cover
+  whitespace, Unicode and ordinary/schema formatting. Prior family-level
+  compatibility results do not certify every newer template or model file.
+* The archive submitted to CRAN remains unchanged; this is not a new release.
+
 # Development documentation after the 0.5.0 submission
 
 * Adds a source-derived public API inventory, an API/version/deprecation policy

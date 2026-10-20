@@ -365,3 +365,12 @@ The two template source spellings are preserved verbatim.
       of your accepting any such warranty or additional liability.
 
    END OF TERMS AND CONDITIONS
+
+Modern Qwen3.5 / Gemma4 chat templates — Apache-2.0
+------------------------------------------------------------------------
+Qwen/Alibaba: Qwen/Qwen3.5-9B at c202236235762e1c871ad0ccb60c8ee5ba337b9a.
+Unsloth: Qwen3.5-9B-GGUF at 3885219b6810b007914f3a7950a8d1b469d598a5.
+Google: gemma-4-12B-it at 707f0a3b8a3c7ad586ed01e27eafbad8a27dd0f7.
+Three exact template spellings are preserved in the source distribution.
+They use the Apache License, Version 2.0 reproduced above. The source fixture
+README records immutable upstream locations and SHA-256 identities.

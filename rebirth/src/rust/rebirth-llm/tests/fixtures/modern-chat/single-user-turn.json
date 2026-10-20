@@ -1,0 +1,730 @@
+{
+  "renderer": "Jinja2 3.1.6 ImmutableSandboxedEnvironment",
+  "template_sha256": {
+    "qwen35-author.jinja": "a4aee8afcf2e0711942cf848899be66016f8d14a889ff9ede07bca099c28f715",
+    "qwen35-gguf.jinja": "7f0e529032c25183bcd66c7f238da2d377f43be754a94e2725a58c4e16d2ed67",
+    "gemma4.jinja": "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4"
+  },
+  "cases": [
+    {
+      "name": "qwen35-author.jinja/ascii/False/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n",
+      "sha256": "e967b6be050816234af45567a23b9b65511b3b3b376d1e9aae8351d704937d13"
+    },
+    {
+      "name": "qwen35-author.jinja/ascii/False/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n",
+      "sha256": "e967b6be050816234af45567a23b9b65511b3b3b376d1e9aae8351d704937d13"
+    },
+    {
+      "name": "qwen35-author.jinja/ascii/True/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n<|im_start|>assistant\n<think>\n",
+      "sha256": "162699de5ae402923caa12d31b02ee48d8ed6848e23f105a83e87f242a3f1d88"
+    },
+    {
+      "name": "qwen35-author.jinja/ascii/True/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "2d50b9610f5f9ec4db7635f8794e26d143a4be1b868712de4c9ac7dea6f857d8"
+    },
+    {
+      "name": "qwen35-author.jinja/unicode/False/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n",
+      "sha256": "af25a628dac0abfc1f28f3ff721c0dab5309cee078e59355e951817e52cd548c"
+    },
+    {
+      "name": "qwen35-author.jinja/unicode/False/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n",
+      "sha256": "af25a628dac0abfc1f28f3ff721c0dab5309cee078e59355e951817e52cd548c"
+    },
+    {
+      "name": "qwen35-author.jinja/unicode/True/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n<|im_start|>assistant\n<think>\n",
+      "sha256": "98402bd6c803db451f74de6267ae16a2ebc83d53aa08cca6cabcb37bc0a1ff95"
+    },
+    {
+      "name": "qwen35-author.jinja/unicode/True/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "132ae9cec32b63596ed8fbef68dfa1236fa8a7a20ace2f3d8d9051df16ec5969"
+    },
+    {
+      "name": "qwen35-author.jinja/whitespace/False/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n",
+      "sha256": "883af721c5bae736ec9e6e0be73845ef1819803dc807e0c8642ca0794923402a"
+    },
+    {
+      "name": "qwen35-author.jinja/whitespace/False/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n",
+      "sha256": "883af721c5bae736ec9e6e0be73845ef1819803dc807e0c8642ca0794923402a"
+    },
+    {
+      "name": "qwen35-author.jinja/whitespace/True/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n<|im_start|>assistant\n<think>\n",
+      "sha256": "9db40dabea2b5ec7102ca4e464006b8eaab259e3dd25daffc62dc56306556c29"
+    },
+    {
+      "name": "qwen35-author.jinja/whitespace/True/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "3cbc780bb753b68506abdfae403d51862694182e21e6a1b7bbab5845e077e11c"
+    },
+    {
+      "name": "qwen35-author.jinja/python-strip-controls/False/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n",
+      "sha256": "245f2c3d7acb92a9e7c5761ca5bccc693cf85b29aea7eb2f0857a180a21d00f3"
+    },
+    {
+      "name": "qwen35-author.jinja/python-strip-controls/False/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n",
+      "sha256": "245f2c3d7acb92a9e7c5761ca5bccc693cf85b29aea7eb2f0857a180a21d00f3"
+    },
+    {
+      "name": "qwen35-author.jinja/python-strip-controls/True/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n<|im_start|>assistant\n<think>\n",
+      "sha256": "6df8da1a73198b9115979c77228d1f3130493a40021b2dbc9e21e590d98afcc3"
+    },
+    {
+      "name": "qwen35-author.jinja/python-strip-controls/True/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "6ea65513283e3d2184521edb1525c9002481ea7cdfcc1d163abfa6924dcc0208"
+    },
+    {
+      "name": "qwen35-author.jinja/empty/False/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\n<|im_end|>\n",
+      "sha256": "ff921ad4db20f4e5893aa42365722e03362b92fffdf68ebc34edd1ef2457e118"
+    },
+    {
+      "name": "qwen35-author.jinja/empty/False/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\n<|im_end|>\n",
+      "sha256": "ff921ad4db20f4e5893aa42365722e03362b92fffdf68ebc34edd1ef2457e118"
+    },
+    {
+      "name": "qwen35-author.jinja/empty/True/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\n<|im_end|>\n<|im_start|>assistant\n<think>\n",
+      "sha256": "1b561dad7e981ab7e75301a921be177196420cd9057f034fc9202fd778ec663b"
+    },
+    {
+      "name": "qwen35-author.jinja/empty/True/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\n<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "422679356522fe3125048c90cb8a3fc3c36033d365781caedd2e02644de1ce1e"
+    },
+    {
+      "name": "qwen35-author.jinja/literal-markers/False/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n",
+      "sha256": "29db167f25b081d8a1fad737231e6c88d48be146a80eab058e0632f8c2845aa0"
+    },
+    {
+      "name": "qwen35-author.jinja/literal-markers/False/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n",
+      "sha256": "29db167f25b081d8a1fad737231e6c88d48be146a80eab058e0632f8c2845aa0"
+    },
+    {
+      "name": "qwen35-author.jinja/literal-markers/True/False",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n<|im_start|>assistant\n<think>\n",
+      "sha256": "09922188d93ca3d95413a3ddd358325c80f4ae94ba8158c2f164387547ed45a7"
+    },
+    {
+      "name": "qwen35-author.jinja/literal-markers/True/True",
+      "template": "qwen35-author.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "0fe98dec245b773040fe34b4dddcc9eb03be335b104a40e3597ef54ba71b3ad4"
+    },
+    {
+      "name": "qwen35-gguf.jinja/ascii/False/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n",
+      "sha256": "e967b6be050816234af45567a23b9b65511b3b3b376d1e9aae8351d704937d13"
+    },
+    {
+      "name": "qwen35-gguf.jinja/ascii/False/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n",
+      "sha256": "e967b6be050816234af45567a23b9b65511b3b3b376d1e9aae8351d704937d13"
+    },
+    {
+      "name": "qwen35-gguf.jinja/ascii/True/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "2d50b9610f5f9ec4db7635f8794e26d143a4be1b868712de4c9ac7dea6f857d8"
+    },
+    {
+      "name": "qwen35-gguf.jinja/ascii/True/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Compatibility probe",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCompatibility probe<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "2d50b9610f5f9ec4db7635f8794e26d143a4be1b868712de4c9ac7dea6f857d8"
+    },
+    {
+      "name": "qwen35-gguf.jinja/unicode/False/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n",
+      "sha256": "af25a628dac0abfc1f28f3ff721c0dab5309cee078e59355e951817e52cd548c"
+    },
+    {
+      "name": "qwen35-gguf.jinja/unicode/False/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n",
+      "sha256": "af25a628dac0abfc1f28f3ff721c0dab5309cee078e59355e951817e52cd548c"
+    },
+    {
+      "name": "qwen35-gguf.jinja/unicode/True/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "132ae9cec32b63596ed8fbef68dfa1236fa8a7a20ace2f3d8d9051df16ec5969"
+    },
+    {
+      "name": "qwen35-gguf.jinja/unicode/True/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "132ae9cec32b63596ed8fbef68dfa1236fa8a7a20ace2f3d8d9051df16ec5969"
+    },
+    {
+      "name": "qwen35-gguf.jinja/whitespace/False/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n",
+      "sha256": "883af721c5bae736ec9e6e0be73845ef1819803dc807e0c8642ca0794923402a"
+    },
+    {
+      "name": "qwen35-gguf.jinja/whitespace/False/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n",
+      "sha256": "883af721c5bae736ec9e6e0be73845ef1819803dc807e0c8642ca0794923402a"
+    },
+    {
+      "name": "qwen35-gguf.jinja/whitespace/True/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "3cbc780bb753b68506abdfae403d51862694182e21e6a1b7bbab5845e077e11c"
+    },
+    {
+      "name": "qwen35-gguf.jinja/whitespace/True/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep internal  spaces.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "3cbc780bb753b68506abdfae403d51862694182e21e6a1b7bbab5845e077e11c"
+    },
+    {
+      "name": "qwen35-gguf.jinja/python-strip-controls/False/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n",
+      "sha256": "245f2c3d7acb92a9e7c5761ca5bccc693cf85b29aea7eb2f0857a180a21d00f3"
+    },
+    {
+      "name": "qwen35-gguf.jinja/python-strip-controls/False/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n",
+      "sha256": "245f2c3d7acb92a9e7c5761ca5bccc693cf85b29aea7eb2f0857a180a21d00f3"
+    },
+    {
+      "name": "qwen35-gguf.jinja/python-strip-controls/True/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "6ea65513283e3d2184521edb1525c9002481ea7cdfcc1d163abfa6924dcc0208"
+    },
+    {
+      "name": "qwen35-gguf.jinja/python-strip-controls/True/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nKeep\ufeff<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "6ea65513283e3d2184521edb1525c9002481ea7cdfcc1d163abfa6924dcc0208"
+    },
+    {
+      "name": "qwen35-gguf.jinja/empty/False/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\n<|im_end|>\n",
+      "sha256": "ff921ad4db20f4e5893aa42365722e03362b92fffdf68ebc34edd1ef2457e118"
+    },
+    {
+      "name": "qwen35-gguf.jinja/empty/False/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\n<|im_end|>\n",
+      "sha256": "ff921ad4db20f4e5893aa42365722e03362b92fffdf68ebc34edd1ef2457e118"
+    },
+    {
+      "name": "qwen35-gguf.jinja/empty/True/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\n<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "422679356522fe3125048c90cb8a3fc3c36033d365781caedd2e02644de1ce1e"
+    },
+    {
+      "name": "qwen35-gguf.jinja/empty/True/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\n<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "422679356522fe3125048c90cb8a3fc3c36033d365781caedd2e02644de1ce1e"
+    },
+    {
+      "name": "qwen35-gguf.jinja/literal-markers/False/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n",
+      "sha256": "29db167f25b081d8a1fad737231e6c88d48be146a80eab058e0632f8c2845aa0"
+    },
+    {
+      "name": "qwen35-gguf.jinja/literal-markers/False/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n",
+      "sha256": "29db167f25b081d8a1fad737231e6c88d48be146a80eab058e0632f8c2845aa0"
+    },
+    {
+      "name": "qwen35-gguf.jinja/literal-markers/True/False",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "0fe98dec245b773040fe34b4dddcc9eb03be335b104a40e3597ef54ba71b3ad4"
+    },
+    {
+      "name": "qwen35-gguf.jinja/literal-markers/True/True",
+      "template": "qwen35-gguf.jinja",
+      "architecture": "qwen35",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<|im_start|>user\nShow <|turn> and <think> literally: {\"a\": 1}.<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "sha256": "0fe98dec245b773040fe34b4dddcc9eb03be335b104a40e3597ef54ba71b3ad4"
+    },
+    {
+      "name": "gemma4.jinja/ascii/False/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Compatibility probe",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nCompatibility probe<turn|>\n",
+      "sha256": "b0bfa476bdd46e9c2a681636df5cfcc33361dc28a8facd2bd54ab9c1fff1c7bc"
+    },
+    {
+      "name": "gemma4.jinja/ascii/False/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Compatibility probe",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nCompatibility probe<turn|>\n",
+      "sha256": "b0bfa476bdd46e9c2a681636df5cfcc33361dc28a8facd2bd54ab9c1fff1c7bc"
+    },
+    {
+      "name": "gemma4.jinja/ascii/True/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Compatibility probe",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nCompatibility probe<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "b1f54669b38e9f46f304f19d40f385ec78de717d7a4bfa002cbe87c659a1f6ed"
+    },
+    {
+      "name": "gemma4.jinja/ascii/True/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Compatibility probe",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nCompatibility probe<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "b1f54669b38e9f46f304f19d40f385ec78de717d7a4bfa002cbe87c659a1f6ed"
+    },
+    {
+      "name": "gemma4.jinja/unicode/False/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<turn|>\n",
+      "sha256": "c0141a8eebaa1191301faa5534e47815e641d58249e4f1482f7aac269a812667"
+    },
+    {
+      "name": "gemma4.jinja/unicode/False/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<turn|>\n",
+      "sha256": "c0141a8eebaa1191301faa5534e47815e641d58249e4f1482f7aac269a812667"
+    },
+    {
+      "name": "gemma4.jinja/unicode/True/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "8c7196201327411736a7fb08ada5fc06efc1fdf56b7897f1732a9211b41b11b6"
+    },
+    {
+      "name": "gemma4.jinja/unicode/True/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Caf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nCaf\u00e9 \ud83d\ude00 e\u0301\nLine two\tend.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "8c7196201327411736a7fb08ada5fc06efc1fdf56b7897f1732a9211b41b11b6"
+    },
+    {
+      "name": "gemma4.jinja/whitespace/False/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nKeep internal  spaces.<turn|>\n",
+      "sha256": "6d3eec153d6270bb6ff587cf0075bdf463656d737d85e97a5ac700e640dfc4e5"
+    },
+    {
+      "name": "gemma4.jinja/whitespace/False/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nKeep internal  spaces.<turn|>\n",
+      "sha256": "6d3eec153d6270bb6ff587cf0075bdf463656d737d85e97a5ac700e640dfc4e5"
+    },
+    {
+      "name": "gemma4.jinja/whitespace/True/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nKeep internal  spaces.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "ec26a55affda7139cec27900d21a303efd5b710a52cae7036a2200713e80e5a4"
+    },
+    {
+      "name": "gemma4.jinja/whitespace/True/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": " \t\n  Keep internal  spaces.\r\n  ",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nKeep internal  spaces.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "ec26a55affda7139cec27900d21a303efd5b710a52cae7036a2200713e80e5a4"
+    },
+    {
+      "name": "gemma4.jinja/python-strip-controls/False/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nKeep\ufeff<turn|>\n",
+      "sha256": "4e70663176563bbd616913df85942c17795ec044b4bb542edc11e8171f770151"
+    },
+    {
+      "name": "gemma4.jinja/python-strip-controls/False/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nKeep\ufeff<turn|>\n",
+      "sha256": "4e70663176563bbd616913df85942c17795ec044b4bb542edc11e8171f770151"
+    },
+    {
+      "name": "gemma4.jinja/python-strip-controls/True/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nKeep\ufeff<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "c8e5015965b24a489932aee1d7bf2892ee06c0f0f426c6214d671c1d43db239a"
+    },
+    {
+      "name": "gemma4.jinja/python-strip-controls/True/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "\u001c\u001d\u001e\u001f\u0085\u2007Keep\ufeff\u2007\u0085\u001f",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nKeep\ufeff<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "c8e5015965b24a489932aee1d7bf2892ee06c0f0f426c6214d671c1d43db239a"
+    },
+    {
+      "name": "gemma4.jinja/empty/False/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<bos><|turn>user\n<turn|>\n",
+      "sha256": "bc218a18812330fc6ab61d86117c0a012d0907b148183f113df0c0b62f055628"
+    },
+    {
+      "name": "gemma4.jinja/empty/False/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<bos><|turn>user\n<turn|>\n",
+      "sha256": "bc218a18812330fc6ab61d86117c0a012d0907b148183f113df0c0b62f055628"
+    },
+    {
+      "name": "gemma4.jinja/empty/True/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<bos><|turn>user\n<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "c3571891bc6fd32a16f7b7de45439532a26e9d7a0ea4b3cfbe632a8bad07c97d"
+    },
+    {
+      "name": "gemma4.jinja/empty/True/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<bos><|turn>user\n<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "c3571891bc6fd32a16f7b7de45439532a26e9d7a0ea4b3cfbe632a8bad07c97d"
+    },
+    {
+      "name": "gemma4.jinja/literal-markers/False/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": false,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nShow <|turn> and <think> literally: {\"a\": 1}.<turn|>\n",
+      "sha256": "136f81af77cae13e0fa04a35d1140fb9f055f679411085b5e15862ae041cd835"
+    },
+    {
+      "name": "gemma4.jinja/literal-markers/False/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": false,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nShow <|turn> and <think> literally: {\"a\": 1}.<turn|>\n",
+      "sha256": "136f81af77cae13e0fa04a35d1140fb9f055f679411085b5e15862ae041cd835"
+    },
+    {
+      "name": "gemma4.jinja/literal-markers/True/False",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": true,
+      "structured": false,
+      "rendered": "<bos><|turn>user\nShow <|turn> and <think> literally: {\"a\": 1}.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "f4545e9a5b0c3c9606269f5cf4b9839401cf1b312ff7aa0c6d56f049de71f75e"
+    },
+    {
+      "name": "gemma4.jinja/literal-markers/True/True",
+      "template": "gemma4.jinja",
+      "architecture": "gemma4",
+      "prompt": "Show <|turn> and <think> literally: {\"a\": 1}.",
+      "add_assistant": true,
+      "structured": true,
+      "rendered": "<bos><|turn>user\nShow <|turn> and <think> literally: {\"a\": 1}.<turn|>\n<|turn>model\n<|channel>thought\n<channel|>",
+      "sha256": "f4545e9a5b0c3c9606269f5cf4b9839401cf1b312ff7aa0c6d56f049de71f75e"
+    }
+  ]
+}

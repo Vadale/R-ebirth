@@ -1856,3 +1856,28 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   dependencies or downloading large weights during ordinary documentation CI;
   representing guarded model examples as successful executions; marking 1.0
   stability history complete at the documentation merge.
+
+
+## D-054 — Bounded modern chat-template correction and fresh model evaluation
+
+- **Date:** 2026-10-20. **Status:** explicitly authorized by the founder after
+  metadata and installed-library probes found mismatched chat framing.
+- **Scope:** correct the existing single-user `chat = TRUE` path for the pinned
+  Qwen3.5 author/GGUF templates and Gemma4 canonical template. Preserve each
+  embedded template's ordinary thinking default; schema-constrained generation
+  uses its official non-thinking opener. No public argument, Jinja interpreter,
+  output repair, dependency, engine/kernel, sampling or numerical-bound change.
+- **Recognition:** compare complete pinned template bytes. Do not infer a modern
+  format from an architecture name or marker substring. Unknown modern spellings
+  must fail explicitly rather than be rewritten by the legacy detector. Unrelated
+  recognized templates and the existing legacy fallback contract stay unchanged.
+- **Acceptance:** independent Jinja-rendered cases cover ordinary/schema modes,
+  assistant-opener presence, Unicode and Python/Jinja whitespace behavior. Retain
+  the original mismatch, refusal cases, existing family regressions and async
+  prompt limits. Verify the production installed path before fresh, predeclared
+  funding-document quality and CPU/CUDA measurements on this Linux machine.
+  Quantized file identities, resources, slower outcomes and unsupported scopes
+  remain explicit. No consumed holdout replay or general model-quality claim.
+- **Delivery:** one isolated correction, focused checks and one owner review,
+  followed by the ordinary required CI before integration. The submitted CRAN
+  archive remains frozen; this authorization does not replace it or release a tag.
