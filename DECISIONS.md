@@ -1881,3 +1881,21 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
 - **Delivery:** one isolated correction, focused checks and one owner review,
   followed by the ordinary required CI before integration. The submitted CRAN
   archive remains frozen; this authorization does not replace it or release a tag.
+
+### D-054 amendment — Exact Qwen3.8 GGUF template (2026-10-21)
+
+- The founder explicitly authorized a narrow Qwen3.8 chat correction followed by
+  a resource-guarded local trial. Match only the complete Unsloth template at
+  revision `4ca720788d1e01f1bff70c033e0d0028fd02e502`, identified in the fixture
+  README. The architecture remains `qwen35`; architecture alone is not proof
+  of template compatibility.
+- Preserve its default reasoning system message and thinking opener for ordinary
+  single-user chat. Schema output uses the source's non-thinking branch, which
+  omits that reasoning message. Do not expose new thinking knobs, tools, vision
+  or multi-turn behavior.
+- Add 24 independent Jinja references without changing the previous 72 reference
+  bytes. Retain exact-template refusal, message validation, byte budgets and the
+  shared tokenizer/chunked decode path. No vendor, dependency, API, sampling or
+  numerical change. Loading, memory use, factual quality and speed require their
+  own bounded installed-model evidence; this formatting decision proves none of
+  them. The submitted CRAN archive remains frozen.

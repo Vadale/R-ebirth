@@ -1,5 +1,9 @@
 # Development runtime changes after the 0.5.0 submission
 
+* Support the exact pinned Qwen3.8-27B GGUF single-user chat template,
+  preserving its default reasoning system turn and explicit non-thinking
+  framing for schema-constrained output. Unknown templates remain refused.
+
 * Preserve the supported Qwen3.5 and Gemma4 single-user chat formats before the
   legacy engine template detector can discard thinking/channel markers.
   Recognition uses complete pinned source templates; unknown modern spellings
