@@ -20,6 +20,7 @@ fn model() -> LoadedModel {
             backend: BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         },
         Some(1),
     )

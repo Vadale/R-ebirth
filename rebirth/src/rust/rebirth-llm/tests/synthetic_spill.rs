@@ -46,6 +46,7 @@ fn load_synthetic() -> LoadedModel {
         backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("synthetic model loads")
 }

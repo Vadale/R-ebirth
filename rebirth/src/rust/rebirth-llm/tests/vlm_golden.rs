@@ -91,6 +91,7 @@ fn load_vlm_cpu() -> Option<rebirth_llm::LoadedModel> {
             backend: BackendKind::Cpu,
             mmap: true,
             projector: Some(mmproj_path),
+            threads: None,
         })
         .expect("VLM + projector load"),
     )

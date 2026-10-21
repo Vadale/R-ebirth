@@ -171,3 +171,80 @@ independently known `expected_sha256`; changing models does not require editing
 their code. Their required capabilities still apply (for example two layers
 and supported tracing for the direction example). Keep the expected digest
 independent of the file being checked.
+
+## CPU threads and mixed CPU/GPU inference
+
+`llm(path, backend = "cuda", gpu_layers = 12, threads = 8)` requests twelve GPU
+layers and eight CPU threads for both prompt processing and token generation.
+Choose these counts for the available hardware and workload; they are not
+automatic recommendations. `threads = NULL` retains the previous defaults.
+R check-time core caps still apply. Derived text contexts inherit the request;
+the separate vision projector keeps its own defaults. More threads or GPU
+layers can be slower or leave too little working memory. Include the context,
+KV/recurrent state, compute buffers and other applications in the budget.
+
+The exact supported Qwen3.5-35B-A3B converter template has a distinct MoE
+architecture and thinking default. Support applies to verified single-user text
+formatting; structured output explicitly disables thinking. Model loading,
+quality, memory fit and speed each require actual evidence. Active parameters
+per token do not describe the total resident weights of an MoE model.
+
+
+### Bounded dense/MoE comparison
+
+A Linux CUDA experiment on a 16 GB RAM / 6 GB RTX 2060 host compared two pinned
+quantizations using the same production candidate and `threads = 8`. Each model
+answered the same six previously unexecuted Italian extraction cases: four
+selected official-page excerpts and two synthetic adversarial cases. The models
+ran sequentially, with context 4096, mmap enabled, schema-constrained chat,
+seed 21021, temperature 0, top-p 0.95 and at most 384 generated tokens.
+
+| Setting or result | Qwen3.8-27B UD-IQ3_XXS | Qwen3.5-35B-A3B UD-Q2_K_XL |
+| --- | --- | --- |
+| Requested GPU layers | 12 | 8 |
+| Passed frozen field/evidence criteria | 36/36 | 32/36 |
+| Official excerpts / synthetic criteria | 24/24 and 12/12 | 21/24 and 11/12 |
+| Median decode tokens/second | 1.31 | 8.06 |
+| Median complete response time | 101.7 s | 20.7 s |
+| Complete response range | 71.0–115.2 s | 16.2–30.9 s |
+| First-token range | 5.32–13.08 s | 3.97–9.26 s |
+| CPU-mapped weight buffers | 7609 MiB | 9406 MiB |
+| GPU weight buffers | 2474 MiB | 2177 MiB |
+| Smallest observed free VRAM | 1815 MiB | 2383 MiB |
+
+Both models returned the correct dates, amounts and percentages. The MoE returned
+two beneficiary descriptions outside the frozen accepted alternatives, a
+truncated quote that did not establish the deadline, and a quote where the
+contract required null. These remain failures; valid JSON does not establish
+correct extraction. The dense model met every criterion in this small experiment,
+which does not establish reliability on arbitrary grants or complete PDFs/OCR.
+
+Calibration separately compared four/eight threads and adjacent GPU-layer counts
+on two repeated synthetic prompts. Eight threads improved dense median decode
+throughput by 36.4% and 36.8% relative to the start/end four-thread controls. The
+MoE gain was 11.3% against its predeclared combined baseline (13.4% at the start,
+9.2% at the end); long-prompt first-token latency worsened in calibration. Adding
+one GPU layer did not meet the decode improvement criterion and reduced the
+reserve. Calibration prompts are not fresh quality validation.
+
+These are observations of different models, quantizations and GPU allocations,
+with sequential order and cache conditions; the speed difference cannot be
+attributed solely to parameter count or MoE architecture. The final experiment
+used the production development binary before its version metadata changed to
+0.6.0. It does not establish other hardware/backend performance, a generic
+chat-template interpreter, a CUDA-defect fix, or an automatic eight-thread default.
+
+Memory mappings and `MemAvailable` overlap reclaimable file cache: do not add
+mapped RSS to available memory. Context/KV/recurrent and compute buffers are
+additional to weights. Zram activity was observed, with no disk swap used; global
+swap activity cannot be attributed exclusively to the model. Peak memory PSI was
+13.56%, below the declared sustained stop condition. Both processes closed and
+released their GPU allocations. Keep headroom for the desktop and other programs.
+
+Model identities: Unsloth Qwen3.8-27B-GGUF revision
+`4ca720788d1e01f1bff70c033e0d0028fd02e502`, SHA-256
+`c0b7c3038681ed2e3040456c1dd45f9858b6c2290bed172c70388a94874f3eee`;
+and Qwen3.5-35B-A3B-GGUF revision
+`bc014a17be43adabd7066b7a86075ff935c6a4e2`, SHA-256
+`855b8d11f4b52e7ea4b9eeea2fbe3555c4d96d5b7b74702b6144810db3e77270`.
+These files are local-model inputs, not new registry aliases.

@@ -1,4 +1,17 @@
-# Development runtime changes after the 0.5.0 submission
+# relm 0.6.0 (candidate; not published)
+
+## New features
+
+* `llm()` accepts an optional `threads` count for text contexts and their derived
+  handles. `NULL` preserves existing defaults and R check-time core limits still
+  take precedence. More threads are not always faster.
+
+## Model compatibility
+
+* Preserve the exact pinned Qwen3.5-35B-A3B MoE single-user template, including
+  its ordinary thinking default and non-thinking schema mode. Modified modern
+  MoE templates are refused explicitly; no model-quality or speed guarantee is
+  implied by recognizing its format.
 
 * Support the exact pinned Qwen3.8-27B GGUF single-user chat template,
   preserving its default reasoning system turn and explicit non-thinking
@@ -11,16 +24,20 @@
   response repair or new public argument. Independent Jinja references cover
   whitespace, Unicode and ordinary/schema formatting. Prior family-level
   compatibility results do not certify every newer template or model file.
-* The archive submitted to CRAN remains unchanged; this is not a new release.
+* The exact 0.5.0 archive submitted to CRAN remains unchanged. This candidate
+  targets the separately authorized r-universe release, not a new CRAN submission.
 
-# Development documentation after the 0.5.0 submission
+## Documentation
 
 * Adds a source-derived public API inventory, an API/version/deprecation policy
   and an explicit thirty-day green-CI gate for the future 1.0 release.
 * Adds sixteen independent agent examples and a complete documentation site
   artifact, with explicit synthetic/model/network execution boundaries.
-* The exact archive already submitted to CRAN is unchanged. No new runtime API,
-  dependency, model capability or release is introduced by this documentation.
+* The model guide explains explicit CPU threads and mixed CPU/GPU memory, with
+  measured speed/quality tradeoffs and retained failures. No default, dependency,
+  engine revision or numerical tolerance changes.
+* Batch/service examples admit 0.6.0 while retaining exact prepared-environment
+  fingerprints and the existing dependency pins.
 
 # relm 0.5.0 (candidate; not published)
 

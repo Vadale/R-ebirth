@@ -4,11 +4,11 @@
 
 # NOTE (WP-V2): rebirth_model_load takes a sixth argument, `projector` — ""
 # is the text-only NULL sentinel. These direct boundary calls exercise the
-# same pre-WP-V2 behavior; only the signature grew.
+# same pre-WP-V2 behavior; D055 appends 0 for default CPU threads.
 
 test_that("the boundary maps a missing file to a model_load payload", {
   p <- relm:::rebirth_model_load(
-    tempfile(fileext = ".gguf"), 512L, -1L, "cpu", TRUE, ""
+    tempfile(fileext = ".gguf"), 512L, -1L, "cpu", TRUE, "", 0L
   )
   expect_false(p$ok)
   expect_identical(p$class, "relm_error_model_load")
@@ -20,7 +20,7 @@ test_that("the boundary maps garbage bytes to a model_load payload (no crash)", 
   f <- tempfile(fileext = ".gguf")
   writeBin(as.raw(c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)), f)
   on.exit(unlink(f), add = TRUE)
-  p <- relm:::rebirth_model_load(f, 512L, -1L, "cpu", TRUE, "")
+  p <- relm:::rebirth_model_load(f, 512L, -1L, "cpu", TRUE, "", 0L)
   expect_false(p$ok)
   expect_identical(p$class, "relm_error_model_load")
   expect_identical(p$fields$failing_check, "model_parse")
@@ -30,7 +30,7 @@ test_that("the boundary maps an unavailable backend to a backend payload", {
   unavailable <- setdiff(c("cuda", "metal"), relm:::rebirth_available_backends())
   expect_true(length(unavailable) >= 1L)
   unavailable <- unavailable[[1L]]
-  p <- relm:::rebirth_model_load("nowhere.gguf", 512L, -1L, unavailable, TRUE, "")
+  p <- relm:::rebirth_model_load("nowhere.gguf", 512L, -1L, unavailable, TRUE, "", 0L)
   expect_false(p$ok)
   expect_identical(p$class, "relm_error_backend")
   expect_identical(p$fields$requested, unavailable)

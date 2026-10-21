@@ -142,6 +142,7 @@ fn engine_activations_match_numpy_oracle_within_tolerance() {
         backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("synthetic model loads");
 

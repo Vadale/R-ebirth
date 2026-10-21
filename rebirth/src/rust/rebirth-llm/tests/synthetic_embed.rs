@@ -140,6 +140,7 @@ fn engine_embeddings_match_numpy_oracle_within_tolerance() {
         backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("synthetic model loads");
 
@@ -229,6 +230,7 @@ fn embed_texts_with_images_rejects_a_length_mismatch() {
         backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("synthetic model loads");
 

@@ -22,6 +22,7 @@ fn cuda_projection_device_rows_match_scalar_equation() {
             backend: crate::BackendKind::Cuda,
             mmap: true,
             projector: None,
+            threads: None,
         },
         Some(4),
     )

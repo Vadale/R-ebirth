@@ -23,6 +23,7 @@ fn f6b_model(entries: &[crate::LiveSteer], ablate: bool) -> LoadedModel {
             backend: crate::BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         },
         Some(4),
     )

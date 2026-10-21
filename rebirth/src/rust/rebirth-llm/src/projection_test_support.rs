@@ -87,6 +87,7 @@ fn request(path: PathBuf, backend: crate::BackendKind) -> crate::LoadRequest {
         backend,
         mmap: true,
         projector: None,
+        threads: None,
     }
 }
 fn tiny() -> LoadedModel {

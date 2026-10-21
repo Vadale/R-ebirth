@@ -159,6 +159,7 @@ fn load_synthetic() -> rebirth_llm::LoadedModel {
         backend: numeric_backend::backend(),
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("synthetic model loads")
 }

@@ -398,7 +398,15 @@ fn rebirth_model_load(
     backend: &str,
     mmap: bool,
     projector: &str,
+    threads: i32,
 ) -> Robj {
+    // Zero is the private NULL sentinel; never clamp invalid negative counts.
+    if threads < 0 {
+        return error_payload(RebirthError::Argument {
+            argument: "threads".into(),
+            reason: "expected a positive count or the zero default sentinel".into(),
+        });
+    }
     let backend = match BackendKind::parse(backend) {
         Some(kind) => kind,
         None => {
@@ -429,6 +437,7 @@ fn rebirth_model_load(
         },
         backend,
         mmap,
+        threads: if threads == 0 { None } else { Some(threads) },
         projector: if projector.is_empty() {
             None
         } else {

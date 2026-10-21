@@ -1628,6 +1628,8 @@ fn resolve_and_apply_template(
 const QWEN35_AUTHOR_TEMPLATE: &str =
     include_str!("../tests/fixtures/modern-chat/qwen35-author.jinja");
 const QWEN35_GGUF_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/qwen35-gguf.jinja");
+const QWEN35_MOE_GGUF_TEMPLATE: &str =
+    include_str!("../tests/fixtures/modern-chat/qwen35-moe-gguf.jinja");
 const QWEN38_GGUF_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/qwen38-gguf.jinja");
 const GEMMA4_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/gemma4.jinja");
 
@@ -1639,13 +1641,19 @@ fn apply_modern_template(
     structured: bool,
 ) -> Result<Option<TemplatedPrompt>, RebirthError> {
     let (prefix, turn_end, assistant, thinking) = match (arch, template) {
-        ("qwen35", QWEN35_AUTHOR_TEMPLATE | QWEN35_GGUF_TEMPLATE | QWEN38_GGUF_TEMPLATE) => (
+        ("qwen35", QWEN35_AUTHOR_TEMPLATE | QWEN35_GGUF_TEMPLATE | QWEN38_GGUF_TEMPLATE)
+        | ("qwen35moe", QWEN35_MOE_GGUF_TEMPLATE) => (
             "<|im_start|>user\n",
             "<|im_end|>\n",
             "<|im_start|>assistant\n",
-            // Qwen3.5 author and Qwen3.8 GGUF default to thinking; Qwen3.5
-            // GGUF defaults to non-thinking. Schema output starts at JSON.
-            if !structured && matches!(template, QWEN35_AUTHOR_TEMPLATE | QWEN38_GGUF_TEMPLATE) {
+            // The author, MoE GGUF and Qwen3.8 default to thinking; the
+            // dense Qwen3.5 GGUF does not. Schema output starts at JSON.
+            if !structured
+                && matches!(
+                    template,
+                    QWEN35_AUTHOR_TEMPLATE | QWEN35_MOE_GGUF_TEMPLATE | QWEN38_GGUF_TEMPLATE
+                )
+            {
                 "<think>\n"
             } else {
                 "<think>\n\n</think>\n\n"
@@ -1661,7 +1669,9 @@ fn apply_modern_template(
             // Markers only REFUSE an unknown modern spelling; they never select
             // a guessed formatter or overwrite custom template semantics.
             let unknown_modern = match arch {
-                "qwen35" => template.contains("<think>") || template.contains("enable_thinking"),
+                "qwen35" | "qwen35moe" => {
+                    template.contains("<think>") || template.contains("enable_thinking")
+                }
                 "gemma4" => template.contains("<|turn>") || template.contains("enable_thinking"),
                 _ => false,
             };
@@ -1953,6 +1963,7 @@ mod tests {
             backend: crate::BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         })
         .unwrap();
         let schema = crate::CompiledSchema::compile(
@@ -2101,6 +2112,35 @@ mod tests {
         }
     }
 
+    // The MoE converter retains its own default-thinking template. This test
+    // exercises the complete resolver; existing dense/Gemma oracles stay intact.
+    #[test]
+    fn qwen35_moe_chat_matches_independent_jinja_cases() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../tests/fixtures/modern-chat/qwen35-moe-single-user-turn.json"
+        ))
+        .unwrap();
+        let cases = fixture["cases"].as_array().unwrap();
+        assert_eq!(cases.len(), 24);
+        for case in cases {
+            let result = resolve_and_apply_template(
+                Some(super::QWEN35_MOE_GGUF_TEMPLATE),
+                "qwen35moe",
+                &[ChatMessage::user(case["prompt"].as_str().unwrap())],
+                case["add_assistant"].as_bool().unwrap(),
+                case["structured"].as_bool().unwrap(),
+            )
+            .unwrap();
+            assert_eq!(
+                result.text.as_bytes(),
+                case["rendered"].as_str().unwrap().as_bytes(),
+                "{}",
+                case["name"]
+            );
+            assert!(!result.add_special);
+        }
+    }
+
     #[test]
     fn modern_chat_checks_full_utf8_budget_before_allocation() {
         let parts = ["<bos>", "café", "\n"];
@@ -2117,6 +2157,7 @@ mod tests {
     #[test]
     fn modern_chat_rejects_modified_templates_and_bad_messages() {
         for (arch, template) in [
+            ("qwen35moe", super::QWEN35_MOE_GGUF_TEMPLATE),
             ("qwen35", super::QWEN38_GGUF_TEMPLATE),
             (
                 "qwen35",
@@ -2326,6 +2367,7 @@ mod tests {
             backend: crate::BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         })
         .unwrap();
         assert_eq!(model.architecture(), "spark2_5");

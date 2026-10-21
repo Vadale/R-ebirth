@@ -50,6 +50,7 @@ fn multimodal_embedding_mechanics_on_the_pinned_vlm() {
         backend: BackendKind::Cpu,
         mmap: true,
         projector: Some(mmproj_path),
+        threads: None,
     })
     .expect("VLM + projector load");
 

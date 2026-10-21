@@ -1,6 +1,6 @@
 "name","kind","signature","topic"
 "activations","export","activations(layer, component = ""residual"")","activations.Rd"
-"llm","export","llm(path, context_length = 4096, gpu_layers = NULL, backend = c(""auto"", ""metal"", ""cuda"", ""cpu""), mmap = TRUE, projector = NULL)","llm.Rd"
+"llm","export","llm(path, context_length = 4096, gpu_layers = NULL, backend = c(""auto"", ""metal"", ""cuda"", ""cpu""), mmap = TRUE, projector = NULL, threads = NULL)","llm.Rd"
 "llm_ablate","export","llm_ablate(m, layer, neurons, value = 0, component = ""residual"")","llm_ablate.Rd"
 "llm_apply_direction","export","llm_apply_direction(m, direction, context, coef = 1, max_bytes = 64 * 1024^2, operator = ""add"")","llm_apply_direction.Rd"
 "llm_cancel","export","llm_cancel(m)","llm_cancel.Rd"

@@ -60,6 +60,7 @@ fn cpu_load_and_all_context_types_use_no_gpu_device() {
         backend: BackendKind::Cpu,
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("CPU load must not require a usable GPU");
     assert_eq!(model.metadata().gpu_layers, 0);

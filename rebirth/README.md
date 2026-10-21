@@ -24,8 +24,11 @@ is published, including a verified fresh Mac arm64 r-universe installation.
 Check `packageVersion("relm")` and restart R after upgrading.
 
 The **0.5.0 source has been submitted to CRAN**, combining optional Linux CUDA
-and source portability. A separate GitHub release and CRAN acceptance are pending; see the
+and source portability. CRAN acceptance is pending; see the
 [submission status](https://github.com/Vadale/R-ebirth/blob/main/docs/cran-submission.md).
+The **0.6.0 candidate** adds optional `threads` and exact modern chat templates.
+See [model configuration and measured limits](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md);
+release/distribution verification remains pending.
 
 ## Installation
 

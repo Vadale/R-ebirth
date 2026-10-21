@@ -31,7 +31,10 @@ an already loaded package. Windows CPU source-package checks and the corrected
 0.5.0 win-builder R-devel check passed. Binary availability is separate from
 installed-workflow validation; Windows GPU and full live-file lifecycle parity
 remain unverified.
-The 0.5.0 candidate is tracked in the [CRAN preparation status](cran-submission.md).
+The exact 0.5.0 submission is tracked in the [CRAN preparation status](cran-submission.md).
+The 0.6.0 candidate adds optional CPU threads and exact modern chat templates;
+see [model configuration and measured limits](models.md). Check actual
+r-universe availability before expecting this candidate in an installation.
 The development source has
 a separate [optional Linux CUDA build](linux-cuda.md); installing an ordinary
 r-universe binary does not establish CUDA capability.

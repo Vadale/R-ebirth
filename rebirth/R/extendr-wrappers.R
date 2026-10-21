@@ -5,7 +5,7 @@
 #' @useDynLib relm, .registration = TRUE
 NULL
 
-rebirth_model_load <- function(path, context_length, gpu_layers, backend, mmap, projector) .Call(wrap__rebirth_model_load, path, context_length, gpu_layers, backend, mmap, projector)
+rebirth_model_load <- function(path, context_length, gpu_layers, backend, mmap, projector, threads) .Call(wrap__rebirth_model_load, path, context_length, gpu_layers, backend, mmap, projector, threads)
 
 rebirth_handle_close <- function(ptr) .Call(wrap__rebirth_handle_close, ptr)
 

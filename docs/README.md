@@ -26,10 +26,12 @@ the separate publication and 1.0 release gates.
 Version [0.4.0 is published](release-0.4.0.md). For detailed historical numerical
 and runtime evidence, use the [validation ledger](validation-status.md).
 Plans and historical build receipts are not current results.
-The next **0.5.0 candidate** groups Linux CUDA, Windows CPU portability and
+The submitted **0.5.0 candidate** groups Linux CUDA, Windows CPU portability and
 [CRAN preparation](cran-submission.md), including the remaining Rust/Cargo policy
 decision. The exact source has been submitted and maintainer confirmation reported; CRAN
-acceptance and a separate GitHub release are pending.
+acceptance remains pending. The **0.6.0 candidate** adds optional CPU threads and
+exact modern chat support; its [model guide](models.md) records the bounded
+dense/MoE comparison and its failures. Distribution acceptance is still pending.
 
 ## Extend the same workflow
 

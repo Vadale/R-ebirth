@@ -32,6 +32,7 @@ fn default_constructor_routes_and_owned_lifecycle() {
             backend: BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         },
         Some(4),
     )

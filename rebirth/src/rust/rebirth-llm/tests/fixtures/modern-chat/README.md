@@ -1,6 +1,6 @@
 # Modern single-user chat references (D-054)
 
-The four source templates are immutable inputs, not a generic Jinja runtime.
+The five source templates are immutable inputs, not a generic Jinja runtime.
 
 | File | Upstream source and revision | SHA-256 |
 | --- | --- | --- |
@@ -41,3 +41,14 @@ not numerical model goldens or proof that a GGUF loads. Gemma's BOS is explicit;
 Qwen's format has none. Both retain the shared special-token parsing and
 batch-decoding path. Actual tokenizer/model/backend behavior requires separate
 installed-model evidence.
+
+
+The separate `qwen35-moe-gguf.jinja` source is decoded from the
+[Unsloth Qwen3.5-35B-A3B UD-Q2_K_XL GGUF](https://huggingface.co/unsloth/Qwen3.5-35B-A3B-GGUF/tree/bc014a17be43adabd7066b7a86075ff935c6a4e2).
+Its SHA-256 is `e60df41481b6ad20571cda7e2e1290cfee25670f1b50973f74576c9354c66336`.
+Its ordinary single-user default enables thinking, whereas the dense Qwen3.5
+converter source above disables it. Both explicitly disable thinking for schema
+output. `render-fixtures.py --qwen35-moe` verifies 24 additional cases stored in
+`qwen35-moe-single-user-turn.json`; previous reference bytes remain unchanged.
+Full template recognition and a `qwen35moe` name do not certify a particular
+quantized model's installation, resource fit, throughput or numerical quality.

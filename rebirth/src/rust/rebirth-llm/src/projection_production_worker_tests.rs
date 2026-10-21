@@ -20,6 +20,7 @@ fn projection_worker_lifecycle(backend: crate::BackendKind) {
             backend,
             mmap: true,
             projector: None,
+            threads: None,
         },
         Some(4),
     )
