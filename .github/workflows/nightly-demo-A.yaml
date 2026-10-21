@@ -78,7 +78,9 @@ jobs:
       - name: Build relm and run Demo A end-to-end (relaxed acceptance + A4 gate)
         run: |
           Rscript -e '
-            suppressMessages(pkgload::load_all("rebirth", quiet = TRUE))
+            # Exercise an optimized build; pkgload defaults to DEBUG=true/-O0.
+            stopifnot(!nzchar(Sys.getenv("DEBUG")))
+            pkgload::load_all("rebirth", quiet = FALSE, debug = FALSE)
             mp <- Sys.getenv("RELM_TEST_MODEL_QWEN")
             stopifnot(nzchar(mp), file.exists(mp))
             # Fail LOUDLY if the model is not the expected one (a nightly that

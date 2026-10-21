@@ -151,6 +151,9 @@ jobs:
 
       - name: Run the installed [MODEL] tolerance suite
         working-directory: rebirth
+        env:
+          # Match the installed fixture DLL; keep the later S1 build production-only.
+          RELM_ENABLE_SELFTESTS: "1"
         run: |
           set -euo pipefail
           Rscript --vanilla - <<'RS' 2>&1 | tee "$RUNNER_TEMP/tolerance-suite.log"
