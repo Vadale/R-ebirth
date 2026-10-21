@@ -125,6 +125,29 @@ passed, including vision on macOS/Linux. The earlier vision installation failure
 did not require weaker numerical thresholds. This records that integration's
 evidence, not a claim that every later run is green.
 
+## Scheduled build-mode correction (2026-10-21)
+
+The first installed-library model-tolerance run after PR #77 retained 7,882
+passing expectations, 25 scoped skips and one failed registration assertion.
+Its fixture DLL was installed with `RELM_ENABLE_SELFTESTS=1`, but the test step
+omitted that flag and expected a production registration surface. The test step
+now declares the same mode; the subsequent S1 installation stays production-only.
+The original failed job and skipped native-boundary/S1/D2 stages remain distinct
+from the passing HF activation comparison.
+
+Demo A and Demo B exceeded their unchanged 90-minute job limits. Both used
+`pkgload::load_all()` without overriding debug mode. In the observed
+[pkgload 1.5.3](https://github.com/r-lib/pkgload/blob/v1.5.3/R/load.R) and
+[pkgbuild 1.4.8](https://github.com/r-lib/pkgbuild/blob/v1.4.8/R/compile-dll.R),
+that route sets `DEBUG` and adds `-O0`. A tiny compiler observer reproduced
+this configuration and the corrected optimized/release selection. The original
+quiet runner output did not retain exact native compiler commands. The portable
+native build correctly honors the supplied R compiler flags. The demo workflows
+explicitly request `debug = FALSE` and retain full build output. This removes the identified debug-mode configuration defect;
+completion and timing still require actual corrected scheduled runs. Model pins,
+data, seeds, acceptance thresholds, reproducibility checks and timeouts are
+unchanged. No model execution was repeated locally for this correction.
+
 ## Local maintenance evidence
 
 R 4.5.1 on macOS arm64, Rust 1.96.0, existing local Qwen2.5-0.5B and cached vision
