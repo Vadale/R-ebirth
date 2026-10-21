@@ -14,7 +14,7 @@ SOURCES = {
     "gemma4.jinja": ("gemma4", "ae53464bf3be25802b3a5b37def7fd89667067d7577049b3b2d74c4d8de4c6d4"),
 }
 
-def render():
+def render(sources=SOURCES):
     if jinja2.__version__ != "3.1.6":
         raise RuntimeError("Reference renderer requires Jinja2 3.1.6")
     env = ImmutableSandboxedEnvironment(trim_blocks=True, lstrip_blocks=True)
@@ -22,7 +22,7 @@ def render():
         raise ValueError(message)
     env.globals["raise_exception"] = refuse
     cases = []
-    for filename, (architecture, digest) in SOURCES.items():
+    for filename, (architecture, digest) in sources.items():
         raw = (DIRECTORY / filename).read_bytes()
         if hashlib.sha256(raw).hexdigest() != digest:
             raise RuntimeError(f"Template bytes changed: {filename}")
@@ -49,16 +49,25 @@ def render():
                                   "structured": structured, "rendered": text,
                                   "sha256": hashlib.sha256(text.encode()).hexdigest()})
     return {"renderer": "Jinja2 3.1.6 ImmutableSandboxedEnvironment",
-            "template_sha256": {k: v[1] for k, v in SOURCES.items()}, "cases": cases}
+            "template_sha256": {k: v[1] for k, v in sources.items()}, "cases": cases}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
+    parser.add_argument("--qwen38", action="store_true", help="Render the separate Qwen3.8 references")
     options = parser.parse_args()
-    data = (json.dumps(render(), ensure_ascii=True, indent=2) + "\n").encode()
-    target = DIRECTORY / "single-user-turn.json"
+    sources = SOURCES
+    if options.qwen38:
+        sources = {
+            "qwen38-gguf.jinja": (
+                "qwen35",
+                "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
+            )
+        }
+    data = (json.dumps(render(sources), ensure_ascii=True, indent=2) + "\n").encode()
+    target = DIRECTORY / ("qwen38-single-user-turn.json" if options.qwen38 else "single-user-turn.json")
     if options.write:
         target.write_bytes(data)
     elif target.read_bytes() != data:
         raise RuntimeError("Committed reference differs from pinned Jinja render")
-    print("72 single-user cases match the three pinned source templates.")
+    print(f"{len(sources) * 24} single-user cases match {len(sources)} pinned source templates.")

@@ -64,15 +64,17 @@ for chat; changing that flag is a deliberate change to the input format.
 ### Modern chat templates
 
 Chat support depends on the embedded template as well as the architecture.
-The D-054 formatter recognizes three exact source templates: Qwen3.5-9B's
-original author template and the pinned Unsloth GGUF spelling, and
-Gemma4-12B-it's original template. Provenance and independent reference bytes
+The D-054 formatter recognizes four exact source templates: Qwen3.5-9B's
+original author template and pinned Unsloth GGUF spelling, Qwen3.8-27B's
+pinned Unsloth GGUF spelling, and Gemma4-12B-it's original template. Provenance and independent reference bytes
 are in `rebirth/src/rust/rebirth-llm/tests/fixtures/modern-chat/README.md`.
 
 For the single user prompt accepted by `llm_generate()`, ordinary Qwen chat
 preserves the template's declared default: thinking for the author spelling,
-non-thinking for the supported GGUF spelling. Schema-constrained output uses
-the template's non-thinking mode. Gemma4 uses its modern turn/channel markers
+non-thinking for the supported Qwen3.5 GGUF spelling. Qwen3.8 preserves its
+default `xhigh` reasoning system turn and thinking opener. Schema-constrained
+output uses the template's non-thinking mode, including omission of that
+Qwen3.8 reasoning system turn. Gemma4 uses its modern turn/channel markers
 and non-thinking default. No response text is stripped or repaired. Modified
 modern templates are refused rather than replaced with a guessed legacy format.
 This is not arbitrary Jinja, tool calling or multi-turn conversation support.

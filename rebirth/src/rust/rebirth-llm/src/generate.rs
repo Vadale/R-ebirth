@@ -1628,6 +1628,7 @@ fn resolve_and_apply_template(
 const QWEN35_AUTHOR_TEMPLATE: &str =
     include_str!("../tests/fixtures/modern-chat/qwen35-author.jinja");
 const QWEN35_GGUF_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/qwen35-gguf.jinja");
+const QWEN38_GGUF_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/qwen38-gguf.jinja");
 const GEMMA4_TEMPLATE: &str = include_str!("../tests/fixtures/modern-chat/gemma4.jinja");
 
 fn apply_modern_template(
@@ -1638,13 +1639,13 @@ fn apply_modern_template(
     structured: bool,
 ) -> Result<Option<TemplatedPrompt>, RebirthError> {
     let (prefix, turn_end, assistant, thinking) = match (arch, template) {
-        ("qwen35", QWEN35_AUTHOR_TEMPLATE | QWEN35_GGUF_TEMPLATE) => (
+        ("qwen35", QWEN35_AUTHOR_TEMPLATE | QWEN35_GGUF_TEMPLATE | QWEN38_GGUF_TEMPLATE) => (
             "<|im_start|>user\n",
             "<|im_end|>\n",
             "<|im_start|>assistant\n",
-            // The author defaults to thinking; this GGUF converter explicitly
-            // defaults to non-thinking. Schema output must start at JSON.
-            if !structured && template == QWEN35_AUTHOR_TEMPLATE {
+            // Qwen3.5 author and Qwen3.8 GGUF default to thinking; Qwen3.5
+            // GGUF defaults to non-thinking. Schema output starts at JSON.
+            if !structured && matches!(template, QWEN35_AUTHOR_TEMPLATE | QWEN38_GGUF_TEMPLATE) {
                 "<think>\n"
             } else {
                 "<think>\n\n</think>\n\n"
@@ -1688,7 +1689,20 @@ fn apply_modern_template(
     let content = message
         .content
         .trim_matches(|c: char| c.is_whitespace() || matches!(c, '\u{1c}'..='\u{1f}'));
+    // Qwen3.8 injects this default system turn even when the caller supplies
+    // only one user message. Its official non-thinking mode omits it entirely.
+    let system = if template == QWEN38_GGUF_TEMPLATE && !structured {
+        concat!(
+            "<|im_start|>system\n",
+            "Reasoning effort is set to xhigh. Please think carefully through the task, ",
+            "validate key assumptions, consider plausible alternatives, and prioritize ",
+            "correctness, consistency, and clarity in the final answer.<|im_end|>\n"
+        )
+    } else {
+        ""
+    };
     let pieces = [
+        system,
         prefix,
         content,
         turn_end,
@@ -2058,6 +2072,35 @@ mod tests {
         }
     }
 
+    // Ordinary Rust PR jobs; 24 new independent source-template references.
+    // Existing Qwen3.5/Gemma references above remain byte-for-byte unchanged.
+    #[test]
+    fn qwen38_chat_matches_independent_jinja_cases() {
+        let fixture: serde_json::Value = serde_json::from_str(include_str!(
+            "../tests/fixtures/modern-chat/qwen38-single-user-turn.json"
+        ))
+        .unwrap();
+        let cases = fixture["cases"].as_array().unwrap();
+        assert_eq!(cases.len(), 24);
+        for case in cases {
+            let result = resolve_and_apply_template(
+                Some(super::QWEN38_GGUF_TEMPLATE),
+                "qwen35",
+                &[ChatMessage::user(case["prompt"].as_str().unwrap())],
+                case["add_assistant"].as_bool().unwrap(),
+                case["structured"].as_bool().unwrap(),
+            )
+            .unwrap();
+            assert_eq!(
+                result.text.as_bytes(),
+                case["rendered"].as_str().unwrap().as_bytes(),
+                "{}",
+                case["name"]
+            );
+            assert!(!result.add_special, "Qwen3.8 does not add a BOS token");
+        }
+    }
+
     #[test]
     fn modern_chat_checks_full_utf8_budget_before_allocation() {
         let parts = ["<bos>", "café", "\n"];
@@ -2074,6 +2117,7 @@ mod tests {
     #[test]
     fn modern_chat_rejects_modified_templates_and_bad_messages() {
         for (arch, template) in [
+            ("qwen35", super::QWEN38_GGUF_TEMPLATE),
             (
                 "qwen35",
                 include_str!("../tests/fixtures/modern-chat/qwen35-author.jinja"),
