@@ -812,6 +812,55 @@ pub(crate) mod tests {
         );
     }
 
+    // D056 test-only transport update: keep the frozen producer manifest intact.
+    // Twin pins: tests/llm-golden/transport_provenance.py; checked below.
+    const HISTORICAL_REQUIREMENTS_SHA: &str =
+        "58557e747b0d19c9eb0dd24ecf2317bb9d28e9bc4337bd43a85b43f614363086";
+    const CURRENT_REQUIREMENTS_SHA: &str =
+        "ddf59e592c44556d980e2733413ca859602e802a3fdacbc472f72b04b06e7008";
+
+    fn current_provenance_digest<'a>(path: &str, historical: &'a str) -> &'a str {
+        if path == "tests/llm-golden/requirements.txt" {
+            assert_eq!(historical, HISTORICAL_REQUIREMENTS_SHA);
+            CURRENT_REQUIREMENTS_SHA
+        } else {
+            historical
+        }
+    }
+
+    /// Model-free CI guard: no exception for another file or unknown digest.
+    #[test]
+    fn transport_provenance_requires_exact_approved_transition_and_twin_pins() {
+        let path = "tests/llm-golden/requirements.txt";
+        assert_eq!(
+            current_provenance_digest(path, HISTORICAL_REQUIREMENTS_SHA),
+            CURRENT_REQUIREMENTS_SHA
+        );
+        for invalid in [CURRENT_REQUIREMENTS_SHA, "unknown"] {
+            assert!(std::panic::catch_unwind(|| current_provenance_digest(path, invalid)).is_err());
+        }
+        assert_eq!(
+            current_provenance_digest("another/source", HISTORICAL_REQUIREMENTS_SHA),
+            HISTORICAL_REQUIREMENTS_SHA
+        );
+        let python =
+            std::fs::read_to_string(root().join("tests/llm-golden/transport_provenance.py"))
+                .unwrap();
+        for (name, digest) in [
+            ("HISTORICAL_SHA", HISTORICAL_REQUIREMENTS_SHA),
+            ("CURRENT_SHA", CURRENT_REQUIREMENTS_SHA),
+        ] {
+            assert_eq!(
+                python
+                    .lines()
+                    .filter(|line| *line == format!("{name} = \"{digest}\""))
+                    .count(),
+                1,
+                "Python/Rust provenance twin pin {name}"
+            );
+        }
+    }
+
     /// Download-free cargo-test CI. Independent full-prefix numpy reference,
     /// last-only output pruning, over-n_batch and over-n_ubatch first prefill,
     /// post-intervention residual and unmodified raw MLP semantics.
@@ -824,7 +873,10 @@ pub(crate) mod tests {
             check_digest(&dir.join(name), artifact["sha256"].as_str().unwrap());
         }
         for (path, digest) in manifest["provenance_sha256"].as_object().unwrap() {
-            check_digest(&root().join(path), digest.as_str().unwrap());
+            check_digest(
+                &root().join(path),
+                current_provenance_digest(path, digest.as_str().unwrap()),
+            );
         }
         let states = csv("states.csv");
         let activations = csv("activations.csv");

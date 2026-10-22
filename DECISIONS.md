@@ -1924,3 +1924,10 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   root is absent and the three unaffected roots restored by upstream are present.
   Required ordinary CI remains unchanged in scope. The root-store update can
   change TLS trust decisions; it makes no numerical or performance claim.
+
+- **Affected native test consumer:** the live-state Rust test also checks this
+  historical requirements hash before comparing its saved independent values.
+  Its test-only provenance resolver admits the same exact transition for that
+  one path, then still hashes the actual current file. A model-free regression
+  rejects unknown historical hashes/other-path substitutions and binds Python/Rust
+  twin pins. Native production code and all numerical comparisons are unchanged.
