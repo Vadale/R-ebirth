@@ -32,6 +32,7 @@ fn tiny() -> LoadedModel {
             backend: crate::BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         },
         Some(512),
         Some(128),

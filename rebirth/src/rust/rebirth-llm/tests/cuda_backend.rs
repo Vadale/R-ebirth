@@ -61,6 +61,7 @@ fn cuda_load_and_all_context_types_use_device_buffers() {
         backend: BackendKind::Cuda,
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("CUDA load must use the real device");
     // Metadata retains the request sentinel; actual placement is checked below.

@@ -155,6 +155,8 @@ pub struct Model {
     ptr: NonNull<ffi::llama_model>,
     resolved_backend: BackendKind,
     max_token_piece_bytes: u64,
+    /// Explicit text-context threads, shared by every derived handle.
+    threads: Option<i32>,
     /// The sentinel-probe verdict cache (D-021), shared through every `Arc<Model>`
     /// clone so a derived handle inherits it: the intervention mechanism is proven
     /// on this model's weights once per (mechanism, layer), then reused. `Mutex`
@@ -328,6 +330,10 @@ impl OwnedContext {
         // b10828 defaults to one output per sequence. relm also returns
         // per-token logits/embeddings, so retain the pre-bump batch-wide limit.
         cparams.n_outputs_max_per_seq = 0;
+        if let Some(threads) = model.threads {
+            cparams.n_threads = threads;
+            cparams.n_threads_batch = threads;
+        }
         cparams.n_threads = crate::check_resources::threads(cparams.n_threads);
         cparams.n_threads_batch = crate::check_resources::threads(cparams.n_threads_batch);
         // This chokepoint covers generation, embeddings, traces, and derived
@@ -849,6 +855,9 @@ pub struct LoadRequest {
     /// `Some(path)` = an mmproj GGUF to load as the vision projector
     /// (`llm(projector=)`, WP-V2/D-026); `None` = text-only, unchanged.
     pub projector: Option<PathBuf>,
+    /// None preserves native defaults; Some(n) requests positive text threads.
+    /// The check-time resource cap still applies at every context creation.
+    pub threads: Option<i32>,
 }
 
 /// Load a GGUF model into an owned `LoadedModel`, or return a classed error.
@@ -890,6 +899,12 @@ fn load_impl(
     n_ubatch: Option<u32>,
     callback: bool,
 ) -> Result<LoadedModel, RebirthError> {
+    if req.threads.is_some_and(|count| count < 1) {
+        return Err(RebirthError::Argument {
+            argument: "threads".into(),
+            reason: "expected a positive thread count or the default".into(),
+        });
+    }
     // Acquire the backend up front so the ggml device registry is populated
     // before any capability query, and so it lives for the whole load. On an
     // early return the guard drops and (if last) tears the backend down again.
@@ -963,6 +978,7 @@ fn load_impl(
         ptr: model_ptr,
         resolved_backend: req.backend,
         max_token_piece_bytes: 0,
+        threads: req.threads,
         // SAFETY: freshly loaded non-null model; scalar metadata query.
         probe_cache: Mutex::new(ProbeCache::new(
             unsafe { ffi::llama_model_n_layer(model_ptr.as_ptr()) }.max(0) as usize,
@@ -1171,6 +1187,7 @@ mod tests {
             backend: BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         })
         .unwrap();
         let derived = model.clone_with_fresh_context().unwrap();
@@ -1197,6 +1214,86 @@ mod tests {
         }
         assert_eq!(crate::vision::context_params().n_threads, expected);
         println!("CRAN_CONTEXT_THREADS_OK threads={expected} contexts=4 text_fields=8 vision_parameter=1 loads=1 decodes=0");
+    }
+
+    #[test]
+    fn explicit_threads_reach_owned_contexts_and_respect_check_caps() {
+        // Ordinary Rust CI; separate processes keep the environment isolated.
+        if std::env::var_os("RELM_EXPLICIT_THREADS_CHILD").is_none() {
+            for check in ["TRUE", "FALSE"] {
+                let output = std::process::Command::new(std::env::current_exe().unwrap())
+                    .args(["--exact", "engine::tests::explicit_threads_reach_owned_contexts_and_respect_check_caps", "--nocapture"])
+                    .env("RELM_EXPLICIT_THREADS_CHILD", "1")
+                    .env("_R_CHECK_LIMIT_CORES_", check)
+                    .output().unwrap();
+                assert!(
+                    output.status.success(),
+                    "{}\n{}",
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                print!("{}", String::from_utf8_lossy(&output.stdout));
+            }
+            return;
+        }
+        extern "C" {
+            fn llama_n_threads(ctx: *mut ffi::llama_context) -> i32;
+            fn llama_n_threads_batch(ctx: *mut ffi::llama_context) -> i32;
+        }
+        extern "C" fn no_capture(_: *mut ffi::ggml_tensor, _: bool, _: *mut c_void) -> bool {
+            false
+        }
+        let _native = NativeGuard::acquire("explicit_thread_control");
+        let model = load(LoadRequest {
+            path: PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+                .join("../../../tests/testthat/fixtures/synthetic-llama-2l.gguf"),
+            context_length: 64,
+            gpu_layers: Some(0),
+            backend: BackendKind::Cpu,
+            mmap: true,
+            projector: None,
+            threads: Some(8),
+        })
+        .unwrap();
+        let derived = model.clone_with_fresh_context().unwrap();
+        let embedding = model.create_embedding_context(64).unwrap();
+        let trace = model
+            .create_trace_context(64, no_capture, std::ptr::null_mut())
+            .unwrap();
+        let expected = if std::env::var("_R_CHECK_LIMIT_CORES_").as_deref() == Ok("TRUE") {
+            2
+        } else {
+            8
+        };
+        for ptr in [
+            model.ctx_ptr(),
+            derived.ctx_ptr(),
+            embedding.as_ptr(),
+            trace.as_ptr(),
+        ] {
+            // SAFETY: scalar upstream getters on the four live owned contexts.
+            unsafe {
+                assert_eq!(llama_n_threads(ptr), expected);
+                assert_eq!(llama_n_threads_batch(ptr), expected);
+            }
+        }
+        let vision_expected = if expected == 2 { 2 } else { 4 };
+        assert_eq!(crate::vision::context_params().n_threads, vision_expected);
+        println!("EXPLICIT_CONTEXT_THREADS_OK threads={expected} contexts=4 text_fields=8 vision_parameter_unchanged=1 loads=1 decodes=0");
+        for threads in [0, -1, i32::MIN] {
+            let result = load(LoadRequest {
+                path: PathBuf::from("not-loaded.gguf"),
+                context_length: 64,
+                gpu_layers: Some(0),
+                backend: BackendKind::Cpu,
+                mmap: true,
+                projector: None,
+                threads: Some(threads),
+            });
+            assert!(
+                matches!(result, Err(RebirthError::Argument { argument, .. }) if argument == "threads")
+            );
+        }
     }
 
     #[test]
@@ -1250,6 +1347,7 @@ mod tests {
             backend: BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         };
         match load(req) {
             Err(RebirthError::ModelLoad { failing_check }) => {
@@ -1278,6 +1376,7 @@ mod tests {
             backend: BackendKind::Cpu,
             mmap: true,
             projector: None,
+            threads: None,
         };
         let result = load(req);
         let _ = std::fs::remove_file(&path);
@@ -1305,6 +1404,7 @@ mod tests {
             backend: unavailable,
             mmap: true,
             projector: None,
+            threads: None,
         };
         match load(req) {
             Err(RebirthError::Backend {

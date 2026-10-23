@@ -1,11 +1,14 @@
 # Public API and version policy
 
-Effective for the WP16 compatibility baseline, relm 0.5.0 development sources.
+The WP16 compatibility baseline is extended by the approved D055 capability
+in the relm 0.6.0 candidate.
 CRAN submission is pending. This policy does not announce a 1.0 release.
 
 ## What is stable
 
-The existing sixteen exports, their named arguments/defaults and documented
+D055 adds the founder-approved optional `threads` argument to `llm()` while
+preserving its default behavior. The existing sixteen exports, their other
+named arguments/defaults and documented
 return contracts are the frozen public baseline. Registered S3 methods are part
 of that baseline too. See the machine-readable [surface](api-surface.csv), the
 [approved grammar](../API-GRAMMAR.md) and the installed help for details.

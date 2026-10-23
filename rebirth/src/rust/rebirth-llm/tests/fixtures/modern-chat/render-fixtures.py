@@ -54,7 +54,9 @@ def render(sources=SOURCES):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--write", action="store_true")
-    parser.add_argument("--qwen38", action="store_true", help="Render the separate Qwen3.8 references")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument("--qwen38", action="store_true", help="Render the separate Qwen3.8 references")
+    group.add_argument("--qwen35-moe", action="store_true", help="Render the separate Qwen3.5 MoE references")
     options = parser.parse_args()
     sources = SOURCES
     if options.qwen38:
@@ -64,8 +66,18 @@ if __name__ == "__main__":
                 "12827f24b742ea4e80cdc12dbcf9622227056b9f797252a3149263d4f9aaadce",
             )
         }
+    if options.qwen35_moe:
+        sources = {
+            "qwen35-moe-gguf.jinja": (
+                "qwen35moe",
+                "e60df41481b6ad20571cda7e2e1290cfee25670f1b50973f74576c9354c66336",
+            )
+        }
     data = (json.dumps(render(sources), ensure_ascii=True, indent=2) + "\n").encode()
-    target = DIRECTORY / ("qwen38-single-user-turn.json" if options.qwen38 else "single-user-turn.json")
+    filename = "qwen38-single-user-turn.json" if options.qwen38 else "single-user-turn.json"
+    if options.qwen35_moe:
+        filename = "qwen35-moe-single-user-turn.json"
+    target = DIRECTORY / filename
     if options.write:
         target.write_bytes(data)
     elif target.read_bytes() != data:

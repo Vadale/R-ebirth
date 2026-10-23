@@ -11,7 +11,8 @@ llm(
   gpu_layers = NULL,
   backend = c("auto", "metal", "cuda", "cpu"),
   mmap = TRUE,
-  projector = NULL
+  projector = NULL,
+  threads = NULL
 )
 
 \method{print}{llm}(x, ...)
@@ -33,6 +34,12 @@ non-negative integer count of layers to offload (llama.cpp:
 \item{projector}{\code{NULL} (default: text-only, unchanged) or a single string:
 path to the model's \strong{mmproj GGUF}, enabling image input (see the
 \emph{Image input} section).}
+
+\item{threads}{\code{NULL} (default: preserve native defaults) or a single positive
+whole number of CPU threads for text generation and prompt processing.
+Derived generation, embedding, trace and intervention contexts inherit it.
+R check-time core limits take precedence. This does not set the separate
+vision projector's threads or guarantee faster inference.}
 
 \item{x}{An \code{llm} handle.}
 

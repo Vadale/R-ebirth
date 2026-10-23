@@ -619,6 +619,7 @@ pub(crate) mod tests {
             backend,
             mmap: true,
             projector: None,
+            threads: None,
         }
     }
 

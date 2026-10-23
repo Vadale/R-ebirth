@@ -56,7 +56,9 @@ with measured RTX 2060 results; an ordinary binary does not establish CUDA capab
 Windows CPU source-package checks and the corrected 0.5.0 win-builder check passed; Windows GPU and full live-file
 lifecycle parity remain outside that acceptance. The **0.5.0 source candidate**
 combines this portability work and has been submitted to CRAN. Maintainer
-confirmation is complete; acceptance and a separate 0.5.0 release are pending. See the [submission status](docs/cran-submission.md).
+confirmation is complete; CRAN acceptance remains pending. The **0.6.0 candidate** adds optional CPU
+threads and exact modern chat support; see [configuration and measured limits](docs/models.md).
+Its release/distribution checks are still pending. See the [submission status](docs/cran-submission.md).
 
 ```r
 install.packages(

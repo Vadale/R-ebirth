@@ -84,8 +84,17 @@ are conditional on frozen fits and are withheld when unsupported.
 
 ## 3. Function entries — Phases 0–1 `[approved: D-003]`
 
-### `llm(path, context_length = 4096, gpu_layers = NULL, backend = c("auto", "metal", "cuda", "cpu"), mmap = TRUE, projector = NULL)` — Phase 0 · `projector` approved 2026-07-14 (Phase 11, D-026)
+### `llm(path, context_length = 4096, gpu_layers = NULL, backend = c("auto", "metal", "cuda", "cpu"), mmap = TRUE, projector = NULL, threads = NULL)` — Phase 0 · `projector` approved 2026-07-14 (Phase 11, D-026)
 Loads a GGUF model; returns an `llm` handle. `gpu_layers = NULL` = auto (all that fit); `backend = "auto"` picks the best available. `projector` = a path to an **mmproj GGUF** (or a registry alias resolved to a path) enabling image input; `NULL` (default) = text-only, unchanged. When set, `llm()` also initializes the vision encoder bound to the loaded model — the projector is a session property fixed at load (it shares the model pointer), exactly like the model file, so it belongs on `llm()`, not on each call. A projector whose input embedding size does not match the model raises `relm_error_image` naming both sizes (reject-not-clamp). New handle slots: `projector` (chr path or `NULL`), `vision` (lgl); `print.llm` shows the projector when present. Errors: `relm_error_argument` (invalid `context_length`/`gpu_layers`/`mmap`), `relm_error_model_load` (missing/corrupt/unsupported file — message names the failing check), `relm_error_backend` (requested backend unavailable), `relm_error_image` (projector load failure / mmproj–model mismatch).
+
+**D055 amendment (approved 2026-10-21):** `threads = NULL` preserves existing
+native defaults. A single finite positive whole number representable as i32
+sets both text-context counts (token generation and prompt processing). The
+request follows the model into derived generation, embedding, trace and
+intervention contexts, without changing the separate vision projector's thread
+count or public return structures. Invalid values raise `relm_error_argument`
+before loading, with independent native boundary validation. Existing CRAN
+check-time core caps take precedence. No automatic selection or speed guarantee.
 
 ### `close(con, ...)` method `close.llm` — Phase 0
 Frees native memory deterministically when the native execution domain is idle

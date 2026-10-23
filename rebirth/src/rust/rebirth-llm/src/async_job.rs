@@ -1864,6 +1864,7 @@ mod tests {
                 backend: crate::BackendKind::Cpu,
                 mmap: true,
                 projector: None,
+                threads: None,
             },
             Some(4),
         )
@@ -1965,6 +1966,7 @@ mod tests {
                 backend: crate::BackendKind::Cpu,
                 mmap: true,
                 projector: None,
+                threads: None,
             },
             Some(1),
         )
@@ -2175,6 +2177,7 @@ mod tests {
                 backend: crate::BackendKind::Cpu,
                 mmap: true,
                 projector: None,
+                threads: None,
             },
             Some(1),
         )
@@ -2237,6 +2240,7 @@ mod tests {
                     backend: crate::BackendKind::Cpu,
                     mmap: true,
                     projector: None,
+                    threads: None,
                 },
                 Some(1),
             )
@@ -2340,6 +2344,7 @@ mod tests {
             backend: crate::BackendKind::Cpu,
             mmap: true,
             projector: Some(projector_path),
+            threads: None,
         })
         .expect("cached VLM/projector load");
         let metadata = parent.metadata();

@@ -111,6 +111,7 @@ fn load_qwen(path: PathBuf) -> LoadedModel {
         backend: pick_backend(),
         mmap: true,
         projector: None,
+        threads: None,
     })
     .expect("load Qwen2.5-0.5B")
 }

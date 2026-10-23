@@ -47,6 +47,11 @@
 #' @param projector `NULL` (default: text-only, unchanged) or a single string:
 #'   path to the model's **mmproj GGUF**, enabling image input (see the
 #'   *Image input* section).
+#' @param threads `NULL` (default: preserve native defaults) or a single positive
+#'   whole number of CPU threads for text generation and prompt processing.
+#'   Derived generation, embedding, trace and intervention contexts inherit it.
+#'   R check-time core limits take precedence. This does not set the separate
+#'   vision projector's threads or guarantee faster inference.
 #' @return An object of class `llm` (see the package's class documentation).
 #' @seealso [close.llm()], [print.llm()], [summary.llm()]
 #' @examplesIf nzchar(Sys.getenv("RELM_TEST_MODEL_QWEN"))
@@ -69,7 +74,8 @@ llm <- function(path,
                 gpu_layers = NULL,
                 backend = c("auto", "metal", "cuda", "cpu"),
                 mmap = TRUE,
-                projector = NULL) {
+                projector = NULL,
+                threads = NULL) {
   # --- path: a single, existing, readable, non-directory file ---
   if (!is.character(path) || length(path) != 1L || is.na(path) || !nzchar(path)) {
     relm_abort(
@@ -122,6 +128,12 @@ llm <- function(path,
       "`gpu_layers` must be NULL (auto) or a single non-negative integer.",
       list(argument = "gpu_layers")
     )
+  }
+
+  # --- threads: NULL preserves defaults; explicit counts must fit native i32 ---
+  if (!is.null(threads) &&
+    (!is_count(threads) || threads < 1L || threads > .Machine$integer.max)) {
+    abort_argument("threads", "`threads` must be NULL or a single positive whole number.")
   }
 
   # --- mmap: a single non-NA logical ---
@@ -195,11 +207,12 @@ llm <- function(path,
   }
 
   # --- cross the boundary: NULL gpu_layers is the -1 auto sentinel; NULL
-  # projector is the "" text-only sentinel ---
+  # projector is the "" text-only sentinel; threads uses 0 for native defaults ---
   gpu_layers_arg <- if (is.null(gpu_layers)) -1L else as.integer(gpu_layers)
   projector_arg <- if (is.null(projector)) "" else projector
+  threads_arg <- if (is.null(threads)) 0L else as.integer(threads)
   payload <- rebirth_model_load(
-    path, as.integer(context_length), gpu_layers_arg, backend, mmap, projector_arg
+    path, as.integer(context_length), gpu_layers_arg, backend, mmap, projector_arg, threads_arg
   )
   payload <- relm_check(payload)
   new_llm(payload, path, projector = projector)

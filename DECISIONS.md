@@ -1901,6 +1901,74 @@ ordinary builds remain SDK-independent. Single-GPU builds do not require NCCL.
   them. The submitted CRAN archive remains frozen.
 
 
+## D-055 — Measured dense/MoE configuration and next r-universe release
+
+- **Date:** 2026-10-21. **Status:** authorized by the founder: complete dense and
+  MoE comparisons and justified optimizations, retain weights until needed tests
+  finish, publish a new version on r-universe, and await the pending CRAN review.
+- **Scope:** measure the existing CPU/GPU path before selecting changes. Preserve
+  previous quality cases as consumed; separate repeated calibration from fresh
+  paired quality validation. Bind model quantization, settings, installed binary,
+  resources and timings. A local diagnostic configuration is not a shipped API.
+  No driver, engine/vendor, dependency, kernel or numerical-bound change is implied.
+- **MoE prerequisite:** the pinned Qwen3.5-35B-A3B converter uses the `qwen35moe`
+  architecture and a distinct full chat template with thinking on by default.
+  Recognize only those exact bytes under D-054's existing single-user contract;
+  preserve the default opener and explicit non-thinking schema route. Add new
+  independent references without changing the 96 existing references. Refuse
+  modified modern MoE templates instead of falling through to a legacy detector.
+- **Selection:** retain unsuccessful/slower configurations and memory stops.
+  Prefer existing settings and small generic changes over speculative KV/cache
+  rewrites. A new public argument needs its concrete grammar/decision before
+  implementation; compatible defaults and check-time core limits remain protected.
+- **Delivery:** one coherent candidate, focused checks and integrated owner review,
+  then all required current CI, applicable scheduled gates and actual distribution
+  verification. Version follows the accepted behavior, not the phase number.
+  Remove only no-longer-needed downloaded weights after evidence is complete.
+  Existing published identities and the exact pending CRAN archive stay unchanged;
+  this is neither a duplicate CRAN submission nor satisfaction of the 1.0 gate.
+
+### D055 CPU control amendment — approved 2026-10-21
+
+The founder explicitly approved the concrete optional `threads` proposal
+("Approvo threads opzionale"). Append `threads = NULL` to `llm()`: NULL preserves
+existing native defaults; a finite positive whole number representable as i32
+sets both text-context thread counts. The model retains the request for derived
+generation, embedding, trace and intervention contexts. Invalid values are
+classed argument errors; the native boundary validates independently. Existing
+R-check core caps take precedence. The separate vision projector and public
+return structures remain unchanged. No automatic CPU selection, GPU/default/KV
+precision change or general speed guarantee. This compatible capability requires
+a minor release after the current acceptance gates.
+
+The predeclared dense calibration selected eight threads / twelve GPU layers:
+1.1895 median decode tokens/s against 0.8720 and 0.8692 in the two four-thread
+baselines, with all twelve field/evidence criteria per configuration satisfied.
+Eight threads slowed long-prompt first-token latency; thirteen GPU layers used
+more VRAM without a material gain. This two-prompt, one-host diagnostic does not
+replace real product-path acceptance or the fresh paired quality holdout.
+
+
+### D055 final configuration disposition — 2026-10-21
+
+The final public-product-path comparison used six frozen fresh cases per model.
+Dense 27B met 36/36 criteria; MoE 35B-A3B met 32/36, with every date, amount and
+percentage correct but four beneficiary/evidence-contract misses. The MoE had
+8.06 versus 1.31 median decode tokens/s and 20.7 versus 101.7 seconds median
+response time on this host. These are bounded observations across different
+models/quantizations and GPU allocations, not isolated architecture causality.
+The [model guide](docs/models.md) preserves resource scope and slower calibration
+results. Keep the optional thread control and exact MoE template; no automatic
+default change or KV/cache rewrite is justified. The compatible new capability
+selects 0.6.0 for the authorized release candidate. The package/version and
+scheduled/distribution gates remain separate from the consumed model experiment.
+
+Batch/service recipes may admit exactly 0.6.0 as well as their previous released
+versions; future/development versions remain refused. This changes neither
+stored environment fingerprints nor pinned dependencies and does not migrate an
+existing prepared environment silently.
+
+
 ## D-056 — Certifi transport security with frozen numerical provenance
 
 - **Date:** 2026-10-23 · **Status:** accepted (founder explicitly authorized the

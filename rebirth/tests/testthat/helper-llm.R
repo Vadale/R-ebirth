@@ -82,8 +82,8 @@ vision_golden_path <- function(name) {
 # the machine instead.
 #
 # WHY THE CPU MODEL AND NOT THE ARCH. `Darwin && arm64` was the original gate and
-# it was wrong: a non-M4 arm64 runner (same OS, same arch, same n_threads -- relm
-# never sets it, so it is 4 everywhere) measured `max |d| = 6.05e-3` against the
+# it was wrong: a non-M4 arm64 runner (same OS, same arch, same default n_threads -- these fixtures retain
+# the native default of 4 outside R check-time caps) measured `max |d| = 6.05e-3` against the
 # M4-recorded pin. The reason is below the arch: ggml's CPU backend keeps
 # GGML_ACCELERATE on for macOS (build.rs) and dispatches on runtime CPU features
 # (`ggml_cpu_has_sme`, `ggml_cpu_has_sve`) -- and SME exists on the M4 but not on

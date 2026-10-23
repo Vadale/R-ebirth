@@ -43,6 +43,7 @@ pub(super) fn run(path: &str) -> Result<(), RebirthError> {
         backend: BackendKind::Cpu,
         mmap: true,
         projector: None,
+        threads: None,
     })?));
     let ptr: Robj = source.clone().into();
     let ints = Robj::from(Vec::<i32>::new());

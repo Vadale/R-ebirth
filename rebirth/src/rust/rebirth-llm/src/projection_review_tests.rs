@@ -44,6 +44,7 @@ fn zero_live_capture(backend: crate::BackendKind) {
             backend,
             mmap: true,
             projector: None,
+            threads: None,
         },
         Some(4),
     )
