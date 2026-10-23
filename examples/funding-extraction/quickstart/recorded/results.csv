@@ -1,0 +1,7 @@
+"id","status","json","elapsed_seconds","error_class","error_message","partial_output"
+"N01","ok","{""amount_eur"": 250000, ""evidence"": ""The Cedar 2026 community programme has a total budget of EUR 250000.""}",19.087,"","",""
+"N02","ok","{""amount_eur"": null, ""evidence"": ""Harbour 2026 offers grants of up to EUR 40000 per project.""}",18.701,"","",""
+"N03","ok","{""amount_eur"": 120000, ""evidence"": ""The total budget for Meadow 2026 is EUR 120000.""}",20.474,"","",""
+"N04","ok","{""amount_eur"": 300000, ""evidence"": ""The total budget for Riverside 2026 is EUR 300000 across all partners.""}",19.877,"","",""
+"N05","ok","{""amount_eur"": null, ""evidence"": null}",15.324,"","",""
+"N06","ok","{""amount_eur"": 600000, ""evidence"": ""Willow 2026 has a total budget of EUR 600000 over three years. EUR 200000 is allocated to the first year.""}",22.086,"","",""

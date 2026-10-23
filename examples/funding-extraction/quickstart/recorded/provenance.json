@@ -1,0 +1,23 @@
+{
+  "relm": "0.6.1",
+  "source": "cbecff997eb384803894aa8e47ff107b8e58fe3a",
+  "dll_sha256": "d69b403d22c10cea625ecded092487dd248c8ffbf612f592acbeed97df95e2c2",
+  "R": "4.6.1",
+  "platform": "x86_64-pc-linux-gnu",
+  "jsonlite": "2.0.0",
+  "settings": {
+    "model_alias": "qwen2.5-1.5b-instruct-q4_k_m",
+    "model_file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+    "model_sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+    "model_bytes": 1117320736,
+    "backend": "cpu",
+    "threads": 4,
+    "context_length": 2048,
+    "max_tokens": 192,
+    "temperature": 0,
+    "top_p": 1,
+    "seed": 231023,
+    "chat": true
+  },
+  "started_utc": "2026-10-23 20:32:47 UTC"
+}

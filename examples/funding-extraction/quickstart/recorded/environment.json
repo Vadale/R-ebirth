@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-23",
+  "cpu": "AMD Ryzen 7 4800H with Radeon Graphics",
+  "machine": "Linux x86_64, 8 physical cores / 16 logical CPUs",
+  "configured_threads": 4,
+  "backend": "cpu",
+  "passes": 1,
+  "warmups": 0,
+  "model_generation_attempts": 6,
+  "model_generation_retries": 0,
+  "model_prepare_seconds": 107.49,
+  "model_prepare_scope": "Fresh download plus public llm_download verification and a second recipe SHA256 check, measured by shell time; excludes package installation. Network speed is not a product benchmark.",
+  "run_process_elapsed_seconds": 121.16,
+  "run_cpu_user_seconds": 457.89,
+  "run_cpu_system_seconds": 1.44,
+  "jsonlite_source_sha256": "75eb910c82b350ec33f094779da0f87bff154c232e4ae39c9896a9b89f3ac82d",
+  "labels": "Synthetic expectations authored before generation; reviewed by the same assistant. Not independent expert labels.",
+  "unmeasured": [
+    "electricity",
+    "monetary cost",
+    "human review time",
+    "other platforms",
+    "cold/warm variation"
+  ]
+}

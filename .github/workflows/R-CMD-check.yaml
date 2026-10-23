@@ -321,6 +321,10 @@ jobs:
                              repos = NULL, type = "source")
           }
 
+      - name: Funding quickstart scorer and recorded review (no models)
+        if: matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release' && steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla examples/funding-extraction/quickstart/run.R check
+
       - name: D2 process interruption and identity acceptance (model-free)
         if: steps.scope.outputs.full_checks != 'false'
         run: |

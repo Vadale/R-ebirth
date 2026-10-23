@@ -1,82 +1,28 @@
-# relm · Local model research in R
+# relm · Local language models in R
 
-![relm — Local models. Inspectable experiments. Conceptual illustration of a model layer connected to an R workspace.](docs/images/relm-research.png)
+**Turn text into data, inspect a model's internal activity, and compare interventions
+from an ordinary R session.** relm returns text, data frames and matrices you can
+use with your existing statistical and plotting tools.
 
-[Get started](docs/getting-started.md) ·
-[Research walkthrough](examples/research-workflow/README.md) ·
-[Documentation](https://vadale.github.io/R-ebirth/) ·
-[For agents](llms.txt) ·
-[0.4.0 release](https://github.com/Vadale/R-ebirth/releases/tag/v0.4.0)
+Inference runs on your computer after you download a model. No Python runtime,
+model server or API key is required. **relm** is the R package; R-ebirth is this
+repository.
 
-**Run a local language model, inspect its internal activity, and test interventions
-from an ordinary R session.** relm returns text, data frames and matrices that
-work with the statistical and plotting tools you already use.
+[Install](#install) · [First example](#first-example) ·
+[Complete extraction recipe](examples/funding-extraction/quickstart/README.md) ·
+[Guides and reference](https://vadale.github.io/R-ebirth/) ·
+[0.6.1 release](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.1)
 
-R-ebirth is the repository; **relm** is the R package. It embeds a Rust/llama.cpp
-engine and runs on stock R ≥ 4.5. No Python runtime, model server or API key is
-required. Once a model is downloaded, inference runs locally.
+![R plots compare recorded model activations, an unchanged zero control, and a residual intervention alongside next-token probabilities.](docs/media/research/activation-intervention.gif)
 
-## From a question to an inspectable experiment
+*An actual saved relm experiment: inspect internal values, check a zero control,
+and compare an intervention. The animation reveals recorded values; it does not
+simulate measurements or demonstrate improved accuracy.*
+[Static figure, data and explanation](docs/animated-research.md).
 
-**Load → observe → compare → intervene → evaluate → export**
+## Install
 
-| What you want to do | Start here | What you get |
-| --- | --- | --- |
-| Generate text or constrained JSON | `llm_generate()` | Text, with streaming and asynchronous options |
-| Represent documents numerically | `llm_embed()` | A numeric matrix, one row per input |
-| Inspect values inside the model | `llm_trace()` | Selected activations as a data frame or matrix slice |
-| Measure whether activations predict a label | `llm_probe()` | Grouped statistical probes with held-out evaluation options |
-| Test a controlled intervention | `llm_direction()`, `llm_apply_direction()`, `llm_ablate()` | Derived model handles; the original remains available |
-| Inspect and share the experiment | `plot()`, `llm_compare()`, `llm_timeline()` | Base-R figures and exportable tables |
-
-An **activation** is a numerical value inside the model. A **direction** combines
-paired activation differences into a reusable vector. An intervention changes
-selected values during generation so you can study what changes in the output.
-These tools support experiments; a changed activation or shorter answer does
-not establish an improvement.
-
-## See an intervention, coordinate by coordinate
-
-![Animated R plots reveal 896 recorded layer-12 activations, an unchanged zero control, and the measured effect of residual addition alongside next-token probabilities.](docs/media/research/activation-intervention.gif)
-
-*Real values from a saved relm experiment: capture a state, check the zero control,
-then compare an intervention at the same prompt and prefix. The animation reveals
-recorded coordinates; it does not interpolate new measurements.*
-
-[Play the video](docs/media/research/activation-intervention.mp4) ·
-[Static figure](docs/media/research/activation-intervention.png) ·
-[How it works and the rendering code](docs/animated-research.md)
-
-## Install and try it
-
-[r-universe](https://vadale.r-universe.dev/relm) distributes the package. Prebuilt
-binaries need no Rust or C++ toolchain; check availability for your OS, R version
-and architecture. The development source also has an optional [Linux CUDA build](docs/linux-cuda.md)
-with measured RTX 2060 results; an ordinary binary does not establish CUDA capability.
-Windows CPU source-package checks and the corrected 0.5.0 win-builder check passed; Windows GPU and full live-file
-lifecycle parity remain outside that acceptance. The **0.5.0 source candidate**
-combines this portability work and has been submitted to CRAN. Maintainer
-confirmation is complete; CRAN acceptance remains pending. The **0.6.0 release** is published on [r-universe](https://vadale.r-universe.dev/relm),
-with optional CPU threads and exact modern chat support. See
-[configuration and measured limits](docs/models.md) and the
-[release notes](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.0).
-Published binaries cover Linux and macOS on x86_64/ARM64 and Windows on x86_64.
-Windows ARM64 and webR/WebAssembly are deferred and are not current support or
-release targets. Ordinary PR checks focus on Linux, macOS and Windows x86_64.
-The earlier failures and experimental work remain recorded for future use; see
-[CI scope and deferred platforms](docs/ci-efficiency-implementation.md#pr-check-audit-and-platform-deferral-2026-10-23).
-The 0.6.1 sources also include a version-preserving `extendr` R-API
-compatibility patch; see [the patch scope and verification](vendor/extendr/README.md).
-It does not establish browser inference support. Python is used only by maintainer
-reference/security tests; the R package does not require a Python environment. See the [submission status](docs/cran-submission.md).
-
-## 0.6.1 maintenance update
-
-The 0.6.1 sources contain Python maintainer-tooling security updates, the shared
-extendr R lookup correction and desktop build fixes. Check the version available
-on [r-universe](https://vadale.r-universe.dev/relm) and `packageVersion("relm")`
-after installing. The published 0.6.0 tag and archive remain unchanged.
-Windows ARM64 and WebAssembly stay deferred.
+Use **R >= 4.5**. Install from [r-universe](https://vadale.r-universe.dev/relm):
 
 ```r
 install.packages(
@@ -85,110 +31,75 @@ install.packages(
 )
 ```
 
-The first model download below is approximately 675 MB; later calls reuse the
-verified cached file. This small model is useful for learning the workflow,
-but its answers still need checking.
+The published release is **0.6.1**. Prebuilt binaries avoid a Rust/C++ build;
+check availability for your R version and platform. The supported desktop scope
+is Linux, macOS and Windows x86_64; Windows ARM64 and WebAssembly are deferred.
+See [installation and troubleshooting](docs/getting-started.md) for source builds
+and platform details. CRAN acceptance of the separately submitted candidate is
+still pending; see [submission status](docs/cran-submission.md).
+
+## First example
+
+The first download is about **1.12 GB**. Later calls reuse the verified model.
+This example uses CPU explicitly; memory use and speed depend on your machine.
 
 ```r
 library(relm)
 
-path <- llm_download("qwen2.5-0.5b-instruct-q8_0")
-m <- llm(path, backend = "cpu", context_length = 512L)
-
-prompt <- paste0(
-  "Question: A sealed envelope has no markings. ",
-  "Which city is named in the letter inside?\nAnswer:"
-)
-answer <- llm_generate(m, prompt, chat = FALSE, max_tokens = 48L,
-                       temperature = 0, seed = 3107L)
-cat(answer)
-
-trace <- llm_trace(m, prompt, layers = 12L, positions = "last",
-                   components = "residual", spill = FALSE)
-activations <- as.matrix(trace, layer = 12L)
-dim(activations) # one captured position × the model's hidden width
-
+path <- llm_download("qwen2.5-1.5b-instruct-q4_k_m")
+m <- llm(path, backend = "cpu", context_length = 2048L, threads = 4L)
+answer <- llm_generate(m, "Explain a research budget in one sentence.",
+                      chat = TRUE, max_tokens = 64L,
+                      temperature = 0, seed = 231023L)
+cat(answer, "\n")
 close(m)
 ```
 
-`chat = FALSE` continues the supplied text; `chat = TRUE` uses the model's chat
-template. `llm_trace()` observes a forward pass over the supplied prompt, not
-the generated answer. Use `on_state` for observations during generation.
-CPU makes this example explicit; the normal `backend = "auto"` selects Metal
-on supported Apple silicon builds, then available compiled CUDA, then CPU.
-See [installation and troubleshooting](docs/getting-started.md).
-To use a different model, follow [choosing and changing models](docs/models.md):
-five pinned aliases, other local GGUF files and matched vision projectors, with
-the supported research operations made explicit.
+Example output from this model in a CPU run (wording may vary):
 
-## Go beyond the first call
+> A research budget is the financial allocation made by an organization to fund research activities.
 
-For agent-assisted use, start with [llms.txt](llms.txt), the
-[standalone examples](docs/agents.md) and [API/version policy](docs/api-policy.md).
+A fluent answer can still be wrong. To work with documents, keep the source text
+and check the extracted facts. [Choosing another model](docs/models.md) explains
+pinned downloads, local GGUF files, chat templates and supported operations.
 
-- **Run a complete experiment:** the [research walkthrough](examples/research-workflow/README.md)
-  saves prompts, fixed conditions, original/zero/intervention outputs, provenance,
-  comparison plots and CSV/RDS files. The [research guide](docs/research-guide.md)
-  explains which API to use at each step.
-- **Watch generation:** [stream token events](rebirth/vignettes/token-streaming.qmd)
-  or inspect [live states and intervention graphics](rebirth/vignettes/model-interventions.qmd).
-  Async/live generation uses optional `later` and `promises`.
-- **Construct an intervention:** [record contrast directions](rebirth/vignettes/contrast-directions.qmd)
-  and apply residual addition or component projection on supported sites.
-  Projection is static; live coefficient updates are additive.
-- **Use the wider R ecosystem:** [probe activations](rebirth/vignettes/anatomy-lab.qmd),
-  build a [topic map](rebirth/vignettes/topics-without-python.qmd), or use supported
-  [image/text models](rebirth/vignettes/vision.qmd).
-- **Build a repeatable application:** separate [batch](examples/funding-extraction/README.md)
-  and [local-service](examples/funding-service/README.md) templates preserve jobs
-  and results. Valid JSON does not guarantee correct extracted facts.
+## A complete recipe: six notices to a reviewable CSV
 
-## Watch generation and keep the evidence
+[Run the funding extraction quickstart](examples/funding-extraction/quickstart/README.md).
+It includes six short **synthetic** notices, expected values, an R script, every
+recorded response, and measured time and memory. It extracts a programme's total
+budget with a supporting quotation and checks cases where the total is absent.
 
-![Animated token-stream replay shows recorded text and character counts for the original model and residual addition. The runs share their first three tokens, then diverge. The zero control exactly reproduces the original.](docs/media/research/token-stream.gif)
+The recorded CPU run matched **5 of 6 amount/evidence pairs** in about **116
+seconds** of generation, with the failed response preserved. You can inspect the
+saved results without downloading a model. Six designed examples are not a
+real-world accuracy benchmark. Valid JSON alone does not establish a correct amount.
 
-*Actual `on_token` events from the [first-use study](docs/research-first-use.md),
-replayed at an equal interval per token. This is not a speed comparison. The
-intervention changed the response; both responses still invented missing facts.
-relm makes that difference inspectable, so an experiment can test whether a change
-helps rather than assume it does.*
+## Explore further
 
-[Play the video](docs/media/research/token-stream.mp4) ·
-[Static figure](docs/media/research/token-stream.png) ·
-[Data, code and interpretation](docs/animated-research.md)
+| Your next question | Guide |
+| --- | --- |
+| How do I capture activations and compare an intervention? | [Research walkthrough](examples/research-workflow/README.md) and [API guide](docs/research-guide.md) |
+| How do I turn documents into embeddings or topic maps? | [Topics without Python](rebirth/vignettes/topics-without-python.qmd) |
+| How do I watch generation? | [Token streaming](rebirth/vignettes/token-streaming.qmd) and [recorded demonstrations](docs/animated-research.md) |
+| How do I process larger batches or resume a stopped run? | [Batch application](examples/funding-extraction/README.md) and [local service](examples/funding-service/README.md) |
+| Which model, backend and research operations are supported? | [Support matrix](docs/supported-workflow.md), [model guide](docs/models.md) and [validation limits](docs/validation-status.md) |
+| How can an assistant use the API correctly? | [Agent guide](docs/agents.md), [llms.txt](llms.txt) and [API/version policy](docs/api-policy.md) |
 
-## What works today—and what needs care
+Select layers and positions when capturing activations; spill does not bound all
+process memory. Close model handles when finished. Interventions provide no
+safety or debiasing guarantee. The [negative extraction evaluation](docs/d1-extraction-evaluation.md)
+and [first-use study](docs/research-first-use.md) remain available with their
+original findings. CUDA work is deferred; an ordinary binary does not imply GPU
+support.
 
-Version **0.4.0 is published**, including a verified installation from r-universe
-on Mac arm64. The [release record](docs/release-0.4.0.md) separates package checks,
-distribution checks and the scope of actual model tests.
+## Contribute
 
-- **Supported combinations matter.** Model architecture, component and backend
-  support vary. Start with the [support matrix](docs/supported-workflow.md).
-  Linux CUDA has a [recorded development scope and performance report](docs/wp13-linux-cuda-implementation.md).
-  Windows and vision-encoder tracing remain outside that acceptance.
-- **Memory is part of experiment design.** Select layers and token positions.
-  Trace spill manages capture storage; it does not bound all model/process memory.
-  Close model and derived handles when finished.
-- **Interpret changes cautiously.** Probes measure predictive decodability;
-  model maps show configuration; interventions provide no safety or debiasing
-  guarantee. Numerical checks have [documented scopes and limits](docs/validation-status.md).
-- **Functionality and research quality are separate.** Small-model examples and
-  a successful workflow do not demonstrate general task accuracy. The
-  [first-use assessment](docs/research-first-use.md) records an agent's actual
-  experience, including poor outputs and remaining usability gaps. Human
-  external-user validation is still open.
-
-## Contribute or explore
-
-Start with the [documentation index](docs/README.md). The package lives in
-`rebirth/`; runnable studies and application templates live in `examples/` and
-`tests/demos/`. The [development workflow](docs/development-workflow.md),
-[architecture](ARCHITECTURE.md) and [simplifier compendium](docs/simplifier-compendium.md)
-explain how to contribute and keep changes readable. The optional
-[statistical-assistant companion](integrations/README.md) is separate from relm.
+Start with the [documentation index](docs/README.md) and
+[development workflow](docs/development-workflow.md). The package is in `rebirth/`;
+runnable examples are in `examples/`. Architecture and implementation details
+are linked from those guides.
 
 Original code is **MIT OR Apache-2.0** ([license](LICENSE.md)); vendored llama.cpp
 is MIT ([notice](NOTICE)). Modified redistributions must follow the
-[trademark policy](TRADEMARK.md). The cover is a conceptual illustration;
-research figures are identified by their actual data source.
+[trademark policy](TRADEMARK.md).
