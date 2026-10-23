@@ -16,8 +16,8 @@
   preserve local versus inherited lookup and contain promise/active-binding
   errors before returning to Rust callers. Developer and offline-package sources
   are byte-checked against the same explicit patch; dependency versions and the
-  lockfile remain unchanged. Focused native and target-webR controls are part of
-  the candidate CI, with no engine or model required by these controls.
+  lockfile remain unchanged. Focused native R controls remain in candidate CI,
+  with no engine or model required by those controls. Target-webR controls are retained for future work.
 * Accept tool-wrapper diagnostics around one canonical Cargo/rustc version line,
   while rejecting ambiguous, malformed, failed or below-minimum version output.
 * Apply the Windows thread-declaration adapter to Rtools Clang as well as GCC.
@@ -31,8 +31,10 @@
   native registration and R syntax checks instead of loading Wasm in host R.
   Wasm builders must provide a local Node-compatible frontend explicitly; the
   package generator does not download a runtime or use a pre-generated fallback.
-  New Windows ARM64 and rwasm CI builds validate these candidate fixes; they do
-  not establish supported browser inference or a published ARM64 Windows binary.
+  Windows ARM64 and WebAssembly are now deferred by the maintainer. Their
+  experimental source corrections remain available, but automatic PR builds for
+  these two targets are removed. No browser inference, default r-universe Wasm
+  publication or supported ARM64 Windows binary is claimed.
 
 # relm 0.6.0 (2026-10-23)
 

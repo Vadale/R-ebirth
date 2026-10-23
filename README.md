@@ -61,15 +61,10 @@ with optional CPU threads and exact modern chat support. See
 [configuration and measured limits](docs/models.md) and the
 [release notes](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.0).
 Published binaries cover Linux and macOS on x86_64/ARM64 and Windows on x86_64.
-Windows ARM64 and webR/WebAssembly builds remain unaccepted; their failures are
-recorded in the release notes.
-Windows ARM64 targets ARM-based PCs; webR runs R in a browser. Neither is needed
-for a normal Linux installation. Candidate compatibility fixes are being checked
-separately from the published 0.6.0 artifacts. The candidate Wasm build requires
-`RELM_WEBR_RUNTIME` to point to the target toolchain runtime with a Node-compatible
-webR frontend; the [pinned CI setup](.github/workflows/cran-portability.yaml) shows
-this explicit build prerequisite. The unmodified r-universe image lacks that
-frontend, so a passing candidate CI would not alone fix its default Wasm build.
+Windows ARM64 and webR/WebAssembly are deferred and are not current support or
+release targets. Ordinary PR checks focus on Linux, macOS and Windows x86_64.
+The earlier failures and experimental work remain recorded for future use; see
+[CI scope and deferred platforms](docs/ci-efficiency-implementation.md#pr-check-audit-and-platform-deferral-2026-10-23).
 The development candidate also includes a version-preserving `extendr` R-API
 compatibility patch; see [the patch scope and verification](vendor/extendr/README.md).
 It does not establish browser inference support. Python is used only by maintainer

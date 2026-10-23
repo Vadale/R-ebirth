@@ -2098,3 +2098,26 @@ baseline; no undefined native bad-signature invocation is needed. Full current
 CI and actual target loading remain required; no browser inference claim follows.
 This amendment authorizes the bounded dependency correction, not merge, a new
 release, a changed 0.6.0 artifact or a replacement CRAN submission.
+
+
+### D057 platform priority and PR-check amendment — 2026-10-23
+
+The founder explicitly deferred Windows ARM64 and WebAssembly and requested an
+inventory of duplicate, obsolete and excessive PR verification. This supersedes
+the added-platform gate requirement above: ordinary PR CI returns to twelve
+routes for Linux, macOS and Windows x86_64, including the existing Intel-mac
+cross-link check. Earlier failures remain failures; the change is a scope
+retirement, not acceptance of either experimental platform. Existing source fixes
+and exact historical workflow definitions remain available for a future mandate.
+The shared extendr lookup patch and Windows x64 provenance/newline correction
+remain in scope.
+
+The bounded orchestration audit removes only demonstrated repeat invocations:
+Demo B sourcing already runs the same 41 demo-utils assertions, and Python source
+link checks read the same files in each R matrix cell. Keep combined numeric/plot
+checks on all four R cells; run Python source links once on Linux release and keep
+the separate generated-site check. R inventory parsing still runs on all four
+cells. No test assertion, fixture, numerical tolerance, production/selftest or
+supported-platform package gate is deleted. The old-to-surviving mapping and
+retained candidates are in docs/ci-efficiency-implementation.md. No claim of a
+measured CI speedup, fresh model evidence, merge or release authority follows.

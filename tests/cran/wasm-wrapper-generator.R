@@ -1,4 +1,4 @@
-# Pinned rwasm CI preflight: execute the actual generator in target R against
+# Deferred webR preflight: execute the actual generator in target R against
 # tiny Wasm DLLs. No engine, Rust build, package model or inference is involved.
 args <- commandArgs(TRUE)
 stopifnot(length(args) == 1L, nzchar(Sys.which("emcc")),

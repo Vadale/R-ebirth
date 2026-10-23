@@ -249,7 +249,7 @@ jobs:
           path: ${{ runner.temp }}/projection-reference-check
           if-no-files-found: warn
 
-      - name: Service contract consistency (planning only)
+      - name: Service contract invariants and dependency provenance (no runtime)
         run: python tests/service-contract/verify.py --self-test
 
       - name: Structured-output offline contract checks (no model)

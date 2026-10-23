@@ -1,4 +1,4 @@
-# Same real-R control runs natively and in the pinned webR job; no models.
+# Real-R control for native CI and the deferred target-webR route; no models.
 args <- commandArgs(TRUE)
 stopifnot(length(args) == 1L)
 dll <- dyn.load(args[[1L]])

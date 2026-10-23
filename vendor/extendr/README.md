@@ -21,5 +21,7 @@ use the packaged offline sources or explicitly load the project configuration.
 Regeneration uses a pristine cargo vendor --locked --versioned-dirs directory;
 tools/prepare-cran-sources.py applies only the pinned three-file delta and two
 checksum records. Existing omission of four WASI-only binary assets is unchanged.
-Acceptance includes focused native R/target-webR controls and the ordinary current
-CI matrix. Successful loading does not imply browser model inference support.
+Current acceptance requires focused native R controls and the ordinary desktop
+CI matrix. Target-webR controls are retained for deferred experimental work; they
+are not an automatic PR gate. Successful loading does not imply browser model
+inference support.

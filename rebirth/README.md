@@ -30,10 +30,10 @@ The **0.6.0 release**, published on [r-universe](https://vadale.r-universe.dev/r
 adds optional `threads` and exact modern chat templates.
 See [model configuration and measured limits](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md)
 and the [published release scope](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.0).
-Windows ARM64 and webR/WebAssembly builds remain unaccepted.
-Windows ARM64 targets ARM-based PCs; webR runs R in a browser. Neither is needed
-for a normal Linux installation. Candidate compatibility fixes are being checked
-separately from the published 0.6.0 artifacts. Python is used only by maintainer
+Windows ARM64 and webR/WebAssembly are deferred and are not current support or
+release targets. Ordinary PR checks focus on Linux, macOS and Windows x86_64;
+[the CI scope](https://github.com/Vadale/R-ebirth/blob/main/docs/ci-efficiency-implementation.md#pr-check-audit-and-platform-deferral-2026-10-23)
+retains the experimental work for future use. Python is used only by maintainer
 reference/security tests; the R package does not require a Python environment.
 
 ## Installation

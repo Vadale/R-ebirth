@@ -1,4 +1,4 @@
-# Native R matrix and pinned rwasm: isolated actual dependency, no engine/models.
+# Native R matrix; target-webR mode is deferred. No engine/models.
 args <- commandArgs(TRUE)
 stopifnot(length(args) == 1L || (length(args) == 2L && args[[2L]] == "wasm"))
 wasm <- length(args) == 2L && identical(args[[2L]], "wasm")

@@ -29,9 +29,10 @@ Plans and historical build receipts are not current results.
 The submitted **0.5.0 candidate** groups Linux CUDA, Windows CPU portability and
 [CRAN preparation](cran-submission.md), including the remaining Rust/Cargo policy
 decision. The exact source has been submitted and maintainer confirmation reported; CRAN
-acceptance remains pending. The **0.6.0 candidate** adds optional CPU threads and
-exact modern chat support; its [model guide](models.md) records the bounded
-dense/MoE comparison and its failures. Distribution acceptance is still pending.
+acceptance remains pending. The **0.6.0 release** is published on r-universe and adds optional CPU threads
+and exact modern chat support; its [model guide](models.md) records the bounded
+dense/MoE comparison and its failures. Subsequent development changes are separate
+from that immutable release.
 
 ## Extend the same workflow
 
@@ -58,6 +59,7 @@ dense/MoE comparison and its failures. Distribution acceptance is still pending.
   usability remains deferred, not claimed by the maintainer's functional run.
 - [API and version policy](api-policy.md), including compatibility and the
   thirty-day green-CI gate before 1.0.
+- [Current PR-check audit and deferred platforms](ci-efficiency-implementation.md#pr-check-audit-and-platform-deferral-2026-10-23): retained coverage, removed repetition and timing limits.
 - [Development workflow](development-workflow.md): coherent milestones, scoped
   verification and batched pushes (D-029).
 - Binding specifications: [product plan](../SOLO-PHASE-PLAN.md),
