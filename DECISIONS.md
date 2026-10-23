@@ -2055,3 +2055,18 @@ existing prepared environment silently.
   A host-only seven-component archive fixture verifies bundling and final symbol
   resolution without an engine or model. Actual rwasm package acceptance remains
   required; no cross-compiled DLL execution or browser support is claimed.
+
+- **Target wrapper generation within D-057:** the runtime-only archive link now
+  succeeds; the host R post-link generator then rejects the Wasm DLL as an invalid
+  ELF file. Execute the same registration, metadata and R syntax checks in the
+  target webR runtime. Native DLLs retain their existing R-hosted path. The Wasm
+  builder explicitly supplies `RELM_WEBR_RUNTIME`; no checked-in wrapper fallback,
+  host-DLL substitution, automatic runtime download or engine change is added.
+  The pinned CI image contains browser frontend files. CI supplies only the two
+  Node frontend files from official webR 0.6.0, with a fixed archive SHA-256, and
+  points all C/R runtime files and VFS entries at that same compiler image.
+  This is an isolated build-toolchain component, not an R/Rust package dependency.
+  A tiny Wasm C fixture protects valid metadata, wrong arity, invalid R text and
+  missing DLL/runtime refusals with output preservation. Native controls remain.
+  Actual full-package CI is still required, and stock r-universe builders need
+  the same frontend prerequisite before their Wasm distribution can be accepted.

@@ -65,7 +65,12 @@ Windows ARM64 and webR/WebAssembly builds remain unaccepted; their failures are
 recorded in the release notes.
 Windows ARM64 targets ARM-based PCs; webR runs R in a browser. Neither is needed
 for a normal Linux installation. Candidate compatibility fixes are being checked
-separately from the published 0.6.0 artifacts. Python is used only by maintainer
+separately from the published 0.6.0 artifacts. The candidate Wasm build requires
+`RELM_WEBR_RUNTIME` to point to the target toolchain runtime with a Node-compatible
+webR frontend; the [pinned CI setup](.github/workflows/cran-portability.yaml) shows
+this explicit build prerequisite. The unmodified r-universe image lacks that
+frontend, so a passing candidate CI would not alone fix its default Wasm build.
+Python is used only by maintainer
 reference/security tests; the R package does not require a Python environment. See the [submission status](docs/cran-submission.md).
 
 ```r

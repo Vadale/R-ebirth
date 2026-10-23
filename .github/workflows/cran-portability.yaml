@@ -239,6 +239,27 @@ jobs:
       NOT_CRAN: "false"
     steps:
       - uses: actions/checkout@v7
+      - name: Prepare local target webR runtime for metadata checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/wasm-evidence" "$RUNNER_TEMP/webr-node-runtime"
+          curl --fail --silent --show-error --location https://registry.npmjs.org/webr/-/webr-0.6.0.tgz --output "$RUNNER_TEMP/webr-0.6.0.tgz"
+          printf '%s  %s\n' 5821c8bd87484add59064fa13fa62a65f686032f3f64dacf4b0aa34c4325e959 "$RUNNER_TEMP/webr-0.6.0.tgz" | sha256sum --check
+          # Only the official Node frontend is added. R.js, R.wasm and the VFS
+          # remain the exact target runtime from the pinned compiler image.
+          tar -xzf "$RUNNER_TEMP/webr-0.6.0.tgz" -C "$RUNNER_TEMP/webr-node-runtime" --strip-components=2 package/dist/webr.mjs package/dist/webr-worker.js
+          for path in "$WEBR_ROOT"/dist/*; do
+            case "${path##*/}" in webr.mjs|webr-worker.js|webr.mjs.map|webr-worker.js.map) continue ;; esac
+            ln -s "$path" "$RUNNER_TEMP/webr-node-runtime/${path##*/}"
+          done
+          echo "RELM_WEBR_RUNTIME=$RUNNER_TEMP/webr-node-runtime" >> "$GITHUB_ENV"
+          sha256sum "$RUNNER_TEMP/webr-node-runtime/"{webr.mjs,webr-worker.js,R.js,R.wasm} > "$RUNNER_TEMP/wasm-evidence/runtime-sha256.txt"
+      - name: Target wrapper metadata controls (no engine or models)
+        shell: bash
+        run: |
+          set -euo pipefail
+          Rscript --vanilla tests/cran/wasm-wrapper-generator.R "$RUNNER_TEMP/wasm-evidence/wrapper-controls"
       - name: Build source archive without vignette or model execution
         shell: bash
         run: |

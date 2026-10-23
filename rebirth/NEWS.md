@@ -20,6 +20,10 @@
   avoiding incompatible 64-bit objects at the final package link.
   Link the native archives already bundled by Rust through `librelm.a`, without
   requiring duplicate external archives in the Emscripten package link.
+  Generate cross-built wrappers in the matching target webR runtime, retaining
+  native registration and R syntax checks instead of loading Wasm in host R.
+  Wasm builders must provide a local Node-compatible frontend explicitly; the
+  package generator does not download a runtime or use a pre-generated fallback.
   New Windows ARM64 and rwasm CI builds validate these candidate fixes; they do
   not establish supported browser inference or a published ARM64 Windows binary.
 
