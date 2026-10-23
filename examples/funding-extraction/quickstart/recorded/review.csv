@@ -1,0 +1,7 @@
+"id","amount_eur","expected_eur","evidence","complete_record","amount_correct","evidence_correct","passed","elapsed_seconds","human_review_required"
+"N01",250000,250000,"The Cedar 2026 community programme has a total budget of EUR 250000.",TRUE,TRUE,TRUE,TRUE,19.087,TRUE
+"N02",NA,NA,"Harbour 2026 offers grants of up to EUR 40000 per project.",TRUE,TRUE,FALSE,FALSE,18.701,TRUE
+"N03",120000,120000,"The total budget for Meadow 2026 is EUR 120000.",TRUE,TRUE,TRUE,TRUE,20.474,TRUE
+"N04",3e+05,3e+05,"The total budget for Riverside 2026 is EUR 300000 across all partners.",TRUE,TRUE,TRUE,TRUE,19.877,TRUE
+"N05",NA,NA,NA,TRUE,TRUE,TRUE,TRUE,15.324,TRUE
+"N06",6e+05,6e+05,"Willow 2026 has a total budget of EUR 600000 over three years. EUR 200000 is allocated to the first year.",TRUE,TRUE,TRUE,TRUE,22.086,TRUE

@@ -1,0 +1,13 @@
+{
+  "model_verify_seconds": 4.201,
+  "model_load_seconds": 0.939,
+  "generation_seconds": 115.549,
+  "run_elapsed_seconds": 120.792,
+  "process_peak_rss_bytes": 1336537088,
+  "model_bytes": 1117320736,
+  "complete_records": 6,
+  "correct_amounts": 6,
+  "matching_amount_and_evidence": 5,
+  "cases": 6,
+  "scope": "One CPU process; no warm-up or retry. Download/install excluded. RSS from Linux VmHWM; unavailable on other systems. Electricity and human review time unmeasured."
+}

@@ -62,3 +62,7 @@ ROADMAP.md
 /THESIS-PLAN.md
 /private/
 /personal/
+
+# Local quickstart model and reruns; the public recording is tracked separately.
+/.recipe-models/
+/.recipe-run*/

@@ -5,10 +5,9 @@ binary when one is available for your platform, or install from source with the
 toolchain below. The package name in R is **relm**; `rebirth/` is its directory
 inside the R-ebirth repository.
 
-Version **0.4.0** brings together streaming, live observations, recorded directions,
-projection, graphics and the research walkthrough; see the
-[release notes](../rebirth/NEWS.md#relm-040). Binary availability follows
-r-universe builds, so check the installed version before using the new features.
+The published release is **0.6.1**; see the
+[release notes](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.1).
+Binary availability follows r-universe builds, so check the installed version.
 
 ## Install from r-universe
 
@@ -25,24 +24,24 @@ packageVersion("relm")
 ```
 
 r-universe builds from `main`, so its version can differ from the latest tagged
-release. Version 0.4.0 has been published and installed from r-universe on
-macOS arm64; see the [release record](release-0.4.0.md). Restart R after upgrading
-an already loaded package. Windows CPU source-package checks and the corrected
-0.5.0 win-builder R-devel check passed. Binary availability is separate from
-installed-workflow validation; Windows GPU and full live-file lifecycle parity
-remain unverified.
-The exact 0.5.0 submission is tracked in the [CRAN preparation status](cran-submission.md).
-The 0.6.0 candidate adds optional CPU threads and exact modern chat templates;
-see [model configuration and measured limits](models.md). Check actual
-r-universe availability before expecting this candidate in an installation.
-The development source has
-a separate [optional Linux CUDA build](linux-cuda.md); installing an ordinary
-r-universe binary does not establish CUDA capability.
+release. Version 0.6.1 has published desktop binaries and a verified isolated
+Linux x86_64 installation. Restart R after upgrading an already loaded package.
+Use a binary matching your R version and architecture; installation on one
+platform is not evidence for every workflow on another.
+
+Current desktop work covers Linux, macOS and Windows x86_64. Windows ARM64 and
+WebAssembly are deferred. CUDA is also deferred; an ordinary r-universe binary
+does not establish CUDA capability. Existing [CUDA evidence](linux-cuda.md)
+retains its original scope. The separately submitted 0.5.0 CRAN candidate remains
+unchanged and awaiting acceptance; see [submission status](cran-submission.md).
+For optional CPU threads, chat templates and model-specific limits, see
+[model configuration](models.md).
 
 ## Choose your starting point
 
 - **A first model call:** use the [first-run example](#first-run) below. It needs
   only relm and one small model file.
+- **Extract a small table from text:** use the [six-notice recipe](../examples/funding-extraction/quickstart/README.md), with synthetic data, expected values and recorded errors/costs.
 - **Use a different model:** follow [choosing and changing models](models.md)
   for the five pinned aliases, local GGUF files and matched vision projectors.
 - **Understand which function to use:** read the [research API guide](research-guide.md),
@@ -56,8 +55,7 @@ r-universe binary does not establish CUDA capability.
 
 ## Check research capabilities
 
-The research APIs are included in 0.4.0. An installed package
-can retain that version string, and binary builds can lag `main`; check the
+The research APIs have been available since 0.4.0. Binary builds can lag `main`; check the
 functions you will use after installation and restart R after upgrading:
 
 ```r

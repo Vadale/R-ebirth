@@ -1,5 +1,9 @@
 # Restartable funding extraction
 
+New here? Start with the [six-notice quickstart](quickstart/README.md): a smaller
+script, synthetic inputs, expected values and a recorded CPU run. Return here
+when you need interruption recovery and job manifests.
+
 Run a local GGUF through relm, inspect a normal CSV, and resume after a stopped
 process. This is the D2 reference application: one R process, one model and one
 writer. It adds no relm API or package dependency. Its sole additional runtime

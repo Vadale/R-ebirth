@@ -1,0 +1,7 @@
+id,amount_eur,evidence_anchor,case
+N01,250000,total budget of EUR 250000,Direct total
+N02,,,Per-project cap is not a programme total
+N03,120000,total budget for Meadow 2026 is EUR 120000,Current versus prior year
+N04,300000,total budget for Riverside 2026 is EUR 300000,Requested versus neighbouring programme
+N05,,,No amount; do not treat participant counts as money
+N06,600000,total budget of EUR 600000,Whole programme versus first-year allocation

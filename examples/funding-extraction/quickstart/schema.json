@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "properties": {
+    "amount_eur": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 2147483647
+    },
+    "evidence": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 256
+    }
+  },
+  "required": [
+    "amount_eur",
+    "evidence"
+  ],
+  "additionalProperties": false
+}

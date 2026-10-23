@@ -3,6 +3,7 @@
 Run from repository root: python tests/docs/check.py [SITE_DIRECTORY]
 """
 import csv
+import hashlib
 from html.parser import HTMLParser
 from pathlib import Path
 import re
@@ -27,6 +28,18 @@ for path in examples.glob("*.R"):
 paths = [root / "llms.txt", root / "README.md"] + [root / "docs" / name for name in (
     "agents.md", "api-policy.md", "wp16-plan.md", "README.md", "getting-started.md",
     "models.md")]
+paths += [root / "examples/funding-extraction/quickstart" / name
+          for name in ("README.md", "recorded/README.md")]
+# Bind the public recording to the adjacent recipe, without executing a model.
+recipe = root / "examples/funding-extraction/quickstart"
+recorded_inputs = list(csv.DictReader((recipe / "recorded/inputs.csv").open()))
+assert len(recorded_inputs) == 6
+assert {row["file"] for row in recorded_inputs} == {
+    "notices.csv", "expected.csv", "prompt.txt", "schema.json", "settings.json", "run.R"}
+for row in recorded_inputs:
+    path = recipe / row["file"]
+    assert path.parent == recipe and path.is_file(), row
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == row["sha256"], row
 links = 0
 for path in paths:
     text = path.read_text()

@@ -5,6 +5,10 @@ Start with one supported path, then use the specialist guides when needed.
 [Watch relm in motion](animated-research.md): two short, code-generated animations
 of actual activation comparisons and token events, with static figures and data.
 
+[Six notices to a reviewable CSV](../examples/funding-extraction/quickstart/README.md):
+a small public recipe with synthetic inputs, expected values, raw outputs and
+measured errors, time and memory. Read the saved run without a model download.
+
 ## Start and complete an experiment
 
 1. [Install and check capabilities](getting-started.md).
@@ -23,16 +27,13 @@ of actual activation comparisons and token events, with static figures and data.
 [WP16 validation](wp16-implementation.md) records actual example execution and
 the separate publication and 1.0 release gates.
 
-Version [0.4.0 is published](release-0.4.0.md). For detailed historical numerical
-and runtime evidence, use the [validation ledger](validation-status.md).
-Plans and historical build receipts are not current results.
-The submitted **0.5.0 candidate** groups Linux CUDA, Windows CPU portability and
-[CRAN preparation](cran-submission.md), including the remaining Rust/Cargo policy
-decision. The exact source has been submitted and maintainer confirmation reported; CRAN
-acceptance remains pending. The **0.6.0 release** is published on r-universe and adds optional CPU threads
-and exact modern chat support; its [model guide](models.md) records the bounded
-dense/MoE comparison and its failures. Subsequent development changes are separate
-from that immutable release.
+Version [0.6.1 is published](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.1)
+on r-universe, including desktop build corrections and maintainer-tooling
+security updates. For historical numerical and runtime evidence, use the
+[validation ledger](validation-status.md); plans and old receipts are not current
+results. The submitted **0.5.0 CRAN candidate** remains frozen awaiting acceptance;
+see [submission status](cran-submission.md). The [model guide](models.md) records
+optional CPU threads, chat support and the bounded dense/MoE comparison.
 
 ## Extend the same workflow
 

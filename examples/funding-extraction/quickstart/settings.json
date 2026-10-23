@@ -1,0 +1,14 @@
+{
+  "model_alias": "qwen2.5-1.5b-instruct-q4_k_m",
+  "model_file": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "model_sha256": "6a1a2eb6d15622bf3c96857206351ba97e1af16c30d7a74ee38970e434e9407e",
+  "model_bytes": 1117320736,
+  "backend": "cpu",
+  "threads": 4,
+  "context_length": 2048,
+  "max_tokens": 192,
+  "temperature": 0,
+  "top_p": 1,
+  "seed": 231023,
+  "chat": true
+}
