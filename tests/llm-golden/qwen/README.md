@@ -68,7 +68,32 @@ run in per-commit CI (no model). The numerical comparison is **[MODEL]-gated on
 `RELM_TEST_MODEL_QWEN`** (a local Qwen2.5-0.5B GGUF) — it runs on the founder's
 Mac / nightly, never in per-commit CI, and never downloads a model.
 
-## Regenerating
+## Maintained CPU environment
+
+The current tooling uses PyTorch 2.13.0. Accelerate is absent because this loader
+uses a single CPU model with no `device_map`; the inspected Accelerate 1.15.0
+still contains the reported checkpoint-index path traversal. Removing the unused
+optional dependency is not a claim that upstream fixed it. These are maintainer
+Python dependencies, not relm R runtime requirements.
+
+For Linux, install the official CPU wheel first so this test environment does
+not install an unused CUDA stack:
+
+```sh
+python3 -m venv .hf-golden-venv
+.hf-golden-venv/bin/pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+.hf-golden-venv/bin/pip install -r tests/llm-golden/qwen/requirements-hf.txt
+.hf-golden-venv/bin/pip check
+HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 .hf-golden-venv/bin/python tests/llm-golden/qwen/test_environment.py
+```
+
+The smoke test calls the frozen loader once on a newly constructed tiny local
+checkpoint. It runs no reference forward pass, downloads no model, and produces
+no golden output. The historical producer and manifest still identify their
+original PyTorch/Accelerate environment; installing current tooling does not
+relabel or reproduce those historical numerical results.
+
+## Regenerating (separate, explicitly authorized golden update)
 
 ```sh
 python3 -m venv .hf-golden-venv
@@ -77,5 +102,6 @@ python3 -m venv .hf-golden-venv
 .hf-golden-venv/bin/python tests/llm-golden/qwen/reference_forward_hf.py --check
 ```
 
-Regenerating changes the committed SHA256 (pinned in the R test and the manifest)
+The following commands are historical producer entry points, not routine upgrade
+checks. Do not run them merely to refresh a dependency receipt. Regenerating changes the committed SHA256 (pinned in the R test and the manifest)
 and is a documented golden-update event, not a silent refresh.

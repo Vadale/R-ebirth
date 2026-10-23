@@ -29,11 +29,12 @@ def run(args, *, expect_failure=False):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--compiler', default='gcc')
     args = parser.parse_args()
     output = args.output.absolute()
     output.mkdir(parents=True, exist_ok=False)
-    gcc = shutil.which('gcc')
-    assert gcc, 'Use the configured native compiler (Rtools GCC on Windows)'
+    gcc = shutil.which(args.compiler)
+    assert gcc, 'Use the configured native compiler (Rtools GCC or Clang on Windows)'
     real_windows = os.name == 'nt'
     modes = ['actual-sdk'] if real_windows else ['missing-declarations', 'existing-declarations']
     for mode in modes:

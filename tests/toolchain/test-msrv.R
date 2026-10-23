@@ -76,6 +76,24 @@ for (tool in c("rustc", "cargo")) {
   expect_error(check_configure(raw = setNames(list(simpleError("missing tool")), tool)),
                paste(tool, "could not run"))
 }
+# Cross-compilation wrappers may print diagnostics before the version line.
+# The actual version must still be unique, canonical, successful and >= floor.
+for (tool in c("rustc", "cargo")) {
+  wrapped <- c("rwasm: cross-compilation wrapper", "info: using installed toolchain",
+               paste(tool, floor, "(fixture)"))
+  stopifnot(is.null(check_configure(raw = setNames(list(wrapped), tool))))
+  cases <- cases + 1L
+  for (bad in list(c(wrapped, paste(tool, floor)),
+                   c(wrapped, paste(tool, below)),
+                   c(wrapped, paste(tool, "malformed")),
+                   c(NA_character_, wrapped), structure(wrapped, status = 1L))) {
+    expect_error(check_configure(raw = setNames(list(bad), tool)),
+                 paste("Cannot determine", tool, "version"))
+  }
+  expect_error(check_configure(raw = setNames(list(c("wrapper diagnostic", paste(tool, below))), tool)),
+               paste("Installed", if (tool == "rustc") "Rust" else "Cargo", "version is", below))
+}
+
 missing_floor <- desc
 missing_floor[, "SystemRequirements"] <- sub("Cargo (Rust's package manager) >= 1.85.0",
   "Cargo (Rust's package manager)", desc[, "SystemRequirements"], fixed = TRUE)

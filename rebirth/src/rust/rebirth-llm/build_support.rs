@@ -79,7 +79,12 @@ pub fn built_archive_name(stem: &str, target_os: &str) -> String {
     format!("{prefix}{stem}.a")
 }
 
-pub fn link_libraries(stems: &[&str], target_os: &str, metal: bool) -> Vec<String> {
+pub fn link_libraries(
+    stems: &[&str],
+    target_os: &str,
+    target_arch: &str,
+    metal: bool,
+) -> Vec<String> {
     // GNU links need archive back-references resolved in dependent Rust bins as
     // well as the R shared library. Do not bundle duplicate native archives into
     // librelm.a; Makevars links the same archives explicitly with --start-group.
@@ -95,7 +100,12 @@ pub fn link_libraries(stems: &[&str], target_os: &str, metal: bool) -> Vec<Strin
         })
         .collect();
     if gnu {
-        flags.push("dylib=stdc++".into());
+        let runtime = if target_os == "windows" && target_arch == "aarch64" {
+            "dylib=c++"
+        } else {
+            "dylib=stdc++"
+        };
+        flags.push(runtime.into());
         if target_os == "linux" {
             flags.extend(["dylib=m".into(), "dylib=dl".into()]);
         } else {
@@ -103,7 +113,7 @@ pub fn link_libraries(stems: &[&str], target_os: &str, metal: bool) -> Vec<Strin
             // existing R DLL link in Makevars.win.in for Cargo executables too.
             flags.push("dylib=advapi32".into());
         }
-    } else {
+    } else if target_os == "macos" {
         flags.extend(["dylib=c++".into(), "framework=Accelerate".into()]);
         if metal {
             flags.extend([
@@ -112,6 +122,9 @@ pub fn link_libraries(stems: &[&str], target_os: &str, metal: bool) -> Vec<Strin
                 "framework=Foundation".into(),
             ]);
         }
+    } else {
+        // Emscripten uses libc++; Darwin frameworks are never available.
+        flags.push("dylib=c++".into());
     }
     flags
 }
@@ -257,7 +270,7 @@ mod tests {
     #[test]
     fn windows_gnu_has_no_darwin_frameworks_or_unix_libraries() {
         assert_eq!(
-            link_libraries(&["llama", "ggml"], "windows", false),
+            link_libraries(&["llama", "ggml"], "windows", "x86_64", false),
             [
                 "static:+whole-archive,-bundle=llama",
                 "static:+whole-archive,-bundle=ggml",
@@ -269,7 +282,7 @@ mod tests {
 
     #[test]
     fn windows_registry_library_matches_existing_r_dll_link() {
-        let flags = link_libraries(&["ggml-cpu"], "windows", false);
+        let flags = link_libraries(&["ggml-cpu"], "windows", "x86_64", false);
         assert_eq!(flags.iter().filter(|s| *s == "dylib=advapi32").count(), 1);
         let makevars = include_str!("../../Makevars.win.in");
         let pkg_libs = makevars
@@ -280,9 +293,29 @@ mod tests {
     }
 
     #[test]
+    fn windows_arm_uses_llvm_runtime_and_registry_without_darwin_frameworks() {
+        assert_eq!(
+            link_libraries(&["llama"], "windows", "aarch64", false),
+            [
+                "static:+whole-archive,-bundle=llama",
+                "dylib=c++",
+                "dylib=advapi32"
+            ]
+        );
+    }
+
+    #[test]
+    fn emscripten_never_links_darwin_frameworks() {
+        assert_eq!(
+            link_libraries(&["llama"], "emscripten", "wasm32", false),
+            ["static=llama", "dylib=c++"]
+        );
+    }
+
+    #[test]
     fn linux_and_macos_link_plans_are_unchanged() {
         assert_eq!(
-            link_libraries(&["llama"], "linux", false),
+            link_libraries(&["llama"], "linux", "x86_64", false),
             [
                 "static:+whole-archive,-bundle=llama",
                 "dylib=stdc++",
@@ -291,11 +324,11 @@ mod tests {
             ]
         );
         assert_eq!(
-            link_libraries(&["llama"], "macos", false),
+            link_libraries(&["llama"], "macos", "x86_64", false),
             ["static=llama", "dylib=c++", "framework=Accelerate"]
         );
         assert_eq!(
-            link_libraries(&["llama"], "macos", true),
+            link_libraries(&["llama"], "macos", "aarch64", true),
             [
                 "static=llama",
                 "dylib=c++",

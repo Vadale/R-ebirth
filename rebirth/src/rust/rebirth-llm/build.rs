@@ -275,7 +275,7 @@ fn main() {
 
     println!("cargo:rustc-link-search=native={}", native_dir.display());
 
-    emit_link_flags(&lib_stems, &target_os, metal);
+    emit_link_flags(&lib_stems, &target_os, &target_arch, metal);
     if let Some((_, lib)) = cuda_paths {
         println!("cargo:rustc-link-search=native={}", lib.display());
         // Link the real system driver, never the toolkit's driver stub.
@@ -343,8 +343,8 @@ fn configure_sanitizers(config: &mut cmake::Config) {
 
 /// Emit the `cargo:rustc-link-lib` flags for the cargo-driven link (tests + the
 /// `document` bin). The R SHLIB link mirrors these in `src/Makevars(.in)`.
-fn emit_link_flags(lib_stems: &[&str], target_os: &str, metal: bool) {
-    for flag in build_support::link_libraries(lib_stems, target_os, metal) {
+fn emit_link_flags(lib_stems: &[&str], target_os: &str, target_arch: &str, metal: bool) {
+    for flag in build_support::link_libraries(lib_stems, target_os, target_arch, metal) {
         println!("cargo:rustc-link-lib={flag}");
     }
     if metal {

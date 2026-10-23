@@ -128,7 +128,9 @@ jobs:
       - name: Windows header compatibility controls (no engine build)
         if: steps.scope.outputs.full_checks != 'false'
         working-directory: .
-        run: python3 tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+        run: |
+          python3 tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+          python3 tests/cran/windows_thread_compat.py --compiler clang --output "$RUNNER_TEMP/windows-clang-thread-compat"
 
       - name: cargo clippy (R-free engine crate; deny warnings)
         if: steps.scope.outputs.full_checks != 'false'
@@ -206,6 +208,18 @@ jobs:
           pip check
           python tests/llm-golden/transport_provenance.py
           python tests/llm-golden/test_transport_provenance.py
+          python tests/llm-golden/test_transport_security.py
+
+      - name: Patched HF CPU loader environment (one tiny fixture, no reference replay)
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          python -m venv "$RUNNER_TEMP/hf-environment"
+          "$RUNNER_TEMP/hf-environment/bin/python" -m pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
+          "$RUNNER_TEMP/hf-environment/bin/python" -m pip install -r tests/llm-golden/qwen/requirements-hf.txt
+          "$RUNNER_TEMP/hf-environment/bin/python" -m pip check
+          "$RUNNER_TEMP/hf-environment/bin/python" tests/llm-golden/qwen/test_environment.py
 
       - name: reference forward self-check (determinism + goldens + GGUF)
         run: python tests/llm-golden/synthetic/reference_forward.py --check

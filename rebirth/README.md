@@ -26,9 +26,15 @@ Check `packageVersion("relm")` and restart R after upgrading.
 The **0.5.0 source has been submitted to CRAN**, combining optional Linux CUDA
 and source portability. CRAN acceptance is pending; see the
 [submission status](https://github.com/Vadale/R-ebirth/blob/main/docs/cran-submission.md).
-The **0.6.0 candidate** adds optional `threads` and exact modern chat templates.
-See [model configuration and measured limits](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md);
-release/distribution verification remains pending.
+The **0.6.0 release**, published on [r-universe](https://vadale.r-universe.dev/relm),
+adds optional `threads` and exact modern chat templates.
+See [model configuration and measured limits](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md)
+and the [published release scope](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.0).
+Windows ARM64 and webR/WebAssembly builds remain unaccepted.
+Windows ARM64 targets ARM-based PCs; webR runs R in a browser. Neither is needed
+for a normal Linux installation. Candidate compatibility fixes are being checked
+separately from the published 0.6.0 artifacts. Python is used only by maintainer
+reference/security tests; the R package does not require a Python environment.
 
 ## Installation
 

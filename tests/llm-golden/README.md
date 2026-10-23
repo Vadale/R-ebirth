@@ -137,14 +137,15 @@ checks. Golden regeneration remains governed by the project's golden-update work
 
 ## Transport security and historical provenance (D-056)
 
-The active tooling pin uses `certifi==2026.10.19` for
+The active tooling pins use `urllib3==2.8.0` for the deflate EOF, chunk-header
+read-bound and HTTPS-proxy verification fixes, and `certifi==2026.10.19` for
 [GHSA-6q48-6c7w-9gw2](https://github.com/advisories/GHSA-6q48-6c7w-9gw2).
 Install the current requirements in a fresh environment; do not reconstruct an
 old vulnerable environment just to match a producer receipt.
 
 Frozen producers, numerical artifacts and their manifests remain unchanged.
 Their requirements hash records the environment that produced them, including
-the old certifi pin. The active directions and projection checks validate both
+the old certifi and urllib3 pins. The active directions and projection checks validate both
 manifests and accept exactly the approved old-to-new requirements hash pair.
 Every other provenance value, numerical bound and artifact check is preserved;
 newly computed metadata retains the new hash. No artifact is relabelled.
@@ -162,3 +163,9 @@ The Rust live-state golden consumer applies the same exact requirements transiti
 before its actual file hash check. A model-free Rust test enforces the Python/Rust
 twin pins and rejects unknown historical hashes; every other source/artifact and
 all native numerical comparisons retain their previous checks.
+
+D-057 updates the exact active requirements digest after the urllib3 correction;
+D-056's historical manifests are not rewritten. `test_transport_security.py`
+exercises all three urllib3 regressions offline with bounded inputs and mocked
+sockets. The old version fails these controls. Neither this test nor the strict
+provenance controls execute a model or regenerate reference outputs.

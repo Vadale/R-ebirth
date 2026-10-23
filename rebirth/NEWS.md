@@ -1,4 +1,25 @@
-# relm 0.6.0 (candidate; not published)
+# Development changes after 0.6.0 (not released)
+
+## Security tooling
+
+* Update test-tooling urllib3 to 2.8.0 and the optional Hugging Face reference
+  environment to PyTorch 2.13.0. Remove Accelerate from that CPU-only environment:
+  the loader does not use it, and the inspected upstream version still contains
+  the reported checkpoint path-traversal issue. Python is not needed to use relm
+  from R. Historical reference producers, artifacts and producing-environment
+  manifests remain unchanged; this is not a golden regeneration.
+
+## Build portability
+
+* Accept tool-wrapper diagnostics around one canonical Cargo/rustc version line,
+  while rejecting ambiguous, malformed, failed or below-minimum version output.
+* Apply the Windows thread-declaration adapter to Rtools Clang as well as GCC.
+  Select the Cargo target and C++ runtime from the actual Windows R architecture.
+* Keep Emscripten link plans free of host Linux libraries and Darwin frameworks.
+  New Windows ARM64 and rwasm CI builds validate these candidate fixes; they do
+  not establish supported browser inference or a published ARM64 Windows binary.
+
+# relm 0.6.0 (2026-10-23)
 
 ## New features
 
@@ -24,8 +45,8 @@
   response repair or new public argument. Independent Jinja references cover
   whitespace, Unicode and ordinary/schema formatting. Prior family-level
   compatibility results do not certify every newer template or model file.
-* The exact 0.5.0 archive submitted to CRAN remains unchanged. This candidate
-  targets the separately authorized r-universe release, not a new CRAN submission.
+* The exact 0.5.0 archive submitted to CRAN remains unchanged. Version 0.6.0
+  is published on r-universe; it is not a new CRAN submission.
 
 ## Documentation
 
@@ -39,7 +60,7 @@
 * Batch/service examples admit 0.6.0 while retaining exact prepared-environment
   fingerprints and the existing dependency pins.
 
-# relm 0.5.0 (candidate; not published)
+# relm 0.5.0 (CRAN submission pending)
 
 ## CRAN source preparation
 

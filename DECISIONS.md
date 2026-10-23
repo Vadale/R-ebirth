@@ -1999,3 +1999,37 @@ existing prepared environment silently.
   one path, then still hashes the actual current file. A model-free regression
   rejects unknown historical hashes/other-path substitutions and binds Python/Rust
   twin pins. Native production code and all numerical comparisons are unchanged.
+
+
+## D-057 — Authorized Python security and extra-platform build corrections
+
+- **Date:** 2026-10-23 · **Status:** implementation candidate; platform CI pending.
+  The founder requested updated README/NEWS and attempts to resolve the remaining
+  five Python advisories and Windows ARM64/WebAssembly build failures.
+- **Security scope:** urllib3 2.7.0 becomes 2.8.0 for its three transport advisories;
+  the optional HF CPU environment moves PyTorch 2.12.1 to 2.13.0. Remove Accelerate
+  because the actual frozen loader does not use its optional device-map path and
+  the inspected latest 1.15.0 retains the vulnerable checkpoint-index join.
+  This removes an unused dependency rather than asserting an upstream fix.
+- **Evidence:** bounded offline controls distinguish all three old urllib3
+  behaviors from the patched version. A fresh CPU environment passes dependency
+  consistency, a benign JIT call and one tiny synthetic checkpoint through the
+  actual unchanged HF loader with Accelerate absent. No external model, original
+  numerical reference run or golden regeneration is authorized by these checks.
+- **Provenance:** all original producers, 131 inventoried frozen files, numerical
+  tolerances and producing manifests stay exact. D-056's strict transport shim
+  and test-only Rust consumer admit only the original historical requirements
+  digest and the new exact approved active digest; no wildcard or numerical
+  exception is added. The separate HF environment does not relabel old outputs.
+- **Build scope:** preserve strict version floors and accept only one canonical
+  version line among wrapper diagnostics. Extend the existing single-source
+  Windows declaration adapter to Clang, select the Rtools target/runtime from
+  the actual R architecture, and separate Emscripten link libraries from host OS
+  libraries. The engine archive, vendored Rust crates and numerical kernels stay
+  unchanged. Linux GCC/Clang and configure/link controls are not ARM/webR runtime
+  acceptance; actual additional CI builds are required before such claims.
+- **Delivery:** retain the twelve existing ordinary routes and add actual Windows
+  ARM64 and pinned-rwasm builds without suppression, retry or weakened gates.
+  README/NEWS distinguish the published 0.6.0 release from these development
+  corrections. The v0.6.0 tag and published archive are immutable. The pending
+  CRAN 0.5.0 submission remains unchanged; CUDA remains deferred by the founder.

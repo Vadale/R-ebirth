@@ -56,9 +56,17 @@ with measured RTX 2060 results; an ordinary binary does not establish CUDA capab
 Windows CPU source-package checks and the corrected 0.5.0 win-builder check passed; Windows GPU and full live-file
 lifecycle parity remain outside that acceptance. The **0.5.0 source candidate**
 combines this portability work and has been submitted to CRAN. Maintainer
-confirmation is complete; CRAN acceptance remains pending. The **0.6.0 candidate** adds optional CPU
-threads and exact modern chat support; see [configuration and measured limits](docs/models.md).
-Its release/distribution checks are still pending. See the [submission status](docs/cran-submission.md).
+confirmation is complete; CRAN acceptance remains pending. The **0.6.0 release** is published on [r-universe](https://vadale.r-universe.dev/relm),
+with optional CPU threads and exact modern chat support. See
+[configuration and measured limits](docs/models.md) and the
+[release notes](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.0).
+Published binaries cover Linux and macOS on x86_64/ARM64 and Windows on x86_64.
+Windows ARM64 and webR/WebAssembly builds remain unaccepted; their failures are
+recorded in the release notes.
+Windows ARM64 targets ARM-based PCs; webR runs R in a browser. Neither is needed
+for a normal Linux installation. Candidate compatibility fixes are being checked
+separately from the published 0.6.0 artifacts. Python is used only by maintainer
+reference/security tests; the R package does not require a Python environment. See the [submission status](docs/cran-submission.md).
 
 ```r
 install.packages(

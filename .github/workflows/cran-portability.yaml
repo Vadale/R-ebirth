@@ -9,8 +9,22 @@ permissions: read-all
 
 jobs:
   windows-cpu:
-    name: Windows CPU source package (R release)
-    runs-on: windows-latest
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows CPU source package (R release)
+            runner: windows-latest
+            target: x86_64-pc-windows-gnu
+            compiler: gcc
+            artifact: windows-cpu-package
+          - name: Windows ARM64 source package (R release)
+            runner: windows-11-arm
+            target: aarch64-pc-windows-gnullvm
+            compiler: clang
+            artifact: windows-arm64-package
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -38,7 +52,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          targets: x86_64-pc-windows-gnu
+          targets: ${{ matrix.target }}
       - name: Native path and link controls (no engine build)
         shell: pwsh
         run: |
@@ -70,7 +84,7 @@ jobs:
           source("tests/toolchain/test-msrv.R")
       - name: Rtools thread declaration compatibility (no engine build)
         shell: bash
-        run: python tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+        run: python tests/cran/windows_thread_compat.py --compiler "${{ matrix.compiler }}" --output "$RUNNER_TEMP/windows-thread-compat"
       - name: R-hosted wrapper generator controls (no engine build)
         shell: bash
         run: |
@@ -92,7 +106,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: windows-cpu-package-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ matrix.artifact }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             rebirth/check
             rebirth/*.tar.gz
@@ -207,4 +221,41 @@ jobs:
             ${{ runner.temp }}/nonshared-r/*.rds
             ${{ runner.temp }}/nonshared-r/r-build/config.log
             ${{ runner.temp }}/nonshared-r/library/relm
+          if-no-files-found: warn
+
+  wasm-build:
+    name: WebAssembly source build (rwasm)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    # Same immutable image as the failed 0.6.0 r-universe build. A successful
+    # build is a build gate, not browser inference or general webR support.
+    container:
+      image: ghcr.io/r-universe-org/build-wasm@sha256:7dbd2b8aa6f3a386512463ff59f4ae4b5d2251d9491b67d050bad0dd8be36a1a
+    env:
+      RELM_ENABLE_CUDA: "0"
+      RELM_ENABLE_SELFTESTS: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_NET_OFFLINE: "true"
+      NOT_CRAN: "false"
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build source archive without vignette or model execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/wasm-evidence"
+          R CMD build --no-build-vignettes --no-manual --no-resave-data rebirth 2>&1 | tee "$RUNNER_TEMP/wasm-evidence/source.log"
+      - name: Compile the actual package with rwasm
+        shell: bash
+        run: |
+          set -euo pipefail
+          Rscript --vanilla -e 'archives <- Sys.glob("relm_*.tar.gz"); stopifnot(length(archives) == 1L); print(packageVersion("rwasm")); rwasm::build(archives, out_dir = file.path(Sys.getenv("RUNNER_TEMP"), "wasm-evidence"))' 2>&1 | tee "$RUNNER_TEMP/wasm-evidence/build.log"
+      - name: Retain actual WebAssembly build outputs and failures
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: wasm-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/wasm-evidence
+            relm_*.tar.gz
           if-no-files-found: warn
