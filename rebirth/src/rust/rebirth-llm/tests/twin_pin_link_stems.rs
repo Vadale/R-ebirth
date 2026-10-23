@@ -41,13 +41,13 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
         .unwrap_or_else(|e| panic!("cannot read {}: {e}", config_r_path.display()));
     assert!(config_r.contains(r#"sub("-lggml-base", "-lggml-cuda -lggml-base""#));
 
-    // GNU-ld group form: the Windows and Linux branches each carry the full
+    // Archive-group form: Windows, Emscripten and Linux each carry the full
     // ordered token list (order matters: left-to-right resolution).
     let group = "-lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base";
     assert_eq!(
         config_r.matches(group).count(),
-        2,
-        "expected exactly the Windows + Linux branches of config.R to carry \
+        3,
+        "expected exactly the Windows + Emscripten + Linux branches of config.R to carry \
          `{group}`; the R-side stem list diverged from build.rs (Hard rule 8f)"
     );
 

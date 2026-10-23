@@ -72,6 +72,10 @@ configure_case <- function(vendor, not_cran, windows = FALSE, cmake = NULL, arch
     env$.Platform$path.sep <- ";"
   }
   if (wasm) {
+    # Cross-target fixture: do not inherit the host Windows OS.type/path separator.
+    env$.Platform <- .Platform
+    env$.Platform$OS.type <- "unix"
+    env$.Platform$path.sep <- ":"
     env$R.version <- R.version
     env$R.version$platform <- "wasm32-unknown-emscripten"
     env$R.version$arch <- "wasm32"
