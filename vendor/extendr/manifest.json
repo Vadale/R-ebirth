@@ -1,0 +1,488 @@
+{
+  "cargo_lock_sha256": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",
+  "changed": {
+    "extendr-api-0.9.0/src/robj/rinternals.rs": {
+      "patched": "2fb044366bf57fec0c58476d427dd111c5b58b37c59f0d674971481d7cb13b9a",
+      "upstream": "9fa8d0dd4bb8b6aefa171b1091350192491ec345f605646de79daab0e4d81791"
+    },
+    "extendr-api-0.9.0/src/wrapper/environment.rs": {
+      "patched": "32c159f56b85d28b97e0aa6246be5f50fcfbefe4052a70ea0d47ab93ffe2a64b",
+      "upstream": "00e449a1638706c9effbc988479349067ba8e4aff7b51b20ba28ed75f43bf2eb"
+    },
+    "extendr-ffi-0.9.0/src/backports.rs": {
+      "patched": "79b89fae6437d8fba943a31ec7da02e5e48b30ca18c33285b01df5ed9b77e11a",
+      "upstream": "2a2c88b32e3041af7b365ebe2e164991b763937948b547b957a8de8fc4fc3d8c"
+    }
+  },
+  "checksum_files": {
+    "extendr-api-0.9.0/.cargo-checksum.json": "f1c62c198bbd68abb304aa284be6db9fe6ac9ddc0b40a1b27b40450591ead9ec",
+    "extendr-ffi-0.9.0/.cargo-checksum.json": "e947413715e35ef1d4c89e8a4b79c903a3b7e4770d4f84584d4a6a1168b99919"
+  },
+  "decision": "D057 extendr lookup amendment; founder approved 2026-10-23",
+  "files": {
+    "extendr-api-0.9.0/.cargo_vcs_info.json": {
+      "patched": "27ddc0d126c1eb2591e2ce3d72dbb0cd88c830ee2feec5a5c3ea6c3fc4903c44",
+      "upstream": "27ddc0d126c1eb2591e2ce3d72dbb0cd88c830ee2feec5a5c3ea6c3fc4903c44"
+    },
+    "extendr-api-0.9.0/Cargo.lock": {
+      "patched": "1bf36bc90e45a43aa978639b3c75586711e541d0e4cdd55b8130991b1be95676",
+      "upstream": "1bf36bc90e45a43aa978639b3c75586711e541d0e4cdd55b8130991b1be95676"
+    },
+    "extendr-api-0.9.0/Cargo.toml": {
+      "patched": "89aa2dc6e06fa80e52cb01d0252e3073a6e587f86ed652b1eebabdaaa5e02ed8",
+      "upstream": "89aa2dc6e06fa80e52cb01d0252e3073a6e587f86ed652b1eebabdaaa5e02ed8"
+    },
+    "extendr-api-0.9.0/Cargo.toml.orig": {
+      "patched": "e8ae3ad29a0224ee69b75484fa6dcab7cc6f141ca744ec67c90cc752071d30b7",
+      "upstream": "e8ae3ad29a0224ee69b75484fa6dcab7cc6f141ca744ec67c90cc752071d30b7"
+    },
+    "extendr-api-0.9.0/README.md": {
+      "patched": "3a50d2e79d5036248b74d0e9684c3051794c2b25e40e169f419567ad60922008",
+      "upstream": "3a50d2e79d5036248b74d0e9684c3051794c2b25e40e169f419567ad60922008"
+    },
+    "extendr-api-0.9.0/build.rs": {
+      "patched": "a439f66129c12e07a01d01b093526dbf3467bf885c91dc94f19d5fd2574669b9",
+      "upstream": "a439f66129c12e07a01d01b093526dbf3467bf885c91dc94f19d5fd2574669b9"
+    },
+    "extendr-api-0.9.0/src/conversions/mod.rs": {
+      "patched": "b0aa04b6838db188f7cde5a016f00437b9ec5f7e1f944338562dbaa0f9384f1d",
+      "upstream": "b0aa04b6838db188f7cde5a016f00437b9ec5f7e1f944338562dbaa0f9384f1d"
+    },
+    "extendr-api-0.9.0/src/conversions/try_into_int.rs": {
+      "patched": "251acfd02c3c23806b5415f295b63cc7b3dba46421ef44be623e595cd59dc85f",
+      "upstream": "251acfd02c3c23806b5415f295b63cc7b3dba46421ef44be623e595cd59dc85f"
+    },
+    "extendr-api-0.9.0/src/deserializer.rs": {
+      "patched": "fcf791cd0215ce7714b425836871f7163e25422dd08a754f6b2f254124372ff9",
+      "upstream": "fcf791cd0215ce7714b425836871f7163e25422dd08a754f6b2f254124372ff9"
+    },
+    "extendr-api-0.9.0/src/error.rs": {
+      "patched": "6f429156b0a98f977607985612e3fb13571963a576d03f358df14b59c08bef7b",
+      "upstream": "6f429156b0a98f977607985612e3fb13571963a576d03f358df14b59c08bef7b"
+    },
+    "extendr-api-0.9.0/src/functions.rs": {
+      "patched": "6b5de25f7c8ac47464cd9b62f87cd7145d00067ba0f9b3af8e19b136af6cc381",
+      "upstream": "6b5de25f7c8ac47464cd9b62f87cd7145d00067ba0f9b3af8e19b136af6cc381"
+    },
+    "extendr-api-0.9.0/src/graphics/color.rs": {
+      "patched": "1b3a02c516e72809e86a5058b5c5b8e9f8450526e2ab0a1981c97c08a532a0f8",
+      "upstream": "1b3a02c516e72809e86a5058b5c5b8e9f8450526e2ab0a1981c97c08a532a0f8"
+    },
+    "extendr-api-0.9.0/src/graphics/device_descriptor.rs": {
+      "patched": "49e4ddb157d9f5d22fe7faf7227926a071bb7be61db23497fbb0da458706f49b",
+      "upstream": "49e4ddb157d9f5d22fe7faf7227926a071bb7be61db23497fbb0da458706f49b"
+    },
+    "extendr-api-0.9.0/src/graphics/device_driver.rs": {
+      "patched": "300f823ecfc0212311c11ab68ea174a12a057bf4bce8251f8899623db702fa38",
+      "upstream": "300f823ecfc0212311c11ab68ea174a12a057bf4bce8251f8899623db702fa38"
+    },
+    "extendr-api-0.9.0/src/graphics/mod.rs": {
+      "patched": "70baf92e1eda354ebd51f648cf9bac2f8ffe99cc3636605f79fdeb09817ac54a",
+      "upstream": "70baf92e1eda354ebd51f648cf9bac2f8ffe99cc3636605f79fdeb09817ac54a"
+    },
+    "extendr-api-0.9.0/src/io/load.rs": {
+      "patched": "0622df62f5fbe0419c7d0ad8962c4345151e1a255e78ff072e7dbdbd7a11de2a",
+      "upstream": "0622df62f5fbe0419c7d0ad8962c4345151e1a255e78ff072e7dbdbd7a11de2a"
+    },
+    "extendr-api-0.9.0/src/io/mod.rs": {
+      "patched": "62d66f4d65e160eaf758d4a1e3efa80022e8b773c5ff0823d75341f5bda656cf",
+      "upstream": "62d66f4d65e160eaf758d4a1e3efa80022e8b773c5ff0823d75341f5bda656cf"
+    },
+    "extendr-api-0.9.0/src/io/save.rs": {
+      "patched": "e12ba06840911e96e1feff8dc640d562ccb1df112f2e1c8e0a5713fd41e5f375",
+      "upstream": "e12ba06840911e96e1feff8dc640d562ccb1df112f2e1c8e0a5713fd41e5f375"
+    },
+    "extendr-api-0.9.0/src/iter.rs": {
+      "patched": "8321f71d9f9e39a08589fdee8f4f93154fd31f7bf05b9aba1e6aee28f78920f2",
+      "upstream": "8321f71d9f9e39a08589fdee8f4f93154fd31f7bf05b9aba1e6aee28f78920f2"
+    },
+    "extendr-api-0.9.0/src/lang_macros.rs": {
+      "patched": "7c08af13652ebfe9cf11ff14040eb024530c45240acd429c363cd760b4b5c3d2",
+      "upstream": "7c08af13652ebfe9cf11ff14040eb024530c45240acd429c363cd760b4b5c3d2"
+    },
+    "extendr-api-0.9.0/src/lib.rs": {
+      "patched": "641b8c7da6cf1bcb3c83ead3e59a840bb49225c6ffe8eaca26415b99c40922d1",
+      "upstream": "641b8c7da6cf1bcb3c83ead3e59a840bb49225c6ffe8eaca26415b99c40922d1"
+    },
+    "extendr-api-0.9.0/src/metadata.rs": {
+      "patched": "eb195f8f87aaa891caa01daf653449b4f36abb37ec1978e60d6183db9667bd86",
+      "upstream": "eb195f8f87aaa891caa01daf653449b4f36abb37ec1978e60d6183db9667bd86"
+    },
+    "extendr-api-0.9.0/src/na.rs": {
+      "patched": "4ea93946ba1eb78060c115e1366256a5dafc169c056cb25e1cca4d7e22a105f1",
+      "upstream": "4ea93946ba1eb78060c115e1366256a5dafc169c056cb25e1cca4d7e22a105f1"
+    },
+    "extendr-api-0.9.0/src/optional/either.rs": {
+      "patched": "df6625634bc8e8fe3e025de393e3c905bc13aaa93c2d3859c3baeff44e2a60db",
+      "upstream": "df6625634bc8e8fe3e025de393e3c905bc13aaa93c2d3859c3baeff44e2a60db"
+    },
+    "extendr-api-0.9.0/src/optional/faer.rs": {
+      "patched": "51bca15a084600910513a8950f676dbb354e8c823993c29a35df77a7ac77ccf2",
+      "upstream": "51bca15a084600910513a8950f676dbb354e8c823993c29a35df77a7ac77ccf2"
+    },
+    "extendr-api-0.9.0/src/optional/mod.rs": {
+      "patched": "d0c044b5f9ee57d70d0137cd0a6ecdd8ebdf2a29d96fe751ecbaf31f9b8b35fa",
+      "upstream": "d0c044b5f9ee57d70d0137cd0a6ecdd8ebdf2a29d96fe751ecbaf31f9b8b35fa"
+    },
+    "extendr-api-0.9.0/src/optional/ndarray.rs": {
+      "patched": "09faf53901c7edb0354d5bb523d2563dbcfd041afb4130173717a37ed15dcd6e",
+      "upstream": "09faf53901c7edb0354d5bb523d2563dbcfd041afb4130173717a37ed15dcd6e"
+    },
+    "extendr-api-0.9.0/src/ownership.rs": {
+      "patched": "98bfeb8b0f7cd679379ef7482bff63237211496da24acf92b055bc9ce76886d4",
+      "upstream": "98bfeb8b0f7cd679379ef7482bff63237211496da24acf92b055bc9ce76886d4"
+    },
+    "extendr-api-0.9.0/src/prelude.rs": {
+      "patched": "6eae74776684b23a73e982988632d05e04b205249507eadec82d19341b6a97a1",
+      "upstream": "6eae74776684b23a73e982988632d05e04b205249507eadec82d19341b6a97a1"
+    },
+    "extendr-api-0.9.0/src/rmacros.rs": {
+      "patched": "16326651b2af7f4cf5e4a929eb3a4c167a2fd4ebae3308533b49c41cdf99a79a",
+      "upstream": "16326651b2af7f4cf5e4a929eb3a4c167a2fd4ebae3308533b49c41cdf99a79a"
+    },
+    "extendr-api-0.9.0/src/robj/debug.rs": {
+      "patched": "4d6f1e9cf44234ae2e38ec61d1f9059e10949c54ca66b3fb78254f242bdf43b4",
+      "upstream": "4d6f1e9cf44234ae2e38ec61d1f9059e10949c54ca66b3fb78254f242bdf43b4"
+    },
+    "extendr-api-0.9.0/src/robj/into_robj.rs": {
+      "patched": "9cfde4e69006b5526e09c3530e2ca90618eb83d9fa69069838c071915b10ede0",
+      "upstream": "9cfde4e69006b5526e09c3530e2ca90618eb83d9fa69069838c071915b10ede0"
+    },
+    "extendr-api-0.9.0/src/robj/into_robj/repeat_into_robj.rs": {
+      "patched": "e3fd70cf63feca283d55c26991b0cc9da8808388b665bc506ea99dda71f7df03",
+      "upstream": "e3fd70cf63feca283d55c26991b0cc9da8808388b665bc506ea99dda71f7df03"
+    },
+    "extendr-api-0.9.0/src/robj/mod.rs": {
+      "patched": "4851003425b93f4bdbcfbae8dce39199f4db2fed9fd73866b4183d11bf46ec15",
+      "upstream": "4851003425b93f4bdbcfbae8dce39199f4db2fed9fd73866b4183d11bf46ec15"
+    },
+    "extendr-api-0.9.0/src/robj/operators.rs": {
+      "patched": "3071209ec2a3999187bb65ab36703f895b6298e6775d0c4d50d662eed6af16c9",
+      "upstream": "3071209ec2a3999187bb65ab36703f895b6298e6775d0c4d50d662eed6af16c9"
+    },
+    "extendr-api-0.9.0/src/robj/rinternals.rs": {
+      "patched": "ea609a47302c8a3c4a9ca84793203c57450061707816b4eff993607809a692cd",
+      "upstream": "9fa8d0dd4bb8b6aefa171b1091350192491ec345f605646de79daab0e4d81791"
+    },
+    "extendr-api-0.9.0/src/robj/tests.rs": {
+      "patched": "d791657ad6564ca9703ad3b2149e0de809b1718bf7d5b081508de110060ff213",
+      "upstream": "d791657ad6564ca9703ad3b2149e0de809b1718bf7d5b081508de110060ff213"
+    },
+    "extendr-api-0.9.0/src/robj/try_from_robj.rs": {
+      "patched": "8d8a072b8adf044f1098b57c13e21321d39de04c85658b852a70675080d8d043",
+      "upstream": "8d8a072b8adf044f1098b57c13e21321d39de04c85658b852a70675080d8d043"
+    },
+    "extendr-api-0.9.0/src/scalar/macros.rs": {
+      "patched": "d1141d950ca5402dd5d63d7a287e128fd79ed787533023a176b26588ee8ef5ae",
+      "upstream": "d1141d950ca5402dd5d63d7a287e128fd79ed787533023a176b26588ee8ef5ae"
+    },
+    "extendr-api-0.9.0/src/scalar/mod.rs": {
+      "patched": "54e022050bbd277e065be7e4e732c4a8f5e72c76712b94aa5081c21e58f7b588",
+      "upstream": "54e022050bbd277e065be7e4e732c4a8f5e72c76712b94aa5081c21e58f7b588"
+    },
+    "extendr-api-0.9.0/src/scalar/rbool.rs": {
+      "patched": "77fd6a24570b202da31e93c7fffa4068d5febac16ad541d515eebc98cb45dd84",
+      "upstream": "77fd6a24570b202da31e93c7fffa4068d5febac16ad541d515eebc98cb45dd84"
+    },
+    "extendr-api-0.9.0/src/scalar/rcplx_default.rs": {
+      "patched": "f573d063f8b973dff3789c1305641ad63c6dac8b826fc555ebc3ead347584605",
+      "upstream": "f573d063f8b973dff3789c1305641ad63c6dac8b826fc555ebc3ead347584605"
+    },
+    "extendr-api-0.9.0/src/scalar/rcplx_full.rs": {
+      "patched": "e4d9dd48f8903dfd8eae0ac0805ed8c6fe1c39e191585e65d61533bdd799dd79",
+      "upstream": "e4d9dd48f8903dfd8eae0ac0805ed8c6fe1c39e191585e65d61533bdd799dd79"
+    },
+    "extendr-api-0.9.0/src/scalar/rfloat.rs": {
+      "patched": "2c4111a3a6bb31d77e04dda71276de0ba87ec7a6008d8c71ac6df131a81195fa",
+      "upstream": "2c4111a3a6bb31d77e04dda71276de0ba87ec7a6008d8c71ac6df131a81195fa"
+    },
+    "extendr-api-0.9.0/src/scalar/rint.rs": {
+      "patched": "16e287e298df091a7976e1700aaffaf1d7d87b4beaffb22b4b76bdd9f478acb4",
+      "upstream": "16e287e298df091a7976e1700aaffaf1d7d87b4beaffb22b4b76bdd9f478acb4"
+    },
+    "extendr-api-0.9.0/src/serializer.rs": {
+      "patched": "a4995653eb297f14c0e7c26f06c0220dfa6cc99318847bb36fb6d27a8b9687c8",
+      "upstream": "a4995653eb297f14c0e7c26f06c0220dfa6cc99318847bb36fb6d27a8b9687c8"
+    },
+    "extendr-api-0.9.0/src/thread_safety.rs": {
+      "patched": "e132aafe7114e48446fe59a769cfe4e78e23f5c27b43584f9f9e26ce7c41db33",
+      "upstream": "e132aafe7114e48446fe59a769cfe4e78e23f5c27b43584f9f9e26ce7c41db33"
+    },
+    "extendr-api-0.9.0/src/wrapper/altrep.rs": {
+      "patched": "1491ac824703c7a28358be80fc4636149cc4eabc40bc1a070b28e34a2ab2ec1d",
+      "upstream": "1491ac824703c7a28358be80fc4636149cc4eabc40bc1a070b28e34a2ab2ec1d"
+    },
+    "extendr-api-0.9.0/src/wrapper/complexes.rs": {
+      "patched": "b265d80ab18ee3c27fa440bd32d511108904def29aa5ccae7c0ee9445e6d4eae",
+      "upstream": "b265d80ab18ee3c27fa440bd32d511108904def29aa5ccae7c0ee9445e6d4eae"
+    },
+    "extendr-api-0.9.0/src/wrapper/dataframe.rs": {
+      "patched": "f032aca0eaf1c59b96ff41aee1f4f8a8348c90a8e63ff5a341a98a6031620d52",
+      "upstream": "f032aca0eaf1c59b96ff41aee1f4f8a8348c90a8e63ff5a341a98a6031620d52"
+    },
+    "extendr-api-0.9.0/src/wrapper/doubles.rs": {
+      "patched": "6c77b952af8e3a0f8115c313c0f8178a5787a265aa3c67385c0ea2d939c3557a",
+      "upstream": "6c77b952af8e3a0f8115c313c0f8178a5787a265aa3c67385c0ea2d939c3557a"
+    },
+    "extendr-api-0.9.0/src/wrapper/environment.rs": {
+      "patched": "32c159f56b85d28b97e0aa6246be5f50fcfbefe4052a70ea0d47ab93ffe2a64b",
+      "upstream": "00e449a1638706c9effbc988479349067ba8e4aff7b51b20ba28ed75f43bf2eb"
+    },
+    "extendr-api-0.9.0/src/wrapper/expr.rs": {
+      "patched": "56077a8566bd26590b4c17d34599d195be395eb8e973c738f992ed52afbfda6e",
+      "upstream": "56077a8566bd26590b4c17d34599d195be395eb8e973c738f992ed52afbfda6e"
+    },
+    "extendr-api-0.9.0/src/wrapper/externalptr.rs": {
+      "patched": "067d2e7e2bb57a5caf41edcc5b8b7a96b03489d2887573c4427f43cd667916cc",
+      "upstream": "067d2e7e2bb57a5caf41edcc5b8b7a96b03489d2887573c4427f43cd667916cc"
+    },
+    "extendr-api-0.9.0/src/wrapper/function.rs": {
+      "patched": "9c1e089b74c422bd34b9f9fcf3e3dafb19a9f3571d999e25c0d1b64695ddc569",
+      "upstream": "9c1e089b74c422bd34b9f9fcf3e3dafb19a9f3571d999e25c0d1b64695ddc569"
+    },
+    "extendr-api-0.9.0/src/wrapper/integers.rs": {
+      "patched": "5aa1eb5317b44d9b304c70b0fbf0df6fd49ffc7b057d42808a58e9445acdb996",
+      "upstream": "5aa1eb5317b44d9b304c70b0fbf0df6fd49ffc7b057d42808a58e9445acdb996"
+    },
+    "extendr-api-0.9.0/src/wrapper/lang.rs": {
+      "patched": "3de02be32ea78c0c449fc98546dc27bc54bcfaaef895d1321e9aea75a7811118",
+      "upstream": "3de02be32ea78c0c449fc98546dc27bc54bcfaaef895d1321e9aea75a7811118"
+    },
+    "extendr-api-0.9.0/src/wrapper/list.rs": {
+      "patched": "46881641a255d1d0616f9e17806eacf5b32e0c8b5c467c7145a43fb782bf2efe",
+      "upstream": "46881641a255d1d0616f9e17806eacf5b32e0c8b5c467c7145a43fb782bf2efe"
+    },
+    "extendr-api-0.9.0/src/wrapper/logicals.rs": {
+      "patched": "d99c71ec6292a9c563d66f03515e6309c8f93125718b0e68d907ac0aca32d15c",
+      "upstream": "d99c71ec6292a9c563d66f03515e6309c8f93125718b0e68d907ac0aca32d15c"
+    },
+    "extendr-api-0.9.0/src/wrapper/macros.rs": {
+      "patched": "27a2a5af20ab08f2f69ea224835f188a9706e4522e1e4ab72aafa9e90646fa69",
+      "upstream": "27a2a5af20ab08f2f69ea224835f188a9706e4522e1e4ab72aafa9e90646fa69"
+    },
+    "extendr-api-0.9.0/src/wrapper/matrix.rs": {
+      "patched": "49fb544b099add2b4e2d132c72774a1951c4057e86e84f00f3f9a0c4dcc4cca5",
+      "upstream": "49fb544b099add2b4e2d132c72774a1951c4057e86e84f00f3f9a0c4dcc4cca5"
+    },
+    "extendr-api-0.9.0/src/wrapper/mod.rs": {
+      "patched": "7f00352579aabf7b3630a4bded541aff55ae9c32a2631b31dc8bb3459482c0aa",
+      "upstream": "7f00352579aabf7b3630a4bded541aff55ae9c32a2631b31dc8bb3459482c0aa"
+    },
+    "extendr-api-0.9.0/src/wrapper/nullable.rs": {
+      "patched": "c631eb4e4bcd0b206e7d7efec2242f6c879ed002a5d3d3d09da66359ed058a81",
+      "upstream": "c631eb4e4bcd0b206e7d7efec2242f6c879ed002a5d3d3d09da66359ed058a81"
+    },
+    "extendr-api-0.9.0/src/wrapper/pairlist.rs": {
+      "patched": "b096df03e79470b2ce9402833169d178d42d080f88415d1f094407dc8a27da34",
+      "upstream": "b096df03e79470b2ce9402833169d178d42d080f88415d1f094407dc8a27da34"
+    },
+    "extendr-api-0.9.0/src/wrapper/primitive.rs": {
+      "patched": "aacd0f16bc78f7cc093f9c02b96095ed5585abec7586cbb11a02140eef1468d7",
+      "upstream": "aacd0f16bc78f7cc093f9c02b96095ed5585abec7586cbb11a02140eef1468d7"
+    },
+    "extendr-api-0.9.0/src/wrapper/promise.rs": {
+      "patched": "abeede74d1bb5d719dce9a59daa522f4ced2dc18a39288116924b06fc3199a92",
+      "upstream": "abeede74d1bb5d719dce9a59daa522f4ced2dc18a39288116924b06fc3199a92"
+    },
+    "extendr-api-0.9.0/src/wrapper/raw.rs": {
+      "patched": "eb6fe92e85c01719d822a2ea329d68b7e09c4edd78234731d916440683519566",
+      "upstream": "eb6fe92e85c01719d822a2ea329d68b7e09c4edd78234731d916440683519566"
+    },
+    "extendr-api-0.9.0/src/wrapper/rstr.rs": {
+      "patched": "8e08c7b705fb99455858c639c7fefdf64f6a30a28cb510e28fefb849c980f368",
+      "upstream": "8e08c7b705fb99455858c639c7fefdf64f6a30a28cb510e28fefb849c980f368"
+    },
+    "extendr-api-0.9.0/src/wrapper/s4.rs": {
+      "patched": "665cd1db709c7179472dcf98cb400dcdc14e9a6f55565760d47367100c863323",
+      "upstream": "665cd1db709c7179472dcf98cb400dcdc14e9a6f55565760d47367100c863323"
+    },
+    "extendr-api-0.9.0/src/wrapper/strings.rs": {
+      "patched": "2fa9af5898b7c51f91dfddc1db07fd7a3ce825eff7e8e7f15e6c3c0ec3383412",
+      "upstream": "2fa9af5898b7c51f91dfddc1db07fd7a3ce825eff7e8e7f15e6c3c0ec3383412"
+    },
+    "extendr-api-0.9.0/src/wrapper/symbol.rs": {
+      "patched": "a676ae7c894dcad5ae18a17244528d7ccc89113b33d27243e4f5e817b1533937",
+      "upstream": "a676ae7c894dcad5ae18a17244528d7ccc89113b33d27243e4f5e817b1533937"
+    },
+    "extendr-api-0.9.0/src/wrapper/wrapper_macros.rs": {
+      "patched": "fa47d6b03079d61cd894e3d264fcd5bd25085349c7fe1fb214ef9220fa5db4eb",
+      "upstream": "fa47d6b03079d61cd894e3d264fcd5bd25085349c7fe1fb214ef9220fa5db4eb"
+    },
+    "extendr-api-0.9.0/tests/altrep_tests.rs": {
+      "patched": "c97fd89b5f26a59ea91800fefb96e9acd07190aa65331a63052ee64bd91173fe",
+      "upstream": "c97fd89b5f26a59ea91800fefb96e9acd07190aa65331a63052ee64bd91173fe"
+    },
+    "extendr-api-0.9.0/tests/call_tests.rs": {
+      "patched": "5e7c1d42802c74733bb8f67d37372b09f1de09537f6a03fb34440331ffd60795",
+      "upstream": "5e7c1d42802c74733bb8f67d37372b09f1de09537f6a03fb34440331ffd60795"
+    },
+    "extendr-api-0.9.0/tests/dataframe_tests.rs": {
+      "patched": "47f5993013f883969ec9745987eafa6398f0f69354af981ab58c321a4ddb3bd1",
+      "upstream": "47f5993013f883969ec9745987eafa6398f0f69354af981ab58c321a4ddb3bd1"
+    },
+    "extendr-api-0.9.0/tests/debug_tests.rs": {
+      "patched": "69403b82873a3310a2dce0c076a2c2394ceaa8248d21df8b4c637b6d25719ef3",
+      "upstream": "69403b82873a3310a2dce0c076a2c2394ceaa8248d21df8b4c637b6d25719ef3"
+    },
+    "extendr-api-0.9.0/tests/derive_into_list.rs": {
+      "patched": "3ddf8e908153527a58cd4d9efda5a23feef0c3288dabfbc0c133365385dfe8bb",
+      "upstream": "3ddf8e908153527a58cd4d9efda5a23feef0c3288dabfbc0c133365385dfe8bb"
+    },
+    "extendr-api-0.9.0/tests/extendr_macro.rs": {
+      "patched": "f15a6ee8012c4047aa4405fd7c4e400126068480e9f643035e0b48e755a5f632",
+      "upstream": "f15a6ee8012c4047aa4405fd7c4e400126068480e9f643035e0b48e755a5f632"
+    },
+    "extendr-api-0.9.0/tests/extendr_module_tests.rs": {
+      "patched": "06e4daa7ad28c6a0bbc8031309a250661099b505894f6caf25f4d1b48f9e1788",
+      "upstream": "06e4daa7ad28c6a0bbc8031309a250661099b505894f6caf25f4d1b48f9e1788"
+    },
+    "extendr-api-0.9.0/tests/externalptr_tests.rs": {
+      "patched": "fd5a463f9991c5ea1493779d4ca861f3d56ce96a5d4e728177cfabae30fe0916",
+      "upstream": "fd5a463f9991c5ea1493779d4ca861f3d56ce96a5d4e728177cfabae30fe0916"
+    },
+    "extendr-api-0.9.0/tests/features.rs": {
+      "patched": "90240b64dab7df6d3659d84f2cd448c842b7336fa72f9abe8d5122e1a2060034",
+      "upstream": "90240b64dab7df6d3659d84f2cd448c842b7336fa72f9abe8d5122e1a2060034"
+    },
+    "extendr-api-0.9.0/tests/from_iterator_tests.rs": {
+      "patched": "9b8f7ca125a0e4ea510a90b8d617fdb86ad1680b4dc081b5b03a11ae31687af2",
+      "upstream": "9b8f7ca125a0e4ea510a90b8d617fdb86ad1680b4dc081b5b03a11ae31687af2"
+    },
+    "extendr-api-0.9.0/tests/graphics_tests.rs": {
+      "patched": "d04f8a2fea851edef1b5054f7b1b0dd5db7758eefc3e2b5db8d9b8f9bff5782a",
+      "upstream": "d04f8a2fea851edef1b5054f7b1b0dd5db7758eefc3e2b5db8d9b8f9bff5782a"
+    },
+    "extendr-api-0.9.0/tests/into_iterator_tests.rs": {
+      "patched": "e78df3a46d5ef59dec217bf1692c1e6b74ef7cfb3411f2f3e272713913300835",
+      "upstream": "e78df3a46d5ef59dec217bf1692c1e6b74ef7cfb3411f2f3e272713913300835"
+    },
+    "extendr-api-0.9.0/tests/io_tests.rs": {
+      "patched": "cb6dd042005582486364e9e64be5dafb09e91c628539b97a639fe7350fca21fc",
+      "upstream": "cb6dd042005582486364e9e64be5dafb09e91c628539b97a639fe7350fca21fc"
+    },
+    "extendr-api-0.9.0/tests/issue-397-memory-allocation.rs": {
+      "patched": "6236d5de8493fb42414e9edc07c5ed559b2a1de446e53b88b3d816df5271d1e6",
+      "upstream": "6236d5de8493fb42414e9edc07c5ed559b2a1de446e53b88b3d816df5271d1e6"
+    },
+    "extendr-api-0.9.0/tests/macro_tests.rs": {
+      "patched": "0d3d32ba7e3d1f142492318ea080cddb41cd88f03b7a8f88afe08f77c5f3421b",
+      "upstream": "0d3d32ba7e3d1f142492318ea080cddb41cd88f03b7a8f88afe08f77c5f3421b"
+    },
+    "extendr-api-0.9.0/tests/na_tests.rs": {
+      "patched": "c348bb40e0a9dd025737ce53c7048ec5fc8fbea3a4400954bc3ac40d6671060e",
+      "upstream": "c348bb40e0a9dd025737ce53c7048ec5fc8fbea3a4400954bc3ac40d6671060e"
+    },
+    "extendr-api-0.9.0/tests/optional/either/either_mock_into_robj.rs": {
+      "patched": "adf70a6848179924ae2d4cfe177a28eeb476edcf33ff5eb576f7b60241d950cb",
+      "upstream": "adf70a6848179924ae2d4cfe177a28eeb476edcf33ff5eb576f7b60241d950cb"
+    },
+    "extendr-api-0.9.0/tests/optional/either/either_mock_try_from_robj.rs": {
+      "patched": "037c0f5472017ae985c72d789f479380209f53d495d94954bebb1c94d2d71528",
+      "upstream": "037c0f5472017ae985c72d789f479380209f53d495d94954bebb1c94d2d71528"
+    },
+    "extendr-api-0.9.0/tests/optional/either/mod.rs": {
+      "patched": "a79550cbd56c89ac64a98a40d6d2051bc1e39d27dd131d4bac277f4c5cf08147",
+      "upstream": "a79550cbd56c89ac64a98a40d6d2051bc1e39d27dd131d4bac277f4c5cf08147"
+    },
+    "extendr-api-0.9.0/tests/optional/mod.rs": {
+      "patched": "e6888c7db2e5078d735d79092598b20f7b70429eb88bdb6a844774e471d4d607",
+      "upstream": "e6888c7db2e5078d735d79092598b20f7b70429eb88bdb6a844774e471d4d607"
+    },
+    "extendr-api-0.9.0/tests/optional/ndarray.rs": {
+      "patched": "5a9841857200ebeab0c62f5de7a5cb85b5673a93a929d44c2b5ae071a5c8f645",
+      "upstream": "5a9841857200ebeab0c62f5de7a5cb85b5673a93a929d44c2b5ae071a5c8f645"
+    },
+    "extendr-api-0.9.0/tests/optional/non_api.rs": {
+      "patched": "e3473d657dff814ed670d622a7308ebdf13af1bcc8b785f1796e7efadf7646ea",
+      "upstream": "e3473d657dff814ed670d622a7308ebdf13af1bcc8b785f1796e7efadf7646ea"
+    },
+    "extendr-api-0.9.0/tests/optional/serde.rs": {
+      "patched": "2aaca801518c550936d3164e9c159154771bf3f7108a96f4bb5ae8c527504f71",
+      "upstream": "2aaca801518c550936d3164e9c159154771bf3f7108a96f4bb5ae8c527504f71"
+    },
+    "extendr-api-0.9.0/tests/optional/serde/deserializer.rs": {
+      "patched": "97ce50f20e27046208ca88678dfc5cf7b9164f78f60f28bef17498db17aeb612",
+      "upstream": "97ce50f20e27046208ca88678dfc5cf7b9164f78f60f28bef17498db17aeb612"
+    },
+    "extendr-api-0.9.0/tests/optional/serde/serializer.rs": {
+      "patched": "659b293cd66c5d6cfc52295a462827d884c293e19fc8e6c0ae491be02a6a2ce1",
+      "upstream": "659b293cd66c5d6cfc52295a462827d884c293e19fc8e6c0ae491be02a6a2ce1"
+    },
+    "extendr-api-0.9.0/tests/parse_tests.rs": {
+      "patched": "93d486ff19e474910d56ea796e7891987baed1f6f01dddde032b6e248e7abfde",
+      "upstream": "93d486ff19e474910d56ea796e7891987baed1f6f01dddde032b6e248e7abfde"
+    },
+    "extendr-api-0.9.0/tests/rng_tests.rs": {
+      "patched": "efa6e28ac3e1ec9c004c750d26664e4919223c0216df5307595ea4c11bde2a98",
+      "upstream": "efa6e28ac3e1ec9c004c750d26664e4919223c0216df5307595ea4c11bde2a98"
+    },
+    "extendr-api-0.9.0/tests/scalar_ordering_tests.rs": {
+      "patched": "34870439bee15c5ec09c54d97c4cc055b8cffaae08be438dc87c5c6186495146",
+      "upstream": "34870439bee15c5ec09c54d97c4cc055b8cffaae08be438dc87c5c6186495146"
+    },
+    "extendr-api-0.9.0/tests/scalar_tests.rs": {
+      "patched": "e3ec2cdf66fb671ca5a10d3f4e60d75a956c693ae93f5f8ff7d5fcf5555aa7b6",
+      "upstream": "e3ec2cdf66fb671ca5a10d3f4e60d75a956c693ae93f5f8ff7d5fcf5555aa7b6"
+    },
+    "extendr-api-0.9.0/tests/try_from_tests.rs": {
+      "patched": "1eb8f03c0499d2b96abab1feb36429a2edf0fa1ce4836f5bda5c13665d489304",
+      "upstream": "1eb8f03c0499d2b96abab1feb36429a2edf0fa1ce4836f5bda5c13665d489304"
+    },
+    "extendr-api-0.9.0/tests/vector_tests.rs": {
+      "patched": "5917f8be0023edcb70d183e079b92dbd7f9360a3ec7dece18623cf51f0e08a5d",
+      "upstream": "5917f8be0023edcb70d183e079b92dbd7f9360a3ec7dece18623cf51f0e08a5d"
+    },
+    "extendr-ffi-0.9.0/.cargo_vcs_info.json": {
+      "patched": "36f00241c98718bfe22b4da53d19ebe6c151adb2619b06b7154a81a949a83f14",
+      "upstream": "36f00241c98718bfe22b4da53d19ebe6c151adb2619b06b7154a81a949a83f14"
+    },
+    "extendr-ffi-0.9.0/Cargo.lock": {
+      "patched": "b3486747014c972eff7c422d7e6bd484b987b2ea0136df3ed64e047783bd8ed9",
+      "upstream": "b3486747014c972eff7c422d7e6bd484b987b2ea0136df3ed64e047783bd8ed9"
+    },
+    "extendr-ffi-0.9.0/Cargo.toml": {
+      "patched": "9a30bafee03066573405074f723e6b1daf89172102f84599c681b787b8d7589d",
+      "upstream": "9a30bafee03066573405074f723e6b1daf89172102f84599c681b787b8d7589d"
+    },
+    "extendr-ffi-0.9.0/Cargo.toml.orig": {
+      "patched": "b1e147080952ce58ef32adc4bcf4985946a97dd1efc006cbc11f36e30e76f9ea",
+      "upstream": "b1e147080952ce58ef32adc4bcf4985946a97dd1efc006cbc11f36e30e76f9ea"
+    },
+    "extendr-ffi-0.9.0/README.md": {
+      "patched": "8895e59f004c806e5a726f3074c8943fdf0f8e60994a9c202a657a9037f7a4ab",
+      "upstream": "8895e59f004c806e5a726f3074c8943fdf0f8e60994a9c202a657a9037f7a4ab"
+    },
+    "extendr-ffi-0.9.0/build.rs": {
+      "patched": "3b0703c9ee92652edcce5975e08644e62280f2baa51931731dca99f39d759350",
+      "upstream": "3b0703c9ee92652edcce5975e08644e62280f2baa51931731dca99f39d759350"
+    },
+    "extendr-ffi-0.9.0/src/altrep.rs": {
+      "patched": "c42eaec3fd476e68eb5255f99c2661620f4a535e1343d84910518c2727d6f3aa",
+      "upstream": "c42eaec3fd476e68eb5255f99c2661620f4a535e1343d84910518c2727d6f3aa"
+    },
+    "extendr-ffi-0.9.0/src/backports.rs": {
+      "patched": "79b89fae6437d8fba943a31ec7da02e5e48b30ca18c33285b01df5ed9b77e11a",
+      "upstream": "2a2c88b32e3041af7b365ebe2e164991b763937948b547b957a8de8fc4fc3d8c"
+    },
+    "extendr-ffi-0.9.0/src/graphics.rs": {
+      "patched": "5c0986f43083ffc65ba42c22a759164ac925eaa9e3214557621381dbc2c85907",
+      "upstream": "5c0986f43083ffc65ba42c22a759164ac925eaa9e3214557621381dbc2c85907"
+    },
+    "extendr-ffi-0.9.0/src/lib.rs": {
+      "patched": "ec551d201920875cc1afe9f5441b207adf4daf23f8273987113b763e48da40c0",
+      "upstream": "ec551d201920875cc1afe9f5441b207adf4daf23f8273987113b763e48da40c0"
+    },
+    "extendr-ffi-0.9.0/src/non_api.rs": {
+      "patched": "8ce0a5116095e91da81aadceb3ea0ef5c93176d964506911bbf433eb93c251dd",
+      "upstream": "8ce0a5116095e91da81aadceb3ea0ef5c93176d964506911bbf433eb93c251dd"
+    },
+    "extendr-ffi-0.9.0/src/symbols.rs": {
+      "patched": "e46401f909417c1bf08d01bff35bbac491a32cb1b257942328276ad00f771560",
+      "upstream": "e46401f909417c1bf08d01bff35bbac491a32cb1b257942328276ad00f771560"
+    }
+  },
+  "versions": {
+    "extendr-api": "0.9.0",
+    "extendr-ffi": "0.9.0"
+  }
+}

@@ -11,6 +11,13 @@
 
 ## Build portability
 
+* Apply an owned, version-preserving extendr 0.9.0 patch for R variable lookups.
+  Correct the R API signatures, distinguish missing bindings from present `NULL`,
+  preserve local versus inherited lookup and contain promise/active-binding
+  errors before returning to Rust callers. Developer and offline-package sources
+  are byte-checked against the same explicit patch; dependency versions and the
+  lockfile remain unchanged. Focused native and target-webR controls are part of
+  the candidate CI, with no engine or model required by these controls.
 * Accept tool-wrapper diagnostics around one canonical Cargo/rustc version line,
   while rejecting ambiguous, malformed, failed or below-minimum version output.
 * Apply the Windows thread-declaration adapter to Rtools Clang as well as GCC.

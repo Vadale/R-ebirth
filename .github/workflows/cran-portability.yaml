@@ -271,6 +271,9 @@ jobs:
         run: |
           set -euo pipefail
           Rscript --vanilla -e 'archives <- Sys.glob("relm_*.tar.gz"); stopifnot(length(archives) == 1L); print(packageVersion("rwasm")); rwasm::build(file.path(".", archives), out_dir = file.path(Sys.getenv("RUNNER_TEMP"), "wasm-evidence"))' 2>&1 | tee "$RUNNER_TEMP/wasm-evidence/build.log"
+      - name: Actual target extendr lookup and unwind controls (no engine or models)
+        shell: bash
+        run: Rscript --vanilla tests/cran/extendr-lookup/run.R "$RUNNER_TEMP/wasm-evidence/extendr-lookup" wasm
       - name: Retain actual WebAssembly build outputs and failures
         if: always()
         uses: actions/upload-artifact@v7
@@ -278,5 +281,7 @@ jobs:
           name: wasm-build-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             ${{ runner.temp }}/wasm-evidence
+            !${{ runner.temp }}/wasm-evidence/extendr-lookup/target/**
+            !${{ runner.temp }}/wasm-evidence/extendr-lookup/vendor/**
             relm_*.tar.gz
           if-no-files-found: warn

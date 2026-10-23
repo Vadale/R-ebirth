@@ -1,0 +1,2 @@
+# D057: same version/graph; exact owned extendr patch also ships offline.
+paths = ["vendor/extendr/extendr-ffi-0.9.0", "vendor/extendr/extendr-api-0.9.0"]

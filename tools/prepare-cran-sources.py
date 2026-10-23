@@ -15,6 +15,8 @@ import sys
 import tarfile
 import tomllib
 
+from extendr_patch import bundle_overrides, check_bundle
+
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = ROOT / "rebirth"
 LOCK = PACKAGE / "src/rust/Cargo.lock"
@@ -85,6 +87,8 @@ def check():
             actual = {m.name: sha(archive.extractfile(m).read()) for m in members}
             assert len(actual) == len(members), "Duplicate archive member"
             assert actual == bundle["files"], f"Bundle inventory changed: {name}"
+            if name == "src/rust/vendor.tar.xz":
+                check_bundle(archive)
     engine = PACKAGE / "src/llama.cpp"
     current = {"llama.cpp/" + p.relative_to(engine).as_posix(): sha(p.read_bytes()) for p in engine_files()}
     assert current == record["bundles"]["src/llama-sources.tar.xz"]["files"], "Engine bundle is stale"
@@ -120,6 +124,7 @@ def prepare(vendor):
         assert checksums["files"].pop(name) == expected_sha
         omissions.append(dict(path=relative, sha256=expected_sha, reason="Unsupported wasm-only compiled asset; native source unchanged"))
     overrides = {checksum_path: (json.dumps(checksums, sort_keys=True, separators=(",", ":")) + "\n").encode()}
+    overrides.update(bundle_overrides(vendor))
     omitted = {x["path"] for x in omissions}
     files = [p for p in vendor.rglob("*") if p.is_file() and p.relative_to(vendor).as_posix() not in omitted]
     engine = PACKAGE / "src/llama.cpp"

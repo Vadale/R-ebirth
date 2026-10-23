@@ -2070,3 +2070,31 @@ existing prepared environment silently.
   missing DLL/runtime refusals with output preservation. Native controls remain.
   Actual full-package CI is still required, and stock r-universe builders need
   the same frontend prerequisite before their Wasm distribution can be accepted.
+
+### D057 extendr R-API lookup amendment — approved 2026-10-23
+
+The founder explicitly approved the concrete bounded extendr compatibility
+proposal after the actual target Wasm loader rejected R_getVarEx's two-argument
+import. R declares that API with four arguments and R_getVar with three. Preserve
+extendr-api/extendr-ffi 0.9.0 versions and the exact product Cargo.lock graph while
+patching only their lookup wrappers and two immediate API consumers.
+
+Correct typed signatures and explicit inheritance/order; distinguish an absent
+binding from present NULL with a fresh protected sentinel. R_ToplevelExec contains
+promise and active-binding errors inside a callback with only scalar/pointer
+state, before returning to Rust callers and their destructors. Pre-4.5 lookup
+keeps findVar semantics. Errors become explicit lookup errors, not success/null.
+No change to llama.cpp, other dependencies, numerical bounds or public relm APIs.
+
+Keep full upstream crate sources/licenses with a three-file explicit diff and
+original/patched hashes. Cargo paths overrides select the same owned source for
+developer builds; source archives carry byte-identical patched copies with
+coherent per-file Cargo checksums and unchanged upstream package identities.
+Reverse-patch and online/offline equality gates prevent silent divergence.
+Actual native R and target-webR lookup controls cover local/inherited/shadowed,
+absent/NULL, promise/active-binding, cleanup, recovery and GC behavior without an
+engine/model. The previous bad-ABI Wasm failure remains the recorded negative
+baseline; no undefined native bad-signature invocation is needed. Full current
+CI and actual target loading remain required; no browser inference claim follows.
+This amendment authorizes the bounded dependency correction, not merge, a new
+release, a changed 0.6.0 artifact or a replacement CRAN submission.

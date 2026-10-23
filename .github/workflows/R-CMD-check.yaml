@@ -124,7 +124,25 @@ jobs:
         run: |
           python3 tools/prepare-cran-sources.py --check
           python3 tests/cran/test_source_bundles.py
+          python3 tests/cran/test_extendr_patch.py
           Rscript --vanilla tests/cran/configuration.R
+
+      - name: Actual extendr lookup and unwind controls (no engine or models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/cran/extendr-lookup/run.R "${{ runner.temp }}/extendr-lookup"
+
+      - name: Retain focused extendr runtime evidence
+        if: always() && steps.scope.outputs.full_checks != 'false'
+        uses: actions/upload-artifact@v7
+        with:
+          name: extendr-lookup-${{ matrix.config.os }}-${{ matrix.config.r }}
+          path: |
+            ${{ runner.temp }}/extendr-lookup/*.log
+            ${{ runner.temp }}/extendr-lookup/fixture
+            ${{ runner.temp }}/extendr-lookup/target/release/liblookup.so
+            ${{ runner.temp }}/extendr-lookup/target/release/liblookup.dylib
+            ${{ runner.temp }}/extendr-lookup/target/release/lookup.dll
+          if-no-files-found: warn
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         if: steps.scope.outputs.full_checks != 'false'

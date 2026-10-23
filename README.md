@@ -70,7 +70,9 @@ separately from the published 0.6.0 artifacts. The candidate Wasm build requires
 webR frontend; the [pinned CI setup](.github/workflows/cran-portability.yaml) shows
 this explicit build prerequisite. The unmodified r-universe image lacks that
 frontend, so a passing candidate CI would not alone fix its default Wasm build.
-Python is used only by maintainer
+The development candidate also includes a version-preserving `extendr` R-API
+compatibility patch; see [the patch scope and verification](vendor/extendr/README.md).
+It does not establish browser inference support. Python is used only by maintainer
 reference/security tests; the R package does not require a Python environment. See the [submission status](docs/cran-submission.md).
 
 ```r

@@ -1,0 +1,209 @@
+--- a/extendr-api-0.9.0/src/robj/rinternals.rs
++++ b/extendr-api-0.9.0/src/robj/rinternals.rs
+@@ -1,15 +1,15 @@
+ use crate::*;
+ use extendr_ffi::{
+-    get_var_safe, is_data_frame, R_CFinalizer_t, R_ExternalPtrAddr, R_ExternalPtrProtected,
+-    R_ExternalPtrTag, R_GetCurrentSrcref, R_GetSrcFilename, R_IsNamespaceEnv, R_IsPackageEnv,
+-    R_MakeExternalPtr, R_MissingArg, R_NamespaceEnvSpec, R_PackageEnvName, R_RegisterCFinalizerEx,
+-    R_xlen_t, Rboolean, Rf_PairToVectorList, Rf_VectorToPairList, Rf_allocMatrix, Rf_allocVector,
+-    Rf_asChar, Rf_asCharacterFactor, Rf_coerceVector, Rf_conformable, Rf_duplicate, Rf_findFun,
+-    Rf_isArray, Rf_isComplex, Rf_isEnvironment, Rf_isExpression, Rf_isFactor, Rf_isFunction,
+-    Rf_isInteger, Rf_isLanguage, Rf_isList, Rf_isLogical, Rf_isMatrix, Rf_isNewList, Rf_isNull,
+-    Rf_isNumber, Rf_isObject, Rf_isPrimitive, Rf_isReal, Rf_isS4, Rf_isString, Rf_isSymbol,
+-    Rf_isTs, Rf_isUserBinop, Rf_isVector, Rf_isVectorAtomic, Rf_isVectorList, Rf_isVectorizable,
+-    Rf_ncols, Rf_nrows, Rf_xlengthgets, ALTREP, TYPEOF,
++    is_data_frame, R_CFinalizer_t, R_ExternalPtrAddr, R_ExternalPtrProtected, R_ExternalPtrTag,
++    R_GetCurrentSrcref, R_GetSrcFilename, R_IsNamespaceEnv, R_IsPackageEnv, R_MakeExternalPtr,
++    R_MissingArg, R_NamespaceEnvSpec, R_PackageEnvName, R_RegisterCFinalizerEx, R_xlen_t, Rboolean,
++    Rf_PairToVectorList, Rf_VectorToPairList, Rf_allocMatrix, Rf_allocVector, Rf_asChar,
++    Rf_asCharacterFactor, Rf_coerceVector, Rf_conformable, Rf_duplicate, Rf_findFun, Rf_isArray,
++    Rf_isComplex, Rf_isEnvironment, Rf_isExpression, Rf_isFactor, Rf_isFunction, Rf_isInteger,
++    Rf_isLanguage, Rf_isList, Rf_isLogical, Rf_isMatrix, Rf_isNewList, Rf_isNull, Rf_isNumber,
++    Rf_isObject, Rf_isPrimitive, Rf_isReal, Rf_isS4, Rf_isString, Rf_isSymbol, Rf_isTs,
++    Rf_isUserBinop, Rf_isVector, Rf_isVectorAtomic, Rf_isVectorList, Rf_isVectorizable, Rf_ncols,
++    Rf_nrows, Rf_xlengthgets, ALTREP, TYPEOF,
+ };
+ ///////////////////////////////////////////////////////////////
+ /// The following impls wrap specific Rinternals.h functions.
+@@ -172,8 +172,8 @@
+     // //TODO: fix me, as this variable is hidden behind non-api as of this writing
+     // See also [global_var()].
+     ///
+-    /// Note that many common variables and functions are contained in promises
+-    /// which must be evaluated and this function may throw an R error.
++    /// R >= 4.5 evaluates promises; evaluation or active-binding errors return
++    /// Error::EvalError. Older R retains findVar's unforced-promise semantics.
+     ///
+     fn find_var<K: TryInto<Symbol, Error = Error>>(&self, key: K) -> Result<Robj> {
+         let key: Symbol = key.try_into()?;
+@@ -196,13 +196,14 @@
+         //         break None;
+         //     }
+         // }
+-        unsafe {
+-            let sexp = self.get();
+-            match get_var_safe(key.get(), sexp) {
+-                Some(var) => Ok(Robj::from_sexp(var)),
+-                None => Err(Error::NotFound(key.into())),
++        single_threaded(|| unsafe {
++            // A protected sentinel distinguishes a missing name from present NULL.
++            match extendr_ffi::try_get_var(key.get(), self.get(), true) {
++                Ok(Some(var)) => Ok(Robj::from_sexp(var)),
++                Ok(None) => Err(Error::NotFound(key.clone().into())),
++                Err(()) => Err(Error::EvalError(key.clone().into())),
+             }
+-        }
++        })
+     }
+ 
+     #[cfg(feature = "non-api")]
+--- a/extendr-api-0.9.0/src/wrapper/environment.rs
++++ b/extendr-api-0.9.0/src/wrapper/environment.rs
+@@ -1,7 +1,5 @@
+ use super::*;
+-use extendr_ffi::{
+-    get_parent_env, get_var_in_frame, R_BaseEnv, R_EmptyEnv, R_GlobalEnv, Rf_defineVar,
+-};
++use extendr_ffi::{get_parent_env, R_BaseEnv, R_EmptyEnv, R_GlobalEnv, Rf_defineVar};
+ #[derive(PartialEq, Clone)]
+ pub struct Environment {
+     pub(crate) robj: Robj,
+@@ -180,7 +178,14 @@
+     pub fn local<K: Into<Robj>>(&self, key: K) -> Result<Robj> {
+         let key = key.into();
+         if key.is_symbol() {
+-            unsafe { Ok(Robj::from_sexp(get_var_in_frame(self.get(), key.get()))) }
++            single_threaded(|| unsafe {
++                // Contain promise/active-binding errors before Rust owners unwind.
++                match extendr_ffi::try_get_var(key.get(), self.get(), false) {
++                    Ok(Some(value)) => Ok(Robj::from_sexp(value)),
++                    Ok(None) => Err(Error::NotFound(key.clone())),
++                    Err(()) => Err(Error::EvalError(key.clone())),
++                }
++            })
+         } else {
+             Err(Error::NotFound(key))
+         }
+--- a/extendr-ffi-0.9.0/src/backports.rs
++++ b/extendr-ffi-0.9.0/src/backports.rs
+@@ -25,13 +25,13 @@
+     fn Rf_findVar(arg1: SEXP, arg2: SEXP) -> SEXP;
+ 
+     #[cfg(r_4_5)]
+-    fn R_getVar(arg1: SEXP, arg2: SEXP) -> SEXP;
++    fn R_getVar(symbol: SEXP, env: SEXP, inherits: Rboolean) -> SEXP;
+ 
+     #[cfg(not(r_4_5))]
+     fn Rf_findVarInFrame(arg1: SEXP, arg2: SEXP) -> SEXP;
+ 
+     #[cfg(r_4_5)]
+-    fn R_getVarEx(arg1: SEXP, arg2: SEXP) -> SEXP;
++    fn R_getVarEx(symbol: SEXP, env: SEXP, inherits: Rboolean, ifnotfound: SEXP) -> SEXP;
+ 
+     #[cfg(not(r_4_5))]
+     fn CLOENV(x: SEXP) -> SEXP;
+@@ -96,7 +96,7 @@
+     }
+     #[cfg(r_4_5)]
+     {
+-        R_getVar(symbol, env)
++        R_getVar(symbol, env, Rboolean::TRUE)
+     }
+ }
+ 
+@@ -123,7 +123,7 @@
+     }
+     #[cfg(r_4_5)]
+     {
+-        Some(R_getVar(symbol, env))
++        Some(R_getVar(symbol, env, Rboolean::TRUE))
+     }
+ }
+ 
+@@ -134,14 +134,77 @@
+ /// This function dereferences raw SEXP pointers.
+ /// The caller must ensure that `symbol` and `env` are valid SEXP pointers.
+ #[inline]
+-pub unsafe fn get_var_in_frame(symbol: SEXP, env: SEXP) -> SEXP {
+-    #[cfg(not(r_4_5))]
+-    {
+-        Rf_findVarInFrame(symbol, env)
+-    }
+-    #[cfg(r_4_5)]
+-    {
+-        R_getVarEx(env, symbol)
++pub unsafe fn get_var_in_frame(env: SEXP, symbol: SEXP) -> SEXP {
++    #[cfg(not(r_4_5))]
++    {
++        Rf_findVarInFrame(env, symbol)
++    }
++    #[cfg(r_4_5)]
++    {
++        R_getVar(symbol, env, Rboolean::FALSE)
++    }
++}
++
++/// Look up a binding while containing R errors before returning to Rust callers.
++///
++/// `Ok(None)` means absent; a present R NULL is `Ok(Some(R_NilValue))`.
++/// On older R, retain findVar's promise semantics. R >= 4.5 uses R_getVarEx.
++///
++/// # Safety
++/// The caller must run on R's thread with a valid symbol and environment, both
++/// rooted for the call, and protect a returned SEXP before any allocation.
++/// The R callback deliberately owns only plain pointers/scalars: an R longjmp
++/// must not cross Rust values with destructors or a Rust error/panic boundary.
++pub unsafe fn try_get_var(symbol: SEXP, env: SEXP, inherits: bool) -> Result<Option<SEXP>, ()> {
++    use std::ffi::c_void;
++    extern "C" {
++        fn R_ToplevelExec(
++            fun: Option<unsafe extern "C" fn(*mut c_void)>,
++            data: *mut c_void,
++        ) -> Rboolean;
++    }
++    struct Lookup {
++        symbol: SEXP,
++        env: SEXP,
++        inherits: bool,
++        value: Option<SEXP>,
++    }
++    unsafe extern "C" fn lookup(data: *mut c_void) {
++        let data = &mut *data.cast::<Lookup>();
++        #[cfg(r_4_5)]
++        {
++            // Fresh protected identity cannot collide with NULL or any binding.
++            let absent = crate::Rf_protect(crate::Rf_cons(crate::R_NilValue, crate::R_NilValue));
++            let value = R_getVarEx(data.symbol, data.env, data.inherits.into(), absent);
++            data.value = if value == absent { None } else { Some(value) };
++            crate::Rf_unprotect(1);
++        }
++        #[cfg(not(r_4_5))]
++        {
++            let value = if data.inherits {
++                Rf_findVar(data.symbol, data.env)
++            } else {
++                Rf_findVarInFrame(data.env, data.symbol)
++            };
++            data.value = if value == R_UnboundValue {
++                None
++            } else {
++                Some(value)
++            };
++        }
++    }
++    let mut data = Lookup {
++        symbol,
++        env,
++        inherits,
++        value: None,
++    };
++    // R_ToplevelExec restores R's protection stack on both completion and error;
++    // no Rust owner or lock guard is created inside its callback.
++    if R_ToplevelExec(Some(lookup), (&mut data as *mut Lookup).cast()) == Rboolean::TRUE {
++        Ok(data.value)
++    } else {
++        Err(())
+     }
+ }
+ 
