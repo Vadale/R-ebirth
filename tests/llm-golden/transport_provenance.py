@@ -1,4 +1,4 @@
-"""D-056: exact requirements transition for the approved certifi security fix.
+"""D-056/D-057: exact requirements transition for approved transport security fixes.
 
 Historical producer manifests keep their original requirements hash. Recomputed
 metadata records the current file; only this one approved transition may differ.
@@ -13,7 +13,7 @@ from pathlib import Path
 REQUIREMENTS = Path(__file__).with_name("requirements.txt")
 REQUIREMENTS_KEY = "tests/llm-golden/requirements.txt"
 HISTORICAL_SHA = "58557e747b0d19c9eb0dd24ecf2317bb9d28e9bc4337bd43a85b43f614363086"
-CURRENT_SHA = "ddf59e592c44556d980e2733413ca859602e802a3fdacbc472f72b04b06e7008"
+CURRENT_SHA = "d01884102a8eca63c540107a7d2a79175085a3676566642bdf46e8a57a42278a"
 
 
 def check_transition(actual, expected):
@@ -35,7 +35,8 @@ def check_csv(actual, expected, key):
 def check_runtime():
     check_transition(hashlib.sha256(REQUIREMENTS.read_bytes()).hexdigest(), HISTORICAL_SHA)
     assert importlib.metadata.version("certifi") == "2026.10.19", "install the approved certifi version"
-    print("D056_TRANSPORT_PROVENANCE historical=" + HISTORICAL_SHA + " current=" + CURRENT_SHA + " certifi=2026.10.19")
+    assert importlib.metadata.version("urllib3") == "2.8.0", "install the approved urllib3 version"
+    print("D056_TRANSPORT_PROVENANCE historical=" + HISTORICAL_SHA + " current=" + CURRENT_SHA + " certifi=2026.10.19 urllib3=2.8.0")
 
 
 if __name__ == "__main__":

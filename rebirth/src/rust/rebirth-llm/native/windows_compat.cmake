@@ -1,6 +1,6 @@
 # CMAKE_PROJECT_INCLUDE hook: only the affected C source gets missing MinGW
 # declarations. Source bytes and all other compile units remain unchanged.
-if(NOT WIN32 OR NOT CMAKE_C_COMPILER_ID STREQUAL "GNU")
+if(NOT WIN32 OR NOT CMAKE_C_COMPILER_ID MATCHES "^(GNU|Clang)$")
     return()
 endif()
 include_guard(GLOBAL)

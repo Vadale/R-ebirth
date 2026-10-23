@@ -3,6 +3,22 @@
 # instead of libR. The loaded DLL determines production/selftest registrations.
 args <- commandArgs(TRUE)
 stopifnot(length(args) == 2L)
+# Cross-built Wasm DLLs must run in target R, not in the installing host R.
+# Detect the actual binary, rather than trusting an optional environment flag.
+wasm_header <- as.raw(c(0, 97, 115, 109, 1, 0, 0, 0))
+if (!identical(R.version$platform, "wasm32-unknown-emscripten") &&
+    identical(readBin(args[[1L]], "raw", 8L), wasm_header)) {
+  node <- Sys.which("node")
+  if (!nzchar(node)) stop("Wasm wrapper generation requires the webR toolchain's Node.js")
+  file_arg <- grep("^--file=", commandArgs(FALSE), value = TRUE)
+  stopifnot(length(file_arg) == 1L)
+  runner <- file.path(dirname(normalizePath(sub("^--file=", "", file_arg),
+                                          mustWork = TRUE)),
+                      "generate-wrappers-webr.mjs")
+  status <- system2(node, shQuote(c(runner, args)), stdout = "", stderr = "")
+  if (status != 0L) stop("Target webR wrapper generation failed", call. = FALSE)
+  quit(save = "no", status = 0L)
+}
 dll <- dyn.load(normalizePath(args[[1L]], mustWork = TRUE), local = TRUE, now = TRUE)
 symbol <- getNativeSymbolInfo("wrap__make_relm_wrappers", PACKAGE = dll)
 stopifnot(identical(symbol$numParameters, 2L))

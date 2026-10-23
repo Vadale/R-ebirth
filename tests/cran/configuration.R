@@ -31,7 +31,7 @@ stopifnot(identical(unname(tools::md5sum(file.path("rebirth/src/llama.cpp", orig
 stopifnot(system2("sh", c("-c", shQuote(paste("cd", shQuote(root), "&& sh", shQuote(file.path(repo, "rebirth/cleanup")))))) == 0L,
           !dir.exists(file.path(root, "src/llama.cpp")))
 
-configure_case <- function(vendor, not_cran, windows = FALSE, cmake = NULL) {
+configure_case <- function(vendor, not_cran, windows = FALSE, cmake = NULL, arch = "x86_64", wasm = FALSE) {
   directory <- tempfile("configure-", tmpdir = root)
   dir.create(directory)
   dir.create(file.path(directory, "src"))
@@ -67,7 +67,18 @@ configure_case <- function(vendor, not_cran, windows = FALSE, cmake = NULL) {
   if (windows) {
     env$.Platform <- .Platform
     env$.Platform$OS.type <- "windows"
+    env$R.version <- R.version
+    env$R.version$arch <- arch
     env$.Platform$path.sep <- ";"
+  }
+  if (wasm) {
+    # Cross-target fixture: do not inherit the host Windows OS.type/path separator.
+    env$.Platform <- .Platform
+    env$.Platform$OS.type <- "unix"
+    env$.Platform$path.sep <- ":"
+    env$R.version <- R.version
+    env$R.version$platform <- "wasm32-unknown-emscripten"
+    env$R.version$arch <- "wasm32"
   }
   result <- tryCatch({sys.source("tools/config.R", envir = env); env}, error = identity)
   result
@@ -84,5 +95,26 @@ win <- configure_case(TRUE, "false", TRUE)
 stopifnot(is.environment(win), grepl(";", win$new_path, fixed = TRUE),
           identical(win$mv_ofp, "src/Makevars.win"),
           any(win$new_txt == "CXX_STD = CXX17"))
+# Keep native target, archive path and C++ runtime consistent with Rtools.
+for (arch in c("x86_64", "i386", "i686", "aarch64", "arm64")) {
+  configured <- configure_case(TRUE, "false", TRUE, arch = arch)
+  target <- if (arch == "x86_64") "x86_64-pc-windows-gnu" else
+    if (arch %in% c("i386", "i686")) "i686-pc-windows-gnu" else "aarch64-pc-windows-gnullvm"
+  stopifnot(is.environment(configured),
+            any(configured$new_txt == paste("TARGET =", target)),
+            any(configured$new_txt == "LIBDIR = $(TARGET_DIR)/$(TARGET)/release"),
+            !any(grepl("@WINDOWS_TARGET@", configured$new_txt, fixed = TRUE)),
+            grepl(if (arch %in% c("aarch64", "arm64")) "-lc++" else "-lstdc++",
+                  configured$.llama_libs, fixed = TRUE))
+}
+unknown <- configure_case(TRUE, "false", TRUE, arch = "unknown")
+stopifnot(inherits(unknown, "error"), grepl("Unsupported Windows R architecture", conditionMessage(unknown)))
+wasm <- configure_case(TRUE, "false", wasm = TRUE)
+stopifnot(is.environment(wasm),
+          identical(wasm$.target, "--target=wasm32-unknown-emscripten"),
+          identical(wasm$.libdir, "wasm32-unknown-emscripten/release"),
+          identical(wasm$.llama_libs, "-lc++"),
+          !grepl("stdc|framework| -ldl", wasm$.llama_libs),
+          grepl('PANIC="abort"', wasm$.panic_exports, fixed = TRUE))
 unlink(root, recursive = TRUE)
-cat(sprintf("CRAN_CONFIG_PASS cases=9 engine_files=%d native_builds=0 models=0\n", length(original)))
+cat(sprintf("CRAN_CONFIG_PASS cases=16 engine_files=%d native_builds=0 models=0\n", length(original)))

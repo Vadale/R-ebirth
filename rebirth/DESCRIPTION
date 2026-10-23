@@ -1,6 +1,6 @@
 Package: relm
 Title: Local Large Language Models as Base-R Objects
-Version: 0.6.0
+Version: 0.6.1
 Authors@R: 
     c(person("Alessandro", "Vadala", , "vadale93@gmail.com", role = c("aut", "cre", "cph")),
       person("ggml authors", role = c("ctb", "cph"), comment = "Bundled llama.cpp and ggml (MIT)"),

@@ -26,9 +26,23 @@ Check `packageVersion("relm")` and restart R after upgrading.
 The **0.5.0 source has been submitted to CRAN**, combining optional Linux CUDA
 and source portability. CRAN acceptance is pending; see the
 [submission status](https://github.com/Vadale/R-ebirth/blob/main/docs/cran-submission.md).
-The **0.6.0 candidate** adds optional `threads` and exact modern chat templates.
-See [model configuration and measured limits](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md);
-release/distribution verification remains pending.
+The **0.6.0 release**, published on [r-universe](https://vadale.r-universe.dev/relm),
+adds optional `threads` and exact modern chat templates.
+See [model configuration and measured limits](https://github.com/Vadale/R-ebirth/blob/main/docs/models.md)
+and the [published release scope](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.0).
+Windows ARM64 and webR/WebAssembly are deferred and are not current support or
+release targets. Ordinary PR checks focus on Linux, macOS and Windows x86_64;
+[the CI scope](https://github.com/Vadale/R-ebirth/blob/main/docs/ci-efficiency-implementation.md#pr-check-audit-and-platform-deferral-2026-10-23)
+retains the experimental work for future use. Python is used only by maintainer
+reference/security tests; the R package does not require a Python environment.
+
+## 0.6.1 maintenance update
+
+The 0.6.1 sources contain Python maintainer-tooling security updates, the shared
+extendr R lookup correction and desktop build fixes. Check the version available
+on [r-universe](https://vadale.r-universe.dev/relm) and `packageVersion("relm")`
+after installing. The published 0.6.0 tag and archive remain unchanged.
+Windows ARM64 and WebAssembly stay deferred.
 
 ## Installation
 

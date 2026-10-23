@@ -92,11 +92,16 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript --vanilla tests/research-workflow/test-preflight.R
 
+      # R parsing/formals stay covered on each supported R/platform combination.
       - name: Documentation surface and standalone example inventory (no models)
         if: steps.scope.outputs.full_checks != 'false'
-        run: |
-          Rscript --vanilla tools/docs/inventory.R --check
-          python3 tests/docs/check.py
+        run: Rscript --vanilla tools/docs/inventory.R --check
+
+      # Identical source/link bytes need one Python check. The rendered-site
+      # check remains below and validates the generated artifact separately.
+      - name: Source documentation links and public examples (no models)
+        if: matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release' && steps.scope.outputs.full_checks != 'false'
+        run: python3 tests/docs/check.py
 
       - name: External statistical skill artifact runner (base R, no models)
         if: steps.scope.outputs.full_checks != 'false'
@@ -124,7 +129,25 @@ jobs:
         run: |
           python3 tools/prepare-cran-sources.py --check
           python3 tests/cran/test_source_bundles.py
+          python3 tests/cran/test_extendr_patch.py
           Rscript --vanilla tests/cran/configuration.R
+
+      - name: Actual extendr lookup and unwind controls (no engine or models)
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/cran/extendr-lookup/run.R "${{ runner.temp }}/extendr-lookup"
+
+      - name: Retain focused extendr runtime evidence
+        if: always() && steps.scope.outputs.full_checks != 'false'
+        uses: actions/upload-artifact@v7
+        with:
+          name: extendr-lookup-${{ matrix.config.os }}-${{ matrix.config.r }}
+          path: |
+            ${{ runner.temp }}/extendr-lookup/*.log
+            ${{ runner.temp }}/extendr-lookup/fixture
+            ${{ runner.temp }}/extendr-lookup/target/release/liblookup.so
+            ${{ runner.temp }}/extendr-lookup/target/release/liblookup.dylib
+            ${{ runner.temp }}/extendr-lookup/target/release/lookup.dll
+          if-no-files-found: warn
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         if: steps.scope.outputs.full_checks != 'false'
@@ -132,15 +155,6 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
           working-directory: rebirth
-
-      # Model-free demo-utils self-test (D-020 / D-022): the base-R AUC/CI helpers
-      # and the WP7.5b analysis helpers (dose-response CI, cosine matrix, truncated
-      # KL, colour-strip legend breaks, ...) are guarded by an executable self-test
-      # that runs on source(). It needs no model and no built package, so it runs
-      # here per-commit -- the demos' numeric core is checked on every push.
-      - name: demo-utils self-test (model-free)
-        if: steps.scope.outputs.full_checks != 'false'
-        run: Rscript -e 'source("tests/demos/demo-utils.R")'
 
       # Independent WP11a references; the installed-product gate runs below.
       # glmnet is already a Suggests dependency installed by setup-r-dependencies.
@@ -152,9 +166,11 @@ jobs:
       # coordinates/clusters/embeddings/texts (no model, no uwot/dbscan) and renders
       # every analysis to a headless PDF, so a base-graphics regression in the extended
       # topic figures is caught per-commit (the nightly exercises them on a real model).
-      - name: demo-B plot self-test (model-free)
+      # Sourcing Demo B already runs demo-utils' 41 numerical assertions. Keep
+      # those assertions and the B1-B4 figures in one invocation per matrix cell.
+      - name: Demo numeric helpers and B1-B4 plots (model-free)
         if: steps.scope.outputs.full_checks != 'false'
-        run: Rscript -e 'Sys.setenv(RELM_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
+        run: Rscript -e 'Sys.unsetenv("RELM_DEMO_SKIP_SELFTEST"); Sys.setenv(RELM_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
 
       # The COMMITTED golden sidecars, verified from the checkout (D-026 fifth
       # addendum). The testthat suite cannot do this per-commit: the goldens live

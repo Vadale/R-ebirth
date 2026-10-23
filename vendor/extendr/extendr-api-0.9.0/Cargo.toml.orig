@@ -1,0 +1,65 @@
+[package]
+name = "extendr-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Safe and user friendly bindings to the R programming language."
+repository.workspace = true
+license.workspace = true
+
+[package.metadata.docs.rs]
+features = ["full-functionality"]
+
+[dependencies]
+either = { version = "1.8.1", optional = true }
+extendr-ffi = { workspace = true }
+extendr-macros = { workspace = true }
+faer = { version = "0.20", optional = true }
+libc = { version = "0.2", optional = true }
+ndarray = { version = "0.16.1", optional = true }
+num-complex = { version = "0.4.6", optional = true }
+once_cell = "1.21.3"
+paste = "1.0.15"
+readonly = "0.2.13"
+serde = { version = "1.0.219", features = ["derive"], optional = true }
+
+[dev-dependencies]
+extendr-engine = { path = "../extendr-engine" }
+rstest = "0.22.0"
+
+[features]
+result_condition = []
+# Features to modify behaviour of returning Result<T,E> from extendr to R, instead of unwrap-throw_r_error().
+# Add new features below
+# None, one or both can be set, but the one with highest precedence will take effect.
+result_list = []
+
+# This dummy feature enables all features that increase the functionality of
+# extendr, via conversions or R features. Features that change behaviour
+full-functionality = [
+  "either",
+  "faer",
+  "graphics",
+  "ndarray",
+  "num-complex",
+  "serde",
+]
+
+# Parts of the R-API are locked behind non-API, as CRAN frowns upon the presence
+# of non-API items in packages. You may enable this feature, to generate
+# bindings to these non-API items, and their usage in extendr
+# BEWARE: this feature does not work, as `bindgen` use in extendr is deprecated
+non-api = ["extendr-ffi/non-api"]
+
+# libc is needed to allocate a DevDesc (c.f., https://bugs.r-project.org/show_bug.cgi?id=18292)
+graphics = ["libc"]
+
+# The minimal set of features without all optional ones
+tests-minimal = []
+
+tests = ["either", "faer", "ndarray", "num-complex", "serde", "tests-minimal"]
+
+tests-graphics = ["graphics", "tests-minimal"]
+
+# Literally all features to test
+tests-all = ["graphics", "tests"]

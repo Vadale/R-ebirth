@@ -1999,3 +1999,143 @@ existing prepared environment silently.
   one path, then still hashes the actual current file. A model-free regression
   rejects unknown historical hashes/other-path substitutions and binds Python/Rust
   twin pins. Native production code and all numerical comparisons are unchanged.
+
+
+## D-057 — Authorized Python security and extra-platform build corrections
+
+- **Date:** 2026-10-23 · **Status:** implementation candidate; platform CI pending.
+  The founder requested updated README/NEWS and attempts to resolve the remaining
+  five Python advisories and Windows ARM64/WebAssembly build failures.
+- **Security scope:** urllib3 2.7.0 becomes 2.8.0 for its three transport advisories;
+  the optional HF CPU environment moves PyTorch 2.12.1 to 2.13.0. Remove Accelerate
+  because the actual frozen loader does not use its optional device-map path and
+  the inspected latest 1.15.0 retains the vulnerable checkpoint-index join.
+  This removes an unused dependency rather than asserting an upstream fix.
+- **Evidence:** bounded offline controls distinguish all three old urllib3
+  behaviors from the patched version. A fresh CPU environment passes dependency
+  consistency, a benign JIT call and one tiny synthetic checkpoint through the
+  actual unchanged HF loader with Accelerate absent. No external model, original
+  numerical reference run or golden regeneration is authorized by these checks.
+- **Provenance:** all original producers, 131 inventoried frozen files, numerical
+  tolerances and producing manifests stay exact. D-056's strict transport shim
+  and test-only Rust consumer admit only the original historical requirements
+  digest and the new exact approved active digest; no wildcard or numerical
+  exception is added. The separate HF environment does not relabel old outputs.
+- **Build scope:** preserve strict version floors and accept only one canonical
+  version line among wrapper diagnostics. Extend the existing single-source
+  Windows declaration adapter to Clang, select the Rtools target/runtime from
+  the actual R architecture, and separate Emscripten link libraries from host OS
+  libraries. The engine archive, vendored Rust crates and numerical kernels stay
+  unchanged. Linux GCC/Clang and configure/link controls are not ARM/webR runtime
+  acceptance; actual additional CI builds are required before such claims.
+- **Delivery:** retain the twelve existing ordinary routes and add actual Windows
+  ARM64 and pinned-rwasm builds without suppression, retry or weakened gates.
+  README/NEWS distinguish the published 0.6.0 release from these development
+  corrections. The v0.6.0 tag and published archive are immutable. The pending
+  CRAN 0.5.0 submission remains unchanged; CUDA remains deferred by the founder.
+
+- **Wasm32 correction within D-057:** the first actual cross-compilation reached
+  the final R link, which rejected a 64-bit `mtmd.cpp.o` in the Rust archive.
+  The pinned engine defaults `LLAMA_WASM_MEM64` to `ON`. Select its existing
+  `OFF` option only for `emscripten`/`wasm32`, matching R and Rust pointer width;
+  no vendor edit or desktop flag change is needed. The actual rwasm package job
+  remains the regression and acceptance gate; CMake configuration inspection
+  alone does not establish a successful Wasm link or browser execution.
+
+- **Emscripten archive-link correction within D-057:** after the memory-width
+  correction, Rust completes and reports only libc++/R as external libraries;
+  the final R link instead requests seven absent duplicate native archives.
+  Emscripten's existing Rust `static=` links bundle those archives in `librelm.a`.
+  Match that contract in the R link by requesting only libc++ after `librelm.a`.
+  Preserve explicit GNU archive groups on Windows/Linux and all Darwin flags.
+  Extend the existing target/twin-pin controls to protect all seven bundled
+  libraries and the exact R runtime-only branch. The failed runner did not retain
+  archive-copy paths, so the reason its optional profile copies were absent is
+  not established; this correction removes that unnecessary dependency for Wasm.
+  A host-only seven-component archive fixture verifies bundling and final symbol
+  resolution without an engine or model. Actual rwasm package acceptance remains
+  required; no cross-compiled DLL execution or browser support is claimed.
+
+- **Target wrapper generation within D-057:** the runtime-only archive link now
+  succeeds; the host R post-link generator then rejects the Wasm DLL as an invalid
+  ELF file. Execute the same registration, metadata and R syntax checks in the
+  target webR runtime. Native DLLs retain their existing R-hosted path. The Wasm
+  builder explicitly supplies `RELM_WEBR_RUNTIME`; no checked-in wrapper fallback,
+  host-DLL substitution, automatic runtime download or engine change is added.
+  The pinned CI image contains browser frontend files. CI supplies only the two
+  Node frontend files from official webR 0.6.0, with a fixed archive SHA-256, and
+  points all C/R runtime files and VFS entries at that same compiler image.
+  This is an isolated build-toolchain component, not an R/Rust package dependency.
+  A tiny Wasm C fixture protects valid metadata, wrong arity, invalid R text and
+  missing DLL/runtime refusals with output preservation. Native controls remain.
+  Actual full-package CI is still required, and stock r-universe builders need
+  the same frontend prerequisite before their Wasm distribution can be accepted.
+
+### D057 extendr R-API lookup amendment — approved 2026-10-23
+
+The founder explicitly approved the concrete bounded extendr compatibility
+proposal after the actual target Wasm loader rejected R_getVarEx's two-argument
+import. R declares that API with four arguments and R_getVar with three. Preserve
+extendr-api/extendr-ffi 0.9.0 versions and the exact product Cargo.lock graph while
+patching only their lookup wrappers and two immediate API consumers.
+
+Correct typed signatures and explicit inheritance/order; distinguish an absent
+binding from present NULL with a fresh protected sentinel. R_ToplevelExec contains
+promise and active-binding errors inside a callback with only scalar/pointer
+state, before returning to Rust callers and their destructors. Pre-4.5 lookup
+keeps findVar semantics. Errors become explicit lookup errors, not success/null.
+No change to llama.cpp, other dependencies, numerical bounds or public relm APIs.
+
+Keep full upstream crate sources/licenses with a three-file explicit diff and
+original/patched hashes. Cargo paths overrides select the same owned source for
+developer builds; source archives carry byte-identical patched copies with
+coherent per-file Cargo checksums and unchanged upstream package identities.
+Reverse-patch and online/offline equality gates prevent silent divergence.
+Actual native R and target-webR lookup controls cover local/inherited/shadowed,
+absent/NULL, promise/active-binding, cleanup, recovery and GC behavior without an
+engine/model. The previous bad-ABI Wasm failure remains the recorded negative
+baseline; no undefined native bad-signature invocation is needed. Full current
+CI and actual target loading remain required; no browser inference claim follows.
+This amendment authorizes the bounded dependency correction, not merge, a new
+release, a changed 0.6.0 artifact or a replacement CRAN submission.
+
+
+### D057 platform priority and PR-check amendment — 2026-10-23
+
+The founder explicitly deferred Windows ARM64 and WebAssembly and requested an
+inventory of duplicate, obsolete and excessive PR verification. This supersedes
+the added-platform gate requirement above: ordinary PR CI returns to twelve
+routes for Linux, macOS and Windows x86_64, including the existing Intel-mac
+cross-link check. Earlier failures remain failures; the change is a scope
+retirement, not acceptance of either experimental platform. Existing source fixes
+and exact historical workflow definitions remain available for a future mandate.
+The shared extendr lookup patch and Windows x64 provenance/newline correction
+remain in scope.
+
+The bounded orchestration audit removes only demonstrated repeat invocations:
+Demo B sourcing already runs the same 41 demo-utils assertions, and Python source
+link checks read the same files in each R matrix cell. Keep combined numeric/plot
+checks on all four R cells; run Python source links once on Linux release and keep
+the separate generated-site check. R inventory parsing still runs on all four
+cells. No test assertion, fixture, numerical tolerance, production/selftest or
+supported-platform package gate is deleted. The old-to-surviving mapping and
+retained candidates are in docs/ci-efficiency-implementation.md. No claim of a
+measured CI speedup, fresh model evidence, merge or release authority follows.
+
+
+### D057 patch-release authorization — 2026-10-23
+
+After the twelve desktop routes and their current artifacts were accepted, the
+founder explicitly authorized the concrete 0.6.1 proposal, including merge.
+Prepare a distinct patch version for the security and shared desktop corrections;
+retain the exact admitted-version set in batch/service recipes and reject future
+and development versions. Existing prepared-environment identities stay intact.
+
+The previous no-merge/no-release wording above records the earlier boundary and
+is superseded only for this delivery. Merge the exact 0.6.1 candidate after its
+required current checks pass, then verify automatic main/docs and the actual
+r-universe source/archive, supported desktop binaries and isolated Linux install.
+A new v0.6.1 tag/release may identify the accepted artifact. Published v0.6.0 and
+the pending CRAN archive remain immutable; no duplicate CRAN submission follows.
+Windows ARM64, WebAssembly and CUDA remain deferred. Reuse unchanged accepted
+model/native/phase-review evidence without replay or new support claims.

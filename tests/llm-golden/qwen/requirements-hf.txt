@@ -1,22 +1,28 @@
 # HF fp32 activation-golden tooling (WP6b) — TEST TOOLING ONLY, never a package
-# dependency. This pins the venv that generates + self-checks the real-model
-# activation golden under tests/llm-golden/qwen/. It is separate from
+# dependency. This maintains the optional CPU reference-tooling environment;
+# historical golden producing versions remain in their manifest. It is separate from
 # ../requirements.txt (the numpy-only synthetic path, which DELIBERATELY omits
 # torch/transformers) and is not referenced by DESCRIPTION or Cargo.toml.
 #
-# Reproduce the venv (from the repo root):
+# Create the maintained environment (from the repo root; Linux CPU example):
 #   python3 -m venv .hf-golden-venv
+#   .hf-golden-venv/bin/pip install torch==2.13.0 --index-url https://download.pytorch.org/whl/cpu
 #   .hf-golden-venv/bin/pip install -r tests/llm-golden/qwen/requirements-hf.txt
 #
-# Then (downloads Qwen2.5-0.5B-Instruct once into the HF cache):
+# Separate golden-update authorization is required for the historical producer
+# entry points below (they download Qwen2.5-0.5B-Instruct into the HF cache):
 #   .hf-golden-venv/bin/python tests/llm-golden/qwen/reference_forward_hf.py
 #   .hf-golden-venv/bin/python tests/llm-golden/qwen/reference_forward_hf.py --check
 #
 # Pinned against Python 3.13. Regeneration is governed by the `golden-update`
-# skill; these exact versions are recorded in the golden's manifest.json.
+# skill. Historical producing versions remain in the frozen manifest.json;
+# the maintained environment does not rewrite or recertify that numerical result.
+# Install a CPU torch wheel first on Linux to avoid unnecessary CUDA packages.
+# Accelerate is deliberately absent: this CPU-only producer does not use device
+# maps, distributed dispatch or Accelerate checkpoint loading.
 
 # --- direct ---
-torch==2.12.1
+torch==2.13.0
 transformers==5.13.0
 huggingface_hub==1.22.0
 numpy==2.5.1
@@ -24,4 +30,3 @@ numpy==2.5.1
 # --- pulled in by transformers (pinned for reproducibility) ---
 safetensors==0.8.0
 tokenizers==0.22.2
-accelerate==1.14.0

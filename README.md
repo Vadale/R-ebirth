@@ -56,9 +56,27 @@ with measured RTX 2060 results; an ordinary binary does not establish CUDA capab
 Windows CPU source-package checks and the corrected 0.5.0 win-builder check passed; Windows GPU and full live-file
 lifecycle parity remain outside that acceptance. The **0.5.0 source candidate**
 combines this portability work and has been submitted to CRAN. Maintainer
-confirmation is complete; CRAN acceptance remains pending. The **0.6.0 candidate** adds optional CPU
-threads and exact modern chat support; see [configuration and measured limits](docs/models.md).
-Its release/distribution checks are still pending. See the [submission status](docs/cran-submission.md).
+confirmation is complete; CRAN acceptance remains pending. The **0.6.0 release** is published on [r-universe](https://vadale.r-universe.dev/relm),
+with optional CPU threads and exact modern chat support. See
+[configuration and measured limits](docs/models.md) and the
+[release notes](https://github.com/Vadale/R-ebirth/releases/tag/v0.6.0).
+Published binaries cover Linux and macOS on x86_64/ARM64 and Windows on x86_64.
+Windows ARM64 and webR/WebAssembly are deferred and are not current support or
+release targets. Ordinary PR checks focus on Linux, macOS and Windows x86_64.
+The earlier failures and experimental work remain recorded for future use; see
+[CI scope and deferred platforms](docs/ci-efficiency-implementation.md#pr-check-audit-and-platform-deferral-2026-10-23).
+The 0.6.1 sources also include a version-preserving `extendr` R-API
+compatibility patch; see [the patch scope and verification](vendor/extendr/README.md).
+It does not establish browser inference support. Python is used only by maintainer
+reference/security tests; the R package does not require a Python environment. See the [submission status](docs/cran-submission.md).
+
+## 0.6.1 maintenance update
+
+The 0.6.1 sources contain Python maintainer-tooling security updates, the shared
+extendr R lookup correction and desktop build fixes. Check the version available
+on [r-universe](https://vadale.r-universe.dev/relm) and `packageVersion("relm")`
+after installing. The published 0.6.0 tag and archive remain unchanged.
+Windows ARM64 and WebAssembly stay deferred.
 
 ```r
 install.packages(

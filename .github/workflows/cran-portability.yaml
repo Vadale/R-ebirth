@@ -7,10 +7,21 @@ on:
 
 permissions: read-all
 
+# Windows ARM64 and WebAssembly are deferred by the founder (D-057).
+# Their former jobs and exact toolchain are retained in Git; see docs/ci-efficiency-implementation.md.
 jobs:
   windows-cpu:
-    name: Windows CPU source package (R release)
-    runs-on: windows-latest
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows CPU source package (R release)
+            runner: windows-latest
+            target: x86_64-pc-windows-gnu
+            compiler: gcc
+            artifact: windows-cpu-package
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 60
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -38,7 +49,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          targets: x86_64-pc-windows-gnu
+          targets: ${{ matrix.target }}
       - name: Native path and link controls (no engine build)
         shell: pwsh
         run: |
@@ -70,7 +81,7 @@ jobs:
           source("tests/toolchain/test-msrv.R")
       - name: Rtools thread declaration compatibility (no engine build)
         shell: bash
-        run: python tests/cran/windows_thread_compat.py --output "$RUNNER_TEMP/windows-thread-compat"
+        run: python tests/cran/windows_thread_compat.py --compiler "${{ matrix.compiler }}" --output "$RUNNER_TEMP/windows-thread-compat"
       - name: R-hosted wrapper generator controls (no engine build)
         shell: bash
         run: |
@@ -92,7 +103,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: windows-cpu-package-${{ github.run_id }}-${{ github.run_attempt }}
+          name: ${{ matrix.artifact }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             rebirth/check
             rebirth/*.tar.gz

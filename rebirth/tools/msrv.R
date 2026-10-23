@@ -29,13 +29,16 @@ for (tool in names(floors)) {
                      error = function(e) stop(tool, " could not run. ", help, call. = FALSE))
   status <- attr(output, "status")
   pattern <- paste0("^", tool, " ([0-9]+\\.[0-9]+\\.[0-9]+)([-+ ].*)?$")
-  if ((!is.null(status) && status != 0L) || length(output) != 1L ||
-      is.na(output) || !grepl(pattern, output)) {
+  # Cross-compilation wrappers can emit diagnostics before the version. Keep
+  # exactly one tool-prefixed line; duplicate or malformed versions still fail.
+  version <- output[grepl(paste0("^", tool, " "), output)]
+  if ((!is.null(status) && status != 0L) || anyNA(output) ||
+      length(version) != 1L || !grepl(pattern, version)) {
     stop("Cannot determine ", tool, " version from a successful --version command. ",
          help, call. = FALSE)
   }
-  current <- sub(pattern, "\\1", output)
-  message("Using ", output)
+  current <- sub(pattern, "\\1", version)
+  message("Using ", version)
   if (utils::compareVersion(current, floors[[tool]]) < 0L) {
     stop("Minimum supported ", label, " version is ", floors[[tool]],
          ". Installed ", label, " version is ", current, ". ", help, call. = FALSE)

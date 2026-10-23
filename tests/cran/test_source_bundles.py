@@ -5,8 +5,10 @@ from pathlib import Path
 import tarfile
 import tempfile
 import unittest
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))
 SPEC = importlib.util.spec_from_file_location("prepare_sources", ROOT / "tools/prepare-cran-sources.py")
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)

@@ -774,7 +774,7 @@
       "sha256": "180a9f53fa84b1b1857fc9adacf96566eadeaf6202611a68a9b2996bae782d14"
     },
     "src/rust/vendor.tar.xz": {
-      "bytes": 3703172,
+      "bytes": 3704260,
       "files": {
         "vendor/ahash-0.8.12/.cargo-checksum.json": "b55c60b8aa81235db967ca8a7649eda49b0673fd553e824e16a4ceee83939c50",
         "vendor/ahash-0.8.12/.cargo_vcs_info.json": "a9e489a9cb5309b1be3502e513cdf8b6d65d7f4dbd8d1b6273717e5f46d16370",
@@ -1352,7 +1352,7 @@
         "vendor/crunchy-0.2.4/README.md": "93b3f5c468e2d326f59c5882a758500ca96dcef81521f7c20fa7d6f89e2870f1",
         "vendor/crunchy-0.2.4/build.rs": "08bfcfa380ded6870ed262baa4b6e87ec54482306aebffabefbd19c83ad4b6ba",
         "vendor/crunchy-0.2.4/src/lib.rs": "9eb3f0288685ff7b7987a37aa48a6c50dc0f2016732d40a0cd8c7de96284ccca",
-        "vendor/extendr-api-0.9.0/.cargo-checksum.json": "3cfbf5526c9e28791644138a4b11ae047ffdd84d9ff8848fc8becee74df12298",
+        "vendor/extendr-api-0.9.0/.cargo-checksum.json": "f1c62c198bbd68abb304aa284be6db9fe6ac9ddc0b40a1b27b40450591ead9ec",
         "vendor/extendr-api-0.9.0/.cargo_vcs_info.json": "27ddc0d126c1eb2591e2ce3d72dbb0cd88c830ee2feec5a5c3ea6c3fc4903c44",
         "vendor/extendr-api-0.9.0/Cargo.lock": "1bf36bc90e45a43aa978639b3c75586711e541d0e4cdd55b8130991b1be95676",
         "vendor/extendr-api-0.9.0/Cargo.toml": "89aa2dc6e06fa80e52cb01d0252e3073a6e587f86ed652b1eebabdaaa5e02ed8",
@@ -1388,7 +1388,7 @@
         "vendor/extendr-api-0.9.0/src/robj/into_robj/repeat_into_robj.rs": "e3fd70cf63feca283d55c26991b0cc9da8808388b665bc506ea99dda71f7df03",
         "vendor/extendr-api-0.9.0/src/robj/mod.rs": "4851003425b93f4bdbcfbae8dce39199f4db2fed9fd73866b4183d11bf46ec15",
         "vendor/extendr-api-0.9.0/src/robj/operators.rs": "3071209ec2a3999187bb65ab36703f895b6298e6775d0c4d50d662eed6af16c9",
-        "vendor/extendr-api-0.9.0/src/robj/rinternals.rs": "9fa8d0dd4bb8b6aefa171b1091350192491ec345f605646de79daab0e4d81791",
+        "vendor/extendr-api-0.9.0/src/robj/rinternals.rs": "ea609a47302c8a3c4a9ca84793203c57450061707816b4eff993607809a692cd",
         "vendor/extendr-api-0.9.0/src/robj/tests.rs": "d791657ad6564ca9703ad3b2149e0de809b1718bf7d5b081508de110060ff213",
         "vendor/extendr-api-0.9.0/src/robj/try_from_robj.rs": "8d8a072b8adf044f1098b57c13e21321d39de04c85658b852a70675080d8d043",
         "vendor/extendr-api-0.9.0/src/scalar/macros.rs": "d1141d950ca5402dd5d63d7a287e128fd79ed787533023a176b26588ee8ef5ae",
@@ -1404,7 +1404,7 @@
         "vendor/extendr-api-0.9.0/src/wrapper/complexes.rs": "b265d80ab18ee3c27fa440bd32d511108904def29aa5ccae7c0ee9445e6d4eae",
         "vendor/extendr-api-0.9.0/src/wrapper/dataframe.rs": "f032aca0eaf1c59b96ff41aee1f4f8a8348c90a8e63ff5a341a98a6031620d52",
         "vendor/extendr-api-0.9.0/src/wrapper/doubles.rs": "6c77b952af8e3a0f8115c313c0f8178a5787a265aa3c67385c0ea2d939c3557a",
-        "vendor/extendr-api-0.9.0/src/wrapper/environment.rs": "00e449a1638706c9effbc988479349067ba8e4aff7b51b20ba28ed75f43bf2eb",
+        "vendor/extendr-api-0.9.0/src/wrapper/environment.rs": "32c159f56b85d28b97e0aa6246be5f50fcfbefe4052a70ea0d47ab93ffe2a64b",
         "vendor/extendr-api-0.9.0/src/wrapper/expr.rs": "56077a8566bd26590b4c17d34599d195be395eb8e973c738f992ed52afbfda6e",
         "vendor/extendr-api-0.9.0/src/wrapper/externalptr.rs": "067d2e7e2bb57a5caf41edcc5b8b7a96b03489d2887573c4427f43cd667916cc",
         "vendor/extendr-api-0.9.0/src/wrapper/function.rs": "9c1e089b74c422bd34b9f9fcf3e3dafb19a9f3571d999e25c0d1b64695ddc569",
@@ -1456,7 +1456,7 @@
         "vendor/extendr-api-0.9.0/tests/scalar_tests.rs": "e3ec2cdf66fb671ca5a10d3f4e60d75a956c693ae93f5f8ff7d5fcf5555aa7b6",
         "vendor/extendr-api-0.9.0/tests/try_from_tests.rs": "1eb8f03c0499d2b96abab1feb36429a2edf0fa1ce4836f5bda5c13665d489304",
         "vendor/extendr-api-0.9.0/tests/vector_tests.rs": "5917f8be0023edcb70d183e079b92dbd7f9360a3ec7dece18623cf51f0e08a5d",
-        "vendor/extendr-ffi-0.9.0/.cargo-checksum.json": "461fcded28afd59c5a5dea3b59f52d1298c3b627e2de551554988ffcfe9d64da",
+        "vendor/extendr-ffi-0.9.0/.cargo-checksum.json": "e947413715e35ef1d4c89e8a4b79c903a3b7e4770d4f84584d4a6a1168b99919",
         "vendor/extendr-ffi-0.9.0/.cargo_vcs_info.json": "36f00241c98718bfe22b4da53d19ebe6c151adb2619b06b7154a81a949a83f14",
         "vendor/extendr-ffi-0.9.0/Cargo.lock": "b3486747014c972eff7c422d7e6bd484b987b2ea0136df3ed64e047783bd8ed9",
         "vendor/extendr-ffi-0.9.0/Cargo.toml": "9a30bafee03066573405074f723e6b1daf89172102f84599c681b787b8d7589d",
@@ -1464,7 +1464,7 @@
         "vendor/extendr-ffi-0.9.0/README.md": "8895e59f004c806e5a726f3074c8943fdf0f8e60994a9c202a657a9037f7a4ab",
         "vendor/extendr-ffi-0.9.0/build.rs": "3b0703c9ee92652edcce5975e08644e62280f2baa51931731dca99f39d759350",
         "vendor/extendr-ffi-0.9.0/src/altrep.rs": "c42eaec3fd476e68eb5255f99c2661620f4a535e1343d84910518c2727d6f3aa",
-        "vendor/extendr-ffi-0.9.0/src/backports.rs": "2a2c88b32e3041af7b365ebe2e164991b763937948b547b957a8de8fc4fc3d8c",
+        "vendor/extendr-ffi-0.9.0/src/backports.rs": "79b89fae6437d8fba943a31ec7da02e5e48b30ca18c33285b01df5ed9b77e11a",
         "vendor/extendr-ffi-0.9.0/src/graphics.rs": "5c0986f43083ffc65ba42c22a759164ac925eaa9e3214557621381dbc2c85907",
         "vendor/extendr-ffi-0.9.0/src/lib.rs": "ec551d201920875cc1afe9f5441b207adf4daf23f8273987113b763e48da40c0",
         "vendor/extendr-ffi-0.9.0/src/non_api.rs": "8ce0a5116095e91da81aadceb3ea0ef5c93176d964506911bbf433eb93c251dd",
@@ -4256,7 +4256,7 @@
         "vendor/zerocopy-derive-0.8.52/tests/union_unaligned.rs": "ff7deadd16e331b4a4c686033330ab9d0207b6e9279c0c3419c0a5c84ea30c94",
         "vendor/zerocopy-derive-0.8.52/tests/unsafe_cell.rs": "c186d04ae7ec6f0c2e05b2b24a15b53ea97496cdb80ef9a3cb5e88c3a847407f"
       },
-      "sha256": "4bf0182671e6c6526298a72aad5578c2d3dc9b74a56015a396979a06970df43b"
+      "sha256": "481aa1b3814ea52319117d64a60af75fcd8301bccac653d5eb282536892eb935"
     }
   },
   "cargo_lock_sha256": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",

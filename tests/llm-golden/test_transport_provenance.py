@@ -67,6 +67,13 @@ class TransportControls(unittest.TestCase):
         with patch.object(transport.importlib.metadata, "version", return_value="2026.6.17"), self.assertRaises(AssertionError):
             transport.check_runtime()
 
+    def test_old_urllib3_is_refused(self):
+        version = transport.importlib.metadata.version
+        with patch.object(transport.importlib.metadata, "version", side_effect=lambda name:
+                          "2.7.0" if name == "urllib3" else version(name)):
+            with self.assertRaisesRegex(AssertionError, "urllib3"):
+                transport.check_runtime()
+
     def test_actual_frozen_artifacts_and_corruption_refusals(self):
         for kind, comparator, changed in (
             ("directions", directions.compare, ("provenance.csv",)),

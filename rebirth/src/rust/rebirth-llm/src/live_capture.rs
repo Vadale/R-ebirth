@@ -813,12 +813,12 @@ pub(crate) mod tests {
         );
     }
 
-    // D056 test-only transport update: keep the frozen producer manifest intact.
+    // D056/D057 test-only transport updates: keep the frozen producer manifest intact.
     // Twin pins: tests/llm-golden/transport_provenance.py; checked below.
     const HISTORICAL_REQUIREMENTS_SHA: &str =
         "58557e747b0d19c9eb0dd24ecf2317bb9d28e9bc4337bd43a85b43f614363086";
     const CURRENT_REQUIREMENTS_SHA: &str =
-        "ddf59e592c44556d980e2733413ca859602e802a3fdacbc472f72b04b06e7008";
+        "d01884102a8eca63c540107a7d2a79175085a3676566642bdf46e8a57a42278a";
 
     fn current_provenance_digest<'a>(path: &str, historical: &'a str) -> &'a str {
         if path == "tests/llm-golden/requirements.txt" {

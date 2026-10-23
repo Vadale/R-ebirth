@@ -1,0 +1,15 @@
+[package]
+name = "relm-extendr-lookup-control"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[lib]
+name = "lookup"
+crate-type = ["cdylib"]
+
+[dependencies]
+extendr-api = "=0.9.0"
+extendr-ffi = "=0.9.0"

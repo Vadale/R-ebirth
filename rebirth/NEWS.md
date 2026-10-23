@@ -1,4 +1,42 @@
-# relm 0.6.0 (candidate; not published)
+# relm 0.6.1
+
+## Security tooling
+
+* Update test-tooling urllib3 to 2.8.0 and the optional Hugging Face reference
+  environment to PyTorch 2.13.0. Remove Accelerate from that CPU-only environment:
+  the loader does not use it, and the inspected upstream version still contains
+  the reported checkpoint path-traversal issue. Python is not needed to use relm
+  from R. Historical reference producers, artifacts and producing-environment
+  manifests remain unchanged; this is not a golden regeneration.
+
+## Build portability
+
+* Apply an owned, version-preserving extendr 0.9.0 patch for R variable lookups.
+  Correct the R API signatures, distinguish missing bindings from present `NULL`,
+  preserve local versus inherited lookup and contain promise/active-binding
+  errors before returning to Rust callers. Developer and offline-package sources
+  are byte-checked against the same explicit patch; dependency versions and the
+  lockfile remain unchanged. Focused native R controls remain in candidate CI,
+  with no engine or model required by those controls. Target-webR controls are retained for future work.
+* Accept tool-wrapper diagnostics around one canonical Cargo/rustc version line,
+  while rejecting ambiguous, malformed, failed or below-minimum version output.
+* Apply the Windows thread-declaration adapter to Rtools Clang as well as GCC.
+  Select the Cargo target and C++ runtime from the actual Windows R architecture.
+* Keep Emscripten link plans free of host Linux libraries and Darwin frameworks.
+  Select the engine's existing 32-bit memory mode for the wasm32 R/Rust target,
+  avoiding incompatible 64-bit objects at the final package link.
+  Link the native archives already bundled by Rust through `librelm.a`, without
+  requiring duplicate external archives in the Emscripten package link.
+  Generate cross-built wrappers in the matching target webR runtime, retaining
+  native registration and R syntax checks instead of loading Wasm in host R.
+  Wasm builders must provide a local Node-compatible frontend explicitly; the
+  package generator does not download a runtime or use a pre-generated fallback.
+  Windows ARM64 and WebAssembly are now deferred by the maintainer. Their
+  experimental source corrections remain available, but automatic PR builds for
+  these two targets are removed. No browser inference, default r-universe Wasm
+  publication or supported ARM64 Windows binary is claimed.
+
+# relm 0.6.0 (2026-10-23)
 
 ## New features
 
@@ -24,8 +62,8 @@
   response repair or new public argument. Independent Jinja references cover
   whitespace, Unicode and ordinary/schema formatting. Prior family-level
   compatibility results do not certify every newer template or model file.
-* The exact 0.5.0 archive submitted to CRAN remains unchanged. This candidate
-  targets the separately authorized r-universe release, not a new CRAN submission.
+* The exact 0.5.0 archive submitted to CRAN remains unchanged. Version 0.6.0
+  is published on r-universe; it is not a new CRAN submission.
 
 ## Documentation
 
@@ -39,7 +77,7 @@
 * Batch/service examples admit 0.6.0 while retaining exact prepared-environment
   fingerprints and the existing dependency pins.
 
-# relm 0.5.0 (candidate; not published)
+# relm 0.5.0 (CRAN submission pending)
 
 ## CRAN source preparation
 

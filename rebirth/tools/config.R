@@ -110,13 +110,26 @@ is_windows <- .Platform[["OS.type"]] == "windows"
 # to that here.
 sysname <- Sys.info()[["sysname"]]
 arch <- R.version[["arch"]]
+.windows_target <- ""
 if (is_windows) {
+  # Rtools uses GNU on x86 and LLVM/MinGW on ARM64. WIN is empty on current
+  # ARM64 Rtools; derive Cargo's target from the R being installed into.
+  .windows_target <- switch(arch,
+    x86_64 = "x86_64-pc-windows-gnu",
+    i386 = "i686-pc-windows-gnu", i686 = "i686-pc-windows-gnu",
+    aarch64 = "aarch64-pc-windows-gnullvm", arm64 = "aarch64-pc-windows-gnullvm",
+    stop("Unsupported Windows R architecture: ", arch, call. = FALSE))
+  windows_cxx <- if (arch %in% c("aarch64", "arm64")) "-lc++" else "-lstdc++"
   # Windows CPU linking; actual build/check acceptance is the WP15 gate.
   .llama_libs <- paste(
     "-Wl,--start-group",
     "-lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base",
-    "-Wl,--end-group -lstdc++"
+    paste("-Wl,--end-group", windows_cxx)
   )
+} else if (is_wasm) {
+  # Rust's Emscripten static= links bundle all native archives into librelm.a.
+  # Match --print=native-static-libs: only libc++ remains external to that bundle.
+  .llama_libs <- "-lc++"
 } else if (identical(sysname, "Darwin")) {
   is_arm <- arch %in% c("aarch64", "arm64")
   stems <- c("-lrelm-grammar", "-lmtmd", "-lvendor-hash", "-lllama", "-lggml", "-lggml-cpu")
@@ -178,6 +191,7 @@ new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@CLEAN_TARGET@", .clean_targets, x = _) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>
+  gsub("@WINDOWS_TARGET@", .windows_target, x = _, fixed = TRUE) |>
   gsub("@LLAMA_LIBS@", .llama_libs, x = _) |>
   gsub("@PANIC_EXPORTS@", .panic_exports, x = _)
 
