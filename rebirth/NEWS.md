@@ -16,6 +16,8 @@
 * Apply the Windows thread-declaration adapter to Rtools Clang as well as GCC.
   Select the Cargo target and C++ runtime from the actual Windows R architecture.
 * Keep Emscripten link plans free of host Linux libraries and Darwin frameworks.
+  Select the engine's existing 32-bit memory mode for the wasm32 R/Rust target,
+  avoiding incompatible 64-bit objects at the final package link.
   New Windows ARM64 and rwasm CI builds validate these candidate fixes; they do
   not establish supported browser inference or a published ARM64 Windows binary.
 

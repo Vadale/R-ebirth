@@ -97,6 +97,11 @@ fn main() {
 
     let mut cfg = cmake::Config::new(&llama_src);
     let portable = env::var("RELM_R_PORTABLE").as_deref() == Ok("1");
+    if target_os == "emscripten" && target_arch == "wasm32" {
+        // webR and Rust use 32-bit pointers. Upstream defaults to MEMORY64,
+        // which produces archives incompatible with the final wasm32 R link.
+        cfg.define("LLAMA_WASM_MEM64", "OFF");
+    }
     if portable {
         assert!(
             !cuda,

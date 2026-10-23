@@ -2033,3 +2033,11 @@ existing prepared environment silently.
   README/NEWS distinguish the published 0.6.0 release from these development
   corrections. The v0.6.0 tag and published archive are immutable. The pending
   CRAN 0.5.0 submission remains unchanged; CUDA remains deferred by the founder.
+
+- **Wasm32 correction within D-057:** the first actual cross-compilation reached
+  the final R link, which rejected a 64-bit `mtmd.cpp.o` in the Rust archive.
+  The pinned engine defaults `LLAMA_WASM_MEM64` to `ON`. Select its existing
+  `OFF` option only for `emscripten`/`wasm32`, matching R and Rust pointer width;
+  no vendor edit or desktop flag change is needed. The actual rwasm package job
+  remains the regression and acceptance gate; CMake configuration inspection
+  alone does not establish a successful Wasm link or browser execution.
