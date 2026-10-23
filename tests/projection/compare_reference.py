@@ -7,6 +7,11 @@ import csv
 import hashlib
 import json
 import math
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "llm-golden"))
+from transport_provenance import REQUIREMENTS_KEY, check_csv, check_transition
 
 FROZEN_MANIFEST_SHA = "78729e5fe710e30dffa83e76a9d084ee15091a0ef7074230172c3293f2463959"
 F64_TOL = 1e-12
@@ -61,6 +66,8 @@ def metadata(actual, expected, path=()):
     elif len(path) in (3, 4) and path[0] == "cases" and path[2] in CASE_OBSERVATIONS:
         assert isinstance(expected, float), ("F64 field type", path)
         f64_equal(actual, expected)
+    elif path == ("source_sha256", REQUIREMENTS_KEY):
+        check_transition(actual, expected)
     else:
         assert actual == expected, ("exact metadata", path)
 
@@ -110,6 +117,8 @@ def compare_reference(actual, expected):
         a, e = actual / name, expected / name
         if name == "manifest.json":
             metadata(json.loads(a.read_text()), json.loads(e.read_text()))
+        elif name == "sources.csv":
+            check_csv(a.read_bytes(), e.read_bytes(), REQUIREMENTS_KEY)
         elif name in NUMERIC_COLUMNS or name == "controls.csv":
             table(a, e, name)
         else:

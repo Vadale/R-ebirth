@@ -24,19 +24,26 @@ mathematical reference, not a model-engine execution or CPU/Metal acceptance.
 Native callback placement, buffer mutation, synchronization, final-row pruning,
 resources, lifecycle and throughput remain separate acceptance requirements.
 
-## Frozen commands and results
+## Current verification and historical results
 
 From the repository root:
 
 ```sh
-PYTHONDONTWRITEBYTECODE=1 .golden-venv/bin/python tests/llm-golden/projection/reference_projection.py --check
+# Set TMPDIR to an existing disk-backed temporary directory first.
+PYTHONDONTWRITEBYTECODE=1 .golden-venv/bin/python tests/projection/check_reference_retained.py --output "${TMPDIR:?}/projection-reference-check"
 ```
 
-The initial `--write` command creates only a new empty `goldens/` directory and
-refuses to overwrite one. `--check` recomputes this feature into a temporary
-directory, runs every positive/negative control, and requires the same inventory
-and exact bytes for every frozen output. No old producer entry point runs.
-The producer emits `D046_REFERENCE_OK` only after completion.
+The current wrapper invokes the unchanged producer, retaining diagnostics on
+failure. Both manifests and inventories remain checked; the D-046 field-aware
+comparison preserves exact integrity/discrete fields and its existing F64 bounds.
+D-056 permits only the approved requirements-hash transition in the source
+metadata. Generated and historical artifacts keep their own hashes unchanged.
+The wrapper emits `D046_REFERENCE_PORTABLE_OK` only after completion.
+
+The initial `reference_projection.py --write` command created only a new empty
+`goldens/` directory and refused to overwrite one. Its original `--check` mode
+was byte-exact, including the original environment receipt. Both historical
+commands remain unchanged; they are not the current CI verification entry point.
 
 Both initial write and check passed with CPython 3.13.5 / NumPy 2.5.1 /
 gguf 0.19.0: 13 accepted arithmetic cases, 11 refusals, 52 expected coordinates,

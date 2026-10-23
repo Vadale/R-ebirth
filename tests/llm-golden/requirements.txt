@@ -20,7 +20,7 @@ numpy==2.5.1
 gguf==0.19.0
 
 # --- transitive (pulled in by gguf) ---
-certifi==2026.6.17
+certifi==2026.10.19
 charset-normalizer==3.4.7
 idna==3.18
 PyYAML==6.0.3
