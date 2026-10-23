@@ -41,7 +41,10 @@ def verify():
     with tempfile.TemporaryDirectory(prefix="relm-extendr-") as tmp:
         for crate in ("extendr-api-0.9.0", "extendr-ffi-0.9.0"):
             shutil.copytree(OWNED / crate, Path(tmp) / crate)
-        subprocess.run(["git", "apply", "--no-index", "--reverse", str(OWNED / "r-api-lookup.patch")], cwd=tmp, check=True)
+        # Isolate byte reconstruction from runner/user newline preferences.
+        # Windows commonly inherits autocrlf=true outside the repository attrs.
+        subprocess.run(["git", "-c", "core.autocrlf=false", "-c", "core.eol=lf",
+                        "apply", "--no-index", "--reverse", str(OWNED / "r-api-lookup.patch")], cwd=tmp, check=True)
         for name, hashes in record["files"].items():
             assert digest((Path(tmp) / name).read_bytes()) == hashes["upstream"], name
     return record

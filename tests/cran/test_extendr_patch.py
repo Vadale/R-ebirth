@@ -1,6 +1,6 @@
 """Source-only patch corruption controls; R CI source-bundle stage, zero models."""
 import io
-import json
+import os
 from pathlib import Path
 import shutil
 import sys
@@ -15,6 +15,13 @@ import extendr_patch as subject
 
 
 class ExtendrPatchTests(unittest.TestCase):
+    def test_inherited_git_newline_conversion_cannot_change_provenance(self):
+        # The old verifier changes LF source to CRLF during reverse apply here.
+        with patch.dict(os.environ, {"GIT_CONFIG_COUNT": "1",
+                                     "GIT_CONFIG_KEY_0": "core.autocrlf",
+                                     "GIT_CONFIG_VALUE_0": "true"}):
+            subject.verify()
+
     def test_owned_source_corruption_refused(self):
         with tempfile.TemporaryDirectory() as tmp:
             owned = Path(tmp) / "extendr"
