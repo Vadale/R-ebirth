@@ -2121,3 +2121,21 @@ cells. No test assertion, fixture, numerical tolerance, production/selftest or
 supported-platform package gate is deleted. The old-to-surviving mapping and
 retained candidates are in docs/ci-efficiency-implementation.md. No claim of a
 measured CI speedup, fresh model evidence, merge or release authority follows.
+
+
+### D057 patch-release authorization — 2026-10-23
+
+After the twelve desktop routes and their current artifacts were accepted, the
+founder explicitly authorized the concrete 0.6.1 proposal, including merge.
+Prepare a distinct patch version for the security and shared desktop corrections;
+retain the exact admitted-version set in batch/service recipes and reject future
+and development versions. Existing prepared-environment identities stay intact.
+
+The previous no-merge/no-release wording above records the earlier boundary and
+is superseded only for this delivery. Merge the exact 0.6.1 candidate after its
+required current checks pass, then verify automatic main/docs and the actual
+r-universe source/archive, supported desktop binaries and isolated Linux install.
+A new v0.6.1 tag/release may identify the accepted artifact. Published v0.6.0 and
+the pending CRAN archive remain immutable; no duplicate CRAN submission follows.
+Windows ARM64, WebAssembly and CUDA remain deferred. Reuse unchanged accepted
+model/native/phase-review evidence without replay or new support claims.

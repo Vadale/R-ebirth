@@ -1,4 +1,4 @@
-# Development changes after 0.6.0 (not released)
+# relm 0.6.1
 
 ## Security tooling
 

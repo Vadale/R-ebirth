@@ -65,10 +65,18 @@ Windows ARM64 and webR/WebAssembly are deferred and are not current support or
 release targets. Ordinary PR checks focus on Linux, macOS and Windows x86_64.
 The earlier failures and experimental work remain recorded for future use; see
 [CI scope and deferred platforms](docs/ci-efficiency-implementation.md#pr-check-audit-and-platform-deferral-2026-10-23).
-The development candidate also includes a version-preserving `extendr` R-API
+The 0.6.1 sources also include a version-preserving `extendr` R-API
 compatibility patch; see [the patch scope and verification](vendor/extendr/README.md).
 It does not establish browser inference support. Python is used only by maintainer
 reference/security tests; the R package does not require a Python environment. See the [submission status](docs/cran-submission.md).
+
+## 0.6.1 maintenance update
+
+The 0.6.1 sources contain Python maintainer-tooling security updates, the shared
+extendr R lookup correction and desktop build fixes. Check the version available
+on [r-universe](https://vadale.r-universe.dev/relm) and `packageVersion("relm")`
+after installing. The published 0.6.0 tag and archive remain unchanged.
+Windows ARM64 and WebAssembly stay deferred.
 
 ```r
 install.packages(

@@ -36,6 +36,14 @@ release targets. Ordinary PR checks focus on Linux, macOS and Windows x86_64;
 retains the experimental work for future use. Python is used only by maintainer
 reference/security tests; the R package does not require a Python environment.
 
+## 0.6.1 maintenance update
+
+The 0.6.1 sources contain Python maintainer-tooling security updates, the shared
+extendr R lookup correction and desktop build fixes. Check the version available
+on [r-universe](https://vadale.r-universe.dev/relm) and `packageVersion("relm")`
+after installing. The published 0.6.0 tag and archive remain unchanged.
+Windows ARM64 and WebAssembly stay deferred.
+
 ## Installation
 
 Use [r-universe](https://vadale.r-universe.dev/relm) and check the builds available
