@@ -2041,3 +2041,17 @@ existing prepared environment silently.
   no vendor edit or desktop flag change is needed. The actual rwasm package job
   remains the regression and acceptance gate; CMake configuration inspection
   alone does not establish a successful Wasm link or browser execution.
+
+- **Emscripten archive-link correction within D-057:** after the memory-width
+  correction, Rust completes and reports only libc++/R as external libraries;
+  the final R link instead requests seven absent duplicate native archives.
+  Emscripten's existing Rust `static=` links bundle those archives in `librelm.a`.
+  Match that contract in the R link by requesting only libc++ after `librelm.a`.
+  Preserve explicit GNU archive groups on Windows/Linux and all Darwin flags.
+  Extend the existing target/twin-pin controls to protect all seven bundled
+  libraries and the exact R runtime-only branch. The failed runner did not retain
+  archive-copy paths, so the reason its optional profile copies were absent is
+  not established; this correction removes that unnecessary dependency for Wasm.
+  A host-only seven-component archive fixture verifies bundling and final symbol
+  resolution without an engine or model. Actual rwasm package acceptance remains
+  required; no cross-compiled DLL execution or browser support is claimed.

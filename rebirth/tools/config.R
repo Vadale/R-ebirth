@@ -127,12 +127,9 @@ if (is_windows) {
     paste("-Wl,--end-group", windows_cxx)
   )
 } else if (is_wasm) {
-  # Emscripten supplies libc++; host Linux or Darwin libraries are not targets.
-  .llama_libs <- paste(
-    "-Wl,--start-group",
-    "-lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base",
-    "-Wl,--end-group -lc++"
-  )
+  # Rust's Emscripten static= links bundle all native archives into librelm.a.
+  # Match --print=native-static-libs: only libc++ remains external to that bundle.
+  .llama_libs <- "-lc++"
 } else if (identical(sysname, "Darwin")) {
   is_arm <- arch %in% c("aarch64", "arm64")
   stems <- c("-lrelm-grammar", "-lmtmd", "-lvendor-hash", "-lllama", "-lggml", "-lggml-cpu")

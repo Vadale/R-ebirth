@@ -41,15 +41,27 @@ fn build_rs_and_config_r_pin_the_same_archive_stems() {
         .unwrap_or_else(|e| panic!("cannot read {}: {e}", config_r_path.display()));
     assert!(config_r.contains(r#"sub("-lggml-base", "-lggml-cuda -lggml-base""#));
 
-    // Archive-group form: Windows, Emscripten and Linux each carry the full
+    // Archive-group form: Windows and Linux each carry the full
     // ordered token list (order matters: left-to-right resolution).
     let group = "-lrelm-grammar -lmtmd -lvendor-hash -lllama -lggml -lggml-cpu -lggml-base";
     assert_eq!(
         config_r.matches(group).count(),
-        3,
-        "expected exactly the Windows + Emscripten + Linux branches of config.R to carry \
+        2,
+        "expected exactly the Windows + Linux branches of config.R to carry \
          `{group}`; the R-side stem list diverged from build.rs (Hard rule 8f)"
     );
+
+    // Emscripten uses Cargo's bundled native archives in librelm.a. Pin the
+    // R-side link to the external runtime only; separate archives need not exist.
+    let wasm = config_r
+        .split("} else if (is_wasm) {")
+        .nth(1)
+        .expect("Emscripten branch")
+        .split("} else if")
+        .next()
+        .unwrap();
+    assert!(wasm.contains(".llama_libs <- \"-lc++\""));
+    assert!(!wasm.contains(group));
 
     // Darwin branch: the ordered common stems, the arm64-only Metal archive, and
     // the trailing base archive.

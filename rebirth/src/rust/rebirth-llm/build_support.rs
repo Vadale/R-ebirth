@@ -305,10 +305,32 @@ mod tests {
     }
 
     #[test]
-    fn emscripten_never_links_darwin_frameworks() {
+    fn emscripten_bundles_every_native_archive_and_only_adds_cpp_runtime() {
         assert_eq!(
-            link_libraries(&["llama"], "emscripten", "wasm32", false),
-            ["static=llama", "dylib=c++"]
+            link_libraries(
+                &[
+                    "relm-grammar",
+                    "mtmd",
+                    "vendor-hash",
+                    "llama",
+                    "ggml",
+                    "ggml-cpu",
+                    "ggml-base"
+                ],
+                "emscripten",
+                "wasm32",
+                false
+            ),
+            [
+                "static=relm-grammar",
+                "static=mtmd",
+                "static=vendor-hash",
+                "static=llama",
+                "static=ggml",
+                "static=ggml-cpu",
+                "static=ggml-base",
+                "dylib=c++"
+            ]
         );
     }
 

@@ -113,7 +113,7 @@ wasm <- configure_case(TRUE, "false", wasm = TRUE)
 stopifnot(is.environment(wasm),
           identical(wasm$.target, "--target=wasm32-unknown-emscripten"),
           identical(wasm$.libdir, "wasm32-unknown-emscripten/release"),
-          grepl("-lc++", wasm$.llama_libs, fixed = TRUE),
+          identical(wasm$.llama_libs, "-lc++"),
           !grepl("stdc|framework| -ldl", wasm$.llama_libs),
           grepl('PANIC="abort"', wasm$.panic_exports, fixed = TRUE))
 unlink(root, recursive = TRUE)
