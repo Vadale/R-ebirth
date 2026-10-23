@@ -201,7 +201,11 @@ jobs:
           python-version: '3.13.5'
 
       - name: install pinned golden tooling (test-only, not a package dep)
-        run: pip install -r tests/llm-golden/requirements.txt
+        run: |
+          pip install -r tests/llm-golden/requirements.txt
+          pip check
+          python tests/llm-golden/transport_provenance.py
+          python tests/llm-golden/test_transport_provenance.py
 
       - name: reference forward self-check (determinism + goldens + GGUF)
         run: python tests/llm-golden/synthetic/reference_forward.py --check
@@ -211,7 +215,7 @@ jobs:
 
       - name: Contrast-direction arithmetic and canonical reference (no model)
         run: |
-          python tests/llm-golden/directions/reference_directions.py --check
+          python tests/directions/check_reference.py
           python tests/directions/check-fixture-mirror.py
 
       - name: Projection arithmetic, forward and schema-2 references (no engine)

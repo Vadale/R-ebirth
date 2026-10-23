@@ -1967,3 +1967,35 @@ Batch/service recipes may admit exactly 0.6.0 as well as their previous released
 versions; future/development versions remain refused. This changes neither
 stored environment fingerprints nor pinned dependencies and does not migrate an
 existing prepared environment silently.
+
+
+## D-056 — Certifi transport security with frozen numerical provenance
+
+- **Date:** 2026-10-23 · **Status:** accepted (founder explicitly authorized the
+  certifi fix; exact proposed version 2026.10.19).
+- **Decision:** update only the Python golden-tooling certifi pin from 2026.6.17
+  to 2026.10.19 for GHSA-6q48-6c7w-9gw2. This is test tooling, not an R/Rust runtime
+  dependency. Other dependency pins, engine sources and the pending CRAN archive
+  remain unchanged.
+- **Provenance:** retain every frozen producer and golden byte, including the
+  original requirements hash. Current self-checks record the new requirements
+  hash and accept only that exact approved pair in the requirements field.
+  Both generated and frozen manifest inventories, sizes and hashes are verified;
+  no numerical field, bound or unrelated source identity gains an exception.
+- **Affected path:** directions' historical byte-check CLI is replaced in CI by
+  a wrapper around the same hash-bound producer, preserving its environment
+  guards and all exact outputs except the approved requirements metadata.
+  Projection retains its existing wrapper and F64 comparison. No model replay
+  or golden regeneration is part of this correction.
+- **Controls:** reject unknown/current-file-mutated pins, old installed certifi,
+  changed producer metadata and corrupted artifacts; verify the affected emSign
+  root is absent and the three unaffected roots restored by upstream are present.
+  Required ordinary CI remains unchanged in scope. The root-store update can
+  change TLS trust decisions; it makes no numerical or performance claim.
+
+- **Affected native test consumer:** the live-state Rust test also checks this
+  historical requirements hash before comparing its saved independent values.
+  Its test-only provenance resolver admits the same exact transition for that
+  one path, then still hashes the actual current file. A model-free regression
+  rejects unknown historical hashes/other-path substitutions and binds Python/Rust
+  twin pins. Native production code and all numerical comparisons are unchanged.

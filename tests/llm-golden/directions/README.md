@@ -28,15 +28,17 @@ and are not rerun by this producer.
 From the repository root, the single read-only verification command is:
 
 ```sh
-.golden-venv/bin/python tests/llm-golden/directions/reference_directions.py --check
+.golden-venv/bin/python tests/directions/check_reference.py
 ```
 
-Initial creation used the same command with `--write`. That mode refuses a
+Initial creation used `reference_directions.py --write`. That mode refuses a
 nonempty golden directory; replacing a frozen reference requires a newly
-documented reason and the golden-update workflow. `--check` recomputes only
-these fixtures in a temporary directory, exercises every control, compares the
-exact inventory and every byte, then removes its temporary files. It does not
-write the checked-in goldens. A failure never refreshes an expected value.
+documented reason and the golden-update workflow. The current wrapper invokes
+that unchanged producer in a temporary directory, exercising every original
+control. It verifies both manifests and all output bytes; only the exact D-056
+requirements-hash transition is accepted in provenance. Generated metadata keeps
+the current hash and historical artifacts keep theirs. A failure never refreshes
+an expected value or writes the checked-in goldens.
 
 The first generation and check passed with CPython 3.13.5 in `.golden-venv`:
 16 accepted arithmetic cases, 16 expected refusals, 52 expected direction
@@ -58,8 +60,8 @@ digits; the public comparison tolerance remains 1e-12, not 90-digit equality.
 | `encoding-fields.csv` | 295 preorder typed-node records. `path` gives the location, `kind` is the encoding tag, and container counts precede children. `scalar_hex` is the raw scalar payload (UTF-8 bytes for S; no length/tag), permitting exact base-R `readBin()` recovery. |
 | `artifact-digests.csv` | All six persisted digest fields. The `artifact` node/byte fixture excludes only `payload`; append its listed digest when assembling persisted R metadata. |
 | `prompts.csv` | The six literal UTF-8 prompt strings whose byte digests appear in the synthetic context. These are encoding examples, not a corpus used for model evaluation. |
-| `controls.csv` | Named passed arithmetic, mutation, primitive-rejection and bounded-stream controls. Every `--check` reruns them. |
-| `provenance.csv`, `manifest.csv` | Interpreter/environment/source/encoding pins and generated-file byte/hash receipts. The manifest excludes its own hash; the command prints that hash. |
+| `controls.csv` | Named passed arithmetic, mutation, primitive-rejection and bounded-stream controls. Every current wrapper run exercises them. |
+| `provenance.csv`, `manifest.csv` | Interpreter/environment/source/encoding pins and generated-file byte/hash receipts. The manifest excludes its own hash; the wrapper pins and checks it. |
 
 Use `read.csv(..., colClasses="character", check.names=FALSE)` before explicit
 conversions, so digests, pair IDs and signed-zero text are not altered by type
