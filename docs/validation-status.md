@@ -168,6 +168,21 @@ remaining cost. Model-free orchestration controls exercise this route without
 loading relm; completion within the budget still requires a corrected scheduled
 run. No local model replay or measured speedup is claimed.
 
+## R check completion guard (2026-10-26)
+
+Inspection of [PR86's R-devel job](https://github.com/Vadale/R-ebirth/actions/runs/40318503596/job/121557082645)
+found an incomplete check despite a successful Actions status: CRAN's
+`PACKAGES.in` request timed out, R halted during incoming feasibility, and the
+saved `00check.log` had no completion footer. Package tests and the manual were
+not reached. This is not accepted as a successful R-devel check.
+
+All three `check-r-package` call sites now require the actual `00check.log` to
+end with R's completion and status records. Missing, interrupted, error or warning
+results fail; the existing allowance for notes remains. Base-R controls include
+truncation, installation-only markers, failed statuses and Windows line endings.
+Remote CRAN checks, their timeout and package checks remain enabled and unchanged;
+no retry, dependency update or relaxed gate is used to bypass this interruption.
+
 ## Local maintenance evidence
 
 R 4.5.1 on macOS arm64, Rust 1.96.0, existing local Qwen2.5-0.5B and cached vision

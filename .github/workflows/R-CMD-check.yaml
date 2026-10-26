@@ -172,6 +172,10 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript -e 'Sys.unsetenv("RELM_DEMO_SKIP_SELFTEST"); Sys.setenv(RELM_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
 
+      - name: R check completion controls (model-free)
+        if: steps.scope.outputs.full_checks != 'false' && matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release'
+        run: Rscript --vanilla tests/ci/test-check-r-complete.R
+
       - name: Demo B nightly orchestration regression (model-free)
         if: steps.scope.outputs.full_checks != 'false' && matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release'
         run: Rscript tests/demos/demo-B-orchestration-selftest.R
@@ -284,6 +288,10 @@ jobs:
           args: 'c("--no-manual")'
           error-on: '"warning"'
           upload-snapshots: true
+
+      - name: Require completed R CMD check
+        if: steps.scope.outputs.full_checks != 'false'
+        run: Rscript --vanilla tests/ci/check-r-complete.R rebirth/check/relm.Rcheck/00check.log
 
       - name: Probe product agreement with independent references (no model)
         if: steps.scope.outputs.full_checks != 'false'

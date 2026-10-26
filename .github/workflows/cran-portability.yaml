@@ -99,6 +99,8 @@ jobs:
           args: 'c("--as-cran", "--no-manual")'
           error-on: '"warning"'
           upload-snapshots: true
+      - name: Require completed R CMD check
+        run: Rscript --vanilla tests/ci/check-r-complete.R rebirth/check/relm.Rcheck/00check.log
       - name: Retain Windows package results
         if: always()
         uses: actions/upload-artifact@v7
@@ -176,6 +178,8 @@ jobs:
           args: 'c("--as-cran")'
           build_args: 'character()'
           error-on: '"warning"'
+      - name: Require completed R CMD check
+        run: Rscript --vanilla tests/ci/check-r-complete.R rebirth/check/relm.Rcheck/00check.log
       - name: Retain R-devel source, manual and results
         if: always()
         uses: actions/upload-artifact@v7
