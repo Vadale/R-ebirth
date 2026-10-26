@@ -183,6 +183,24 @@ truncation, installation-only markers, failed statuses and Windows line endings.
 Remote CRAN checks, their timeout and package checks remain enabled and unchanged;
 no retry, dependency update or relaxed gate is used to bypass this interruption.
 
+## Ubuntu runner setup stall (2026-10-26)
+
+PR #86's Linux release job reached the six-hour runner limit inside
+`setup-r`'s `apt-get update`, before any package build or test. Its log records
+ignored Azure-mirror requests followed by Ubuntu fallback metadata and no further
+progress. The exact network stall mechanism is not established. Missing docs and
+other artifacts were downstream consequences, not successful validation.
+
+The R matrix now selects the direct official Ubuntu HTTPS archive before R setup,
+retaining all source suites, components and signing-key declarations. This avoids
+the hosted mirror-list route implicated in the stall. Unexpected source layouts
+fail before modification; fixture checks preserve exact surrounding bytes,
+including CRLF and an existing security archive. The setup action has a 15-minute
+limit so another stalled preparation cannot consume six hours. Existing package
+checks, network-error handling and the Demo B 90-minute limit remain unchanged.
+Actual hosted-runner recovery and all current required checks remain pending;
+local source-transformation checks alone do not establish service availability.
+
 ## Local maintenance evidence
 
 R 4.5.1 on macOS arm64, Rust 1.96.0, existing local Qwen2.5-0.5B and cached vision
