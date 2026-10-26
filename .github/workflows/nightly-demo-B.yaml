@@ -8,7 +8,7 @@
 #   sample (offline, license-clean). Its OWN file, triggered only by `schedule` +
 #   `workflow_dispatch`, means a nightly demo flake can NEVER gate a PR (non-gating).
 #
-# WHAT IS ASSERTED (backend-robust): run_demo_B(extended = TRUE) exits 0 and produces
+# WHAT IS ASSERTED (backend-robust): two extended seeded passes exit 0 and produce
 #   B1-B4 (the four figures); at least two topics are discovered with a finite mean
 #   silhouette in [-1, 1]; and the pipeline is REPRODUCIBLE -- fixed seeds give
 #   byte-identical clustering and B1-B3 statistics (D-022 acceptance). We do NOT assert
@@ -92,12 +92,12 @@ jobs:
             Sys.setenv(RELM_DEMO_NO_AUTORUN = "1")
             source("tests/demos/demo-B-topics.R") # also runs the demo-utils self-test
 
-            # extended = TRUE runs B1-B3 as well as the polished B4 map; PNGs go to a
-            # temp dir so every figure renders to a device (headless-safe).
+            # D-022: two fresh sample embeddings, one full-corpus embedding and two
+            # independent seeded analyses. Use the first result for quality/figures
+            # instead of embedding all 1,200 texts again in a separate demo pass.
             ext_dir <- file.path(Sys.getenv("RUNNER_TEMP", unset = tempdir()), "demoB-extended")
             dir.create(ext_dir, showWarnings = FALSE)
-            res <- run_demo_B(mp, plot_file = file.path(ext_dir, "demoB-B4-map.png"),
-                              extended = TRUE, plot_dir = ext_dir)
+            res <- run_demo_B_reproducible(mp, plot_dir = ext_dir)
 
             cat(sprintf("Demo B: %d topics, %.1f%% noise; mean silhouette %.3f\n",
                         length(res$labels), 100 * mean(res$cluster == 0L),
@@ -112,8 +112,6 @@ jobs:
                       res$extended$files[c("B1", "B2", "B3")])
             stopifnot(all(file.exists(figs)), all(file.info(figs)$size > 0))
 
-            # D-022 reproducibility: fixed seeds => byte-identical clustering + stats.
-            run_demo_B_reproducible(mp)
             cat("Demo B nightly acceptance: PASS\n")
           '
 

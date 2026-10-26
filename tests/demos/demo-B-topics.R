@@ -517,35 +517,46 @@ run_demo_B <- function(model_path = .demo_model_path(),
 # Reproducibility check (D-022 acceptance): fixed seeds => byte-identical clustering
 # and topic statistics. Confirms the embedding is deterministic across identical calls,
 # then runs the seeded layout + HDBSCAN + the B1-B3 statistics TWICE on ONE embedding
-# and asserts they match exactly. Figures go to temp files (no stray device). Returns
-# TRUE or stops loudly.
+# and asserts they match exactly. Returns the first result invisibly, so the nightly
+# can also check quality and figures without a separate full-corpus embedding/pass.
+# plot_dir optionally retains that first pass's B1-B4 figures; the second is temporary.
 run_demo_B_reproducible <- function(model_path = .demo_model_path(),
-                                    abstracts = NULL, seed = 20240707L, verbose = TRUE) {
+                                    abstracts = NULL, seed = 20240707L, verbose = TRUE,
+                                    plot_dir = NULL) {
   say <- function(...) if (isTRUE(verbose)) message(...)
+  timed <- function(label, expr) {
+    say(label, " ...")
+    started <- proc.time()[["elapsed"]]
+    value <- force(expr)
+    say(sprintf("%s completed in %.3f s", label, proc.time()[["elapsed"]] - started))
+    value
+  }
   df <- if (is.null(abstracts)) demo_B_data() else abstracts
 
-  m <- relm::llm(model_path)
-  # embedding determinism: a small subset embedded twice must be bit-identical.
-  sub <- df$text[seq_len(min(16L, nrow(df)))]
-  e1 <- relm::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
-  e2 <- relm::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
-  if (!identical(e1, e2)) {
-    close(m)
-    stop("embedding is not reproducible across identical calls")
-  }
-  emb <- relm::llm_embed(m, df$text, pooling = "mean", normalize = TRUE)
-  close(m) # run_demo_B opens its own handle for naming; reuse `emb` for the rest
+  emb <- local({
+    m <- relm::llm(model_path)
+    on.exit(close(m), add = TRUE)
+    # Two fresh calls still check native embedding determinism before corpus reuse.
+    sub <- df$text[seq_len(min(16L, nrow(df)))]
+    timed("Embedding repeatability (two sample calls)", {
+      e1 <- relm::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
+      e2 <- relm::llm_embed(m, sub, pooling = "mean", normalize = TRUE)
+      if (!identical(e1, e2)) stop("embedding is not reproducible across identical calls")
+    })
+    timed(sprintf("Full corpus embedding (%d abstracts)", nrow(df)),
+          relm::llm_embed(m, df$text, pooling = "mean", normalize = TRUE))
+  }) # Each downstream pass opens its own handle for naming; only `emb` is reused.
 
-  d1 <- file.path(tempdir(), "demoB-repro-1")
-  d2 <- file.path(tempdir(), "demoB-repro-2")
+  d1 <- if (is.null(plot_dir)) tempfile("demoB-repro-1-") else plot_dir
+  d2 <- tempfile("demoB-repro-2-")
   dir.create(d1, showWarnings = FALSE)
   dir.create(d2, showWarnings = FALSE)
   run1 <- function(pd) {
     run_demo_B(model_path, abstracts = df, seed = seed, extended = TRUE, emb = emb,
-               plot_file = file.path(pd, "map.png"), plot_dir = pd, verbose = FALSE)
+               plot_file = file.path(pd, "demoB-B4-map.png"), plot_dir = pd, verbose = FALSE)
   }
-  r1 <- run1(d1)
-  r2 <- run1(d2)
+  r1 <- timed("Seeded analysis and figures (pass 1)", run1(d1))
+  r2 <- timed("Seeded analysis and figures (pass 2)", run1(d2))
 
   checks <- c(
     cluster = identical(r1$cluster, r2$cluster),
@@ -561,7 +572,7 @@ run_demo_B_reproducible <- function(model_path = .demo_model_path(),
   }
   say(sprintf("Demo B reproducibility: PASS (%d clusters, %.1f%% noise, all stats identical)",
     length(r1$labels), 100 * mean(r1$cluster == 0L)))
-  invisible(TRUE)
+  invisible(r1)
 }
 
 # Model-free smoke test of the B1-B4 FIGURE code (no model, no uwot/dbscan): synthesize

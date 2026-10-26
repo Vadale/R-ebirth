@@ -148,6 +148,26 @@ completion and timing still require actual corrected scheduled runs. Model pins,
 data, seeds, acceptance thresholds, reproducibility checks and timeouts are
 unchanged. No model execution was repeated locally for this correction.
 
+## Demo B nightly orchestration correction (2026-10-26)
+
+The scheduled [Oct24 run](https://github.com/Vadale/R-ebirth/actions/runs/40083073581)
+and [Oct25 run](https://github.com/Vadale/R-ebirth/actions/runs/40182949914)
+exceeded the unchanged 90-minute limit after completing the first full
+1,200-abstract extended pass. Both optimized builds completed; these failures
+are distinct from the earlier debug-mode defect. Their four saved figure files
+match byte-for-byte across nights, but neither run completed reproducibility
+acceptance. The exact cancellation substage and runtime-change cause are unknown.
+
+The workflow previously ran a separate extended demo before the reproducibility
+helper, embedding the full corpus twice overall. It now consumes the helper's
+first result for the existing topic, statistic and figure checks. Two fresh
+16-text embedding calls and two independently executed seeded analyses still
+protect the same six exact comparisons. The model pin, corpus, seed, numerical
+thresholds and job timeout remain unchanged. Added phase timings expose the
+remaining cost. Model-free orchestration controls exercise this route without
+loading relm; completion within the budget still requires a corrected scheduled
+run. No local model replay or measured speedup is claimed.
+
 ## Local maintenance evidence
 
 R 4.5.1 on macOS arm64, Rust 1.96.0, existing local Qwen2.5-0.5B and cached vision

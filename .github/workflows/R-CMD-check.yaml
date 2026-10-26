@@ -172,6 +172,10 @@ jobs:
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript -e 'Sys.unsetenv("RELM_DEMO_SKIP_SELFTEST"); Sys.setenv(RELM_DEMO_NO_AUTORUN="1"); source("tests/demos/demo-B-topics.R"); demo_B_plot_selftest(verbose=TRUE)'
 
+      - name: Demo B nightly orchestration regression (model-free)
+        if: steps.scope.outputs.full_checks != 'false' && matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release'
+        run: Rscript tests/demos/demo-B-orchestration-selftest.R
+
       # The COMMITTED golden sidecars, verified from the checkout (D-026 fifth
       # addendum). The testthat suite cannot do this per-commit: the goldens live
       # at the repo root, outside the built tarball, so under R CMD check that
