@@ -32,7 +32,17 @@ The two reference demos, run as scripted acceptance tests
   terms per topic (log-odds z with an informative Dirichlet prior), and **B3**
   inter-topic structure (centroid-cosine heatmap + `hclust` dendrogram); **B4**
   is the polished labelled map. `run_demo_B_reproducible()` asserts fixed seeds
-  give byte-identical clustering and statistics.
+  give byte-identical clustering and statistics. It embeds the 16-text sample
+  twice, embeds the full corpus once, then independently runs the seeded analysis
+  twice. It returns the first demo result invisibly (previously `TRUE`);
+  `plot_dir` optionally retains that pass's B1-B4 figures. The nightly checks
+  quality and figures from this same result, without another full embedding.
+  Phase timings distinguish embedding from downstream analysis.
+- **`demo-B-orchestration-selftest.R`** — model-free regression in Linux-release
+  R CI: executes the actual nightly acceptance block and reproducibility helper
+  with instrumented model/analysis boundaries. Checks call counts and input flow,
+  rejects embedding/statistic changes and missing/invalid acceptance outputs,
+  and checks model cleanup on failure. It does not prove actual-model runtime.
 - **`demo-utils.R`** — model-free helpers sourced by Demo A and Demo B:
   `demo_auc()` (exact rank-based Mann–Whitney AUC) and `demo_auc_ci()`
   (stratified bootstrap CI), plus the WP7.5b shared visual style (`hcl.colors`

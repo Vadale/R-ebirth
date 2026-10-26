@@ -148,6 +148,59 @@ completion and timing still require actual corrected scheduled runs. Model pins,
 data, seeds, acceptance thresholds, reproducibility checks and timeouts are
 unchanged. No model execution was repeated locally for this correction.
 
+## Demo B nightly orchestration correction (2026-10-26)
+
+The scheduled [Oct24 run](https://github.com/Vadale/R-ebirth/actions/runs/40083073581)
+and [Oct25 run](https://github.com/Vadale/R-ebirth/actions/runs/40182949914)
+exceeded the unchanged 90-minute limit after completing the first full
+1,200-abstract extended pass. Both optimized builds completed; these failures
+are distinct from the earlier debug-mode defect. Their four saved figure files
+match byte-for-byte across nights, but neither run completed reproducibility
+acceptance. The exact cancellation substage and runtime-change cause are unknown.
+
+The workflow previously ran a separate extended demo before the reproducibility
+helper, embedding the full corpus twice overall. It now consumes the helper's
+first result for the existing topic, statistic and figure checks. Two fresh
+16-text embedding calls and two independently executed seeded analyses still
+protect the same six exact comparisons. The model pin, corpus, seed, numerical
+thresholds and job timeout remain unchanged. Added phase timings expose the
+remaining cost. Model-free orchestration controls exercise this route without
+loading relm; completion within the budget still requires a corrected scheduled
+run. No local model replay or measured speedup is claimed.
+
+## R check completion guard (2026-10-26)
+
+Inspection of [PR86's R-devel job](https://github.com/Vadale/R-ebirth/actions/runs/40318503596/job/121557082645)
+found an incomplete check despite a successful Actions status: CRAN's
+`PACKAGES.in` request timed out, R halted during incoming feasibility, and the
+saved `00check.log` had no completion footer. Package tests and the manual were
+not reached. This is not accepted as a successful R-devel check.
+
+All three `check-r-package` call sites now require the actual `00check.log` to
+end with R's completion and status records. Missing, interrupted, error or warning
+results fail; the existing allowance for notes remains. Base-R controls include
+truncation, installation-only markers, failed statuses and Windows line endings.
+Remote CRAN checks, their timeout and package checks remain enabled and unchanged;
+no retry, dependency update or relaxed gate is used to bypass this interruption.
+
+## Ubuntu runner setup stall (2026-10-26)
+
+PR #86's Linux release job reached the six-hour runner limit inside
+`setup-r`'s `apt-get update`, before any package build or test. Its log records
+ignored Azure-mirror requests followed by Ubuntu fallback metadata and no further
+progress. The exact network stall mechanism is not established. Missing docs and
+other artifacts were downstream consequences, not successful validation.
+
+The R matrix now selects the direct official Ubuntu HTTPS archive before R setup,
+retaining all source suites, components and signing-key declarations. This avoids
+the hosted mirror-list route implicated in the stall. Unexpected source layouts
+fail before modification; fixture checks preserve exact surrounding bytes,
+including CRLF and an existing security archive. The setup action has a 15-minute
+limit so another stalled preparation cannot consume six hours. Existing package
+checks, network-error handling and the Demo B 90-minute limit remain unchanged.
+Actual hosted-runner recovery and all current required checks remain pending;
+local source-transformation checks alone do not establish service availability.
+
 ## Local maintenance evidence
 
 R 4.5.1 on macOS arm64, Rust 1.96.0, existing local Qwen2.5-0.5B and cached vision
