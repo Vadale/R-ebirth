@@ -1,7 +1,7 @@
 # Version-boundary controls only; no package installation or model activity.
 source("examples/funding-service/common.R")
-for (version in c("0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.6.1")) stopifnot(app_relm_version_supported(version))
-for (version in list("0.6.2", "0.6.1.9000", "0.2.0", "0.3.1", "0.7.0", "0.4.0.9000", "", NA_character_,
+for (version in c("0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.6.1", "0.6.2")) stopifnot(app_relm_version_supported(version))
+for (version in list("0.6.3", "0.6.1.9000", "0.2.0", "0.3.1", "0.7.0", "0.4.0.9000", "", NA_character_,
                     NULL, character(), c("0.3.0", "0.4.0"), 0.4))
   stopifnot(!app_relm_version_supported(version))
 scratch <- tempfile("version-metadata-")
@@ -16,11 +16,11 @@ write_version <- function(package, version) {
 for (i in seq_len(nrow(pins))) write_version(pins$package[[i]], pins$version[[i]])
 write_version("nanoarrow", "metadata-fixture")
 tryCatch({
-  for (version in c("0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.6.1")) {
+  for (version in c("0.3.0", "0.4.0", "0.5.0", "0.6.0", "0.6.1", "0.6.2")) {
     write_version("relm", version)
     stopifnot(identical(svc_library(scratch), normalizePath(scratch)))
   }
-  for (version in c("0.2.0", "0.6.2", "0.7.0")) {
+  for (version in c("0.2.0", "0.6.3", "0.7.0")) {
     write_version("relm", version)
     error <- tryCatch(svc_library(scratch), error = identity)
     stopifnot(inherits(error, "funding_error_environment"))
@@ -33,4 +33,4 @@ tryCatch({
   .libPaths(original_libs)
   unlink(scratch, recursive = TRUE)
 })
-cat("APPLICATION_VERSION_OK predicate_cases=17 service_cases=9 models=0\n")
+cat("APPLICATION_VERSION_OK predicate_cases=18 service_cases=10 models=0\n")

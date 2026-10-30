@@ -141,6 +141,18 @@ jobs:
           python3 tests/cran/test_extendr_patch.py
           Rscript --vanilla tests/cran/configuration.R
 
+      - name: Native R state archive with GCC sanitizer and slim LTO (no engine or models)
+        if: steps.scope.outputs.full_checks != 'false' && matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release'
+        run: python3 tests/cran/native-state-link.py --output "${{ runner.temp }}/native-state-link"
+
+      - name: Retain native state link regression evidence
+        if: always() && steps.scope.outputs.full_checks != 'false' && matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release'
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-state-link
+          path: ${{ runner.temp }}/native-state-link
+          if-no-files-found: error
+
       - name: Actual extendr lookup and unwind controls (no engine or models)
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript --vanilla tests/cran/extendr-lookup/run.R "${{ runner.temp }}/extendr-lookup"

@@ -18,7 +18,7 @@ Vendored dependencies and their licenses are recorded here as they are added.
     - upstream:              https://github.com/ggml-org/llama.cpp
     - tag:                   b10828 (released 2026-09-06)
     - release tarball SHA256:da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247
-    - pruned tree SHA256:    fd1b8327ef675dc91de4b9fde547d8afb7d4c6b2aa63a8f989e421cf59edd7ac
+    - pruned tree SHA256:    e89c0d0b00b6d31cccf55ff5463a06455617341c15b966d5daeda89fb03b27b5
       (pre-patch; the committed tree carries the rebirth patch set, D-015 —
       both patched-tree digests are recorded in VENDORING.md)
   Full provenance, prune manifest, and the patch table:

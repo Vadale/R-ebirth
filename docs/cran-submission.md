@@ -1,4 +1,19 @@
-# relm 0.5.0 — CRAN preparation and remaining decisions
+# relm CRAN maintenance — 0.6.2 candidate
+
+Updated 2026-10-30. CRAN published 0.5.0 on 2026-10-29 and requested corrections
+before 2026-11-20. The published archive and the separate 0.6.1 release remain
+immutable. A new 0.6.2 candidate addresses the Fedora Clang missing errno header
+and GCC-ASAN/LTO unresolved native state helper during installation (D-058).
+Neither reported failure reached package tests; the ASAN report is not evidence
+of a runtime memory violation.
+
+The correction preserves the engine version, dependency graph, public API,
+compiler/sanitizer/LTO flags, numerical contracts and all ordinary platform gates.
+Local checks do not establish exact CRAN-farm equivalence. Candidate production
+installation, required CI, archive inspection and submission remain separate
+acceptance steps; no 0.6.2 submission has been made.
+
+## Historical 0.5.0 submission record
 
 Updated 2026-10-19. **Submitted to CRAN; awaiting a response.** The maintainer
 reported completing the email confirmation. Submission is not acceptance.

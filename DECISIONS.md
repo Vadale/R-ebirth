@@ -2139,3 +2139,26 @@ A new v0.6.1 tag/release may identify the accepted artifact. Published v0.6.0 an
 the pending CRAN archive remain immutable; no duplicate CRAN submission follows.
 Windows ARM64, WebAssembly and CUDA remain deferred. Reuse unchanged accepted
 model/native/phase-review evidence without replay or new support claims.
+
+## D-058 — CRAN Clang header and native GCC LTO archive corrections
+- **Date:** 2026-10-30 · **Status:** accepted implementation scope
+- **Authorization:** founder requested correction of the CRAN notice before
+  2026-11-20 while protecting the configurations already passing. Prepare 0.6.2;
+  published 0.5.0 and 0.6.1 archives remain immutable.
+- **Decision:** add the direct `<cerrno>` include as owned patch 0007 on the
+  unchanged b10828 engine. For native targets, keep the R-compiled state archive
+  outside Rust's staticlib and link it explicitly after librelm. Cargo uses
+  `static:-bundle` and its original OUT_DIR search path; R uses the copied
+  archive beside librelm and a second librelm search for its Rust finalizer
+  callback. Preserve the deferred Emscripten bundling route.
+- **Why:** CRAN Clang reports undeclared errno. A separate minimal GCC slim-LTO
+  reproduction confirms missing state symbols after Rust archive bundling;
+  direct final linking succeeds with the same sanitizer and LTO flags.
+- **Boundaries:** no API, native helper semantics, dependency, engine version,
+  numerical bounds, goldens, toolchain minimum or existing check relaxation.
+  Acceptance requires actual candidate native regressions, source-bundle
+  coherence, production installation and the current full platform matrix.
+  Ordinary passing configurations remain required. Exact Fedora toolchain
+  equivalence and CRAN acceptance are not inferred from local tests.
+- **Rejected:** disabling LTO/sanitizers, forcing fat LTO objects, engine upgrade,
+  replacing released archives, or rerunning accepted model evaluations.

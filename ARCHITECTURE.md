@@ -126,7 +126,9 @@ Greedy decoding: deterministic per backend by construction. Sampling: the sample
 
 - `rebirth/src/Makevars` drives `cargo build` (release profile, locked dependencies,
   at most two Cargo jobs; offline for bundled source packages), links `librelm.a`
-  and llama.cpp statically; macOS adds Metal/Accelerate frameworks. CUDA is opt-in
+  and llama.cpp statically; the R state archive is linked separately with a
+  second librelm search for the finalizer callback (D-058, GCC slim LTO).
+  macOS adds Metal/Accelerate frameworks. CUDA is opt-in
   on Linux x86_64. D-051 bundles the unchanged engine in `llama-sources.tar.xz`
   and existing locked crates in `vendor.tar.xz`; configure unpacks the engine.
 - `configure` detects cargo/rustc and fails with an actionable message if missing (binary users via r-universe never hit this).

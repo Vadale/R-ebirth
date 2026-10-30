@@ -17,7 +17,7 @@ the full prune manifest and reproduction steps) is
 | License | MIT (reproduced in the repo-root `NOTICE`) |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
 | Pruned tree SHA256 (pre-patch) | `e89c0d0b00b6d31cccf55ff5463a06455617341c15b966d5daeda89fb03b27b5` |
-| Pruned tree SHA256 (post-patch) | `49f780edda8a7da6bfb3f49af162dc1a57848aa91e4ee96ba75fc8372b724dfc` |
+| Pruned tree SHA256 (post-patch) | `1d435a2bd6f66b50775f6307a3196dbc3b0c6dd31892f5a1db936f4a620e6292` |
 
 The snapshot includes the multimodal library sources (`tools/mtmd/` +
 `vendor/stb/stb_image.h` + `vendor/miniaudio/miniaudio.h` + `vendor/hash/`),
@@ -39,3 +39,7 @@ post-patch SHA is the committed tree (CI gate G4).
 D-050 restores the unchanged b10828 CUDA source directory for the optional Linux
 backend. The version and existing patches are unchanged; both tree digests above
 include the restored files. This also corrects the obsolete post-patch mirror.
+
+D-058 adds the direct `<cerrno>` include for the existing GGUF error diagnostic
+as patch 0007. Upstream b10828 and the pre-patch tree are unchanged; the
+post-patch identity above matches the build-consumed VENDORING.md.
