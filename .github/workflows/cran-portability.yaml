@@ -208,7 +208,9 @@ jobs:
       - name: Install isolated-R build prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends gfortran libreadline-dev libpcre2-dev libcurl4-openssl-dev libbz2-dev liblzma-dev libdeflate-dev libzstd-dev zlib1g-dev texinfo cmake
+          sudo apt-get install -y --no-install-recommends gfortran libreadline-dev libpcre2-dev libcurl4-openssl-dev libbz2-dev liblzma-dev libdeflate-dev libzstd-dev zlib1g-dev texinfo cmake curl
+      - name: Pinned prerequisite download controls (no network)
+        run: python tests/cran/test-nonshared-downloads.py
       - name: Actual non-shared R and production installation (no models)
         run: python tests/cran/nonshared-r.py "$RUNNER_TEMP/nonshared-r"
       - name: Retain non-shared R installation results
