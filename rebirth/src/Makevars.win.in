@@ -7,7 +7,7 @@ STATLIB = $(LIBDIR)/librelm.a
 # @LLAMA_LIBS@ (from tools/config.R) carries the vendored llama.cpp/ggml static
 # archives + their system libs. Windows CPU acceptance is a separate WP15 gate;
 # the optional CUDA feature remains restricted to Linux x86_64.
-PKG_LIBS = -L$(LIBDIR) -lrelm @LLAMA_LIBS@ -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
+PKG_LIBS = -L$(LIBDIR) -lrelm @R_STATE_LIB@ @LLAMA_LIBS@ -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
 
 # R would otherwise auto-glob src/*.{c,cc,cpp,...} into OBJECTS, and the vendored
 # `src/llama.cpp/` DIRECTORY matches the *.cpp pattern -- R then tries to compile

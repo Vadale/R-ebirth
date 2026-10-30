@@ -2,7 +2,7 @@
 
 The WP16 compatibility baseline is extended by the approved D055 capability
 in relm 0.6.0, published on r-universe on 2026-10-23.
-CRAN submission is pending. This policy does not announce a 1.0 release.
+CRAN published 0.5.0 on 2026-10-29. This policy does not announce a 1.0 release.
 
 ## What is stable
 

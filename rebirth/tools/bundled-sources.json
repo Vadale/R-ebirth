@@ -1,11 +1,11 @@
 {
   "bundles": {
     "src/llama-sources.tar.xz": {
-      "bytes": 2001304,
+      "bytes": 2001976,
       "files": {
         "llama.cpp/CMakeLists.txt": "2904ff5f58eecf40ccfee5e18f2c9f01d23d5fc149efd005e260ba278d1193f6",
         "llama.cpp/LICENSE": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
-        "llama.cpp/VENDORING.md": "80c0dc93ccbe33fd02d68cf5c40edbfed365e5e827bc3c4a2499a7a38f3723df",
+        "llama.cpp/VENDORING.md": "05d93074ae0f1dff46dbb7b475270a2f68360b26baa1571ad8b75293b19d1be9",
         "llama.cpp/cmake/arm64-apple-clang.cmake": "80d01144241c7a45d1c35461aab1256364f8c7e714c3401a8097a567a8179e03",
         "llama.cpp/cmake/arm64-linux-clang.cmake": "feb7bd04443531e2287638c23a8d1873203d72a2da95e03f9c28433b27e24bd1",
         "llama.cpp/cmake/arm64-windows-llvm.cmake": "f0a603529ab01d7f87b9774f6ac6a6998ec660cb975927859917034e1a8f6319",
@@ -456,7 +456,7 @@
         "llama.cpp/ggml/src/ggml-version.h.in": "2b6f26259bfc6768229c90b127fee770f60271e74f4513d7abecb5900fa0b112",
         "llama.cpp/ggml/src/ggml.c": "0a4c36c14a1ba15559d6a21f570bfabb478eb05058c45c97a84ce7108f3c6841",
         "llama.cpp/ggml/src/ggml.cpp": "64e6b5c8d716ae8697e45481a7153540be01f721be2dc7e753aa47b36a69c753",
-        "llama.cpp/ggml/src/gguf.cpp": "615894b49182f94d711280d570a215860e1247ecc05d4289c9382295170b53bc",
+        "llama.cpp/ggml/src/gguf.cpp": "2f6bdc832d5680a93c5fee7b49c33d4afc6660680470aaeb144c41cfb19edb81",
         "llama.cpp/include/llama-cpp.h": "c48fd31095d2403a3bf7cbe98333ba0e61a398ee6e83b56f9d8b7237143b9877",
         "llama.cpp/include/llama.h": "204a489e7aa80831a41f1458fd39d1f4c626a3d75e5e11283b73ad92e3b6011e",
         "llama.cpp/patches/0001-rebirth-wp5-ablation-intervene.diff": "9ee903a2208f0f80e6767fd7f1090205b2a67fafeb9c74b0c78d460a42595640",
@@ -464,7 +464,8 @@
         "llama.cpp/patches/0004-cpu-callback-signatures.diff": "06ee8732faff3a451c5b5b96ddcfa2cef917edfd34318bfb59a5acb069dc6c0a",
         "llama.cpp/patches/0005-compiler-diagnostics.diff": "5e636b033f2c93ec6d7da753222c54bd048b44971e9a352d9659f5cdbbec0c4a",
         "llama.cpp/patches/0006-model-loader-override-null.diff": "2743db69a91ae488c76a6e658a2988df2ee0a920fe39299864b41b5766d81cc4",
-        "llama.cpp/patches/README.md": "c93aac1f7c0c6481995bee29d9a929b3d569e74e3c597a235b18a4e68bb1e3bd",
+        "llama.cpp/patches/0007-gguf-cerrno.diff": "c06566b9eb3de044db9901cadcde46bffd3727263aaf1b9e43ab9a73fe842f43",
+        "llama.cpp/patches/README.md": "8c4b2af7df1ec44558cbcb386d5116b67b74cc4e1b2c27397587b0f17b6d14ea",
         "llama.cpp/patches/verify_vendored_tree.sh": "128550856847cfc483040e4c8f8db59d599f5d89b363fa8fcee850e08f7496de",
         "llama.cpp/src/CMakeLists.txt": "de67b437cfc5b45751e728a550510718a0477c0186e31ed3994d649e143f18f9",
         "llama.cpp/src/llama-adapter.cpp": "ab85827acea9b3e96451e74426b40076d5feb1e842bd2d63ef8dbdf311420f94",
@@ -771,7 +772,7 @@
         "llama.cpp/vendor/stb/CMakeLists.txt": "e3e1fe4e715be12d736f541f2c3029ab85a919339554ed9fa46e8c3c8e198b5d",
         "llama.cpp/vendor/stb/stb_image.h": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
       },
-      "sha256": "180a9f53fa84b1b1857fc9adacf96566eadeaf6202611a68a9b2996bae782d14"
+      "sha256": "9291d091441f32b8de768548c542672fb7515d3b9aa6ce9b240237a5dc1a3c48"
     },
     "src/rust/vendor.tar.xz": {
       "bytes": 3704260,

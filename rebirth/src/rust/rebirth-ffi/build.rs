@@ -1,5 +1,5 @@
 //! One R-hosted, header-based state accessor. No Rust build dependency.
-use std::{env, path::PathBuf, process::Command};
+use std::{env, fs, path::PathBuf, process::Command};
 fn r_command() -> Command {
     // R CMD check deliberately shadows bare R on PATH. Use the same R host
     // that started installation; standalone cargo builds may discover R on PATH.
@@ -101,6 +101,16 @@ fn main() {
         "R state accessor archive failed"
     );
     println!("cargo:rustc-link-search=native={}", out.display());
-    // Bundled into librelm.a, so the package/scratch DLL uses unchanged PKG_LIBS.
-    println!("cargo:rustc-link-lib=static=relm-r-state");
+    if env::var("CARGO_CFG_TARGET_OS").as_deref() == Ok("emscripten") {
+        // Preserve the existing Emscripten bundled-archive link contract.
+        println!("cargo:rustc-link-lib=static=relm-r-state");
+    } else {
+        // GCC slim-LTO members lose their GNU symbol index when bundled into
+        // Rust's staticlib. Keep R's CFLAGS intact and let its final linker
+        // consume the original archive (D-058). Cargo executables use OUT_DIR.
+        let profile = out.ancestors().nth(3).expect("Cargo profile directory");
+        fs::copy(&archive, profile.join("librelm-r-state.a"))
+            .expect("copy R state archive beside librelm.a");
+        println!("cargo:rustc-link-lib=static:-bundle=relm-r-state");
+    }
 }

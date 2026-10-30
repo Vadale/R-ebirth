@@ -1,3 +1,14 @@
+# relm 0.6.2
+
+## Installation fixes
+
+- Include the standard errno header explicitly in the bundled GGUF reader for
+  Clang 23 builds that do not expose it through other headers.
+- Link the R state helper archive directly in native package builds, preserving
+  GCC slim-LTO symbols. R compiler, optimization and sanitizer flags remain
+  unchanged. This fixes the missing helper symbol reported during CRAN's
+  GCC-ASAN installation; numerical behavior and public APIs are unchanged.
+
 # relm 0.6.1
 
 ## Security tooling

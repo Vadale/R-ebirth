@@ -12,13 +12,68 @@ import subprocess
 import sys
 import tarfile
 import time
-import urllib.request
-import urllib.error
 
 
 def sha(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def download_input(name, base, digest, out, attempts):
+    """Fetch identical pinned bytes from at most two CRAN HTTPS endpoints.
+
+    Each request has a 10s connection / 45s total limit and no curl retries.
+    Only nanoarrow's existing 404 archive fallback adds a request on a host.
+    Hash or certificate failures stop immediately; mirrors never bypass them.
+    """
+    destination = out / name
+    partial = out / (name + ".part")
+    if destination.exists() or partial.exists():
+        raise FileExistsError("Refusing to overwrite an existing input: " + name)
+    relative = base.removeprefix("https://cran.r-project.org")
+    if relative == base or relative not in ("/src/base/R-4/", "/src/contrib/"):
+        raise ValueError("Expected the pinned CRAN source path")
+    for host in ("https://cloud.r-project.org", "https://cran.r-project.org"):
+        urls = [host + relative + name]
+        if name.startswith("nanoarrow_"):
+            urls.append(host + relative + "Archive/nanoarrow/" + name)
+        for url in urls:
+            print("Fetching pinned input " + name + " from " + url, flush=True)
+            command = ["curl", "--disable", "--fail", "--show-error", "--silent",
+                       "--location", "--max-redirs", "3", "--proto", "=https",
+                       "--proto-redir", "=https", "--connect-timeout", "10",
+                       "--max-time", "45", "--retry", "0", "--output", str(partial),
+                       "--write-out", "%{http_code}", url]
+            started = time.monotonic()
+            try:
+                result = subprocess.run(command, capture_output=True, text=True, timeout=50)
+                code, http, error = result.returncode, result.stdout.strip(), result.stderr
+            except subprocess.TimeoutExpired:
+                code, http, error = 28, "000", "curl exceeded its 50-second process deadline"
+            record = dict(input=name, url=url, returncode=code, http_status=http,
+                          seconds=time.monotonic() - started, diagnostic=error)
+            attempts.append(record)
+            try:
+                if code == 0:
+                    record["sha256"] = sha(partial)
+                    if record["sha256"] != digest:
+                        record["outcome"] = "hash_mismatch"
+                        raise ValueError("Pinned SHA-256 mismatch: " + name)
+                    partial.replace(destination)
+                    record["outcome"] = "verified"
+                    return
+                record["outcome"] = "request_failed"
+                if code == 22 and http == "404":
+                    continue  # Archive on this host, or the next fixed mirror.
+                transient = code in (5, 6, 7, 18, 28, 52, 55, 56)
+                transient |= code == 22 and (http in ("408", "429") or http.startswith("5"))
+                if transient:
+                    break  # One request per host for transport/service failures.
+                raise RuntimeError("Non-recoverable input download failure: " + url + "\n" + error)
+            finally:
+                partial.unlink(missing_ok=True)
+                (out / "download-attempts.json").write_text(json.dumps(attempts, indent=2) + "\n")
+    raise RuntimeError("Both CRAN endpoints failed for pinned input: " + name)
 
 
 def main():
@@ -55,16 +110,9 @@ def main():
         ("nanoarrow_0.9.0.tar.gz", "https://cran.r-project.org/src/contrib/",
          "c3b6bff407f0bd57f74991ca88460723e1aacc06747ff6f1eff2fc07a6771a55"),
     ]
+    download_attempts = []
     for name, base, digest in inputs:
-        try:
-            response = urllib.request.urlopen(base + name, timeout=90)
-        except urllib.error.HTTPError as error:
-            if error.code != 404 or not name.startswith("nanoarrow_"):
-                raise
-            response = urllib.request.urlopen(base + "Archive/nanoarrow/" + name, timeout=90)
-        with response, (out / name).open("wb") as stream:
-            shutil.copyfileobj(response, stream)
-        assert sha(out / name) == digest, name
+        download_input(name, base, digest, out, download_attempts)
     (out / "downloads.json").write_text(json.dumps(inputs, indent=2) + "\n")
     with tarfile.open(out / "R-4.6.1.tar.gz") as archive:
         archive.extractall(out, filter="data")

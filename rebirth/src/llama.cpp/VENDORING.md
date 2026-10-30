@@ -17,7 +17,7 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz` |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
 | Pruned tree SHA256 (pre-patch) | `e89c0d0b00b6d31cccf55ff5463a06455617341c15b966d5daeda89fb03b27b5` |
-| Pruned tree SHA256 (post-patch) | `07b8a13db5c250360466facdcacb1331e284ba5d4a4d0e04b6a64c99ad0ecd7b` |
+| Pruned tree SHA256 (post-patch) | `1d435a2bd6f66b50775f6307a3196dbc3b0c6dd31892f5a1db936f4a620e6292` |
 
 D-032 advances b9726 to b10828 (commit
 `3ad1ba7336986d98592d3e28cafd1a406715351f`) for native Spark 2.5 support.
@@ -82,6 +82,10 @@ change is involved. The original full translation unit reproduces the diagnostic
 the corrected unit links clean with the warning promoted to error. Eight actual
 template cases compare original/corrected values and logs, without a model load.
 The previous post-patch digest was `49f780edda8a7da6bfb3f49af162dc1a57848aa91e4ee96ba75fc8372b724dfc`.
+
+D-058 adds `0007-gguf-cerrno.diff`: the direct `<cerrno>` include required by
+`gguf.cpp`'s existing errno diagnostic on Fedora Clang 23. No parsing, kernel,
+flag, engine version, upstream archive or pre-patch identity changes.
 
 The patches touch engine sources only; all CMake inputs are pristine upstream.
 D-039, D-040 and the D-048 diagnostic cleanup change only the post-patch digest; the b10828 upstream and pre-patch

@@ -1,0 +1,8 @@
+diff --git a/ggml/src/gguf.cpp b/ggml/src/gguf.cpp
+--- a/ggml/src/gguf.cpp
++++ b/ggml/src/gguf.cpp
+@@ -6,3 +6,4 @@
++#include <cerrno>
+ #include <cinttypes>
+ #include <cstddef>
+ #include <cstdint>

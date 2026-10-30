@@ -30,6 +30,8 @@ unpatched build: the `intervene->apply_to` no-op emits no graph node. The
 existing synthetic goldens must pass unchanged on every bump. Patch 0002 is
 retired under D-032 because b10828 provides the library-only mtmd build upstream.
 
+| `0007-gguf-cerrno.diff` | Direct `<cerrno>` include for the existing file-open error diagnostic | D-058 |
+
 ## Integrity
 
 `verify_vendored_tree.sh` asserts, and CI runs (the `vendored-tree` job):

@@ -88,6 +88,11 @@ cfg <- if (is_debug) "debug" else "release"
 # there may be use cases later where this can be adapted or expanded
 .target <- ifelse(is_wasm, paste0("--target=", webr_target), "")
 
+# The R-compiled state archive stays separate from Rust for GCC slim LTO.
+# Search librelm again for the C finalizer's Rust callback (static archive cycle).
+# Emscripten retains its existing bundled archive contract.
+.r_state_lib <- if (is_wasm) "" else "-lrelm-r-state -lrelm"
+
 # add panic exports only for WASM builds
 .panic_exports <- ifelse(
   is_wasm,
@@ -192,6 +197,7 @@ new_txt <- gsub("@CRAN_FLAGS@", .cran_flags, mv_txt) |>
   gsub("@LIBDIR@", .libdir, x = _) |>
   gsub("@TARGET@", .target, x = _) |>
   gsub("@WINDOWS_TARGET@", .windows_target, x = _, fixed = TRUE) |>
+  gsub("@R_STATE_LIB@", .r_state_lib, x = _, fixed = TRUE) |>
   gsub("@LLAMA_LIBS@", .llama_libs, x = _) |>
   gsub("@PANIC_EXPORTS@", .panic_exports, x = _)
 

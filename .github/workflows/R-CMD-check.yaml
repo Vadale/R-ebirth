@@ -141,6 +141,18 @@ jobs:
           python3 tests/cran/test_extendr_patch.py
           Rscript --vanilla tests/cran/configuration.R
 
+      - name: Native R state archive with GCC sanitizer and slim LTO (no engine or models)
+        if: steps.scope.outputs.full_checks != 'false' && matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release'
+        run: python3 tests/cran/native-state-link.py --output "${{ runner.temp }}/native-state-link"
+
+      - name: Retain native state link regression evidence
+        if: always() && steps.scope.outputs.full_checks != 'false' && matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release'
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-state-link
+          path: ${{ runner.temp }}/native-state-link
+          if-no-files-found: error
+
       - name: Actual extendr lookup and unwind controls (no engine or models)
         if: steps.scope.outputs.full_checks != 'false'
         run: Rscript --vanilla tests/cran/extendr-lookup/run.R "${{ runner.temp }}/extendr-lookup"
@@ -308,13 +320,21 @@ jobs:
 
       # Reuse this job's installed package. No duplicate native install, large
       # model download or change to package dependencies for the docs renderer.
+      # pkgdown's graphics dependencies are maintainer tools, not relm Imports.
+      - name: Documentation system libraries (Linux release only)
+        if: matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release' && steps.scope.outputs.full_checks != 'false'
+        timeout-minutes: 10
+        run: |
+          sudo apt-get install -y --no-install-recommends pkg-config libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev libpng-dev libtiff-dev libjpeg-dev libwebp-dev
+          pkg-config --exists fontconfig freetype2 harfbuzz fribidi libpng libtiff-4 libjpeg libwebp libwebpmux
+
       - name: Standalone agent examples and complete pkgdown site
         if: matrix.config.os == 'ubuntu-24.04' && matrix.config.r == 'release' && steps.scope.outputs.full_checks != 'false'
         shell: bash
         run: |
           mkdir -p "$RUNNER_TEMP/docs-library"
-          Rscript --vanilla -e 'install.packages("pkgdown", lib = file.path(Sys.getenv("RUNNER_TEMP"), "docs-library"), repos = "https://cloud.r-project.org", Ncpus = 2L)'
           export R_LIBS="$RUNNER_TEMP/docs-library${R_LIBS:+:$R_LIBS}"
+          Rscript --vanilla -e 'install.packages("pkgdown", lib = file.path(Sys.getenv("RUNNER_TEMP"), "docs-library"), repos = "https://cloud.r-project.org", Ncpus = 2L); stopifnot(requireNamespace("pkgdown", quietly = TRUE))'
           Rscript --vanilla tests/docs/examples.R rebirth/check/relm.Rcheck "$RUNNER_TEMP/agent-examples"
           Rscript --vanilla tools/docs/build.R rebirth/check/relm.Rcheck "$RUNNER_TEMP/relm-docs"
           python3 tests/docs/check.py "$RUNNER_TEMP/relm-docs/site"
