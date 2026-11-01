@@ -2187,3 +2187,38 @@ model/native/phase-review evidence without replay or new support claims.
 - **Release boundary:** the prepared CRAN 0.6.2 archive remains immutable. This
   maintenance branch does not authorize merge, upload, retagging or replacement
   of that archive. The founder receives the candidate's actual checks and limits.
+
+
+### D-059 release inclusion amendment — 2026-11-01
+
+The founder subsequently authorized inclusion in the unsubmitted 0.6.2, merge
+when all actual required checks pass, and preparation of complete CRAN materials.
+Align NEWS before accepting the final candidate archive. Preserve the earlier
+prepared archive and dossier; the final checked production archive is a separate
+artifact with its own source identity and checks. CRAN upload/email, a new tag
+and GitHub release remain separate decisions. The Metal execution limit above
+remains explicit; unchanged local/model evidence need not be replayed.
+
+## D-060 — Exact CSV serialization checks on R without long double
+
+- **Date:** 2026-11-01. **Authorization:** founder requested correction of CRAN's
+  noLD CSV failure without breaking existing behavior or weakening tests.
+- **Cause:** the published 0.5.0 report differs by one ULP when reading the
+  17-digit decimal for 1/3. The exact R r90794 `R_strtod5` function reproduces
+  the reported value with `LDOUBLE=double`, while its long-double variant
+  reconstructs the original value. The serializer emits the correct decimal
+  in both cases; it is unchanged. This isolated parser evidence is not a full
+  recreation of CRAN's R/toolchain environment.
+- **Decision:** retain all six elapsed inputs, including 1/3, and assert their
+  exact serialized strings against independent literal 17-digit expectations.
+  Keep strict whole-data-frame equality and column types, with numeric elapsed
+  expectations parsed by R from those literals. This separates writer precision
+  from the host reader's rounding. All quoting, Unicode, NA, newline, CRLF and
+  locale-option assertions remain. The test reader defaults to its old numeric
+  behavior and optionally exposes the elapsed field as text for the wire check.
+- **Acceptance:** the original focused case passes with the native reader and
+  fails with the exact isolated noLD parser. The corrected case must pass both;
+  lowering actual writer precision to 15 digits must fail the exact decimal
+  oracle, and restoring it must pass. Ordinary candidate CI still runs the real
+  testthat case in all six R package checks. No tolerance, skip, golden,
+  production writer, public API, runtime arithmetic or dependency changes.

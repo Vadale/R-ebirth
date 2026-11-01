@@ -27,5 +27,7 @@ this control; failure cannot become a skipped success.
 regression, alongside existing numerical/security/resource coverage. macOS R CI
 compiles the Metal backend; shader compilation is not GPU execution evidence.
 
-The prepared CRAN 0.6.2 tarball is separate and immutable. This branch is an
-unreleased candidate, not a replacement archive, submission or release.
+The founder authorized these corrections for the unsubmitted 0.6.2 candidate.
+The previously prepared archive remains immutable; final preparation must use a
+separate production archive checked from the complete accepted source. Passing
+checks authorize the requested merge, not CRAN upload or a tag/release.

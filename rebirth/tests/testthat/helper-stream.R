@@ -36,10 +36,10 @@ stream_test_wait <- function(result, timeout = 10) {
   invisible(result)
 }
 
-stream_test_read <- function(path) read.csv(path, fileEncoding = "UTF-8",
+stream_test_read <- function(path, elapsed_type = "numeric") read.csv(path, fileEncoding = "UTF-8",
   check.names = FALSE, na.strings = character(),
   colClasses = c("integer", "character", "integer", "integer", "integer",
-    "character", "numeric", "character", "logical"))
+    "character", elapsed_type, "character", "logical"))
 
 stream_test_batch <- function() data.frame(
   event_id = 1:3, event = c("token", "text", "prompt_end"),

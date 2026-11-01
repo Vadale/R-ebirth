@@ -128,7 +128,16 @@ test_that("CSV preserves quoting newlines Unicode literal NA and typed missing f
   writeBin(bytes, con)
   flush(con)
   observed <- stream_test_read(path)
-  expect_identical(observed, batch)
+  # Independent decimal oracle: require the writer's full 17-digit precision.
+  # R without long double may parse 1/3 one ULP below the original binary value;
+  # check its numeric interpretation separately from the exact serialized text.
+  expected_elapsed <- c("0", "0.10000000000000001", "0.33333333333333331",
+    "0.12345678901234566", "12345.987654320999", "1000000")
+  expect_identical(stream_test_read(path, elapsed_type = "character")$elapsed,
+    expected_elapsed)
+  expected <- batch
+  expected$elapsed <- as.numeric(expected_elapsed)
+  expect_identical(observed, expected)
   expect_true(grepl('"NA,""double""\nline\n雪é"', rawToChar(bytes), fixed = TRUE))
   expect_true(grepl(',FALSE\n', rawToChar(bytes), fixed = TRUE))
   expect_false(grepl(',NA,', rawToChar(bytes), fixed = TRUE))
