@@ -2222,3 +2222,27 @@ remains explicit; unchanged local/model evidence need not be replayed.
   oracle, and restoring it must pass. Ordinary candidate CI still runs the real
   testthat case in all six R package checks. No tolerance, skip, golden,
   production writer, public API, runtime arithmetic or dependency changes.
+
+
+### D-060 input-construction amendment — 2026-11-01
+
+Actual candidate macOS checks exposed another parser boundary: the decimal
+source literal `0.12345678901234567` itself produces adjacent binary64 values
+before the writer runs. The initial isolated noLD harness covered reading but
+used native host parsing for these input literals, so its scope was incomplete.
+The founder authorized the targeted correction after receiving that failure.
+
+Construct noninteger precision inputs with exact normal hexadecimal constants
+(explicit power-of-two exponent, at most 13 fractional hex digits). Retain the
+six original cases, including `1 / 3`, and append the adjacent fourth-input
+binary value as a seventh case with its own independent exact decimal oracle.
+The original text/flag rows and all strict CSV assertions remain. Production
+serialization, precision, numerical tolerances and public APIs do not change.
+
+The focused diagnostic must parse the actual input source tokens through the
+selected converter before evaluation, as well as cover CSV reading. It must
+reproduce the current Mac failure, accept both fixed input variants, refuse
+15-digit writer output and a one-bit input perturbation without changing the
+oracle, then pass after restoration. Independent rational-to-decimal rounding
+checks the literal wire expectations. This isolated converter evidence still
+requires actual candidate macOS and all other current platform CI before merge.
