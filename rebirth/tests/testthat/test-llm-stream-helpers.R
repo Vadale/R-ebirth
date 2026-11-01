@@ -115,12 +115,15 @@ test_that("CSV preserves quoting newlines Unicode literal NA and typed missing f
   con <- file(path, "wb")
   on.exit({ close(con); unlink(path) }, add = TRUE)
   batch <- stream_test_batch()
-  batch <- batch[rep(1:3, 2), ]
+  batch <- batch[rep(1:3, length.out = 7L), ]
   rownames(batch) <- NULL
   batch$event_id <- seq_len(nrow(batch))
-  batch$text <- c("", 'NA,"double"\nline\n雪é', "", "", "NA", "")
-  batch$validated <- c(NA, NA, NA, FALSE, FALSE, TRUE)
-  batch$elapsed <- c(0, 0.1, 1 / 3, 0.12345678901234567, 12345.987654321, 1000000)
+  batch$text <- c("", 'NA,"double"\nline\n雪é', "", "", "NA", "", "")
+  batch$validated <- c(NA, NA, NA, FALSE, FALSE, TRUE, NA)
+  # Exact binary inputs avoid platform-dependent parsing of decimal literals.
+  # Retain both adjacent values produced by parsing 0.12345678901234567.
+  batch$elapsed <- c(0, 0x1.999999999999ap-4, 1 / 3, 0x1.f9add3746f65ep-4,
+    0x1.81cfe6b74f039p+13, 1000000, 0x1.f9add3746f65fp-4)
   old <- options(OutDec = ",", digits = 2, scipen = 999)
   on.exit(options(old), add = TRUE)
   writeBin(relm:::stream_csv_bytes(), con)
@@ -128,7 +131,16 @@ test_that("CSV preserves quoting newlines Unicode literal NA and typed missing f
   writeBin(bytes, con)
   flush(con)
   observed <- stream_test_read(path)
-  expect_identical(observed, batch)
+  # Independent decimal oracle: require the writer's full 17-digit precision.
+  # R without long double may parse 1/3 one ULP below the original binary value;
+  # check its numeric interpretation separately from the exact serialized text.
+  expected_elapsed <- c("0", "0.10000000000000001", "0.33333333333333331",
+    "0.12345678901234566", "12345.987654320999", "1000000", "0.12345678901234568")
+  expect_identical(stream_test_read(path, elapsed_type = "character")$elapsed,
+    expected_elapsed)
+  expected <- batch
+  expected$elapsed <- as.numeric(expected_elapsed)
+  expect_identical(observed, expected)
   expect_true(grepl('"NA,""double""\nline\n雪é"', rawToChar(bytes), fixed = TRUE))
   expect_true(grepl(',FALSE\n', rawToChar(bytes), fixed = TRUE))
   expect_false(grepl(',NA,', rawToChar(bytes), fixed = TRUE))

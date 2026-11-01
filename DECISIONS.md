@@ -2162,3 +2162,87 @@ model/native/phase-review evidence without replay or new support claims.
   equivalence and CRAN acceptance are not inferred from local tests.
 - **Rejected:** disabling LTO/sanitizers, forcing fat LTO objects, engine upgrade,
   replacing released archives, or rerunning accepted model evaluations.
+
+
+## D-059 — Bounded engine corrections from the November maintenance review
+
+- **Date:** 2026-11-01. **Status:** implementation authorized by the founder's
+  request to verify the three reported upstream cases and fix applicable defects.
+- **Decision:** retain b10828 and backport only the three affected mechanisms in
+  patch 0008: iterative grammar candidate filtering, whole M-RoPE merge tiles and
+  wider integer offsets/token indices in Metal. No dependency, public signature,
+  schema limit, precision, model, golden or release decision changes.
+- **Evidence:** source-derived native units reproduce stack exhaustion with a
+  2048-scalar JSON string represented by one long token, an out-of-bounds image
+  write for merge factor 1, and token-index truncation at 32768. Normal images
+  are pre-aligned; GLM's configurable merger still makes a hardcoded 2 x 2 loop
+  inconsistent. Embedding/trace contexts can exceed 32767 tokens, unlike ordinary
+  chunked prompt ingestion. These are bounded mechanism proofs, not reproduced
+  failures on every supported model or an actual Metal GPU test.
+- **Acceptance:** source-derived ASan/UBSan regressions on Linux/native Mac;
+  actual compiled-schema native candidate regression; existing R-free numerical,
+  security and resource tests; vendor digest/reverse-patch/source-bundle checks;
+  full required candidate CI. Real Metal large-token execution remains explicitly
+  unverified until a suitable Mac runs it. No gate is weakened or golden rebuilt.
+- **Release boundary:** the prepared CRAN 0.6.2 archive remains immutable. This
+  maintenance branch does not authorize merge, upload, retagging or replacement
+  of that archive. The founder receives the candidate's actual checks and limits.
+
+
+### D-059 release inclusion amendment — 2026-11-01
+
+The founder subsequently authorized inclusion in the unsubmitted 0.6.2, merge
+when all actual required checks pass, and preparation of complete CRAN materials.
+Align NEWS before accepting the final candidate archive. Preserve the earlier
+prepared archive and dossier; the final checked production archive is a separate
+artifact with its own source identity and checks. CRAN upload/email, a new tag
+and GitHub release remain separate decisions. The Metal execution limit above
+remains explicit; unchanged local/model evidence need not be replayed.
+
+## D-060 — Exact CSV serialization checks on R without long double
+
+- **Date:** 2026-11-01. **Authorization:** founder requested correction of CRAN's
+  noLD CSV failure without breaking existing behavior or weakening tests.
+- **Cause:** the published 0.5.0 report differs by one ULP when reading the
+  17-digit decimal for 1/3. The exact R r90794 `R_strtod5` function reproduces
+  the reported value with `LDOUBLE=double`, while its long-double variant
+  reconstructs the original value. The serializer emits the correct decimal
+  in both cases; it is unchanged. This isolated parser evidence is not a full
+  recreation of CRAN's R/toolchain environment.
+- **Decision:** retain all six elapsed inputs, including 1/3, and assert their
+  exact serialized strings against independent literal 17-digit expectations.
+  Keep strict whole-data-frame equality and column types, with numeric elapsed
+  expectations parsed by R from those literals. This separates writer precision
+  from the host reader's rounding. All quoting, Unicode, NA, newline, CRLF and
+  locale-option assertions remain. The test reader defaults to its old numeric
+  behavior and optionally exposes the elapsed field as text for the wire check.
+- **Acceptance:** the original focused case passes with the native reader and
+  fails with the exact isolated noLD parser. The corrected case must pass both;
+  lowering actual writer precision to 15 digits must fail the exact decimal
+  oracle, and restoring it must pass. Ordinary candidate CI still runs the real
+  testthat case in all six R package checks. No tolerance, skip, golden,
+  production writer, public API, runtime arithmetic or dependency changes.
+
+
+### D-060 input-construction amendment — 2026-11-01
+
+Actual candidate macOS checks exposed another parser boundary: the decimal
+source literal `0.12345678901234567` itself produces adjacent binary64 values
+before the writer runs. The initial isolated noLD harness covered reading but
+used native host parsing for these input literals, so its scope was incomplete.
+The founder authorized the targeted correction after receiving that failure.
+
+Construct noninteger precision inputs with exact normal hexadecimal constants
+(explicit power-of-two exponent, at most 13 fractional hex digits). Retain the
+six original cases, including `1 / 3`, and append the adjacent fourth-input
+binary value as a seventh case with its own independent exact decimal oracle.
+The original text/flag rows and all strict CSV assertions remain. Production
+serialization, precision, numerical tolerances and public APIs do not change.
+
+The focused diagnostic must parse the actual input source tokens through the
+selected converter before evaluation, as well as cover CSV reading. It must
+reproduce the current Mac failure, accept both fixed input variants, refuse
+15-digit writer output and a one-bit input perturbation without changing the
+oracle, then pass after restoration. Independent rational-to-decimal rounding
+checks the literal wire expectations. This isolated converter evidence still
+requires actual candidate macOS and all other current platform CI before merge.

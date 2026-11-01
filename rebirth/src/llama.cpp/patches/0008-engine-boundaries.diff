@@ -1,0 +1,368 @@
+# D-059: bounded engine safety backports at the unchanged b10828 pin.
+# Founder authorized verification and necessary corrections on 2026-11-01.
+# Upstream: ggml-org/llama.cpp PR31153 (candidate recursion only), PR31336
+# (M-RoPE loops/alignment only), PR30072 (Metal scalar index widths).
+# No common/server code, parser-depth policy, model version or numerical kernel
+# algorithm is imported. Regression scope: tests/engine-boundaries and the
+# actual-schema native candidate test. Real Metal execution remains separate.
+
+diff --git a/ggml/src/ggml-metal/kernels/mul_mm.metal b/ggml/src/ggml-metal/kernels/mul_mm.metal
+index ee848ee..627a616 100644
+--- a/ggml/src/ggml-metal/kernels/mul_mm.metal
++++ b/ggml/src/ggml-metal/kernels/mul_mm.metal
+@@ -318,10 +318,10 @@ kernel void kernel_mul_mm(
+         // if no bounds checks on the output are needed, we can directly write to device memory
+         device float * C = (device float *) dst +
+             (r0 + 32*(sgitg &  1)) + \
+-            (r1 + 16*(sgitg >> 1)) * args.ne0 + im*args.ne1*args.ne0;
++            (uint64_t) (r1 + 16*(sgitg >> 1))*args.ne0 + (uint64_t) im*args.ne1*args.ne0;
+
+         for (short i = 0; i < 8; i++) {
+-            simdgroup_store(mc[i], C + 8*(i%4) + 8*args.ne0*(i/4), args.ne0, 0, false);
++            simdgroup_store(mc[i], C + 8*(i%4) + (uint64_t) 8*args.ne0*(i/4), args.ne0, 0, false);
+         }
+     } else {
+         // block is smaller than 64x32, we should avoid writing data outside of the matrix
+@@ -337,7 +337,7 @@ kernel void kernel_mul_mm(
+
+         if (sgitg == 0) {
+             for (int j = tiitg; j < nr1; j += NR1) {
+-                device float  * D  = (device float  *) dst + r0 + (r1 + j)*args.ne0 + im*args.ne1*args.ne0;
++                device float  * D  = (device float  *) dst + r0 + (uint64_t) (r1 + j)*args.ne0 + (uint64_t) im*args.ne1*args.ne0;
+                 device float4 * D4 = (device float4 *) D;
+
+                 threadgroup float  * C  = temp_str + (j*NR0);
+@@ -480,7 +480,7 @@ kernel void kernel_mul_mm_id(
+     const int id = ids_i32[im*args.ne21 + r1 + lr1];
+
+     const short i11 = (id % args.ne20) % args.ne11;
+-    const short i12 = (id / args.ne20);
++    const int   i12 = (id / args.ne20);
+     const short i13 = 0;
+
+     const uint64_t offset0 = im*args.nb02 + i13*args.nb03;
+@@ -710,9 +710,9 @@ kernel void kernel_mul_mm_id(
+         const int id = ids_i32[im*args.ne21 + r1 + j];
+
+         const short ide = id % args.ne20;
+-        const short idt = id / args.ne20;
++        const int   idt = id / args.ne20;
+
+-        device float  * D  = (device float  *) dst + r0 + ide*args.ne0 + idt*args.ne1*args.ne0;
++        device float  * D  = (device float  *) dst + r0 + (uint64_t) ide*args.ne0 + (uint64_t) idt*args.ne1*args.ne0;
+         device float4 * D4 = (device float4 *) D;
+
+         threadgroup float  * C  = (threadgroup float  *) shmem + j*NR0;
+diff --git a/src/llama-grammar.cpp b/src/llama-grammar.cpp
+index 6aa03c7..c54b78b 100644
+--- a/src/llama-grammar.cpp
++++ b/src/llama-grammar.cpp
+@@ -8,6 +8,7 @@
+ #include <algorithm>
+ #include <cstdint>
+ #include <set>
++#include <numeric>
+ #include <stdexcept>
+
+ #define MAX_REPETITION_THRESHOLD 2000
+@@ -936,25 +937,6 @@ static void llama_grammar_advance_stack(
+     }
+ }
+
+-static llama_grammar_candidates llama_grammar_reject_candidates(
+-        const llama_grammar_rules      & rules,
+-        const llama_grammar_stacks     & stacks,
+-        const llama_grammar_candidates & candidates) {
+-    GGML_ASSERT(!stacks.empty()); // REVIEW
+-
+-    if (candidates.empty()) {
+-        return {};
+-    }
+-
+-    auto rejects = llama_grammar_reject_candidates_for_stack(rules, stacks.front(), candidates);
+-
+-    for (size_t i = 1, size = stacks.size(); i < size; ++i) {
+-        rejects = llama_grammar_reject_candidates_for_stack(rules, stacks[i], rejects);
+-    }
+-
+-    return rejects;
+-}
+-
+ static bool llama_grammar_detect_left_recursion(
+         const llama_grammar_rules & rules,
+         size_t rule_index,
+@@ -1053,56 +1035,63 @@ void llama_grammar_accept(struct llama_grammar * grammar, uint32_t chr) {
+     grammar->stacks = std::move(stacks_new);
+ }
+
+-llama_grammar_candidates llama_grammar_reject_candidates_for_stack(
++// checks the code point at depth of each candidate (an index into the input) against the stack
++// returns true when some match: they go to next, and the stacks that follow to next_stacks
++static bool llama_grammar_reject_step(
+         const llama_grammar_rules      & rules,
+         const llama_grammar_stack      & stack,
+-        const llama_grammar_candidates & candidates) {
+-
+-    llama_grammar_candidates rejects;
+-    rejects.reserve(candidates.size());
++        const llama_grammar_candidates & candidates,
++        size_t                           depth,
++        const std::vector<uint32_t>    & cur,
++              std::vector<uint32_t>    & rejects,
++              std::vector<uint32_t>    & next,
++              llama_grammar_stacks     & next_stacks) {
++    rejects.reserve(cur.size());
+
+     if (stack.empty()) {
+-        for (const auto & tok : candidates) {
+-            if (*tok.code_points != 0 || tok.partial_utf8.n_remain != 0) {
+-                rejects.push_back(tok);
++        for (const uint32_t i : cur) {
++            const auto & tok = candidates[i];
++            if (tok.code_points[depth] != 0 || tok.partial_utf8.n_remain != 0) {
++                rejects.push_back(i);
+             }
+         }
+-        return rejects;
++        return false;
+     }
+
+     const llama_grammar_element * stack_pos = stack.back();
+
+     // if the top of the stack is a token rule, then we only need to check the token id
+     if (stack_pos->type == LLAMA_GRETYPE_TOKEN || stack_pos->type == LLAMA_GRETYPE_TOKEN_NOT) {
+-        for (const auto & tok : candidates) {
+-            if (*tok.code_points == 0) {
++        for (const uint32_t i : cur) {
++            const auto & tok = candidates[i];
++            if (tok.code_points[depth] == 0) {
+                 // reached the end of a token consumed by char rules, reject iff it ended
+                 // in a partial response
+                 if (tok.partial_utf8.n_remain != 0) {
+-                    rejects.push_back(tok);
++                    rejects.push_back(i);
+                 }
+             } else if (!llama_grammar_match_token(stack_pos, tok.id)) {
+-                rejects.push_back(tok);
++                rejects.push_back(i);
+             }
+         }
+-        return rejects;
++        return false;
+     }
+
+-    llama_grammar_candidates next_candidates;
+-    next_candidates.reserve(candidates.size());
++    next.reserve(cur.size());
+
+-    for (const auto & tok : candidates) {
+-        if (*tok.code_points == 0) {
++    for (const uint32_t i : cur) {
++        const auto & tok = candidates[i];
++        if (tok.code_points[depth] == 0) {
+             // reached end of full codepoints in token, reject iff it ended in a partial sequence
+             // that cannot satisfy this position in grammar
+             if (tok.partial_utf8.n_remain != 0 &&
+                     !llama_grammar_match_partial_char(stack_pos, tok.partial_utf8)) {
+-                rejects.push_back(tok);
++                rejects.push_back(i);
+             }
+-        } else if (llama_grammar_match_char(stack_pos, *tok.code_points).first) {
+-            next_candidates.push_back({ tok.index, tok.code_points + 1, tok.partial_utf8, tok.id });
++        } else if (llama_grammar_match_char(stack_pos, tok.code_points[depth]).first) {
++            next.push_back(i);
+         } else {
+-            rejects.push_back(tok);
++            rejects.push_back(i);
+         }
+     }
+
+@@ -1113,17 +1102,80 @@ llama_grammar_candidates llama_grammar_reject_candidates_for_stack(
+     if (!llama_grammar_is_end_of_sequence(stack_pos_after)) {
+         stack_after.push_back(stack_pos_after);
+     }
+-    llama_grammar_stacks next_stacks;
+     llama_grammar_advance_stack(rules, stack_after, next_stacks);
+
+-    auto next_rejects = llama_grammar_reject_candidates(rules, next_stacks, next_candidates);
+-    for (const auto & tok : next_rejects) {
+-        rejects.push_back({ tok.index, tok.code_points - 1, tok.partial_utf8, tok.id });
++    return true;
++}
++
++// the candidates that no stack accepts, each stack narrows the rejects of the previous one
++// no recursion: a level per code point, a token from the GGUF can be long
++static llama_grammar_candidates llama_grammar_reject_candidates(
++        const llama_grammar_rules      & rules,
++        const llama_grammar_stacks     & stacks,
++        const llama_grammar_candidates & candidates) {
++    GGML_ASSERT(!stacks.empty()); // REVIEW
++
++    // a level checks the candidates that reach its code point against its stacks in turn
++    struct level {
++        llama_grammar_stacks  stacks;
++        size_t                i;       // the stack in progress
++        std::vector<uint32_t> cur;     // the candidates rejected by stacks[0, i)
++        std::vector<uint32_t> rejects; // the rejects of stacks[i] at this code point
++    };
++
++    std::vector<uint32_t> all(candidates.size());
++    std::iota(all.begin(), all.end(), 0u);
++
++    std::vector<level> levels;
++    levels.push_back({ stacks, 0, std::move(all), {} });
++
++    while (true) {
++        level & lv = levels.back();
++
++        if (lv.i == lv.stacks.size() || lv.cur.empty()) {
++            if (levels.size() == 1) {
++                break;
++            }
++            // the rejects at the next code point belong to stacks[i] of the parent level
++            level & parent = levels[levels.size() - 2];
++            parent.rejects.insert(parent.rejects.end(), lv.cur.begin(), lv.cur.end());
++            levels.pop_back();
++            parent.cur = std::move(parent.rejects);
++            parent.rejects = {};
++            parent.i++;
++            continue;
++        }
++
++        std::vector<uint32_t> rejects;
++        std::vector<uint32_t> next;
++        llama_grammar_stacks  next_stacks;
++
++        if (!llama_grammar_reject_step(rules, lv.stacks[lv.i], candidates, levels.size() - 1, lv.cur, rejects, next, next_stacks)) {
++            lv.cur = std::move(rejects);
++            lv.i++;
++            continue;
++        }
++
++        GGML_ASSERT(!next_stacks.empty());
++        lv.rejects = std::move(rejects);
++        levels.push_back({ std::move(next_stacks), 0, std::move(next), {} });
+     }
+
++    llama_grammar_candidates rejects;
++    rejects.reserve(levels[0].cur.size());
++    for (const uint32_t i : levels[0].cur) {
++        rejects.push_back(candidates[i]);
++    }
+     return rejects;
+ }
+
++llama_grammar_candidates llama_grammar_reject_candidates_for_stack(
++        const llama_grammar_rules      & rules,
++        const llama_grammar_stack      & stack,
++        const llama_grammar_candidates & candidates) {
++    return llama_grammar_reject_candidates(rules, llama_grammar_stacks{ stack }, candidates);
++}
++
+ ////////////////////
+
+ struct llama_grammar * llama_grammar_init_impl(
+diff --git a/tools/mtmd/clip.cpp b/tools/mtmd/clip.cpp
+index 74f4e2b..90c8c2b 100644
+--- a/tools/mtmd/clip.cpp
++++ b/tools/mtmd/clip.cpp
+@@ -4782,18 +4782,18 @@ bool clip_encode(struct clip_ctx * ctx, struct clip_encode_params * params) {
+         case PROJECTOR_TYPE_GLM4V:
+             {
+                 const int merge_ratio = hparams.n_merge;
+-                const int pw = image_size_width  / patch_size;
+-                const int ph = image_size_height / patch_size;
++                const int pw = image_size_width  / patch_size / merge_ratio;
++                const int ph = image_size_height / patch_size / merge_ratio;
+                 std::vector<int> positions(n_pos * 4);
+                 int ptr = 0;
+-                for (int y = 0; y < ph; y += merge_ratio) {
+-                    for (int x = 0; x < pw; x += merge_ratio) {
+-                        for (int dy = 0; dy < 2; dy++) {
+-                            for (int dx = 0; dx < 2; dx++) {
+-                                positions[                  ptr] = y + dy;
+-                                positions[    num_patches + ptr] = x + dx;
+-                                positions[2 * num_patches + ptr] = y + dy;
+-                                positions[3 * num_patches + ptr] = x + dx;
++                for (int ty = 0; ty < ph; ty++) {
++                    for (int tx = 0; tx < pw; tx++) {
++                        for (int dy = 0; dy < merge_ratio; dy++) {
++                            for (int dx = 0; dx < merge_ratio; dx++) {
++                                positions[                  ptr] = ty * merge_ratio + dy;
++                                positions[    num_patches + ptr] = tx * merge_ratio + dx;
++                                positions[2 * num_patches + ptr] = ty * merge_ratio + dy;
++                                positions[3 * num_patches + ptr] = tx * merge_ratio + dx;
+                                 ptr++;
+                             }
+                         }
+@@ -4817,19 +4817,19 @@ bool clip_encode(struct clip_ctx * ctx, struct clip_encode_params * params) {
+         case PROJECTOR_TYPE_PADDLEOCR:
+             {
+                 const int merge_ratio = hparams.n_merge;
+-                const int pw = image_size_width  / patch_size;
+-                const int ph = image_size_height / patch_size;
++                const int pw = image_size_width  / patch_size / merge_ratio;
++                const int ph = image_size_height / patch_size / merge_ratio;
+                 std::vector<int> positions(n_pos * 4);
+                 int ptr = 0;
+                 // NOTE: same as Qwen-VL, but x and y are swapped
+-                for (int y = 0; y < ph; y += merge_ratio) {
+-                    for (int dy = 0; dy < 2; dy++) {
+-                        for (int x = 0; x < pw; x += merge_ratio) {
+-                            for (int dx = 0; dx < 2; dx++) {
+-                                positions[                  ptr] = y + dy;
+-                                positions[    num_patches + ptr] = x + dx;
+-                                positions[2 * num_patches + ptr] = y + dy;
+-                                positions[3 * num_patches + ptr] = x + dx;
++                for (int ty = 0; ty < ph; ty++) {
++                    for (int dy = 0; dy < merge_ratio; dy++) {
++                        for (int tx = 0; tx < pw; tx++) {
++                            for (int dx = 0; dx < merge_ratio; dx++) {
++                                positions[                  ptr] = ty * merge_ratio + dy;
++                                positions[    num_patches + ptr] = tx * merge_ratio + dx;
++                                positions[2 * num_patches + ptr] = ty * merge_ratio + dy;
++                                positions[3 * num_patches + ptr] = tx * merge_ratio + dx;
+                                 ptr++;
+                             }
+                         }
+@@ -4947,17 +4947,17 @@ bool clip_encode(struct clip_ctx * ctx, struct clip_encode_params * params) {
+                 std::vector<int> positions(n_pos * 4);
+
+                 int ptr = 0;
+-                for (int y = 0; y < iph; y += merge_ratio) {
+-                    for (int x = 0; x < ipw; x += merge_ratio) {
+-                        for (int dy = 0; dy < 2; dy++) {
+-                            for (int dx = 0; dx < 2; dx++) {
++                for (int ty = 0; ty < ph; ty++) {
++                    for (int tx = 0; tx < pw; tx++) {
++                        for (int dy = 0; dy < merge_ratio; dy++) {
++                            for (int dx = 0; dx < merge_ratio; dx++) {
+                                 auto remap = idx[ptr / mpow];
+                                 remap = (remap * mpow) + (ptr % mpow);
+
+-                                positions[                  remap] = y + dy;
+-                                positions[    num_patches + remap] = x + dx;
+-                                positions[2 * num_patches + remap] = y + dy;
+-                                positions[3 * num_patches + remap] = x + dx;
++                                positions[                  remap] = ty * merge_ratio + dy;
++                                positions[    num_patches + remap] = tx * merge_ratio + dx;
++                                positions[2 * num_patches + remap] = ty * merge_ratio + dy;
++                                positions[3 * num_patches + remap] = tx * merge_ratio + dx;
+                                 ptr++;
+                             }
+                         }
+diff --git a/tools/mtmd/models/paddleocr.cpp b/tools/mtmd/models/paddleocr.cpp
+index 5d3a13f..0e6b3f4 100644
+--- a/tools/mtmd/models/paddleocr.cpp
++++ b/tools/mtmd/models/paddleocr.cpp
+@@ -1,7 +1,10 @@
+ #include "models.h"
+
+ ggml_cgraph * clip_graph_paddleocr::build() {
++    GGML_ASSERT(img.nx() % (patch_size * model.hparams.n_merge) == 0);
++    GGML_ASSERT(img.ny() % (patch_size * model.hparams.n_merge) == 0);
++
+     const int n_pos            = n_patches;
+     const int num_position_ids = n_pos * 4; // m-rope requires 4 dim per position
+
+     int mrope_sections[4] = {d_head/4, d_head/4, d_head/4, d_head/4};

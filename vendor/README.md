@@ -17,7 +17,7 @@ the full prune manifest and reproduction steps) is
 | License | MIT (reproduced in the repo-root `NOTICE`) |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
 | Pruned tree SHA256 (pre-patch) | `e89c0d0b00b6d31cccf55ff5463a06455617341c15b966d5daeda89fb03b27b5` |
-| Pruned tree SHA256 (post-patch) | `1d435a2bd6f66b50775f6307a3196dbc3b0c6dd31892f5a1db936f4a620e6292` |
+| Pruned tree SHA256 (post-patch) | `e769cc030d2377f56270fd6394bab5a19983b2073a6bc60bcbdd07bcba215601` |
 
 The snapshot includes the multimodal library sources (`tools/mtmd/` +
 `vendor/stb/stb_image.h` + `vendor/miniaudio/miniaudio.h` + `vendor/hash/`),
@@ -43,3 +43,13 @@ include the restored files. This also corrects the obsolete post-patch mirror.
 D-058 adds the direct `<cerrno>` include for the existing GGUF error diagnostic
 as patch 0007. Upstream b10828 and the pre-patch tree are unchanged; the
 post-patch identity above matches the build-consumed VENDORING.md.
+
+## D-059: bounded engine safety backports
+
+The b10828 pin, upstream archive and pre-patch digest are unchanged. Patch0008
+backports only candidate-filter iteration from [PR31153](https://github.com/ggml-org/llama.cpp/pull/31153),
+whole merge tiles from [PR31336](https://github.com/ggml-org/llama.cpp/pull/31336),
+and wider Metal indices from [PR30072](https://github.com/ggml-org/llama.cpp/pull/30072).
+No common/server changes or parser-depth policy are imported. API, schema bounds,
+model weights, floating-point computations, taps and independent goldens remain
+unchanged. See `tests/engine-boundaries/README.md` for reachability and test limits.

@@ -1,5 +1,14 @@
 # relm 0.6.2
 
+## Engine robustness
+
+- Avoid native call-stack growth for long vocabulary tokens during structured
+  output filtering, retaining the existing JSON schema and output limits.
+- Respect the configured image patch merge factor when producing M-RoPE
+  positions, and retain whole-tile bounds.
+- Preserve Metal matrix offsets beyond signed 32-bit range and MoE token indices
+  beyond 32767. Actual large-workload GPU validation is separate from host checks.
+
 ## Installation fixes
 
 - Include the standard errno header explicitly in the bundled GGUF reader for
@@ -8,6 +17,13 @@
   GCC slim-LTO symbols. R compiler, optimization and sanitizer flags remain
   unchanged. This fixes the missing helper symbol reported during CRAN's
   GCC-ASAN installation; numerical behavior and public APIs are unchanged.
+
+## Check portability
+
+- Validate exact 17-digit CSV output independently of R's decimal-to-double
+  conversion. This corrects the CSV check on R builds without long double while
+  retaining exact field/type checks, all precision cases and the unchanged
+  production serializer. No numerical tolerance is relaxed.
 
 # relm 0.6.1
 

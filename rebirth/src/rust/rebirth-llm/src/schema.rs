@@ -859,6 +859,35 @@ mod tests {
     }
 
     #[test]
+    fn native_mask_handles_one_long_token_with_the_actual_schema() {
+        use std::ffi::{c_char, CString};
+        extern "C" {
+            fn relm_grammar_candidate_check(
+                text: *const c_char,
+                chars: *const u32,
+                n: usize,
+                limit: usize,
+            ) -> i32;
+        }
+        let schema = compiled(r#"{"type":"string","minLength":2048,"maxLength":2048}"#);
+        let grammar = CString::new(schema.grammar()).unwrap();
+        let value = format!(r#"{{"value":"{}"}}"#, "\\ud83d\\ude00".repeat(2048));
+        assert!(schema.validate(value.as_bytes()).is_ok());
+        let check = |value: &str| {
+            let chars: Vec<u32> = value.chars().map(u32::from).collect();
+            // SAFETY: live NUL-terminated grammar and chars buffer, exact length;
+            // the internal regression bridge copies data and catches exceptions.
+            unsafe {
+                relm_grammar_candidate_check(grammar.as_ptr(), chars.as_ptr(), chars.len(), 65536)
+            }
+        };
+        assert_eq!(check(&value), 1);
+        let invalid = value.replacen("\\ud83d\\ude00", "\\ud83d", 1);
+        assert!(schema.validate(invalid.as_bytes()).is_err());
+        assert_eq!(check(&invalid), 0);
+    }
+
+    #[test]
     fn native_integer_grammar_matches_interval_boundaries() {
         use crate::structured::tests::accepts;
         for (min, max) in [

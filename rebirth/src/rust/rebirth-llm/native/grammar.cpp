@@ -1,4 +1,4 @@
-// Relm-owned exception boundary; the vendored engine remains unchanged.
+// Relm-owned exception boundary for the bundled grammar sampler.
 #include "llama.h"
 #include "llama-grammar.h"
 #include "llama-vocab.h"
@@ -150,6 +150,30 @@ extern "C" int relm_grammar_check(const char * text, const uint32_t * chars,
         }
         for (const auto & stack : llama_grammar_get_stacks(grammar.get()))
             if (stack.empty()) return 1;
+        return 0;
+    } catch (...) { return -1; }
+}
+
+
+// Internal R-free regression hook, like relm_grammar_check above. Exercise a
+// complete vocabulary candidate through the native mask path, not one scalar
+// at a time. No model or public R registration is added.
+extern "C" int relm_grammar_candidate_check(const char * text, const uint32_t * chars,
+                                            size_t n, size_t limit) noexcept {
+    try {
+        if (!bounded_grammar(text, limit)) return -1;
+        std::unique_ptr<llama_grammar, decltype(&llama_grammar_free_impl)> grammar(
+            llama_grammar_init_impl(nullptr, text, "root", false, nullptr, 0, nullptr, 0),
+            &llama_grammar_free_impl);
+        if (!grammar) return -1;
+        std::vector<uint32_t> terminated(chars, chars + n);
+        terminated.push_back(0);
+        llama_grammar_candidates rejects{{0, terminated.data(), {0, 0}, 0}};
+        for (const auto & stack : llama_grammar_get_stacks(grammar.get())) {
+            rejects = llama_grammar_reject_candidates_for_stack(
+                llama_grammar_get_rules(grammar.get()), stack, rejects);
+            if (rejects.empty()) return 1;
+        }
         return 0;
     } catch (...) { return -1; }
 }

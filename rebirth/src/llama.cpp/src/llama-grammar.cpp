@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <set>
+#include <numeric>
 #include <stdexcept>
 
 #define MAX_REPETITION_THRESHOLD 2000
@@ -936,25 +937,6 @@ static void llama_grammar_advance_stack(
     }
 }
 
-static llama_grammar_candidates llama_grammar_reject_candidates(
-        const llama_grammar_rules      & rules,
-        const llama_grammar_stacks     & stacks,
-        const llama_grammar_candidates & candidates) {
-    GGML_ASSERT(!stacks.empty()); // REVIEW
-
-    if (candidates.empty()) {
-        return {};
-    }
-
-    auto rejects = llama_grammar_reject_candidates_for_stack(rules, stacks.front(), candidates);
-
-    for (size_t i = 1, size = stacks.size(); i < size; ++i) {
-        rejects = llama_grammar_reject_candidates_for_stack(rules, stacks[i], rejects);
-    }
-
-    return rejects;
-}
-
 static bool llama_grammar_detect_left_recursion(
         const llama_grammar_rules & rules,
         size_t rule_index,
@@ -1053,56 +1035,63 @@ void llama_grammar_accept(struct llama_grammar * grammar, uint32_t chr) {
     grammar->stacks = std::move(stacks_new);
 }
 
-llama_grammar_candidates llama_grammar_reject_candidates_for_stack(
+// checks the code point at depth of each candidate (an index into the input) against the stack
+// returns true when some match: they go to next, and the stacks that follow to next_stacks
+static bool llama_grammar_reject_step(
         const llama_grammar_rules      & rules,
         const llama_grammar_stack      & stack,
-        const llama_grammar_candidates & candidates) {
-
-    llama_grammar_candidates rejects;
-    rejects.reserve(candidates.size());
+        const llama_grammar_candidates & candidates,
+        size_t                           depth,
+        const std::vector<uint32_t>    & cur,
+              std::vector<uint32_t>    & rejects,
+              std::vector<uint32_t>    & next,
+              llama_grammar_stacks     & next_stacks) {
+    rejects.reserve(cur.size());
 
     if (stack.empty()) {
-        for (const auto & tok : candidates) {
-            if (*tok.code_points != 0 || tok.partial_utf8.n_remain != 0) {
-                rejects.push_back(tok);
+        for (const uint32_t i : cur) {
+            const auto & tok = candidates[i];
+            if (tok.code_points[depth] != 0 || tok.partial_utf8.n_remain != 0) {
+                rejects.push_back(i);
             }
         }
-        return rejects;
+        return false;
     }
 
     const llama_grammar_element * stack_pos = stack.back();
 
     // if the top of the stack is a token rule, then we only need to check the token id
     if (stack_pos->type == LLAMA_GRETYPE_TOKEN || stack_pos->type == LLAMA_GRETYPE_TOKEN_NOT) {
-        for (const auto & tok : candidates) {
-            if (*tok.code_points == 0) {
+        for (const uint32_t i : cur) {
+            const auto & tok = candidates[i];
+            if (tok.code_points[depth] == 0) {
                 // reached the end of a token consumed by char rules, reject iff it ended
                 // in a partial response
                 if (tok.partial_utf8.n_remain != 0) {
-                    rejects.push_back(tok);
+                    rejects.push_back(i);
                 }
             } else if (!llama_grammar_match_token(stack_pos, tok.id)) {
-                rejects.push_back(tok);
+                rejects.push_back(i);
             }
         }
-        return rejects;
+        return false;
     }
 
-    llama_grammar_candidates next_candidates;
-    next_candidates.reserve(candidates.size());
+    next.reserve(cur.size());
 
-    for (const auto & tok : candidates) {
-        if (*tok.code_points == 0) {
+    for (const uint32_t i : cur) {
+        const auto & tok = candidates[i];
+        if (tok.code_points[depth] == 0) {
             // reached end of full codepoints in token, reject iff it ended in a partial sequence
             // that cannot satisfy this position in grammar
             if (tok.partial_utf8.n_remain != 0 &&
                     !llama_grammar_match_partial_char(stack_pos, tok.partial_utf8)) {
-                rejects.push_back(tok);
+                rejects.push_back(i);
             }
-        } else if (llama_grammar_match_char(stack_pos, *tok.code_points).first) {
-            next_candidates.push_back({ tok.index, tok.code_points + 1, tok.partial_utf8, tok.id });
+        } else if (llama_grammar_match_char(stack_pos, tok.code_points[depth]).first) {
+            next.push_back(i);
         } else {
-            rejects.push_back(tok);
+            rejects.push_back(i);
         }
     }
 
@@ -1113,15 +1102,78 @@ llama_grammar_candidates llama_grammar_reject_candidates_for_stack(
     if (!llama_grammar_is_end_of_sequence(stack_pos_after)) {
         stack_after.push_back(stack_pos_after);
     }
-    llama_grammar_stacks next_stacks;
     llama_grammar_advance_stack(rules, stack_after, next_stacks);
 
-    auto next_rejects = llama_grammar_reject_candidates(rules, next_stacks, next_candidates);
-    for (const auto & tok : next_rejects) {
-        rejects.push_back({ tok.index, tok.code_points - 1, tok.partial_utf8, tok.id });
+    return true;
+}
+
+// the candidates that no stack accepts, each stack narrows the rejects of the previous one
+// no recursion: a level per code point, a token from the GGUF can be long
+static llama_grammar_candidates llama_grammar_reject_candidates(
+        const llama_grammar_rules      & rules,
+        const llama_grammar_stacks     & stacks,
+        const llama_grammar_candidates & candidates) {
+    GGML_ASSERT(!stacks.empty()); // REVIEW
+
+    // a level checks the candidates that reach its code point against its stacks in turn
+    struct level {
+        llama_grammar_stacks  stacks;
+        size_t                i;       // the stack in progress
+        std::vector<uint32_t> cur;     // the candidates rejected by stacks[0, i)
+        std::vector<uint32_t> rejects; // the rejects of stacks[i] at this code point
+    };
+
+    std::vector<uint32_t> all(candidates.size());
+    std::iota(all.begin(), all.end(), 0u);
+
+    std::vector<level> levels;
+    levels.push_back({ stacks, 0, std::move(all), {} });
+
+    while (true) {
+        level & lv = levels.back();
+
+        if (lv.i == lv.stacks.size() || lv.cur.empty()) {
+            if (levels.size() == 1) {
+                break;
+            }
+            // the rejects at the next code point belong to stacks[i] of the parent level
+            level & parent = levels[levels.size() - 2];
+            parent.rejects.insert(parent.rejects.end(), lv.cur.begin(), lv.cur.end());
+            levels.pop_back();
+            parent.cur = std::move(parent.rejects);
+            parent.rejects = {};
+            parent.i++;
+            continue;
+        }
+
+        std::vector<uint32_t> rejects;
+        std::vector<uint32_t> next;
+        llama_grammar_stacks  next_stacks;
+
+        if (!llama_grammar_reject_step(rules, lv.stacks[lv.i], candidates, levels.size() - 1, lv.cur, rejects, next, next_stacks)) {
+            lv.cur = std::move(rejects);
+            lv.i++;
+            continue;
+        }
+
+        GGML_ASSERT(!next_stacks.empty());
+        lv.rejects = std::move(rejects);
+        levels.push_back({ std::move(next_stacks), 0, std::move(next), {} });
     }
 
+    llama_grammar_candidates rejects;
+    rejects.reserve(levels[0].cur.size());
+    for (const uint32_t i : levels[0].cur) {
+        rejects.push_back(candidates[i]);
+    }
     return rejects;
+}
+
+llama_grammar_candidates llama_grammar_reject_candidates_for_stack(
+        const llama_grammar_rules      & rules,
+        const llama_grammar_stack      & stack,
+        const llama_grammar_candidates & candidates) {
+    return llama_grammar_reject_candidates(rules, llama_grammar_stacks{ stack }, candidates);
 }
 
 ////////////////////
