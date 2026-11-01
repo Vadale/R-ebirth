@@ -1,11 +1,11 @@
 {
   "bundles": {
     "src/llama-sources.tar.xz": {
-      "bytes": 2001976,
+      "bytes": 2003800,
       "files": {
         "llama.cpp/CMakeLists.txt": "2904ff5f58eecf40ccfee5e18f2c9f01d23d5fc149efd005e260ba278d1193f6",
         "llama.cpp/LICENSE": "94f29bbed6a22c35b992c5c6ebf0e7c92f13b836b90f36f461c9cf2f0f1d010d",
-        "llama.cpp/VENDORING.md": "05d93074ae0f1dff46dbb7b475270a2f68360b26baa1571ad8b75293b19d1be9",
+        "llama.cpp/VENDORING.md": "7285ea0c93ba7435dbb9261f322a16e37f2c4ef80721f38d3b447db4f978e14c",
         "llama.cpp/cmake/arm64-apple-clang.cmake": "80d01144241c7a45d1c35461aab1256364f8c7e714c3401a8097a567a8179e03",
         "llama.cpp/cmake/arm64-linux-clang.cmake": "feb7bd04443531e2287638c23a8d1873203d72a2da95e03f9c28433b27e24bd1",
         "llama.cpp/cmake/arm64-windows-llvm.cmake": "f0a603529ab01d7f87b9774f6ac6a6998ec660cb975927859917034e1a8f6319",
@@ -433,7 +433,7 @@
         "llama.cpp/ggml/src/ggml-metal/kernels/fa.metal": "88939f93ec5a38bb6a860dffee60d01885de65ca4464d87c14c31bbc511fda64",
         "llama.cpp/ggml/src/ggml-metal/kernels/gated_delta_net.metal": "aa32316fd9737f9b3b00b7e1fb2eb17f564f153d7d2655771cf0c89c1644a37e",
         "llama.cpp/ggml/src/ggml-metal/kernels/misc.metal": "82d8d937ac195331448fa98bbe7a9c5bda99d8aa2e18845e0b5aae9badcb8cb0",
-        "llama.cpp/ggml/src/ggml-metal/kernels/mul_mm.metal": "7132dd17beea023e02640347c647dd8d6cc291ac842aa416b451bd111d9c906f",
+        "llama.cpp/ggml/src/ggml-metal/kernels/mul_mm.metal": "e8b00615d5bc8c0b3658b1e0bb09dbac9d4828a961674f8af6ce3b927d293178",
         "llama.cpp/ggml/src/ggml-metal/kernels/mul_mv.metal": "acc34539766d650b9879dec256877ed7b472c58de8bdfae9fdc85d7a9bd2e204",
         "llama.cpp/ggml/src/ggml-metal/kernels/norm.metal": "f7ec72dfd80134d4420db2208093eb5757296fbf1ee2364040ca89122b651c09",
         "llama.cpp/ggml/src/ggml-metal/kernels/pool.metal": "4a7a67032a286ef19fc97007e11b113eac30c2ac0f55887a9cecbc8d2fdf70db",
@@ -465,7 +465,8 @@
         "llama.cpp/patches/0005-compiler-diagnostics.diff": "5e636b033f2c93ec6d7da753222c54bd048b44971e9a352d9659f5cdbbec0c4a",
         "llama.cpp/patches/0006-model-loader-override-null.diff": "2743db69a91ae488c76a6e658a2988df2ee0a920fe39299864b41b5766d81cc4",
         "llama.cpp/patches/0007-gguf-cerrno.diff": "c06566b9eb3de044db9901cadcde46bffd3727263aaf1b9e43ab9a73fe842f43",
-        "llama.cpp/patches/README.md": "8c4b2af7df1ec44558cbcb386d5116b67b74cc4e1b2c27397587b0f17b6d14ea",
+        "llama.cpp/patches/0008-engine-boundaries.diff": "e90bd5e2a059b4fef91cc9c9eeab18cbc5c6591490927b77175853ba607a36f3",
+        "llama.cpp/patches/README.md": "5840619a5caaad690529c55ac49d91aa26c3dd8a0b4ff16c998db6791708a92b",
         "llama.cpp/patches/verify_vendored_tree.sh": "128550856847cfc483040e4c8f8db59d599f5d89b363fa8fcee850e08f7496de",
         "llama.cpp/src/CMakeLists.txt": "de67b437cfc5b45751e728a550510718a0477c0186e31ed3994d649e143f18f9",
         "llama.cpp/src/llama-adapter.cpp": "ab85827acea9b3e96451e74426b40076d5feb1e842bd2d63ef8dbdf311420f94",
@@ -481,7 +482,7 @@
         "llama.cpp/src/llama-cparams.cpp": "95ab4b7b72851eb381a3d2ff2e9f18731103ba5f9f5f216882a034319e709297",
         "llama.cpp/src/llama-cparams.h": "167382bd9b9d0d0adffb53f79fcb125a41d076c99f3a0e162add63ba1722e004",
         "llama.cpp/src/llama-ext.h": "522eed344e1765506f30da25002d92d354572951153ba67504f05d5cccdea7f6",
-        "llama.cpp/src/llama-grammar.cpp": "8a8450e410f318d90b353c7a67e7a788a921a06e687ca3e02eff49380d83c5c7",
+        "llama.cpp/src/llama-grammar.cpp": "58f10260ddac0a2158a2aff63089abd7d0ad790f47ee268928a78cc79e96a1b8",
         "llama.cpp/src/llama-grammar.h": "db730e5aff77f96274aba4a43670f036400d89c7ed44b6e98d3ced41c7b9d193",
         "llama.cpp/src/llama-graph.cpp": "cd833a7d6b249ac9bb00129de2e5a8942271fea4a178649c8d7e7f3729ff8a1a",
         "llama.cpp/src/llama-graph.h": "f7d634e5b96629d9c4743ba8c0a9d87386fa805a82a185e08b27053a7a325f35",
@@ -692,7 +693,7 @@
         "llama.cpp/tools/mtmd/clip-graph.h": "0c04795e22939263ff613226428096fbc0f0739cef34a00c3aa675856b4ba4aa",
         "llama.cpp/tools/mtmd/clip-impl.h": "5946bc4c9a575fdfb2b9858b8762edd10d3630fda90c306568b807acb2eed109",
         "llama.cpp/tools/mtmd/clip-model.h": "f4df467f21eb5ac4954010a3be30f26586ebe7fa77f6000e65a943215be011e2",
-        "llama.cpp/tools/mtmd/clip.cpp": "5b2b58d219b68fb1c71ee059536cc87f1b566091dd468b2529387eb1a7fef7fb",
+        "llama.cpp/tools/mtmd/clip.cpp": "d2c06fd67a05e7f66c97f6b3e48d3cc738afe90f1d49d837f81ed2d4c36ab8e6",
         "llama.cpp/tools/mtmd/clip.h": "07b67b04559cd203e389efa9a0399e61abf2a134d8ba14b194b12adaf3aba21a",
         "llama.cpp/tools/mtmd/debug/mtmd-debug.h": "38f6ff31eabd791e5d9233b7b0c8abf0e31297219c4859da2b5899a51e18882f",
         "llama.cpp/tools/mtmd/models/cogvlm.cpp": "6406a79c4b9bbf94e10daffe85c082ce50a7ea1c18bec4537a8930c0b7fa6431",
@@ -724,7 +725,7 @@
         "llama.cpp/tools/mtmd/models/models.h": "d1468dd2543233d6ddd85305363f5bd6f7a960bdeacb428793e804f6fb40c1f5",
         "llama.cpp/tools/mtmd/models/muse-glimmer.cpp": "63db3c255908f510378d9dc4981a3968fd6a72466f6269648d06df9c5df65d06",
         "llama.cpp/tools/mtmd/models/nemotron-v2-vl.cpp": "0a6241340d7801a9b973c26e3e8ec9c3f29b9c661d3f802077218f9c135d9688",
-        "llama.cpp/tools/mtmd/models/paddleocr.cpp": "f7aa6b5ca067eab54d25da240decf224c16b99251cd72972e57a8f7559f40939",
+        "llama.cpp/tools/mtmd/models/paddleocr.cpp": "267fa985652dbfe49c279707a5c9e8d41e796d230193acf1db6c50780c70df65",
         "llama.cpp/tools/mtmd/models/parakeet.cpp": "75453a70d6a389bc86ec0b9f3a3f82744f1417c91f7f8d92bce403bbf20dcfcd",
         "llama.cpp/tools/mtmd/models/pixtral.cpp": "cae02d2f2edf0a625afac954ff1aabcba3ad66488a0728c90dced8584a3666eb",
         "llama.cpp/tools/mtmd/models/pockettts-gen.cpp": "7c9410c650b3c35bfb1c87bbbdc9fa454c3e31f6813cdd09df84c00581513f83",
@@ -772,7 +773,7 @@
         "llama.cpp/vendor/stb/CMakeLists.txt": "e3e1fe4e715be12d736f541f2c3029ab85a919339554ed9fa46e8c3c8e198b5d",
         "llama.cpp/vendor/stb/stb_image.h": "594c2fe35d49488b4382dbfaec8f98366defca819d916ac95becf3e75f4200b3"
       },
-      "sha256": "9291d091441f32b8de768548c542672fb7515d3b9aa6ce9b240237a5dc1a3c48"
+      "sha256": "c1c6a9eba21ea3a698e27b3ac5030046848c3505b461643a3851f447568fcb6f"
     },
     "src/rust/vendor.tar.xz": {
       "bytes": 3704260,

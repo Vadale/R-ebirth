@@ -4782,18 +4782,18 @@ bool clip_encode(struct clip_ctx * ctx, struct clip_encode_params * params) {
         case PROJECTOR_TYPE_GLM4V:
             {
                 const int merge_ratio = hparams.n_merge;
-                const int pw = image_size_width  / patch_size;
-                const int ph = image_size_height / patch_size;
+                const int pw = image_size_width  / patch_size / merge_ratio;
+                const int ph = image_size_height / patch_size / merge_ratio;
                 std::vector<int> positions(n_pos * 4);
                 int ptr = 0;
-                for (int y = 0; y < ph; y += merge_ratio) {
-                    for (int x = 0; x < pw; x += merge_ratio) {
-                        for (int dy = 0; dy < 2; dy++) {
-                            for (int dx = 0; dx < 2; dx++) {
-                                positions[                  ptr] = y + dy;
-                                positions[    num_patches + ptr] = x + dx;
-                                positions[2 * num_patches + ptr] = y + dy;
-                                positions[3 * num_patches + ptr] = x + dx;
+                for (int ty = 0; ty < ph; ty++) {
+                    for (int tx = 0; tx < pw; tx++) {
+                        for (int dy = 0; dy < merge_ratio; dy++) {
+                            for (int dx = 0; dx < merge_ratio; dx++) {
+                                positions[                  ptr] = ty * merge_ratio + dy;
+                                positions[    num_patches + ptr] = tx * merge_ratio + dx;
+                                positions[2 * num_patches + ptr] = ty * merge_ratio + dy;
+                                positions[3 * num_patches + ptr] = tx * merge_ratio + dx;
                                 ptr++;
                             }
                         }
@@ -4817,19 +4817,19 @@ bool clip_encode(struct clip_ctx * ctx, struct clip_encode_params * params) {
         case PROJECTOR_TYPE_PADDLEOCR:
             {
                 const int merge_ratio = hparams.n_merge;
-                const int pw = image_size_width  / patch_size;
-                const int ph = image_size_height / patch_size;
+                const int pw = image_size_width  / patch_size / merge_ratio;
+                const int ph = image_size_height / patch_size / merge_ratio;
                 std::vector<int> positions(n_pos * 4);
                 int ptr = 0;
                 // NOTE: same as Qwen-VL, but x and y are swapped
-                for (int y = 0; y < ph; y += merge_ratio) {
-                    for (int dy = 0; dy < 2; dy++) {
-                        for (int x = 0; x < pw; x += merge_ratio) {
-                            for (int dx = 0; dx < 2; dx++) {
-                                positions[                  ptr] = y + dy;
-                                positions[    num_patches + ptr] = x + dx;
-                                positions[2 * num_patches + ptr] = y + dy;
-                                positions[3 * num_patches + ptr] = x + dx;
+                for (int ty = 0; ty < ph; ty++) {
+                    for (int dy = 0; dy < merge_ratio; dy++) {
+                        for (int tx = 0; tx < pw; tx++) {
+                            for (int dx = 0; dx < merge_ratio; dx++) {
+                                positions[                  ptr] = ty * merge_ratio + dy;
+                                positions[    num_patches + ptr] = tx * merge_ratio + dx;
+                                positions[2 * num_patches + ptr] = ty * merge_ratio + dy;
+                                positions[3 * num_patches + ptr] = tx * merge_ratio + dx;
                                 ptr++;
                             }
                         }
@@ -4947,17 +4947,17 @@ bool clip_encode(struct clip_ctx * ctx, struct clip_encode_params * params) {
                 std::vector<int> positions(n_pos * 4);
 
                 int ptr = 0;
-                for (int y = 0; y < iph; y += merge_ratio) {
-                    for (int x = 0; x < ipw; x += merge_ratio) {
-                        for (int dy = 0; dy < 2; dy++) {
-                            for (int dx = 0; dx < 2; dx++) {
+                for (int ty = 0; ty < ph; ty++) {
+                    for (int tx = 0; tx < pw; tx++) {
+                        for (int dy = 0; dy < merge_ratio; dy++) {
+                            for (int dx = 0; dx < merge_ratio; dx++) {
                                 auto remap = idx[ptr / mpow];
                                 remap = (remap * mpow) + (ptr % mpow);
 
-                                positions[                  remap] = y + dy;
-                                positions[    num_patches + remap] = x + dx;
-                                positions[2 * num_patches + remap] = y + dy;
-                                positions[3 * num_patches + remap] = x + dx;
+                                positions[                  remap] = ty * merge_ratio + dy;
+                                positions[    num_patches + remap] = tx * merge_ratio + dx;
+                                positions[2 * num_patches + remap] = ty * merge_ratio + dy;
+                                positions[3 * num_patches + remap] = tx * merge_ratio + dx;
                                 ptr++;
                             }
                         }

@@ -1,3 +1,14 @@
+# relm development
+
+## Engine robustness
+
+- Avoid native call-stack growth for long vocabulary tokens during structured
+  output filtering, retaining the existing JSON schema and output limits.
+- Respect the configured image patch merge factor when producing M-RoPE
+  positions, and retain whole-tile bounds.
+- Preserve Metal matrix offsets beyond signed 32-bit range and MoE token indices
+  beyond 32767. Actual large-workload GPU validation is separate from host checks.
+
 # relm 0.6.2
 
 ## Installation fixes

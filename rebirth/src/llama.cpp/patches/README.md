@@ -42,3 +42,8 @@ retired under D-032 because b10828 provides the library-only mtmd build upstream
 `VENDORING.md` records all three SHAs (upstream tarball, pre-patch tree,
 post-patch tree). WP4 added zero patches (observation is zero-patch, D-012); this
 WP5 ablation hook is the project's first vendored patch.
+
+- `0008-engine-boundaries.diff`: D-059 narrow upstream safety backports for
+  candidate recursion, M-RoPE merge tiles and Metal scalar index widths. The
+  source-derived regressions run in the existing Rust Linux/native Mac jobs.
+  This is not an engine version update or a regenerated numerical oracle.
