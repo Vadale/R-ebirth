@@ -2246,3 +2246,34 @@ reproduce the current Mac failure, accept both fixed input variants, refuse
 oracle, then pass after restoration. Independent rational-to-decimal rounding
 checks the literal wire expectations. This isolated converter evidence still
 requires actual candidate macOS and all other current platform CI before merge.
+
+
+## D-061 — Direct standard-header dependencies for libc++23
+
+- **Date:** 2026-11-03. **Authorization:** the founder requested diagnosis and
+  correction of the new published0.6.2 Fedora/Clang installation failure,
+  preserving working configurations and tests, with bounded attempts.
+- **Cause:** `llama-graph.h` uses `getenv` and `atoi` without their own standard
+  header. libc++23 removed incidental includes. The published engine bundle is
+  byte-identical to the submitted source. The original actual header reproduces
+  both diagnostics with Clang23/libc++23, while Clang/libstdc++ and GCC accept it.
+- **Decision:** owned patch0009 directly includes `<cstdlib>` and qualifies both
+  calls with `std::`. Keep b10828, all prior patches, dependency locks, R/native
+  APIs, runtime arithmetic, tracing/steering and independent goldens unchanged.
+  No compatibility macro, warning suppression or relaxed check is introduced.
+- **Regression:** compile the actual header first, and exercise its constructor
+  against seven fixed debug-environment expectations. Require its direct include
+  so permissive standard libraries cannot conceal the missing dependency.
+  The original source must be refused. Existing Linux/native macOS Rust jobs
+  retain this control's diagnostics; all existing checks remain required.
+- **Acceptance boundary:** current full engine compilation with libc++23,
+  vendor/reverse-patch/source-bundle coherence, and ordinary candidate platform
+  CI. Local tooling does not claim the exact Fedora CRAN R environment.
+  Published0.6.2 stays immutable; a subsequent submission/version, merge,
+  tag or release needs the applicable explicit authorization.
+
+The bounded complete libc++23 build found the same missing header in two further
+translation units: `llama-mmap.cpp` (`posix_memalign`/`free`) and `llama-vocab.cpp`
+(`strtol`). They are included in the same patch0009 and direct-dependency gate;
+both full units are syntax-compiled by the regression. This is one cause-specific
+correction, not a compiler-flag workaround or a new memory/algorithm change.

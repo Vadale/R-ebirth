@@ -1,0 +1,45 @@
+diff --git a/src/llama-graph.h b/src/llama-graph.h
+index 7cdf73d..bab1f25 100644
+--- a/src/llama-graph.h
++++ b/src/llama-graph.h
+@@ -8,2 +8,3 @@
+ #include <cstdint>
++#include <cstdlib>
+ #include <vector>
+@@ -102,4 +103,4 @@ public:
+     llm_graph_input_i() {
+-        const char * LLAMA_GRAPH_INPUT_DEBUG = getenv("LLAMA_GRAPH_INPUT_DEBUG");
+-        debug = LLAMA_GRAPH_INPUT_DEBUG ? atoi(LLAMA_GRAPH_INPUT_DEBUG) : 0;
++        const char * LLAMA_GRAPH_INPUT_DEBUG = std::getenv("LLAMA_GRAPH_INPUT_DEBUG");
++        debug = LLAMA_GRAPH_INPUT_DEBUG ? std::atoi(LLAMA_GRAPH_INPUT_DEBUG) : 0;
+     }
+diff --git a/src/llama-mmap.cpp b/src/llama-mmap.cpp
+index 4d183cb..9cd35ac 100644
+--- a/src/llama-mmap.cpp
++++ b/src/llama-mmap.cpp
+@@ -7,1 +7,2 @@
++#include <cstdlib>
+ #include <cstring>
+@@ -331,3 +332,3 @@ struct llama_file::impl {
+         struct aligned_buffer_deleter {
+-            void operator()(void * p) const { free(p); }
++            void operator()(void * p) const { std::free(p); }
+         };
+diff --git a/src/llama-vocab.cpp b/src/llama-vocab.cpp
+index a69801f..b3e8678 100644
+--- a/src/llama-vocab.cpp
++++ b/src/llama-vocab.cpp
+@@ -15,2 +15,3 @@
+ #include <cstdarg>
++#include <cstdlib>
+ #include <cstring>
+@@ -3171,3 +3172,3 @@ uint8_t llama_vocab::impl::token_to_byte(llama_token id) const {
+             auto buf = token_data.text.substr(3, 2);
+-            return strtol(buf.c_str(), NULL, 16);
++            return std::strtol(buf.c_str(), NULL, 16);
+         }
+@@ -3176,3 +3177,3 @@ uint8_t llama_vocab::impl::token_to_byte(llama_token id) const {
+             auto buf = token_data.text.substr(3, 2);
+-            return strtol(buf.c_str(), NULL, 16);
++            return std::strtol(buf.c_str(), NULL, 16);
+         }

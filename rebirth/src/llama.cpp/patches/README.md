@@ -47,3 +47,9 @@ WP5 ablation hook is the project's first vendored patch.
   candidate recursion, M-RoPE merge tiles and Metal scalar index widths. The
   source-derived regressions run in the existing Rust Linux/native Mac jobs.
   This is not an engine version update or a regenerated numerical oracle.
+
+- `0009-standard-header-dependencies.diff`: D-061 direct `<cstdlib>` dependencies
+  in the graph header, memory mapping and vocabulary. Standard environment,
+  allocation and integer-conversion calls are qualified. This preserves behavior
+  and supports libc++23 without restoring removed transitive includes or changing
+  compiler flags. See `tests/cran/README-engine-headers.md` for the regression.

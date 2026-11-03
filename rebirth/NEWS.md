@@ -1,3 +1,12 @@
+# relm (development version)
+
+## Installation fixes
+
+- Include standard allocation/environment/conversion declarations directly in
+  the bundled graph, memory-map and vocabulary sources for libc++23 builds.
+  This fixes missing `getenv`, `atoi`, `posix_memalign`, `free` and `strtol`
+  declarations while preserving debug behavior, allocation and computations.
+
 # relm 0.6.2
 
 ## Engine robustness
