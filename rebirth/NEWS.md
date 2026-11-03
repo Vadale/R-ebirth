@@ -1,4 +1,4 @@
-# relm (development version)
+# relm 0.6.3
 
 ## Installation fixes
 

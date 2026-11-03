@@ -1,17 +1,32 @@
-# relm CRAN maintenance — 0.6.2 candidate
+# relm CRAN maintenance — 0.6.3 candidate
 
-Updated 2026-10-30. CRAN published 0.5.0 on 2026-10-29 and requested corrections
-before 2026-11-20. The published archive and the separate 0.6.1 release remain
-immutable. A new 0.6.2 candidate addresses the Fedora Clang missing errno header
-and GCC-ASAN/LTO unresolved native state helper during installation (D-058).
-Neither reported failure reached package tests; the ASAN report is not evidence
-of a runtime memory violation.
+Updated 2026-11-03. CRAN publishes 0.6.2, with a November 20 correction deadline.
+Its archive and previous published releases remain immutable. The next 0.6.3
+candidate addresses the current Fedora Clang23/libc++23 missing standard
+declarations in the graph, memory-map and vocabulary sources (D-061).
 
-The correction preserves the engine version, dependency graph, public API,
-compiler/sanitizer/LTO flags, numerical contracts and all ordinary platform gates.
-Local checks do not establish exact CRAN-farm equivalence. Candidate production
-installation, required CI, archive inspection and submission remain separate
-acceptance steps; no 0.6.2 submission has been made.
+The correction keeps the pinned engine, dependency graph, public API,
+steering/tracing, compiler flags, numerical contracts and platform checks.
+Version 0.6.3 also resolves the incoming-check refusal of a candidate still
+numbered 0.6.2 after that version was published. The separate application setup
+uses bounded HTTPS downloads of its unchanged dependency pins; no service
+acceptance is inferred from successful download controls.
+
+Current CRAN results still include older-version rows. Incorporate any new
+relevant findings before final submission. The founder authorized correction
+and candidate preparation now, without waiting for those rows; this is not
+merge, tag/release, email or CRAN submission authority.
+
+Before declaring an archive ready, require actual complete ordinary CI plus
+the final production archive's applicable Clang23/libc++23, GCC sanitizer/LTO,
+full noLD and Windows/macOS pre-submission results. Record toolchain/library
+versions, executed flags, source identity, notes/skips and environment differences.
+An unavailable required environment remains an explicit blocker, not a pass.
+Reuse unchanged evidence at its actual scope; do not replay models for receipts.
+
+The [submission comments](cran-comments.md) are a pending draft. No 0.6.3
+submission or publication has occurred. The historical sections below describe
+earlier candidates and do not authorize repeating their actions.
 
 ## Historical 0.5.0 submission record
 

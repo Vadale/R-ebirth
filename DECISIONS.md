@@ -2277,3 +2277,29 @@ translation units: `llama-mmap.cpp` (`posix_memalign`/`free`) and `llama-vocab.c
 (`strtol`). They are included in the same patch0009 and direct-dependency gate;
 both full units are syntax-compiled by the regression. This is one cause-specific
 correction, not a compiler-flag workaround or a new memory/algorithm change.
+
+
+### D-061 amendment — next-version and CI source preparation
+
+On 2026-11-03 the founder authorized correcting the confirmed GitHub failures
+immediately while the remaining published 0.6.2 CRAN rows update. Prepare 0.6.3;
+keep the published 0.6.2 archive immutable. This is not merge or publication
+authority. The application version allowlist adds only 0.6.3 and retains explicit
+refusals for future, development and malformed versions.
+
+The oldrel Linux package check completed successfully; subsequent service setup
+failed after two 60-second stringi 1.8.9 downloads on the same host. Replace that
+source-fetch loop with two fixed official HTTPS hosts and at most four bounded
+curl invocations, Archive only after 404; each allows at most three HTTPS redirects. Each request has 10/25/30-second connect/transfer/
+process limits and zero curl retries. Certificate and authorization failures
+remain fatal; partial data is removed and existing destinations preserved.
+The 23 dependency pins, installation/MD5 and final installed-version checks,
+service behavior and acceptance gates remain unchanged. Recorded source hashes
+are provenance, not independent pinned-hash verification.
+
+Offline actual-helper controls cover transport/deadline and archive routing,
+security refusals and destination preservation; the four ordinary R jobs run
+them before setup. A real affected source fetch is data-only validation, not
+installation or hosted recovery. Current full CI and the final-archive platform
+preflight remain required. No test suppression, timeout increase or golden
+regeneration is introduced.

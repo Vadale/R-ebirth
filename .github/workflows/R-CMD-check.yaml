@@ -377,11 +377,13 @@ jobs:
 
       - name: Service source prerequisites (Linux)
         if: runner.os == 'Linux' && steps.scope.outputs.full_checks != 'false'
-        run: sudo apt-get update && sudo apt-get install -y libsodium-dev libcurl4-openssl-dev libicu-dev
+        run: sudo apt-get update && sudo apt-get install -y curl libsodium-dev libcurl4-openssl-dev libicu-dev
 
       - name: Prepare exact D-034 application pins (isolated library)
         if: steps.scope.outputs.full_checks != 'false'
-        run: Rscript --vanilla tests/funding-service/install-pins.R "${{ runner.temp }}/service-library"
+        run: |
+          Rscript --vanilla tests/funding-service/test-downloads.R
+          Rscript --vanilla tests/funding-service/install-pins.R "${{ runner.temp }}/service-library"
 
       - name: Service HTTP, overload, process recovery and persistence
         if: steps.scope.outputs.full_checks != 'false'
