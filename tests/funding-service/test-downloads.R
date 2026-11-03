@@ -70,6 +70,29 @@ for (response in list(answer(60L, "000"), answer(22L, "403"), answer(0L, "302"))
 }
 stopifnot(identical(run_case(list(answer(0L, "200", raw())), "Empty pinned source"), cloud))
 stopifnot(length(run_case(list(), "Refusing existing", existing = TRUE)) == 0L)
+# Hosted macOS curl returned exit 56 with a confirmed HTTP 404. The HTTP
+# result must select Archive on the same host, without accepting partial bytes.
+stopifnot(identical(run_case(list(answer(56L, "404"), ok)), c(cloud, cloud_archive)))
+stopifnot(identical(run_case(list(answer(28L, "000"), answer(56L, "404"), ok)),
+                    c(cloud, cran, cran_archive)))
+stopifnot(identical(run_case(list(answer(56L, "404"), answer(28L, "000"), ok)),
+                    c(cloud, cloud_archive, cran)))
+stopifnot(identical(run_case(rep(list(answer(56L, "404")), 4L), "both CRAN endpoints"),
+                    c(cloud, cloud_archive, cran, cran_archive)))
+# A receive failure alone is not an Archive signal or a complete download.
+for (http in c("000", "200")) {
+  stopifnot(identical(run_case(list(answer(56L, http), ok)), c(cloud, cran)))
+}
+# A transport code must not bypass a definite authorization/permanent HTTP
+# refusal. Certificate/TLS failures remain fatal even alongside HTTP 404.
+for (response in list(answer(60L, "404"), answer(35L, "404"),
+                      answer(56L, "401"), answer(56L, "403"), answer(56L, "407"),
+                      answer(28L, "404"), answer(56L, "410"))) {
+  stopifnot(identical(run_case(list(response), "Non-recoverable"), cloud))
+}
+for (http in c("408", "429", "503")) {
+  stopifnot(identical(run_case(list(answer(56L, http), ok)), c(cloud, cran)))
+}
 module$system2 <- function(...) stop("Unexpected network attempt")
 for (input in list(c("../stringi", "1.8.9"), c("stringi", "1.8.9/other"),
                       c("https://example.org", "1.8.9"), c("stringi", NA_character_))) {

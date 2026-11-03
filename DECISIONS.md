@@ -2303,3 +2303,23 @@ them before setup. A real affected source fetch is data-only validation, not
 installation or hosted recovery. Current full CI and the final-archive platform
 preflight remain required. No test suppression, timeout increase or golden
 regeneration is introduced.
+
+### D-061 amendment — macOS archive routing
+
+The subsequent macOS jobs completed their R package checks, then service setup
+failed to fetch pinned curl 8.0.0. Its current-source URLs returned HTTP 404 with
+curl exit 56, so the helper's exit-22-only condition never selected Archive.
+Recognize this observed exit/HTTP pair while retaining exit 22 support. An exit
+56 without 404 never selects Archive; a definite permanent HTTP refusal cannot
+be hidden by a transport status. Certificate/TLS failures remain fatal even when
+an HTTP code is present. Only exit 0 with HTTP 200 can retain downloaded bytes.
+The cause of curl's platform-specific exit code is not established by these logs.
+
+Keep both official hosts, redirect/connection/transfer/process bounds, zero
+retries, dependency pins, installation/version checks and service gates unchanged.
+Extend the actual-helper offline regressions with the observed macOS routing,
+partial receive failures, permanent HTTP/TLS refusals and bounded transient
+fallbacks. The old helper must fail the new Archive assertion, and bypassing the
+permanent-HTTP guard must fail the refusal assertion. Current hosted service
+acceptance is still required; local routing controls are not a package/model run
+or a guarantee that CRAN/network failures cannot recur.

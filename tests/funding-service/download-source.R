@@ -55,9 +55,15 @@ service_download_source <- function(package, version, destination) {
         message("PIN_DOWNLOAD_COMPLETE package=", package, " sha256=", digest)
         return(invisible(destination))
       }
-      if (status == 22L && identical(http, "404")) next
-      transient <- status %in% c(5L, 6L, 7L, 18L, 28L, 52L, 55L, 56L, 124L) ||
-        (status == 22L && (http %in% c("408", "429") || grepl("^5[0-9]{2}$", http)))
+      # Hosted macOS curl can report a completed HTTP 404 with exit 56.
+      # Only these observed HTTP-error statuses permit Archive; TLS failures do not.
+      if (status %in% c(22L, 56L) && identical(http, "404")) next
+      # Do not hide a definite authorization/permanent HTTP refusal behind a
+      # transport error (notably exit 56). 408/429 retain bounded host fallback.
+      permanent_http <- grepl("^4[0-9]{2}$", http) && !http %in% c("408", "429")
+      transient <- !permanent_http &&
+        (status %in% c(5L, 6L, 7L, 18L, 28L, 52L, 55L, 56L, 124L) ||
+         (status == 22L && (http %in% c("408", "429") || grepl("^5[0-9]{2}$", http))))
       if (transient) break
       stop("Non-recoverable pinned source failure: ", package, " (exit=", status, ", HTTP=", http, ").")
     }
