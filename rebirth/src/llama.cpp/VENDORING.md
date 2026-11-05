@@ -17,7 +17,7 @@ from `../rust/rebirth-llm/build.rs` via the `cmake` build-dependency.
 | Upstream release tarball | `https://github.com/ggml-org/llama.cpp/archive/refs/tags/b10828.tar.gz` |
 | Release tarball SHA256 | `da0a960b36505081df726d35552ae71e84c5b7da313d41d9c52055f0d85b0247` |
 | Pruned tree SHA256 (pre-patch) | `e89c0d0b00b6d31cccf55ff5463a06455617341c15b966d5daeda89fb03b27b5` |
-| Pruned tree SHA256 (post-patch) | `e769cc030d2377f56270fd6394bab5a19983b2073a6bc60bcbdd07bcba215601` |
+| Pruned tree SHA256 (post-patch) | `3a135fc2afc1570c52abd034b44934f3f2fe9678714551abaab37066dfe4492a` |
 
 D-032 advances b9726 to b10828 (commit
 `3ad1ba7336986d98592d3e28cafd1a406715351f`) for native Spark 2.5 support.
@@ -203,3 +203,16 @@ and wider Metal indices from [PR30072](https://github.com/ggml-org/llama.cpp/pul
 No common/server changes or parser-depth policy are imported. API, schema bounds,
 model weights, floating-point computations, taps and independent goldens remain
 unchanged. See `tests/engine-boundaries/README.md` for reachability and test limits.
+
+
+## D-061: direct standard-header dependencies
+
+Patch0009 adds `<cstdlib>` to `src/llama-graph.h`, `src/llama-mmap.cpp` and
+`src/llama-vocab.cpp`, with standard-qualified environment, allocation and
+integer-conversion calls. libc++23 no longer supplies these declarations through
+incidental includes. POSIX allocation keeps its existing global declaration.
+The engine pin, upstream archive, pre-patch tree, debug semantics, allocation,
+taps and numerical operations are unchanged. See
+`tests/cran/README-engine-headers.md` for actual-source compilation and fixed
+constructor cases. Full libc++23 engine compilation is a separate acceptance
+scope; this declaration-only change does not require model replay.

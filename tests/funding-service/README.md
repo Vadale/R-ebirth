@@ -87,6 +87,19 @@ error allows at most 100 ms to confirm death/reuse; missing samples remain
 recorded and cannot certify G7's complete sampling requirement.
 
 `test_environment.py` and `install-pins.R` are separate setup/pinning checks.
+The source-fetch helper uses cloud.r-project.org then cran.r-project.org, at most
+one current-source and one 404-triggered archive request per host. Each curl
+request has a 10-second connection, 25-second transfer and 30-second process limit,
+with no curl retries. HTTP 404 with curl exit 22 or the observed macOS exit 56
+selects Archive; a receive error without 404 does not. Certificate/TLS errors and
+permanent HTTP refusals (including authorization errors paired with a transport
+error) stop immediately. Partial files are discarded and existing destinations
+are refused. Exact package pins,
+R installation/MD5 checks and final installed-version checks remain unchanged.
+The printed SHA256 records the downloaded bytes; it is not a separately pinned
+source oracle. Run the actual helper controls with
+`Rscript --vanilla tests/funding-service/test-downloads.R`; transport is simulated,
+without network, installation or model calls. All four ordinary R jobs run them.
 The frozen contract remains in `tests/service-contract/contract.json`.
 
 `Rscript --vanilla tests/funding-service/test-ipc-scan.R` runs the focused
