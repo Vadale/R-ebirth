@@ -1791,13 +1791,19 @@ mod tests {
                 0,
             )
             .unwrap_or_else(|_| panic!("stream starts"));
+            let deadline = Instant::now() + Duration::from_secs(2);
             observed
-                .recv_timeout(Duration::from_secs(2))
+                .recv_timeout(deadline.saturating_duration_since(Instant::now()))
                 .expect("worker waits");
             let completion = if matches!(mode, AsyncFixtureMode::Success) {
                 job.shutdown().unwrap()
             } else {
-                job.drain_stream().unwrap();
+                // Force the first nonblocking poll to contend; its retry releases the guard.
+                let mut held = Some(job.control.lock());
+                let (rows, _) = drain_stream_before(&job, deadline, || drop(held.take()));
+                assert!(held.is_none(), "drain retried after forced contention");
+                drop(held);
+                assert!(!rows.is_empty());
                 job.worker.take().unwrap().join().unwrap()
             };
             assert_eq!(
