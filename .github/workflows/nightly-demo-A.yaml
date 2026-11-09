@@ -57,6 +57,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          # These model checks do not render the package's Quarto vignettes.
+          install-quarto: 'false'
           # Demo A needs glmnet (Suggests); pkgload comes with devtools.
           extra-packages: any::devtools any::glmnet
           working-directory: rebirth

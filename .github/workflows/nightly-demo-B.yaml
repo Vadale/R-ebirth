@@ -57,6 +57,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          # These model checks do not render the package's Quarto vignettes.
+          install-quarto: 'false'
           # Demo B needs uwot + dbscan (Suggests); pkgload comes with devtools.
           extra-packages: any::devtools any::uwot any::dbscan
           working-directory: rebirth
