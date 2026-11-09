@@ -13,6 +13,7 @@
 #include <cfloat>
 #include <cmath>
 #include <cstdarg>
+#include <cstdlib>
 #include <cstring>
 #include <forward_list>
 #include <limits>
@@ -3169,12 +3170,12 @@ uint8_t llama_vocab::impl::token_to_byte(llama_token id) const {
         case LLAMA_VOCAB_TYPE_SPM:
         case LLAMA_VOCAB_TYPE_UGM: {
             auto buf = token_data.text.substr(3, 2);
-            return strtol(buf.c_str(), NULL, 16);
+            return std::strtol(buf.c_str(), NULL, 16);
         }
         case LLAMA_VOCAB_TYPE_BPE: {
             // Gemma4 uses BPE with SPM-style byte fallback tokens (<0xXX>)
             auto buf = token_data.text.substr(3, 2);
-            return strtol(buf.c_str(), NULL, 16);
+            return std::strtol(buf.c_str(), NULL, 16);
         }
         case LLAMA_VOCAB_TYPE_WPM: {
             GGML_ABORT("fatal error");

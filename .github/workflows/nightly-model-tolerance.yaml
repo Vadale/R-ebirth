@@ -95,6 +95,8 @@ jobs:
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          # These model checks do not render the package's Quarto vignettes.
+          install-quarto: 'false'
           extra-packages: any::devtools
           working-directory: rebirth
 

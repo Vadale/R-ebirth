@@ -10,7 +10,7 @@ actually been tested. This is not a public network deployment or a new relm API.
 
 Use a trusted installed library containing the exact
 [23 application pins](../../tests/service-contract/dependencies.csv), the checked
-relm 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.1 or 0.6.2 build and nanoarrow. Prepare a new environment and store for this
+relm 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.1, 0.6.2 or 0.6.3 build and nanoarrow. Prepare a new environment and store for this
 release; existing development snapshots and acceptance receipts keep their
 original package/source identities. Explicit dependency preparation can use:
 
@@ -18,12 +18,15 @@ original package/source identities. Explicit dependency preparation can use:
 Rscript --vanilla tests/funding-service/install-pins.R /absolute/service-library
 ```
 
-That command may download/install approved pins. It does not build relm or
+That command requires the curl executable and may download/install approved pins. It does not build relm or
 install into your personal R library. Supply the validated relm/nanoarrow build
 in the same library before setup. On Linux, source installation may need the
 usual R development tools plus libsodium, libcurl, zlib and ICU development
 libraries. Package versions alone do not identify installed bytes; setup copies
-and fingerprints the complete service library.
+and fingerprints the complete service library. Source downloads use two fixed
+CRAN HTTPS hosts, bounded requests and no automatic retries; security failures
+remain fatal. Existing installed pins and matching macOS binaries retain their
+previous preparation path.
 
 Use an existing verified model, with either the Spark or Qwen alias from the
 registry. No additional model copy is made. The Mac recipe is:

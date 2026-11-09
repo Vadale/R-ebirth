@@ -2246,3 +2246,80 @@ reproduce the current Mac failure, accept both fixed input variants, refuse
 oracle, then pass after restoration. Independent rational-to-decimal rounding
 checks the literal wire expectations. This isolated converter evidence still
 requires actual candidate macOS and all other current platform CI before merge.
+
+
+## D-061 — Direct standard-header dependencies for libc++23
+
+- **Date:** 2026-11-03. **Authorization:** the founder requested diagnosis and
+  correction of the new published0.6.2 Fedora/Clang installation failure,
+  preserving working configurations and tests, with bounded attempts.
+- **Cause:** `llama-graph.h` uses `getenv` and `atoi` without their own standard
+  header. libc++23 removed incidental includes. The published engine bundle is
+  byte-identical to the submitted source. The original actual header reproduces
+  both diagnostics with Clang23/libc++23, while Clang/libstdc++ and GCC accept it.
+- **Decision:** owned patch0009 directly includes `<cstdlib>` and qualifies both
+  calls with `std::`. Keep b10828, all prior patches, dependency locks, R/native
+  APIs, runtime arithmetic, tracing/steering and independent goldens unchanged.
+  No compatibility macro, warning suppression or relaxed check is introduced.
+- **Regression:** compile the actual header first, and exercise its constructor
+  against seven fixed debug-environment expectations. Require its direct include
+  so permissive standard libraries cannot conceal the missing dependency.
+  The original source must be refused. Existing Linux/native macOS Rust jobs
+  retain this control's diagnostics; all existing checks remain required.
+- **Acceptance boundary:** current full engine compilation with libc++23,
+  vendor/reverse-patch/source-bundle coherence, and ordinary candidate platform
+  CI. Local tooling does not claim the exact Fedora CRAN R environment.
+  Published0.6.2 stays immutable; a subsequent submission/version, merge,
+  tag or release needs the applicable explicit authorization.
+
+The bounded complete libc++23 build found the same missing header in two further
+translation units: `llama-mmap.cpp` (`posix_memalign`/`free`) and `llama-vocab.cpp`
+(`strtol`). They are included in the same patch0009 and direct-dependency gate;
+both full units are syntax-compiled by the regression. This is one cause-specific
+correction, not a compiler-flag workaround or a new memory/algorithm change.
+
+
+### D-061 amendment — next-version and CI source preparation
+
+On 2026-11-03 the founder authorized correcting the confirmed GitHub failures
+immediately while the remaining published 0.6.2 CRAN rows update. Prepare 0.6.3;
+keep the published 0.6.2 archive immutable. This is not merge or publication
+authority. The application version allowlist adds only 0.6.3 and retains explicit
+refusals for future, development and malformed versions.
+
+The oldrel Linux package check completed successfully; subsequent service setup
+failed after two 60-second stringi 1.8.9 downloads on the same host. Replace that
+source-fetch loop with two fixed official HTTPS hosts and at most four bounded
+curl invocations, Archive only after 404; each allows at most three HTTPS redirects. Each request has 10/25/30-second connect/transfer/
+process limits and zero curl retries. Certificate and authorization failures
+remain fatal; partial data is removed and existing destinations preserved.
+The 23 dependency pins, installation/MD5 and final installed-version checks,
+service behavior and acceptance gates remain unchanged. Recorded source hashes
+are provenance, not independent pinned-hash verification.
+
+Offline actual-helper controls cover transport/deadline and archive routing,
+security refusals and destination preservation; the four ordinary R jobs run
+them before setup. A real affected source fetch is data-only validation, not
+installation or hosted recovery. Current full CI and the final-archive platform
+preflight remain required. No test suppression, timeout increase or golden
+regeneration is introduced.
+
+### D-061 amendment — macOS archive routing
+
+The subsequent macOS jobs completed their R package checks, then service setup
+failed to fetch pinned curl 8.0.0. Its current-source URLs returned HTTP 404 with
+curl exit 56, so the helper's exit-22-only condition never selected Archive.
+Recognize this observed exit/HTTP pair while retaining exit 22 support. An exit
+56 without 404 never selects Archive; a definite permanent HTTP refusal cannot
+be hidden by a transport status. Certificate/TLS failures remain fatal even when
+an HTTP code is present. Only exit 0 with HTTP 200 can retain downloaded bytes.
+The cause of curl's platform-specific exit code is not established by these logs.
+
+Keep both official hosts, redirect/connection/transfer/process bounds, zero
+retries, dependency pins, installation/version checks and service gates unchanged.
+Extend the actual-helper offline regressions with the observed macOS routing,
+partial receive failures, permanent HTTP/TLS refusals and bounded transient
+fallbacks. The old helper must fail the new Archive assertion, and bypassing the
+permanent-HTTP guard must fail the refusal assertion. Current hosted service
+acceptance is still required; local routing controls are not a package/model run
+or a guarantee that CRAN/network failures cannot recur.

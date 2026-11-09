@@ -4,6 +4,7 @@
 
 #include "ggml.h"
 
+#include <cstdlib>
 #include <cstring>
 #include <climits>
 #include <stdexcept>
@@ -329,7 +330,7 @@ struct llama_file::impl {
         }
 
         struct aligned_buffer_deleter {
-            void operator()(void * p) const { free(p); }
+            void operator()(void * p) const { std::free(p); }
         };
         std::unique_ptr<void, aligned_buffer_deleter> buffer(raw_buffer);
 

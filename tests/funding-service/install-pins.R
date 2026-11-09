@@ -1,5 +1,6 @@
 #!/usr/bin/env Rscript
 # Explicit preparation only. Never sourced by the running service.
+source('tests/funding-service/download-source.R')
 args <- commandArgs(TRUE)
 if (!length(args) || length(args) > 2L || (length(args) == 2L && args[2] != '--sampler-only'))
   stop('Usage: Rscript install-pins.R /absolute/library [--sampler-only]')
@@ -30,17 +31,11 @@ if (length(missing)) {
     dest <- file.path(target,pkg)
     want <- pins$version[match(pkg,pins$package)]
     if (dir.exists(dest) && read.dcf(file.path(dest,'DESCRIPTION'),'Version')[[1L]] == want) next
-    filename <- paste0(pkg, '_', want, '.tar.gz')
     tmp <- tempfile(fileext='.tar.gz')
-    urls <- c(paste0('https://cran.r-project.org/src/contrib/',filename), paste0('https://cran.r-project.org/src/contrib/Archive/',pkg,'/',filename))
-    ok <- FALSE
-    for (url in urls) {
-      ok <- tryCatch({download.file(url,tmp,mode='wb',quiet=TRUE); TRUE}, error=function(e) FALSE)
-      if (ok) break
-    }
-    if (!ok) stop('Pinned source unavailable: ', pkg)
-    install.packages(tmp, lib=target, repos=NULL, type='source', dependencies=FALSE)
-    unlink(tmp)
+    tryCatch({
+      service_download_source(pkg, want, tmp)
+      install.packages(tmp, lib=target, repos=NULL, type='source', dependencies=FALSE)
+    }, finally = unlink(tmp))
   }
 }
 for (i in seq_len(nrow(pins))) {
