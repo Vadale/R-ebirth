@@ -40,7 +40,8 @@ for (cmake in cmake_paths) {
     config <- configure_case(TRUE, 'false', windows, cmake = cmake)
     stopifnot(is.environment(config), identical(config$cmake_command, cmake))
     exports <- trimws(grep('export CMAKE=', config$new_txt, value = TRUE, fixed = TRUE))
-    expected <- paste0('export ', config$.native_build_env, ' && \\')
+    expected <- paste0('export ', config$.native_build_env,
+                       ' RELM_NATIVE_LIB_DIR="$(CURDIR)/$(LIBDIR)"', ' && \\')
     stopifnot(length(exports) == 1L, all(exports == expected))
     # The former regex replacement must fail this same byte comparison.
     old <- gsub('@NATIVE_BUILD_ENV@', config$.native_build_env, config$mv_txt)
@@ -49,10 +50,17 @@ for (cmake in cmake_paths) {
     if (.Platform$OS.type != 'windows') {
       capture <- file.path(root, 'cmake-path.txt')
       recipe <- sub(' && \\', '', exports[[1L]], fixed = TRUE)
-      writeLines(c('all:', paste0('\t@', recipe, '; printf "%s" "$$CMAKE" > ',
-                                 shQuote(capture))), makefile)
+      lib_capture <- file.path(root, 'native-lib-dir.txt')
+      build_root <- file.path(root, 'source with spaces')
+      # Evaluate the added export through make and sh as well as checking its bytes.
+      writeLines(c(paste('CURDIR :=', build_root), 'LIBDIR = ./rust/target/release',
+                   'all:', paste0('\t@', recipe, '; printf "%s" "$$CMAKE" > ',
+                                  shQuote(capture), '; printf "%s" "$$RELM_NATIVE_LIB_DIR" > ',
+                                  shQuote(lib_capture))), makefile)
       stopifnot(system2('make', c('-f', shQuote(makefile))) == 0L,
-                identical(readChar(capture, file.info(capture)$size, useBytes = TRUE), cmake))
+                identical(readChar(capture, file.info(capture)$size, useBytes = TRUE), cmake),
+                identical(readChar(lib_capture, file.info(lib_capture)$size, useBytes = TRUE),
+                          paste0(build_root, '/./rust/target/release')))
     }
   }
 }
