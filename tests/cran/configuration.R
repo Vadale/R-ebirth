@@ -103,6 +103,7 @@ for (arch in c("x86_64", "i386", "i686", "aarch64", "arm64")) {
   stopifnot(is.environment(configured),
             any(configured$new_txt == paste("TARGET =", target)),
             any(configured$new_txt == "LIBDIR = $(TARGET_DIR)/$(TARGET)/release"),
+            any(grepl("^PKG_LIBS = .* -lsynchronization( |$)", configured$new_txt)),
             !any(grepl("@WINDOWS_TARGET@", configured$new_txt, fixed = TRUE)),
             grepl(if (arch %in% c("aarch64", "arm64")) "-lc++" else "-lstdc++",
                   configured$.llama_libs, fixed = TRUE))
