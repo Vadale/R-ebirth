@@ -25,7 +25,9 @@ def main():
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
     env = os.environ.copy()
+    profile = out / "target/release"
     env.update(TMPDIR=str(out), CARGO_HOME=str(out / "cargo-home"),
+               RELM_NATIVE_LIB_DIR=str(profile),
                CARGO_TARGET_DIR=str(out / "target"), CARGO_NET_OFFLINE="true",
                CARGO_INCREMENTAL="0", RELM_R_PORTABLE="1", CC="gcc",
                CFLAGS="-O2 -fPIC -flto=10 -fno-fat-lto-objects "
@@ -78,7 +80,9 @@ stopifnot(length(f) == 1L); eval(f[[1L]])
 for (windows in c(FALSE, TRUE)) {
     cfg <- configure_case(TRUE, "false", windows)
     stopifnot(is.environment(cfg), cfg$.r_state_lib == "-lrelm-r-state -lrelm",
-              any(grepl("-lrelm -lrelm-r-state ", cfg$new_txt, fixed=TRUE)))
+              any(grepl("-lrelm -lrelm-r-state ", cfg$new_txt, fixed=TRUE)),
+              any(grepl('RELM_NATIVE_LIB_DIR="$(CURDIR)/$(LIBDIR)"',
+                        cfg$new_txt, fixed=TRUE)))
     if (!windows) writeLines(grep("^PKG_LIBS =", cfg$new_txt, value=TRUE),
                             file.path(root, "pkg-libs.txt"))
 }
@@ -88,7 +92,6 @@ stopifnot(is.environment(cfg), cfg$.r_state_lib == "",
 ''')
     run("configure", ["Rscript", "--vanilla", str(configure), str(ROOT), str(out)])
     run("build", ["cargo", "build", "--release", "--offline", "--manifest-path", str(fixture / "Cargo.toml")])
-    profile = out / "target/release"
     archive = profile / "librelm-r-state.a"
     if not archive.is_file():
         raise RuntimeError("native state archive was not copied beside librelm.a")

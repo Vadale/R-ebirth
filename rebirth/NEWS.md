@@ -1,3 +1,9 @@
+# relm (development)
+
+- Fix source installation with Cargo 1.100. R's build stages native archives
+  in the directory used by the linker. Windows builds accept both layouts
+  for Cargo's intermediate files.
+
 # relm 0.6.3
 
 ## Installation fixes

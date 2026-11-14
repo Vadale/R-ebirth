@@ -4,9 +4,8 @@
 //! the `cmake` build-dependency, then:
 //!   1. emits `cargo:rustc-link-*` so cargo-driven links (the `rebirth-llm` tests
 //!      and the `rebirth-ffi` `document` bin) resolve the engine symbols, and
-//!   2. relocates the produced `.a` archives next to `librelm.a` in the shared
-//!      `rust/target/<profile>/` dir so the R shared-object link (Makevars
-//!      `PKG_LIBS`) can find them.
+//!   2. stages the produced `.a` archives beside `librelm.a` in the directory
+//!      requested by R's Makevars, so its shared-object link can find them.
 //!
 //! Backends (D-006): Metal + embedded shaders on macOS arm64, CPU only elsewhere,
 //! CUDA behind the default-off `cuda` feature on Linux x86_64 (D-050).
@@ -45,6 +44,7 @@ fn main() {
     println!("cargo:rerun-if-changed=native/windows_compat.cmake");
     println!("cargo:rerun-if-changed=native/windows_thread_compat.h");
     println!("cargo:rerun-if-env-changed=RELM_NATIVE_SANITIZERS");
+    println!("cargo:rerun-if-env-changed=RELM_NATIVE_LIB_DIR");
     for variable in ["RELM_R_PORTABLE", "CC", "CXX", "CFLAGS", "CXXFLAGS"] {
         println!("cargo:rerun-if-env-changed={variable}");
     }
@@ -251,11 +251,14 @@ fn main() {
     }
     lib_stems.push("ggml-base");
 
-    // Relocate the archives to a stable per-build dir (for cargo's own link) and
-    // to the shared profile dir alongside librelm.a (for the R SHLIB link).
+    // Cargo links from the per-build directory. Makevars supplies the final
+    // archive directory for the R linker independently of Cargo's OUT_DIR.
     let native_dir = dst.join("relm-native");
     fs::create_dir_all(&native_dir).expect("create native lib dir");
-    let profile_dir = profile_target_dir();
+    let r_lib_dir = env::var_os("RELM_NATIVE_LIB_DIR").map(PathBuf::from);
+    if let Some(dir) = &r_lib_dir {
+        fs::create_dir_all(dir).expect("create R native archive directory");
+    }
 
     for stem in &lib_stems {
         let file_name = format!("lib{stem}.a");
@@ -273,8 +276,10 @@ fn main() {
         });
         fs::copy(&found, native_dir.join(&file_name))
             .unwrap_or_else(|e| panic!("copy {file_name} into native dir: {e}"));
-        if let Some(ref pdir) = profile_dir {
-            let _ = fs::copy(&found, pdir.join(&file_name));
+        if let Some(dir) = &r_lib_dir {
+            fs::copy(&found, dir.join(&file_name)).unwrap_or_else(|e| {
+                panic!("copy {file_name} into R native archive directory: {e}")
+            });
         }
     }
 
@@ -412,19 +417,6 @@ fn clang_runtime_dir() -> Option<PathBuf> {
             .join("lib")
             .join("darwin"),
     )
-}
-
-/// The shared `rust/target/<profile>/` directory (alongside `librelm.a`),
-/// derived from `OUT_DIR = <target>/<profile>/build/<crate>-<hash>/out`.
-fn profile_target_dir() -> Option<PathBuf> {
-    let out_dir = PathBuf::from(env::var("OUT_DIR").ok()?);
-    // out -> <crate>-<hash> -> build -> <profile>
-    let dir = out_dir.ancestors().nth(3)?.to_path_buf();
-    if dir.is_dir() {
-        Some(dir)
-    } else {
-        None
-    }
 }
 
 /// Recursively search `dir` for a file named `name`, returning the first match.

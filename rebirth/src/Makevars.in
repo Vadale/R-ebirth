@@ -46,7 +46,7 @@ $(STATLIB):
 	fi
 
 	export CARGO_HOME=$(CARGOTMP) && \
-	export @NATIVE_BUILD_ENV@ && \
+	export @NATIVE_BUILD_ENV@ RELM_NATIVE_LIB_DIR="$(CURDIR)/$(LIBDIR)" && \
 	export PATH="$(PATH):$(HOME)/.cargo/bin" && \
 	@PANIC_EXPORTS@RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ @SELFTEST_FEATURE@ @CUDA_FEATURE@ -p rebirth-ffi --lib @PROFILE@ --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) @TARGET@
 

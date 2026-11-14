@@ -43,7 +43,7 @@ $(STATLIB):
 
 	# Build the project using Cargo with additional flags
 	export CARGO_HOME=$(CARGOTMP) && \
-	export @NATIVE_BUILD_ENV@ && \
+	export @NATIVE_BUILD_ENV@ RELM_NATIVE_LIB_DIR="$(CURDIR)/$(LIBDIR)" && \
 	export LIBRARY_PATH="$(LIBRARY_PATH);$(CURDIR)/$(TARGET_DIR)/libgcc_mock" && \
 	RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ @SELFTEST_FEATURE@ @CUDA_FEATURE@ -p rebirth-ffi --target=$(TARGET) --lib @PROFILE@ --manifest-path=rust/Cargo.toml --target-dir=$(TARGET_DIR)
 
