@@ -7,7 +7,8 @@ STATLIB = $(LIBDIR)/librelm.a
 # @LLAMA_LIBS@ (from tools/config.R) carries the vendored llama.cpp/ggml static
 # archives + their system libs. Windows CPU acceptance is a separate WP15 gate;
 # the optional CUDA feature remains restricted to Linux x86_64.
-PKG_LIBS = -L$(LIBDIR) -lrelm @R_STATE_LIB@ @LLAMA_LIBS@ -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
+# Rust std uses the Windows WaitOnAddress and WakeByAddress functions.
+PKG_LIBS = -L$(LIBDIR) -lrelm @R_STATE_LIB@ @LLAMA_LIBS@ -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll -lsynchronization
 
 # R would otherwise auto-glob src/*.{c,cc,cpp,...} into OBJECTS, and the vendored
 # `src/llama.cpp/` DIRECTORY matches the *.cpp pattern -- R then tries to compile
@@ -43,7 +44,7 @@ $(STATLIB):
 
 	# Build the project using Cargo with additional flags
 	export CARGO_HOME=$(CARGOTMP) && \
-	export @NATIVE_BUILD_ENV@ && \
+	export @NATIVE_BUILD_ENV@ RELM_NATIVE_LIB_DIR="$(CURDIR)/$(LIBDIR)" && \
 	export LIBRARY_PATH="$(LIBRARY_PATH);$(CURDIR)/$(TARGET_DIR)/libgcc_mock" && \
 	RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ @SELFTEST_FEATURE@ @CUDA_FEATURE@ -p rebirth-ffi --target=$(TARGET) --lib @PROFILE@ --manifest-path=rust/Cargo.toml --target-dir=$(TARGET_DIR)
 

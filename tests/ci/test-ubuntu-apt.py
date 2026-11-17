@@ -50,9 +50,26 @@ class UbuntuArchiveTest(unittest.TestCase):
                                 b"URIs: https://security.ubuntu.com/ubuntu/\nSuites: noble-security")
         self.run_case(source, source.replace(MIRROR, ARCHIVE))
 
+    def test_stock_azure_and_cloud_init_uris(self):
+        expected = SOURCE.replace(MIRROR, ARCHIVE)
+        for uri in (b"http://azure.archive.ubuntu.com/ubuntu/",
+                    b"http://archive.ubuntu.com/ubuntu",
+                    b"https://archive.ubuntu.com/ubuntu",
+                    b"https://azure.archive.ubuntu.com/ubuntu"):
+            with self.subTest(uri=uri):
+                source = SOURCE.replace(MIRROR, uri)
+                self.run_case(source, expected)
+
+    def test_stock_security_uri_upgrades_to_https(self):
+        security = b"https://security.ubuntu.com/ubuntu/"
+        source = SOURCE.replace(MIRROR, b"http://archive.ubuntu.com/ubuntu/", 1)
+        source = source.replace(MIRROR, b"http://security.ubuntu.com/ubuntu")
+        expected = SOURCE.replace(MIRROR, ARCHIVE, 1).replace(MIRROR, security)
+        self.run_case(source, expected)
+
     def test_unexpected_layouts_refused_without_writes(self):
         for source in (None, b"", SOURCE.replace(b"URIs:", b"# URIs:"),
-                       SOURCE.replace(MIRROR, b"http://archive.ubuntu.com/ubuntu/"),
+                       SOURCE.replace(MIRROR, b"https://archive.ubuntu.com/other/"),
                        SOURCE.replace(MIRROR, b"https://example.org/ubuntu/", 1),
                        SOURCE.replace(MIRROR, MIRROR + b" " + ARCHIVE),
                        SOURCE.replace(MIRROR, b"https://security.ubuntu.com/ubuntu/")):

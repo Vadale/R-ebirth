@@ -44,9 +44,9 @@ pub fn source_dir(path: &Path) -> io::Result<PathBuf> {
 }
 
 pub fn windows_output_dir(out: &Path) -> io::Result<PathBuf> {
-    // OUT_DIR = <target>/<optional triple>/<profile>/build/rebirth-llm-<hash>/out.
-    // Keep both the profile and Cargo hash; unrelated build units must not share
-    // a CMake cache. Everything remains owned by normal Cargo/R target cleanup.
+    // Cargo 1.100 separated the crate name and unit hash into two components.
+    // Preserve the profile and unit hash so CMake caches remain isolated and
+    // live inside the directory owned by Cargo/R cleanup.
     let invalid = || {
         io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -54,17 +54,27 @@ pub fn windows_output_dir(out: &Path) -> io::Result<PathBuf> {
         )
     };
     let unit = out.parent().ok_or_else(invalid)?;
-    let build = unit.parent().ok_or_else(invalid)?;
-    let profile = build.parent().ok_or_else(invalid)?;
-    let hash = unit
+    let parent = unit.parent().ok_or_else(invalid)?;
+    let name = unit
         .file_name()
         .and_then(|x| x.to_str())
-        .and_then(|x| x.strip_prefix("rebirth-llm-"))
-        .filter(|x| !x.is_empty() && x.bytes().all(|c| c.is_ascii_hexdigit()))
         .ok_or_else(invalid)?;
-    if out.file_name() != Some("out".as_ref()) || build.file_name() != Some("build".as_ref()) {
+    let (build, hash) = if parent.file_name() == Some("rebirth-llm".as_ref()) {
+        (parent.parent().ok_or_else(invalid)?, name)
+    } else {
+        (
+            parent,
+            name.strip_prefix("rebirth-llm-").ok_or_else(invalid)?,
+        )
+    };
+    if out.file_name() != Some("out".as_ref())
+        || build.file_name() != Some("build".as_ref())
+        || hash.is_empty()
+        || !hash.bytes().all(|c| c.is_ascii_hexdigit())
+    {
         return Err(invalid());
     }
+    let profile = build.parent().ok_or_else(invalid)?;
     Ok(profile.join("n").join(hash))
 }
 
@@ -202,15 +212,23 @@ mod tests {
             "target/x86_64-pc-windows-gnu/release",
         ] {
             let root = Path::new("package with spaces").join(prefix);
-            let original = root.join("build/rebirth-llm-a3b0253357eabd3b/out");
-            let output = windows_output_dir(&original).unwrap();
-            assert_eq!(output, root.join("n/a3b0253357eabd3b"));
-            assert!(output.starts_with(&root));
-            assert!(output.as_os_str().len() < original.as_os_str().len());
-            assert_ne!(
-                output,
-                windows_output_dir(&root.join("build/rebirth-llm-1234567890abcdef/out")).unwrap()
-            );
+            for (first, second) in [
+                (
+                    "build/rebirth-llm-a3b0253357eabd3b/out",
+                    "build/rebirth-llm-1234567890abcdef/out",
+                ),
+                (
+                    "build/rebirth-llm/a3b0253357eabd3b/out",
+                    "build/rebirth-llm/1234567890abcdef/out",
+                ),
+            ] {
+                let original = root.join(first);
+                let output = windows_output_dir(&original).unwrap();
+                assert_eq!(output, root.join("n/a3b0253357eabd3b"));
+                assert!(output.starts_with(&root));
+                assert!(output.as_os_str().len() < original.as_os_str().len());
+                assert_ne!(output, windows_output_dir(&root.join(second)).unwrap());
+            }
         }
     }
 
@@ -223,6 +241,10 @@ mod tests {
             "target/release/build/rebirth-llm-../out",
             "target/release/not-build/rebirth-llm-123/out",
             "target/release/build/rebirth-llm-123/other",
+            "target/release/build/other-crate/123/out",
+            "target/release/build/rebirth-llm/invalid/out",
+            "target/release/not-build/rebirth-llm/123/out",
+            "target/release/build/rebirth-llm/123/other",
         ] {
             assert_eq!(
                 windows_output_dir(Path::new(path)).unwrap_err().kind(),

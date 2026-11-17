@@ -35,6 +35,7 @@ fn main() {
         "CC",
         "CFLAGS",
         "RELM_R_PORTABLE",
+        "RELM_NATIVE_LIB_DIR",
         "R_MAKEVARS_USER",
     ] {
         println!("cargo:rerun-if-env-changed={name}");
@@ -108,9 +109,11 @@ fn main() {
         // GCC slim-LTO members lose their GNU symbol index when bundled into
         // Rust's staticlib. Keep R's CFLAGS intact and let its final linker
         // consume the original archive (D-058). Cargo executables use OUT_DIR.
-        let profile = out.ancestors().nth(3).expect("Cargo profile directory");
-        fs::copy(&archive, profile.join("librelm-r-state.a"))
-            .expect("copy R state archive beside librelm.a");
+        if let Some(dir) = env::var_os("RELM_NATIVE_LIB_DIR").map(PathBuf::from) {
+            fs::create_dir_all(&dir).expect("create R native archive directory");
+            fs::copy(&archive, dir.join("librelm-r-state.a"))
+                .expect("copy R state archive beside librelm.a");
+        }
         println!("cargo:rustc-link-lib=static:-bundle=relm-r-state");
     }
 }
