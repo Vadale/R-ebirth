@@ -132,6 +132,20 @@ class UbuntuNobleRepairTest(unittest.TestCase):
             with self.subTest(source=source):
                 self.repair(source)
 
+    def test_official_ec2_cloud_init_sources_are_restored(self):
+        for region in ("us-east-2", "us-west-2"):
+            for scheme in ("http", "https"):
+                for suffix in ("", "/"):
+                    with self.subTest(region=region, scheme=scheme, suffix=suffix):
+                        uri = f"{scheme}://{region}.ec2.archive.ubuntu.com/ubuntu{suffix}".encode()
+                        self.repair(self.source.replace(MIRROR, uri))
+
+    def test_stale_temporary_file_does_not_block_repair(self):
+        stale = self.path.with_name(self.path.name + ".relm-tmp")
+        stale.write_bytes(b"interrupted earlier operation")
+        self.repair(self.source)
+        self.assertEqual(stale.read_bytes(), b"interrupted earlier operation")
+
     def test_repaired_sources_are_idempotent(self):
         result = self.repair(self.source)
         self.assertEqual(self.repair(result), result)
@@ -139,6 +153,7 @@ class UbuntuNobleRepairTest(unittest.TestCase):
     def test_invalid_origin_signing_or_trust_is_refused_without_writes(self):
         foreign_sources = (
             self.source.replace(MIRROR, b"https://example.org/ubuntu/", 1),
+            self.source.replace(MIRROR, b"https://us-west-2.ec2.archive.ubuntu.com.example.org/ubuntu/", 1),
             self.source.replace(str(self.keyring).encode(), b"/tmp/foreign.gpg", 1),
             self.source + b"\nTrusted: yes\n",
             self.source.replace(b"Types: deb", b"Allow-Insecure: yes\nTypes: deb", 1),

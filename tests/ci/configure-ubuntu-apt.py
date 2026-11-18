@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import platform
 import subprocess
+import tempfile
 import sys
 
 MIRROR = b"mirror+file:/etc/apt/apt-mirrors.txt"
@@ -17,6 +18,13 @@ for origin in (b"http://archive.ubuntu.com", b"http://azure.archive.ubuntu.com",
     MAIN_URIS.update((origin + b"/ubuntu", origin + b"/ubuntu/"))
 for origin in (b"http://security.ubuntu.com", b"https://security.ubuntu.com"):
     SECURITY_URIS.update((origin + b"/ubuntu", origin + b"/ubuntu/"))
+# Cloud-init may keep an official EC2 origin before image mirror normalization.
+# R-devel repair accepts these exact hosts without changing ordinary R routing.
+REPAIR_MAIN_URIS = set(MAIN_URIS)
+for region in (b"us-east-2", b"us-west-2"):
+    for scheme in (b"http://", b"https://"):
+        origin = scheme + region + b".ec2.archive.ubuntu.com/ubuntu"
+        REPAIR_MAIN_URIS.update((origin, origin + b"/"))
 URI_LINE = re.compile(rb"^(URIs:[ \t]*)([^\r\n]*)(\r?)$", re.MULTILINE)
 
 
@@ -75,7 +83,7 @@ def restore_noble(path, release, architecture, keyring):
         if (not fields[b"Types"].split()
                 or not set(fields[b"Types"].split()) <= {b"deb", b"deb-src"}
                 or not fields[b"URIs"].split()
-                or not set(fields[b"URIs"].split()) <= MAIN_URIS | SECURITY_URIS
+                or not set(fields[b"URIs"].split()) <= REPAIR_MAIN_URIS | SECURITY_URIS
                 or not fields[b"Suites"].split()
                 or not set(fields[b"Suites"].split()) <= suites
                 or not set(fields[b"Components"].split()) <= components
@@ -101,11 +109,11 @@ def restore_noble(path, release, architecture, keyring):
     ).encode()
     if updated != original:
         # Atomic replacement prevents a partial sources file after an interrupted write.
-        temporary = path.with_name(path.name + ".relm-tmp")
-        with temporary.open("xb") as stream:
-            stream.write(updated)
-        temporary.chmod(0o644)
-        temporary.replace(path)
+        with tempfile.TemporaryDirectory(prefix=".relm-apt-", dir=path.parent) as directory:
+            temporary = Path(directory) / path.name
+            temporary.write_bytes(updated)
+            temporary.chmod(0o644)
+            temporary.replace(path)
     print("Ubuntu APT: signed Noble main, updates, backports and security indices enabled")
 
 
