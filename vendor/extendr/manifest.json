@@ -1,5 +1,5 @@
 {
-  "cargo_lock_sha256": "b5729dbf0b4850c5bddd97f17681a2317e064490275f3f6fa280c6a4fa07dab6",
+  "cargo_lock_sha256": "479c83c69654b7efd1f8321192eeed42c77f43c423da4df1e1bef247078a2dcd",
   "changed": {
     "extendr-api-0.9.0/src/robj/rinternals.rs": {
       "patched": "2fb044366bf57fec0c58476d427dd111c5b58b37c59f0d674971481d7cb13b9a",

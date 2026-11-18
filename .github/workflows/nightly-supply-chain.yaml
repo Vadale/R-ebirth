@@ -44,8 +44,8 @@ jobs:
       - name: Install cargo-audit
         run: cargo install cargo-audit --locked
 
-      # Default behaviour is the intended gate: a VULNERABILITY advisory fails the job
-      # (non-zero exit); an unmaintained/notice warning does NOT (verified locally:
+      # Vulnerability and unsound-memory advisories fail the job.
+      # An unmaintained/notice warning remains visible (verified locally:
       # `paste` unmaintained -> exit 0). Prove it actually scanned (a nightly that
       # silently scans nothing lies): assert a non-zero dependency count.
       - name: Run cargo audit (fail loud on any vulnerability)
@@ -85,18 +85,18 @@ jobs:
           # annotation below is never printed, on exactly the run that needs it. The
           # exit code still gated correctly, which is why it went unnoticed.
           set +e
-          cargo audit 2>&1 | tee audit.log
+          cargo audit --deny unsound 2>&1 | tee audit.log
           status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -ne 0 ]; then
-            echo "::error::cargo audit reported a security vulnerability in the dependency tree (exit $status). Triage the advisory above; do not ignore it without a documented reason in deny.toml."
+            echo "::error::cargo audit reported a vulnerability or unsound dependency (exit $status). Triage the advisory above; do not ignore it without a documented reason in deny.toml."
             exit 1
           fi
           if ! scanned_nonempty_lockfile audit.log; then
             echo "::error::cargo audit did not scan the lockfile (0 crates) — refusing a false green."
             exit 1
           fi
-          echo "cargo audit OK: no vulnerabilities in the scanned dependency tree."
+          echo "cargo audit OK: no vulnerabilities or unsound advisories in the scanned dependency tree."
 
   cargo-deny-advisories:
     runs-on: ubuntu-24.04
@@ -111,7 +111,10 @@ jobs:
       # documented `paste` unmaintained ignore.
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-deny
+          tool: cargo-deny@0.21.0
+
+      - name: Report the temporary chrono maintenance disposition
+        run: echo "::warning::RUSTSEC-2026-0543 is accepted only through arrow-array =59.3.2 until December17 UTC. Blocking resumes December18. See D-062."
 
       - name: cargo deny — advisories
         working-directory: rebirth/src/rust
