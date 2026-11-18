@@ -49,14 +49,21 @@ wildcards = "warn"
 allow-wildcard-paths = true
 
 [advisories]
-# Security VULNERABILITIES fail the nightly advisories run. One known transitive
-# maintenance notice is ignored with a reason (it is not a vulnerability):
+# Include indirect dependencies such as arrow-data; workspace-only misses them.
+unsound = "all"
+# Vulnerabilities and transitive unsound advisories fail the nightly run.
+# The reviewed maintenance-notice dispositions below retain their individual scope.
 ignore = [
     # paste 1.0.15 — unmaintained (upstream archived, RUSTSEC-2024-0436). A transitive
     # proc-macro dependency of extendr-api (the R bridge); there is no safe drop-in in
     # the tree today. A maintenance NOTICE, not a vulnerability. Revisit on an extendr
     # bump (a maintained replacement, e.g. `pastey`, would clear this). (2026-07-07)
     "RUSTSEC-2024-0436",
+    # Arrow59.3.2 requires chrono, which has no maintained drop-in release.
+    # This reviewed maintenance-risk acceptance is valid through December17 UTC.
+    # cargo-deny0.21 enforces expiry and this exact dependent version. Vulnerability
+    # and unsound reclassifications also fail the independent cargo-audit job.
+    { id = "RUSTSEC-2026-0543", reason = "Mandatory Arrow dependency. Temporary maintenance-risk acceptance under D-062.", expiry = "2026-12-17", allow = ["arrow-array@=59.3.2"] },
 ]
 
 [sources]

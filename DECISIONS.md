@@ -2323,3 +2323,41 @@ fallbacks. The old helper must fail the new Archive assertion, and bypassing the
 permanent-HTTP guard must fail the refusal assertion. Current hosted service
 acceptance is still required; local routing controls are not a package/model run
 or a guarantee that CRAN/network failures cannot recur.
+
+## D-062 — Arrow security maintenance and R-devel runner preparation
+
+- **Date:** 2026-11-18
+- **Status:** accepted for targeted corrective maintenance
+- **Decision:** update the three direct Arrow pins and six resolved Arrow crates
+  from 59.0.0 to 59.3.2, which fixes RUSTSEC-2026-0442. Regenerate the source-only
+  crate bundle, lock digest, authors and license notices with the existing
+  distribution tools. Retain Rust 1.85, default spill and no-spill behavior,
+  the IPC stream schema and float32 values. The engine pin, owned patches and
+  independent numerical references are unchanged.
+- **Runner correction:** prepare signed official Ubuntu Noble repositories
+  before R-devel setup, checking the actual repository-backed candidates for
+  setup-r's prerequisites. Restrict repair to the ephemeral Ubuntu24 amd64
+  runner and the named Ubuntu source file. Reject unknown sources, signing
+  keys and trust overrides before mutation. Preserve sibling repositories.
+  Existing ordinary R archive rewriting remains supported.
+- **Security policy:** transitive unsound advisories must fail alongside
+  vulnerabilities. A successful default cargo-audit exit alone does not clear
+  informational unsound warnings. Preserve scan output and nonempty-lock checks.
+- **Chrono disposition:** chrono is mandatory in upstream Arrow59.3.2 and is
+  covered by RUSTSEC-2026-0543. No patched chrono version is available. Accept
+  this maintenance risk temporarily for the exact arrow-array =59.3.2 dependent.
+  Pin the CI-only cargo-deny tool to0.21.0 at both existing install sites, using
+  its native expiry2026-12-17. The date is inclusive, so blocking resumes
+  December18 UTC. Keep a visible CI warning and unsuppressed cargo-audit output.
+  The independent audit job rejects unsound advisories and vulnerabilities,
+  including any later reclassification of the same advisory ID.
+- **Dependency scope:** Arrow-buffer59.3.2 requires num-bigint0.5. The lock
+  therefore also updates num-bigint0.4.8 to0.5.1. Other versions and sources
+  remain pinned. The existing extendr patch manifest records the new whole-lock
+  digest after verification of its unchanged owned patch and source bytes.
+- **Verification:** exercise actual APT helper recovery/refusal behavior and
+  scanner policy, check the resolved/vendor graph and source licenses, and run
+  affected Rust and R/nanoarrow spill, bounds and integrity regressions.
+  Required final PR platform checks and the declared Rust floor remain gates.
+  Reuse unchanged model/engine evidence at its recorded scope. No golden update
+  or unrelated dependency/API/engine change is part of this decision.

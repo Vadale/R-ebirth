@@ -34,9 +34,9 @@ serde_json = { version = "=1.0.145", default-features = false, features = ["std"
 # so only the IPC core is built. arrow-buffer/arrow-data/arrow-select/flatbuffers,
 # and arrow-array's own chrono/num/half temporal-and-numeric support, arrive
 # transitively (intrinsic to arrow-array — not removable without forking arrow).
-arrow-array = { version = "=59.0.0", default-features = false, optional = true }
-arrow-schema = { version = "=59.0.0", default-features = false, optional = true }
-arrow-ipc = { version = "=59.0.0", default-features = false, optional = true }
+arrow-array = { version = "=59.3.2", default-features = false, optional = true }
+arrow-schema = { version = "=59.3.2", default-features = false, optional = true }
+arrow-ipc = { version = "=59.3.2", default-features = false, optional = true }
 
 # The `cmake` crate drives the vendored llama.cpp static build (DECISIONS.md
 # D-006 — the only new dependency WP1 introduces). It shells out to the system

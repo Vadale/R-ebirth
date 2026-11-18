@@ -145,6 +145,19 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
+      - name: Prepare signed Ubuntu indices for R-devel
+        run: |
+          python3 tests/ci/test-ubuntu-apt.py
+          sudo python3 tests/ci/configure-ubuntu-apt.py --restore-noble /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get -o APT::Update::Error-Mode=any update
+          for package in gdebi-core qpdf devscripts ghostscript; do
+            versions="$(apt-cache madison "$package")"
+            if ! printf '%s\n' "$versions" | grep -E '\| https://(archive|security)\.ubuntu\.com/ubuntu/? '; then
+              echo "::error::No signed Ubuntu package index supplies $package"
+              exit 1
+            fi
+          done
+          sudo apt-get -s install -y gdebi-core qpdf devscripts ghostscript
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: devel

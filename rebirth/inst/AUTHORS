@@ -15,27 +15,27 @@ android_system_properties-0.1.5
   Authors: Nicolas Silva <nical@fastmail.com>
   License: MIT/Apache-2.0
 
-arrow-array-59.0.0
+arrow-array-59.3.2
   Authors: Apache Arrow <dev@arrow.apache.org>
   License: Apache-2.0 AND MIT
 
-arrow-buffer-59.0.0
+arrow-buffer-59.3.2
   Authors: Apache Arrow <dev@arrow.apache.org>
   License: Apache-2.0
 
-arrow-data-59.0.0
+arrow-data-59.3.2
   Authors: Apache Arrow <dev@arrow.apache.org>
   License: Apache-2.0
 
-arrow-ipc-59.0.0
+arrow-ipc-59.3.2
   Authors: Apache Arrow <dev@arrow.apache.org>
   License: Apache-2.0
 
-arrow-schema-59.0.0
+arrow-schema-59.3.2
   Authors: Apache Arrow <dev@arrow.apache.org>
   License: Apache-2.0
 
-arrow-select-59.0.0
+arrow-select-59.3.2
   Authors: Apache Arrow <dev@arrow.apache.org>
   License: Apache-2.0
 
@@ -171,8 +171,8 @@ memchr-2.8.3
   Authors: Andrew Gallant <jamslam@gmail.com>; bluss
   License: Unlicense OR MIT
 
-num-bigint-0.4.8
-  Authors: The Rust Project Developers
+num-bigint-0.5.1
+  Authors: See the retained upstream source and license notices
   License: MIT OR Apache-2.0
 
 num-complex-0.4.6

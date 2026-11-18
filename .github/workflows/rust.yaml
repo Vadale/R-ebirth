@@ -319,7 +319,7 @@ jobs:
       # ~15s. Keeps the per-PR gate fast (the point of the sccache CI cache).
       - uses: taiki-e/install-action@v2
         with:
-          tool: cargo-deny
+          tool: cargo-deny@0.21.0
 
       - name: cargo deny — licenses / bans / sources
         working-directory: rebirth/src/rust
