@@ -179,7 +179,9 @@ jobs:
         run: |
           set -euo pipefail
           {
-            sudo apt-get update
+            python3 tests/ci/test-ubuntu-apt.py
+            sudo python3 tests/ci/configure-ubuntu-apt.py --restore-noble /etc/apt/sources.list.d/ubuntu.sources
+            sudo apt-get -o APT::Update::Error-Mode=any update
             sudo apt-get install -y \
               "clang-19=$LLVM_PACKAGE_VERSION" \
               "llvm-19=$LLVM_PACKAGE_VERSION" \

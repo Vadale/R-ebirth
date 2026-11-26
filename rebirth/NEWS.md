@@ -1,12 +1,18 @@
-# relm (development)
+# relm 0.6.4
 
-- Update the bundled Arrow IPC crates to 59.3.2, including the
-  RunEndEncoded bounds-validation correction in RUSTSEC-2026-0442.
+## Installation fixes
 
 - Fix source installation with Cargo 1.100. R's build stages native archives
   in the directory used by the linker. Windows builds accept both layouts
   for Cargo's intermediate files and link the Windows synchronization
   library required by Rust's standard library.
+- Keep Cargo configuration and vendor cleanup paths intact when installing
+  from a source directory containing spaces.
+
+## Dependency maintenance
+
+- Update the bundled Arrow IPC crates to 59.3.2, including the
+  RunEndEncoded bounds-validation correction in RUSTSEC-2026-0442.
 
 # relm 0.6.3
 

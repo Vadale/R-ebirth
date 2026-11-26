@@ -20,8 +20,10 @@ all: $(SHLIB) rust_clean
 
 $(SHLIB): $(STATLIB)
 
-CARGOTMP = $(CURDIR)/.cargo
-VENDOR_DIR = $(CURDIR)/vendor
+# Shell operations own only these working-directory-relative scratch trees.
+# Cargo still receives an absolute home, including when the source path has spaces.
+CARGOTMP = ./.cargo
+VENDOR_DIR = ./vendor
 
 
 # RUSTFLAGS appends --print=native-static-libs to ensure that 
@@ -36,26 +38,26 @@ $(STATLIB):
 
 	if [ -d ./vendor ]; then \
 		echo "=== Using offline vendor directory ==="; \
-		mkdir -p $(CARGOTMP) && \
-		cp rust/vendor-config.toml $(CARGOTMP)/config.toml; \
+		mkdir -p "$(CARGOTMP)" && \
+		cp rust/vendor-config.toml "$(CARGOTMP)/config.toml"; \
 	elif [ -f ./rust/vendor.tar.xz ]; then \
 		echo "=== Using offline vendor tarball ==="; \
 		tar xf rust/vendor.tar.xz && \
-		mkdir -p $(CARGOTMP) && \
-		cp rust/vendor-config.toml $(CARGOTMP)/config.toml; \
+		mkdir -p "$(CARGOTMP)" && \
+		cp rust/vendor-config.toml "$(CARGOTMP)/config.toml"; \
 	fi
 
-	export CARGO_HOME=$(CARGOTMP) && \
+	export CARGO_HOME="$(CURDIR)/$(CARGOTMP)" && \
 	export @NATIVE_BUILD_ENV@ RELM_NATIVE_LIB_DIR="$(CURDIR)/$(LIBDIR)" && \
 	export PATH="$(PATH):$(HOME)/.cargo/bin" && \
 	@PANIC_EXPORTS@RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ @SELFTEST_FEATURE@ @CUDA_FEATURE@ -p rebirth-ffi --lib @PROFILE@ --manifest-path=./rust/Cargo.toml --target-dir $(TARGET_DIR) @TARGET@
 
 	# Always clean up CARGOTMP
-	rm -Rf $(CARGOTMP);
+	rm -Rf "$(CARGOTMP)";
 
 rust_clean: $(SHLIB)
 	@RSCRIPT@ --vanilla ../tools/generate-wrappers.R "$(SHLIB)" ../R/extendr-wrappers.R
-	rm -Rf $(CARGOTMP) $(VENDOR_DIR) @CLEAN_TARGET@
+	rm -Rf "$(CARGOTMP)" "$(VENDOR_DIR)" @CLEAN_TARGET@
 
 clean:
-	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) $(TARGET_DIR) $(VENDOR_DIR)
+	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) $(TARGET_DIR) "$(VENDOR_DIR)"

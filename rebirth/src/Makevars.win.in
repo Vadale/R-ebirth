@@ -22,8 +22,10 @@ all: $(SHLIB) rust_clean
 
 $(SHLIB): $(STATLIB)
 
-CARGOTMP = $(CURDIR)/.cargo
-VENDOR_DIR = vendor
+# Shell operations own only these working-directory-relative scratch trees.
+# Cargo still receives an absolute home, including when the source path has spaces.
+CARGOTMP = ./.cargo
+VENDOR_DIR = ./vendor
 
 $(STATLIB):
 	mkdir -p $(TARGET_DIR)/libgcc_mock
@@ -33,27 +35,27 @@ $(STATLIB):
   # vendor.tar.xz exists, it is unzipped and used for offline compilation.
 	if [ -d ./vendor ]; then \
 		echo "=== Using offline vendor directory ==="; \
-		mkdir -p $(CARGOTMP) && \
-		cp rust/vendor-config.toml $(CARGOTMP)/config.toml; \
+		mkdir -p "$(CARGOTMP)" && \
+		cp rust/vendor-config.toml "$(CARGOTMP)/config.toml"; \
 	elif [ -f ./rust/vendor.tar.xz ]; then \
 		echo "=== Using offline vendor tarball ==="; \
 		tar xf rust/vendor.tar.xz && \
-		mkdir -p $(CARGOTMP) && \
-		cp rust/vendor-config.toml $(CARGOTMP)/config.toml; \
+		mkdir -p "$(CARGOTMP)" && \
+		cp rust/vendor-config.toml "$(CARGOTMP)/config.toml"; \
 	fi
 
 	# Build the project using Cargo with additional flags
-	export CARGO_HOME=$(CARGOTMP) && \
+	export CARGO_HOME="$(CURDIR)/$(CARGOTMP)" && \
 	export @NATIVE_BUILD_ENV@ RELM_NATIVE_LIB_DIR="$(CURDIR)/$(LIBDIR)" && \
 	export LIBRARY_PATH="$(LIBRARY_PATH);$(CURDIR)/$(TARGET_DIR)/libgcc_mock" && \
 	RUSTFLAGS="$(RUSTFLAGS) --print=native-static-libs" cargo build @CRAN_FLAGS@ @SELFTEST_FEATURE@ @CUDA_FEATURE@ -p rebirth-ffi --target=$(TARGET) --lib @PROFILE@ --manifest-path=rust/Cargo.toml --target-dir=$(TARGET_DIR)
 
 	# Always clean up CARGOTMP
-	rm -Rf $(CARGOTMP);
+	rm -Rf "$(CARGOTMP)";
 
 rust_clean: $(SHLIB)
 	@RSCRIPT@ --vanilla ../tools/generate-wrappers.R "$(SHLIB)" ../R/extendr-wrappers.R
-	rm -Rf $(CARGOTMP) $(VENDOR_DIR) @CLEAN_TARGET@
+	rm -Rf "$(CARGOTMP)" "$(VENDOR_DIR)" @CLEAN_TARGET@
 
 clean:
-	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) $(TARGET_DIR) $(VENDOR_DIR)
+	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) $(TARGET_DIR) "$(VENDOR_DIR)"
