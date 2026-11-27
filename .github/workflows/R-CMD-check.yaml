@@ -139,6 +139,7 @@ jobs:
           python3 tools/prepare-cran-sources.py --check
           python3 tests/cran/test_source_bundles.py
           python3 tests/cran/test_extendr_patch.py
+          python3 tests/cran/test-vendor-paths.py
           Rscript --vanilla tests/cran/configuration.R
 
       - name: Native R state archive with GCC sanitizer and slim LTO (no engine or models)
